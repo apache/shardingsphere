@@ -25,6 +25,7 @@ weight = 4
 | ----------- | -------------------------------------------- | --------------- |
 | name        | String                                       | 表名称           |
 | columns (+) | Collection\<EncryptColumnRuleConfiguration\> | 加密列规则配置列表 |
+| queryWithCipherColumn (?) | boolean                                             | 该表是否使用加密列进行查询 | true   |
 
 ## 加密列规则配置
 

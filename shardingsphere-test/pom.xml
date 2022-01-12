@@ -38,6 +38,7 @@
         <module>shardingsphere-rewrite-test</module>
         <module>shardingsphere-parser-test</module>
         <module>shardingsphere-optimize-test</module>
+        <module>shardingsphere-pipeline-test</module>
     </modules>
     
     <properties>

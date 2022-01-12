@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text;
 
+import io.vertx.core.Future;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 
 import java.sql.SQLException;
@@ -35,6 +36,19 @@ public interface TextProtocolBackendHandler {
      * @throws SQLException SQL exception
      */
     ResponseHeader execute() throws SQLException;
+    
+    /**
+     * Execute command and return future.
+     *
+     * @return future of response header
+     */
+    default Future<ResponseHeader> executeFuture() {
+        try {
+            return Future.succeededFuture(execute());
+        } catch (SQLException ex) {
+            return Future.failedFuture(ex);
+        }
+    }
     
     /**
      * Goto next result value.

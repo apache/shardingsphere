@@ -53,8 +53,8 @@ spring.shardingsphere.rules.sharding.tables.t_user_detail.table-strategy.standar
 
 # 数据加密配置
 # `t_user` 使用分片规则配置的逻辑表名称
-spring.shardingsphere.rules.encrypt.tables.t_user.columns.user_name.cipher-column=user_name
-spring.shardingsphere.rules.encrypt.tables.t_user.columns.user_name.encryptor-name=name-encryptor
+spring.shardingsphere.rules.encrypt.tables.t_user.columns.username.cipher-column=username
+spring.shardingsphere.rules.encrypt.tables.t_user.columns.username.encryptor-name=name-encryptor
 spring.shardingsphere.rules.encrypt.tables.t_user.columns.pwd.cipher-column=pwd
 spring.shardingsphere.rules.encrypt.tables.t_user.columns.pwd.encryptor-name=pwd-encryptor
 

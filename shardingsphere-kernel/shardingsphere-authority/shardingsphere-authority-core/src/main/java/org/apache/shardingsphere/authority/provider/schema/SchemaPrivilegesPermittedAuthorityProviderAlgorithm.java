@@ -49,12 +49,12 @@ public final class SchemaPrivilegesPermittedAuthorityProviderAlgorithm implement
     }
 
     @Override
-    public void init(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
+    public void init(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
         this.userPrivilegeMap.putAll(SchemaPrivilegeBuilder.build(users, props));
     }
 
     @Override
-    public void refresh(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
+    public void refresh(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
         this.userPrivilegeMap.putAll(SchemaPrivilegeBuilder.build(users, props));
     }
 

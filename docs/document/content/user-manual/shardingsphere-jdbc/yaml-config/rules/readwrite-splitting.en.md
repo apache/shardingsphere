@@ -10,6 +10,7 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     <data-source-name> (+): # Logic data source name of readwrite-splitting
+      autoAwareDataSourceName: # Auto aware data source name(Use with database discovery)
       writeDataSourceName: # Write data source name
       readDataSourceNames: 
         - <read-data-source-name> (+) # Read data source name

@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAuto
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.tcl.AutoCommitSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLBeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLRollbackStatement;
@@ -89,16 +90,27 @@ public final class MySQLTCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        return new MySQLRollbackStatement();
+        MySQLRollbackStatement result = new MySQLRollbackStatement();
+        if (null != ctx.identifier()) {
+            result.setSavepointName(((IdentifierValue) visit(ctx.identifier())).getValue());
+        }
+        return result;
     }
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        return new MySQLSavepointStatement();
+        MySQLSavepointStatement result = new MySQLSavepointStatement();
+        result.setSavepointName(((IdentifierValue) visit(ctx.identifier())).getValue());
+        return result;
     }
     
     @Override
     public ASTNode visitXa(final XaContext ctx) {
-        return new MySQLXAStatement();
+        MySQLXAStatement result = new MySQLXAStatement();
+        result.setOp(ctx.getChild(1).getText().toUpperCase());
+        if (null != ctx.xid()) {
+            result.setXid(ctx.xid().getText());
+        }
+        return result;
     }
 }

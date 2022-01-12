@@ -59,7 +59,7 @@ public class TableMetaDataUtil {
     }
     
     private static void addOneActualTableDataNode(final SchemaBuilderMaterials materials, final Map<String, Collection<String>> dataSourceTableGroups, final DataNodes dataNodes, final String table) {
-        Optional<DataNode> optional = dataNodes.getDataNodes(table).stream().findFirst();
+        Optional<DataNode> optional = dataNodes.getDataNodes(table).stream().filter(dataNode -> materials.getDataSourceMap().keySet().contains(dataNode.getDataSourceName())).findFirst();
         String dataSourceName = optional.map(DataNode::getDataSourceName).orElse(materials.getDataSourceMap().keySet().iterator().next());
         String tableName = optional.map(DataNode::getTableName).orElse(table);
         addDataSourceTableGroups(dataSourceName, tableName, dataSourceTableGroups);

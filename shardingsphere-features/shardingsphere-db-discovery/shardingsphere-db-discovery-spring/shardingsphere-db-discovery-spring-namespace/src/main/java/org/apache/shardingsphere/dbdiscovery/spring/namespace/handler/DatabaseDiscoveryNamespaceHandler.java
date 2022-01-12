@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.dbdiscovery.spring.namespace.handler;
 
+import org.apache.shardingsphere.dbdiscovery.spring.namespace.factorybean.DatabaseDiscoveryAlgorithmFactoryBean;
 import org.apache.shardingsphere.dbdiscovery.spring.namespace.parser.DatabaseDiscoveryRuleBeanDefinitionParser;
 import org.apache.shardingsphere.dbdiscovery.spring.namespace.tag.DatabaseDiscoveryRuleBeanDefinitionTag;
+import org.apache.shardingsphere.dbdiscovery.spring.namespace.tag.DatabaseDiscoveryTypeBeanDefinitionTag;
+import org.apache.shardingsphere.spring.namespace.parser.ShardingSphereAlgorithmBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
@@ -29,5 +32,6 @@ public final class DatabaseDiscoveryNamespaceHandler extends NamespaceHandlerSup
     @Override
     public void init() {
         registerBeanDefinitionParser(DatabaseDiscoveryRuleBeanDefinitionTag.ROOT_TAG, new DatabaseDiscoveryRuleBeanDefinitionParser());
+        registerBeanDefinitionParser(DatabaseDiscoveryTypeBeanDefinitionTag.ROOT_TAG, new ShardingSphereAlgorithmBeanDefinitionParser(DatabaseDiscoveryAlgorithmFactoryBean.class));
     }
 }

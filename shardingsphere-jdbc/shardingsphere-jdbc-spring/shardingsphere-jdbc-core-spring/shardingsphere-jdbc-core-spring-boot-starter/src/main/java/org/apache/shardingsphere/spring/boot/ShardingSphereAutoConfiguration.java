@@ -103,7 +103,8 @@ public class ShardingSphereAutoConfiguration implements EnvironmentAware {
     @Bean
     @ConditionalOnMissingBean(DataSource.class)
     public DataSource dataSource(final ModeConfiguration modeConfig) throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(schemaName, modeConfig);
+        return !dataSourceMap.isEmpty() ? ShardingSphereDataSourceFactory.createDataSource(schemaName, modeConfig, dataSourceMap, Collections.emptyList(), props.getProps())
+                : ShardingSphereDataSourceFactory.createDataSource(schemaName, modeConfig);
     }
     
     /**

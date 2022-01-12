@@ -71,6 +71,10 @@ SHARDING_COLUMN
     : S H A R D I N G UL_ C O L U M N
     ;
 
+SHARDING_COLUMNS
+    : S H A R D I N G UL_ C O L U M N S
+    ;
+
 TYPE
     : T Y P E
     ;
@@ -142,7 +146,7 @@ CLEAR
 DEFAULT
     : D E F A U L T
     ;
-    
+
 DATABASE
     : D A T A B A S E
     ;
@@ -154,16 +158,39 @@ SHARDING_ALGORITHM
 STRATEGY
     : S T R A T E G Y
     ;
-        
+
 DATANODES
     : D A T A N O D E S
     ;
-    
+
 DATABASE_STRATEGY
     : D A T A B A S E UL_ S T R A T E G Y
     ;
-    
+
 TABLE_STRATEGY
     : T A B L E UL_ S T R A T E G Y
     ;
 
+NODES
+    : N O D E S
+    ;
+
+KEY
+    : K E Y
+    ;
+
+GENERATOR
+    : G E N E R A T O R
+    ;
+
+GENERATORS
+    : G E N E R A T O R S
+    ;
+
+GENERATED_KEY_ALGORITHM
+    : G E N E R A T E D UL_ K E Y UL_ A L G O R I T H M
+    ;
+
+UNUSED
+    : U N U S E D
+    ;

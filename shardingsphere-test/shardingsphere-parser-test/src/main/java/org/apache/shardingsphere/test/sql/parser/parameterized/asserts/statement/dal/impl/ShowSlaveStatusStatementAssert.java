@@ -27,7 +27,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * MySQL show slave status statement assert.
+ * Show slave status statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowSlaveStatusStatementAssert {
@@ -36,8 +36,8 @@ public final class ShowSlaveStatusStatementAssert {
      * Assert show slave status statement is correct with expected show slave status statement test case.
      *
      * @param assertContext assert context
-     * @param actual        actual show slave status statement
-     * @param expected      expected show slave status statement test case
+     * @param actual actual show slave status statement
+     * @param expected expected show slave status statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowSlaveStatusStatement actual, final ShowSlaveStatusStatementTestCase expected) {
         if (null != expected.getChannel()) {

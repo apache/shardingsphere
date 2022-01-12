@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.schema.SchemaAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowDataBaseDiscoveryRulesStatementTestCase;
@@ -40,7 +40,7 @@ public final class ShowDatabaseDiscoveryRulesStatementAssert {
      * @param actual actual show database discovery rules statement
      * @param expected expected show database discovery rules statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowDatabaseDiscoveryRulesStatement actual, final ShowDataBaseDiscoveryRulesStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowRulesStatement actual, final ShowDataBaseDiscoveryRulesStatementTestCase expected) {
         if (null != expected.getSchema()) {
             assertTrue(assertContext.getText("Actual schema should exist."), actual.getSchema().isPresent());
             SchemaAssert.assertIs(assertContext, actual.getSchema().get(), expected.getSchema());

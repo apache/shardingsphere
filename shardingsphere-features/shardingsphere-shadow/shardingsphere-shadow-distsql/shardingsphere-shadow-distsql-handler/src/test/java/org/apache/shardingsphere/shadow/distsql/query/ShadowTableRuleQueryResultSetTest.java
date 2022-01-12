@@ -54,7 +54,6 @@ public final class ShadowTableRuleQueryResultSetTest {
     }
     
     private RuleConfiguration createRuleConfiguration() {
-        // FIXME because the defined final attribute will be removed, here is just for the new object
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         Properties properties = new Properties();
         properties.setProperty("foo", "bar");

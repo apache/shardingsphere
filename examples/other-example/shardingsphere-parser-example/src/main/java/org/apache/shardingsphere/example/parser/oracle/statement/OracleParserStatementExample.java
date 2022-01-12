@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.example.parser.oracle.statement;
 
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseContext;
@@ -51,7 +52,8 @@ public final class OracleParserStatementExample {
     
     public static void main(String[] args) {
         ORACLE_PARSER_STATEMENT_LIST.forEach(sql -> {
-            SQLParserEngine parserEngine = new SQLParserEngine("Oracle", false);
+            CacheOption cacheOption = new CacheOption(128, 1024L, 4);
+            SQLParserEngine parserEngine = new SQLParserEngine("Oracle", cacheOption, false);
             ParseContext parseContext = parserEngine.parse(sql, false);
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("Oracle", "STATEMENT", new Properties());
             OracleStatement sqlStatement = visitorEngine.visit(parseContext);

@@ -30,7 +30,7 @@ import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
- * Note shadow algorithm determiner.
+ * Hint shadow algorithm determiner.
  */
 @RequiredArgsConstructor
 public final class HintShadowAlgorithmDeterminer implements ShadowAlgorithmDeterminer {

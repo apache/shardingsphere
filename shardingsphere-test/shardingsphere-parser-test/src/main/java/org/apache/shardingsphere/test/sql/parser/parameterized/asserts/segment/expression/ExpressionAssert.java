@@ -36,9 +36,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.column.ColumnAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.generic.DataTypeAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.projection.ProjectionAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dml.impl.SelectStatementAssert;
@@ -326,8 +328,9 @@ public final class ExpressionAssert {
             assertSubqueryExpression(assertContext,
                     (SubqueryExpressionSegment) actual, expected.getSubquery());
         } else if (actual instanceof ColumnSegment) {
-            ColumnAssert.assertIs(assertContext,
-                    (ColumnSegment) actual, expected.getColumn());
+            ColumnAssert.assertIs(assertContext, (ColumnSegment) actual, expected.getColumn());
+        } else if (actual instanceof DataTypeSegment) {
+            DataTypeAssert.assertIs(assertContext, (DataTypeSegment) actual, expected.getDataType());
         } else if (actual instanceof LiteralExpressionSegment) {
             assertLiteralExpression(assertContext,
                     (LiteralExpressionSegment) actual, expected.getLiteralExpression());

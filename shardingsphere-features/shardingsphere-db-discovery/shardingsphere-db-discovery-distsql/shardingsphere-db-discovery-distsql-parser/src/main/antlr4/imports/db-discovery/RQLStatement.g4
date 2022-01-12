@@ -22,7 +22,15 @@ import Keyword, Literals, Symbol;
 showDatabaseDiscoveryRules
     : SHOW DB_DISCOVERY RULES (FROM schemaName)?
     ;
-
+    
+showDatabaseDiscoveryTypes
+    : SHOW DB_DISCOVERY TYPES (FROM schemaName)?
+    ;
+    
+showDatabaseDiscoveryHeartbeats
+    : SHOW DB_DISCOVERY HEARTBEATS (FROM schemaName)?
+    ;
+    
 schemaName
     : IDENTIFIER
     ;

@@ -48,18 +48,19 @@ public final class DatabaseDiscoveryRuleConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlWithLoadBalanceAlgorithm() {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig =
-                new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.singletonList("dataSourceName"), "discoveryTypeName");
+                new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.singletonList("dataSourceName"), "ha_heartbeat", "discoveryTypeName");
         YamlDatabaseDiscoveryRuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToYamlConfiguration(new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceConfig),
-                ImmutableMap.of("mgr", new ShardingSphereAlgorithmConfiguration("MGR", new Properties()))));
+                Collections.emptyMap(), ImmutableMap.of("mgr", new ShardingSphereAlgorithmConfiguration("MGR", new Properties()))));
         assertThat(actual.getDataSources().keySet(), is(Collections.singleton("ds")));
         assertThat(actual.getDataSources().get("ds").getDataSourceNames(), is(Collections.singletonList("dataSourceName")));
     }
     
     @Test
     public void assertSwapToYamlWithoutLoadBalanceAlgorithm() {
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.singletonList("dataSourceName"), "discoveryTypeName");
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.singletonList("dataSourceName"),
+                "ha_heartbeat", "discoveryTypeName");
         YamlDatabaseDiscoveryRuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToYamlConfiguration(
-                new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap()));
+                new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap(), Collections.emptyMap()));
         assertThat(actual.getDataSources().keySet(), is(Collections.singleton("ds")));
         assertThat(actual.getDataSources().get("ds").getDataSourceNames(), is(Collections.singletonList("dataSourceName")));
     }
@@ -87,7 +88,7 @@ public final class DatabaseDiscoveryRuleConfigurationYamlSwapperTest {
     
     private void assertHARuleConfiguration(final DatabaseDiscoveryRuleConfiguration actual) {
         DatabaseDiscoveryDataSourceRuleConfiguration group = actual.getDataSources().iterator().next();
-        assertThat(group.getName(), is("ha_ds"));
+        assertThat(group.getGroupName(), is("ha_ds"));
         assertThat(group.getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
     }
     

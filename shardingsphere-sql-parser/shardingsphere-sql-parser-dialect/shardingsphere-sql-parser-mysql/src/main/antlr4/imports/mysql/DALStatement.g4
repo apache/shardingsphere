@@ -24,14 +24,14 @@ use
     ;
 
 help
-    : HELP string_
+    : HELP textOrIdentifier
     ;
 
 explain
     : (DESC | DESCRIBE | EXPLAIN)
     (tableName (columnRef | textString)?
     | explainType? (explainableStatement | FOR CONNECTION connectionId)
-    | ANALYZE select)
+    | ANALYZE (FORMAT EQ_ TREE)? select)
     ;
 
 showDatabases
@@ -139,7 +139,7 @@ showCreateTrigger
     ;
 
 showCreateUser
-    : SHOW CREATE USER userName
+    : SHOW CREATE USER username
     ;
 
 showCreateView
@@ -175,7 +175,7 @@ showFunctionStatus
     ;
 
 showGrant
-    : SHOW GRANTS (FOR userName (USING userName (COMMA_ userName)+)?)?
+    : SHOW GRANTS (FOR username (USING username (COMMA_ username)+)?)?
     ;
 
 showMasterStatus
@@ -408,15 +408,19 @@ shutdown
 explainType
     : FORMAT EQ_ formatName
     ;
-
+    
 explainableStatement
-    : select | delete | insert | replace | update
+    : table | select | delete | insert | replace | update
     ;
 
 formatName
     : TRADITIONAL | JSON | TREE
     ;
 
+delimiter
+    : DELIMITER  delimiterName
+    ;
+    
 show
     : showDatabases
     | showTables

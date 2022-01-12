@@ -1,6 +1,6 @@
 +++
 title = "Shadow"
-weight = 5
+weight = 6
 +++
 
 ## Syntax
@@ -9,7 +9,7 @@ weight = 5
 CREATE SHADOW RULE shadowRuleDefinition [, shadowRuleDefinition] ... 
 
 ALTER SHADOW RULE shadowRuleDefinition [, shadowRuleDefinition] ... 
-```
+
 CREATE SHADOW ALGORITHM shadowAlgorithm [, shadowAlgorithm] ...
 
 ALTER SHADOW ALGORITHM shadowAlgorithm [, shadowAlgorithm] ...

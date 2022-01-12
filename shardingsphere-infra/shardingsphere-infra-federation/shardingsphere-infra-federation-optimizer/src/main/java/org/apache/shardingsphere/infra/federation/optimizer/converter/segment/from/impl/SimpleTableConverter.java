@@ -24,10 +24,13 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -38,7 +41,12 @@ public final class SimpleTableConverter implements SQLSegmentConverter<SimpleTab
     @Override
     public Optional<SqlNode> convertToSQLNode(final SimpleTableSegment segment) {
         TableNameSegment tableName = segment.getTableName();
-        SqlNode tableNameSQLNode = new SqlIdentifier(tableName.getIdentifier().getValue(), SqlParserPos.ZERO);
+        List<String> names = new ArrayList<>();
+        if (segment.getOwner().isPresent()) {
+            names.add(segment.getOwner().get().getIdentifier().getValue());
+        }
+        names.add(tableName.getIdentifier().getValue());
+        SqlNode tableNameSQLNode = new SqlIdentifier(names, SqlParserPos.ZERO);
         if (segment.getAlias().isPresent()) {
             SqlNode aliasSQLNode = new SqlIdentifier(segment.getAlias().get(), SqlParserPos.ZERO);
             return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, new SqlNode[] {tableNameSQLNode, aliasSQLNode}, SqlParserPos.ZERO));
@@ -59,7 +67,12 @@ public final class SimpleTableConverter implements SQLSegmentConverter<SimpleTab
             }
         }
         if (sqlNode instanceof SqlIdentifier) {
-            return Optional.of(new SimpleTableSegment(new TableNameSegment(getStartIndex(sqlNode), getStopIndex(sqlNode), new IdentifierValue(((SqlIdentifier) sqlNode).names.get(0)))));
+            List<String> names = ((SqlIdentifier) sqlNode).names;
+            SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(getStartIndex(sqlNode), getStopIndex(sqlNode), new IdentifierValue(names.get(names.size() - 1))));
+            if (2 == names.size()) {
+                simpleTableSegment.setOwner(new OwnerSegment(getStartIndex(sqlNode), getStartIndex(sqlNode) + names.get(0).length() - 1, new IdentifierValue(names.get(0))));
+            }
+            return Optional.of(simpleTableSegment);
         }
         return Optional.empty();
     }

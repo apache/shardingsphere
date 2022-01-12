@@ -104,6 +104,13 @@ public final class DatabaseTypeRecognizerTest {
         DatabaseTypeRecognizer.getDatabaseType(differentDataSources);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void assertCantGetConnectionFromDataSource() throws SQLException {
+        DataSource mockDataSource = mock(DataSource.class);
+        when(mockDataSource.getConnection()).thenThrow(SQLException.class);
+        DatabaseTypeRecognizer.getDatabaseType(Arrays.asList(mockDataSource));
+    }
+
     private DataSource mockDataSource(final DatabaseType databaseType) throws SQLException {
         DataSource result = mock(DataSource.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);

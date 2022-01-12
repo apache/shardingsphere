@@ -5,7 +5,7 @@ weight = 2
 
 ## Root Configuration
 
-Class name: ReadwriteSplittingRuleConfiguration
+Class name: org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration
 
 Attributes:
 
@@ -16,13 +16,14 @@ Attributes:
 
 ## Readwrite-splitting Data Source Configuration
 
-Class name: ReadwriteSplittingDataSourceRuleConfiguration
+Class name: org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration
 
 Attributes:
 
 | *Name*                     | *DataType*           | *Description*                                  | *Default Value*                    |
 | -------------------------- | -------------------- | ---------------------------------------------- | ---------------------------------- |
 | name                       | String               | Readwrite-splitting data source name           | -                                  |
+| autoAwareDataSourceName(?) | String               | Auto aware data source name(Use with database discovery)        | -             |
 | writeDataSourceName        | String               | Write sources source name                      | -                                  |
 | readDataSourceNames (+)    | Collection\<String\> | Read sources source name list                  | -                                  |
 | loadBalancerName (?)       | String               | Load balance algorithm name of replica sources | Round robin load balance algorithm |

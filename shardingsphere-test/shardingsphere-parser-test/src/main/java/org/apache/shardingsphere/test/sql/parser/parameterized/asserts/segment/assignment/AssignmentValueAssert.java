@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
@@ -55,6 +56,8 @@ public final class AssignmentValueAssert {
             ColumnAssert.assertIs(assertContext, (ColumnSegment) actual, expected.getColumn());
         } else if (actual instanceof SubqueryExpressionSegment) {
             ExpressionAssert.assertSubqueryExpression(assertContext, (SubqueryExpressionSegment) actual, expected.getSubquery());
+        } else if (actual instanceof FunctionSegment) {
+            ExpressionAssert.assertFunction(assertContext, (FunctionSegment) actual, expected.getFunction());
         }
     }
 }

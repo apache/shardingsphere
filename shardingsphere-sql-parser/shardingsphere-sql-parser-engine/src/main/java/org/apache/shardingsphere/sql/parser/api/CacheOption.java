@@ -17,19 +17,23 @@
 
 package org.apache.shardingsphere.sql.parser.api;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Cache option.
  */
-@RequiredArgsConstructor
 @Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public final class CacheOption {
     
-    private final int initialCapacity;
+    private int initialCapacity;
     
-    private final long maximumSize;
+    private long maximumSize;
     
-    private final int concurrencyLevel;
+    private int concurrencyLevel;
 }

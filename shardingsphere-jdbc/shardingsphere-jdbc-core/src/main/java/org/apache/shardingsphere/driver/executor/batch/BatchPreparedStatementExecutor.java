@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -92,7 +93,12 @@ public final class BatchPreparedStatementExecutor {
     }
     
     private Collection<BatchExecutionUnit> createBatchExecutionUnits(final Collection<ExecutionUnit> executionUnits) {
-        return executionUnits.stream().map(BatchExecutionUnit::new).collect(Collectors.toList());
+        List<BatchExecutionUnit> result = new ArrayList<>(executionUnits.size());
+        for (ExecutionUnit executionUnit : executionUnits) {
+            BatchExecutionUnit batchExecutionUnit = new BatchExecutionUnit(executionUnit);
+            result.add(batchExecutionUnit);
+        }
+        return result;
     }
     
     private void handleOldBatchExecutionUnits(final Collection<BatchExecutionUnit> newExecutionUnits) {
@@ -100,7 +106,11 @@ public final class BatchPreparedStatementExecutor {
     }
     
     private void reviseBatchExecutionUnits(final BatchExecutionUnit batchExecutionUnit) {
-        batchExecutionUnits.stream().filter(each -> each.equals(batchExecutionUnit)).forEach(each -> reviseBatchExecutionUnit(each, batchExecutionUnit));
+        for (BatchExecutionUnit each : batchExecutionUnits) {
+            if (each.equals(batchExecutionUnit)) {
+                reviseBatchExecutionUnit(each, batchExecutionUnit);
+            }
+        }
     }
     
     private void reviseBatchExecutionUnit(final BatchExecutionUnit oldBatchExecutionUnit, final BatchExecutionUnit newBatchExecutionUnit) {
@@ -110,7 +120,9 @@ public final class BatchPreparedStatementExecutor {
     
     private void handleNewBatchExecutionUnits(final Collection<BatchExecutionUnit> newExecutionUnits) {
         newExecutionUnits.removeAll(batchExecutionUnits);
-        newExecutionUnits.forEach(each -> each.mapAddBatchCount(batchCount));
+        for (BatchExecutionUnit each : newExecutionUnits) {
+            each.mapAddBatchCount(batchCount);
+        }
         batchExecutionUnits.addAll(newExecutionUnits);
     }
     
@@ -184,8 +196,11 @@ public final class BatchPreparedStatementExecutor {
      */
     public List<Statement> getStatements() {
         List<Statement> result = new LinkedList<>();
-        for (ExecutionGroup<JDBCExecutionUnit> each : executionGroupContext.getInputGroups()) {
-            result.addAll(each.getInputs().stream().map(JDBCExecutionUnit::getStorageResource).collect(Collectors.toList()));
+        for (ExecutionGroup<JDBCExecutionUnit> eachGroup : executionGroupContext.getInputGroups()) {
+            for (JDBCExecutionUnit eachUnit : eachGroup.getInputs()) {
+                Statement storageResource = eachUnit.getStorageResource();
+                result.add(storageResource);
+            }
         }
         return result;
     }

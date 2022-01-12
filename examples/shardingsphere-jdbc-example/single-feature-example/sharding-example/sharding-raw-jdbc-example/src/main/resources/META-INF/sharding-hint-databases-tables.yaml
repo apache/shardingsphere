@@ -36,10 +36,10 @@ rules:
       actualDataNodes: ds_${0..1}.t_order_${0..1}
       databaseStrategy:
         hint:
-          shardingAlgorithmName: hint_test
+          shardingAlgorithmName: hint-test
       tableStrategy:
         hint:
-          shardingAlgorithmName: hint_test
+          shardingAlgorithmName: hint-test
       keyGenerateStrategy:
         column: order_id
         keyGeneratorName: snowflake
@@ -53,14 +53,14 @@ rules:
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      shardingAlgorithmName: database_inline
+      shardingAlgorithmName: database-inline
   defaultTableStrategy:
     none:
   
   shardingAlgorithms:
-    hint_test:
+    hint-test:
       type: HINT_TEST
-    database_inline:
+    database-inline:
       type: INLINE
       props:
         algorithm-expression: ds_${user_id % 2}

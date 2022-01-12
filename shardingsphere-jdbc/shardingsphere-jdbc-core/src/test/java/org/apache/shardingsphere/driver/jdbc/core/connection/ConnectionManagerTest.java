@@ -17,41 +17,110 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.connection;
 
+import com.google.common.collect.Sets;
+import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.instance.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.InstanceType;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 public final class ConnectionManagerTest {
     
     private ConnectionManager connectionManager;
     
+    private MockedStatic<DataSourcePoolCreatorUtil> dataSourcePoolCreatorUtil;
+    
     @Before
     public void setUp() throws SQLException {
         connectionManager = new ConnectionManager(DefaultSchema.LOGIC_NAME, mockContextManager());
     }
     
+    @After
+    public void cleanUp() {
+        dataSourcePoolCreatorUtil.close();
+    }
+    
     private ContextManager mockContextManager() throws SQLException {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSourceMap = mockDataSourceMap();
+        TrafficRule trafficRule = mockTrafficRule();
+        MetaDataPersistService metaDataPersistService = mockMetaDataPersistService();
         when(result.getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(dataSourceMap);
+        when(result.getMetaDataContexts().getMetaDataPersistService()).thenReturn(Optional.of(metaDataPersistService));
         when(result.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.empty());
+        when(result.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TrafficRule.class)).thenReturn(Optional.of(trafficRule));
+        dataSourcePoolCreatorUtil = mockStatic(DataSourcePoolCreatorUtil.class);
+        Map<String, DataSource> trafficDataSourceMap = mockTrafficDataSourceMap();
+        when(DataSourcePoolCreatorUtil.getDataSourceMap(any())).thenReturn(trafficDataSourceMap);
+        return result;
+    }
+    
+    private Map<String, DataSource> mockTrafficDataSourceMap() {
+        Map<String, DataSource> trafficDataSourceMap = new LinkedHashMap<>();
+        trafficDataSourceMap.put("127.0.0.1@3307", mock(DataSource.class));
+        return trafficDataSourceMap;
+    }
+    
+    private MetaDataPersistService mockMetaDataPersistService() {
+        MetaDataPersistService result = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
+        when(result.getDataSourceService().load(DefaultSchema.LOGIC_NAME)).thenReturn(createDataSourcePropertiesMap());
+        when(result.getComputeNodePersistService().loadComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(Collections.singletonList(mockComputeNodeInstance()));
+        when(result.getGlobalRuleService().loadUsers()).thenReturn(Collections.singletonList(new ShardingSphereUser("root", "root", "localhost")));
+        return result;
+    }
+    
+    private Map<String, DataSourceProperties> createDataSourcePropertiesMap() {
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>();
+        DataSourceProperties dataSourceProps = new DataSourceProperties(HikariDataSource.class.getName());
+        result.put(DefaultSchema.LOGIC_NAME, dataSourceProps);
+        dataSourceProps.getProps().put("jdbcUrl", "jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false");
+        dataSourceProps.getProps().put("username", "root");
+        dataSourceProps.getProps().put("password", "123456");
+        return result;
+    }
+    
+    private ComputeNodeInstance mockComputeNodeInstance() {
+        ComputeNodeInstance result = new ComputeNodeInstance();
+        result.setLabels(Collections.singletonList("OLTP"));
+        result.setInstanceDefinition(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
+        return result;
+    }
+    
+    private TrafficRule mockTrafficRule() {
+        TrafficRule result = mock(TrafficRule.class);
+        when(result.getLabels()).thenReturn(Arrays.asList("OLTP", "OLAP"));
         return result;
     }
     
@@ -65,10 +134,9 @@ public final class ConnectionManagerTest {
     }
     
     @Test
-    public void assertGetRandomPhysicalDataSourceNameFromContextManager() throws SQLException {
-        connectionManager.getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY);
+    public void assertGetRandomPhysicalDataSourceNameFromContextManager() {
         String actual = connectionManager.getRandomPhysicalDataSourceName();
-        assertThat(actual, is("ds"));
+        assertTrue(Sets.newHashSet("ds", "invalid_ds").contains(actual));
     }
     
     @Test
@@ -85,6 +153,12 @@ public final class ConnectionManagerTest {
     }
     
     @Test
+    public void assertGetConnectionWhenConfigTrafficRule() throws SQLException {
+        assertThat(connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY),
+                is(connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY)));
+    }
+    
+    @Test
     public void assertGetConnectionsWhenAllInCache() throws SQLException {
         Connection expected = connectionManager.getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY).get(0);
         List<Connection> actual = connectionManager.getConnections("ds", 1, ConnectionMode.CONNECTION_STRICTLY);
@@ -93,8 +167,22 @@ public final class ConnectionManagerTest {
     }
     
     @Test
+    public void assertGetConnectionsWhenConfigTrafficRuleAndAllInCache() throws SQLException {
+        Connection expected = connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        List<Connection> actual = connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.CONNECTION_STRICTLY);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0), is(expected));
+    }
+    
+    @Test
     public void assertGetConnectionsWhenEmptyCache() throws SQLException {
         List<Connection> actual = connectionManager.getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY);
+        assertThat(actual.size(), is(1));
+    }
+    
+    @Test
+    public void assertGetConnectionsWhenConfigTrafficRuleAndEmptyCache() throws SQLException {
+        List<Connection> actual = connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(1));
     }
     

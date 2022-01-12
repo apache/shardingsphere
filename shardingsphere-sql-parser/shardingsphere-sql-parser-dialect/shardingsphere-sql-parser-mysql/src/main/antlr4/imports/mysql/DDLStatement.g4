@@ -617,7 +617,7 @@ subpartitionDefinition
     ;
 
 ownerStatement
-    : DEFINER EQ_ (userName | CURRENT_USER ( LP_ RP_)?)
+    : DEFINER EQ_ (username | CURRENT_USER ( LP_ RP_)?)
     ;
 
 scheduleExpression

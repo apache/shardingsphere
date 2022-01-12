@@ -43,7 +43,7 @@ public final class DatabaseDiscoveryRuleBuilder implements SchemaRuleBuilder<Dat
                 realDataSourceMap.put(datasourceName, materials.getDataSourceMap().get(datasourceName));
             }
         }
-        return new DatabaseDiscoveryRule(config, materials.getSchemaName(), realDataSourceMap);
+        return new DatabaseDiscoveryRule(materials.getSchemaName(), realDataSourceMap, config);
     }
     
     @Override

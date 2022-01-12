@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer.converter.segment.projection;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
+import org.apache.calcite.sql.SqlNumericLiteral;
 import org.apache.calcite.sql.SqlOrderBy;
 import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.parser.SqlParserPos;
@@ -99,7 +101,7 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
     private Optional<ProjectionSegment> getProjectionSegment(final SqlNode sqlNode) {
         if (sqlNode instanceof SqlIdentifier) {
             SqlIdentifier sqlIdentifier = (SqlIdentifier) sqlNode;
-            if (SqlIdentifier.STAR.names.equals(sqlIdentifier.names)) {
+            if (SqlIdentifier.STAR.names.equals(sqlIdentifier.names) || isOwnerShorthandProjection(sqlIdentifier)) {
                 return new ShorthandProjectionConverter().convertToSQLSegment(sqlIdentifier).map(optional -> optional);    
             }
             return new ColumnProjectionConverter().convertToSQLSegment(sqlIdentifier).map(optional -> optional);
@@ -108,7 +110,7 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
             if (AggregationType.isAggregationType(sqlBasicCall.getOperator().getName()) || AggregationProjectionConverter.isAsOperatorAggregationType(sqlBasicCall)) {
                 return new AggregationProjectionConverter().convertToSQLSegment(sqlBasicCall).map(optional -> optional);
             }
-            if (null != sqlBasicCall.getOperator() && SqlKind.AS == sqlBasicCall.getOperator().getKind()) {
+            if (null != sqlBasicCall.getOperator() && SqlKind.AS == sqlBasicCall.getOperator().getKind() && !(sqlBasicCall.getOperandList().get(0) instanceof SqlNumericLiteral)) {
                 return new ColumnProjectionConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
             }
             return new ExpressionProjectionConverter().convertToSQLSegment(sqlNode).map(optional -> optional);
@@ -117,5 +119,10 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
         }
         // TODO process other projection
         return Optional.empty();
+    }
+    
+    private boolean isOwnerShorthandProjection(final SqlIdentifier sqlIdentifier) {
+        return 2 == sqlIdentifier.names.size() 
+                && SqlIdentifier.STAR.names.equals(ImmutableList.of(sqlIdentifier.names.get(1)));
     }
 }

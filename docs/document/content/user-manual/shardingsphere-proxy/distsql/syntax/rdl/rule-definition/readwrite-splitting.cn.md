@@ -1,6 +1,6 @@
 +++
 title = "读写分离"
-weight = 2
+weight = 3
 +++
 
 ## 语法说明

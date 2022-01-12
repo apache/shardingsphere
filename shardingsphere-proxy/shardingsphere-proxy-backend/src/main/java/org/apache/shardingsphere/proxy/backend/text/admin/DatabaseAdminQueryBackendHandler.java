@@ -21,12 +21,12 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeaderBuilder;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
 
@@ -42,7 +42,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class DatabaseAdminQueryBackendHandler implements TextProtocolBackendHandler {
     
-    private final BackendConnection backendConnection;
+    private final ConnectionSession connectionSession;
     
     private final DatabaseAdminQueryExecutor executor;
     
@@ -52,7 +52,7 @@ public final class DatabaseAdminQueryBackendHandler implements TextProtocolBacke
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        executor.execute(backendConnection);
+        executor.execute(connectionSession);
         queryResultMetaData = executor.getQueryResultMetaData();
         mergedResult = executor.getMergedResult();
         return new QueryResponseHeader(createResponseHeader());
@@ -60,7 +60,7 @@ public final class DatabaseAdminQueryBackendHandler implements TextProtocolBacke
     
     private List<QueryHeader> createResponseHeader() throws SQLException {
         List<QueryHeader> result = new ArrayList<>(queryResultMetaData.getColumnCount());
-        ShardingSphereMetaData metaData = null == backendConnection.getSchemaName() ? null : ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
+        ShardingSphereMetaData metaData = null == connectionSession.getSchemaName() ? null : ProxyContext.getInstance().getMetaData(connectionSession.getSchemaName());
         for (int columnIndex = 1; columnIndex <= queryResultMetaData.getColumnCount(); columnIndex++) {
             result.add(QueryHeaderBuilder.build(queryResultMetaData, metaData, columnIndex));
         }

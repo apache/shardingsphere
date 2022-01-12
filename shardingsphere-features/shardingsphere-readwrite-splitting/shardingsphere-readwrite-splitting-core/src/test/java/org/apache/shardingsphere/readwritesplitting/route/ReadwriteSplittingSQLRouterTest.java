@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.readwritesplitting.route;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -36,6 +38,7 @@ import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.Before;
@@ -69,7 +72,7 @@ public final class ReadwriteSplittingSQLRouterTest {
     private ReadwriteSplittingRule rule;
     
     @Mock
-    private SQLStatementContext<SQLStatement> sqlStatementContext;
+    private CommonSQLStatementContext<SQLStatement> sqlStatementContext;
     
     private ReadwriteSplittingSQLRouter sqlRouter;
     
@@ -190,6 +193,20 @@ public final class ReadwriteSplittingSQLRouterTest {
         actual = sqlRouter.createRouteContext(logicSQL, metaData, rule, new ConfigurationProperties(new Properties()));
         routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(READ_DATASOURCE));
+    }
+    
+    @Test
+    public void assertSqlHintRouteWriteOnly() {
+        SelectStatement statement = mock(SelectStatement.class);
+        CommonSQLStatementContext<SelectStatement> sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(statement);
+        when(sqlStatementContext.isHintWriteRouteOnly()).thenReturn(true);
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "", Collections.emptyList());
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(rule));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("logic_schema", mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, mock(ShardingSphereSchema.class));
+        RouteContext actual = sqlRouter.createRouteContext(logicSQL, metaData, rule, new ConfigurationProperties(new Properties()));
+        Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
+        assertThat(routedDataSourceNames.next(), is(WRITE_DATASOURCE));
     }
     
     private RouteContext mockRouteContext() {

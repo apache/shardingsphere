@@ -25,6 +25,10 @@ import java.util.Collection;
 public final class RequiredAlgorithmMissedException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = -1952698375135777585L;
+
+    public RequiredAlgorithmMissedException() {
+        super(1115, "No sharding algorithm definition in current statement");
+    }
     
     public RequiredAlgorithmMissedException(final String schemaName) {
         super(1115, String.format("Sharding algorithm does not exist in schema `%s`.", schemaName));

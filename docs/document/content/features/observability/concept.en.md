@@ -5,14 +5,17 @@ weight = 1
 
 ## Agent
 
-Based on bytecode enhance and plugin design to provide APM, metrics event tracing and log output.
-Enable agent to collection data and then can display data into integrated 3rd APM projects. 
+Based on bytecode enhance and plug-in design to provide tracing, metrics and logging features.
+Enable the plugin in agent to collect data and send data to the integrated 3rd APM system. 
 
 ## APM
 
 APM is the abbreviation for application performance monitoring.
-It works for performance diagnosis of distributed systems, including chain demonstration, application topology analysis and so on.
-Use agent to send tracing data into 3rd party APM protocols.
+It works for performance diagnosis of distributed systems, including chain demonstration, service topology analysis and so on.
+
+## Tracing
+
+Tracing data between distributed services or internal processes will be collected by agent. It then will be sent to APM system.
 
 ## Metrics
 

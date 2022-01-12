@@ -25,5 +25,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
  * SQLServer alter sequence statement.
  */
 @ToString
-public class SQLServerAlterSequenceStatement extends AlterSequenceStatement implements SQLServerStatement {
+public final class SQLServerAlterSequenceStatement extends AlterSequenceStatement implements SQLServerStatement {
 }

@@ -87,6 +87,7 @@ shardingsphere-example
   │   │   │   └── transaction-base-seata-spring-boot-example
   ├── shardingsphere-proxy-example
   │   ├── shardingsphere-proxy-boot-mybatis-example
+  │   ├── shardingsphere-proxy-distsql-example
   │   └── shardingsphere-proxy-hint-example
   ├── shardingsphere-sample
   │   ├── shardingsphere-example-engine
@@ -252,6 +253,7 @@ shardingsphere-example
 | [事务](shardingsphere-jdbc-example/single-feature-example/transaction-example)                           | 演示在 ShardingSphere-JDBC 中使用事务                  |
 | [hint](shardingsphere-jdbc-example/single-feature-example/sharding-example/sharding-raw-jdbc-example)   | 演示在 ShardingSphere-JDBC 中使用 hint                |
 | [加密](shardingsphere-jdbc-example/single-feature-example/encrypt-example)                               | 演示在 ShardingSphere-JDBC 中使用加密                  |
+| [DistSQL](shardingsphere-proxy-example/shardingsphere-proxy-distsql-example)                            | 演示在 ShardingSphere-Proxy 中使用 DistSQL                  |
 | APM 监控(Pending)                                                                                        | 演示在 ShardingSphere 中使用 APM 监控                  |
 | proxy(Pending)                                                                                          | 演示使用 ShardingSphere-Proxy                         |
 | [docker](./docker/docker-compose.md)                                                                    | 演示通过 docker 创建 ShardingSphere 所依赖的环境         |

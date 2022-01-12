@@ -140,6 +140,13 @@ public final class SeataATShardingSphereTransactionManagerTest {
         assertTrue(seataTransactionManager.isInTransaction());
         assertResult();
     }
+
+    @Test
+    public void assertBeginTimeout() {
+        seataTransactionManager.begin(30);
+        assertTrue(seataTransactionManager.isInTransaction());
+        assertResult();
+    }
     
     @Test
     public void assertCommit() {

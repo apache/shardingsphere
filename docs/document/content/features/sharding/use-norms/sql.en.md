@@ -117,10 +117,6 @@ CASE WHEN can not support as following:
 * `CASE WHEN` containing sub-query
 * `CASE WHEN` containing logical-table (instead of table alias)
 
-UNION and UNION ALL can not support as following:
-
-* containing sharding or broadcast table
-
 ### SQL Example
 
 | Stable supported SQL                                                                        | Necessary conditions                                           |
@@ -153,7 +149,7 @@ UNION and UNION ALL can not support as following:
 ***
 
 | Experimental supported SQL                                               | Necessary conditions                                                |
-| ------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| ------------------------------------------------------------------------ |---------------------------------------------------------------------|
 | SELECT * FROM (SELECT * FROM tbl_name) o                                 |                                                                     |
 | SELECT * FROM (SELECT * FROM tbl_name) o WHERE o.col1 = ?                |                                                                     |
 | SELECT * FROM (SELECT * FROM tbl_name WHERE col1 = ?) o                  |                                                                     |
@@ -161,6 +157,8 @@ UNION and UNION ALL can not support as following:
 | SELECT (SELECT MAX(col1) FROM tbl_name) a, col2 from tbl_name            |                                                                     |
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                       |                                                                     |
 | SELECT col1, SUM(col2) FROM tbl_name GROUP BY col1 HAVING SUM(col2) > ?  |                                                                     |
+| SELECT col1, col2 FROM tbl_name UNION SELECT col1, col2 FROM tbl_name    |                                                                     |
+| SELECT col1, col2 FROM tbl_name UNION ALL SELECT col1, col2 FROM tbl_name|                                                                     |
 
 ***
 

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
+import org.apache.shardingsphere.proxy.config.resource.ProxyResourceConfiguration;
 
 import java.util.Collection;
 import java.util.Map;
@@ -33,11 +33,13 @@ import java.util.Properties;
 @Getter
 public final class ProxyConfiguration {
     
-    private final Map<String, Map<String, DataSourceParameter>> schemaDataSources;
+    private final Map<String, Map<String, ProxyResourceConfiguration>> schemaResources;
     
     private final Map<String, Collection<RuleConfiguration>> schemaRules;
     
     private final Collection<RuleConfiguration> globalRules;
     
     private final Properties props;
+    
+    private final Collection<String> labels;
 }

@@ -27,7 +27,7 @@ ShardingTracer.init();
 ShardingTracer.init(new SkywalkingTracer());
 ```
 
-*Notice: when using SkyWalking OpenTracing agent, you should disable the former ShardingSphere agent plug-in to avoid the conflict between them.*
+*Notice: when using SkyWalking OpenTracing agent, the OpenTracing plug-in of Apache ShardingSphere Agent cannot be used at the same time to prevent the two plug-ins from conflicting with each other.*
 
 ### Use SkyWalking's Automatic Agent
 

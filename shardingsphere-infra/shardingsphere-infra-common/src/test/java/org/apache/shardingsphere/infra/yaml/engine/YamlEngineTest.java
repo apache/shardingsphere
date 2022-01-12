@@ -68,6 +68,12 @@ public final class YamlEngineTest {
     }
     
     @Test
+    public void assertUnmarshalWithYamlContentClassTypeSkipMissingProperties() {
+        YamlRuleConfigurationFixture actual = YamlEngine.unmarshal("name: test\nnotExistsField: test", YamlRuleConfigurationFixture.class, true);
+        assertThat(actual.getName(), is("test"));
+    }
+    
+    @Test
     public void assertUnmarshalProperties() {
         Properties actual = YamlEngine.unmarshal("password: pwd", Properties.class);
         assertThat(actual.getProperty("password"), is("pwd"));

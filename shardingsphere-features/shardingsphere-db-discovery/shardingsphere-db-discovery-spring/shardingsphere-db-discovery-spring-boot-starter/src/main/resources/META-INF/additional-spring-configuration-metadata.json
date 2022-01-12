@@ -28,6 +28,11 @@
       "sourceType": "org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration"
     },
     {
+      "name": "spring.shardingsphere.rules.database-discovery.discovery-heartbeats",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscoveryHeartBeatConfiguration>",
+      "sourceType": "org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration"
+    },
+    {
       "name": "spring.shardingsphere.rules.database-discovery.discovery-types",
       "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration>",
       "sourceType": "org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration"
@@ -37,6 +42,11 @@
     {
       "name": "spring.shardingsphere.rules.database-discovery.data-sources",
       "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscoveryDataSourceRuleConfiguration>",
+      "sourceType": "org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.database-discovery.discovery-heartbeats",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscoveryHeartBeatConfiguration>",
       "sourceType": "org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration"
     },
     {
@@ -54,6 +64,18 @@
           "name": "handle-as",
           "parameters": {
             "target": "org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscoveryDataSourceRuleConfiguration"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.shardingsphere.rules.database-discovery.discovery-heartbeats.values",
+      "values": [],
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscoveryHeartBeatConfiguration"
           }
         }
       ]

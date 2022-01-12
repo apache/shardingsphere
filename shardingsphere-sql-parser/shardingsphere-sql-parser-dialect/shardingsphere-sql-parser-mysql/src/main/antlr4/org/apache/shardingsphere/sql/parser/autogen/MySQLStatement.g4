@@ -20,7 +20,8 @@ grammar MySQLStatement;
 import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement, RLStatement;
 
 execute
-    : (select
+    : (table
+    | select
     | insert
     | update
     | delete
@@ -120,6 +121,7 @@ execute
     | createTablespace
     | alterTablespace
     | dropTablespace
+    | delimiter
     ) (SEMI_ EOF? | EOF)
     | EOF
     ;

@@ -30,6 +30,10 @@ public final class InvalidAlgorithmConfigurationException extends RuleDefinition
         super(1114, String.format("Invalid %s algorithms %s.", algorithmType, algorithms));
     }
     
+    public InvalidAlgorithmConfigurationException(final String algorithmType, final String algorithm) {
+        super(1114, String.format("Invalid %s algorithm %s.", algorithmType, algorithm));
+    }
+    
     public InvalidAlgorithmConfigurationException(final String algorithmType) {
         super(1114, String.format("Invalid %s algorithms configuration.", algorithmType));
     }

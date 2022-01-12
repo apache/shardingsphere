@@ -19,7 +19,8 @@ Apache ShardingSphere 通过提供多样化的表类型，适配不同场景下�
 ## 绑定表
 
 指分片规则一致的主表和子表。
-例如：`t_order` 表和 `t_order_item` 表，均按照 `order_id` 分片，则此两张表互为绑定表关系。
+使用绑定表进行多表关联查询时，必须使用分片键进行关联，否则会出现笛卡尔积关联或跨库关联，从而影响查询效率。
+例如：`t_order` 表和 `t_order_item` 表，均按照 `order_id` 分片，并且使用 `order_id` 进行关联，则此两张表互为绑定表关系。
 绑定表之间的多表关联查询不会出现笛卡尔积关联，关联查询效率将大大提升。
 举例说明，如果 SQL 为：
 
@@ -39,7 +40,7 @@ SELECT i.* FROM t_order_1 o JOIN t_order_item_0 i ON o.order_id=i.order_id WHERE
 SELECT i.* FROM t_order_1 o JOIN t_order_item_1 i ON o.order_id=i.order_id WHERE o.order_id in (10, 11);
 ```
 
-在配置绑定表关系后，路由的 SQL 应该为 2 条：
+在配置绑定表关系，并且使用 `order_id` 进行关联后，路由的 SQL 应该为 2 条：
 
 ```sql
 SELECT i.* FROM t_order_0 o JOIN t_order_item_0 i ON o.order_id=i.order_id WHERE o.order_id in (10, 11);

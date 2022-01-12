@@ -1,6 +1,6 @@
 +++
 title = "混合规则"
-weight = 6
+weight = 7
 +++
 
 混合配置的规则项之间的叠加使用是通过数据源名称和表名称关联的。
@@ -77,7 +77,7 @@ shardingRuleConfiguration.getKeyGenerators().put("snowflake", new ShardingSphere
 /* 数据加密规则配置 */
 Properties encryptProperties = new Properties();
 encryptProperties.setProperty("aes-key-value", "123456");
-EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("user_name", "user_name", "", "user_name_plain", "name_encryptor");
+EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("username", "username", "", "username_plain", "name_encryptor");
 EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encryptor");
 EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
 

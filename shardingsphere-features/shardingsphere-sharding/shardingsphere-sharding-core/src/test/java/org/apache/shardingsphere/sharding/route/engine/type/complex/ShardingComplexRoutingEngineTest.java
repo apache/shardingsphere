@@ -39,8 +39,8 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
     
     @Test
     public void assertRoutingForBindingTables() {
-        ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(Arrays.asList("t_order", "t_order_item"), 
-                createShardingConditions("t_order"), new ConfigurationProperties(new Properties()));
+        ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(createShardingConditions("t_order"), 
+                new ConfigurationProperties(new Properties()), Arrays.asList("t_order", "t_order_item"));
         RouteContext routeContext = complexRoutingEngine.route(createBindingShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
@@ -52,8 +52,8 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
     
     @Test
     public void assertRoutingForShardingTableJoinBroadcastTable() {
-        ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(Arrays.asList("t_order", "t_config"),
-                createShardingConditions("t_order"), new ConfigurationProperties(new Properties()));
+        ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(createShardingConditions("t_order"), 
+                new ConfigurationProperties(new Properties()), Arrays.asList("t_order", "t_config"));
         RouteContext routeContext = complexRoutingEngine.route(createBroadcastShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
@@ -65,8 +65,8 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
     
     @Test(expected = ShardingSphereException.class)
     public void assertRoutingForNonLogicTable() {
-        ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(Collections.emptyList(), 
-                createShardingConditions("t_order"), new ConfigurationProperties(new Properties()));
+        ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(createShardingConditions("t_order"), 
+                new ConfigurationProperties(new Properties()), Collections.emptyList());
         RouteContext routeContext = complexRoutingEngine.route(mock(ShardingRule.class));
     }
 }

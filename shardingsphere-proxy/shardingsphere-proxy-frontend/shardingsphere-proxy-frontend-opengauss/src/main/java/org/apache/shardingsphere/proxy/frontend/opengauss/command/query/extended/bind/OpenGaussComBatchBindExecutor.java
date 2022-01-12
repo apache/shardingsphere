@@ -23,28 +23,14 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
-import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
-import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
-import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Command batch bind executor for openGauss.
@@ -54,9 +40,7 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
     
     private final OpenGaussComBatchBindPacket packet;
     
-    private final BackendConnection backendConnection;
-    
-    private SQLStatement sqlStatement;
+    private final ConnectionSession connectionSession;
     
     private long updateCount;
     
@@ -64,39 +48,9 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
-        sqlStatement = parseSql(packet.getSql(), backendConnection.getSchemaName());
-        while (packet.hasNextParameters()) {
-            List<Object> parameters = packet.readOneGroupOfParameters();
-            DatabaseCommunicationEngine databaseCommunicationEngine = newEngine(parameters);
-            try {
-                ResponseHeader responseHeader = databaseCommunicationEngine.execute();
-                if (responseHeader instanceof UpdateResponseHeader) {
-                    updateCount += ((UpdateResponseHeader) responseHeader).getUpdateCount();
-                }
-            } finally {
-                backendConnection.closeDatabaseCommunicationEngines(false);
-            }
-        }
+        OpenGaussBatchedInsertsExecutor batchedInsertsExecutor = new OpenGaussBatchedInsertsExecutor(connectionSession, packet.getPreparedStatement(), packet.readParameterSets());
+        updateCount = batchedInsertsExecutor.executeBatch();
         return Collections.singletonList(new PostgreSQLBindCompletePacket());
-    }
-    
-    private DatabaseCommunicationEngine newEngine(final List<Object> parameter) {
-        return DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(getSqlStatementContext(parameter), packet.getSql(), parameter, backendConnection);
-    }
-    
-    private SQLStatementContext<?> getSqlStatementContext(final List<Object> parameters) {
-        Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
-        return SQLStatementContextFactory.newInstance(metaDataMap, parameters, sqlStatement, backendConnection.getDefaultSchemaName());
-    }
-    
-    private SQLStatement parseSql(final String sql, final String schemaName) {
-        if (sql.isEmpty()) {
-            return new EmptyStatement();
-        }
-        ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(
-                DatabaseTypeRegistry.getTrunkDatabaseTypeName(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType()),
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
-        return sqlStatementParserEngine.parse(sql, true);
     }
     
     @Override
@@ -111,7 +65,7 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
     
     @Override
     public PostgreSQLPacket getQueryRowPacket() {
-        String sqlCommand = PostgreSQLCommand.valueOf(sqlStatement.getClass()).map(PostgreSQLCommand::getTag).orElse("");
+        String sqlCommand = PostgreSQLCommand.valueOf(packet.getPreparedStatement().getSqlStatement().getClass()).map(PostgreSQLCommand::getTag).orElse("");
         return new PostgreSQLCommandCompletePacket(sqlCommand, updateCount);
     }
 }

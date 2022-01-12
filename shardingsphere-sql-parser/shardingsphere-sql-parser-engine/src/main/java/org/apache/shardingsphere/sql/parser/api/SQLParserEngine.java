@@ -31,10 +31,6 @@ public final class SQLParserEngine {
     
     private final LoadingCache<String, ParseContext> parseTreeCache;
     
-    public SQLParserEngine(final String databaseType, final boolean sqlCommentParseEnabled) {
-        this(databaseType, new CacheOption(128, 1024L, 4), sqlCommentParseEnabled);
-    }
-    
     public SQLParserEngine(final String databaseType, final CacheOption cacheOption, final boolean sqlCommentParseEnabled) {
         sqlParserExecutor = new SQLParserExecutor(databaseType, sqlCommentParseEnabled);
         parseTreeCache = ParseTreeCacheBuilder.build(cacheOption, databaseType, sqlCommentParseEnabled);

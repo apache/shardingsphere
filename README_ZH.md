@@ -1,4 +1,4 @@
-# [ShardingSphere - 构建多模数据库上层的标准和生态](https://shardingsphere.apache.org/index_zh.html)
+# [ShardingSphere - 构建异构数据库上层的标准和生态](https://shardingsphere.apache.org/index_zh.html)
 
 **官方网站: https://shardingsphere.apache.org/**
 
@@ -21,7 +21,7 @@
 
 ## 概述
 
-Apache ShardingSphere 产品定位为 `Database Plus`，旨在构建多模数据库上层的标准和生态。
+Apache ShardingSphere 产品定位为 `Database Plus`，旨在构建异构数据库上层的标准和生态。
 它关注如何充分合理地利用数据库的计算和存储能力，而并非实现一个全新的数据库。ShardingSphere 站在数据库的上层视角，关注他们之间的协作多于数据库自身。
 
 `连接`、`增量`和`可插拔`是 Apache ShardingSphere 的核心概念。
@@ -45,7 +45,7 @@ ShardingSphere 已于 2020 年 4 月 16 日成为 [Apache 软件基金会](https
 
 ## 社区和支持:
 
-:link: [Mailing List](dev@shardingsphere.apache.org). 适合于 Apache 社区相关讨论和版本发布；
+:link: [Mailing List](https://shardingsphere.apache.org/community/cn/contribute/subscribe/). 适合于 Apache 社区相关讨论和版本发布；
 
 :link: [GitHub Issues](https://github.com/apache/shardingsphere/issues). 适合于设计问题、缺陷报告或者开发相关；
 
@@ -110,7 +110,7 @@ Apache ShardingSphere 是多接入端共同组成的生态圈。
 
 ## 线路规划
 
-![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap.png)
+![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap_v2.png)
 
 ## 如何构建 Apache ShardingSphere:
 

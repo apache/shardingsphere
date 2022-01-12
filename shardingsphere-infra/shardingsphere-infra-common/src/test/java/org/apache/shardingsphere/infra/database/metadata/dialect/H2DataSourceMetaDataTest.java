@@ -30,7 +30,7 @@ public final class H2DataSourceMetaDataTest {
     @Test
     public void assertNewConstructorWithMem() {
         H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        assertThat(actual.getHostName(), is(""));
+        assertThat(actual.getHostname(), is(""));
         assertThat(actual.getPort(), is(-1));
         assertThat(actual.getCatalog(), is("ds_0"));
         assertNull(actual.getSchema());
@@ -39,7 +39,7 @@ public final class H2DataSourceMetaDataTest {
     @Test
     public void assertNewConstructorWithSymbol() {
         H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:~:ds-0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        assertThat(actual.getHostName(), is(""));
+        assertThat(actual.getHostname(), is(""));
         assertThat(actual.getPort(), is(-1));
         assertNull(actual.getSchema());
     }
@@ -47,7 +47,7 @@ public final class H2DataSourceMetaDataTest {
     @Test
     public void assertNewConstructorWithTcp() {
         H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:tcp://localhost:8082/~/test1/test2;DB_CLOSE_DELAY=-1");
-        assertThat(actual.getHostName(), is("localhost"));
+        assertThat(actual.getHostname(), is("localhost"));
         assertThat(actual.getPort(), is(8082));
         assertThat(actual.getCatalog(), is("test2"));
         assertNull(actual.getSchema());
@@ -56,7 +56,7 @@ public final class H2DataSourceMetaDataTest {
     @Test
     public void assertNewConstructorWithSsl() {
         H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:ssl:180.76.76.76/home/test");
-        assertThat(actual.getHostName(), is("180.76.76.76"));
+        assertThat(actual.getHostname(), is("180.76.76.76"));
         assertThat(actual.getPort(), is(-1));
         assertThat(actual.getCatalog(), is("test"));
         assertNull(actual.getSchema());
@@ -65,7 +65,7 @@ public final class H2DataSourceMetaDataTest {
     @Test
     public void assertNewConstructorWithFile() {
         H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:file:/data/sample;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false");
-        assertThat(actual.getHostName(), is(""));
+        assertThat(actual.getHostname(), is(""));
         assertThat(actual.getPort(), is(-1));
         assertThat(actual.getCatalog(), is("sample"));
         assertNull(actual.getSchema());

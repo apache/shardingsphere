@@ -16,7 +16,7 @@ dataSource:
     simpleSource | urlSource
 
 simpleSource:
-    dataSourceName(HOST=hostName,PORT=port,DB=dbName,USER=user [,PASSWORD=password] [,PROPERTIES(poolProperty [,poolProperty]) ...])
+    dataSourceName(HOST=hostname,PORT=port,DB=dbName,USER=user [,PASSWORD=password] [,PROPERTIES(poolProperty [,poolProperty]) ...])
 
 urlSource:
     dataSourceName(URL=url,USER=user [,PASSWORD=password] [,PROPERTIES(poolProperty [,poolProperty]) ...])

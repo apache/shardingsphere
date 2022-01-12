@@ -17,47 +17,57 @@
   -->
 
 <rewrite-assertions yaml-rule="scenario/sharding/config/sharding-rule.yaml">
-    <rewrite-assertion id="update_with_sharding_value_for_parameters" db-types="SQL92">
+    <rewrite-assertion id="update_with_sharding_value_for_parameters">
         <input sql="UPDATE t_account SET status = ? WHERE account_id = ?" parameters="'OK', 100" />
         <output sql="UPDATE t_account_0 SET status = ? WHERE account_id = ?" parameters="'OK', 100" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="update_with_sharding_value_with_table_for_parameters" db-types="SQL92">
+    <rewrite-assertion id="update_with_sharding_value_with_table_for_parameters" db-types="MySQL,Oracle,SQLServer,SQL92">
         <input sql="UPDATE t_account SET t_account.status = ? WHERE t_account.account_id = ?" parameters="'OK', 100" />
         <output sql="UPDATE t_account_0 SET t_account_0.status = ? WHERE t_account_0.account_id = ?" parameters="'OK', 100" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="update_with_sharding_value_for_literals" db-types="SQL92">
+    <rewrite-assertion id="update_with_sharding_value_for_literals">
         <input sql="UPDATE t_account SET status = 'OK' WHERE account_id = 100" />
         <output sql="UPDATE t_account_0 SET status = 'OK' WHERE account_id = 100" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="update_with_sharding_value_with_table_for_literals" db-types="SQL92">
+    <rewrite-assertion id="update_with_sharding_value_with_table_for_literals" db-types="MySQL,Oracle,SQLServer,SQL92">
         <input sql="UPDATE t_account SET t_account.status = 'OK' WHERE t_account.account_id = 100" />
         <output sql="UPDATE t_account_0 SET t_account_0.status = 'OK' WHERE t_account_0.account_id = 100" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="update_without_sharding_value_for_parameters" db-types="SQL92">
+    <rewrite-assertion id="update_without_sharding_value_for_parameters">
         <input sql="UPDATE t_account SET status = ? WHERE amount = ?" parameters="'OK', 1000" />
         <output sql="UPDATE t_account_0 SET status = ? WHERE amount = ?" parameters="'OK', 1000" />
         <output sql="UPDATE t_account_1 SET status = ? WHERE amount = ?" parameters="'OK', 1000" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="update_without_sharding_value_with_table_for_parameters" db-types="SQL92">
+    <rewrite-assertion id="update_without_sharding_value_with_table_for_parameters" db-types="MySQL,Oracle,SQLServer,SQL92">
         <input sql="UPDATE t_account SET t_account.status = ? WHERE t_account.amount = ?" parameters="'OK', 1000" />
         <output sql="UPDATE t_account_0 SET t_account_0.status = ? WHERE t_account_0.amount = ?" parameters="'OK', 1000" />
         <output sql="UPDATE t_account_1 SET t_account_1.status = ? WHERE t_account_1.amount = ?" parameters="'OK', 1000" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="update_without_sharding_value_for_literals" db-types="SQL92">
+    <rewrite-assertion id="update_without_sharding_value_for_literals">
         <input sql="UPDATE t_account SET status = 'OK' WHERE amount = 10" />
         <output sql="UPDATE t_account_0 SET status = 'OK' WHERE amount = 10" />
         <output sql="UPDATE t_account_1 SET status = 'OK' WHERE amount = 10" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="update_without_sharding_value_with_table_for_literals" db-types="SQL92">
+    <rewrite-assertion id="update_without_sharding_value_with_table_for_literals" db-types="MySQL,Oracle,SQLServer,SQL92">
         <input sql="UPDATE t_account SET t_account.status = 'OK' WHERE t_account.amount = 10" />
         <output sql="UPDATE t_account_0 SET t_account_0.status = 'OK' WHERE t_account_0.amount = 10" />
         <output sql="UPDATE t_account_1 SET t_account_1.status = 'OK' WHERE t_account_1.amount = 10" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_sharding_column_with_sharding_value_for_parameters">
+        <input sql="UPDATE t_account SET status = ?, account_id = ? WHERE account_id = ?" parameters="'OK', 102, 100" />
+        <output sql="UPDATE t_account_0 SET status = ?, account_id = ? WHERE account_id = ?" parameters="'OK', 102, 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="update_sharding_column_with_sharding_value_for_literals">
+        <input sql="UPDATE t_account SET status = 'OK', account_id = 102 WHERE account_id = 100" />
+        <output sql="UPDATE t_account_0 SET status = 'OK', account_id = 102 WHERE account_id = 100" />
     </rewrite-assertion>
 </rewrite-assertions>

@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -41,40 +43,54 @@ public final class YamlDataSourceConfigurationSwapper {
      * @return data sources
      */
     public Map<String, DataSource> swapToDataSources(final Map<String, Map<String, Object>> yamlDataSources) {
-        return DataSourceConverter.getDataSourceMap(yamlDataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapToDataSourceConfiguration(entry.getValue()))));
+        return DataSourcePoolCreatorUtil.getDataSourceMap(yamlDataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapToDataSourceProperties(entry.getValue()))));
     }
     
     /**
-     * Swap to data source configuration.
+     * Get data source properties.
+     *
+     * @param yamlRootConfig yaml root configuration
+     * @return data source name to data source properties map
+     */
+    public Map<String, DataSourceProperties> getDataSourcePropertiesMap(final YamlRootConfiguration yamlRootConfig) {
+        Map<String, Map<String, Object>> yamlDataSourceConfigs = yamlRootConfig.getDataSources();
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(yamlDataSourceConfigs.size());
+        yamlDataSourceConfigs.forEach((key, value) -> result.put(key, swapToDataSourceProperties(value)));
+        return result;
+    }
+    
+    /**
+     * Swap to data source properties.
      * 
      * @param yamlConfig YAML configurations
-     * @return data source configuration
+     * @return data source properties
      */
-    public DataSourceConfiguration swapToDataSourceConfiguration(final Map<String, Object> yamlConfig) {
+    @SuppressWarnings("rawtypes")
+    public DataSourceProperties swapToDataSourceProperties(final Map<String, Object> yamlConfig) {
         Preconditions.checkState(yamlConfig.containsKey(DATA_SOURCE_CLASS_NAME_KEY), "%s can not be null.", DATA_SOURCE_CLASS_NAME_KEY);
         Map<String, Object> newDataSourceMap = new HashMap<>(yamlConfig);
         newDataSourceMap.remove(DATA_SOURCE_CLASS_NAME_KEY);
-        DataSourceConfiguration result = new DataSourceConfiguration(yamlConfig.get(DATA_SOURCE_CLASS_NAME_KEY).toString());
-        if (null != newDataSourceMap.get(DataSourceConfiguration.CUSTOM_POOL_PROPS_KEY)) {
-            result.getCustomPoolProps().putAll((Map) newDataSourceMap.get(DataSourceConfiguration.CUSTOM_POOL_PROPS_KEY));
-            newDataSourceMap.remove(DataSourceConfiguration.CUSTOM_POOL_PROPS_KEY);
+        DataSourceProperties result = new DataSourceProperties(yamlConfig.get(DATA_SOURCE_CLASS_NAME_KEY).toString());
+        if (null != newDataSourceMap.get(DataSourceProperties.CUSTOM_POOL_PROPS_KEY)) {
+            result.getCustomPoolProps().putAll((Map) newDataSourceMap.get(DataSourceProperties.CUSTOM_POOL_PROPS_KEY));
+            newDataSourceMap.remove(DataSourceProperties.CUSTOM_POOL_PROPS_KEY);
         }
         result.getProps().putAll(newDataSourceMap);
         return result;
     }
     
     /**
-     * Swap to map from data source configuration.
+     * Swap to map from data source properties.
      * 
-     * @param dataSourceConfig data source configuration
+     * @param dataSourceProps data source properties
      * @return data source map
      */
-    public Map<String, Object> swapToMap(final DataSourceConfiguration dataSourceConfig) {
-        Map<String, Object> result = new HashMap<>(dataSourceConfig.getProps());
-        if (!dataSourceConfig.getCustomPoolProps().isEmpty()) {
-            result.put(DataSourceConfiguration.CUSTOM_POOL_PROPS_KEY, dataSourceConfig.getCustomPoolProps());
+    public Map<String, Object> swapToMap(final DataSourceProperties dataSourceProps) {
+        Map<String, Object> result = new HashMap<>(dataSourceProps.getProps());
+        if (!dataSourceProps.getCustomPoolProps().isEmpty()) {
+            result.put(DataSourceProperties.CUSTOM_POOL_PROPS_KEY, dataSourceProps.getCustomPoolProps());
         }
-        result.put(DATA_SOURCE_CLASS_NAME_KEY, dataSourceConfig.getDataSourceClassName());
+        result.put(DATA_SOURCE_CLASS_NAME_KEY, dataSourceProps.getDataSourceClassName());
         return result;
     }
 }

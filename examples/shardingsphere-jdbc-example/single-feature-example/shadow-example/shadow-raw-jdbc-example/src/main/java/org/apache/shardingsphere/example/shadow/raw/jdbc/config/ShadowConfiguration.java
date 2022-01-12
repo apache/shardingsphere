@@ -42,12 +42,12 @@ public final class ShadowConfiguration extends BaseShadowConfiguration {
     private Collection<RuleConfiguration> createRuleConfiguration() {
         Collection<RuleConfiguration> result = new LinkedList<>();
         result.add(createShadowRuleConfiguration());
+        result.add(createSQLParserRuleConfiguration());
         return result;
     }
     
     private RuleConfiguration createShadowRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.setEnable(true);
         result.setShadowAlgorithms(createShadowAlgorithmConfigurations());
         result.setDataSources(createShadowDataSources());
         result.setTables(createShadowTables());
@@ -68,7 +68,7 @@ public final class ShadowConfiguration extends BaseShadowConfiguration {
     
     private Map<String, ShadowDataSourceConfiguration> createShadowDataSources() {
         Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
-        result.put("shadow-data-source", new ShadowDataSourceConfiguration("ds", "shadow-ds"));
+        result.put("shadow-data-source", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
         return result;
     }
 }

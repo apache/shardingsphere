@@ -1,6 +1,6 @@
 +++
 title = "Encrypt"
-weight = 4
+weight = 5
 +++
 
 ## Syntax

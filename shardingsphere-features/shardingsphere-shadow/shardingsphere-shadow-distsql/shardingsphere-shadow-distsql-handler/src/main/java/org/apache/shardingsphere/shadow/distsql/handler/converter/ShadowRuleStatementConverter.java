@@ -48,7 +48,6 @@ public final class ShadowRuleStatementConverter {
      * @return shadow rule configuration
      */
     public static ShadowRuleConfiguration convert(final Collection<ShadowRuleSegment> rules) {
-        // FIXME because the defined final attribute will be removed, here is just for the new object
         ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration();
         shadowRuleConfiguration.setShadowAlgorithms(getShadowAlgorithms(rules));
         shadowRuleConfiguration.setDataSources(getDataSource(rules));

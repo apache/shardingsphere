@@ -7,11 +7,9 @@ MySQL 不支持的 SQL 清单如下：
 
 | SQL                                                          |
 | ------------------------------------------------------------ |
-| FLUSH PRIVILEGES                                             |
 | CLONE LOCAL DATA DIRECTORY = 'clone_dir'                     |
 | INSTALL COMPONENT 'file://component1', 'file://component2'   |
 | UNINSTALL COMPONENT 'file://component1', 'file://component2' |
-| SHOW CREATE USER user                                        |
 | REPAIR TABLE t_order                                         |
 | OPTIMIZE TABLE t_order                                       |
 | CHECKSUM TABLE t_order                                       |

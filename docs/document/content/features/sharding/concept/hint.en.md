@@ -16,6 +16,6 @@ So it requires to designate sharding result externally, which is referred to as 
 Apache ShardingSphere uses `ThreadLocal` to manage sharding key values. 
 Users can program to add sharding conditions to `HintManager`, but the condition is only effective within the current thread.
 
-In addition to the programming method, Apache ShardingSphere also plans to cite Hint through special notation in SQL, so that users can use that function in a more transparent way.
+In addition to the programming method, Apache ShardingSphere is able to cite Hint through special notation in SQL, so that users can use that function in a more transparent way.
 
 The SQL designated with sharding hint will ignore the former sharding logic but directly route to the designated node.

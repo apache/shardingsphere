@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.example.parser.mysql.format;
 
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseContext;
@@ -54,7 +55,8 @@ public final class MySQLParserFormatExample {
         MYSQL_FORMAT_SQL_LIST.stream().forEach(sql -> {
             Properties props = new Properties();
             props.setProperty("parameterized", "false");
-            SQLParserEngine parserEngine = new SQLParserEngine("MySQL", false);
+            CacheOption cacheOption = new CacheOption(128, 1024L, 4);
+            SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption, false);
             ParseContext parseContext = parserEngine.parse(sql, false);
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "FORMAT", props);
             String result = visitorEngine.visit(parseContext);

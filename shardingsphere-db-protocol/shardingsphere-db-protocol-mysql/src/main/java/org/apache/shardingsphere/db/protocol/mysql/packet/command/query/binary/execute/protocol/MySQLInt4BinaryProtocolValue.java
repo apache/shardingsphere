@@ -33,6 +33,12 @@ public final class MySQLInt4BinaryProtocolValue implements MySQLBinaryProtocolVa
     
     @Override
     public void write(final MySQLPacketPayload payload, final Object value) {
-        payload.writeInt4(value instanceof BigDecimal ? ((BigDecimal) value).intValue() : (Integer) value);
+        if (value instanceof BigDecimal) {
+            payload.writeInt4(((BigDecimal) value).intValue());
+        } else if (value instanceof Integer) {
+            payload.writeInt4((Integer) value);
+        } else {
+            payload.writeInt4(((Long) value).intValue());
+        }
     }
 }

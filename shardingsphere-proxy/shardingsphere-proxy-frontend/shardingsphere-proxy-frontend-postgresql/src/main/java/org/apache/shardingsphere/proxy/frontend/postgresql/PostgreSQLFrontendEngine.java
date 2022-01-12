@@ -22,7 +22,7 @@ import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.postgresql.codec.PostgreSQLPacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
@@ -46,9 +46,9 @@ public final class PostgreSQLFrontendEngine implements DatabaseProtocolFrontendE
     private final DatabasePacketCodecEngine<PostgreSQLPacket> codecEngine = new PostgreSQLPacketCodecEngine();
     
     @Override
-    public void release(final BackendConnection backendConnection) {
-        PostgreSQLPreparedStatementRegistry.getInstance().unregister(backendConnection.getConnectionId());
-        PostgreSQLConnectionContextRegistry.getInstance().remove(backendConnection.getConnectionId());
+    public void release(final ConnectionSession connectionSession) {
+        PostgreSQLPreparedStatementRegistry.getInstance().unregister(connectionSession.getConnectionId());
+        PostgreSQLConnectionContextRegistry.getInstance().remove(connectionSession.getConnectionId());
     }
     
     @Override

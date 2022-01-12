@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  * Connection thread executor group.
  *
  * <p>
- * Manage the thread for each backend connection invoking.
+ * Manage the thread for each connection session invoking.
  * This ensure XA transaction framework processed by current thread id.
  * </p>
  */

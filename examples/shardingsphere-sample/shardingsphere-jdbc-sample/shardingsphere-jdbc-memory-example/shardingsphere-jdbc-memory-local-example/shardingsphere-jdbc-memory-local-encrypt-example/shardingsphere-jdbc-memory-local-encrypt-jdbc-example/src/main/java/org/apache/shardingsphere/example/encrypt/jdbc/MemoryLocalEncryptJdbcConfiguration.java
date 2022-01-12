@@ -40,7 +40,7 @@ public final class MemoryLocalEncryptJdbcConfiguration {
     
     private static final String USER_NAME = "root";
     
-    private static final String PASSWORD = "123456";
+    private static final String PASSWORD = "root";
     
     /**
      * Create a DataSource object, which is an object rewritten by ShardingSphere itself 
@@ -54,14 +54,15 @@ public final class MemoryLocalEncryptJdbcConfiguration {
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
         Properties props = new Properties();
-        props.setProperty("aes-key-value", "");
-        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("user_id", "user_id", null, null, "name_encryptor");
-        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("address_id", "address_id", null, null, "pwd_encryptor");
-        EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_order", Arrays.asList(columnConfigAes, columnConfigTest), true);
+        props.setProperty("aes-key-value", "123456");
+        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("phone", "phone", "", "phone_plain", "phone_encryptor");
+        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("status", "status", "assisted_query_status", "", "string_encryptor");
+        EncryptTableRuleConfiguration orderItemRule = new EncryptTableRuleConfiguration("t_order_item", Collections.singleton(columnConfigAes), true);
+        EncryptTableRuleConfiguration orderRule = new EncryptTableRuleConfiguration("t_order", Collections.singleton(columnConfigTest), true);
         Map<String, ShardingSphereAlgorithmConfiguration> encryptAlgorithmConfigs = new LinkedHashMap<>(2, 1);
-        encryptAlgorithmConfigs.put("name_encryptor", new ShardingSphereAlgorithmConfiguration("AES", props));
-        encryptAlgorithmConfigs.put("pwd_encryptor", new ShardingSphereAlgorithmConfiguration("AES", props));
-        return new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs);
+        encryptAlgorithmConfigs.put("phone_encryptor", new ShardingSphereAlgorithmConfiguration("AES", props));
+        encryptAlgorithmConfigs.put("string_encryptor", new ShardingSphereAlgorithmConfiguration("assistedTest", props));
+        return new EncryptRuleConfiguration(Arrays.asList(orderRule, orderItemRule), encryptAlgorithmConfigs);
     }
     
     private DataSource createDataSource(final String dataSourceName) {

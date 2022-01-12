@@ -51,11 +51,11 @@ public final class DataSourceAssert {
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getUrl(), is(expected.getUrl()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getHostName(), is(expected.getHostName()));
+                    actual.getClass().getSimpleName())), actual.getHostname(), is(expected.getHostname()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getPort(), is(expected.getPort()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getDb(), is(expected.getDb()));
+                    actual.getClass().getSimpleName())), actual.getDatabase(), is(expected.getDb()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getUser(), is(expected.getUser()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",

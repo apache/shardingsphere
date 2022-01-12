@@ -5,7 +5,7 @@ weight = 2
 
 ## 配置入口
 
-类名称：ReadwriteSplittingRuleConfiguration
+类名称：org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration
 
 可配置属性：
 
@@ -16,13 +16,14 @@ weight = 2
 
 ## 主从数据源配置
 
-类名称：ReadwriteSplittingDataSourceRuleConfiguration
+类名称：org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration
 
 可配置属性：
 
 | *名称*                     | *数据类型*             | *说明*              | *默认值*       |
 | -------------------------- | -------------------- | ------------------- | ------------- |
 | name                       | String               | 读写分离数据源名称    | -             |
+| autoAwareDataSourceName(?) | String               | 自动发现数据源名称(与数据库发现配合使用)        | -             |
 | writeDataSourceName        | String               | 写库数据源名称        | -             |
 | readDataSourceNames (+)    | Collection\<String\> | 读库数据源名称列表    | -             |
 | loadBalancerName (?)       | String               | 读库负载均衡算法名称  | 轮询负载均衡算法 |

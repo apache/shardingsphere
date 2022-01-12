@@ -23,8 +23,10 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLParseCompletePacket;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
@@ -37,19 +39,20 @@ import java.util.Collections;
  */
 public final class PostgreSQLComParseExecutor implements CommandExecutor {
     
-    public PostgreSQLComParseExecutor(final PostgreSQLComParsePacket packet, final BackendConnection backendConnection) {
-        String schemaName = backendConnection.getSchemaName();
+    public PostgreSQLComParseExecutor(final PostgreSQLComParsePacket packet, final ConnectionSession connectionSession) {
+        String schemaName = connectionSession.getSchemaName();
         SQLStatement sqlStatement = parseSql(packet.getSql(), schemaName);
-        PostgreSQLPreparedStatementRegistry.getInstance().register(backendConnection.getConnectionId(), packet.getStatementId(), packet.getSql(), sqlStatement, packet.getColumnTypes());
+        PostgreSQLPreparedStatementRegistry.getInstance().register(connectionSession.getConnectionId(), packet.getStatementId(), packet.getSql(), sqlStatement, packet.getColumnTypes());
     }
     
     private SQLStatement parseSql(final String sql, final String schemaName) {
         if (sql.isEmpty()) {
             return new EmptyStatement();
         }
+        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(
-                DatabaseTypeRegistry.getTrunkDatabaseTypeName(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType()),
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
+                DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType()),
+                metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class).orElse(null));
         return sqlStatementParserEngine.parse(sql, true);
     }
     

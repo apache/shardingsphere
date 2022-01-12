@@ -22,10 +22,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.HintShardingType;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.result.ShowShardingHintStatusResult;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ShowShardingHintStatusStatement;
@@ -45,7 +45,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class ShowShardingHintStatusExecutor extends AbstractHintQueryExecutor<ShowShardingHintStatusStatement> {
     
-    private final BackendConnection backendConnection;
+    private final ConnectionSession connectionSession;
     
     @Override
     protected List<QueryHeader> createQueryHeaders() {
@@ -60,7 +60,7 @@ public final class ShowShardingHintStatusExecutor extends AbstractHintQueryExecu
     @Override
     protected MergedResult createMergedResult() {
         Map<String, ShowShardingHintStatusResult> results = new HashMap<>();
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(connectionSession.getSchemaName());
         if (!metaData.isComplete()) {
             throw new RuleNotExistedException();
         }

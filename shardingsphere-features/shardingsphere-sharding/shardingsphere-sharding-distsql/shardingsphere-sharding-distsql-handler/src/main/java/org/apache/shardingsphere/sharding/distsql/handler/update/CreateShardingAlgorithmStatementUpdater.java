@@ -35,7 +35,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -53,20 +52,22 @@ public final class CreateShardingAlgorithmStatementUpdater implements RuleDefini
     }
     
     private void checkDuplicate(final String schemaName, final CreateShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        LinkedList<String> shardingAlgorithmNames = sqlStatement.getAlgorithmSegments().stream()
+        Collection<String> shardingAlgorithmNames = sqlStatement.getAlgorithmSegments().stream()
                 .map(ShardingAlgorithmSegment::getShardingAlgorithmName).collect(Collectors.toCollection(LinkedList::new));
         checkDuplicateInput(shardingAlgorithmNames, duplicated -> new DuplicateRuleException("sharding", schemaName, duplicated));
-        checkExist(shardingAlgorithmNames, currentRuleConfig.getShardingAlgorithms().keySet(), duplicated -> new DuplicateRuleException("sharding", schemaName, duplicated));
+        if (currentRuleConfig != null) {
+            checkExist(shardingAlgorithmNames, currentRuleConfig.getShardingAlgorithms().keySet(), duplicated -> new DuplicateRuleException("sharding", schemaName, duplicated));
+        }
     }
     
-    private static void checkDuplicateInput(final Collection<String> rules, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
-        Set<String> duplicateRequire = rules.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
+    private void checkDuplicateInput(final Collection<String> rules, final Function<Collection<String>, DistSQLException> thrower) throws DistSQLException {
+        Collection<String> duplicateRequire = rules.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
                 .filter(each -> each.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
         DistSQLException.predictionThrow(duplicateRequire.isEmpty(), thrower.apply(duplicateRequire));
     }
     
-    private static void checkExist(final Collection<String> requireRules, final Collection<String> currentRules, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
-        Set<String> identical = requireRules.stream().filter(currentRules::contains).collect(Collectors.toSet());
+    private void checkExist(final Collection<String> requireRules, final Collection<String> currentRules, final Function<Collection<String>, DistSQLException> thrower) throws DistSQLException {
+        Collection<String> identical = requireRules.stream().filter(currentRules::contains).collect(Collectors.toSet());
         DistSQLException.predictionThrow(identical.isEmpty(), thrower.apply(identical));
     }
     

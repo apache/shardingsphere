@@ -56,7 +56,7 @@ public final class DatabaseDiscoverySQLRouter implements SQLRouter<DatabaseDisco
         for (RouteUnit each : routeContext.getRouteUnits()) {
             String dataSourceName = each.getDataSourceMapper().getLogicName();
             Optional<DatabaseDiscoveryDataSourceRule> dataSourceRule = rule.findDataSourceRule(dataSourceName);
-            if (dataSourceRule.isPresent() && dataSourceRule.get().getName().equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
+            if (dataSourceRule.isPresent() && dataSourceRule.get().getGroupName().equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
                 toBeRemoved.add(each);
                 String actualDataSourceName = new DatabaseDiscoveryDataSourceRouter(dataSourceRule.get()).route();
                 toBeAdded.add(new RouteUnit(new RouteMapper(each.getDataSourceMapper().getLogicName(), actualDataSourceName), each.getTableMappers()));

@@ -31,7 +31,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Simple note shadow algorithm.
+ * Simple hint shadow algorithm.
  */
 @Getter
 @Setter

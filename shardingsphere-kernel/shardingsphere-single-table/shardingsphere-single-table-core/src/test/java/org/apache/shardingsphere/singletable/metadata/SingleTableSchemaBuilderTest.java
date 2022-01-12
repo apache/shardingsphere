@@ -21,7 +21,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -77,14 +76,10 @@ public final class SingleTableSchemaBuilderTest {
         when(dataSource.getConnection()).thenReturn(connection);
         Collection<ShardingSphereRule> rules = Collections.singletonList(mockSingleTableRuleLoad(connection));
         mockSQLLoad(connection);
-        Collection<TableMetaData> tableMetaDataList = TableMetaDataBuilder.load(Arrays.asList(singleTableNames),
-                new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource), rules, props)).values();
-        ShardingSphereSchema schemaForKernel = SchemaBuilder.buildKernelSchema(tableMetaDataList, rules);
-        ShardingSphereSchema schemaForFederation = SchemaBuilder.buildFederationSchema(tableMetaDataList, rules);
-        assertThat(schemaForKernel.getTables().size(), is(2));
-        assertActualOfSingleTables(schemaForKernel.getTables().values());
-        assertThat(schemaForFederation.getTables().size(), is(2));
-        assertActualOfSingleTables(schemaForFederation.getTables().values());
+        ShardingSphereSchema schema = new ShardingSphereSchema(TableMetaDataBuilder.load(Arrays.asList(singleTableNames),
+                new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource), rules, props)));
+        assertThat(schema.getTables().size(), is(2));
+        assertActualOfSingleTables(schema.getTables().values());
     }
     
     @SneakyThrows(SQLException.class)

@@ -50,8 +50,6 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
         ShardingSphereServiceLoader.register(ShadowAlgorithm.class);
     }
     
-    private final boolean enable;
-    
     private ShadowAlgorithm defaultShadowAlgorithm;
     
     private final Map<String, ShadowDataSourceRule> shadowDataSourceMappings = new LinkedHashMap<>();
@@ -61,23 +59,17 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
     private final Map<String, ShadowTableRule> shadowTableRules = new LinkedHashMap<>();
     
     public ShadowRule(final ShadowRuleConfiguration shadowRuleConfig) {
-        enable = shadowRuleConfig.isEnable();
-        if (enable) {
-            initShadowDataSourceMappings(shadowRuleConfig.getDataSources());
-            initShadowAlgorithmConfigurations(shadowRuleConfig.getShadowAlgorithms());
-            initDefaultShadowAlgorithm(shadowRuleConfig.getDefaultShadowAlgorithmName());
-            initShadowTableRules(shadowRuleConfig.getTables());
-        }
+        initShadowDataSourceMappings(shadowRuleConfig.getDataSources());
+        initShadowAlgorithmConfigurations(shadowRuleConfig.getShadowAlgorithms());
+        initDefaultShadowAlgorithm(shadowRuleConfig.getDefaultShadowAlgorithmName());
+        initShadowTableRules(shadowRuleConfig.getTables());
     }
     
     public ShadowRule(final AlgorithmProvidedShadowRuleConfiguration shadowRuleConfig) {
-        enable = shadowRuleConfig.isEnable();
-        if (enable) {
-            initShadowDataSourceMappings(shadowRuleConfig.getDataSources());
-            initShadowAlgorithms(shadowRuleConfig.getShadowAlgorithms());
-            initDefaultShadowAlgorithm(shadowRuleConfig.getDefaultShadowAlgorithmName());
-            initShadowTableRules(shadowRuleConfig.getTables());
-        }
+        initShadowDataSourceMappings(shadowRuleConfig.getDataSources());
+        initShadowAlgorithms(shadowRuleConfig.getShadowAlgorithms());
+        initDefaultShadowAlgorithm(shadowRuleConfig.getDefaultShadowAlgorithmName());
+        initShadowTableRules(shadowRuleConfig.getTables());
     }
     
     private void initShadowDataSourceMappings(final Map<String, ShadowDataSourceConfiguration> dataSources) {

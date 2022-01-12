@@ -48,6 +48,7 @@ The third generation of SQL parsing engine begins from 3.0.x version. ShardingSp
 |SQLServer |supported|
 |Oracle    |supported|
 |SQL92     |supported|
+|openGauss |supported|
 
 * SQL format (developing)
 * SQL parameterize (developing)

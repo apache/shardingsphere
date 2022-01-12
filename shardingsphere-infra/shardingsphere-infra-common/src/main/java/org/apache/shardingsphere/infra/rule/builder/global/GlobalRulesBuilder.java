@@ -47,14 +47,14 @@ public final class GlobalRulesBuilder {
      * Build rules.
      *
      * @param globalRuleConfigs global rule configurations
-     * @param mataDataMap mata data map
+     * @param metaDataMap meta data map
      * @return built rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Collection<ShardingSphereRule> buildRules(final Collection<RuleConfiguration> globalRuleConfigs, final Map<String, ShardingSphereMetaData> mataDataMap) {
+    public static Collection<ShardingSphereRule> buildRules(final Collection<RuleConfiguration> globalRuleConfigs, final Map<String, ShardingSphereMetaData> metaDataMap) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, GlobalRuleBuilder> entry : getRuleBuilderMap(globalRuleConfigs).entrySet()) {
-            result.add(entry.getValue().build(entry.getKey(), mataDataMap));
+            result.add(entry.getValue().build(entry.getKey(), metaDataMap));
         }
         return result;
     }

@@ -22,22 +22,27 @@ import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.instance.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.InstanceType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.authority.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
@@ -51,6 +56,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -77,8 +83,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -103,10 +111,12 @@ public final class ClusterContextManagerCoordinatorTest {
         PersistRepositoryConfiguration persistRepositoryConfiguration = new ClusterPersistRepositoryConfiguration("TEST", "", "", new Properties());
         ModeConfiguration configuration = new ModeConfiguration("Cluster", persistRepositoryConfiguration, false);
         ClusterContextManagerBuilder builder = new ClusterContextManagerBuilder();
-        contextManager = builder.build(configuration, new HashMap<>(), new HashMap<>(), new LinkedList<>(), new Properties(), false, null);
+        contextManager = builder.build(ContextManagerBuilderParameter.builder().modeConfig(configuration).dataSourcesMap(new HashMap<>()).schemaRuleConfigs(new HashMap<>())
+                .globalRuleConfigs(new LinkedList<>()).props(new Properties()).isOverwrite(false).instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307)).build());
+        assertTrue(contextManager.getMetaDataContexts().getMetaDataPersistService().isPresent());
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getMetaDataPersistService().get(), createMetaDataMap(), globalRuleMetaData, 
                 mock(ExecutorEngine.class),
-                new ConfigurationProperties(new Properties()), mock(OptimizerContext.class, RETURNS_DEEP_STUBS)));
+                new ConfigurationProperties(new Properties()), createOptimizerContext()));
         contextManager.renewTransactionContexts(mock(TransactionContexts.class, RETURNS_DEEP_STUBS));
         coordinator = new ClusterContextManagerCoordinator(metaDataPersistService, contextManager);
     }
@@ -114,19 +124,19 @@ public final class ClusterContextManagerCoordinatorTest {
     @Test
     public void assertSchemaAdd() throws SQLException {
         SchemaAddedEvent event = new SchemaAddedEvent("schema_add");
-        when(metaDataPersistService.getDataSourceService().load("schema_add")).thenReturn(getDataSourceConfigurations());
+        when(metaDataPersistService.getDataSourceService().load("schema_add")).thenReturn(getDataSourcePropertiesMap());
         when(metaDataPersistService.getSchemaRuleService().load("schema_add")).thenReturn(Collections.emptyList());
         coordinator.renew(event);
         assertNotNull(contextManager.getMetaDataContexts().getMetaData("schema_add"));
         assertNotNull(contextManager.getMetaDataContexts().getMetaData("schema_add").getResource().getDataSources());
     }
     
-    private Map<String, DataSourceConfiguration> getDataSourceConfigurations() {
+    private Map<String, DataSourceProperties> getDataSourcePropertiesMap() {
         MockedDataSource dataSource = new MockedDataSource();
-        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(3, 1);
-        result.put("primary_ds", DataSourceConverter.getDataSourceConfiguration(dataSource));
-        result.put("ds_0", DataSourceConverter.getDataSourceConfiguration(dataSource));
-        result.put("ds_1", DataSourceConverter.getDataSourceConfiguration(dataSource));
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(3, 1);
+        result.put("primary_ds", DataSourcePoolCreatorUtil.getDataSourceConfiguration(dataSource));
+        result.put("ds_0", DataSourcePoolCreatorUtil.getDataSourceConfiguration(dataSource));
+        result.put("ds_1", DataSourcePoolCreatorUtil.getDataSourceConfiguration(dataSource));
         return result;
     }
     
@@ -148,18 +158,11 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertSchemaChanged() {
-        SchemaChangedEvent event = new SchemaChangedEvent("schema", mock(ShardingSphereSchema.class));
-        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData("schema");
+        TableMetaData changedTableMetaData = new TableMetaData("t_order");
+        SchemaChangedEvent event = new SchemaChangedEvent("schema", changedTableMetaData, null);
         coordinator.renew(event);
         assertTrue(contextManager.getMetaDataContexts().getAllSchemaNames().contains("schema"));
-        assertThat(contextManager.getMetaDataContexts().getMetaData("schema"), not(metaData));
-    }
-    
-    @Test
-    public void assertSchemaChangedWithExistSchema() {
-        SchemaChangedEvent event = new SchemaChangedEvent("schema", mock(ShardingSphereSchema.class));
-        coordinator.renew(event);
-        assertThat(contextManager.getMetaDataContexts().getMetaData("schema"), not(metaData));
+        verify(contextManager.getMetaDataContexts().getMetaData("schema").getSchema()).put(eq("t_order"), eq(event.getChangedTableMetaData()));
     }
     
     @Test
@@ -178,17 +181,17 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertDataSourceChanged() {
-        DataSourceChangedEvent event = new DataSourceChangedEvent("schema", getChangedDataSourceConfigurations());
+        DataSourceChangedEvent event = new DataSourceChangedEvent("schema", getChangedDataSourcePropertiesMap());
         coordinator.renew(event);
         assertTrue(contextManager.getMetaDataContexts().getMetaData("schema").getResource().getDataSources().containsKey("ds_2"));
     }
     
-    private Map<String, DataSourceConfiguration> getChangedDataSourceConfigurations() {
+    private Map<String, DataSourceProperties> getChangedDataSourcePropertiesMap() {
         MockedDataSource dataSource = new MockedDataSource();
-        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(3, 1);
-        result.put("primary_ds", DataSourceConverter.getDataSourceConfiguration(dataSource));
-        result.put("ds_1", DataSourceConverter.getDataSourceConfiguration(dataSource));
-        result.put("ds_2", DataSourceConverter.getDataSourceConfiguration(dataSource));
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(3, 1);
+        result.put("primary_ds", DataSourcePoolCreatorUtil.getDataSourceConfiguration(dataSource));
+        result.put("ds_1", DataSourcePoolCreatorUtil.getDataSourceConfiguration(dataSource));
+        result.put("ds_2", DataSourcePoolCreatorUtil.getDataSourceConfiguration(dataSource));
         return result;
     }
     
@@ -197,9 +200,10 @@ public final class ClusterContextManagerCoordinatorTest {
         GlobalRuleConfigurationsChangedEvent event = new GlobalRuleConfigurationsChangedEvent(getChangedGlobalRuleConfigurations());
         coordinator.renew(event);
         assertThat(contextManager.getMetaDataContexts().getGlobalRuleMetaData(), not(globalRuleMetaData));
-        assertThat(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getRules().size(), is(2));
+        assertThat(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getRules().size(), is(3));
         assertThat(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof AuthorityRule).count(), is(1L));
         assertThat(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).count(), is(1L));
+        assertThat(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof SQLParserRule).count(), is(1L));
     }
     
     private Collection<RuleConfiguration> getChangedGlobalRuleConfigurations() {
@@ -235,9 +239,18 @@ public final class ClusterContextManagerCoordinatorTest {
         when(metaData.getName()).thenReturn("schema");
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(metaData.getResource()).thenReturn(resource);
-        when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(metaData.getSchema()).thenReturn(schema);
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("schema", metaData);
     }
-}
+    
+    private OptimizerContext createOptimizerContext() {
+        OptimizerContext result = mock(OptimizerContext.class, RETURNS_DEEP_STUBS);
+        Map<String, FederationSchemaMetaData> schemas = new HashMap<>(1, 1);
+        schemas.put("schema", new FederationSchemaMetaData("schema", Collections.emptyMap()));
+        when(result.getFederationMetaData().getSchemas()).thenReturn(schemas);
+        return result;
+    }
+} 

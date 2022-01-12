@@ -77,11 +77,11 @@ public final class AggregationProjectionConverter implements SQLSegmentConverter
         }
         if (segment.getAlias().isPresent()) {
             return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, new SqlNode[]{new SqlBasicCall(convertOperator(segment.getType().name()), 
-                    new SqlNode[]{SqlIdentifier.star(parameters, SqlParserPos.ZERO, Collections.singletonList(SqlParserPos.ZERO))}, SqlParserPos.ZERO, false, functionQuantifier),
+                    new SqlNode[]{createParametersSqlNode(parameters)}, SqlParserPos.ZERO, false, functionQuantifier),
                     SqlIdentifier.star(Collections.singletonList(segment.getAlias().get()), SqlParserPos.ZERO, Collections.singletonList(SqlParserPos.ZERO))}, SqlParserPos.ZERO));
         }
-        return Optional.of(new SqlBasicCall(convertOperator(segment.getType().name()), 
-                new SqlNode[]{SqlIdentifier.star(parameters, SqlParserPos.ZERO, Collections.singletonList(SqlParserPos.ZERO))}, SqlParserPos.ZERO, false, functionQuantifier));
+        return Optional.of(new SqlBasicCall(convertOperator(segment.getType().name()),
+                new SqlNode[]{createParametersSqlNode(parameters)}, SqlParserPos.ZERO, false, functionQuantifier));
     }
     
     @Override
@@ -91,7 +91,7 @@ public final class AggregationProjectionConverter implements SQLSegmentConverter
         }
         if (isAsOperatorAggregationType(sqlBasicCall)) {
             SqlBasicCall subSqlBasicCall = (SqlBasicCall) sqlBasicCall.getOperandList().get(0);
-            AggregationType aggregationType = AggregationType.valueOf(subSqlBasicCall.getOperator().getName());
+            AggregationType aggregationType = AggregationType.valueOf(subSqlBasicCall.getOperator().getName().toUpperCase());
             String innerExpression = getInnerExpression(subSqlBasicCall);
             AliasSegment aliasSegment = new AliasSegment(getStartIndex(sqlBasicCall.getOperandList().get(1)), getStopIndex(sqlBasicCall.getOperandList().get(1)), 
                     new IdentifierValue(((SqlIdentifier) sqlBasicCall.getOperandList().get(1)).names.get(0)));
@@ -147,5 +147,16 @@ public final class AggregationProjectionConverter implements SQLSegmentConverter
         return null != sqlBasicCall.getOperator() && SqlKind.AS == sqlBasicCall.getOperator().getKind()
                 && sqlBasicCall.getOperandList().get(0) instanceof SqlBasicCall
                 && AggregationType.isAggregationType(((SqlBasicCall) sqlBasicCall.getOperandList().get(0)).getOperator().getName());
+    }
+    
+    private SqlNode createParametersSqlNode(final List<String> parameters) {
+        if (1 == parameters.size()) {
+            try {
+                Long.parseLong(parameters.get(0));
+                return SqlLiteral.createExactNumeric(parameters.get(0), SqlParserPos.ZERO);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        return SqlIdentifier.star(parameters, SqlParserPos.ZERO, Collections.singletonList(SqlParserPos.ZERO));
     }
 }

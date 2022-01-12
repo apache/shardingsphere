@@ -1,7 +1,7 @@
 +++
-pre = "<b>6.7. </b>"
+pre = "<b>6.8. </b>"
 title = "Readwrite-splitting"
-weight = 7
+weight = 8
 chapter = true
 +++
 
@@ -15,3 +15,4 @@ chapter = true
 | ------------------------------------- | ------------------------------------------------------- |
 | RoundRobinReplicaLoadBalanceAlgorithm | Round robin load balance algorithm of replica databases |
 | RandomReplicaLoadBalanceAlgorithm     | Random load balance algorithm of replica databases      |
+| WeightReplicaLoadBalanceAlgorithm     | Weight load balance algorithm of replica databases      |

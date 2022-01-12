@@ -1468,7 +1468,34 @@
         </projections>
         <where start-index="22" stop-index="50">
             <expr>
-                <common-expression text="BINARY t_order.order_id" start-index="28" stop-index="50"/>
+                <column name="order_id" start-index="35" stop-index="50">
+                    <owner name="t_order" start-index="35" stop-index="41" />
+                </column>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_with_simple_expr_with_binary_value" parameters="1">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20"/>
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <where start-index="22" stop-index="54">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="54">
+                    <left>
+                        <column name="order_id" start-index="28" stop-index="43">
+                            <owner name="t_order" start-index="28" stop-index="34" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <parameter-marker-expression value="0" start-index="54" stop-index="54" />
+                        <literal-expression value="1" start-index="54" stop-index="54" />
+                    </right>
+                </binary-operation-expression>
             </expr>
         </where>
     </select>
@@ -1973,5 +2000,22 @@
                 </binary-operation-expression>
             </expr>
         </where>
+    </select>
+
+    <select sql-case-id="select_with_regular_function_utc_timestamp">
+        <projections start-index="7" stop-index="38">
+            <expression-projection text="TIMEDIFF(NOW(), UTC_TIMESTAMP())" start-index="7" stop-index="38">
+                <expr>
+                    <function function-name="TIMEDIFF" text="TIMEDIFF(NOW(), UTC_TIMESTAMP())" start-index="7" stop-index="38">
+                        <parameter>
+                            <function function-name="NOW" text="NOW()" start-index="16" stop-index="20" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="UTC_TIMESTAMP" text="UTC_TIMESTAMP()" start-index="23" stop-index="37" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
     </select>
 </sql-parser-test-cases>

@@ -3192,7 +3192,14 @@
             <column-projection name="user_id" start-index="7" stop-index="13"/>
             <expression-projection text="CAST(order_id AS SIGNED)" start-index="15" stop-index="38">
                 <expr>
-                    <function function-name="CAST" start-index="15" stop-index="38" text="CAST(order_id AS SIGNED)" />
+                    <function function-name="CAST" start-index="15" stop-index="38" text="CAST(order_id AS SIGNED)" >
+                        <parameter>
+                            <column name="order_id" start-index="20" stop-index="27"/>
+                        </parameter>
+                        <parameter>
+                            <data-type value="SIGNED" start-index="32" stop-index="37"/>
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
@@ -3205,13 +3212,104 @@
         <projections start-index="7" stop-index="40">
             <expression-projection text="CAST(order_id AS UNSIGNED)" start-index="7" stop-index="32">
                 <expr>
-                    <function function-name="CAST" start-index="7" stop-index="32" text="CAST(order_id AS UNSIGNED)" />
+                    <function function-name="CAST" start-index="7" stop-index="32" text="CAST(order_id AS UNSIGNED)" >
+                        <parameter>
+                            <column name="order_id" start-index="12" stop-index="19"/>
+                        </parameter>
+                        <parameter>
+                            <data-type value="UNSIGNED" start-index="24" stop-index="31"/>
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
             <column-projection name="user_id" start-index="34" stop-index="40"/>
         </projections>
     </select>
 
+    <select sql-case-id="select_with_cast_as_signed_int">
+        <from>
+            <simple-table name="t_order" start-index="49" stop-index="55" />
+        </from>
+        <projections start-index="7" stop-index="42">
+            <column-projection name="user_id" start-index="7" stop-index="13"/>
+            <expression-projection text="CAST(order_id AS SIGNED INT)" start-index="15" stop-index="42">
+                <expr>
+                    <function function-name="CAST" start-index="15" stop-index="42" text="CAST(order_id AS SIGNED INT)" >
+                        <parameter>
+                            <column name="order_id" start-index="20" stop-index="27"/>
+                        </parameter>
+                        <parameter>
+                            <data-type value="SIGNED" start-index="32" stop-index="41"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_cast_as_unsigned_int">
+        <from>
+            <simple-table name="t_order" start-index="51" stop-index="57"/>
+        </from>
+        <projections start-index="7" stop-index="44">
+            <expression-projection text="CAST(order_id AS UNSIGNED INT)" start-index="7" stop-index="36">
+                <expr>
+                    <function function-name="CAST" start-index="7" stop-index="36" text="CAST(order_id AS UNSIGNED INT)" >
+                        <parameter>
+                            <column name="order_id" start-index="12" stop-index="19"/>
+                        </parameter>
+                        <parameter>
+                            <data-type value="UNSIGNED" start-index="24" stop-index="35"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <column-projection name="user_id" start-index="38" stop-index="44"/>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_with_cast_as_signed_integer">
+        <from>
+            <simple-table name="t_order" start-index="53" stop-index="59" />
+        </from>
+        <projections start-index="7" stop-index="46">
+            <column-projection name="user_id" start-index="7" stop-index="13"/>
+            <expression-projection text="CAST(order_id AS SIGNED INTEGER)" start-index="15" stop-index="46">
+                <expr>
+                    <function function-name="CAST" start-index="15" stop-index="46" text="CAST(order_id AS SIGNED INTEGER)" >
+                        <parameter>
+                            <column name="order_id" start-index="20" stop-index="27"/>
+                        </parameter>
+                        <parameter>
+                            <data-type value="SIGNED" start-index="32" stop-index="45"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_cast_as_unsigned_integer">
+        <from>
+            <simple-table name="t_order" start-index="55" stop-index="61"/>
+        </from>
+        <projections start-index="7" stop-index="48">
+            <expression-projection text="CAST(order_id AS UNSIGNED INTEGER)" start-index="7" stop-index="40">
+                <expr>
+                    <function function-name="CAST" start-index="7" stop-index="40" text="CAST(order_id AS UNSIGNED INTEGER)" >
+                        <parameter>
+                            <column name="order_id" start-index="12" stop-index="19"/>
+                        </parameter>
+                        <parameter>
+                            <data-type value="UNSIGNED" start-index="24" stop-index="39"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <column-projection name="user_id" start-index="42" stop-index="48"/>
+        </projections>
+    </select>
+    
     <select sql-case-id="select_with_simple_table" >
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
@@ -3783,6 +3881,71 @@
         <projections start-index="7" stop-index="40">
             <column-projection name="order_id_value" start-index="7" stop-index="20"/>
             <column-projection name="order_item_id_value" start-index="22" stop-index="40"/>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_with_dollar_parameter_for_postgresql" parameters="1, 12" >
+        <projections start-index="7" stop-index="14">
+            <column-projection name="order_id" start-index="7" stop-index="14"/>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+        <where start-index="29" stop-index="80" literal-stop-index="79">
+            <expr>
+                <binary-operation-expression start-index="35" stop-index="80" literal-stop-index="79">
+                    <left>
+                        <binary-operation-expression start-index="35" stop-index="64" literal-stop-index="63">
+                            <left>
+                                <binary-operation-expression start-index="35" stop-index="46">
+                                    <left>
+                                        <column name="user_id" start-index="35" stop-index="41" />
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <parameter-marker-expression value="1" start-index="45" stop-index="46" />
+                                        <literal-expression value="12" start-index="45" stop-index="46" />
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>AND</operator>
+                            <right>
+                                <binary-operation-expression start-index="52" stop-index="64" literal-stop-index="63">
+                                    <left>
+                                        <column name="order_id" start-index="52" stop-index="59" />
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <parameter-marker-expression value="0" start-index="63" stop-index="64" literal-stop-index="63" />
+                                        <literal-expression value="1" start-index="63" stop-index="63" />
+                                    </right>
+                                </binary-operation-expression>
+                            </right>
+                        </binary-operation-expression>    
+                    </left>
+                    <operator>OR</operator>
+                    <right>
+                        <binary-operation-expression start-index="69" stop-index="80" literal-start-index="68" literal-stop-index="79">
+                            <left>
+                                <column name="user_id" start-index="69" stop-index="75" literal-start-index="68" literal-stop-index="74" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <parameter-marker-expression value="1" start-index="79" stop-index="80" literal-start-index="78" literal-stop-index="79" />
+                                <literal-expression value="12" start-index="78" stop-index="79" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_binary_keyword" >
+        <projections start-index="7" stop-index="70">
+            <!-- TODO parse position function in projection -->
+            <expression-projection text="position(binary 'll' in 'hello')" start-index="7" stop-index="38" />
+            <expression-projection text="position('a' in binary 'hello')" start-index="40" stop-index="70" />
         </projections>
     </select>
 </sql-parser-test-cases>

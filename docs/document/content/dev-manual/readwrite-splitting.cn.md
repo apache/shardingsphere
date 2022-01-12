@@ -1,7 +1,7 @@
 +++
-pre = "<b>6.7. </b>"
+pre = "<b>6.8. </b>"
 title = "读写分离"
-weight = 7
+weight = 8
 chapter = true
 +++
 
@@ -15,3 +15,4 @@ chapter = true
 | ----------------------------------------- | ----------------------- |
 | RoundRobinReplicaLoadBalanceAlgorithm     | 基于轮询的读库负载均衡算法 |
 | RandomReplicaLoadBalanceAlgorithm         | 基于随机的读库负载均衡算法 |
+| WeightReplicaLoadBalanceAlgorithm         | 基于权重的读库负载均衡算法 |

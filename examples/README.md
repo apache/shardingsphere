@@ -252,6 +252,7 @@ shardingsphere-example
 | [transaction](shardingsphere-jdbc-example/single-feature-example/transaction-example)                                          | show how to use ShardingSphere-JDBC transaction                                         |
 | [hint](shardingsphere-jdbc-example/single-feature-example/sharding-example/sharding-raw-jdbc-example)                          | show how to use ShardingSphere-JDBC hint                                                |
 | [encryption](shardingsphere-jdbc-example/single-feature-example/encrypt-example)                        | show how to use ShardingSphere-JDBC encryption                                          |
+| [DistSQL](shardingsphere-proxy-example/shardingsphere-proxy-distsql-example)                            | show how to use DistSQL in ShardingSphere-Proxy                   |
 | APM(Pending)                                                                                            | show how to use APM in ShardingSphere                                                   |
 | proxy(Pending)                                                                                          | show how to use ShardingSphere-Proxy                                                    |
 | [docker](./docker/docker-compose.md)                                                                    | show how to use docker to setup the environment for ShardingSphere                      |

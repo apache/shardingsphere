@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.engine.P
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ParameterMarkerProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.SchemaAvailable;
@@ -41,8 +42,10 @@ import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.SubqueryType;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
@@ -55,10 +58,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtil;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -88,6 +93,9 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     @Setter
     private SubqueryType subqueryType;
+    
+    @Setter
+    private boolean needAggregateRewrite;
     
     public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, final SelectStatement sqlStatement, final String defaultSchemaName) {
         super(sqlStatement);
@@ -147,6 +155,36 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
      */
     public boolean isContainsHaving() {
         return getSqlStatement().getHaving().isPresent();
+    }
+    
+    /**
+     * Judge whether contains union or not.
+     *
+     * @return whether contains union or not
+     */
+    public boolean isContainsUnion() {
+        return !getSqlStatement().getUnionSegments().isEmpty();
+    }
+    
+    /**
+     * Judge whether contains dollar parameter marker or not.
+     * 
+     * @return whether contains dollar parameter marker or not
+     */
+    public boolean isContainsDollarParameterMarker() {
+        for (Projection each : projectionsContext.getProjections()) {
+            if (each instanceof ParameterMarkerProjection && ParameterMarkerType.DOLLAR == ((ParameterMarkerProjection) each).getParameterMarkerType()) {
+                return true;
+            }
+        }
+        Collection<ParameterMarkerExpressionSegment> expressions = getWhere().isPresent() 
+                ? ExpressionExtractUtil.getParameterMarkerExpressions(Collections.singletonList(getWhere().get().getExpr())) : Collections.emptyList();
+        for (ParameterMarkerExpressionSegment each : expressions) {
+            if (ParameterMarkerType.DOLLAR == each.getParameterMarkerType()) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**
@@ -255,11 +293,14 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     private Collection<TableSegment> getAllTableSegments() {
-        Collection<TableSegment> result = new LinkedList<>();
         TableExtractor tableExtractor = new TableExtractor();
         tableExtractor.extractTablesFromSelect(getSqlStatement());
-        result.addAll(tableExtractor.getRewriteTables());
-        result.addAll(tableExtractor.getTableContext().stream().filter(each -> each instanceof SubqueryTableSegment).collect(Collectors.toList()));
+        Collection<TableSegment> result = new LinkedList<>(tableExtractor.getRewriteTables());
+        for (TableSegment each : tableExtractor.getTableContext()) {
+            if (each instanceof SubqueryTableSegment) {
+                result.add(each);
+            }
+        }
         return result;
     }
 }

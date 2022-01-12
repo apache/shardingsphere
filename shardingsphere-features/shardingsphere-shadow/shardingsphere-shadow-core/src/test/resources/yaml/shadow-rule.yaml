@@ -31,7 +31,6 @@ dataSources:
 
 rules:
 - !SHADOW
-  enable: true
   dataSources:
     shadowDataSource:
       sourceDataSourceName: ds

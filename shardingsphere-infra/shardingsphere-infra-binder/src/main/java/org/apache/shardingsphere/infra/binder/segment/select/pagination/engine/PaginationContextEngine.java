@@ -36,7 +36,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Pagination context engine.
@@ -57,7 +56,10 @@ public final class PaginationContextEngine {
             return new LimitPaginationContextEngine().createPaginationContext(limitSegment.get(), parameters);
         }
         Optional<TopProjectionSegment> topProjectionSegment = findTopProjection(selectStatement);
-        Collection<ExpressionSegment> expressions = getWhereSegments(selectStatement).stream().map(WhereSegment::getExpr).collect(Collectors.toList());
+        Collection<ExpressionSegment> expressions = new LinkedList<>();
+        for (WhereSegment each : getWhereSegments(selectStatement)) {
+            expressions.add(each.getExpr());
+        }
         if (topProjectionSegment.isPresent()) {
             return new TopPaginationContextEngine().createPaginationContext(topProjectionSegment.get(), expressions, parameters);
         }

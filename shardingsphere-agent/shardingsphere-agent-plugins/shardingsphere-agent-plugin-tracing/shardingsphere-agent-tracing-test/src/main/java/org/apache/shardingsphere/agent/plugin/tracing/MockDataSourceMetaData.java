@@ -19,10 +19,12 @@ package org.apache.shardingsphere.agent.plugin.tracing;
 
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 
+import java.util.Properties;
+
 public final class MockDataSourceMetaData implements DataSourceMetaData {
     
     @Override
-    public String getHostName() {
+    public String getHostname() {
         return "mock.host";
     }
     
@@ -39,5 +41,15 @@ public final class MockDataSourceMetaData implements DataSourceMetaData {
     @Override
     public String getSchema() {
         return "mock.schema";
+    }
+    
+    @Override
+    public Properties getQueryProperties() {
+        return new Properties();
+    }
+    
+    @Override
+    public Properties getDefaultQueryProperties() {
+        return new Properties();
     }
 }

@@ -40,7 +40,6 @@ public final class ShadowDefaultAlgorithmSpringNamespaceTest extends AbstractJUn
     
     @Test
     public void assertDataSource() {
-        assertThat(shadowRule.isEnable(), is(true));
         assertShadowDataSources(shadowRule.getDataSources());
         assertShadowTables(shadowRule.getTables());
         assertDefaultShadowAlgorithm(shadowRule.getDefaultShadowAlgorithmName());

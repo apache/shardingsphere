@@ -64,6 +64,7 @@ public final class YamlRootRuleConfigurationsForYamlDatabaseDiscoveryRuleConfigu
     
     private void assertDatabaseDiscoveryRule(final YamlDatabaseDiscoveryRuleConfiguration actual) {
         assertThat(actual.getDataSources().size(), is(2));
+        assertThat(actual.getDiscoveryHeartbeats().size(), is(1));
         assertDatabaseDiscoveryRuleForDs0(actual);
         assertDatabaseDiscoveryRuleForDs1(actual);
     }

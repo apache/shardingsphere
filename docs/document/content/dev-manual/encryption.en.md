@@ -1,7 +1,7 @@
 +++
-pre = "<b>6.11. </b>"
+pre = "<b>6.13. </b>"
 title = "Encryption"
-weight = 11
+weight = 13
 chapter = true
 +++
 
@@ -15,7 +15,9 @@ chapter = true
 | ----------------------------- | -------------------------- |
 | MD5EncryptAlgorithm           | MD5 data encrypt algorithm |
 | AESEncryptAlgorithm           | AES data encrypt algorithm |
-| RC4EncryptAlgorithm           | Rc4 data encrypt algorithm |
+| RC4EncryptAlgorithm           | RC4 data encrypt algorithm |
+| SM3EncryptAlgorithm           | SM3 data encrypt algorithm |
+| SM4EncryptAlgorithm           | SM4 data encrypt algorithm |
 
 ## QueryAssistedEncryptAlgorithm
 

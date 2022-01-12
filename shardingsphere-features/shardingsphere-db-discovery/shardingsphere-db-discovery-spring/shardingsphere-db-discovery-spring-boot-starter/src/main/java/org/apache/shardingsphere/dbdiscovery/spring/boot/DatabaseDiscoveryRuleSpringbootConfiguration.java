@@ -18,16 +18,25 @@
 package org.apache.shardingsphere.dbdiscovery.spring.boot;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.spring.boot.algorithm.DatabaseDiscoveryAlgorithmProvidedBeanRegistry;
 import org.apache.shardingsphere.dbdiscovery.spring.boot.rule.YamlDatabaseDiscoveryRuleSpringBootConfiguration;
 import org.apache.shardingsphere.dbdiscovery.spring.boot.condition.DatabaseDiscoverySpringBootCondition;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.swapper.DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Rule spring boot configuration for data base discovery.
@@ -46,10 +55,25 @@ public class DatabaseDiscoveryRuleSpringbootConfiguration {
     /**
      * Database discovery rule configuration for spring boot.
      *
-     * @return database discovery rule configuration
+     * @param discoveryTypes database discovery types
+     * @return discovery rule configuration
      */
     @Bean
-    public RuleConfiguration databaseDiscoveryRuleConfiguration() {
-        return swapper.swapToObject(yamlConfig.getDatabaseDiscovery());
+    public RuleConfiguration discoveryRuleConfiguration(final ObjectProvider<Map<String, DatabaseDiscoveryType>> discoveryTypes) {
+        AlgorithmProvidedDatabaseDiscoveryRuleConfiguration result = swapper.swapToObject(yamlConfig.getDatabaseDiscovery());
+        Map<String, DatabaseDiscoveryType> discoveryTypeMap = Optional.ofNullable(discoveryTypes.getIfAvailable()).orElse(Collections.emptyMap());
+        result.setDiscoveryTypes(discoveryTypeMap);
+        return result;
+    }
+    
+    /**
+     * Database discovery algorithm provided bean registry.
+     *
+     * @param environment environment
+     * @return database discovery algorithm provided bean registry
+     */
+    @Bean
+    public static DatabaseDiscoveryAlgorithmProvidedBeanRegistry databaseDiscoveryAlgorithmProvidedBeanRegistry(final Environment environment) {
+        return new DatabaseDiscoveryAlgorithmProvidedBeanRegistry(environment);
     }
 }

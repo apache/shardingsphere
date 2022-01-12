@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin.executor;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
@@ -27,9 +28,11 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.me
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseNotExistedException;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.FunctionWithException;
 
 import javax.sql.DataSource;
@@ -39,6 +42,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -64,8 +68,8 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
     private final LinkedList<Map<String, Object>> rows = new LinkedList<>();
     
     @Override
-    public final void execute(final BackendConnection backendConnection) throws SQLException {
-        List<String> schemaNames = getSchemaNames();
+    public final void execute(final ConnectionSession connectionSession) throws SQLException {
+        List<String> schemaNames = getSchemaNames(connectionSession);
         for (String schemaName : schemaNames) {
             initSchemaData(schemaName);
             getSourceData(schemaName, resultSet -> handleResultSet(schemaName, resultSet));
@@ -103,7 +107,7 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
      *
      * @return schema names
      */
-    protected abstract List<String> getSchemaNames();
+    protected abstract List<String> getSchemaNames(ConnectionSession connectionSession);
     
     /**
      * Add default row data.
@@ -152,6 +156,24 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
     }
     
     /**
+     * Determine whether there is authority.
+     *
+     * @param schemaName schema name
+     * @param grantee grantee
+     * @return has authority or not
+     */
+    protected static boolean hasAuthority(final String schemaName, final Grantee grantee) {
+        return SQLCheckEngine.check(schemaName, getRules(schemaName), grantee);
+    }
+    
+    private static Collection<ShardingSphereRule> getRules(final String schemaName) {
+        Collection<ShardingSphereRule> result;
+        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getRuleMetaData().getRules());
+        result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules());
+        return result;
+    }
+    
+    /**
      * Default database metadata executor, execute sql directly in the database to obtain the result source data.
      */
     @Slf4j
@@ -174,8 +196,9 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
          * @return schema names
          */
         @Override
-        protected List<String> getSchemaNames() {
-            String schema = ProxyContext.getInstance().getAllSchemaNames().stream().filter(AbstractDatabaseMetadataExecutor::hasDatasource).findFirst().orElseThrow(DatabaseNotExistedException::new);
+        protected List<String> getSchemaNames(final ConnectionSession connectionSession) {
+            String schema = ProxyContext.getInstance().getAllSchemaNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee()))
+                    .filter(AbstractDatabaseMetadataExecutor::hasDatasource).findFirst().orElseThrow(DatabaseNotExistedException::new);
             return Collections.singletonList(schema);
         }
         
@@ -191,8 +214,9 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
             Optional<Entry<String, DataSource>> dataSourceEntry = resource.getDataSources().entrySet().stream().findFirst();
             log.info("Actual SQL: {} ::: {}", dataSourceEntry.orElseThrow(DatabaseNotExistedException::new).getKey(), sql);
             try (Connection conn = dataSourceEntry.get().getValue().getConnection();
-                 PreparedStatement ps = conn.prepareStatement(sql)) {
-                callback.apply(ps.executeQuery());
+                 PreparedStatement ps = conn.prepareStatement(sql);
+                 ResultSet resultSet = ps.executeQuery()) {
+                callback.apply(resultSet);
             }
         }
         

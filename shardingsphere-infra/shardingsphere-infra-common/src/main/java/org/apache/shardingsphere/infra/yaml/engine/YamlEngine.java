@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.yaml.engine.constructor.ShardingSphereYam
 import org.apache.shardingsphere.infra.yaml.engine.representer.ShardingSphereYamlRepresenter;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -82,6 +83,21 @@ public final class YamlEngine {
      */
     public static <T> T unmarshal(final String yamlContent, final Class<T> classType) {
         return new Yaml(new ShardingSphereYamlConstructor(classType)).loadAs(yamlContent, classType);
+    }
+    
+    /**
+     * Unmarshal YAML.
+     *
+     * @param yamlContent YAML content
+     * @param classType class type
+     * @param skipMissingProperties true if missing properties should be skipped, false otherwise
+     * @param <T> type of class
+     * @return object from YAML
+     */
+    public static <T> T unmarshal(final String yamlContent, final Class<T> classType, final boolean skipMissingProperties) {
+        Representer representer = new Representer();
+        representer.getPropertyUtils().setSkipMissingProperties(skipMissingProperties);
+        return new Yaml(new ShardingSphereYamlConstructor(classType), representer).loadAs(yamlContent, classType);
     }
     
     /**

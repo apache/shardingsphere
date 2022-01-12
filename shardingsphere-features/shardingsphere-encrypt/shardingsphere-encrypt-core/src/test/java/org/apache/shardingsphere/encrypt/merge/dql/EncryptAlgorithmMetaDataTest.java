@@ -112,4 +112,14 @@ public final class EncryptAlgorithmMetaDataTest {
         Optional<EncryptAlgorithm> actualEncryptor = encryptAlgorithmMetaData.findEncryptor(1);
         assertFalse(actualEncryptor.isPresent());
     }
+    
+    @Test
+    public void assertIsQueryWithCipherColumn() {
+        Map<String, String> columnTableNames = new HashMap<>();
+        columnTableNames.put(columnProjection.getExpression(), "t_order");
+        when(tablesContext.findTableName(Collections.singletonList(columnProjection), schema)).thenReturn(columnTableNames);
+        when(encryptRule.isQueryWithCipherColumn("t_order")).thenReturn(true);
+        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(schema, encryptRule, selectStatementContext);
+        assertTrue(encryptAlgorithmMetaData.isQueryWithCipherColumn(1));
+    }
 }

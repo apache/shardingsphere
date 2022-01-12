@@ -23,6 +23,8 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -45,7 +47,24 @@ public final class ShardingSphereRuleMetaData {
      * @return found rules
      */
     public <T extends ShardingSphereRule> Collection<T> findRules(final Class<T> clazz) {
-        return rules.stream().filter(each -> clazz.isAssignableFrom(each.getClass())).map(clazz::cast).collect(Collectors.toList());
+        List<T> result = new LinkedList<>();
+        for (ShardingSphereRule each : rules) {
+            if (clazz.isAssignableFrom(each.getClass())) {
+                result.add(clazz.cast(each));
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Find rule configuration by class.
+     *
+     * @param clazz target class
+     * @param <T> type of rule configuration
+     * @return found rule configurations
+     */
+    public <T extends RuleConfiguration> Collection<T> findRuleConfiguration(final Class<T> clazz) {
+        return configurations.stream().filter(each -> clazz.isAssignableFrom(each.getClass())).map(clazz::cast).collect(Collectors.toList());
     }
     
     /**

@@ -49,7 +49,6 @@ public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapperTest {
     public void assertSwapToYamlConfiguration() {
         AlgorithmProvidedShadowRuleConfiguration expectedConfiguration = buildAlgorithmProvidedShadowRuleConfiguration();
         YamlShadowRuleConfiguration actualConfiguration = swapper.swapToYamlConfiguration(expectedConfiguration);
-        assertThat(actualConfiguration.isEnable(), is(expectedConfiguration.isEnable()));
         actualConfiguration.getDataSources().forEach((key, value) -> {
             ShadowDataSourceConfiguration dataSourceConfiguration = expectedConfiguration.getDataSources().get(key);
             assertNotNull(dataSourceConfiguration);
@@ -70,7 +69,6 @@ public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapperTest {
     
     private AlgorithmProvidedShadowRuleConfiguration buildAlgorithmProvidedShadowRuleConfiguration() {
         AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
-        result.setEnable(true);
         result.getDataSources().put("shadow-data-source", new ShadowDataSourceConfiguration("ds", "ds-shadow"));
         result.getTables().put("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source"), Arrays.asList("user-id-match-algorithm", "note-algorithm")));
         result.getShadowAlgorithms().put("user-id-match-algorithm", new ColumnRegexMatchShadowAlgorithm());
@@ -81,7 +79,6 @@ public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapperTest {
     public void assertSwapToObject() {
         YamlShadowRuleConfiguration expectedConfiguration = buildYamlShadowRuleConfiguration();
         AlgorithmProvidedShadowRuleConfiguration actualConfiguration = swapper.swapToObject(expectedConfiguration);
-        assertThat(actualConfiguration.isEnable(), is(expectedConfiguration.isEnable()));
         actualConfiguration.getDataSources().forEach((key, value) -> {
             YamlShadowDataSourceConfiguration yamlShadowDataSourceConfiguration = expectedConfiguration.getDataSources().get(key);
             assertNotNull(yamlShadowDataSourceConfiguration);
@@ -102,7 +99,6 @@ public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapperTest {
     
     private YamlShadowRuleConfiguration buildYamlShadowRuleConfiguration() {
         YamlShadowRuleConfiguration result = new YamlShadowRuleConfiguration();
-        result.setEnable(true);
         YamlShadowDataSourceConfiguration yamlShadowDataSourceConfiguration = new YamlShadowDataSourceConfiguration();
         yamlShadowDataSourceConfiguration.setSourceDataSourceName("ds");
         yamlShadowDataSourceConfiguration.setShadowDataSourceName("ds-shadow");

@@ -30,37 +30,41 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class ShardingCreateViewStatementValidatorTest {
     
     @Mock
     private ShardingRule shardingRule;
     
     @Test
-    public void assertValidateCreateViewForMySQL() {
+    public void assertPreValidateCreateViewForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
-        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
+        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         MySQLCreateViewStatement sqlStatement = new MySQLCreateViewStatement();
         sqlStatement.setSelect(selectStatement);
         SQLStatementContext<CreateViewStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
+        when(shardingRule.isShardingTable("t_order")).thenReturn(false);
         new ShardingCreateViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereSchema.class));
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertValidateCreateViewWithShardingTableForMySQL() {
+    public void assertPreValidateCreateViewWithShardingTableForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         MySQLCreateViewStatement sqlStatement = new MySQLCreateViewStatement();
         sqlStatement.setSelect(selectStatement);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.getAllTableNames()).thenReturn(Collections.singleton("t_order"));
         SQLStatementContext<CreateViewStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
+        when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         new ShardingCreateViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
     }
 }

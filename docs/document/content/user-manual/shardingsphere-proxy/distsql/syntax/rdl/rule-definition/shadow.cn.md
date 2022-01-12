@@ -1,6 +1,6 @@
 +++
 title = "影子库压测"
-weight = 5
+weight = 6
 +++
 
 ## 语法说明
@@ -9,7 +9,7 @@ weight = 5
 CREATE SHADOW RULE shadowRuleDefinition [, shadowRuleDefinition] ... 
 
 ALTER SHADOW RULE shadowRuleDefinition [, shadowRuleDefinition] ... 
-``
+
 CREATE SHADOW ALGORITHM shadowAlgorithm [, shadowAlgorithm] ...
 
 ALTER SHADOW ALGORITHM shadowAlgorithm [, shadowAlgorithm] ...

@@ -21,17 +21,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
-import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
-import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.ScheduleJobBootstrap;
-import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
-import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
-import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
-import org.apache.shardingsphere.elasticjob.lite.lifecycle.internal.settings.JobConfigurationAPIImpl;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -39,7 +31,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -52,10 +43,6 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
     
     private static final String DB_ROLE = "select local_role,db_state from pg_stat_get_stream_replications()";
     
-    private static CoordinatorRegistryCenter coordinatorRegistryCenter;
-    
-    private static final Map<String, ScheduleJobBootstrap> SCHEDULE_JOB_BOOTSTRAP_MAP = new HashMap<>(16, 1);
-    
     private String oldPrimaryDataSource;
     
     @Getter
@@ -63,39 +50,19 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
     private Properties props = new Properties();
     
     @Override
-    public void checkDatabaseDiscoveryConfiguration(final String schemaName,
-            final Map<String, DataSource> dataSourceMap) throws SQLException {
-        try (Connection connection = dataSourceMap.get(oldPrimaryDataSource).getConnection();
-                Statement statement = connection.createStatement()) {
-            checkRolePrimary(statement);
-        }
-    }
-    
-    private void checkRolePrimary(final Statement statement) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(DB_ROLE)) {
-            while (resultSet.next()) {
-                if (!"Primary".equals(resultSet.getString("local_role"))) {
-                    throw new ShardingSphereConfigurationException("Instance is not Primary.");
-                }
-            }
-        }
+    public void checkDatabaseDiscoveryConfiguration(final String schemaName, final DataSource dataSource) {
     }
     
     @Override
-    public void updatePrimaryDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap,
-            final Collection<String> disabledDataSourceNames, final String groupName) {
-        Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
-        if (!disabledDataSourceNames.isEmpty()) {
-            activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
-        }
-        String newPrimaryDataSource = determinePrimaryDataSource(activeDataSourceMap);
+    public void updatePrimaryDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
+        String newPrimaryDataSource = determinePrimaryDataSource(dataSourceMap);
         if (newPrimaryDataSource.isEmpty()) {
+            oldPrimaryDataSource = "";
             return;
         }
         if (!newPrimaryDataSource.equals(oldPrimaryDataSource)) {
             oldPrimaryDataSource = newPrimaryDataSource;
-            ShardingSphereEventBus.getInstance()
-                    .post(new PrimaryDataSourceChangedEvent(schemaName, groupName, newPrimaryDataSource));
+            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceChangedEvent(schemaName, groupName, newPrimaryDataSource));
         }
     }
     
@@ -106,8 +73,7 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
                     Statement statement = connection.createStatement();
                     ResultSet resultSet = statement.executeQuery(DB_ROLE)) {
                 if (resultSet.next()) {
-                    if (resultSet.getString("local_role").equals("Primary")
-                            && resultSet.getString("db_state").equals("Normal")) {
+                    if (resultSet.getString("local_role").equals("Primary") && resultSet.getString("db_state").equals("Normal")) {
                         return entry.getKey();
                     }
                 }
@@ -119,23 +85,15 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
     }
     
     @Override
-    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap,
-            final Collection<String> disabledDataSourceNames) {
-        Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
-        if (!disabledDataSourceNames.isEmpty()) {
-            activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
-        }
-        determineDisabledDataSource(schemaName, activeDataSourceMap);
-    }
-    
-    private void determineDisabledDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap) {
+    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             boolean disable = true;
             try (Connection connection = entry.getValue().getConnection();
-                Statement statement = connection.createStatement();
+                 Statement statement = connection.createStatement();
                  ResultSet resultSet = statement.executeQuery(DB_ROLE)) {
                 if (resultSet.next()) {
-                    if (resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal")) {
+                    if ((resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal"))
+                            || entry.getKey().equals(oldPrimaryDataSource)) {
                         disable = false;
                     }
                 }
@@ -147,40 +105,8 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
     }
     
     @Override
-    public void startPeriodicalUpdate(final String schemaName, final Map<String, DataSource> dataSourceMap,
-            final Collection<String> disabledDataSourceNames, final String groupName) {
-        if (null == coordinatorRegistryCenter) {
-            ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(props.getProperty("zkServerLists"),
-                    "opengauss-elasticjob");
-            coordinatorRegistryCenter = new ZookeeperRegistryCenter(zkConfig);
-            coordinatorRegistryCenter.init();
-        }
-        if (null != SCHEDULE_JOB_BOOTSTRAP_MAP.get(groupName)) {
-            SCHEDULE_JOB_BOOTSTRAP_MAP.get(groupName).shutdown();
-        }
-        SCHEDULE_JOB_BOOTSTRAP_MAP.put(groupName, new ScheduleJobBootstrap(coordinatorRegistryCenter,
-                new OpenGaussHeartbeatJob(this, schemaName, dataSourceMap, disabledDataSourceNames, groupName),
-                JobConfiguration.newBuilder("opengauss-" + groupName, 1).cron(props.getProperty("keepAliveCron")).build()));
-        SCHEDULE_JOB_BOOTSTRAP_MAP.get(groupName).schedule();
-    }
-    
-    @Override
     public String getPrimaryDataSource() {
         return oldPrimaryDataSource;
-    }
-    
-    @Override
-    public void updateProperties(final String groupName, final Properties props) {
-        new JobConfigurationAPIImpl(coordinatorRegistryCenter)
-                .updateJobConfiguration(createJobConfiguration("opengauss-" + groupName, props.getProperty("keepAliveCron")));
-    }
-    
-    private JobConfigurationPOJO createJobConfiguration(final String jobName, final String cron) {
-        JobConfigurationPOJO result = new JobConfigurationPOJO();
-        result.setJobName(jobName);
-        result.setCron(cron);
-        result.setShardingTotalCount(1);
-        return result;
     }
     
     @Override

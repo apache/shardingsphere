@@ -159,6 +159,10 @@ operatorName
     : (owner DOT_)? name
     ;
 
+dimensionName
+    : (owner DOT_)? name
+    ;
+
 constraintName
     : identifier
     ;
@@ -204,7 +208,7 @@ functionName
     ;
 
 dbLink
-    : identifier
+    : identifier (DOT_ identifier)*
     ;
 
 parameterValue
@@ -303,7 +307,7 @@ roleName
     : identifier
     ;
 
-userName
+username
     : identifier
     ;
 
@@ -1004,6 +1008,10 @@ underPathCondition
     : UNDER_PATH LP_ columnName (COMMA_ levels)? COMMA_ pathString (COMMA_ correlationInteger)? RP_
     ;
 
+level
+    : identifier
+    ;
+
 levels
     : INTEGER_
     ;
@@ -1187,4 +1195,20 @@ inCondition
 
 isOfTypeCondition
     : expr IS NOT? OF TYPE? LP_ ONLY? typeName (COMMA_ ONLY? typeName)* RP_
+    ;
+
+databaseCharset
+    : AL32UTF8
+    ;
+
+nationalCharset
+    : AL16UTF16 | UTF8
+    ;
+
+filenamePattern
+    : STRING_
+    ;
+
+connectString
+    : STRING_
     ;

@@ -37,4 +37,11 @@ public final class PropertiesChangedWatcherTest {
         assertTrue(actual.isPresent());
         assertTrue((boolean) actual.get().getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()));
     }
+    
+    @Test
+    public void assertCreateAddEvent() {
+        Optional<PropertiesChangedEvent> actual = new PropertiesChangedWatcher().createGovernanceEvent(new DataChangedEvent("test", PROPERTIES_YAML, Type.ADDED));
+        assertTrue(actual.isPresent());
+        assertTrue((boolean) actual.get().getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()));
+    }
 }

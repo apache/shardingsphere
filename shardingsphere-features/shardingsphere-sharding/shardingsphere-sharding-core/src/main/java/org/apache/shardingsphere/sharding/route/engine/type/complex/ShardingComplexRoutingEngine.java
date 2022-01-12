@@ -38,11 +38,11 @@ import java.util.TreeSet;
 @RequiredArgsConstructor
 public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
     
-    private final Collection<String> logicTables;
-    
     private final ShardingConditions shardingConditions;
     
     private final ConfigurationProperties props;
+
+    private final Collection<String> logicTables;
     
     @Override
     public RouteContext route(final ShardingRule shardingRule) {

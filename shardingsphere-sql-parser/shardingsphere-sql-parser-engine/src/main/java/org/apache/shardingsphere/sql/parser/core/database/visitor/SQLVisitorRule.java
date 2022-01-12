@@ -30,6 +30,8 @@ public enum SQLVisitorRule {
     
     SELECT("Select", SQLStatementType.DML),
     
+    TABLE("Table", SQLStatementType.DML),
+    
     INSERT("Insert", SQLStatementType.DML),
     
     UPDATE("Update", SQLStatementType.DML),
@@ -39,6 +41,8 @@ public enum SQLVisitorRule {
     MERGE("Merge", SQLStatementType.DML),
     
     REPLACE("Replace", SQLStatementType.DML),
+    
+    COPY("Copy", SQLStatementType.DML),
     
     CREATE_TABLE("CreateTable", SQLStatementType.DDL),
     
@@ -70,9 +74,17 @@ public enum SQLVisitorRule {
     
     CREATE_DATABASE("CreateDatabase", SQLStatementType.DDL),
 
+    CREATE_DATABASE_LINK("CreateDatabaseLink", SQLStatementType.DDL),
+    
     ALTER_DATABASE("AlterDatabase", SQLStatementType.DDL),
     
     DROP_DATABASE("DropDatabase", SQLStatementType.DDL),
+    
+    CREATE_DIMENSION("CreateDimension", SQLStatementType.DDL),
+
+    ALTER_DIMENSION("AlterDimension", SQLStatementType.DDL),
+
+    DROP_DIMENSION("DropDimension", SQLStatementType.DDL),
     
     CREATE_EVENT("CreateEvent", SQLStatementType.DDL),
     
@@ -225,12 +237,22 @@ public enum SQLVisitorRule {
     USE("Use", SQLStatementType.DAL),
     
     DESC("Desc", SQLStatementType.DAL),
+
+    HELP("Help", SQLStatementType.DAL),
     
     EXPLAIN("Explain", SQLStatementType.DAL),
     
     SHOW_DATABASES("ShowDatabases", SQLStatementType.DAL),
     
     SHOW_TABLES("ShowTables", SQLStatementType.DAL),
+    
+    SHOW_EVENTS("ShowEvents", SQLStatementType.DAL),
+    
+    SHOW_CHARACTER_SET("ShowCharacterSet", SQLStatementType.DAL),
+    
+    SHOW_COLLATION("ShowCollation", SQLStatementType.DAL),
+    
+    SHOW_VARIABLES("ShowVariables", SQLStatementType.DAL),
     
     SHOW_TABLE_STATUS("ShowTableStatus", SQLStatementType.DAL),
     
@@ -241,7 +263,7 @@ public enum SQLVisitorRule {
     SHOW_CREATE_TABLE("ShowCreateTable", SQLStatementType.DAL),
     
     SHOW_OTHER("ShowOther", SQLStatementType.DAL),
-
+    
     SHOW_REPLICAS("ShowReplicas", SQLStatementType.DAL),
     
     SHOW_REPLICA_STATUS("ShowReplicaStatus", SQLStatementType.DAL),
@@ -314,6 +336,14 @@ public enum SQLVisitorRule {
     
     CHECK_TABLE("CheckTable", SQLStatementType.DAL),
     
+    CHECKSUM_TABLE("ChecksumTable", SQLStatementType.DAL),
+    
+    DROP_RESOURCE_GROUP("DropResourceGroup", SQLStatementType.DAL),
+    
+    ALTER_RESOURCE_GROUP("AlterResourceGroup", SQLStatementType.DAL),
+    
+    DELIMITER("Delimiter", SQLStatementType.DAL),
+    
     CALL("Call", SQLStatementType.DML),
     
     CHANGE_MASTER("ChangeMaster", SQLStatementType.RL), 
@@ -336,7 +366,35 @@ public enum SQLVisitorRule {
 
     ALTER_SERVICE("AlterService", SQLStatementType.DDL),
 
-    DROP_SERVICE("DropService", SQLStatementType.DDL);
+    DROP_SERVICE("DropService", SQLStatementType.DDL),
+    
+    DROP_DOMAIN("DropDomain", SQLStatementType.DDL),
+    
+    CREATE_DOMAIN("CreateDomain", SQLStatementType.DDL),
+    
+    CREATE_RULE("CreateRule", SQLStatementType.DDL),
+    
+    CREATE_LANGUAGE("CreateLanguage", SQLStatementType.DDL),
+    
+    ALTER_LANGUAGE("AlterLanguage", SQLStatementType.DDL),
+    
+    DROP_LANGUAGE("DropLanguage", SQLStatementType.DDL),
+    
+    CREATE_CONVERSION("CreateConversion", SQLStatementType.DDL),
+    
+    CREATE_TYPE("CreateType", SQLStatementType.DDL),
+    
+    DROP_CONVERSION("DropConversion", SQLStatementType.DDL),
+    
+    ALTER_CONVERSION("AlterConversion", SQLStatementType.DDL),
+    
+    CREATE_TEXT_SEARCH("CreateTextSearch", SQLStatementType.DDL),
+    
+    ALTER_TEXT_SEARCH_DICTIONARY("AlterTextSearchDictionary", SQLStatementType.DDL),
+    
+    ALTER_TEXT_SEARCH_TEMPLATE("AlterTextSearchTemplate", SQLStatementType.DDL),
+    
+    ALTER_TEXT_SEARCH_PARSER("AlterTextSearchParser", SQLStatementType.DDL);
 
     private final String name;
     

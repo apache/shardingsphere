@@ -40,11 +40,6 @@
   ],
   "properties": [
     {
-      "name": "spring.shardingsphere.rules.shadow.enable",
-      "type": "java.lang.Boolean",
-      "sourceType": "org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration"
-    },
-    {
       "name": "spring.shardingsphere.rules.shadow.default-shadow-algorithm-name",
       "type": "java.lang.String",
       "sourceType": "org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration"

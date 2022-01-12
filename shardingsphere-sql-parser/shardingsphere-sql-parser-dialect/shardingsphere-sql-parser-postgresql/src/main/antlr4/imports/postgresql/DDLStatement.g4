@@ -932,7 +932,7 @@ alterGroupClauses
     ;
 
 alterLanguage
-    : ALTER PROCEDURAL? LANGUAGE (colId RENAME TO colId | OWNER TO (ignoredIdentifier | CURRENT_USER | SESSION_USER))
+    : ALTER PROCEDURAL? LANGUAGE colId (RENAME TO colId | OWNER TO (ignoredIdentifier | CURRENT_USER | SESSION_USER))
     ;
 
 alterLargeObject

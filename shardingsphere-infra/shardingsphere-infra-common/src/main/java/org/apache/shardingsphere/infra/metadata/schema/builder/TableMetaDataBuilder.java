@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
@@ -32,7 +31,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -55,58 +53,30 @@ public final class TableMetaDataBuilder {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Map<String, TableMetaData> load(final Collection<String> tableNames, final SchemaBuilderMaterials materials) throws SQLException {
-        Map<String, TableMetaData> result = new LinkedHashMap<>();
+        Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
         for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, materials.getRules()).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {
                 TableContainedRule rule = (TableContainedRule) entry.getKey();
                 RuleBasedTableMetaDataBuilder<TableContainedRule> builder = entry.getValue();
-                Collection<String> needLoadTables = tableNames.stream().filter(each -> rule.getTables().contains(each)).filter(each -> !result.containsKey(each)).collect(Collectors.toList());
+                Collection<String> needLoadTables = tableNames.stream().filter(each -> rule.getTables().contains(each))
+                        .filter(each -> !tableMetaDataMap.containsKey(each)).collect(Collectors.toList());
                 if (!needLoadTables.isEmpty()) {
-                    result.putAll(builder.load(needLoadTables, rule, materials));
+                    tableMetaDataMap.putAll(builder.load(needLoadTables, rule, materials));
                 }
             }
         }
-        return result;
+        return decorate(tableMetaDataMap, materials.getRules());
     }
     
-    /**
-     * Decorate federation table meta data.
-     *
-     * @param tableMetaData table meta data
-     * @param rules shardingSphere rules
-     * @return table meta data
-     */
-    public static TableMetaData decorateFederationTableMetaData(final TableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
-        return decorateTableName(tableMetaData, rules);
-    }
-    
-    /**
-     * Decorate kernel table meta data.
-     *
-     * @param tableMetaData table meta data
-     * @param rules shardingSphere rules
-     * @return table meta data
-     */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static TableMetaData decorateKernelTableMetaData(final TableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
-        TableMetaData result = decorateTableName(tableMetaData, rules);
-        for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).entrySet()) {
-            if (entry.getKey() instanceof TableContainedRule) {
-                result = entry.getValue().decorate(result.getName(), result, (TableContainedRule) entry.getKey());
-            }
-        }
-        return result;
-    }
-    
-    private static TableMetaData decorateTableName(final TableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
-        for (ShardingSphereRule each : rules) {
-            if (each instanceof DataNodeContainedRule) {
-                Optional<String> logicTable = ((DataNodeContainedRule) each).findLogicTableByActualTable(tableMetaData.getName());
-                if (logicTable.isPresent()) {
-                    return new TableMetaData(logicTable.get(), tableMetaData.getColumns().values(), tableMetaData.getIndexes().values());
+    private static Map<String, TableMetaData> decorate(final Map<String, TableMetaData> tableMetaDataMap, final Collection<ShardingSphereRule> rules) {
+        for (Entry<String, TableMetaData> entry : tableMetaDataMap.entrySet()) {
+            for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> builderEntry : OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).entrySet()) {
+                if (builderEntry.getKey() instanceof TableContainedRule) {
+                    entry.setValue(builderEntry.getValue().decorate(entry.getKey(), entry.getValue(), (TableContainedRule) builderEntry.getKey()));
                 }
             }
         }
-        return new TableMetaData(tableMetaData.getName(), tableMetaData.getColumns().values(), tableMetaData.getIndexes().values());
+        return tableMetaDataMap;
     }
 }

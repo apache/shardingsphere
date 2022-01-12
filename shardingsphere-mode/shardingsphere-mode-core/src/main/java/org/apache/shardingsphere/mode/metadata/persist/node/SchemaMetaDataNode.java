@@ -35,7 +35,7 @@ public final class SchemaMetaDataNode {
     
     private static final String RULE_NODE = "rules";
     
-    private static final String SCHEMA_NODE = "schema";
+    private static final String TABLES_NODE = "tables";
     
     /**
      * Get meta data data source path.
@@ -77,13 +77,24 @@ public final class SchemaMetaDataNode {
     }
     
     /**
-     * Get meta data schema path.
+     * Get meta data tables path.
      *
      * @param schemaName schema name
-     * @return schema path
+     * @return tables path
      */
-    public static String getMetaDataSchemaPath(final String schemaName) {
-        return getFullMetaDataPath(schemaName, SCHEMA_NODE);
+    public static String getMetaDataTablesPath(final String schemaName) {
+        return getFullMetaDataPath(schemaName, TABLES_NODE);
+    }
+    
+    /**
+     * Get table meta data path.
+     * 
+     * @param schemaName schema name
+     * @param table table name
+     * @return table meta data path
+     */
+    public static String getTableMetaDataPath(final String schemaName, final String table) {
+        return String.join("/", getMetaDataTablesPath(schemaName), table);
     }
     
     private static String getFullMetaDataPath(final String schemaName, final String node) {
@@ -97,7 +108,7 @@ public final class SchemaMetaDataNode {
      * @return schema name
      */
     public static String getSchemaName(final String configurationNodeFullPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)" + "(/datasources|/rules|/schema)?", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)" + "(/datasources|/rules|/tables)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(configurationNodeFullPath);
         return matcher.find() ? matcher.group(1) : "";
     }
@@ -111,6 +122,19 @@ public final class SchemaMetaDataNode {
     public static String getSchemaNameBySchemaPath(final String schemaPath) {
         Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(schemaPath);
+        return matcher.find() ? matcher.group(1) : "";
+    }
+    
+    /**
+     * Get table meta data path.
+     * 
+     * @param schemaName schema name
+     * @param tableMetaDataPath table meta data path
+     * @return table name
+     */
+    public static String getTableName(final String schemaName, final String tableMetaDataPath) {
+        Pattern pattern = Pattern.compile(getMetaDataTablesPath(schemaName) + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(tableMetaDataPath);
         return matcher.find() ? matcher.group(1) : "";
     }
 }

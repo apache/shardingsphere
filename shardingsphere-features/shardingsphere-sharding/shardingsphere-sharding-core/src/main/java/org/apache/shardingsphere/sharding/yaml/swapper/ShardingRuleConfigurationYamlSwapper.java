@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.yaml.swapper;
 
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.ShardingSphereAlgorithmConfigurationYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rulealtered.OnRuleAlteredActionConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
@@ -46,6 +47,8 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
     
     private final ShardingSphereAlgorithmConfigurationYamlSwapper algorithmSwapper = new ShardingSphereAlgorithmConfigurationYamlSwapper();
     
+    private final OnRuleAlteredActionConfigurationYamlSwapper onRuleAlteredActionYamlSwapper = new OnRuleAlteredActionConfigurationYamlSwapper();
+    
     @Override
     public YamlShardingRuleConfiguration swapToYamlConfiguration(final ShardingRuleConfiguration data) {
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
@@ -56,6 +59,7 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         setYamlDefaultStrategies(data, result);
         setYamlAlgorithms(data, result);
         result.setDefaultShardingColumn(data.getDefaultShardingColumn());
+        result.setScalingName(data.getScalingName());
         return result;
     }
     
@@ -78,6 +82,9 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         if (null != data.getKeyGenerators()) {
             data.getKeyGenerators().forEach((key, value) -> yamlConfig.getKeyGenerators().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
         }
+        if (null != data.getScaling()) {
+            data.getScaling().forEach((key, value) -> yamlConfig.getScaling().put(key, onRuleAlteredActionYamlSwapper.swapToYamlConfiguration(value)));
+        }
     }
     
     @Override
@@ -98,6 +105,7 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         setDefaultStrategies(yamlConfig, result);
         setAlgorithms(yamlConfig, result);
         result.setDefaultShardingColumn(yamlConfig.getDefaultShardingColumn());
+        result.setScalingName(yamlConfig.getScalingName());
         return result;
     }
     
@@ -119,6 +127,9 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         }
         if (null != yamlConfig.getKeyGenerators()) {
             yamlConfig.getKeyGenerators().forEach((key, value) -> ruleConfig.getKeyGenerators().put(key, algorithmSwapper.swapToObject(value)));
+        }
+        if (null != yamlConfig.getScaling()) {
+            yamlConfig.getScaling().forEach((key, value) -> ruleConfig.getScaling().put(key, onRuleAlteredActionYamlSwapper.swapToObject(value)));
         }
     }
     

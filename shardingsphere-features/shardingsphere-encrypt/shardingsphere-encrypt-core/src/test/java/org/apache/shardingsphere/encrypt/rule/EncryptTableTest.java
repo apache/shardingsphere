@@ -121,4 +121,11 @@ public final class EncryptTableTest {
     public void assertGetLogicAndCipherColumns() {
         assertThat(encryptTable.getLogicAndCipherColumns(), is(ImmutableMap.of("logicColumn", "cipherColumn")));
     }
+    
+    @Test
+    public void assertGetQueryWithCipherColumn() {
+        encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt",
+                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "plainColumn", "myEncryptor")), true));
+        assertTrue(encryptTable.getQueryWithCipherColumn().get());
+    }
 }
