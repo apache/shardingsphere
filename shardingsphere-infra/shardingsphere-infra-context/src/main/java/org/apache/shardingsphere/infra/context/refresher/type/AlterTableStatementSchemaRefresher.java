@@ -43,7 +43,7 @@ import java.util.Optional;
  */
 public final class AlterTableStatementSchemaRefresher implements MetaDataRefresher<AlterTableStatement> {
     
-    private static final String TYPE = AlterTableStatement.class.getCanonicalName();
+    private static final String TYPE = AlterTableStatement.class.getName();
     
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
