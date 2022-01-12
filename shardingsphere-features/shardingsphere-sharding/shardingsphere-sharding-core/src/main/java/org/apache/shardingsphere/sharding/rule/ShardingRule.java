@@ -218,6 +218,9 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         String savedShardingAlgorithm = null;
         for (TableRule tableRule : tableRules.values()) {
             ShardingStrategyConfiguration shardingStrategyConfiguration = tableRule.getDatabaseShardingStrategyConfig();
+            if (null == shardingStrategyConfiguration) {
+                continue;
+            }
             String loopShardingColumn = getShardingColumn(shardingStrategyConfiguration);
             String loopShardingAlgorithm = shardingStrategyConfiguration.getShardingAlgorithmName();
             if (null == savedShardingColumn) {
@@ -237,6 +240,9 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         String savedShardingColumn = null;
         for (TableRule tableRule : tableRules.values()) {
             ShardingStrategyConfiguration shardingStrategyConfiguration = tableRule.getTableShardingStrategyConfig();
+            if (null == shardingStrategyConfiguration) {
+                continue;
+            }
             String loopShardingColumn = getShardingColumn(shardingStrategyConfiguration);
             if (null == savedShardingColumn) {
                 savedShardingColumn = loopShardingColumn;
