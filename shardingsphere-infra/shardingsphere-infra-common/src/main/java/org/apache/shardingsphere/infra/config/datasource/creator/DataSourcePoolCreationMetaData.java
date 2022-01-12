@@ -15,23 +15,50 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.pool.destroyer;
+package org.apache.shardingsphere.infra.config.datasource.creator;
 
 import org.apache.shardingsphere.spi.required.RequiredSPI;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
-import javax.sql.DataSource;
-import java.sql.SQLException;
+
+import java.util.Map;
 
 /**
- * Data source pool destroyer.
+ * Data source pool creation meta data.
  */
-public interface DataSourcePoolDestroyer extends TypedSPI, RequiredSPI {
+public interface DataSourcePoolCreationMetaData extends TypedSPI, RequiredSPI {
     
     /**
-     * destroy data source pool gracefully.
-     * 
-     * @param dataSource data source pool to be destroyed
-     * @throws SQLException SQL exception
+     * Get default properties.
+     *
+     * @return default properties
      */
-    void destroy(DataSource dataSource) throws SQLException;
+    Map<String, Object> getDefaultProperties();
+    
+    /**
+     * Get invalid properties.
+     * 
+     * @return invalid properties
+     */
+    Map<String, Object> getInvalidProperties();
+    
+    /**
+     * Get property synonyms.
+     * 
+     * @return property synonyms
+     */
+    Map<String, String> getPropertySynonyms();
+    
+    /**
+     * Get JDBC URL field name.
+     *
+     * @return JDBC URL field name
+     */
+    String getJdbcUrlFieldName();
+    
+    /**
+     * Get JDBC URL properties field name.
+     * 
+     * @return JDBC URL properties field name
+     */
+    String getJdbcUrlPropertiesFieldName();
 }

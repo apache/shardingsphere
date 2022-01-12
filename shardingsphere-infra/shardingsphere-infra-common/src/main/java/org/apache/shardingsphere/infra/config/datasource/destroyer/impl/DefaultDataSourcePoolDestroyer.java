@@ -15,41 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.pool.creator.impl;
+package org.apache.shardingsphere.infra.config.datasource.destroyer.impl;
 
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreationMetaData;
+import org.apache.shardingsphere.infra.config.datasource.destroyer.DataSourcePoolDestroyer;
 
-import java.util.Collections;
-import java.util.Map;
+import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
- * Default data source pool creator.
+ * Default data source pool destroyer.
  */
-public final class DefaultDataSourcePoolCreationMetaData implements DataSourcePoolCreationMetaData {
+public final class DefaultDataSourcePoolDestroyer implements DataSourcePoolDestroyer {
     
     @Override
-    public Map<String, Object> getDefaultProperties() {
-        return Collections.emptyMap();
-    }
-    
-    @Override
-    public Map<String, Object> getInvalidProperties() {
-        return Collections.emptyMap();
-    }
-    
-    @Override
-    public Map<String, String> getPropertySynonyms() {
-        return Collections.emptyMap();
-    }
-    
-    @Override
-    public String getJdbcUrlFieldName() {
-        return null;
-    }
-    
-    @Override
-    public String getJdbcUrlPropertiesFieldName() {
-        return null;
+    public void destroy(final DataSource dataSource) throws SQLException {
+        if (dataSource instanceof AutoCloseable) {
+            try {
+                ((AutoCloseable) dataSource).close();
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                throw new SQLException(ex);
+            }
+        }
     }
     
     @Override

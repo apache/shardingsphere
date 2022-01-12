@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.pool.creator.impl;
+package org.apache.shardingsphere.infra.config.datasource.creator.impl;
 
 import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreator;
+import org.apache.shardingsphere.infra.config.datasource.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
