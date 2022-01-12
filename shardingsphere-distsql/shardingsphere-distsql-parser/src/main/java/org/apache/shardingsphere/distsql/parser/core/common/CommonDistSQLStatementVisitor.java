@@ -72,7 +72,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceS
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowTransactionRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
@@ -253,7 +253,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitShowTransactionRule(final ShowTransactionRuleContext ctx) {
-        return new ShowTransactionRuleStatement(null);
+        return new ShowTransactionRuleStatement();
     }
     
     @Override

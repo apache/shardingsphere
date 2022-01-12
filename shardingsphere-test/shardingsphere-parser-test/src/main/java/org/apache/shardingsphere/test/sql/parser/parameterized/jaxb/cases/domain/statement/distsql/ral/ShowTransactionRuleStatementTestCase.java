@@ -15,16 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rql.show;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
 
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Show transaction rule statement.
+ * Show transaction rule statement test case.
  */
-public final class ShowTransactionRuleStatement extends ShowRulesStatement {
-    
-    public ShowTransactionRuleStatement(final SchemaSegment schema) {
-        super(schema);
-    }
+public final class ShowTransactionRuleStatementTestCase extends SQLParserTestCase {
 }

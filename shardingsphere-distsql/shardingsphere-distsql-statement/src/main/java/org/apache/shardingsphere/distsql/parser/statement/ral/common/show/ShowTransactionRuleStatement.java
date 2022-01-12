@@ -15,16 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.show;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
 
 /**
- * Show transaction rule statement test case.
+ * Show transaction rule statement.
  */
-@Getter
-@Setter
-public final class ShowTransactionRuleStatementTestCase extends SQLParserTestCase {
+public final class ShowTransactionRuleStatement extends ShowDistSQLStatement {
 }

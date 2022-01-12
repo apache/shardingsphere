@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
 import java.sql.Types;
 import java.util.Arrays;
@@ -31,37 +31,32 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public final class ShowAuthorityRuleExecutor extends AbstractShowExecutor {
+public final class ShowTransactionRuleExecutor extends AbstractShowExecutor {
     
-    private static final String USERS = "users";
+    private static final String DEFAULT_TYPE = "default_type";
     
-    private static final String PROVIDER = "provider";
-    
-    private static final String PROPS = "props";
+    private static final String PROVIDER_TYPE = "provider_type";
     
     @Override
     protected List<QueryHeader> createQueryHeaders() {
         return Arrays.asList(
-                new QueryHeader("", "", USERS, USERS, Types.VARCHAR, "VARCHAR", 100, 0, false, false, false, false),
-                new QueryHeader("", "", PROVIDER, PROVIDER, Types.VARCHAR, "VARCHAR", 100, 0, false, false, false, false),
-                new QueryHeader("", "", PROPS, PROPS, Types.VARCHAR, "VARCHAR", 100, 0, false, false, false, false));
+                new QueryHeader("", "", DEFAULT_TYPE, DEFAULT_TYPE, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
+                new QueryHeader("", "", PROVIDER_TYPE, PROVIDER_TYPE, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false));
     }
     
     @Override
     protected MergedResult createMergedResult() {
-        Optional<AuthorityRuleConfiguration> authorityRuleConfigurationOptional = ProxyContext.getInstance().getContextManager()
-                .getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(AuthorityRuleConfiguration.class).stream().findFirst();
-        if (!authorityRuleConfigurationOptional.isPresent()) {
+        Optional<TransactionRuleConfiguration> optionalTransactionRuleConfiguration = ProxyContext.getInstance().getContextManager()
+                .getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(TransactionRuleConfiguration.class).stream().findAny();
+        if (!optionalTransactionRuleConfiguration.isPresent()) {
             return new MultipleLocalDataMergedResult(Collections.emptyList());
         }
-        AuthorityRuleConfiguration authorityRuleConfiguration = authorityRuleConfigurationOptional.get();
+        TransactionRuleConfiguration transactionRuleConfiguration = optionalTransactionRuleConfiguration.get();
         List<Object> row = new LinkedList<>();
-        row.add(authorityRuleConfiguration.getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; ")));
-        row.add(authorityRuleConfiguration.getProvider().getType());
-        row.add(authorityRuleConfiguration.getProvider().getProps().size() == 0 ? "" : authorityRuleConfiguration.getProvider().getProps());
+        row.add(transactionRuleConfiguration.getDefaultType());
+        row.add(null == transactionRuleConfiguration.getProviderType() ? "" : transactionRuleConfiguration.getProviderType());
         Collection<List<Object>> rows = new LinkedList<>();
         rows.add(row);
         return new MultipleLocalDataMergedResult(rows);
