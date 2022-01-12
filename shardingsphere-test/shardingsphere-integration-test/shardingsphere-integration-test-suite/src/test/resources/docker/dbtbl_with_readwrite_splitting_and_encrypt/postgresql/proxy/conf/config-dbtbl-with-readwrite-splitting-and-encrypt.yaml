@@ -210,7 +210,7 @@ rules:
           shardingAlgorithmName: standard_test
       tableStrategy:
         standard:
-          shardingColumn: item_id
+          shardingColumn: user_id
           shardingAlgorithmName: standard_test
       keyGenerateStrategy:
         column: item_id
