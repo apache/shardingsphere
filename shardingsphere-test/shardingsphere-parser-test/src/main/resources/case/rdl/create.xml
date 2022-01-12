@@ -452,5 +452,78 @@
         </shardingKeyGenerator>
     </create-sharding-key-generator>
 
-    <create-sharding-scaling sql-case-id="create-sharding-scaling" scaling-name="default_scaling"/>
+    <create-sharding-scaling sql-case-id="create-sharding-scaling-without-configuration" scaling-name="default_scaling"/>
+
+    <create-sharding-scaling sql-case-id="create-sharding-scaling-with-minimal-auto-configuration" scaling-name="default_scaling">
+        <configuration>
+            <completion-detector algorithm-name="IDLE">
+                <properties>
+                    <property key="incremental-task-idle-minute-threshold" value="30"/>
+                </properties>
+            </completion-detector>
+            <data-consistency-checker algorithm-name="DATA_MATCH">
+                <properties>
+                    <property key="chunk-size" value="1000"/>
+                </properties>
+            </data-consistency-checker>
+        </configuration>
+    </create-sharding-scaling>
+
+    <create-sharding-scaling sql-case-id="create-sharding-scaling-with-complete-auto-configuration" scaling-name="default_scaling">
+        <configuration>
+            <input-segment worker-thread="40" batch-size="1000">
+                <rate-limiter algorithm-name="QPS">
+                    <properties>
+                        <property key="qps" value="50"/>
+                    </properties>
+                </rate-limiter>
+            </input-segment>
+            <output-segment worker-thread="40" batch-size="1000">
+                <rate-limiter algorithm-name="TPS">
+                    <properties>
+                        <property key="tps" value="2000"/>
+                    </properties>
+                </rate-limiter>
+            </output-segment>
+            <stream-channel algorithm-name="MEMORY">
+                <properties>
+                    <property key="block-queue-size" value="10000"/>
+                </properties>
+            </stream-channel>
+            <completion-detector algorithm-name="IDLE">
+                <properties>
+                    <property key="incremental-task-idle-minute-threshold" value="30"/>
+                </properties>
+            </completion-detector>
+            <data-consistency-checker algorithm-name="DATA_MATCH">
+                <properties>
+                    <property key="chunk-size" value="1000"/>
+                </properties>
+            </data-consistency-checker>
+        </configuration>
+    </create-sharding-scaling>
+
+    <create-sharding-scaling sql-case-id="create-sharding-scaling-with-manual-configuration" scaling-name="default_scaling">
+        <configuration>
+            <input-segment worker-thread="40" batch-size="1000">
+                <rate-limiter algorithm-name="QPS">
+                    <properties>
+                        <property key="qps" value="50"/>
+                    </properties>
+                </rate-limiter>
+            </input-segment>
+            <output-segment worker-thread="40" batch-size="1000">
+                <rate-limiter algorithm-name="TPS">
+                    <properties>
+                        <property key="tps" value="2000"/>
+                    </properties>
+                </rate-limiter>
+            </output-segment>
+            <stream-channel algorithm-name="MEMORY">
+                <properties>
+                    <property key="block-queue-size" value="10000"/>
+                </properties>
+            </stream-channel>
+        </configuration>
+    </create-sharding-scaling>
 </sql-parser-test-cases>
