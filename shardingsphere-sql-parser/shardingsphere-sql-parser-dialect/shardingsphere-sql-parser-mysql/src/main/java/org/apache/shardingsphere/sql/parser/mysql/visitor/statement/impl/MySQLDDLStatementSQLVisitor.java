@@ -83,6 +83,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LoopSta
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ModifyColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PlaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReferenceDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RepeatStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RoutineBodyContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SimpleStatementContext;
@@ -151,6 +152,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLDropTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLDropTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLDropViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLRenameTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLTruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
@@ -372,6 +374,22 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitAlterRenameTable(final AlterRenameTableContext ctx) {
         RenameTableDefinitionSegment result = new RenameTableDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         result.setRenameTable((SimpleTableSegment) visit(ctx.tableName()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitRenameTable(final RenameTableContext ctx) {
+        MySQLRenameTableStatement result = new MySQLRenameTableStatement();
+        if (null != ctx.tableName()) {
+            for (int i = 0, len = ctx.tableName().size(); i < len; i += 2) {
+                MySQLStatementParser.TableNameContext tableName = ctx.tableName(i);
+                MySQLStatementParser.TableNameContext renameTableName = ctx.tableName(i + 1);
+                RenameTableDefinitionSegment renameTableDefinitionSegment = new RenameTableDefinitionSegment(tableName.start.getStartIndex(), renameTableName.stop.getStopIndex());
+                renameTableDefinitionSegment.setTable((SimpleTableSegment) visit(tableName));
+                renameTableDefinitionSegment.setRenameTable((SimpleTableSegment) visit(renameTableName));
+                result.getRenameTables().add(renameTableDefinitionSegment);
+            }
+        }  
         return result;
     }
     

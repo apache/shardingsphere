@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.definition.ExpectedRenameDefinition;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Rename table definition segment.
+ * Rename table statement test case.
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
-public final class RenameTableDefinitionSegment implements AlterDefinitionSegment {
-    
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private SimpleTableSegment table;
-    
-    private SimpleTableSegment renameTable;
+public final class RenameTableStatementTestCase extends SQLParserTestCase {
+
+    @XmlElement(name = "rename")
+    private final List<ExpectedRenameDefinition> renames = new LinkedList<>();
 }
