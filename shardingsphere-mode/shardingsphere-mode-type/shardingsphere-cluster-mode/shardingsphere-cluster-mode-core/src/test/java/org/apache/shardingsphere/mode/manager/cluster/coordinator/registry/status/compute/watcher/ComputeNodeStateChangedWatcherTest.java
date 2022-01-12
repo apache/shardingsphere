@@ -35,7 +35,7 @@ public final class ComputeNodeStateChangedWatcherTest {
     @Test
     public void assertCreateEventWhenEnabled() {
         Optional<StateEvent> actual = new ComputeNodeStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/attributes/127.0.0.1@3307/status", 
-                YamlEngine.marshal(Arrays.asList(ComputeNodeStatus.CIRCUIT_BREAKER.name())), Type.ADDED));
+                YamlEngine.marshal(Arrays.asList(ComputeNodeStatus.CIRCUIT_BREAK.name())), Type.ADDED));
         assertTrue(actual.isPresent());
         assertTrue(actual.get().isOn());
     }
