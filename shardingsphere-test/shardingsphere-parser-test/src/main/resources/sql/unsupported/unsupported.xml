@@ -2560,7 +2560,6 @@
     <sql-case id="select_by_mysql_source_test_case1076" value="select mysqltest_db.f_does_not_exist()" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case1077" value="select position(&quot;0&quot; in &quot;baaa&quot; in (1)),position(&quot;0&quot; in &quot;1&quot; in (1,2,3)),position(&quot;sql&quot; in (&quot;mysql&quot;))" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case1078" value="select position((&quot;1&quot; in (1,2,3)) in &quot;01&quot;)" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case1079" value="select position(binary &apos;ll&apos; in &apos;hello&apos;),position(&apos;a&apos; in binary &apos;hello&apos;)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case1080" value="select repeat(&quot;a&quot;,0),repeat(&quot;ab&quot;,5+5),repeat(&quot;ab&quot;,-1),reverse(NULL)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case1081" value="select repeat(&apos;a&apos;, cast(2 as unsigned int))" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case1082" value="select repeat(&apos;a&apos;,2000)" db-types="MySQL"/>
