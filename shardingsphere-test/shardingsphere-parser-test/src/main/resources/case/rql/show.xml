@@ -104,4 +104,8 @@
     <show-unused-sharding-algorithms sql-case-id="show-unused-sharding-algorithms">
         <schema name="schemaName" start-index="37" stop-index="46"/>
     </show-unused-sharding-algorithms>
+
+    <count-schema-rules sql-case-id="count-schema-rules">
+        <schema name="schemaName" start-index="24" stop-index="33"/>
+    </count-schema-rules>
 </sql-parser-test-cases>

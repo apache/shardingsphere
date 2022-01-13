@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryHeartbeatsStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryTypesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSchemaRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableStatement;
@@ -39,6 +40,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingT
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowUnusedShardingAlgorithmsStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.CountSchemaRulesStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowDatabaseDiscoveryRulesStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowDefaultShardingStrategyStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowEncryptRulesStatementAssert;
@@ -56,6 +58,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowTransactionRuleStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowUnusedShardingAlgorithmsStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountSchemaRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowDataBaseDiscoveryRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowDefaultShardingStrategyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowEncryptRulesStatementTestCase;
@@ -119,6 +122,8 @@ public final class ShowRulesStatementAssert {
             ShowDefaultShardingStrategyStatementAssert.assertIs(assertContext, (ShowDefaultShardingStrategyStatement) actual, (ShowDefaultShardingStrategyStatementTestCase) expected);
         } else if (actual instanceof ShowUnusedShardingAlgorithmsStatement) {
             ShowUnusedShardingAlgorithmsStatementAssert.assertIs(assertContext, (ShowUnusedShardingAlgorithmsStatement) actual, (ShowUnusedShardingAlgorithmsStatementTestCase) expected);
+        } else if (actual instanceof CountSchemaRulesStatement) {
+            CountSchemaRulesStatementAssert.assertIs(assertContext, (CountSchemaRulesStatement) actual, (CountSchemaRulesStatementTestCase) expected);
         }
     }
 }

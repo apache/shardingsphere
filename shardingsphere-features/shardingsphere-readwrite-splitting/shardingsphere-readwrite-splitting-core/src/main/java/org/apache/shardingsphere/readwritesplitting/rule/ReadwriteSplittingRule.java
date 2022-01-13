@@ -90,7 +90,7 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     
     /**
      * Find data source rule.
-     * 
+     *
      * @param dataSourceName data source name
      * @return replica query data source rule
      */

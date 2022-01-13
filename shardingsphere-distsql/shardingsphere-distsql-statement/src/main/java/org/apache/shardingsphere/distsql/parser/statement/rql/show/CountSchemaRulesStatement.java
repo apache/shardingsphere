@@ -15,33 +15,18 @@
  * limitations under the License.
  */
 
-grammar CommonDistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
-execute
-    : (addResource
-    | alterResource
-    | dropResource
-    | showResources
-    | setVariable
-    | showVariable
-    | showAllVariables
-    | clearHint
-    | enableInstance
-    | disableInstance
-    | showInstance
-    | showSingleTable
-    | showSingleTableRules
-    | createDefaultSingleTableRule
-    | alterDefaultSingleTableRule
-    | dropDefaultSingleTableRule
-    | refreshTableMetadata
-    | showSQLParserRule
-    | alterSQLParserRule
-    | showAuthorityRule
-    | showTransactionRule
-    | showTableMetadata
-    | countSchemaRules
-    ) SEMI?
-    ;
+/**
+ * Count schema rules statement.
+ */
+@Getter
+public final class CountSchemaRulesStatement extends ShowRulesStatement {
+    
+    public CountSchemaRulesStatement(final SchemaSegment schema) {
+        super(schema);
+    }
+}

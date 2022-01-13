@@ -28,7 +28,8 @@ showSingleTableRules
     ;
     
 showSingleTable
-    : SHOW SINGLE (table | TABLES)  (FROM schemaName)?;
+    : SHOW SINGLE (table | TABLES)  (FROM schemaName)?
+    ;
     
 showAuthorityRule
     : SHOW AUTHORITY RULE
@@ -36,6 +37,10 @@ showAuthorityRule
     
 showTransactionRule
     : SHOW TRANSACTION RULE
+    ;
+   
+countSchemaRules
+    : COUNT SCHEMA RULES (FROM schemaName)?
     ;
     
 schemaName

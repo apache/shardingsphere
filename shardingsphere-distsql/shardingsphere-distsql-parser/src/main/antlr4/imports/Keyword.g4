@@ -214,3 +214,7 @@ MAXIMUM_SIZE
 CONCURRENCY_LEVEL
     : C O N C U R R E N C Y UL_ L E V E L
     ;
+
+COUNT
+    : C O U N T
+    ;

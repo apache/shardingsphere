@@ -25,6 +25,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.AlterSQLParserRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.CacheOptionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ClearHintContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.CountSchemaRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.CreateDefaultSingleTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DataSourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DisableInstanceContext;
@@ -53,6 +54,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.segment.CacheOptionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.RefreshTableMetadataStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.hint.ClearHintStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetInstanceStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
@@ -63,12 +65,12 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowSQ
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTableMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AlterDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSchemaRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableStatement;
@@ -277,5 +279,10 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
                 null == ctx.maximumSize() ? null : Long.parseLong(getIdentifierValue(ctx.maximumSize())),
                 null == ctx.concurrencyLevel() ? null : Integer.parseInt(getIdentifierValue(ctx.concurrencyLevel()))
         );
+    }
+    
+    @Override
+    public ASTNode visitCountSchemaRules(final CountSchemaRulesContext ctx) {
+        return new CountSchemaRulesStatement(null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
     }
 }

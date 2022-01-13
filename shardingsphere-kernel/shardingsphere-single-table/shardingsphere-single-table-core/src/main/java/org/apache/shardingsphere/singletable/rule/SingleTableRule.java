@@ -21,12 +21,14 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
@@ -46,7 +48,7 @@ import java.util.stream.Collectors;
  * Single table rule.
  */
 @Getter
-public final class SingleTableRule implements SchemaRule, DataNodeContainedRule, TableContainedRule, MutableDataNodeRule {
+public final class SingleTableRule implements SchemaRule, DataNodeContainedRule, TableContainedRule, MutableDataNodeRule, ExportableRule {
     
     private String defaultDataSource;
     
@@ -231,5 +233,10 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     @Override
     public String getType() {
         return SingleTableRule.class.getSimpleName();
+    }
+    
+    @Override
+    public Map<String, Object> export() {
+        return Collections.singletonMap(ExportableConstants.SINGLE_TABLE_TABLES, tableNames.keySet());
     }
 }
