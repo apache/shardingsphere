@@ -76,7 +76,9 @@ public final class ProxyResourceConfigurationConverter {
         result.getProps().put("minimumIdle", resourceConfig.getPool().getMinPoolSize());
         result.getProps().put("readOnly", resourceConfig.getPool().getReadOnly());
         if (null != resourceConfig.getPool().getCustomProperties()) {
-            result.getCustomPoolProps().putAll(resourceConfig.getPool().getCustomProperties());
+            for (Entry<Object, Object> entry : resourceConfig.getPool().getCustomProperties().entrySet()) {
+                result.getProps().put(entry.getKey().toString(), entry.getValue());
+            }
         }
         return result;
     }

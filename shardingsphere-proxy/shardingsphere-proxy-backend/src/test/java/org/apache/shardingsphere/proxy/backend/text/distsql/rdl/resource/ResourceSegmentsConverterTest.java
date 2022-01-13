@@ -40,7 +40,7 @@ public final class ResourceSegmentsConverterTest {
         assertThat(actual.size(), is(2));
         assertTrue(actual.keySet().containsAll(Arrays.asList("ds0", "ds1")));
         assertThat(actual.values().iterator().next().getProps().get("username"), is("root0"));
-        assertThat(actual.values().iterator().next().getCustomPoolProps().getProperty("maxPoolSize"), is("30"));
+        assertThat(actual.values().iterator().next().getProps().get("maxPoolSize"), is("30"));
     }
     
     private Collection<DataSourceSegment> createDataSourceSegments() {
