@@ -119,7 +119,7 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     }
     
     @Override
-    public Map<String, Supplier<Object>> buildExportMethods() {
+    public Map<String, Supplier<Object>> getExportMethods() {
         Map<String, Supplier<Object>> exportMethods = new HashMap<>(2);
         exportMethods.put(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY, this::exportAutoAwareDataSourceMap);
         exportMethods.put(ExportableConstants.AUTO_AWARE_DATA_SOURCE_NAME, this::exportAutoAwareDataSourceNames);
