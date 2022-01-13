@@ -57,7 +57,7 @@ public interface ExportableRule extends ShardingSphereRule {
      * Export data by specified key.
      *
      * @param key specified key
-     * @return data map
+     * @return data
      */
     default Object export(final String key) {
         Map<String, Supplier<Object>> exportMethods = getExportMethods();
