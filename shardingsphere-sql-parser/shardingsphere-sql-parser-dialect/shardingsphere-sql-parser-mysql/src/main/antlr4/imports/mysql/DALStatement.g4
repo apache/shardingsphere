@@ -107,7 +107,7 @@ showBinaryLogs
     ;
 
 showBinlogEvents
-    : SHOW BINLOG EVENTS (IN DEFINER)? (FROM NUMBER_)? (LIMIT (NUMBER_ COMMA_)? NUMBER_)?
+    : SHOW BINLOG EVENTS (IN logName)? (FROM NUMBER_)? (LIMIT (NUMBER_ COMMA_)? NUMBER_)?
     ;
 
 showCharacterSet
@@ -218,12 +218,12 @@ showRelaylogEvent
     : SHOW RELAYLOG EVENTS (IN logName)? (FROM NUMBER_)? (LIMIT (NUMBER_ COMMA_)? NUMBER_)? FOR CHANNEL channelName
     ;
 
-showSlavehost
-    : SHOW SLAVE HOST
+showSlavehosts
+    : SHOW (REPLICAS | SLAVE) HOSTS
     ;
 
 showSlaveStatus
-    : SHOW SLAVE STATUS (FOR CHANNEL channelName)?
+    : SHOW (REPLICA | SLAVE) STATUS (FOR CHANNEL channelName)?
     ;
 
 showStatus
@@ -372,7 +372,7 @@ tablesOption
     ;
 
 kill
-    : KILL (CONNECTION | QUERY)? NUMBER_+
+    : KILL (CONNECTION | QUERY)? NUMBER_
     ;
 
 loadIndexInfo
@@ -391,6 +391,8 @@ resetStatement
 resetOption
     : MASTER (TO binaryLogFileIndexNumber)?
     | SLAVE ALL? channelOption?
+    | REPLICA
+    | QUERY CACHE
     ;
 
 resetPersist
@@ -456,7 +458,7 @@ show
     | showProfile
     | showProcedureStatus
     | showProfiles
-    | showSlavehost
+    | showSlavehosts
     | showSlaveStatus
     | showRelaylogEvent
     | showStatus

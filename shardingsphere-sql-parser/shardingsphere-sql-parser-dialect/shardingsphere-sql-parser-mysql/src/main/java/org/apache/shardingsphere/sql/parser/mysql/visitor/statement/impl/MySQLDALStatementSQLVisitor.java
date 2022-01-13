@@ -95,7 +95,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowRel
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowReplicaStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowReplicasContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowSlaveStatusContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowSlavehostContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowSlavehostsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTablesContext;
@@ -445,7 +445,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitKill(final KillContext ctx) {
         MySQLKillStatement result = new MySQLKillStatement();
-        result.setThreadId(ctx.NUMBER_().get(0).getText());
+        result.setProcesslistId(ctx.getText());
         return result;
     }
     
@@ -696,7 +696,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     }
 
     @Override
-    public ASTNode visitShowSlavehost(final ShowSlavehostContext ctx) {
+    public ASTNode visitShowSlavehosts(final ShowSlavehostsContext ctx) {
         return new MySQLShowSlaveHostsStatement();
     }
 

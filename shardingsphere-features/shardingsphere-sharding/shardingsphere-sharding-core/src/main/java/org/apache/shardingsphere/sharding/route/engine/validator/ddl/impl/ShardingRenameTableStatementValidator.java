@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Sharding alter table statement validator.
+ * Sharding rename table statement validator.
  */
 public final class ShardingRenameTableStatementValidator extends ShardingDDLStatementValidator<RenameTableStatement> {
     
