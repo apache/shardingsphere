@@ -27,6 +27,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLBatchedInsertsExecutor;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -48,7 +49,7 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
-        OpenGaussBatchedInsertsExecutor batchedInsertsExecutor = new OpenGaussBatchedInsertsExecutor(connectionSession, packet.getPreparedStatement(), packet.readParameterSets());
+        PostgreSQLBatchedInsertsExecutor batchedInsertsExecutor = new PostgreSQLBatchedInsertsExecutor(connectionSession, packet.getPreparedStatement(), packet.readParameterSets());
         updateCount = batchedInsertsExecutor.executeBatch();
         return Collections.singletonList(new PostgreSQLBindCompletePacket());
     }

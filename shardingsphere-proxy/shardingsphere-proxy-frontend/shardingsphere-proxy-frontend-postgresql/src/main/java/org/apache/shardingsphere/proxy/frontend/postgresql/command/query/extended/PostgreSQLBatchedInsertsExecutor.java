@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.opengauss.command.query.extended.bind;
+package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended;
 
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatement;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
@@ -59,9 +59,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Batched inserts executor for openGauss.
+ * Batched inserts executor for PostgreSQL.
  */
-public final class OpenGaussBatchedInsertsExecutor {
+public final class PostgreSQLBatchedInsertsExecutor {
     
     private final KernelProcessor kernelProcessor = new KernelProcessor();
     
@@ -79,7 +79,7 @@ public final class OpenGaussBatchedInsertsExecutor {
     
     private ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext;
     
-    public OpenGaussBatchedInsertsExecutor(final ConnectionSession connectionSession, final PostgreSQLPreparedStatement preparedStatement, final List<List<Object>> parameterSets) {
+    public PostgreSQLBatchedInsertsExecutor(final ConnectionSession connectionSession, final PostgreSQLPreparedStatement preparedStatement, final List<List<Object>> parameterSets) {
         this.connectionSession = connectionSession;
         metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         this.preparedStatement = preparedStatement;

@@ -33,6 +33,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLComTerminationExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLUnsupportedCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLAggregatedBatchedInsertsCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLAggregatedCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.bind.PostgreSQLComBindExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.close.PostgreSQLComCloseExecutor;
@@ -43,6 +44,8 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extende
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.simple.PostgreSQLComQueryExecutor;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Command executor factory for PostgreSQL.
@@ -64,24 +67,40 @@ public final class PostgreSQLCommandExecutorFactory {
     public static CommandExecutor newInstance(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket,
                                               final ConnectionSession connectionSession, final PostgreSQLConnectionContext connectionContext) throws SQLException {
         log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
-        if (commandPacket instanceof PostgreSQLAggregatedCommandPacket) {
-            return new PostgreSQLAggregatedCommandExecutor(((PostgreSQLAggregatedCommandPacket) commandPacket).getPayload(), connectionSession, connectionContext);
+        if (!(commandPacket instanceof PostgreSQLAggregatedCommandPacket)) {
+            return getCommandExecutor(commandPacketType, commandPacket, connectionSession, connectionContext);
         }
-        return getCommandExecutor(commandPacketType, commandPacket, connectionSession, connectionContext);
+        PostgreSQLAggregatedCommandPacket aggregatedCommandPacket = (PostgreSQLAggregatedCommandPacket) commandPacket;
+        if (aggregatedCommandPacket.isBatchedInserts()) {
+            return new PostgreSQLAggregatedCommandExecutor(getExecutorsOfAggregatedBatchedInserts(aggregatedCommandPacket, connectionSession, connectionContext));
+        }
+        List<CommandExecutor> result = new ArrayList<>(aggregatedCommandPacket.getPackets().size());
+        for (PostgreSQLCommandPacket each : aggregatedCommandPacket.getPackets()) {
+            result.add(getCommandExecutor((PostgreSQLCommandPacketType) each.getIdentifier(), each, connectionSession, connectionContext));
+        }
+        return new PostgreSQLAggregatedCommandExecutor(result);
     }
     
-    /**
-     * Get command executor.
-     *
-     * @param commandPacketType command packet type for PostgreSQL
-     * @param commandPacket command packet for PostgreSQL
-     * @param connectionSession connection session
-     * @param connectionContext PostgreSQL connection context
-     * @return command executor
-     * @throws SQLException SQL exception
-     */
-    public static CommandExecutor getCommandExecutor(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket, final ConnectionSession connectionSession,
-                                                     final PostgreSQLConnectionContext connectionContext) throws SQLException {
+    private static List<CommandExecutor> getExecutorsOfAggregatedBatchedInserts(final PostgreSQLAggregatedCommandPacket aggregatedCommandPacket,
+                                                                                final ConnectionSession connectionSession, final PostgreSQLConnectionContext connectionContext) throws SQLException {
+        List<PostgreSQLCommandPacket> packets = aggregatedCommandPacket.getPackets();
+        int firstBindIndex = aggregatedCommandPacket.getFirstBindIndex();
+        int lastExecuteIndex = aggregatedCommandPacket.getLastExecuteIndex();
+        List<CommandExecutor> result = new ArrayList<>(firstBindIndex + packets.size() - lastExecuteIndex);
+        for (int i = 0; i < firstBindIndex; i++) {
+            PostgreSQLCommandPacket each = packets.get(i);
+            result.add(getCommandExecutor((PostgreSQLCommandPacketType) each.getIdentifier(), each, connectionSession, connectionContext));
+        }
+        result.add(new PostgreSQLAggregatedBatchedInsertsCommandExecutor(connectionSession, packets.subList(firstBindIndex, lastExecuteIndex)));
+        for (int i = lastExecuteIndex + 1; i < packets.size(); i++) {
+            PostgreSQLCommandPacket each = packets.get(i);
+            result.add(getCommandExecutor((PostgreSQLCommandPacketType) each.getIdentifier(), each, connectionSession, connectionContext));
+        }
+        return result;
+    }
+    
+    private static CommandExecutor getCommandExecutor(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket, final ConnectionSession connectionSession,
+                                                      final PostgreSQLConnectionContext connectionContext) throws SQLException {
         switch (commandPacketType) {
             case SIMPLE_QUERY:
                 return new PostgreSQLComQueryExecutor(connectionContext, (PostgreSQLComQueryPacket) commandPacket, connectionSession);

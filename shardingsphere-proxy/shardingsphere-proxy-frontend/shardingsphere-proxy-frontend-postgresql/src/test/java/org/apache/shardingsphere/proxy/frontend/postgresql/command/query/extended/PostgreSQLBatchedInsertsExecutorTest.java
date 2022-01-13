@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.opengauss.command.query.extended.bind;
+package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatement;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class OpenGaussBatchedInsertsExecutorTest {
+public final class PostgreSQLBatchedInsertsExecutorTest {
     
     @Mock
     private ConnectionSession connectionSession;
@@ -76,7 +76,7 @@ public final class OpenGaussBatchedInsertsExecutorTest {
         OpenGaussInsertStatement openGaussInsertStatement = mock(OpenGaussInsertStatement.class, RETURNS_DEEP_STUBS);
         when(openGaussInsertStatement.getTable().getTableName().getIdentifier().getValue()).thenReturn("");
         PostgreSQLPreparedStatement postgreSQLPreparedStatement = new PostgreSQLPreparedStatement("", openGaussInsertStatement, Collections.emptyList());
-        OpenGaussBatchedInsertsExecutor actual = new OpenGaussBatchedInsertsExecutor(connectionSession, postgreSQLPreparedStatement, Collections.emptyList());
+        PostgreSQLBatchedInsertsExecutor actual = new PostgreSQLBatchedInsertsExecutor(connectionSession, postgreSQLPreparedStatement, Collections.emptyList());
         ExecutionContext executionContext = mock(ExecutionContext.class);
         setAnyExecutionContext(actual, executionContext);
         actual.executeBatch();
@@ -84,8 +84,8 @@ public final class OpenGaussBatchedInsertsExecutorTest {
     }
     
     @SneakyThrows
-    private void setAnyExecutionContext(final OpenGaussBatchedInsertsExecutor executor, final ExecutionContext executionContext) {
-        Field field = OpenGaussBatchedInsertsExecutor.class.getDeclaredField("anyExecutionContext");
+    private void setAnyExecutionContext(final PostgreSQLBatchedInsertsExecutor executor, final ExecutionContext executionContext) {
+        Field field = PostgreSQLBatchedInsertsExecutor.class.getDeclaredField("anyExecutionContext");
         field.setAccessible(true);
         field.set(executor, executionContext);
     }

@@ -19,14 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketFactory;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLCommandExecutorFactory;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -36,25 +29,33 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class PostgreSQLAggregatedCommandExecutor implements CommandExecutor {
     
-    private final PostgreSQLPacketPayload payload;
-    
-    private final ConnectionSession connectionSession;
-    
-    private final PostgreSQLConnectionContext connectionContext;
+    private final List<CommandExecutor> executors;
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
         List<DatabasePacket<?>> result = new LinkedList<>();
-        while (payload.hasCompletePacket()) {
-            PostgreSQLCommandPacketType commandPacketType = PostgreSQLCommandPacketType.valueOf(payload.readInt1());
-            PostgreSQLCommandPacket commandPacket = PostgreSQLCommandPacketFactory.getPostgreSQLCommandPacket(commandPacketType, payload);
-            CommandExecutor commandExecutor = PostgreSQLCommandExecutorFactory.getCommandExecutor(commandPacketType, commandPacket, connectionSession, connectionContext);
-            try {
-                result.addAll(commandExecutor.execute());
-            } finally {
-                commandExecutor.close();
-            }
+        for (CommandExecutor each : executors) {
+            result.addAll(each.execute());
         }
         return result;
+    }
+    
+    @Override
+    public void close() throws SQLException {
+        Collection<SQLException> exceptions = new LinkedList<>();
+        for (CommandExecutor each : executors) {
+            try {
+                each.close();
+            } catch (final SQLException ex) {
+                exceptions.add(ex);
+            }
+        }
+        executors.clear();
+        if (exceptions.isEmpty()) {
+            return;
+        }
+        SQLException ex = new SQLException();
+        exceptions.forEach(ex::setNextException);
+        throw ex;
     }
 }

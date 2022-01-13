@@ -31,6 +31,9 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.sim
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLComTerminationPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Command packet factory for PostgreSQL.
  */
@@ -48,17 +51,17 @@ public final class PostgreSQLCommandPacketFactory {
         if (!PostgreSQLCommandPacketType.isExtendedProtocolPacketType(commandPacketType)) {
             return getPostgreSQLCommandPacket(commandPacketType, payload);
         }
-        return new PostgreSQLAggregatedCommandPacket(payload);
+        List<PostgreSQLCommandPacket> result = new ArrayList<>();
+        while (payload.hasCompletePacket()) {
+            PostgreSQLCommandPacketType type = PostgreSQLCommandPacketType.valueOf(payload.readInt1());
+            int length = payload.getByteBuf().getInt(payload.getByteBuf().readerIndex());
+            PostgreSQLPacketPayload slicedPayload = new PostgreSQLPacketPayload(payload.getByteBuf().readSlice(length), payload.getCharset());
+            result.add(getPostgreSQLCommandPacket(type, slicedPayload));
+        }
+        return new PostgreSQLAggregatedCommandPacket(result);
     }
     
-    /**
-     * Get PostgreSQL command packet.
-     *
-     * @param commandPacketType command packet type
-     * @param payload payload
-     * @return PostgreSQL command packet
-     */
-    public static PostgreSQLCommandPacket getPostgreSQLCommandPacket(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLPacketPayload payload) {
+    private static PostgreSQLCommandPacket getPostgreSQLCommandPacket(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLPacketPayload payload) {
         switch (commandPacketType) {
             case SIMPLE_QUERY:
                 return new PostgreSQLComQueryPacket(payload);
