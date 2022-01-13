@@ -34,7 +34,7 @@ public interface ExportableRule extends ShardingSphereRule {
      *
      * @return export method supplier
      */
-    Map<String, Supplier<Object>> buildExportMethods();
+    Map<String, Supplier<Object>> getExportMethods();
     
     /**
      * Export data by specified key.
@@ -43,7 +43,7 @@ public interface ExportableRule extends ShardingSphereRule {
      * @return data map
      */
     default Map<String, Object> export(final Collection<String> keys) {
-        Map<String, Supplier<Object>> exportMethods = buildExportMethods();
+        Map<String, Supplier<Object>> exportMethods = getExportMethods();
         Map<String, Object> result = new HashMap<>(keys.size(), 1);
         keys.forEach(each -> {
             if (exportMethods.containsKey(each)) {
@@ -60,7 +60,7 @@ public interface ExportableRule extends ShardingSphereRule {
      * @return data map
      */
     default Object export(final String key) {
-        Map<String, Supplier<Object>> exportMethods = buildExportMethods();
+        Map<String, Supplier<Object>> exportMethods = getExportMethods();
         if (exportMethods.containsKey(key)) {
             return exportMethods.get(key).get();
         }
@@ -74,6 +74,6 @@ public interface ExportableRule extends ShardingSphereRule {
      * @return contain or not
      */
     default boolean containExportableKey(final Collection<String> keys) {
-        return keys.stream().anyMatch(each -> buildExportMethods().containsKey(each));
+        return keys.stream().anyMatch(each -> getExportMethods().containsKey(each));
     }
 }
