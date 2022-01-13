@@ -37,4 +37,6 @@ public final class ExportableConstants {
     public static final String REPLICA_DATA_SOURCE_NAMES = "replica_data_source_names";
     
     public static final String SINGLE_TABLE_TABLES = "single_table_tables";
+    
+    public static final String DATA_SOURCE_KEY = "data_source_key";
 }

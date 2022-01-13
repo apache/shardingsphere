@@ -66,7 +66,7 @@ public final class MetaDataRefreshEngine {
      * @throws SQLException SQL exception
      */
     public void refresh(final SQLStatement sqlStatement, final Collection<String> logicDataSourceNames) throws SQLException {
-        Optional<MetaDataRefresher> schemaRefresher = TypedSPIRegistry.findRegisteredService(MetaDataRefresher.class, sqlStatement.getClass().getSuperclass().getCanonicalName(), null);
+        Optional<MetaDataRefresher> schemaRefresher = TypedSPIRegistry.findRegisteredService(MetaDataRefresher.class, sqlStatement.getClass().getSuperclass().getName(), null);
         if (schemaRefresher.isPresent()) {
             schemaRefresher.get().refresh(schemaMetaData, federationMetaData, optimizerPlanners, logicDataSourceNames, sqlStatement, props);
         }

@@ -14,7 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-    
+
 spring.shardingsphere.rules.readwrite-splitting.load-balancers.round_robin.type=ROUND_ROBIN
 spring.shardingsphere.rules.readwrite-splitting.data-sources.pr_ds.write-data-source-name=ds-0
 spring.shardingsphere.rules.readwrite-splitting.data-sources.pr_ds.read-data-source-names=ds-1,ds-2

@@ -33,6 +33,8 @@ import java.util.Properties;
  */
 public final class MySQLInventoryDumper extends AbstractInventoryDumper {
     
+    private static final String YEAR_DATA_TYPE = "YEAR";
+    
     public MySQLInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineDataSourceManager dataSourceManager) {
         super(inventoryDumperConfig, dataSourceManager);
         Properties queryProps = new Properties();
@@ -42,7 +44,10 @@ public final class MySQLInventoryDumper extends AbstractInventoryDumper {
     
     @Override
     public Object readValue(final ResultSet resultSet, final int index) throws SQLException {
-        if (isDateTimeValue(resultSet.getMetaData().getColumnType(index))) {
+        if (isYearDataType(resultSet.getMetaData().getColumnTypeName(index))) {
+            Object result = resultSet.getObject(index);
+            return resultSet.wasNull() ? null : result;
+        } else if (isDateTimeValue(resultSet.getMetaData().getColumnType(index))) {
             return resultSet.getString(index);
         } else {
             return resultSet.getObject(index);
@@ -51,6 +56,10 @@ public final class MySQLInventoryDumper extends AbstractInventoryDumper {
     
     private boolean isDateTimeValue(final int columnType) {
         return Types.TIME == columnType || Types.DATE == columnType || Types.TIMESTAMP == columnType;
+    }
+    
+    private boolean isYearDataType(final String columnDataTypeName) {
+        return YEAR_DATA_TYPE.equalsIgnoreCase(columnDataTypeName);
     }
     
     @Override

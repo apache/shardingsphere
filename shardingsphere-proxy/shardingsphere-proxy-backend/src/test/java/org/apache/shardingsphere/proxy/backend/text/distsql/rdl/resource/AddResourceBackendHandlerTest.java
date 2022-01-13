@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfigurationValidator;
+import org.apache.shardingsphere.infra.config.datasource.DataSourcePropertiesValidator;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
@@ -53,7 +53,7 @@ import static org.mockito.Mockito.when;
 public final class AddResourceBackendHandlerTest {
     
     @Mock
-    private DataSourceConfigurationValidator dataSourceConfigurationValidator;
+    private DataSourcePropertiesValidator validator;
     
     @Mock
     private AddResourceStatement addResourceStatement;
@@ -75,9 +75,9 @@ public final class AddResourceBackendHandlerTest {
     @Before
     public void setUp() throws Exception {
         addResourceBackendHandler = new AddResourceBackendHandler(new MySQLDatabaseType(), addResourceStatement, connectionSession);
-        Field field = addResourceBackendHandler.getClass().getDeclaredField("dataSourceConfigValidator");
+        Field field = addResourceBackendHandler.getClass().getDeclaredField("validator");
         field.setAccessible(true);
-        field.set(addResourceBackendHandler, dataSourceConfigurationValidator);
+        field.set(addResourceBackendHandler, validator);
     }
     
     @Test

@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -121,17 +122,34 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
         Map<String, Object> result = new HashMap<>(1, 1);
         result.put(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY, exportAutoAwareDataSourceMap());
         result.put(ExportableConstants.AUTO_AWARE_DATA_SOURCE_NAME, exportAutoAwareDataSourceNames());
+        result.put(ExportableConstants.DATA_SOURCE_KEY, exportDataSourceNames());
         return result;
     }
-
+    
     private Map<String, Map<String, String>> exportAutoAwareDataSourceMap() {
         Map<String, Map<String, String>> result = new HashMap<>(dataSourceRules.size(), 1);
-        dataSourceRules.forEach((name, dataSourceRule) -> result.put(dataSourceRule.getName(), dataSourceRule.getAutoAwareDataSources()));
+        dataSourceRules.forEach((name, dataSourceRule) -> {
+            Map<String, String> autoAwareDataSources = dataSourceRule.getAutoAwareDataSources();
+            if (!autoAwareDataSources.isEmpty()) {
+                result.put(dataSourceRule.getName(), autoAwareDataSources);
+            }
+        });
+        return result;
+    }
+    
+    private Map<String, Map<String, String>> exportDataSourceNames() {
+        Map<String, Map<String, String>> result = new HashMap<>(dataSourceRules.size(), 1);
+        dataSourceRules.forEach((name, dataSourceRule) -> {
+            Map<String, String> dataSources = dataSourceRule.getDataSources();
+            if (!dataSources.isEmpty()) {
+                result.put(dataSourceRule.getName(), dataSources);
+            }
+        });
         return result;
     }
     
     private Collection<String> exportAutoAwareDataSourceNames() {
-        return dataSourceRules.values().stream().map(ReadwriteSplittingDataSourceRule::getAutoAwareDataSourceName).collect(Collectors.toSet());
+        return dataSourceRules.values().stream().map(ReadwriteSplittingDataSourceRule::getAutoAwareDataSourceName).filter(Objects::nonNull).collect(Collectors.toSet());
     }
     
     @Override

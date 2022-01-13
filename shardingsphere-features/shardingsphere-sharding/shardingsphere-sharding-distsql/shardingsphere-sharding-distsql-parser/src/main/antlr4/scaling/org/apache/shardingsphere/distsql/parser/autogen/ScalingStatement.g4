@@ -29,8 +29,10 @@ execute
     | checkScaling
     | showScalingCheckAlgorithms
     | stopScalingSourceWriting
-    | checkoutScaling
+    | applyScaling
     | createShardingScaling
     | dropShardingScaling
+    | enableShardingScaling
+    | disableShardingScaling
     ) SEMI?
     ;

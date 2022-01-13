@@ -552,4 +552,24 @@
         <output sql="SELECT * FROM ( SELECT TMP.*, ROWNUM ROW_ID FROM ( SELECT  account_id  FROM t_account_0 ) TMP WHERE ROWNUM &lt;=?) WHERE ROW_ID &gt; ?" parameters="10,0" />
         <output sql="SELECT * FROM ( SELECT TMP.*, ROWNUM ROW_ID FROM ( SELECT  account_id  FROM t_account_1 ) TMP WHERE ROWNUM &lt;=?) WHERE ROW_ID &gt; ?" parameters="10,0" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_sharding_value_and_binary_column_for_parameters" db-types="MySQL">
+        <input sql="SELECT * FROM t_account WHERE BINARY account_id = ?" parameters="100" />
+        <output sql="SELECT * FROM t_account_0 WHERE BINARY account_id = ?" parameters="100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_sharding_value_and_binary_column_for_literals" db-types="MySQL">
+        <input sql="SELECT * FROM t_account WHERE BINARY account_id = 100" />
+        <output sql="SELECT * FROM t_account_0 WHERE BINARY account_id = 100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_sharding_value_and_binary_value_for_parameters" db-types="MySQL">
+        <input sql="SELECT * FROM t_account WHERE account_id = BINARY ?" parameters="100" />
+        <output sql="SELECT * FROM t_account_0 WHERE account_id = BINARY ?" parameters="100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_sharding_value_and_binary_value_for_literals" db-types="MySQL">
+        <input sql="SELECT * FROM t_account WHERE account_id = BINARY 100" />
+        <output sql="SELECT * FROM t_account_0 WHERE account_id = BINARY 100" />
+    </rewrite-assertion>
 </rewrite-assertions>

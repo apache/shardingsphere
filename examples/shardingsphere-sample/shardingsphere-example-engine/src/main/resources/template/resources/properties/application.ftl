@@ -48,7 +48,8 @@ spring.shardingsphere.datasource.ds-2.jdbc-url=jdbc:mysql://localhost:3306/demo_
 spring.shardingsphere.datasource.ds-2.username=root
 spring.shardingsphere.datasource.ds-2.password=root
 spring.shardingsphere.datasource.ds-2.max-active=16
-
 <#list feature?split(",") as item>
     <#include "${item}.ftl">
 </#list>
+
+spring.shardingsphere.props.sql-show=true

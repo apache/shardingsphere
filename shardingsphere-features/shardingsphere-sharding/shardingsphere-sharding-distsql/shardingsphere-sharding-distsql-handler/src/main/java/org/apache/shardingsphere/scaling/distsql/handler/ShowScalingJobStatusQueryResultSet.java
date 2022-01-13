@@ -56,6 +56,7 @@ public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSe
                         list.add("");
                         list.add("");
                         list.add("");
+                        list.add("");
                     }
                     return list;
                 }).collect(Collectors.toList()).iterator();

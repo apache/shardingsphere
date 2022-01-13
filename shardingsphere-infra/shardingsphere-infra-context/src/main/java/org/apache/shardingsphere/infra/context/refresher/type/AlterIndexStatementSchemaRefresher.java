@@ -42,7 +42,7 @@ import java.util.Optional;
  */
 public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresher<AlterIndexStatement> {
     
-    private static final String TYPE = AlterIndexStatement.class.getCanonicalName();
+    private static final String TYPE = AlterIndexStatement.class.getName();
     
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
