@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.StartTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss start transaction statement.
  */
 @ToString
-public final class OpenGaussStartTransactionStatement extends BeginTransactionStatement implements OpenGaussStatement {
+public final class OpenGaussStartTransactionStatement extends StartTransactionStatement implements OpenGaussStatement {
 }
