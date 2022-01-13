@@ -30,7 +30,8 @@ import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.RenameTableStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -39,26 +40,23 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Schema refresher for alter table statement.
+ * Schema refresher for rename table statement.
  */
-public final class AlterTableStatementSchemaRefresher implements MetaDataRefresher<AlterTableStatement> {
+public final class RenameTableStatementSchemaRefresher implements MetaDataRefresher<RenameTableStatement> {
     
-    private static final String TYPE = AlterTableStatement.class.getName();
+    private static final String TYPE = RenameTableStatement.class.getName();
     
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
-                        final Collection<String> logicDataSourceNames, final AlterTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
+                        final Collection<String> logicDataSourceNames, final RenameTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getName());
-        if (sqlStatement.getRenameTable().isPresent()) {
-            String renameTable = sqlStatement.getRenameTable().get().getTableName().getIdentifier().getValue();
+        for (RenameTableDefinitionSegment each : sqlStatement.getRenameTables()) {
+            String tableName = each.getTable().getTableName().getIdentifier().getValue();
+            String renameTable = each.getRenameTable().getTableName().getIdentifier().getValue();
             putTableMetaData(schemaMetaData, schema, optimizerPlanners, logicDataSourceNames, renameTable, props);
             removeTableMetaData(schemaMetaData, schema, optimizerPlanners, tableName);
             event.getAlteredTables().add(schemaMetaData.getSchema().get(renameTable));
             event.getDroppedTables().add(tableName);
-        } else {
-            putTableMetaData(schemaMetaData, schema, optimizerPlanners, logicDataSourceNames, tableName, props);
-            event.getAlteredTables().add(schemaMetaData.getSchema().get(tableName));
         }
         ShardingSphereEventBus.getInstance().post(event);
     }
