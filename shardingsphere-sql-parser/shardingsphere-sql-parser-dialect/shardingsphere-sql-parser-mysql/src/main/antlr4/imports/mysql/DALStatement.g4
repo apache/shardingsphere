@@ -218,12 +218,12 @@ showRelaylogEvent
     : SHOW RELAYLOG EVENTS (IN logName)? (FROM NUMBER_)? (LIMIT (NUMBER_ COMMA_)? NUMBER_)? FOR CHANNEL channelName
     ;
 
-showSlavehosts
-    : SHOW (REPLICAS | SLAVE) HOSTS
+showSlavehost
+    : SHOW HOST
     ;
 
 showSlaveStatus
-    : SHOW (REPLICA | SLAVE) STATUS (FOR CHANNEL channelName)?
+    : SHOW STATUS (FOR CHANNEL channelName)?
     ;
 
 showStatus
@@ -458,7 +458,7 @@ show
     | showProfile
     | showProcedureStatus
     | showProfiles
-    | showSlavehosts
+    | showSlavehost
     | showSlaveStatus
     | showRelaylogEvent
     | showStatus

@@ -95,7 +95,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowRel
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowReplicaStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowReplicasContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowSlaveStatusContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowSlavehostsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowSlavehostContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTablesContext;
@@ -696,7 +696,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     }
 
     @Override
-    public ASTNode visitShowSlavehosts(final ShowSlavehostsContext ctx) {
+    public ASTNode visitShowSlavehost(final ShowSlavehostContext ctx) {
         return new MySQLShowSlaveHostsStatement();
     }
 
