@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -118,12 +119,12 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     }
     
     @Override
-    public Map<String, Object> export() {
-        Map<String, Object> result = new HashMap<>(1, 1);
-        result.put(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY, exportAutoAwareDataSourceMap());
-        result.put(ExportableConstants.AUTO_AWARE_DATA_SOURCE_NAME, exportAutoAwareDataSourceNames());
-        result.put(ExportableConstants.DATA_SOURCE_KEY, exportDataSourceNames());
-        return result;
+    public Map<String, Supplier<Object>> buildExportMethods() {
+        Map<String, Supplier<Object>> exportMethods = new HashMap<>(2);
+        exportMethods.put(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY, this::exportAutoAwareDataSourceMap);
+        exportMethods.put(ExportableConstants.AUTO_AWARE_DATA_SOURCE_NAME, this::exportAutoAwareDataSourceNames);
+        exportMethods.put(ExportableConstants.DATA_SOURCE_KEY, this::exportDataSourceNames);
+        return exportMethods;
     }
     
     private Map<String, Map<String, String>> exportAutoAwareDataSourceMap() {

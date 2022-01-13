@@ -119,7 +119,7 @@ public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractS
     
     private Map<String, Map<String, String>> getAutoAwareResourceData(final ShardingSphereMetaData metaData) {
         return metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof ExportableRule)
-                .map(each -> ((ExportableRule) each).export().get(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY))
+                .map(each -> ((ExportableRule) each).export(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY))
                 .filter(Objects::nonNull).map(each -> (Map<String, Map<String, String>>) each)
                 .map(Map::entrySet).flatMap(Collection::stream).filter(entry -> !entry.getValue().isEmpty()).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
