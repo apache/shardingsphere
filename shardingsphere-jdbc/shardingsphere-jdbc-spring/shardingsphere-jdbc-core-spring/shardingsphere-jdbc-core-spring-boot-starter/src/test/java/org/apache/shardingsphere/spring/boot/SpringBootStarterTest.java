@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
+import org.apache.shardingsphere.readwritesplitting.algorithm.StaticReadwriteSplittingType;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
@@ -125,8 +126,10 @@ public class SpringBootStarterTest {
         ReadwriteSplittingDataSourceRule dataSourceRule = rule.getSingleDataSourceRule();
         assertNotNull(dataSourceRule);
         assertThat(dataSourceRule.getName(), is("pr_ds"));
-        assertThat(dataSourceRule.getWriteDataSourceName(), is("write_ds"));
-        assertThat(dataSourceRule.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
+        assertThat(dataSourceRule.getReadwriteSplittingType(), instanceOf(StaticReadwriteSplittingType.class));
+        StaticReadwriteSplittingType staticReadwriteSplitting = (StaticReadwriteSplittingType) dataSourceRule.getReadwriteSplittingType();
+        assertThat(staticReadwriteSplitting.getWriteDataSource(), is("write_ds"));
+        assertThat(staticReadwriteSplitting.getReadDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
         assertThat(dataSourceRule.getLoadBalancer(), instanceOf(RandomReplicaLoadBalanceAlgorithm.class));
         assertThat(dataSourceRule.getDataSourceMapper(), is(Collections.singletonMap("pr_ds", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"))));
     }

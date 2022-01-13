@@ -39,13 +39,13 @@ dataSources:
     maxTotal: 100
 
 rules:
-- !READWRITE_SPLITTING
-  dataSources:
-    pr_ds:
-      writeDataSourceName: db_write
-      readDataSourceNames:
-        - read_ds_0
-        - read_ds_1
+  - !READWRITE_SPLITTING
+    dataSources:
+      pr_ds:
+        type: Static
+        props:
+          write-data-source-name: db_write
+          read-data-source-names: read_ds_0,read_ds_1
 
 mode:
   type: Cluster
