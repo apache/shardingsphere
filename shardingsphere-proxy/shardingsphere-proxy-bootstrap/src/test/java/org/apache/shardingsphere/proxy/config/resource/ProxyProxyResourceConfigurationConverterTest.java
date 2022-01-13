@@ -49,7 +49,7 @@ public final class ProxyProxyResourceConfigurationConverterTest {
     }
     
     private void assertParameter(final DataSourceProperties actual) {
-        Map<String, Object> props = actual.getProps();
+        Map<String, Object> props = actual.getProperties();
         assertThat(props.size(), is(9));
         assertThat(props.get("jdbcUrl"), is("jdbc:mysql://localhost:3306/demo_ds"));
         assertThat(props.get("username"), is("root"));

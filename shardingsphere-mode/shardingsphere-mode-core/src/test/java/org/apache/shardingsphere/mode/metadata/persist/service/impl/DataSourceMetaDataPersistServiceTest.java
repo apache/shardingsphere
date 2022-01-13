@@ -67,10 +67,10 @@ public final class DataSourceMetaDataPersistServiceTest {
     
     private void assertDataSourceProperties(final DataSourceProperties actual, final DataSourceProperties expected) {
         assertThat(actual.getDataSourceClassName(), is(expected.getDataSourceClassName()));
-        assertThat(actual.getProps().get("url"), is(expected.getProps().get("url")));
-        assertThat(actual.getProps().get("username"), is(expected.getProps().get("username")));
-        assertThat(actual.getProps().get("password"), is(expected.getProps().get("password")));
-        assertThat(actual.getProps().get("connectionInitSqls"), is(expected.getProps().get("connectionInitSqls")));
+        assertThat(actual.getProperties().get("url"), is(expected.getProperties().get("url")));
+        assertThat(actual.getProperties().get("username"), is(expected.getProperties().get("username")));
+        assertThat(actual.getProperties().get("password"), is(expected.getProperties().get("password")));
+        assertThat(actual.getProperties().get("connectionInitSqls"), is(expected.getProperties().get("connectionInitSqls")));
     }
     
     @Test

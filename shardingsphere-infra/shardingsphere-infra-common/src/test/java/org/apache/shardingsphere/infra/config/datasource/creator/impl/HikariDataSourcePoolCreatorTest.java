@@ -42,7 +42,7 @@ public final class HikariDataSourcePoolCreatorTest {
         dataSource.setUsername("root");
         dataSource.setPassword("root");
         DataSourceProperties dataSourceProps = new DataSourcePoolCreator(HikariDataSource.class.getCanonicalName()).createDataSourceProperties(dataSource);
-        Map<String, Object> props = dataSourceProps.getProps();
+        Map<String, Object> props = dataSourceProps.getProperties();
         assertFalse(props.containsKey("driverClassName") && null == props.get("driverClassName"));
     }
     
@@ -51,13 +51,13 @@ public final class HikariDataSourcePoolCreatorTest {
         DataSourcePoolCreator dataSourcePoolCreator = new DataSourcePoolCreator(HikariDataSource.class.getCanonicalName());
         DataSourceProperties dataSourceProps = dataSourcePoolCreator.createDataSourceProperties(dataSourcePoolCreator.createDataSource(createDataSourceProperties()));
         assertThat(dataSourceProps.getDataSourceClassName(), is("com.zaxxer.hikari.HikariDataSource"));
-        assertThat(dataSourceProps.getProps().get("jdbcUrl"), is("jdbc:mysql://127.0.0.1/foo_ds"));
-        assertThat(dataSourceProps.getProps().get("driverClassName"), is(MockedDataSource.class.getCanonicalName()));
-        assertThat(dataSourceProps.getProps().get("username"), is("root"));
-        assertThat(dataSourceProps.getProps().get("password"), is("root"));
-        assertThat(dataSourceProps.getProps().get("maximumPoolSize"), is(10));
-        assertThat(dataSourceProps.getProps().get("minimumIdle"), is(1));
-        assertDataSourceProperties((Properties) dataSourceProps.getProps().get("dataSourceProperties"));
+        assertThat(dataSourceProps.getProperties().get("jdbcUrl"), is("jdbc:mysql://127.0.0.1/foo_ds"));
+        assertThat(dataSourceProps.getProperties().get("driverClassName"), is(MockedDataSource.class.getCanonicalName()));
+        assertThat(dataSourceProps.getProperties().get("username"), is("root"));
+        assertThat(dataSourceProps.getProperties().get("password"), is("root"));
+        assertThat(dataSourceProps.getProperties().get("maximumPoolSize"), is(10));
+        assertThat(dataSourceProps.getProperties().get("minimumIdle"), is(1));
+        assertDataSourceProperties((Properties) dataSourceProps.getProperties().get("dataSourceProperties"));
     }
     
     @Test
@@ -85,7 +85,7 @@ public final class HikariDataSourcePoolCreatorTest {
         props.put("minPoolSize", 1);
         props.put("dataSourceProperties", getDataSourceProperties());
         DataSourceProperties result = new DataSourceProperties("com.zaxxer.hikari.HikariDataSource");
-        result.getProps().putAll(props);
+        result.getProperties().putAll(props);
         return result;
     }
     

@@ -63,7 +63,7 @@ public final class DataSourcePoolCreator {
             String propertyName = entry.getKey();
             Object propertyValue = entry.getValue();
             if (isValidProperty(propertyName, propertyValue)) {
-                dataSourceProps.getProps().put(propertyName, propertyValue);
+                dataSourceProps.getProperties().put(propertyName, propertyValue);
             }
         }
     }
@@ -102,7 +102,7 @@ public final class DataSourcePoolCreator {
     }
     
     private void setConfiguredFields(final DataSourceProperties dataSourceProps, final DataSourceReflection dataSourceReflection) {
-        for (Entry<String, Object> entry : dataSourceProps.getAllProperties().entrySet()) {
+        for (Entry<String, Object> entry : dataSourceProps.getProperties().entrySet()) {
             String fieldName = entry.getKey();
             Object fieldValue = entry.getValue();
             if (isValidProperty(fieldName, fieldValue)) {

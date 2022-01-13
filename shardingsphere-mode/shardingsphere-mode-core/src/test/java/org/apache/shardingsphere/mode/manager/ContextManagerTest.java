@@ -448,7 +448,7 @@ public final class ContextManagerTest {
         props.putIfAbsent("username", "root");
         props.putIfAbsent("password", "root");
         DataSourceProperties result = new DataSourceProperties(MockedDataSource.class.getCanonicalName());
-        result.getProps().putAll(props);
+        result.getProperties().putAll(props);
         return result;
     }
     

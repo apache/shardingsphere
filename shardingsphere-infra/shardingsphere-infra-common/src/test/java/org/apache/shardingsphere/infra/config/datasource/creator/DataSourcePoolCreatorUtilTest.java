@@ -62,11 +62,11 @@ public final class DataSourcePoolCreatorUtilTest {
         actualDataSource.setLoginTimeout(1);
         DataSourceProperties actual = DataSourcePoolCreatorUtil.getDataSourceConfiguration(actualDataSource);
         assertThat(actual.getDataSourceClassName(), is(HikariDataSource.class.getName()));
-        assertThat(actual.getProps().get("driverClassName").toString(), is(MockedDataSource.class.getCanonicalName()));
-        assertThat(actual.getProps().get("jdbcUrl").toString(), is("jdbc:mock://127.0.0.1/foo_ds"));
-        assertThat(actual.getProps().get("username").toString(), is("root"));
-        assertThat(actual.getProps().get("password").toString(), is("root"));
-        assertNull(actual.getProps().get("loginTimeout"));
+        assertThat(actual.getProperties().get("driverClassName").toString(), is(MockedDataSource.class.getCanonicalName()));
+        assertThat(actual.getProperties().get("jdbcUrl").toString(), is("jdbc:mock://127.0.0.1/foo_ds"));
+        assertThat(actual.getProperties().get("username").toString(), is("root"));
+        assertThat(actual.getProperties().get("password").toString(), is("root"));
+        assertNull(actual.getProperties().get("loginTimeout"));
     }
     
     @Test
@@ -90,7 +90,7 @@ public final class DataSourcePoolCreatorUtilTest {
         props.put("password", 123);
         props.put("loginTimeout", "5000");
         DataSourceProperties dataSourceProps = new DataSourceProperties(HikariDataSource.class.getName());
-        dataSourceProps.getProps().putAll(props);
+        dataSourceProps.getProperties().putAll(props);
         HikariDataSource actual = (HikariDataSource) DataSourcePoolCreatorUtil.getDataSource(dataSourceProps);
         assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getCanonicalName()));
         assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
@@ -126,7 +126,7 @@ public final class DataSourcePoolCreatorUtilTest {
         props.put("maxLifetime", "60000");
         props.put("test", "test");
         DataSourceProperties result = new DataSourceProperties(HikariDataSource.class.getName());
-        result.getProps().putAll(props);
+        result.getProperties().putAll(props);
         return result;
     }
 }

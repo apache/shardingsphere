@@ -41,7 +41,7 @@ public final class DataSourcePropertiesValidatorTest {
         props.put("username", "root");
         props.put("password", "root");
         DataSourceProperties result = new DataSourceProperties(HikariDataSource.class.getName());
-        result.getProps().putAll(props);
+        result.getProperties().putAll(props);
         return result;
     }
     
@@ -55,7 +55,7 @@ public final class DataSourcePropertiesValidatorTest {
         Map<String, Object> props = new HashMap<>();
         props.put("driverClassName", "InvalidDriver");
         DataSourceProperties result = new DataSourceProperties(HikariDataSource.class.getName());
-        result.getProps().putAll(props);
+        result.getProperties().putAll(props);
         return result;
     }
 }
