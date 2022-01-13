@@ -67,20 +67,19 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     
     private Properties props = new Properties();
     
-    private String sm4Mode;
-    
     private byte[] sm4Key;
     
     private byte[] sm4Iv;
     
-    private String sm4Padding;
+    private String sm4ModePadding;
     
     @Override
     public void init() {
-        sm4Mode = createSm4Mode();
+        String sm4Mode = createSm4Mode();
+        String sm4Padding = createSm4Padding();
+        sm4ModePadding = "SM4/" + sm4Mode + "/" + sm4Padding;
         sm4Key = createSm4Key();
         sm4Iv = createSm4Iv(sm4Mode);
-        sm4Padding = createSm4Padding();
     }
     
     private String createSm4Mode() {
@@ -142,7 +141,7 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
 
     @SneakyThrows
     private byte[] handle(final byte[] input, final int mode) {
-        Cipher cipher = Cipher.getInstance(String.format("SM4/%s/%s", sm4Mode, sm4Padding), BouncyCastleProvider.PROVIDER_NAME);
+        Cipher cipher = Cipher.getInstance(sm4ModePadding, BouncyCastleProvider.PROVIDER_NAME);
         SecretKeySpec secretKeySpec = new SecretKeySpec(sm4Key, SM4);
         Optional<byte[]> sm4Iv = getSm4Iv();
         if (sm4Iv.isPresent()) {
