@@ -110,7 +110,6 @@ public enum PostgreSQLCommand {
     DROP_VIEW(DropViewStatement.class),
     TRUNCATE_TABLE(TruncateStatement.class),
     BEGIN(PostgreSQLBeginTransactionStatement.class),
-//    START_TRANSACTION(PostgreSQLStartTransactionStatement.class),
     START_TRANSACTION(StartTransactionStatement.class),
     COMMIT(CommitStatement.class),
     SAVEPOINT(SavepointStatement.class),
