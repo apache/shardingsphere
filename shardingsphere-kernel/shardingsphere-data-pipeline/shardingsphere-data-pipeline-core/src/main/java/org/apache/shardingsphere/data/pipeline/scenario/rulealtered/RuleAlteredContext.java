@@ -30,7 +30,6 @@ import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLockAlgorith
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration.InputConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration.OutputConfiguration;
@@ -38,7 +37,6 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rulealtered.YamlOnRuleAl
 import org.apache.shardingsphere.infra.yaml.config.pojo.rulealtered.YamlOnRuleAlteredActionConfiguration.YamlOutputConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rulealtered.OnRuleAlteredActionConfigurationYamlSwapper.InputConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rulealtered.OnRuleAlteredActionConfigurationYamlSwapper.OutputConfigurationSwapper;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.Properties;
@@ -59,10 +57,6 @@ public final class RuleAlteredContext {
         ShardingSphereServiceLoader.register(DataConsistencyCheckAlgorithm.class);
         ShardingSphereServiceLoader.register(RuleBasedJobLockAlgorithm.class);
     }
-    
-    private static volatile ModeConfiguration modeConfig;
-    
-    private static volatile ContextManager contextManager;
     
     private final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig;
     
@@ -114,41 +108,5 @@ public final class RuleAlteredContext {
         inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(inputConfig.getWorkerThread());
         incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance();
         importerExecuteEngine = ExecuteEngine.newFixedThreadInstance(outputConfig.getWorkerThread());
-    }
-    
-    /**
-     * Get mode configuration.
-     *
-     * @return mode configuration
-     */
-    public static ModeConfiguration getModeConfig() {
-        return modeConfig;
-    }
-    
-    /**
-     * Initialize mode configuration.
-     *
-     * @param modeConfig configuration
-     */
-    public static void initModeConfig(final ModeConfiguration modeConfig) {
-        RuleAlteredContext.modeConfig = modeConfig;
-    }
-    
-    /**
-     * Get context manager.
-     *
-     * @return context manager
-     */
-    public static ContextManager getContextManager() {
-        return contextManager;
-    }
-    
-    /**
-     * Initialize context manager.
-     *
-     * @param contextManager context manager
-     */
-    public static void initContextManager(final ContextManager contextManager) {
-        RuleAlteredContext.contextManager = contextManager;
     }
 }
