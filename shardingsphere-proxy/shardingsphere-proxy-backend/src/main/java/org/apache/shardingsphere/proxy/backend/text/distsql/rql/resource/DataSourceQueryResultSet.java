@@ -78,7 +78,7 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     
     private Map<String, Object> getAttributeMap(final DataSourceProperties dataSourceProps) {
         Map<String, Object> result = new LinkedHashMap<>(7, 1);
-        for (Entry<String, Object> entry : dataSourceProps.getProps().entrySet()) {
+        for (Entry<String, Object> entry : dataSourceProps.getProperties().entrySet()) {
             // TODO process synonym
             String key = entry.getKey();
             // TODO skip url, user and password from DataSourceProperties

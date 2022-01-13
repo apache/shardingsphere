@@ -39,8 +39,8 @@ public final class ResourceSegmentsConverterTest {
         Map<String, DataSourceProperties> actual = ResourceSegmentsConverter.convert(new MySQLDatabaseType(), createDataSourceSegments());
         assertThat(actual.size(), is(2));
         assertTrue(actual.keySet().containsAll(Arrays.asList("ds0", "ds1")));
-        assertThat(actual.values().iterator().next().getProps().get("username"), is("root0"));
-        assertThat(actual.values().iterator().next().getProps().get("maxPoolSize"), is("30"));
+        assertThat(actual.values().iterator().next().getProperties().get("username"), is("root0"));
+        assertThat(actual.values().iterator().next().getProperties().get("maxPoolSize"), is("30"));
     }
     
     private Collection<DataSourceSegment> createDataSourceSegments() {

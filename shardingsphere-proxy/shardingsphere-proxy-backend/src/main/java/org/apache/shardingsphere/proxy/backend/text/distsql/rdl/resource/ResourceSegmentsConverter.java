@@ -52,10 +52,10 @@ public final class ResourceSegmentsConverter {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static DataSourceProperties createDataSourceProperties(final DatabaseType databaseType, final DataSourceSegment segment) {
         DataSourceProperties result = new DataSourceProperties(HikariDataSource.class.getCanonicalName());
-        result.getProps().put("jdbcUrl", getURL(databaseType, segment));
-        result.getProps().put("username", segment.getUser());
-        result.getProps().put("password", segment.getPassword());
-        result.getProps().putAll((Map) segment.getProperties());
+        result.getProperties().put("jdbcUrl", getURL(databaseType, segment));
+        result.getProperties().put("username", segment.getUser());
+        result.getProperties().put("password", segment.getPassword());
+        result.getProperties().putAll((Map) segment.getProperties());
         return result;
     }
     
