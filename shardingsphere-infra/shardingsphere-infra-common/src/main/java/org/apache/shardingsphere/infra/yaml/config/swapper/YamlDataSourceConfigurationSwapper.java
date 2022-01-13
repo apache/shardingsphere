@@ -65,17 +65,16 @@ public final class YamlDataSourceConfigurationSwapper {
      * @param yamlConfig YAML configurations
      * @return data source properties
      */
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public DataSourceProperties swapToDataSourceProperties(final Map<String, Object> yamlConfig) {
         Preconditions.checkState(yamlConfig.containsKey(DATA_SOURCE_CLASS_NAME_KEY), "%s can not be null.", DATA_SOURCE_CLASS_NAME_KEY);
         Map<String, Object> newDataSourceMap = new HashMap<>(yamlConfig);
         newDataSourceMap.remove(DATA_SOURCE_CLASS_NAME_KEY);
         DataSourceProperties result = new DataSourceProperties(yamlConfig.get(DATA_SOURCE_CLASS_NAME_KEY).toString());
-        if (null != newDataSourceMap.get(DataSourceProperties.CUSTOM_POOL_PROPS_KEY)) {
-            result.getCustomPoolProps().putAll((Map) newDataSourceMap.get(DataSourceProperties.CUSTOM_POOL_PROPS_KEY));
-            newDataSourceMap.remove(DataSourceProperties.CUSTOM_POOL_PROPS_KEY);
-        }
         result.getProps().putAll(newDataSourceMap);
+        if (newDataSourceMap.containsKey(DataSourceProperties.CUSTOM_POOL_PROPS_KEY)) {
+            result.getProps().putAll((Map) newDataSourceMap.get(DataSourceProperties.CUSTOM_POOL_PROPS_KEY));
+        }
         return result;
     }
     
@@ -87,9 +86,6 @@ public final class YamlDataSourceConfigurationSwapper {
      */
     public Map<String, Object> swapToMap(final DataSourceProperties dataSourceProps) {
         Map<String, Object> result = new HashMap<>(dataSourceProps.getProps());
-        if (!dataSourceProps.getCustomPoolProps().isEmpty()) {
-            result.put(DataSourceProperties.CUSTOM_POOL_PROPS_KEY, dataSourceProps.getCustomPoolProps());
-        }
         result.put(DATA_SOURCE_CLASS_NAME_KEY, dataSourceProps.getDataSourceClassName());
         return result;
     }
