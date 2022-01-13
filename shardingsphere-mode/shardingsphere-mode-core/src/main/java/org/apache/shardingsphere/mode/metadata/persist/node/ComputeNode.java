@@ -39,6 +39,8 @@ public final class ComputeNode {
     
     private static final String STATUS_NODE = "status";
     
+    private static final String WORKER_ID = "worker_id";
+    
     /**
      * Get online compute node path.
      * 
@@ -77,6 +79,16 @@ public final class ComputeNode {
      */
     public static String getAttributesNodePath() {
         return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ATTRIBUTES_NODE);
+    }
+    
+    /**
+     * Get instance worker id node path.
+     *
+     * @param instanceId instance id
+     * @return worker id path
+     */
+    public static String getInstanceWorkerIdNodePath(final String instanceId) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ATTRIBUTES_NODE, instanceId, WORKER_ID);
     }
     
     /**

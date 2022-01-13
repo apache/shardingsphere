@@ -15,15 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
 
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.StartTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * PostgreSQL start transaction statement.
+ * Start transaction statement.
  */
-@ToString
-public final class PostgreSQLStartTransactionStatement extends StartTransactionStatement implements PostgreSQLStatement {
+public abstract class StartTransactionStatement extends AbstractSQLStatement implements TCLStatement {
 }

@@ -23,8 +23,8 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPos
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
-import org.apache.shardingsphere.data.pipeline.core.util.RuleAlteredContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.junit.After;
@@ -43,9 +43,9 @@ import static org.junit.Assert.assertThat;
 
 public final class InventoryTaskSplitterTest {
     
-    private static final ExecuteEngine EXECUTE_ENGINE = RuleAlteredContextUtil.getExecuteEngine();
+    private static final ExecuteEngine EXECUTE_ENGINE = PipelineContextUtil.getExecuteEngine();
     
-    private static final PipelineChannelFactory PIPELINE_CHANNEL_FACTORY = RuleAlteredContextUtil.getPipelineChannelFactory();
+    private static final PipelineChannelFactory PIPELINE_CHANNEL_FACTORY = PipelineContextUtil.getPipelineChannelFactory();
     
     private RuleAlteredJobContext jobContext;
     
