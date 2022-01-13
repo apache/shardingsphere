@@ -15,36 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.algorithm;
+package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Properties;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Round-robin replica load-balance algorithm.
+ * Random replica load-balance algorithm.
  */
-public final class RoundRobinReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
+@Getter
+@Setter
+public final class RandomReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
     
-    private static final ConcurrentHashMap<String, AtomicInteger> COUNTS = new ConcurrentHashMap<>();
+    private Properties props = new Properties();
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        AtomicInteger count = COUNTS.containsKey(name) ? COUNTS.get(name) : new AtomicInteger(0);
-        COUNTS.putIfAbsent(name, count);
-        count.compareAndSet(readDataSourceNames.size(), 0);
-        return readDataSourceNames.get(Math.abs(count.getAndIncrement()) % readDataSourceNames.size());
+        return readDataSourceNames.get(ThreadLocalRandom.current().nextInt(readDataSourceNames.size()));
     }
     
     @Override
     public String getType() {
-        return "ROUND_ROBIN";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
+        return "RANDOM";
     }
 }

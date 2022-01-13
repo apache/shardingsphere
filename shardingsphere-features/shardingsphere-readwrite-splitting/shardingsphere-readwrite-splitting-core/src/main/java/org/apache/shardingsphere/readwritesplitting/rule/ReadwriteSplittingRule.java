@@ -27,21 +27,22 @@ import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
+import org.apache.shardingsphere.readwritesplitting.algorithm.DynamicReadwriteSplittingType;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadwriteSplittingType;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Map.Entry;
 
 /**
  * Readwrite-splitting rule.
@@ -50,6 +51,7 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     
     static {
         ShardingSphereServiceLoader.register(ReplicaLoadBalanceAlgorithm.class);
+        ShardingSphereServiceLoader.register(ReadwriteSplittingType.class);
     }
     
     private final Map<String, ReplicaLoadBalanceAlgorithm> loadBalancers = new LinkedHashMap<>();
@@ -91,7 +93,7 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     
     /**
      * Find data source rule.
-     * 
+     *
      * @param dataSourceName data source name
      * @return replica query data source rule
      */
@@ -120,20 +122,9 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     @Override
     public Map<String, Object> export() {
         Map<String, Object> result = new HashMap<>(1, 1);
-        result.put(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY, exportAutoAwareDataSourceMap());
+        result.put(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY, exportDataSourceNames());
         result.put(ExportableConstants.AUTO_AWARE_DATA_SOURCE_NAME, exportAutoAwareDataSourceNames());
         result.put(ExportableConstants.DATA_SOURCE_KEY, exportDataSourceNames());
-        return result;
-    }
-    
-    private Map<String, Map<String, String>> exportAutoAwareDataSourceMap() {
-        Map<String, Map<String, String>> result = new HashMap<>(dataSourceRules.size(), 1);
-        dataSourceRules.forEach((name, dataSourceRule) -> {
-            Map<String, String> autoAwareDataSources = dataSourceRule.getAutoAwareDataSources();
-            if (!autoAwareDataSources.isEmpty()) {
-                result.put(dataSourceRule.getName(), autoAwareDataSources);
-            }
-        });
         return result;
     }
     
@@ -149,7 +140,13 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     }
     
     private Collection<String> exportAutoAwareDataSourceNames() {
-        return dataSourceRules.values().stream().map(ReadwriteSplittingDataSourceRule::getAutoAwareDataSourceName).filter(Objects::nonNull).collect(Collectors.toSet());
+        Collection<String> result = new ArrayList<>();
+        for (ReadwriteSplittingDataSourceRule each : dataSourceRules.values()) {
+            if (each.getReadwriteSplittingType() instanceof DynamicReadwriteSplittingType) {
+                result.add(((DynamicReadwriteSplittingType) each.getReadwriteSplittingType()).getAutoAwareDataSourceName());
+            }
+        }
+        return result;
     }
     
     @Override

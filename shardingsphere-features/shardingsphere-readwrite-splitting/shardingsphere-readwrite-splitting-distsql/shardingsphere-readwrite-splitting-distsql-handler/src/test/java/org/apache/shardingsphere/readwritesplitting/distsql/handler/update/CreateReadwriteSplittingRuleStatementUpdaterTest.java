@@ -80,8 +80,11 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
     }
     
     private ReadwriteSplittingRuleConfiguration getCurrentRuleConfig() {
+        Properties props = new Properties();
+        props.setProperty("write-data-source-name", "ds_write");
+        props.setProperty("read-data-source-names", "read_ds_0,read_ds_1");
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig
-                = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", "", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), "TEST");
+                = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", "Static", props, "TEST");
         return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), Collections.emptyMap());
     }
 }

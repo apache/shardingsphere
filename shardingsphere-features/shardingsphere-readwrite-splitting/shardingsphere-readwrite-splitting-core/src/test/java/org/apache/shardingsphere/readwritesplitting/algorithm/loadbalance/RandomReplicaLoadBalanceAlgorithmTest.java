@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.algorithm;
+package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import org.junit.Test;
 

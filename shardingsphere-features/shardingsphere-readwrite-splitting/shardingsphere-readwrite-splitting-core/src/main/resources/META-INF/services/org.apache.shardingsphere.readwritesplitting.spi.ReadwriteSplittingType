@@ -15,6 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RoundRobinReplicaLoadBalanceAlgorithm
-org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm
-org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.WeightReplicaLoadBalanceAlgorithm
+org.apache.shardingsphere.readwritesplitting.algorithm.StaticReadwriteSplittingType
+org.apache.shardingsphere.readwritesplitting.algorithm.DynamicReadwriteSplittingType
