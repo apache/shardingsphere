@@ -107,7 +107,7 @@ showBinaryLogs
     ;
 
 showBinlogEvents
-    : SHOW BINLOG EVENTS (IN logName)? (FROM NUMBER_)? (LIMIT (NUMBER_ COMMA_)? NUMBER_)?
+    : SHOW BINLOG EVENTS (IN DEFINER)? (FROM NUMBER_)? (LIMIT (NUMBER_ COMMA_)? NUMBER_)?
     ;
 
 showCharacterSet
@@ -219,11 +219,11 @@ showRelaylogEvent
     ;
 
 showSlavehost
-    : SHOW HOST
+    : SHOW SLAVE HOST
     ;
 
 showSlaveStatus
-    : SHOW STATUS (FOR CHANNEL channelName)?
+    : SHOW SLAVE STATUS (FOR CHANNEL channelName)?
     ;
 
 showStatus
