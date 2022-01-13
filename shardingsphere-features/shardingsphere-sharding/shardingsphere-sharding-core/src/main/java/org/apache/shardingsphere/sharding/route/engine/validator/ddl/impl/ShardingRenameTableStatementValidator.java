@@ -57,8 +57,8 @@ public final class ShardingRenameTableStatementValidator extends ShardingDDLStat
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<RenameTableStatement> sqlStatementContext, final List<Object> parameters, 
                              final ShardingSphereSchema schema, final ConfigurationProperties props, final RouteContext routeContext) {
-        for (RenameTableDefinitionSegment segment : sqlStatementContext.getSqlStatement().getRenameTables()) {
-            String primaryTable = segment.getTable().getTableName().getIdentifier().getValue();
+        for (RenameTableDefinitionSegment each : sqlStatementContext.getSqlStatement().getRenameTables()) {
+            String primaryTable = each.getTable().getTableName().getIdentifier().getValue();
             if (isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, primaryTable)) {
                 throw new ShardingSphereException("RENAME TABLE ... TO ... statement can not route correctly for tables %s.", sqlStatementContext.getTablesContext().getTableNames());
             }

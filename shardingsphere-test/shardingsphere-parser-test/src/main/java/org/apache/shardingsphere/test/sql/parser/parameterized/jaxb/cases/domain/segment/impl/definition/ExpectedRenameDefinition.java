@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlElement;
  */
 @Getter
 @Setter
-public class ExpectedRenameDefinition extends AbstractExpectedSQLSegment {
+public final class ExpectedRenameDefinition extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "table")
     private ExpectedSimpleTable table;
