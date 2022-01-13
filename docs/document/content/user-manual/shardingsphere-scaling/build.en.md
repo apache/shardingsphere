@@ -52,17 +52,17 @@ rules:
   scalingName: # Enabled scaling action config name
   scaling:
     <scaling-action-config-name> (+):
-      input:
-        workerThread: # Worker thread pool size for inventory data ingestion from source
-        batchSize: # Maximum records count of a DML select operation
-        rateLimiter: # Rate limit algorithm
+      input: # Data read configuration. If it's not configured, then part of its configuration will take effect.
+        workerThread: # Worker thread pool size for inventory data ingestion from source. If it's not configured, then use system default value.
+        batchSize: # Maximum records count of a DML select operation. If it's not configured, then use system default value.
+        rateLimiter: # Rate limit algorithm. If it's not configured, then system will skip rate limit.
           type: # Algorithm type. Options: QPS
           props: # Algorithm properties
             qps: # QPS property. Available for types: QPS
-      output:
-        workerThread: # Worker thread pool size for data importing to target
-        batchSize: # Maximum records count of a DML insert/delete/update operation
-        rateLimiter: # Rate limit algorithm
+      output: # Data write configuration. If it's not configured, then part of its configuration will take effect.
+        workerThread: # Worker thread pool size for data importing to target. If it's not configured, then use system default value.
+        batchSize: # Maximum records count of a DML insert/delete/update operation. If it's not configured, then use system default value.
+        rateLimiter: # Rate limit algorithm. If it's not configured, then system will skip rate limit.
           type: # Algorithm type. Options: TPS
           props: # Algorithm properties
             tps: # TPS property. Available for types: TPS
