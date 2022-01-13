@@ -34,7 +34,7 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import java.util.Properties;
 
 @Slf4j
-public final class RuleAlteredContextUtil {
+public final class PipelineContextUtil {
     
     private static final ExecuteEngine EXECUTE_ENGINE = ExecuteEngine.newCachedThreadInstance();
     
