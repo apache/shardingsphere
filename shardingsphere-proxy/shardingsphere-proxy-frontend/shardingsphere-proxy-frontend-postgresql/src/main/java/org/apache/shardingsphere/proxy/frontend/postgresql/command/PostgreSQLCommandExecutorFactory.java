@@ -109,7 +109,7 @@ public final class PostgreSQLCommandExecutorFactory {
             case BIND_COMMAND:
                 return new PostgreSQLComBindExecutor(connectionContext, (PostgreSQLComBindPacket) commandPacket, connectionSession);
             case DESCRIBE_COMMAND:
-                return new PostgreSQLComDescribeExecutor(connectionContext, (PostgreSQLComDescribePacket) commandPacket);
+                return new PostgreSQLComDescribeExecutor(connectionContext, (PostgreSQLComDescribePacket) commandPacket, connectionSession);
             case EXECUTE_COMMAND:
                 return new PostgreSQLComExecuteExecutor(connectionContext, (PostgreSQLComExecutePacket) commandPacket);
             case SYNC_COMMAND:
