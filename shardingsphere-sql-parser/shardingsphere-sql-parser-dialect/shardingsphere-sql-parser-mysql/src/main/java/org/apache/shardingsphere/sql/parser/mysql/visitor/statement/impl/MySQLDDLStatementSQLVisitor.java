@@ -89,6 +89,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Routine
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SimpleStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableConstraintDefContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableElementContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ValidStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhileStatementContext;
@@ -380,16 +381,18 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitRenameTable(final RenameTableContext ctx) {
         MySQLRenameTableStatement result = new MySQLRenameTableStatement();
-        if (null != ctx.tableName()) {
-            for (int i = 0, len = ctx.tableName().size(); i < len; i += 2) {
-                MySQLStatementParser.TableNameContext tableName = ctx.tableName(i);
-                MySQLStatementParser.TableNameContext renameTableName = ctx.tableName(i + 1);
-                RenameTableDefinitionSegment renameTableDefinitionSegment = new RenameTableDefinitionSegment(tableName.start.getStartIndex(), renameTableName.stop.getStopIndex());
-                renameTableDefinitionSegment.setTable((SimpleTableSegment) visit(tableName));
-                renameTableDefinitionSegment.setRenameTable((SimpleTableSegment) visit(renameTableName));
-                result.getRenameTables().add(renameTableDefinitionSegment);
-            }
-        }  
+        for (int i = 0, len = ctx.tableName().size(); i < len; i += 2) {
+            TableNameContext tableName = ctx.tableName(i);
+            TableNameContext renameTableName = ctx.tableName(i + 1);
+            result.getRenameTables().add(createRenameTableDefinitionSegment(tableName, renameTableName));
+        }
+        return result;
+    }
+    
+    private RenameTableDefinitionSegment createRenameTableDefinitionSegment(final TableNameContext tableName, final TableNameContext renameTableName) {
+        RenameTableDefinitionSegment result = new RenameTableDefinitionSegment(tableName.start.getStartIndex(), renameTableName.stop.getStopIndex());
+        result.setTable((SimpleTableSegment) visit(tableName));
+        result.setRenameTable((SimpleTableSegment) visit(renameTableName));
         return result;
     }
     

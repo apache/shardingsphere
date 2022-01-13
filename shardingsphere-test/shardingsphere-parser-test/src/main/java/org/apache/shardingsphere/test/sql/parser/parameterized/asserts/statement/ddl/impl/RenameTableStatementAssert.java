@@ -46,10 +46,10 @@ public final class RenameTableStatementAssert {
         if (null != expected.getRenames()) {
             assertNotNull(assertContext.getText("Actual rename table segment should exist."), actual.getRenameTables());
             int count = 0;
-            for (RenameTableDefinitionSegment actualSegment : actual.getRenameTables()) {
-                SQLSegmentAssert.assertIs(assertContext, actualSegment, expected.getRenames().get(count));
-                TableAssert.assertIs(assertContext, actualSegment.getTable(), expected.getRenames().get(count).getTable());
-                TableAssert.assertIs(assertContext, actualSegment.getRenameTable(), expected.getRenames().get(count).getRenameTable());
+            for (RenameTableDefinitionSegment each : actual.getRenameTables()) {
+                SQLSegmentAssert.assertIs(assertContext, each, expected.getRenames().get(count));
+                TableAssert.assertIs(assertContext, each.getTable(), expected.getRenames().get(count).getTable());
+                TableAssert.assertIs(assertContext, each.getRenameTable(), expected.getRenames().get(count).getRenameTable());
                 count++;
             }
         } else {
