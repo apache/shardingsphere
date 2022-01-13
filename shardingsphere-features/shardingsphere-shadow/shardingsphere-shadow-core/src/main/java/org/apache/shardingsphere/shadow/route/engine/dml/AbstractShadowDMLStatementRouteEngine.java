@@ -47,21 +47,20 @@ public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRou
     
     @Override
     public void route(final RouteContext routeContext, final ShadowRule shadowRule) {
-        findShadowDataSourceMappings(shadowRule).ifPresent(shadowDataSourceMappings -> shadowRouteDecorate(routeContext, shadowDataSourceMappings));
+        shadowRouteDecorate(routeContext, shadowRule, findShadowDataSourceMappings(shadowRule));
     }
     
-    private Optional<Map<String, String>> findShadowDataSourceMappings(final ShadowRule shadowRule) {
+    private Map<String, String> findShadowDataSourceMappings(final ShadowRule shadowRule) {
         Collection<String> relatedShadowTables = getRelatedShadowTables(getAllTables(), shadowRule);
         if (relatedShadowTables.isEmpty() && isMatchDefaultShadowAlgorithm(shadowRule)) {
-            return Optional.of(shadowRule.getAllShadowDataSourceMappings());
+            return shadowRule.getAllShadowDataSourceMappings();
         }
         ShadowOperationType shadowOperationType = getShadowOperationType();
         Map<String, String> result = findBySQLComments(relatedShadowTables, shadowRule, shadowOperationType);
         if (!result.isEmpty()) {
-            return Optional.of(result);
+            return result;
         }
-        result = findByShadowColumn(relatedShadowTables, shadowRule, shadowOperationType);
-        return result.isEmpty() ? Optional.empty() : Optional.of(result);
+        return findByShadowColumn(relatedShadowTables, shadowRule, shadowOperationType);
     }
     
     private Collection<String> getRelatedShadowTables(final Collection<SimpleTableSegment> simpleTableSegments, final ShadowRule shadowRule) {
