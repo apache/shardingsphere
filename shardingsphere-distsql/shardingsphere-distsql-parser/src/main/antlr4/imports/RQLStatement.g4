@@ -30,14 +30,6 @@ showSingleTableRules
 showSingleTable
     : SHOW SINGLE (table | TABLES)  (FROM schemaName)?
     ;
-    
-showAuthorityRule
-    : SHOW AUTHORITY RULE
-    ;
-    
-showTransactionRule
-    : SHOW TRANSACTION RULE
-    ;
    
 countSchemaRules
     : COUNT SCHEMA RULES (FROM schemaName)?

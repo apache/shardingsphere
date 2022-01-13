@@ -42,7 +42,6 @@ execute
     | alterSQLParserRule
     | showAuthorityRule
     | showTransactionRule
-    | showTableMetadata
     | countSchemaRules
     ) SEMI?
     ;
