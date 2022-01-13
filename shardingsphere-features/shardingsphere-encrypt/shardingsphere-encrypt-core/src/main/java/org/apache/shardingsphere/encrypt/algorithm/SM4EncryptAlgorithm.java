@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.encrypt.algorithm;
 
 import com.google.common.base.Preconditions;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -31,12 +32,15 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 
 /**
  * SM4 encrypt algorithm.
  */
+@Getter
+@Setter
 public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, String> {
     
     static {
@@ -61,19 +65,66 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     
     private static final Set<String> PADDINGS = new HashSet<>(Arrays.asList("PKCS5Padding", "PKCS7Padding"));
     
-    @Setter
-    private Properties props;
+    private Properties props = new Properties();
+    
+    private String sm4Mode;
+    
+    private byte[] sm4Key;
+    
+    private byte[] sm4Iv;
+    
+    private String sm4Padding;
+    
+    @Override
+    public void init() {
+        sm4Mode = createSm4Mode();
+        sm4Key = createSm4Key();
+        sm4Iv = createSm4Iv(sm4Mode);
+        sm4Padding = createSm4Padding();
+    }
+    
+    private String createSm4Mode() {
+        Preconditions.checkArgument(props.containsKey(SM4_MODE), "%s can not be null.", SM4_MODE);
+        String result = String.valueOf(props.getProperty(SM4_MODE)).toUpperCase();
+        Preconditions.checkState(MODES.contains(result), "Mode must be either CBC or ECB.");
+        return result;
+    }
+    
+    private byte[] createSm4Key() {
+        Preconditions.checkArgument(props.containsKey(SM4_KEY), "%s can not be null.", SM4_KEY);
+        String sm4KeyValue = String.valueOf(props.getProperty(SM4_KEY));
+        byte[] sm4KeyBytes = ByteUtils.fromHexString(sm4KeyValue);
+        Preconditions.checkState(KEY_LENGTH == sm4KeyBytes.length, "Key length must be " + KEY_LENGTH + " bytes long.");
+        return sm4KeyBytes;
+    }
+    
+    private byte[] createSm4Iv(final String sm4Mode) {
+        if ("CBC".equalsIgnoreCase(sm4Mode)) {
+            Preconditions.checkArgument(props.containsKey(SM4_IV), "%s can not be null.", SM4_IV);
+            String sm4IvValue = String.valueOf(props.getProperty(SM4_IV));
+            byte[] sm4IvBytes = ByteUtils.fromHexString(sm4IvValue);
+            Preconditions.checkState(IV_LENGTH == sm4IvBytes.length, "Iv length must be " + IV_LENGTH + " bytes long.");
+        }
+        return null;
+    }
+    
+    private String createSm4Padding() {
+        Preconditions.checkArgument(props.containsKey(SM4_PADDING), "%s can not be null.", SM4_PADDING);
+        String result = String.valueOf(props.get(SM4_PADDING)).toUpperCase().replace("PADDING", "Padding");
+        Preconditions.checkState(PADDINGS.contains(result), "Padding must be either PKCS5Padding or PKCS7Padding.");
+        return result;
+    }
     
     @Override
     public String encrypt(final Object plainValue) {
         if (null == plainValue) {
             return null;
         }
-        return Hex.encodeHexString(encrypt(StringUtils.getBytesUtf8(String.valueOf(plainValue))));
+        return ByteUtils.toHexString(encrypt(StringUtils.getBytesUtf8(String.valueOf(plainValue))));
     }
     
     private byte[] encrypt(final byte[] plainValue) {
-        return sm4(plainValue, Cipher.ENCRYPT_MODE);
+        return handle(plainValue, Cipher.ENCRYPT_MODE);
     }
     
     @SneakyThrows
@@ -82,60 +133,32 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
         if (null == cipherValue) {
             return null;
         }
-        return StringUtils.newStringUtf8(decrypt(Hex.decodeHex(cipherValue.toCharArray())));
+        return StringUtils.newStringUtf8(decrypt(ByteUtils.fromHexString(cipherValue)));
     }
     
     private byte[] decrypt(final byte[] cipherValue) {
-        return sm4(cipherValue, Cipher.DECRYPT_MODE);
-    }
-    
-    @Override
-    public void init() {
-    }
-    
-    @Override
-    public String getType() {
-        return SM4;
+        return handle(cipherValue, Cipher.DECRYPT_MODE);
     }
 
     @SneakyThrows
-    private byte[] sm4(final byte[] input, final int mode) {
-        String modeAndPadding = String.format("SM4/%s/%s", checkAndGetMode(), checkAndGetPadding());
-        Cipher cipher = Cipher.getInstance(modeAndPadding, org.bouncycastle.jce.provider.BouncyCastleProvider.PROVIDER_NAME);
-        SecretKeySpec secretKeySpec = new SecretKeySpec(Hex.decodeHex(checkAndGetKey().toCharArray()), SM4);
-        String iv = checkAndGetIv(modeAndPadding);
-        if (null != iv) {
-            cipher.init(mode, secretKeySpec, new IvParameterSpec(Hex.decodeHex(iv.toCharArray())));
+    private byte[] handle(final byte[] input, final int mode) {
+        Cipher cipher = Cipher.getInstance(String.format("SM4/%s/%s", sm4Mode, sm4Padding), BouncyCastleProvider.PROVIDER_NAME);
+        SecretKeySpec secretKeySpec = new SecretKeySpec(sm4Key, SM4);
+        Optional<byte[]> sm4Iv = getSm4Iv();
+        if (sm4Iv.isPresent()) {
+            cipher.init(mode, secretKeySpec, new IvParameterSpec(sm4Iv.get()));
         } else {
             cipher.init(mode, secretKeySpec);
         }
         return cipher.doFinal(input);
     }
     
-    private String checkAndGetKey() throws ShardingSphereException {
-        String result = null == props.getProperty(SM4_KEY) ? null : String.valueOf(props.getProperty(SM4_KEY));
-        Preconditions.checkState(KEY_LENGTH != result.length(), "Key length must be " + KEY_LENGTH + " bytes long.");
-        return result;
+    private Optional<byte[]> getSm4Iv() {
+        return Optional.ofNullable(sm4Iv);
     }
     
-    private String checkAndGetMode() throws ShardingSphereException {
-        String result = null == props.getProperty(SM4_MODE) ? null : String.valueOf(props.getProperty(SM4_MODE)).toUpperCase();
-        Preconditions.checkState(MODES.contains(result), "Mode must be either CBC or ECB.");
-        return result;
-    }
-    
-    private String checkAndGetPadding() throws ShardingSphereException {
-        Object objectPadding = props.getProperty(SM4_PADDING);
-        String result = null == objectPadding ? null : String.valueOf(objectPadding).toUpperCase().replace("PADDING", "Padding");
-        Preconditions.checkState(PADDINGS.contains(result), "Padding must be either PKCS5Padding or PKCS7Padding.");
-        return result;
-    }
-    
-    private String checkAndGetIv(final String mode) throws ShardingSphereException {
-        String result = null == props.getProperty(SM4_IV) ? null : String.valueOf(props.getProperty(SM4_IV));
-        if ("CBC".equalsIgnoreCase(mode)) {
-            Preconditions.checkState(null == result || IV_LENGTH != result.length(), "Iv length must be " + IV_LENGTH + " bytes long.");
-        }
-        return result;
+    @Override
+    public String getType() {
+        return SM4;
     }
 }
