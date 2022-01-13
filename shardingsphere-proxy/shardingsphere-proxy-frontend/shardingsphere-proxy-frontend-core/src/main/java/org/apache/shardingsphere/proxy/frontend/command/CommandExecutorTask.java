@@ -69,6 +69,7 @@ public final class CommandExecutorTask implements Runnable {
             isNeedFlush = executeCommand(context, payload);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
+            ex.printStackTrace();
             // CHECKSTYLE:ON
             processException(ex);
         } finally {
