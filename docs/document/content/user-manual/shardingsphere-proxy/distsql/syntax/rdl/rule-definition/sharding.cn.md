@@ -34,12 +34,12 @@ DROP SHARDING KEY GENERATOR keyGeneratorName [, keyGeneratorName] ...
 
 shardingTableRuleDefinition:
     shardingAutoTableRule | shardingTableRule
-   
+
 shardingAutoTableRule:
-    tableName(resources COMMA shardingColumn COMMA algorithmDefinition (COMMA keyGenerateDeclaration)?)
-    
+    tableName(resources, shardingColumn, algorithmDefinition [, keyGenerateDeclaration])
+
 shardingTableRule:
-    tableName(dataNodes (COMMA  databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateDeclaration)?)
+    tableName(dataNodes [, databaseStrategy] [, tableStrategy] [, keyGenerateDeclaration])
 
 resources:
     RESOURCES(resource [, resource] ...)
@@ -79,7 +79,7 @@ keyGenerateConstruction
 
 shardingStrategy:
     TYPE=strategyType, shardingColumn, shardingAlgorithm
-    
+
 shardingAlgorithm:
     existingAlgorithm | autoCreativeAlgorithm
 
@@ -138,6 +138,60 @@ ALTER SHARDING BROADCAST TABLE RULES (tableName [, tableName] ...)
 DROP SHARDING BROADCAST TABLE RULES (tableName [, tableName] ...)
 ```
 - `ALTER` 会使用新的配置直接覆盖数据库内的广播表配置
+
+### Sharding Scaling Rule
+
+```sql
+CREATE SHARDING SCALING scalingName [scalingDefinition]
+
+DROP SHARDING SCALING scalingName
+
+ENABLE SHARDING SCALING scalingName
+
+DISABLE SHARDING SCALING scalingName
+
+scalingDefinition:
+    minimumAutoDefinition | completeAutoDefinition | manualDefinition
+
+minimumAutoDefinition:
+    (completionDetector, dataConsistencyChecker)
+
+completeAutoDefinition:
+    (inputDefinition, outputDefinition, streamChannel, completionDetector, dataConsistencyChecker)
+
+manualDefinition:
+    (inputDefinition, outputDefinition, streamChannel)
+
+inputDefinition:
+    INPUT (workerThread, batchSize, rateLimiter)
+
+outputDefinition:
+    INPUT (workerThread, batchSize, rateLimiter)
+
+completionDetector:
+    COMPLETION_DETECTOR (algorithmDefinition)
+
+dataConsistencyChecker:
+    DATA_CONSISTENCY_CHECKER (algorithmDefinition)
+
+rateLimiter:
+    RATE_LIMITER (algorithmDefinition)
+
+streamChannel:
+    STREAM_CHANNEL (algorithmDefinition)
+
+workerThread:
+    WORKER_THREAD=intValue
+
+batchSize:
+    BATCH_SIZE=intValue
+
+intValue:
+    INT
+```
+- `ENABLE` is used to set which scaling configuration is enabled
+- `DISABLE` is the opposite of ENABLE
+- The first scaling rule created is enabled by default
 
 ## 示例
 
@@ -240,4 +294,30 @@ ALTER SHARDING BROADCAST TABLE RULES (t_b,t_a,t_3);
 DROP SHARDING BROADCAST TABLE RULES;
 
 DROP SHARDING BROADCAST TABLE RULES t_b;
+```
+
+### Sharding Broadcast Table Rule
+
+```sql
+CREATE SHARDING SCALING scaling_name(
+INPUT(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000,
+  RATE_LIMITER(TYPE(NAME=QPS, PROPERTIES("qps"=50)))
+),
+OUTPUT(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000,
+  RATE_LIMITER(TYPE(NAME=TPS, PROPERTIES("tps"=2000)))
+),
+STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
+COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-minute-threshold"=30))),
+DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
+);
+
+ENABLE SHARDING SCALING scaling_name;
+
+DISABLE SHARDING SCALING scaling_name;
+
+DROP SHARDING SCALING scaling_name;
 ```
