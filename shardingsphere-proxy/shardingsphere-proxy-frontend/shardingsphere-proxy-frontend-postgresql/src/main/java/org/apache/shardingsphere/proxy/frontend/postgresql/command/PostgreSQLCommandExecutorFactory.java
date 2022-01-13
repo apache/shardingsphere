@@ -71,7 +71,7 @@ public final class PostgreSQLCommandExecutorFactory {
             return getCommandExecutor(commandPacketType, commandPacket, connectionSession, connectionContext);
         }
         PostgreSQLAggregatedCommandPacket aggregatedCommandPacket = (PostgreSQLAggregatedCommandPacket) commandPacket;
-        if (aggregatedCommandPacket.isBatchedInserts()) {
+        if (aggregatedCommandPacket.isContainsBatchedInserts()) {
             return new PostgreSQLAggregatedCommandExecutor(getExecutorsOfAggregatedBatchedInserts(aggregatedCommandPacket, connectionSession, connectionContext));
         }
         List<CommandExecutor> result = new ArrayList<>(aggregatedCommandPacket.getPackets().size());
@@ -91,7 +91,7 @@ public final class PostgreSQLCommandExecutorFactory {
             PostgreSQLCommandPacket each = packets.get(i);
             result.add(getCommandExecutor((PostgreSQLCommandPacketType) each.getIdentifier(), each, connectionSession, connectionContext));
         }
-        result.add(new PostgreSQLAggregatedBatchedInsertsCommandExecutor(connectionSession, packets.subList(firstBindIndex, lastExecuteIndex)));
+        result.add(new PostgreSQLAggregatedBatchedInsertsCommandExecutor(connectionSession, packets.subList(firstBindIndex, lastExecuteIndex + 1)));
         for (int i = lastExecuteIndex + 1; i < packets.size(); i++) {
             PostgreSQLCommandPacket each = packets.get(i);
             result.add(getCommandExecutor((PostgreSQLCommandPacketType) each.getIdentifier(), each, connectionSession, connectionContext));

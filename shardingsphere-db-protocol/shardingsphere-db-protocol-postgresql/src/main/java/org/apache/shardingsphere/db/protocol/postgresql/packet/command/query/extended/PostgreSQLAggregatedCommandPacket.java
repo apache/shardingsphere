@@ -35,7 +35,7 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
     
     private final List<PostgreSQLCommandPacket> packets;
     
-    private final boolean batchedInserts;
+    private final boolean containsBatchedInserts;
     
     private final int firstBindIndex;
     
@@ -44,22 +44,21 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
     public PostgreSQLAggregatedCommandPacket(final List<PostgreSQLCommandPacket> packets) {
         this.packets = packets;
         int parseTimes = 0;
-        int bindTimes = 0;
-        int executeTimes = 0;
-        String statement = null;
-        String portal = null;
+        int firstStatementBindTimes = 0;
+        int firstStatementExecuteTimes = 0;
+        String firstStatement = null;
+        String firstPortal = null;
         int index = 0;
         int firstBindIndex = -1;
         int lastExecuteIndex = -1;
-        boolean isBatchedInserts = false;
         for (PostgreSQLCommandPacket each : packets) {
             if (each instanceof PostgreSQLComParsePacket) {
                 if (++parseTimes > 1) {
                     break;
                 }
-                if (statement == null) {
-                    statement = ((PostgreSQLComParsePacket) each).getStatementId();
-                } else if (!statement.equals(((PostgreSQLComParsePacket) each).getStatementId())) {
+                if (firstStatement == null) {
+                    firstStatement = ((PostgreSQLComParsePacket) each).getStatementId();
+                } else if (!firstStatement.equals(((PostgreSQLComParsePacket) each).getStatementId())) {
                     break;
                 }
             }
@@ -67,36 +66,34 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
                 if (-1 == firstBindIndex) {
                     firstBindIndex = index;
                 }
-                bindTimes++;
-                if (null == statement) {
-                    statement = ((PostgreSQLComBindPacket) each).getStatementId();
-                } else if (!statement.equals(((PostgreSQLComBindPacket) each).getStatementId())) {
+                if (null == firstStatement) {
+                    firstStatement = ((PostgreSQLComBindPacket) each).getStatementId();
+                } else if (!firstStatement.equals(((PostgreSQLComBindPacket) each).getStatementId())) {
                     break;
                 }
-                if (null == portal) {
-                    portal = ((PostgreSQLComBindPacket) each).getPortal();
-                } else if (!portal.equals(((PostgreSQLComBindPacket) each).getPortal())) {
+                if (null == firstPortal) {
+                    firstPortal = ((PostgreSQLComBindPacket) each).getPortal();
+                } else if (!firstPortal.equals(((PostgreSQLComBindPacket) each).getPortal())) {
                     break;
                 }
+                firstStatementBindTimes++;
             }
             if (each instanceof PostgreSQLComExecutePacket) {
                 if (index > lastExecuteIndex) {
                     lastExecuteIndex = index;
                 }
-                executeTimes++;
-                if (null == portal) {
-                    portal = ((PostgreSQLComExecutePacket) each).getPortal();
-                } else if (!portal.equals(((PostgreSQLComExecutePacket) each).getPortal())) {
+                if (null == firstPortal) {
+                    firstPortal = ((PostgreSQLComExecutePacket) each).getPortal();
+                } else if (!firstPortal.equals(((PostgreSQLComExecutePacket) each).getPortal())) {
                     break;
                 }
+                firstStatementExecuteTimes++;
             }
-            if (++index == packets.size()) {
-                isBatchedInserts = bindTimes == executeTimes && bindTimes >= 3;
-            }
+            index++;
         }
         this.firstBindIndex = firstBindIndex;
         this.lastExecuteIndex = lastExecuteIndex;
-        if (this.batchedInserts = isBatchedInserts) {
+        if (this.containsBatchedInserts = (firstStatementBindTimes == firstStatementExecuteTimes && firstStatementBindTimes >= 3)) {
             ensureRandomAccessible(packets);
         }
     }
