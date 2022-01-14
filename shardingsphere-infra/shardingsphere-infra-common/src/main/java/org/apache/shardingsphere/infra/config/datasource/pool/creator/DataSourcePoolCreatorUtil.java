@@ -35,26 +35,6 @@ import java.util.stream.Collectors;
 public final class DataSourcePoolCreatorUtil {
     
     /**
-     * Get data source.
-     * 
-     * @param dataSourceProps data source properties
-     * @return data source
-     */
-    public static DataSource getDataSource(final DataSourceProperties dataSourceProps) {
-        return DataSourcePoolCreator.create(dataSourceProps);
-    }
-    
-    /**
-     * Get data source properties.
-     * 
-     * @param dataSource data source
-     * @return data source properties
-     */
-    public static DataSourceProperties getDataSourceProperties(final DataSource dataSource) {
-        return DataSourcePropertiesCreator.create(dataSource);
-    }
-    
-    /**
      * Get data source map.
      *
      * @param dataSourcePropsMap data source configuration map
@@ -73,6 +53,6 @@ public final class DataSourcePoolCreatorUtil {
      */
     public static Map<String, DataSourceProperties> getDataSourcePropertiesMap(final Map<String, DataSource> dataSourceMap) {
         return dataSourceMap.entrySet().stream().collect(
-                Collectors.toMap(Entry::getKey, entry -> getDataSourceProperties(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                Collectors.toMap(Entry::getKey, entry -> DataSourcePropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
 }
