@@ -49,6 +49,7 @@ public final class PostgreSQLCommandPacketFactory {
      */
     public static PostgreSQLCommandPacket newInstance(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLPacketPayload payload) {
         if (!PostgreSQLCommandPacketType.isExtendedProtocolPacketType(commandPacketType)) {
+            payload.getByteBuf().skipBytes(1);
             return getPostgreSQLCommandPacket(commandPacketType, payload);
         }
         List<PostgreSQLCommandPacket> result = new ArrayList<>();
