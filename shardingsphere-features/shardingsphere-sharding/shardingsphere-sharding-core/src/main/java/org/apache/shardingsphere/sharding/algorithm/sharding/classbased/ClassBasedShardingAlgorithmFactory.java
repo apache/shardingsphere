@@ -31,14 +31,14 @@ import java.util.Properties;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ClassBasedShardingAlgorithmFactory {
-
+    
     /**
      * Create sharding algorithm.
-     *
-     * @param <T> class generic type
+     * 
      * @param shardingAlgorithmClassName sharding algorithm class name
      * @param superShardingAlgorithmClass sharding algorithm super class
      * @param props properties
+     * @param <T> class generic type
      * @return sharding algorithm instance
      */
     @SneakyThrows
