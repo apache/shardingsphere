@@ -35,8 +35,8 @@ import static org.junit.Assert.assertThat;
 public final class HikariDataSourcePoolCreatorTest {
     
     @Test
-    public void assertCreateDataSource() {
-        DataSource dataSource = DataSourcePoolCreator.createDataSource(createDataSourceProperties());
+    public void assertCreate() {
+        DataSource dataSource = DataSourcePoolCreator.create(createDataSourceProperties());
         assertThat(dataSource, instanceOf(HikariDataSource.class));
         HikariDataSource hikariDataSource = (HikariDataSource) dataSource;
         assertThat(hikariDataSource.getJdbcUrl(), is("jdbc:mysql://127.0.0.1/foo_ds"));
@@ -45,24 +45,24 @@ public final class HikariDataSourcePoolCreatorTest {
         assertThat(hikariDataSource.getPassword(), is("root"));
         assertThat(hikariDataSource.getMaximumPoolSize(), is(10));
         assertThat(hikariDataSource.getMinimumIdle(), is(1));
-        assertDataSourceProperties(hikariDataSource.getDataSourceProperties());
+        assertProperties(hikariDataSource.getDataSourceProperties());
     }
     
     private DataSourceProperties createDataSourceProperties() {
-        Map<String, Object> props = new HashMap<>(16, 1);
+        Map<String, Object> props = new HashMap<>();
         props.put("jdbcUrl", "jdbc:mysql://127.0.0.1/foo_ds");
         props.put("driverClassName", MockedDataSource.class.getName());
         props.put("username", "root");
         props.put("password", "root");
         props.put("maxPoolSize", 10);
         props.put("minPoolSize", 1);
-        props.put("dataSourceProperties", getDataSourceProperties());
+        props.put("dataSourceProperties", createJdbcUrlProperties());
         DataSourceProperties result = new DataSourceProperties(HikariDataSource.class.getName());
         result.getProps().putAll(props);
         return result;
     }
     
-    private Properties getDataSourceProperties() {
+    private Properties createJdbcUrlProperties() {
         Properties result = new Properties();
         result.put("prepStmtCacheSqlLimit", 1024);
         result.put("cachePrepStmts", true);
@@ -70,20 +70,20 @@ public final class HikariDataSourcePoolCreatorTest {
         return result;
     }
     
-    private void assertDataSourceProperties(final Properties props) {
-        assertThat(props.get("prepStmtCacheSqlLimit"), is(1024));
-        assertThat(props.get("cachePrepStmts"), is(true));
-        assertThat(props.get("prepStmtCacheSize"), is(1000));
-        assertThat(props.get("useServerPrepStmts"), is(Boolean.TRUE.toString()));
-        assertThat(props.get("useLocalSessionState"), is(Boolean.TRUE.toString()));
-        assertThat(props.get("rewriteBatchedStatements"), is(Boolean.TRUE.toString()));
-        assertThat(props.get("cacheResultSetMetadata"), is(Boolean.FALSE.toString()));
-        assertThat(props.get("cacheServerConfiguration"), is(Boolean.TRUE.toString()));
-        assertThat(props.get("elideSetAutoCommits"), is(Boolean.TRUE.toString()));
-        assertThat(props.get("maintainTimeStats"), is(Boolean.FALSE.toString()));
-        assertThat(props.get("netTimeoutForStreamingResults"), is("0"));
-        assertThat(props.get("tinyInt1isBit"), is(Boolean.FALSE.toString()));
-        assertThat(props.get("useSSL"), is(Boolean.FALSE.toString()));
-        assertThat(props.get("serverTimezone"), is("UTC"));
+    private void assertProperties(final Properties actual) {
+        assertThat(actual.get("prepStmtCacheSqlLimit"), is(1024));
+        assertThat(actual.get("cachePrepStmts"), is(true));
+        assertThat(actual.get("prepStmtCacheSize"), is(1000));
+        assertThat(actual.get("useServerPrepStmts"), is(Boolean.TRUE.toString()));
+        assertThat(actual.get("useLocalSessionState"), is(Boolean.TRUE.toString()));
+        assertThat(actual.get("rewriteBatchedStatements"), is(Boolean.TRUE.toString()));
+        assertThat(actual.get("cacheResultSetMetadata"), is(Boolean.FALSE.toString()));
+        assertThat(actual.get("cacheServerConfiguration"), is(Boolean.TRUE.toString()));
+        assertThat(actual.get("elideSetAutoCommits"), is(Boolean.TRUE.toString()));
+        assertThat(actual.get("maintainTimeStats"), is(Boolean.FALSE.toString()));
+        assertThat(actual.get("netTimeoutForStreamingResults"), is("0"));
+        assertThat(actual.get("tinyInt1isBit"), is(Boolean.FALSE.toString()));
+        assertThat(actual.get("useSSL"), is(Boolean.FALSE.toString()));
+        assertThat(actual.get("serverTimezone"), is("UTC"));
     }
 }

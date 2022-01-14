@@ -70,8 +70,8 @@ public final class DataSourcePoolCreatorUtilTest {
     }
     
     @Test
-    public void assertGetDataSource() {
-        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreator.createDataSource(createDataSourceProperties());
+    public void assertCreate() {
+        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreator.create(createDataSourceProperties());
         assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getCanonicalName()));
         assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getUsername(), is("root"));
@@ -82,7 +82,7 @@ public final class DataSourcePoolCreatorUtilTest {
     }
     
     @Test
-    public void assertCreateDataSourceWithIntegerPassword() {
+    public void assertCreateWithIntegerPassword() {
         Map<String, Object> props = new HashMap<>(16, 1);
         props.put("driverClassName", MockedDataSource.class.getCanonicalName());
         props.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
@@ -91,7 +91,7 @@ public final class DataSourcePoolCreatorUtilTest {
         props.put("loginTimeout", "5000");
         DataSourceProperties dataSourceProps = new DataSourceProperties(HikariDataSource.class.getName());
         dataSourceProps.getProps().putAll(props);
-        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreator.createDataSource(dataSourceProps);
+        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreator.create(dataSourceProps);
         assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getCanonicalName()));
         assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getUsername(), is("root"));

@@ -28,8 +28,8 @@ import static org.junit.Assert.assertThat;
 public final class DefaultDataSourcePoolCreatorTest {
     
     @Test
-    public void assertCreateDataSource() {
-        BasicDataSource actual = (BasicDataSource) DataSourcePoolCreator.createDataSource(createDataSourceProperties());
+    public void assertCreate() {
+        BasicDataSource actual = (BasicDataSource) DataSourcePoolCreator.create(createDataSourceProperties());
         assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
         assertThat(actual.getUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getUsername(), is("root"));
