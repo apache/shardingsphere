@@ -51,7 +51,7 @@ public final class DataSourcePoolCreatorUtil {
      * @return data source properties
      */
     public static DataSourceProperties getDataSourceProperties(final DataSource dataSource) {
-        return new DataSourcePropertiesCreator(dataSource.getClass().getCanonicalName()).createDataSourceProperties(dataSource);
+        return DataSourcePropertiesCreator.createDataSourceProperties(dataSource);
     }
     
     /**
