@@ -58,12 +58,12 @@ public final class DataSourcePropertiesTest {
         actual.addPropertySynonym("url", "jdbcUrl");
         actual.addPropertySynonym("user", "username");
         assertThat(actual.getDataSourceClassName(), is(HikariDataSource.class.getName()));
-        assertThat(actual.getProperties().get("driverClassName").toString(), is(MockedDataSource.class.getCanonicalName()));
-        assertThat(actual.getProperties().get("jdbcUrl").toString(), is("jdbc:mock://127.0.0.1/foo_ds"));
-        assertThat(actual.getProperties().get("username").toString(), is("root"));
-        assertThat(actual.getProperties().get("password").toString(), is("root"));
-        assertThat(actual.getProperties().get("jdbcUrl"), is(actual.getProperties().get("url")));
-        assertThat(actual.getProperties().get("username"), is(actual.getProperties().get("user")));
+        assertThat(actual.getProps().get("driverClassName").toString(), is(MockedDataSource.class.getCanonicalName()));
+        assertThat(actual.getProps().get("jdbcUrl").toString(), is("jdbc:mock://127.0.0.1/foo_ds"));
+        assertThat(actual.getProps().get("username").toString(), is("root"));
+        assertThat(actual.getProps().get("password").toString(), is("root"));
+        assertThat(actual.getProps().get("jdbcUrl"), is(actual.getProps().get("url")));
+        assertThat(actual.getProps().get("username"), is(actual.getProps().get("user")));
     }
     
     @Test
@@ -72,10 +72,10 @@ public final class DataSourcePropertiesTest {
         DataSourceProperties targetDataSourceProps = new DataSourceProperties("FooDataSourceClass");
         assertThat(originalDataSourceProps, is(originalDataSourceProps));
         assertThat(originalDataSourceProps, is(targetDataSourceProps));
-        originalDataSourceProps.getProperties().put("username", "root");
-        targetDataSourceProps.getProperties().put("username", "root");
+        originalDataSourceProps.getProps().put("username", "root");
+        targetDataSourceProps.getProps().put("username", "root");
         assertThat(originalDataSourceProps, is(targetDataSourceProps));
-        targetDataSourceProps.getProperties().put("password", "root");
+        targetDataSourceProps.getProps().put("password", "root");
         assertThat(originalDataSourceProps, is(targetDataSourceProps));
     }
     
@@ -93,8 +93,8 @@ public final class DataSourcePropertiesTest {
     public void assertNotEqualsWithDifferentProperties() {
         DataSourceProperties originalDataSourceProps = new DataSourceProperties("FooDataSourceClass");
         DataSourceProperties targetDataSourceProps = new DataSourceProperties("FooDataSourceClass");
-        originalDataSourceProps.getProperties().put("username", "root");
-        targetDataSourceProps.getProperties().put("username", "root0");
+        originalDataSourceProps.getProps().put("username", "root");
+        targetDataSourceProps.getProps().put("username", "root0");
         assertThat(originalDataSourceProps, not(targetDataSourceProps));
     }
     
@@ -103,11 +103,11 @@ public final class DataSourcePropertiesTest {
         DataSourceProperties originalDataSourceProps = new DataSourceProperties("FooDataSourceClass");
         DataSourceProperties targetDataSourceProps = new DataSourceProperties("FooDataSourceClass");
         assertThat(originalDataSourceProps.hashCode(), is(targetDataSourceProps.hashCode()));
-        originalDataSourceProps.getProperties().put("username", "root");
-        targetDataSourceProps.getProperties().put("username", "root");
+        originalDataSourceProps.getProps().put("username", "root");
+        targetDataSourceProps.getProps().put("username", "root");
         assertThat(originalDataSourceProps.hashCode(), is(targetDataSourceProps.hashCode()));
-        originalDataSourceProps.getProperties().put("password", "root");
-        targetDataSourceProps.getProperties().put("password", "root");
+        originalDataSourceProps.getProps().put("password", "root");
+        targetDataSourceProps.getProps().put("password", "root");
         assertThat(originalDataSourceProps.hashCode(), is(targetDataSourceProps.hashCode()));
     }
     
@@ -115,9 +115,9 @@ public final class DataSourcePropertiesTest {
     public void assertDifferentHashCode() {
         DataSourceProperties originalDataSourceProps = new DataSourceProperties("FooDataSourceClass");
         DataSourceProperties targetDataSourceProps = new DataSourceProperties("FooDataSourceClass");
-        originalDataSourceProps.getProperties().put("username", "root");
-        targetDataSourceProps.getProperties().put("username", "root");
-        targetDataSourceProps.getProperties().put("password", "root");
+        originalDataSourceProps.getProps().put("username", "root");
+        targetDataSourceProps.getProps().put("username", "root");
+        targetDataSourceProps.getProps().put("password", "root");
         assertThat(originalDataSourceProps.hashCode(), not(targetDataSourceProps.hashCode()));
         originalDataSourceProps = new DataSourceProperties("FooDataSourceClass");
         targetDataSourceProps = new DataSourceProperties("BarDataSourceClass");
@@ -135,13 +135,13 @@ public final class DataSourcePropertiesTest {
         actualDataSource.setConnectionInitSqls(Arrays.asList("set names utf8mb4;", "set names utf8;"));
         DataSourceProperties actual = DataSourcePoolCreatorUtil.getDataSourceConfiguration(actualDataSource);
         assertThat(actual.getDataSourceClassName(), is(BasicDataSource.class.getName()));
-        assertThat(actual.getProperties().get("driverClassName").toString(), is(MockedDataSource.class.getCanonicalName()));
-        assertThat(actual.getProperties().get("url").toString(), is("jdbc:mock://127.0.0.1/foo_ds"));
-        assertThat(actual.getProperties().get("username").toString(), is("root"));
-        assertThat(actual.getProperties().get("password").toString(), is("root"));
-        assertNull(actual.getProperties().get("loginTimeout"));
-        assertThat(actual.getProperties().get("connectionInitSqls"), instanceOf(List.class));
-        List<String> actualConnectionInitSql = (List<String>) actual.getProperties().get("connectionInitSqls");
+        assertThat(actual.getProps().get("driverClassName").toString(), is(MockedDataSource.class.getCanonicalName()));
+        assertThat(actual.getProps().get("url").toString(), is("jdbc:mock://127.0.0.1/foo_ds"));
+        assertThat(actual.getProps().get("username").toString(), is("root"));
+        assertThat(actual.getProps().get("password").toString(), is("root"));
+        assertNull(actual.getProps().get("loginTimeout"));
+        assertThat(actual.getProps().get("connectionInitSqls"), instanceOf(List.class));
+        List<String> actualConnectionInitSql = (List<String>) actual.getProps().get("connectionInitSqls");
         assertThat(actualConnectionInitSql, hasItem("set names utf8mb4;"));
         assertThat(actualConnectionInitSql, hasItem("set names utf8;"));
     }
@@ -159,8 +159,8 @@ public final class DataSourcePropertiesTest {
         customPoolProps.setProperty("maximumPoolSize", "30");
         customPoolProps.setProperty("idleTimeout", "30000");
         DataSourceProperties dataSourceProps = new DataSourceProperties(HikariDataSource.class.getName());
-        dataSourceProps.getProperties().putAll(props);
-        dataSourceProps.getProperties().putAll(new HashMap(customPoolProps));
+        dataSourceProps.getProps().putAll(props);
+        dataSourceProps.getProps().putAll(new HashMap(customPoolProps));
         HikariDataSource actual = (HikariDataSource) DataSourcePoolCreatorUtil.getDataSource(dataSourceProps);
         assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getCanonicalName()));
         assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
@@ -182,9 +182,9 @@ public final class DataSourcePropertiesTest {
         customPoolProps.setProperty("maximumPoolSize", "30");
         customPoolProps.setProperty("idleTimeout", "30000");
         DataSourceProperties originalDataSourceProps = new DataSourceProperties("FooDataSourceClass");
-        originalDataSourceProps.getProperties().putAll(props);
-        originalDataSourceProps.getProperties().putAll(new HashMap(customPoolProps));
-        Map<String, Object> actualAllProperties = originalDataSourceProps.getProperties();
+        originalDataSourceProps.getProps().putAll(props);
+        originalDataSourceProps.getProps().putAll(new HashMap(customPoolProps));
+        Map<String, Object> actualAllProperties = originalDataSourceProps.getAllProperties();
         assertNotNull(actualAllProperties);
         assertThat(actualAllProperties.size(), is(7));
         assertTrue(actualAllProperties.containsKey("driverClassName"));

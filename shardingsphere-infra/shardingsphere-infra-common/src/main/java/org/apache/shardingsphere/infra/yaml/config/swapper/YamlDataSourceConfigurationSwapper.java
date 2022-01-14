@@ -71,9 +71,9 @@ public final class YamlDataSourceConfigurationSwapper {
         Map<String, Object> newDataSourceMap = new HashMap<>(yamlConfig);
         newDataSourceMap.remove(DATA_SOURCE_CLASS_NAME_KEY);
         DataSourceProperties result = new DataSourceProperties(yamlConfig.get(DATA_SOURCE_CLASS_NAME_KEY).toString());
-        result.getProperties().putAll(newDataSourceMap);
+        result.getProps().putAll(newDataSourceMap);
         if (newDataSourceMap.containsKey(DataSourceProperties.CUSTOM_POOL_PROPS_KEY)) {
-            result.getProperties().putAll((Map) newDataSourceMap.get(DataSourceProperties.CUSTOM_POOL_PROPS_KEY));
+            result.getProps().putAll((Map) newDataSourceMap.get(DataSourceProperties.CUSTOM_POOL_PROPS_KEY));
         }
         return result;
     }
@@ -85,7 +85,7 @@ public final class YamlDataSourceConfigurationSwapper {
      * @return data source map
      */
     public Map<String, Object> swapToMap(final DataSourceProperties dataSourceProps) {
-        Map<String, Object> result = new HashMap<>(dataSourceProps.getProperties());
+        Map<String, Object> result = new HashMap<>(dataSourceProps.getProps());
         result.put(DATA_SOURCE_CLASS_NAME_KEY, dataSourceProps.getDataSourceClassName());
         return result;
     }
