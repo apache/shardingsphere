@@ -34,5 +34,5 @@ import java.util.List;
 @Getter
 public final class MySQLResetStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
-    private List<ResetOptionSegment> options = new LinkedList<>();
+    private final List<ResetOptionSegment> options = new LinkedList<>();
 }
