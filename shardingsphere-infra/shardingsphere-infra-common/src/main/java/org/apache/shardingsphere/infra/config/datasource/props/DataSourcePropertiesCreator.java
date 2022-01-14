@@ -40,7 +40,7 @@ public final class DataSourcePropertiesCreator {
      * @param dataSource data source
      * @return created data source properties
      */
-    public static DataSourceProperties createDataSourceProperties(final DataSource dataSource) {
+    public static DataSourceProperties create(final DataSource dataSource) {
         DataSourceProperties result = new DataSourceProperties(dataSource.getClass().getName());
         result.getProps().putAll(createProperties(dataSource));
         return result;

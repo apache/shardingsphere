@@ -28,8 +28,8 @@ import static org.junit.Assert.assertThat;
 public final class DataSourcePropertiesCreatorTest {
     
     @Test
-    public void assertCreateDataSourceProperties() {
-        assertThat(DataSourcePropertiesCreator.createDataSourceProperties(createDataSource()), is(createDataSourceProperties()));
+    public void assertCreate() {
+        assertThat(DataSourcePropertiesCreator.create(createDataSource()), is(createDataSourceProperties()));
     }
     
     private DataSource createDataSource() {
