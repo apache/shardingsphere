@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-grammar BaseRule;
+package org.apache.shardingsphere.distsql.parser.segment;
 
-import Symbol, Keyword, Literals;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-algorithmDefinition
-    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
-    ;
+import java.util.Properties;
 
-algorithmName
-    : IDENTIFIER
-    ;
-
-algorithmProperties
-    : algorithmProperty (COMMA algorithmProperty)*
-    ;
-
-algorithmProperty
-    : key=(IDENTIFIER | STRING) EQ value=(INT | IDENTIFIER | STRING)
-    ;
+/**
+ * Transaction provider segment.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class TransactionProviderSegment implements ASTNode {
+    
+    private final String providerType;
+    
+    private final Properties props;
+}

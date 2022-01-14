@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -58,7 +59,7 @@ public final class TransactionContextsBuilderTest {
         when(metaData.getResource().getDataSources()).thenReturn(createDataSourceMap());
         metaDataMap.put(DefaultSchema.LOGIC_NAME, metaData);
         Collection<ShardingSphereRule> globalRules = new LinkedList<>();
-        globalRules.add(new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null)));
+        globalRules.add(new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null, new Properties())));
         TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataMap, globalRules).build();
         Map<String, ShardingSphereTransactionManagerEngine> engines = transactionContexts.getEngines();
         assertThat(engines.size(), is(1));
