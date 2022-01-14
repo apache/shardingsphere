@@ -22,8 +22,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
@@ -375,7 +375,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private boolean isModifiedDataSource(final Map<String, DataSource> originalDataSources, final String dataSourceName, final DataSourceProperties dataSourceProps) {
-        DataSourceProperties originalDataSourceProps = DataSourcePoolCreatorUtil.getDataSourcePropertiesMap(originalDataSources).get(dataSourceName);
+        DataSourceProperties originalDataSourceProps = DataSourcePropertiesCreator.create(originalDataSources).get(dataSourceName);
         return null != originalDataSourceProps && !dataSourceProps.equals(originalDataSourceProps);
     }
     

@@ -21,7 +21,6 @@ import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.config.datasource.pool.destroyer.DataSourcePoolDestroyerFactory;
 import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.config.datasource.props.DataSourcePropertiesCreator;
@@ -112,7 +111,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     private Map<String, Map<String, DataSourceProperties>> getDataSourcePropertiesMaps(final Map<String, Map<String, DataSource>> dataSourcesMap) {
         Map<String, Map<String, DataSourceProperties>> result = new LinkedHashMap<>(dataSourcesMap.size(), 1);
         for (Entry<String, Map<String, DataSource>> entry : dataSourcesMap.entrySet()) {
-            result.put(entry.getKey(), DataSourcePoolCreatorUtil.getDataSourcePropertiesMap(entry.getValue()));
+            result.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
         }
         return result;
     }
