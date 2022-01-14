@@ -45,6 +45,8 @@ import java.util.function.Function;
  */
 public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
     
+    private static final int DEFAULT_COUNT = 0;
+    
     private static final String SINGLE_TABLE = "single_table";
     
     private static final String SHARDING = "sharding";
@@ -70,8 +72,6 @@ public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
     private static final Map<String, Class<? extends RuleConfiguration>> FEATURE_MAP = new HashMap<>(5);
     
     private Iterator<Collection<Object>> data;
-    
-    private final int defaultCount = 0;
     
     static {
         FEATURE_MAP.put(SHARDING, ShardingRuleConfiguration.class);
@@ -99,7 +99,7 @@ public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
         Optional<Integer> count = rules.stream().map(SingleTableRule::export)
                 .map(each -> (Collection) each.getOrDefault(ExportableConstants.SINGLE_TABLE_TABLES, Collections.emptyList()))
                 .map(Collection::size).reduce(Integer::sum);
-        dataMap.putIfAbsent(SINGLE_TABLE, buildRow(SINGLE_TABLE, TABLE, count.orElse(defaultCount)));
+        dataMap.putIfAbsent(SINGLE_TABLE, buildRow(SINGLE_TABLE, TABLE, count.orElse(DEFAULT_COUNT)));
     }
     
     private void addShardingData(final Map<String, Collection<Object>> dataMap, final RuleConfiguration ruleConfiguration) {
@@ -129,7 +129,7 @@ public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
                          final RuleConfiguration ruleConfiguration, final Function<RuleConfiguration, Integer> apply) {
         Class<? extends RuleConfiguration> clz = FEATURE_MAP.get(feature);
         if (!(ruleConfiguration.getClass().getCanonicalName().equals(clz.getCanonicalName()))) {
-            dataMap.putIfAbsent(dataKey, buildRow(feature, type, defaultCount));
+            dataMap.putIfAbsent(dataKey, buildRow(feature, type, DEFAULT_COUNT));
             return;
         }
         dataMap.put(dataKey, buildRow(feature, type, apply.apply(ruleConfiguration)));
