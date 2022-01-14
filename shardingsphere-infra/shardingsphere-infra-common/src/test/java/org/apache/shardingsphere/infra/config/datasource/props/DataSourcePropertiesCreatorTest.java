@@ -15,25 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.pool.metadata.impl;
+package org.apache.shardingsphere.infra.config.datasource.props;
 
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
+
+import javax.sql.DataSource;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class DefaultDataSourcePoolCreatorTest {
+public final class DataSourcePropertiesCreatorTest {
     
     @Test
-    public void assertCreateDataSource() {
-        MockedDataSource actual = (MockedDataSource) new DataSourcePoolCreator("Default").createDataSource(createDataSourceProperties());
-        assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
-        assertThat(actual.getUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
-        assertThat(actual.getUsername(), is("root"));
-        assertThat(actual.getPassword(), is("root"));
+    public void assertCreateDataSourceProperties() {
+        assertThat(new DataSourcePropertiesCreator("Default").createDataSourceProperties(createDataSource()), is(createDataSourceProperties()));
+    }
+    
+    private DataSource createDataSource() {
+        MockedDataSource result = new MockedDataSource();
+        result.setDriverClassName("org.h2.Driver");
+        result.setUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        result.setUsername("root");
+        result.setPassword("root");
+        return result;
     }
     
     private DataSourceProperties createDataSourceProperties() {
@@ -42,6 +47,7 @@ public final class DefaultDataSourcePoolCreatorTest {
         result.getProps().put("url", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         result.getProps().put("username", "root");
         result.getProps().put("password", "root");
+        result.getProps().put("maximumPoolSize", "-1");
         return result;
     }
 }

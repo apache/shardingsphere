@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.config.datasource.props.DataSourcePropert
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import javax.sql.DataSource;
-import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -36,39 +35,17 @@ public final class DataSourcePoolCreator {
         ShardingSphereServiceLoader.register(DataSourcePoolMetaData.class);
     }
     
-    private final DataSourcePoolMetaData creationMetaData;
+    private final DataSourcePoolMetaData poolMetaData;
     
     public DataSourcePoolCreator(final String dataSourceClassName) {
-        creationMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceClassName);
-    }
-    
-    /**
-     * Create data source properties.
-     * 
-     * @param dataSource data source
-     * @return data source properties
-     */
-    public DataSourceProperties createDataSourceProperties(final DataSource dataSource) {
-        DataSourceProperties result = new DataSourceProperties(dataSource.getClass().getName());
-        filterInvalidProperties(result, new DataSourceReflection(dataSource).convertToProperties());
-        return result;
-    }
-    
-    private void filterInvalidProperties(final DataSourceProperties dataSourceProps, final Map<String, Object> reflectionProps) {
-        for (Entry<String, Object> entry : reflectionProps.entrySet()) {
-            String propertyName = entry.getKey();
-            Object propertyValue = entry.getValue();
-            if (isValidProperty(propertyName, propertyValue)) {
-                dataSourceProps.getProps().put(propertyName, propertyValue);
-            }
-        }
+        poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceClassName);
     }
     
     /**
      * Create data source.
      * 
      * @param dataSourceProps data source properties
-     * @return data source
+     * @return created data source
      */
     public DataSource createDataSource(final DataSourceProperties dataSourceProps) {
         DataSource result = buildDataSource(dataSourceProps.getDataSourceClassName());
@@ -76,7 +53,7 @@ public final class DataSourcePoolCreator {
         DataSourceReflection dataSourceReflection = new DataSourceReflection(result);
         setDefaultFields(dataSourceReflection);
         setConfiguredFields(dataSourceProps, dataSourceReflection);
-        dataSourceReflection.addDefaultDataSourceProperties(creationMetaData.getJdbcUrlPropertiesFieldName(), creationMetaData.getJdbcUrlFieldName());
+        dataSourceReflection.addDefaultDataSourceProperties(poolMetaData.getJdbcUrlPropertiesFieldName(), poolMetaData.getJdbcUrlFieldName());
         return result;
     }
     
@@ -86,13 +63,13 @@ public final class DataSourcePoolCreator {
     }
     
     private void addPropertySynonym(final DataSourceProperties dataSourceProps) {
-        for (Entry<String, String> entry : creationMetaData.getPropertySynonyms().entrySet()) {
+        for (Entry<String, String> entry : poolMetaData.getPropertySynonyms().entrySet()) {
             dataSourceProps.addPropertySynonym(entry.getKey(), entry.getValue());
         }
     }
     
     private void setDefaultFields(final DataSourceReflection dataSourceReflection) {
-        for (Entry<String, Object> entry : creationMetaData.getDefaultProperties().entrySet()) {
+        for (Entry<String, Object> entry : poolMetaData.getDefaultProperties().entrySet()) {
             dataSourceReflection.setField(entry.getKey(), entry.getValue());
         }
     }
@@ -108,6 +85,6 @@ public final class DataSourcePoolCreator {
     }
     
     private boolean isValidProperty(final String key, final Object value) {
-        return !creationMetaData.getInvalidProperties().containsKey(key) || null == value || !value.equals(creationMetaData.getInvalidProperties().get(key));
+        return !poolMetaData.getInvalidProperties().containsKey(key) || null == value || !value.equals(poolMetaData.getInvalidProperties().get(key));
     }
 }

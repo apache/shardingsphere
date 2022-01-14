@@ -53,7 +53,7 @@ public final class DataSourcePropertiesTest {
         actualDataSource.setJdbcUrl("jdbc:mock://127.0.0.1/foo_ds");
         actualDataSource.setUsername("root");
         actualDataSource.setPassword("root");
-        DataSourceProperties actual = DataSourcePoolCreatorUtil.getDataSourceConfiguration(actualDataSource);
+        DataSourceProperties actual = DataSourcePoolCreatorUtil.getDataSourceProperties(actualDataSource);
         actual.addPropertySynonym("url", "jdbcUrl");
         actual.addPropertySynonym("user", "username");
         assertThat(actual.getDataSourceClassName(), is(HikariDataSource.class.getName()));
@@ -132,7 +132,7 @@ public final class DataSourcePropertiesTest {
         actualDataSource.setUsername("root");
         actualDataSource.setPassword("root");
         actualDataSource.setConnectionInitSqls(Arrays.asList("set names utf8mb4;", "set names utf8;"));
-        DataSourceProperties actual = DataSourcePoolCreatorUtil.getDataSourceConfiguration(actualDataSource);
+        DataSourceProperties actual = DataSourcePoolCreatorUtil.getDataSourceProperties(actualDataSource);
         assertThat(actual.getDataSourceClassName(), is(BasicDataSource.class.getName()));
         assertThat(actual.getProps().get("driverClassName").toString(), is(MockedDataSource.class.getCanonicalName()));
         assertThat(actual.getProps().get("url").toString(), is("jdbc:mock://127.0.0.1/foo_ds"));
