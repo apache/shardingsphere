@@ -41,7 +41,6 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import java.sql.Connection;
@@ -56,8 +55,6 @@ import java.util.Optional;
  */
 @Slf4j
 public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor implements InventoryDumper {
-    
-    private static final String PG_MONEY_TYPE = "money";
     
     @Getter(AccessLevel.PROTECTED)
     private final InventoryDumperConfiguration inventoryDumperConfig;
@@ -186,18 +183,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     protected abstract PreparedStatement createPreparedStatement(Connection connection, String sql) throws SQLException;
     
     protected Object readValue(final ResultSet resultSet, final int index) throws SQLException {
-        if (isPgMoneyType(resultSet, index)) {
-            return resultSet.getBigDecimal(index);
-        }
         return resultSet.getObject(index);
-    }
-    
-    private boolean isPgMoneyType(final ResultSet resultSet, final int index) throws SQLException {
-        String databaseTypeName = inventoryDumperConfig.getDataSourceConfig().getDatabaseType().getName();
-        if (new PostgreSQLDatabaseType().getName().equalsIgnoreCase(databaseTypeName)) {
-            return PG_MONEY_TYPE.equalsIgnoreCase(resultSet.getMetaData().getColumnTypeName(index));
-        }
-        return false;
     }
     
     private void pushRecord(final Record record) {
