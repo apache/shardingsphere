@@ -38,7 +38,7 @@ public final class ShowScalingListQueryResultSet implements DistSQLResultSet {
     
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        data = PipelineJobAPIFactory.getPipelineJobAPI().list().stream()
+        data = PipelineJobAPIFactory.getRuleAlteredJobAPI().list().stream()
                 .map(each -> {
                     Collection<Object> list = new LinkedList<>();
                     list.add(each.getJobId());

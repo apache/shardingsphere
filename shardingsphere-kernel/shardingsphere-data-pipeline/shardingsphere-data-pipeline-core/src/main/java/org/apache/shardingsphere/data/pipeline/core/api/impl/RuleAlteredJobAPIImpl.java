@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.HandleConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
@@ -70,8 +70,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Slf4j
-// TODO replace RuleAltered
-public final class PipelineJobAPIImpl implements PipelineJobAPI {
+public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl implements RuleAlteredJobAPI {
     
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
@@ -80,7 +79,7 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     
     @Override
     public boolean isDefault() {
-        return true;
+        return false;
     }
     
     @Override
@@ -135,15 +134,6 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     @Override
-    public void startDisabledJob(final String jobId) {
-        log.info("Start disabled job {}", jobId);
-        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        jobConfigPOJO.setDisabled(false);
-        jobConfigPOJO.getProps().remove("stop_time");
-        PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
-    }
-    
-    @Override
     public Optional<String> start(final JobConfiguration jobConfig) {
         jobConfig.buildHandleConfig();
         if (jobConfig.getHandleConfig().getJobShardingCount() == 0) {
@@ -165,34 +155,6 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
         jobConfigPOJO.setJobParameter(YamlEngine.marshal(jobConfig));
         jobConfigPOJO.getProps().setProperty("create_time", LocalDateTime.now().format(DATE_TIME_FORMATTER));
         return YamlEngine.marshal(jobConfigPOJO);
-    }
-    
-    @Override
-    public void stop(final String jobId) {
-        log.info("Stop scaling job {}", jobId);
-        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        jobConfigPOJO.setDisabled(true);
-        jobConfigPOJO.getProps().setProperty("stop_time", LocalDateTime.now().format(DATE_TIME_FORMATTER));
-        PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
-    }
-    
-    @Override
-    public void remove(final String jobId) {
-        log.info("Remove scaling job {}", jobId);
-        PipelineAPIFactory.getJobOperateAPI().remove(String.valueOf(jobId), null);
-        PipelineAPIFactory.getGovernanceRepositoryAPI().deleteJob(jobId);
-    }
-    
-    @Override
-    public Map<Integer, JobProgress> getProgress(final String jobId) {
-        return IntStream.range(0, getJobConfig(jobId).getHandleConfig().getJobShardingCount()).boxed().collect(LinkedHashMap::new, (map, each) -> {
-            JobProgress jobProgress = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobId, each);
-            JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-            if (jobProgress != null) {
-                jobProgress.setActive(!jobConfigPOJO.isDisabled());
-            }
-            map.put(each, jobProgress);
-        }, LinkedHashMap::putAll);
     }
     
     @Override
@@ -311,6 +273,18 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
         } catch (final SQLException ex) {
             throw new PipelineJobExecutionException("Reset target table failed for job " + jobId);
         }
+    }
+    
+    @Override
+    public Map<Integer, JobProgress> getProgress(final String jobId) {
+        return IntStream.range(0, getJobConfig(jobId).getHandleConfig().getJobShardingCount()).boxed().collect(LinkedHashMap::new, (map, each) -> {
+            JobProgress jobProgress = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobId, each);
+            JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+            if (null != jobProgress) {
+                jobProgress.setActive(!jobConfigPOJO.isDisabled());
+            }
+            map.put(each, jobProgress);
+        }, LinkedHashMap::putAll);
     }
     
     @Override

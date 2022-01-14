@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.core.job;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCompletedParameter;
@@ -38,11 +38,11 @@ import java.util.Map;
 @Slf4j
 public final class FinishedCheckJob implements SimpleJob {
     
-    private final PipelineJobAPI pipelineJobAPI = PipelineJobAPIFactory.getPipelineJobAPI();
+    private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = PipelineJobAPIFactory.getRuleAlteredJobAPI();
     
     @Override
     public void execute(final ShardingContext shardingContext) {
-        List<JobInfo> jobInfos = pipelineJobAPI.list();
+        List<JobInfo> jobInfos = RULE_ALTERED_JOB_API.list();
         for (JobInfo jobInfo : jobInfos) {
             if (!jobInfo.isActive()) {
                 continue;
@@ -56,7 +56,7 @@ public final class FinishedCheckJob implements SimpleJob {
                     log.info("completionDetector not configured, auto switch will not be enabled. You could query job progress and switch config manually with DistSQL.");
                     continue;
                 }
-                RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobInfo.getShardingTotalCount(), pipelineJobAPI.getProgress(jobId).values());
+                RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobInfo.getShardingTotalCount(), RULE_ALTERED_JOB_API.getProgress(jobId).values());
                 if (!ruleAlteredContext.getCompletionDetectAlgorithm().isAlmostCompleted(parameter)) {
                     continue;
                 }
@@ -67,9 +67,9 @@ public final class FinishedCheckJob implements SimpleJob {
                     if (null != sourceWritingStopAlgorithm) {
                         sourceWritingStopAlgorithm.lock(schemaName, jobId + "");
                     }
-                    if (!pipelineJobAPI.isDataConsistencyCheckNeeded(jobId)) {
+                    if (!RULE_ALTERED_JOB_API.isDataConsistencyCheckNeeded(jobId)) {
                         log.info("dataConsistencyCheckAlgorithm is not configured, data consistency check is ignored.");
-                        pipelineJobAPI.switchClusterConfiguration(jobId);
+                        RULE_ALTERED_JOB_API.switchClusterConfiguration(jobId);
                         continue;
                     }
                     if (!dataConsistencyCheck(jobId)) {
@@ -93,8 +93,8 @@ public final class FinishedCheckJob implements SimpleJob {
     }
     
     private boolean dataConsistencyCheck(final String jobId) {
-        Map<String, DataConsistencyCheckResult> checkResultMap = pipelineJobAPI.dataConsistencyCheck(jobId);
-        return pipelineJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap);
+        Map<String, DataConsistencyCheckResult> checkResultMap = RULE_ALTERED_JOB_API.dataConsistencyCheck(jobId);
+        return RULE_ALTERED_JOB_API.aggregateDataConsistencyCheckResults(jobId, checkResultMap);
     }
     
     private void switchClusterConfiguration(final String schemaName, final String jobId, final RuleBasedJobLockAlgorithm checkoutLockAlgorithm) {
@@ -102,7 +102,7 @@ public final class FinishedCheckJob implements SimpleJob {
             if (null != checkoutLockAlgorithm) {
                 checkoutLockAlgorithm.lock(schemaName, jobId + "");
             }
-            pipelineJobAPI.switchClusterConfiguration(jobId);
+            RULE_ALTERED_JOB_API.switchClusterConfiguration(jobId);
         } finally {
             if (null != checkoutLockAlgorithm) {
                 checkoutLockAlgorithm.releaseLock(schemaName, jobId + "");

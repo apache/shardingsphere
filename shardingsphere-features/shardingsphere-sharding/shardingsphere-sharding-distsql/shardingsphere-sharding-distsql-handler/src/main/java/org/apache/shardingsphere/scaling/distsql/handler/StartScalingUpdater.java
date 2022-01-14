@@ -28,7 +28,7 @@ public final class StartScalingUpdater implements RALUpdater<StartScalingStateme
     
     @Override
     public void executeUpdate(final StartScalingStatement sqlStatement) {
-        PipelineJobAPIFactory.getPipelineJobAPI().startDisabledJob(sqlStatement.getJobId());
+        PipelineJobAPIFactory.getRuleAlteredJobAPI().startDisabledJob(sqlStatement.getJobId());
     }
     
     @Override

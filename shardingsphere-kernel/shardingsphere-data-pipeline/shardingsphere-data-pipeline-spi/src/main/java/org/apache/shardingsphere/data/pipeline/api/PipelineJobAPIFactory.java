@@ -24,15 +24,15 @@ import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
  */
 public final class PipelineJobAPIFactory {
     
-    private static final PipelineJobAPI PIPELINE_JOB_API = RequiredSPIRegistry.getRegisteredService(PipelineJobAPI.class);
+    private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobAPI.class);
     
     /**
-     * Get {@linkplain PipelineJobAPI}.
+     * Get {@linkplain RuleAlteredJobAPI}.
      *
      * @return pipeline job API
      */
-    public static PipelineJobAPI getPipelineJobAPI() {
+    public static RuleAlteredJobAPI getRuleAlteredJobAPI() {
         // TODO checkServerConfig()
-        return PIPELINE_JOB_API;
+        return RULE_ALTERED_JOB_API;
     }
 }
