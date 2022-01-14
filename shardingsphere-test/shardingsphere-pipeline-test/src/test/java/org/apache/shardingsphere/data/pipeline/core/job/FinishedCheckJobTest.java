@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.data.pipeline.core.job;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
-import org.apache.shardingsphere.data.pipeline.core.util.RuleAlteredContextUtil;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -44,38 +44,38 @@ public final class FinishedCheckJobTest {
     private static FinishedCheckJob finishedCheckJob;
     
     @Mock
-    private PipelineJobAPI pipelineJobAPI;
+    private RuleAlteredJobAPI ruleAlteredJobAPI;
     
     @BeforeClass
     public static void beforeClass() {
         EmbedTestingServer.start();
-        RuleAlteredContextUtil.mockModeConfig();
+        PipelineContextUtil.mockModeConfig();
         finishedCheckJob = new FinishedCheckJob();
     }
     
     @Before
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
-        ReflectionUtil.setFieldValue(finishedCheckJob, "pipelineJobAPI", pipelineJobAPI);
+        ReflectionUtil.setFieldValue(finishedCheckJob, "ruleAlteredJobAPI", ruleAlteredJobAPI);
     }
     
     @Test
     public void assertExecuteAllDisabledJob() {
-        Optional<String> jobId = PipelineJobAPIFactory.getPipelineJobAPI().start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = PipelineJobAPIFactory.getRuleAlteredJobAPI().start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
-        List<JobInfo> jobInfos = PipelineJobAPIFactory.getPipelineJobAPI().list();
+        List<JobInfo> jobInfos = PipelineJobAPIFactory.getRuleAlteredJobAPI().list();
         jobInfos.forEach(each -> each.setActive(false));
-        when(pipelineJobAPI.list()).thenReturn(jobInfos);
+        when(ruleAlteredJobAPI.list()).thenReturn(jobInfos);
         finishedCheckJob.execute(null);
     }
     
     @Test
     public void assertExecuteActiveJob() {
-        Optional<String> jobId = PipelineJobAPIFactory.getPipelineJobAPI().start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = PipelineJobAPIFactory.getRuleAlteredJobAPI().start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
-        List<JobInfo> jobInfos = PipelineJobAPIFactory.getPipelineJobAPI().list();
+        List<JobInfo> jobInfos = PipelineJobAPIFactory.getRuleAlteredJobAPI().list();
         jobInfos.forEach(each -> each.setActive(true));
-        when(pipelineJobAPI.list()).thenReturn(jobInfos);
+        when(ruleAlteredJobAPI.list()).thenReturn(jobInfos);
         finishedCheckJob.execute(null);
     }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.type.complex;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;

@@ -34,5 +34,5 @@ import java.util.LinkedList;
 @ToString
 public final class MySQLLoadIndexInfoStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
-    private Collection<LoadTableIndexSegment> tableIndexes = new LinkedList<>();
+    private final Collection<LoadTableIndexSegment> tableIndexes = new LinkedList<>();
 }

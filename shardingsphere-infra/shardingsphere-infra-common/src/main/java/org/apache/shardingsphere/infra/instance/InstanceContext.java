@@ -51,4 +51,15 @@ public final class InstanceContext {
     private void switchInstanceState(final Collection<String> status) {
         state.switchState(StateType.CIRCUIT_BREAK, null != status && status.contains(StateType.CIRCUIT_BREAK.name()));
     }
+    
+    /**
+     * Update instance worker id.
+     * 
+     * @param workerId worker id
+     */
+    public void updateWorkerId(final Long workerId) {
+        if (workerId != instance.getWorkerId()) {
+            instance.setWorkerId(workerId);
+        }
+    }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.inform
 
 import com.zaxxer.hikari.pool.HikariProxyResultSet;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.check.SQLChecker;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -117,7 +117,7 @@ public final class SelectInformationExecutorTest {
         );
     }
     
-    private ShardingSphereMetaData getEmptyMetaData(final String schemaName) throws SQLException {
+    private ShardingSphereMetaData getEmptyMetaData(final String schemaName) {
         ShardingSphereRuleMetaData metaData = mock(ShardingSphereRuleMetaData.class);
         when(metaData.getRules()).thenReturn(Collections.singletonList(mock(AuthorityRule.class, RETURNS_DEEP_STUBS)));
         return new ShardingSphereMetaData(schemaName,
