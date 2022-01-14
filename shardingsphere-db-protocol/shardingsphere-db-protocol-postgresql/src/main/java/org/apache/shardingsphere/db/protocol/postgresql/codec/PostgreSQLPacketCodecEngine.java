@@ -47,19 +47,19 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
     
     private static final int PAYLOAD_LENGTH = 4;
     
-    private boolean startupPhase = true;
+    private boolean startupMessageReceived = true;
     
     private final List<ByteBuf> pendingMessages = new LinkedList<>();
     
     @Override
     public boolean isValidHeader(final int readableBytes) {
-        return readableBytes >= (startupPhase ? 0 : MESSAGE_TYPE_LENGTH) + PAYLOAD_LENGTH;
+        return readableBytes >= (startupMessageReceived ? 0 : MESSAGE_TYPE_LENGTH) + PAYLOAD_LENGTH;
     }
     
     @Override
     public void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
         while (isValidHeader(in.readableBytes())) {
-            if (startupPhase) {
+            if (startupMessageReceived) {
                 handleStartupPhase(in, out);
                 return;
             }
@@ -87,7 +87,7 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
         }
         if (in.readableBytes() == in.getInt(readerIndex)) {
             out.add(in.readRetainedSlice(in.readableBytes()));
-            startupPhase = false;
+            startupMessageReceived = false;
         }
     }
     

@@ -82,7 +82,7 @@ public enum PostgreSQLCommandPacketType implements CommandPacketType, PostgreSQL
      * @param commandPacketType command packet type
      * @return is extended protocol packet type
      */
-    public static boolean isExtendedProtocolPacketType(final PostgreSQLCommandPacketType commandPacketType) {
+    public static boolean isExtendedProtocolPacketType(final CommandPacketType commandPacketType) {
         return EXTENDED_PROTOCOL_PACKET_TYPE.contains(commandPacketType);
     }
 }
