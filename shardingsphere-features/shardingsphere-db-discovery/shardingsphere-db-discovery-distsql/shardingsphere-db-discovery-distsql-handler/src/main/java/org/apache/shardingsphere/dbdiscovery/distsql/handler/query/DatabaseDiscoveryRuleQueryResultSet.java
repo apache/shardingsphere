@@ -73,7 +73,7 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
                 .stream().filter(each -> each instanceof ExportableRule)
                 .filter(each -> ((ExportableRule) each).containExportableKey(Collections.singleton(ExportableConstants.PRIMARY_DATA_SOURCE_KEY)))
                 .map(each -> (ExportableRule) each).findAny();
-        primaryDataSources = (Map<String, String>) (exportableRule.map(optional -> optional.export(ExportableConstants.PRIMARY_DATA_SOURCE_KEY)).orElse(Collections.emptyMap()));
+        primaryDataSources = (Map<String, String>) (exportableRule.map(optional -> optional.export(ExportableConstants.PRIMARY_DATA_SOURCE_KEY)).orElseGet(Collections::emptyMap));
     }
     
     @Override
