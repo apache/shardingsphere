@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.After;
@@ -89,9 +90,9 @@ public final class ConnectionManagerTest {
     }
     
     private Map<String, DataSource> mockTrafficDataSourceMap() {
-        Map<String, DataSource> trafficDataSourceMap = new LinkedHashMap<>();
-        trafficDataSourceMap.put("127.0.0.1@3307", mock(DataSource.class));
-        return trafficDataSourceMap;
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        result.put("127.0.0.1@3307", new MockedDataSource());
+        return result;
     }
     
     private MetaDataPersistService mockMetaDataPersistService() {
@@ -127,7 +128,7 @@ public final class ConnectionManagerTest {
     
     private Map<String, DataSource> mockDataSourceMap() throws SQLException {
         Map<String, DataSource> result = new HashMap<>(2, 1);
-        result.put("ds", mock(DataSource.class, RETURNS_DEEP_STUBS));
+        result.put("ds", new MockedDataSource());
         DataSource invalidDataSource = mock(DataSource.class);
         when(invalidDataSource.getConnection()).thenThrow(new SQLException());
         result.put("invalid_ds", invalidDataSource);

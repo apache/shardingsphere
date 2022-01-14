@@ -27,12 +27,23 @@ import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Data source properties creator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourcePropertiesCreator {
+    
+    /**
+     * Create data source properties.
+     *
+     * @param dataSourceMap data source map
+     * @return created data source properties
+     */
+    public static Map<String, DataSourceProperties> create(final Map<String, DataSource> dataSourceMap) {
+        return dataSourceMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getValue()), (a, b) -> b, LinkedHashMap::new));
+    }
     
     /**
      * Create data source properties.
