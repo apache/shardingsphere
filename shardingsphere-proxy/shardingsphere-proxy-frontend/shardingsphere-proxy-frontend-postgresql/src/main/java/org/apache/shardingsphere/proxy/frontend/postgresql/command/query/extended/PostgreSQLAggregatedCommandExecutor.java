@@ -15,25 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.postgresql.command.generic;
+package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
-import org.junit.Test;
+import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
+import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class PostgreSQLUnsupportedCommandExecutorTest {
+@RequiredArgsConstructor
+public final class PostgreSQLAggregatedCommandExecutor implements CommandExecutor {
     
-    @Test
-    public void assertExecute() {
-        PostgreSQLUnsupportedCommandExecutor commandExecutor = new PostgreSQLUnsupportedCommandExecutor();
-        Collection<DatabasePacket<?>> actual = commandExecutor.execute();
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), instanceOf(PostgreSQLErrorResponsePacket.class));
+    private final List<CommandExecutor> executors;
+    
+    @Override
+    public Collection<DatabasePacket<?>> execute() throws SQLException {
+        List<DatabasePacket<?>> result = new LinkedList<>();
+        for (CommandExecutor each : executors) {
+            try {
+                result.addAll(each.execute());
+            } finally {
+                each.close();
+            }
+        }
+        return result;
     }
 }

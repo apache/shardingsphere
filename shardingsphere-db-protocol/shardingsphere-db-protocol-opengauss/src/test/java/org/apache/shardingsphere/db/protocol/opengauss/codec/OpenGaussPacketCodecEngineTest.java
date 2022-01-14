@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.codec;
+package org.apache.shardingsphere.db.protocol.opengauss.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -46,7 +46,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PostgreSQLPacketCodecEngineTest {
+public final class OpenGaussPacketCodecEngineTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ChannelHandlerContext context;
@@ -61,33 +61,33 @@ public final class PostgreSQLPacketCodecEngineTest {
     
     @Test
     public void assertIsValidHeader() {
-        assertTrue(new PostgreSQLPacketCodecEngine().isValidHeader(50));
+        assertTrue(new OpenGaussPacketCodecEngine().isValidHeader(50));
     }
     
     @Test
     public void assertIsInvalidHeader() {
-        assertTrue(new PostgreSQLPacketCodecEngine().isValidHeader(4));
+        assertTrue(new OpenGaussPacketCodecEngine().isValidHeader(4));
     }
     
     @Test
     public void assertDecode() {
         when(byteBuf.readableBytes()).thenReturn(51, 47, 0);
         List<Object> out = new LinkedList<>();
-        new PostgreSQLPacketCodecEngine().decode(context, byteBuf, out);
+        new OpenGaussPacketCodecEngine().decode(context, byteBuf, out);
         assertThat(out.size(), is(1));
     }
     
     @Test
     public void assertDecodeWithStickyPacket() {
         List<Object> out = new LinkedList<>();
-        new PostgreSQLPacketCodecEngine().decode(context, byteBuf, out);
+        new OpenGaussPacketCodecEngine().decode(context, byteBuf, out);
         assertTrue(out.isEmpty());
     }
     
     @Test
     public void assertEncodePostgreSQLPacket() {
         PostgreSQLPacket packet = mock(PostgreSQLPacket.class);
-        new PostgreSQLPacketCodecEngine().encode(context, packet, byteBuf);
+        new OpenGaussPacketCodecEngine().encode(context, packet, byteBuf);
         verify(packet).write(any(PostgreSQLPacketPayload.class));
     }
     
@@ -96,7 +96,7 @@ public final class PostgreSQLPacketCodecEngineTest {
         PostgreSQLIdentifierPacket packet = mock(PostgreSQLIdentifierPacket.class);
         when(packet.getIdentifier()).thenReturn(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST);
         when(byteBuf.readableBytes()).thenReturn(9);
-        new PostgreSQLPacketCodecEngine().encode(context, packet, byteBuf);
+        new OpenGaussPacketCodecEngine().encode(context, packet, byteBuf);
         verify(byteBuf).writeByte(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST.getValue());
         verify(byteBuf).writeInt(0);
         verify(packet).write(any(PostgreSQLPacketPayload.class));
@@ -110,7 +110,7 @@ public final class PostgreSQLPacketCodecEngineTest {
         when(ex.getMessage()).thenReturn("Error");
         doThrow(ex).when(packet).write(any(PostgreSQLPacketPayload.class));
         when(byteBuf.readableBytes()).thenReturn(9);
-        new PostgreSQLPacketCodecEngine().encode(context, packet, byteBuf);
+        new OpenGaussPacketCodecEngine().encode(context, packet, byteBuf);
         verify(byteBuf).resetWriterIndex();
         verify(byteBuf).writeByte(PostgreSQLMessagePacketType.ERROR_RESPONSE.getValue());
         verify(byteBuf).setInt(1, 8);
@@ -118,6 +118,6 @@ public final class PostgreSQLPacketCodecEngineTest {
     
     @Test
     public void assertCreatePacketPayload() {
-        assertThat(new PostgreSQLPacketCodecEngine().createPacketPayload(byteBuf, StandardCharsets.UTF_8).getByteBuf(), is(byteBuf));
+        assertThat(new OpenGaussPacketCodecEngine().createPacketPayload(byteBuf, StandardCharsets.UTF_8).getByteBuf(), is(byteBuf));
     }
 }

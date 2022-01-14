@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.opengauss.command.query.extended.bind;
+package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended;
 
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatement;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLTypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -59,9 +60,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Batched inserts executor for openGauss.
+ * Batched inserts executor for PostgreSQL.
  */
-public final class OpenGaussBatchedInsertsExecutor {
+public final class PostgreSQLBatchedInsertsExecutor {
     
     private final KernelProcessor kernelProcessor = new KernelProcessor();
     
@@ -79,7 +80,7 @@ public final class OpenGaussBatchedInsertsExecutor {
     
     private ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext;
     
-    public OpenGaussBatchedInsertsExecutor(final ConnectionSession connectionSession, final PostgreSQLPreparedStatement preparedStatement, final List<List<Object>> parameterSets) {
+    public PostgreSQLBatchedInsertsExecutor(final ConnectionSession connectionSession, final PostgreSQLPreparedStatement preparedStatement, final List<List<Object>> parameterSets) {
         this.connectionSession = connectionSession;
         metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         this.preparedStatement = preparedStatement;
@@ -136,7 +137,12 @@ public final class OpenGaussBatchedInsertsExecutor {
         for (List<Object> eachGroupParameter : executionUnitParameters.getOrDefault(jdbcExecutionUnit.getExecutionUnit(), Collections.emptyList())) {
             ListIterator<Object> parametersIterator = eachGroupParameter.listIterator();
             while (parametersIterator.hasNext()) {
-                preparedStatement.setObject(parametersIterator.nextIndex() + 1, parametersIterator.next());
+                int parameterIndex = parametersIterator.nextIndex() + 1;
+                Object value = parametersIterator.next();
+                if (value instanceof PostgreSQLTypeUnspecifiedSQLParameter) {
+                    value = value.toString();
+                }
+                preparedStatement.setObject(parameterIndex, value);
             }
             preparedStatement.addBatch();
         }

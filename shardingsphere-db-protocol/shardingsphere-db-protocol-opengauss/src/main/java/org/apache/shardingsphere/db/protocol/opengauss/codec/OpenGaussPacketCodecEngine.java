@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.codec;
+package org.apache.shardingsphere.db.protocol.opengauss.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
+import org.apache.shardingsphere.db.protocol.opengauss.packet.command.OpenGaussCommandPacketType;
+import org.apache.shardingsphere.db.protocol.opengauss.packet.command.generic.OpenGaussErrorResponsePacket;
+import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
@@ -35,9 +37,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Database packet codec for PostgreSQL.
+ * Database packet codec for openGauss.
  */
-public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEngine<PostgreSQLPacket> {
+public final class OpenGaussPacketCodecEngine implements DatabasePacketCodecEngine<PostgreSQLPacket> {
     
     private static final int SSL_REQUEST_PAYLOAD_LENGTH = 8;
     
@@ -68,7 +70,7 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
                 return;
             }
             byte type = in.getByte(in.readerIndex());
-            PostgreSQLCommandPacketType commandPacketType = PostgreSQLCommandPacketType.valueOf(type);
+            CommandPacketType commandPacketType = OpenGaussCommandPacketType.valueOf(type);
             if (requireAggregation(commandPacketType)) {
                 pendingMessages.add(in.readRetainedSlice(MESSAGE_TYPE_LENGTH + payloadLength));
             } else if (!pendingMessages.isEmpty()) {
@@ -91,8 +93,8 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
         }
     }
     
-    private boolean requireAggregation(final PostgreSQLCommandPacketType commandPacketType) {
-        return PostgreSQLCommandPacketType.isExtendedProtocolPacketType(commandPacketType)
+    private boolean requireAggregation(final CommandPacketType commandPacketType) {
+        return OpenGaussCommandPacketType.isExtendedProtocolPacketType(commandPacketType)
                 && PostgreSQLCommandPacketType.SYNC_COMMAND != commandPacketType && PostgreSQLCommandPacketType.FLUSH_COMMAND != commandPacketType;
     }
     
@@ -117,8 +119,7 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
             // CHECKSTYLE:ON
             payload.getByteBuf().resetWriterIndex();
             // TODO consider what severity to use
-            PostgreSQLErrorResponsePacket errorResponsePacket = PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.SYSTEM_ERROR, ex.getMessage())
-                    .build();
+            OpenGaussErrorResponsePacket errorResponsePacket = new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.SYSTEM_ERROR.getErrorCode(), ex.getMessage());
             isPostgreSQLIdentifierPacket = true;
             prepareMessageHeader(out, errorResponsePacket.getIdentifier().getValue());
             errorResponsePacket.write(payload);
