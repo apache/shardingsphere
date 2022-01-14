@@ -23,8 +23,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.Loc
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.event.LockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.InnerLockReleasedEvent;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
