@@ -22,11 +22,12 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
+import org.apache.shardingsphere.infra.config.datasource.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -38,7 +39,6 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
-import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
@@ -69,17 +69,19 @@ public final class ContextManager implements AutoCloseable {
     
     private volatile TransactionContexts transactionContexts = new TransactionContexts();
     
-    private final StateContext stateContext = new StateContext();
+    private volatile InstanceContext instanceContext;
     
     /**
      * Initialize context manager.
      *
      * @param metaDataContexts meta data contexts
      * @param transactionContexts transaction contexts
+     * @param instanceContext instance context                           
      */
-    public void init(final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts) {
+    public void init(final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final InstanceContext instanceContext) {
         this.metaDataContexts = metaDataContexts;
         this.transactionContexts = transactionContexts;
+        this.instanceContext = instanceContext;
     }
     
     /**

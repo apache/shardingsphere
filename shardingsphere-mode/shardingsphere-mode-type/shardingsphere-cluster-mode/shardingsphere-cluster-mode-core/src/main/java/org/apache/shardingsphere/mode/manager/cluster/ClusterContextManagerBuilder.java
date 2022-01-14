@@ -22,8 +22,9 @@ import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
-import org.apache.shardingsphere.infra.config.datasource.pool.destroyer.DataSourcePoolDestroyerFactory;
+import org.apache.shardingsphere.infra.config.datasource.creator.DataSourcePoolCreatorUtil;
+import org.apache.shardingsphere.infra.config.datasource.destroyer.DataSourcePoolDestroyerFactory;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceDefinition;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -77,13 +78,15 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private TransactionContexts transactionContexts;
     
+    private InstanceContext instanceContext;
+    
     private ContextManager contextManager;
     
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
         beforeBuildContextManager(parameter);
         contextManager = new ContextManager();
-        contextManager.init(metaDataContexts, transactionContexts);
+        contextManager.init(metaDataContexts, transactionContexts, instanceContext);
         afterBuildContextManager(parameter);
         return contextManager;
     }
@@ -106,6 +109,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         metaDataContexts = new MetaDataContextsBuilder(clusterDataSources, clusterSchemaRuleConfigs, metaDataPersistService.getGlobalRuleService().load(), schemas, rules, clusterProps)
                 .build(metaDataPersistService);
         transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
+        instanceContext = new InstanceContext(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(parameter.getInstanceDefinition()));
     }
     
     private void afterBuildContextManager(final ContextManagerBuilderParameter parameter) {

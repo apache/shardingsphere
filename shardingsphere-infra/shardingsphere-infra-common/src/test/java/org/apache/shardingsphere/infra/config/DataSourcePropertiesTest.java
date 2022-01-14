@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.config;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
+import org.apache.shardingsphere.infra.config.datasource.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Rule;
 import org.junit.Test;

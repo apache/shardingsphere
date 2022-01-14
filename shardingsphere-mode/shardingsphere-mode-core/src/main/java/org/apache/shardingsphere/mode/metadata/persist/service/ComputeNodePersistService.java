@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.metadata.persist.service;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.InstanceType;
@@ -34,6 +35,7 @@ import java.util.List;
 /**
  * Compute node persist service.
  */
+@Slf4j
 @RequiredArgsConstructor
 public final class ComputeNodePersistService {
     
@@ -47,6 +49,16 @@ public final class ComputeNodePersistService {
      */
     public void persistInstanceLabels(final String instanceId, final Collection<String> labels) {
         repository.persist(ComputeNode.getInstanceLabelNodePath(instanceId), YamlEngine.marshal(labels));
+    }
+    
+    /**
+     * Persist instance worker id.
+     * 
+     * @param instanceId instance id
+     * @param workerId worker id
+     */
+    public void persistInstanceWorkerId(final String instanceId, final Integer workerId) {
+        repository.persist(ComputeNode.getInstanceWorkerIdNodePath(instanceId), String.valueOf(workerId));
     }
     
     /**
@@ -72,6 +84,21 @@ public final class ComputeNodePersistService {
     }
     
     /**
+     * Load instance worker id.
+     *
+     * @param instanceId instance id
+     * @return worker id
+     */
+    public Integer loadInstanceWorkerId(final String instanceId) {
+        try {
+            return Integer.valueOf(repository.get(ComputeNode.getInstanceWorkerIdNodePath(instanceId)));
+        } catch (final NumberFormatException ex) {
+            log.error("Invalid worker id for instance: {}", instanceId);
+        }
+        return null;
+    }
+    
+    /**
      * Load compute node instances by instance type and labels.
      *
      * @param instanceType instance type
@@ -88,6 +115,7 @@ public final class ComputeNodePersistService {
                 instance.setInstanceDefinition(new InstanceDefinition(instanceType, each));
                 instance.setLabels(actualLabels);
                 instance.setStatus(loadInstanceStatus(each));
+                instance.setWorkerId(loadInstanceWorkerId(each));
                 result.add(instance);
             }
         });
@@ -103,14 +131,23 @@ public final class ComputeNodePersistService {
         Collection<ComputeNodeInstance> result = new ArrayList<>();
         Arrays.stream(InstanceType.values()).forEach(instanceType -> {
             Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
-            onlineComputeNodes.forEach(each -> {
-                ComputeNodeInstance instance = new ComputeNodeInstance();
-                instance.setInstanceDefinition(new InstanceDefinition(instanceType, each));
-                instance.setLabels(loadInstanceLabels(each));
-                instance.setStatus(loadInstanceStatus(each));
-                result.add(instance);
-            });
+            onlineComputeNodes.forEach(each -> result.add(loadComputeNodeInstance(new InstanceDefinition(instanceType, each))));
         });
+        return result;
+    }
+    
+    /**
+     * Load compute node instance by instance definition.
+     * 
+     * @param instanceDefinition instance definition
+     * @return compute node instance
+     */
+    public ComputeNodeInstance loadComputeNodeInstance(final InstanceDefinition instanceDefinition) {
+        ComputeNodeInstance result = new ComputeNodeInstance();
+        result.setInstanceDefinition(instanceDefinition);
+        result.setLabels(loadInstanceLabels(instanceDefinition.getInstanceId().getId()));
+        result.setStatus(loadInstanceStatus(instanceDefinition.getInstanceId().getId()));
+        result.setWorkerId(loadInstanceWorkerId(instanceDefinition.getInstanceId().getId()));
         return result;
     }
 }

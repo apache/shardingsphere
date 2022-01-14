@@ -55,8 +55,8 @@ stopScalingSourceWriting
     : STOP SCALING SOURCE WRITING jobId
     ;
 
-checkoutScaling
-    : CHECKOUT SCALING jobId
+applyScaling
+    : APPLY SCALING jobId
     ;
 
 jobId

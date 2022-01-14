@@ -35,3 +35,5 @@ org.apache.shardingsphere.sharding.distsql.handler.update.AlterDefaultShardingSt
 org.apache.shardingsphere.sharding.distsql.handler.update.DropDefaultStrategyStatementUpdater
 org.apache.shardingsphere.scaling.distsql.handler.CreateShardingScalingStatementUpdater
 org.apache.shardingsphere.scaling.distsql.handler.DropShardingScalingStatementUpdater
+org.apache.shardingsphere.scaling.distsql.handler.EnableShardingScalingStatementUpdater
+org.apache.shardingsphere.scaling.distsql.handler.DisableShardingScalingStatementUpdater
