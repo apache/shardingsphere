@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSource
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.config.datasource.pool.destroyer.DataSourcePoolDestroyerFactory;
 import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -140,8 +141,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
             Map<String, DataSourceProperties> loadDataSourcePropsMap = loadedDataSourcePropsMaps.get(each.getKey());
             for (Entry<String, DataSourceProperties> entry : loadDataSourcePropsMap.entrySet()) {
                 Map<String, DataSource> localDataSources = localDataSourcesMap.get(each.getKey());
-                if (null != localDataSources && null != localDataSources.get(entry.getKey())
-                        && DataSourcePoolCreatorUtil.getDataSourceProperties(localDataSources.get(entry.getKey())).equals(entry.getValue())) {
+                if (null != localDataSources && null != localDataSources.get(entry.getKey()) && DataSourcePropertiesCreator.create(localDataSources.get(entry.getKey())).equals(entry.getValue())) {
                     dataSources.put(entry.getKey(), localDataSources.get(entry.getKey()));
                 } else {
                     dataSources.put(entry.getKey(), DataSourcePoolCreator.create(entry.getValue()));

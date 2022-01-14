@@ -23,7 +23,7 @@ import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -134,9 +134,9 @@ public final class ClusterContextManagerCoordinatorTest {
     private Map<String, DataSourceProperties> getDataSourcePropertiesMap() {
         MockedDataSource dataSource = new MockedDataSource();
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(3, 1);
-        result.put("primary_ds", DataSourcePoolCreatorUtil.getDataSourceProperties(dataSource));
-        result.put("ds_0", DataSourcePoolCreatorUtil.getDataSourceProperties(dataSource));
-        result.put("ds_1", DataSourcePoolCreatorUtil.getDataSourceProperties(dataSource));
+        result.put("primary_ds", DataSourcePropertiesCreator.create(dataSource));
+        result.put("ds_0", DataSourcePropertiesCreator.create(dataSource));
+        result.put("ds_1", DataSourcePropertiesCreator.create(dataSource));
         return result;
     }
     
@@ -189,9 +189,9 @@ public final class ClusterContextManagerCoordinatorTest {
     private Map<String, DataSourceProperties> getChangedDataSourcePropertiesMap() {
         MockedDataSource dataSource = new MockedDataSource();
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(3, 1);
-        result.put("primary_ds", DataSourcePoolCreatorUtil.getDataSourceProperties(dataSource));
-        result.put("ds_1", DataSourcePoolCreatorUtil.getDataSourceProperties(dataSource));
-        result.put("ds_2", DataSourcePoolCreatorUtil.getDataSourceProperties(dataSource));
+        result.put("primary_ds", DataSourcePropertiesCreator.create(dataSource));
+        result.put("ds_1", DataSourcePropertiesCreator.create(dataSource));
+        result.put("ds_2", DataSourcePropertiesCreator.create(dataSource));
         return result;
     }
     

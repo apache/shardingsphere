@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.metadata.persist.service.impl;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
@@ -55,8 +55,8 @@ public final class DataSourceMetaDataPersistServiceTest {
         when(repository.get("/metadata/foo_db/dataSources")).thenReturn(readDataSourceYaml("yaml/persist/data-source.yaml"));
         Map<String, DataSourceProperties> actual = new DataSourcePersistService(repository).load("foo_db");
         assertThat(actual.size(), is(2));
-        assertDataSourceProperties(actual.get("ds_0"), DataSourcePoolCreatorUtil.getDataSourceProperties(createDataSource("ds_0")));
-        assertDataSourceProperties(actual.get("ds_1"), DataSourcePoolCreatorUtil.getDataSourceProperties(createDataSource("ds_1")));
+        assertDataSourceProperties(actual.get("ds_0"), DataSourcePropertiesCreator.create(createDataSource("ds_0")));
+        assertDataSourceProperties(actual.get("ds_1"), DataSourcePropertiesCreator.create(createDataSource("ds_1")));
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class})
@@ -82,7 +82,7 @@ public final class DataSourceMetaDataPersistServiceTest {
     
     @Test
     public void assertAppend() {
-        new DataSourcePersistService(repository).append("foo_db", Collections.singletonMap("foo_ds", DataSourcePoolCreatorUtil.getDataSourceProperties(createDataSource("foo_ds"))));
+        new DataSourcePersistService(repository).append("foo_db", Collections.singletonMap("foo_ds", DataSourcePropertiesCreator.create(createDataSource("foo_ds"))));
         String expected = readDataSourceYaml("yaml/persist/data-source-foo.yaml");
         verify(repository).persist("/metadata/foo_db/dataSources", expected);
     }
