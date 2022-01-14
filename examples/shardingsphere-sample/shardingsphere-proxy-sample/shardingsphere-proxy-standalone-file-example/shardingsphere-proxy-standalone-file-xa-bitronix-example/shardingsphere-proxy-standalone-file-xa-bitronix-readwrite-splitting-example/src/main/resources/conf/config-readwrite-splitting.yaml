@@ -47,7 +47,7 @@ dataSources:
     minPoolSize: 1
 
 rules:
-
+  - !READWRITE_SPLITTING
     dataSources:
       pr_ds:
         writeDataSourceName: write_ds
