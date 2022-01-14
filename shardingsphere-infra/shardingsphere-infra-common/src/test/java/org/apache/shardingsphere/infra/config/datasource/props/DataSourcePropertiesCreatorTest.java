@@ -29,7 +29,7 @@ public final class DataSourcePropertiesCreatorTest {
     
     @Test
     public void assertCreateDataSourceProperties() {
-        assertThat(new DataSourcePropertiesCreator("Default").createDataSourceProperties(createDataSource()), is(createDataSourceProperties()));
+        assertThat(DataSourcePropertiesCreator.createDataSourceProperties(createDataSource()), is(createDataSourceProperties()));
     }
     
     private DataSource createDataSource() {
@@ -42,7 +42,7 @@ public final class DataSourcePropertiesCreatorTest {
     }
     
     private DataSourceProperties createDataSourceProperties() {
-        DataSourceProperties result = new DataSourceProperties(MockedDataSource.class.getCanonicalName());
+        DataSourceProperties result = new DataSourceProperties(MockedDataSource.class.getName());
         result.getProps().put("driverClassName", "org.h2.Driver");
         result.getProps().put("url", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         result.getProps().put("username", "root");

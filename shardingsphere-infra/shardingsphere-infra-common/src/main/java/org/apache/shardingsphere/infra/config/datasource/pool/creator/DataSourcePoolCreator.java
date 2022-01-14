@@ -23,7 +23,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
 import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import javax.sql.DataSource;
 import java.util.Map.Entry;
@@ -33,10 +32,6 @@ import java.util.Map.Entry;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourcePoolCreator {
-    
-    static {
-        ShardingSphereServiceLoader.register(DataSourcePoolMetaData.class);
-    }
     
     /**
      * Create data source.
