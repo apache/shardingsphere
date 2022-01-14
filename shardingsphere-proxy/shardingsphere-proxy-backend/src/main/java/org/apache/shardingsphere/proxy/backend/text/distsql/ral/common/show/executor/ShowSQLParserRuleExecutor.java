@@ -20,16 +20,15 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.exe
 import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
 
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,10 +48,6 @@ public final class ShowSQLParserRuleExecutor extends AbstractShowExecutor {
     private static final String PARSE_TREE_CACHE = "parse_tree_cache";
 
     private static final String SQL_STATEMENT_CACHE = "sql_statement_cache";
-    
-    private final ShowSQLParserRuleStatement sqlStatement;
-    
-    private final ConnectionSession connectionSession;
     
     @Override
     protected List<QueryHeader> createQueryHeaders() {
@@ -75,7 +70,7 @@ public final class ShowSQLParserRuleExecutor extends AbstractShowExecutor {
         row.add(String.valueOf(sqlParserRuleConfiguration.isSqlCommentParseEnabled()));
         row.add(GSON.toJson(sqlParserRuleConfiguration.getParseTreeCache()));
         row.add(GSON.toJson(sqlParserRuleConfiguration.getSqlStatementCache()));
-        List<List<Object>> rows = new LinkedList<>();
+        Collection<List<Object>> rows = new LinkedList<>();
         rows.add(row);
         return new MultipleLocalDataMergedResult(rows);
     }

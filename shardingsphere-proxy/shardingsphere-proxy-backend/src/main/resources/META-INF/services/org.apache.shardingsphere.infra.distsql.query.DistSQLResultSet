@@ -18,4 +18,3 @@
 org.apache.shardingsphere.proxy.backend.text.distsql.rql.resource.DataSourceQueryResultSet
 org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule.SingleTableQueryResultSet
 org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule.SingleTableRulesQueryResultSet
-org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule.TransactionRuleResultSet

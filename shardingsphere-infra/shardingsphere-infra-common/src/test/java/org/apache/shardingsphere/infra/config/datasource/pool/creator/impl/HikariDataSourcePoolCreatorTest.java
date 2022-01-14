@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.config.datasource.pool.creator.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
@@ -36,34 +36,34 @@ import static org.junit.Assert.assertThat;
 public final class HikariDataSourcePoolCreatorTest {
     
     @Test
-    public void assertCreateDataSourceConfigurationWithoutDriverClassName() {
+    public void assertCreateDataSourcePropertiesWithoutDriverClassName() {
         HikariDataSource dataSource = new HikariDataSource();
         dataSource.setJdbcUrl("jdbc:mysql://127.0.0.1/foo_ds");
         dataSource.setUsername("root");
         dataSource.setPassword("root");
-        DataSourceConfiguration dataSourceConfiguration = new DataSourcePoolCreator(HikariDataSource.class.getCanonicalName()).createDataSourceConfiguration(dataSource);
-        Map<String, Object> props = dataSourceConfiguration.getProps();
+        DataSourceProperties dataSourceProps = new DataSourcePoolCreator(HikariDataSource.class.getCanonicalName()).createDataSourceProperties(dataSource);
+        Map<String, Object> props = dataSourceProps.getProps();
         assertFalse(props.containsKey("driverClassName") && null == props.get("driverClassName"));
     }
     
     @Test
-    public void assertCreateDataSourceConfiguration() {
+    public void assertCreateDataSourceProperties() {
         DataSourcePoolCreator dataSourcePoolCreator = new DataSourcePoolCreator(HikariDataSource.class.getCanonicalName());
-        DataSourceConfiguration configuration = dataSourcePoolCreator.createDataSourceConfiguration(dataSourcePoolCreator.createDataSource(createDataSourceConfiguration()));
-        assertThat(configuration.getDataSourceClassName(), is("com.zaxxer.hikari.HikariDataSource"));
-        assertThat(configuration.getProps().get("jdbcUrl"), is("jdbc:mysql://127.0.0.1/foo_ds"));
-        assertThat(configuration.getProps().get("driverClassName"), is(MockedDataSource.class.getCanonicalName()));
-        assertThat(configuration.getProps().get("username"), is("root"));
-        assertThat(configuration.getProps().get("password"), is("root"));
-        assertThat(configuration.getProps().get("maximumPoolSize"), is(10));
-        assertThat(configuration.getProps().get("minimumIdle"), is(1));
-        assertDataSourceProperties((Properties) configuration.getProps().get("dataSourceProperties"));
+        DataSourceProperties dataSourceProps = dataSourcePoolCreator.createDataSourceProperties(dataSourcePoolCreator.createDataSource(createDataSourceProperties()));
+        assertThat(dataSourceProps.getDataSourceClassName(), is("com.zaxxer.hikari.HikariDataSource"));
+        assertThat(dataSourceProps.getProps().get("jdbcUrl"), is("jdbc:mysql://127.0.0.1/foo_ds"));
+        assertThat(dataSourceProps.getProps().get("driverClassName"), is(MockedDataSource.class.getCanonicalName()));
+        assertThat(dataSourceProps.getProps().get("username"), is("root"));
+        assertThat(dataSourceProps.getProps().get("password"), is("root"));
+        assertThat(dataSourceProps.getProps().get("maximumPoolSize"), is(10));
+        assertThat(dataSourceProps.getProps().get("minimumIdle"), is(1));
+        assertDataSourceProperties((Properties) dataSourceProps.getProps().get("dataSourceProperties"));
     }
     
     @Test
     public void assertCreateDataSource() {
         DataSourcePoolCreator dataSourcePoolCreator = new DataSourcePoolCreator(HikariDataSource.class.getCanonicalName());
-        DataSource dataSource = dataSourcePoolCreator.createDataSource(createDataSourceConfiguration());
+        DataSource dataSource = dataSourcePoolCreator.createDataSource(createDataSourceProperties());
         assertThat(dataSource, instanceOf(HikariDataSource.class));
         HikariDataSource hikariDataSource = (HikariDataSource) dataSource;
         assertThat(hikariDataSource.getJdbcUrl(), is("jdbc:mysql://127.0.0.1/foo_ds"));
@@ -75,7 +75,7 @@ public final class HikariDataSourcePoolCreatorTest {
         assertDataSourceProperties(hikariDataSource.getDataSourceProperties());
     }
     
-    private DataSourceConfiguration createDataSourceConfiguration() {
+    private DataSourceProperties createDataSourceProperties() {
         Map<String, Object> props = new HashMap<>(16, 1);
         props.put("jdbcUrl", "jdbc:mysql://127.0.0.1/foo_ds");
         props.put("driverClassName", MockedDataSource.class.getCanonicalName());
@@ -84,7 +84,7 @@ public final class HikariDataSourcePoolCreatorTest {
         props.put("maxPoolSize", 10);
         props.put("minPoolSize", 1);
         props.put("dataSourceProperties", getDataSourceProperties());
-        DataSourceConfiguration result = new DataSourceConfiguration("com.zaxxer.hikari.HikariDataSource");
+        DataSourceProperties result = new DataSourceProperties("com.zaxxer.hikari.HikariDataSource");
         result.getProps().putAll(props);
         return result;
     }

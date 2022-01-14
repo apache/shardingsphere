@@ -65,8 +65,10 @@ public final class MySQLErrPacket implements MySQLPacket {
     public void write(final MySQLPacketPayload payload) {
         payload.writeInt1(HEADER);
         payload.writeInt2(errorCode);
-        payload.writeStringFix(SQL_STATE_MARKER);
-        payload.writeStringFix(sqlState);
+        if (0 != sequenceId) {
+            payload.writeStringFix(SQL_STATE_MARKER);
+            payload.writeStringFix(sqlState);
+        }
         payload.writeStringEOF(errorMessage);
     }
 }

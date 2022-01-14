@@ -32,8 +32,8 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
 import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureDataConsistencyCheckAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
-import org.apache.shardingsphere.data.pipeline.core.util.RuleAlteredContextUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -60,7 +60,7 @@ public final class PipelineJobAPIImplTest {
     @BeforeClass
     public static void beforeClass() {
         EmbedTestingServer.start();
-        RuleAlteredContextUtil.mockModeConfig();
+        PipelineContextUtil.mockModeConfig();
         pipelineJobAPI = PipelineJobAPIFactory.getPipelineJobAPI();
     }
     
@@ -141,7 +141,7 @@ public final class PipelineJobAPIImplTest {
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = pipelineJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
-        RuleAlteredContextUtil.mockContextManager();
+        PipelineContextUtil.mockContextManager();
         Map<String, DataConsistencyCheckResult> checkResultMap = pipelineJobAPI.dataConsistencyCheck(jobId.get());
         assertThat(checkResultMap.size(), is(1));
     }
@@ -152,7 +152,7 @@ public final class PipelineJobAPIImplTest {
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = pipelineJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
-        RuleAlteredContextUtil.mockContextManager();
+        PipelineContextUtil.mockContextManager();
         Map<String, DataConsistencyCheckResult> checkResultMap = pipelineJobAPI.dataConsistencyCheck(jobId.get(), FixtureDataConsistencyCheckAlgorithm.TYPE);
         assertThat(checkResultMap.size(), is(1));
         assertTrue(checkResultMap.get("t_order").isRecordsCountMatched());

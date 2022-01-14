@@ -372,7 +372,7 @@ tablesOption
     ;
 
 kill
-    : KILL (CONNECTION | QUERY)? NUMBER_+
+    : KILL (CONNECTION | QUERY)? NUMBER_
     ;
 
 loadIndexInfo
@@ -391,6 +391,8 @@ resetStatement
 resetOption
     : MASTER (TO binaryLogFileIndexNumber)?
     | SLAVE ALL? channelOption?
+    | REPLICA
+    | QUERY CACHE
     ;
 
 resetPersist
@@ -408,10 +410,9 @@ shutdown
 explainType
     : FORMAT EQ_ formatName
     ;
-
-// TODO support table statement
+    
 explainableStatement
-    : select | delete | insert | replace | update
+    : table | select | delete | insert | replace | update
     ;
 
 formatName

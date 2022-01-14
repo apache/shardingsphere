@@ -37,6 +37,7 @@ execute
     | alterDefaultSingleTableRule
     | dropDefaultSingleTableRule
     | refreshTableMetadata
+    | showTableMetadata
     | showSQLParserRule
     | alterSQLParserRule
     | showAuthorityRule

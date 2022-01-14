@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.value.ValueASTNode;
 
 /**
@@ -29,4 +30,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.ValueASTNode;
 public final class ParameterMarkerValue implements ValueASTNode<Integer> {
     
     private final Integer value;
+    
+    private final ParameterMarkerType type;
 }

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.memory;
 
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -46,8 +48,15 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
                 schemas, rules, parameter.getProps()).build(null);
         TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
         ContextManager result = new ContextManager();
-        result.init(metaDataContexts, transactionContexts);
+        result.init(metaDataContexts, transactionContexts, buildInstanceContext(parameter));
         return result;
+    }
+    
+    private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter parameter) {
+        ComputeNodeInstance instance = new ComputeNodeInstance();
+        instance.setInstanceDefinition(parameter.getInstanceDefinition());
+        instance.setLabels(parameter.getLabels());
+        return new InstanceContext(instance);
     }
     
     @Override

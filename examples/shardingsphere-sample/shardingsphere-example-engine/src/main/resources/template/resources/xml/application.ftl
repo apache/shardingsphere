@@ -121,7 +121,6 @@
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
 </#if>
-    
 <#assign ruleRefs="">
 <#list feature?split(",") as item>
     <#assign ruleRefs += toCamel(item) + "Rule" />

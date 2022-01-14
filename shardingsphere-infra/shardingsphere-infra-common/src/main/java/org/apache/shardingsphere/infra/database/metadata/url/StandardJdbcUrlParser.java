@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.database.metadata.url;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
 
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -50,21 +50,19 @@ public final class StandardJdbcUrlParser {
     /**
      * Parse JDBC URL.
      * 
-     * @param jdbcURL JDBC URL to be parsed
+     * @param jdbcUrl JDBC URL to be parsed
      * @return parsed JDBC URL
      */
-    public JdbcUrl parse(final String jdbcURL) {
-        Matcher matcher = CONNECTION_URL_PATTERN.matcher(jdbcURL);
+    public JdbcUrl parse(final String jdbcUrl) {
+        Matcher matcher = CONNECTION_URL_PATTERN.matcher(jdbcUrl);
         if (matcher.matches()) {
             String authority = matcher.group(AUTHORITY_GROUP_KEY);
             if (null == authority) {
-                return new JdbcUrl("", -1, "", new Properties());
-                // throw new UnrecognizedDatabaseURLException(jdbcURL, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%"));
+                throw new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%"));
             }
             return new JdbcUrl(parseHostname(authority), parsePort(authority), matcher.group(PATH_GROUP_KEY), parseQueryProperties(matcher.group(QUERY_GROUP_KEY)));
         }
-        return new JdbcUrl("", -1, "", new Properties());
-        // throw new UnrecognizedDatabaseURLException(jdbcURL, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%"));
+        throw new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%"));
     }
     
     private String parseHostname(final String authority) {
@@ -94,50 +92,5 @@ public final class StandardJdbcUrlParser {
             result.setProperty(entry.getKey(), entry.getValue());
         }
         return result;
-    }
-    
-    /**
-     * Append query properties.
-     *
-     * @param jdbcURL JDBC URL to be appended
-     * @param queryProps query properties to be appended
-     * @return appended JDBC URL
-     */
-    public String appendQueryProperties(final String jdbcURL, final Properties queryProps) {
-        Properties currentQueryProps = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcURL).getDataSourceMetaData(jdbcURL, null).getQueryProperties();
-        if (hasConflictedQueryProperties(currentQueryProps, queryProps)) {
-            Properties newQueryProps = new Properties();
-            newQueryProps.putAll(currentQueryProps);
-            newQueryProps.putAll(queryProps);
-            StringBuilder result = new StringBuilder(jdbcURL.substring(0, jdbcURL.indexOf('?')));
-            result.append('?');
-            appendQueryPropertiesOnURLBuilder(result, newQueryProps);
-            return result.toString();
-        }
-        StringBuilder result = new StringBuilder(jdbcURL);
-        String delimiter = currentQueryProps.isEmpty() ? "?" : "&";
-        result.append(delimiter);
-        appendQueryPropertiesOnURLBuilder(result, queryProps);
-        return result.toString();
-    }
-    
-    private boolean hasConflictedQueryProperties(final Properties currentQueryProps, final Properties queryProps) {
-        for (Entry<Object, Object> entry : queryProps.entrySet()) {
-            if (currentQueryProps.containsKey(entry.getKey())) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private void appendQueryPropertiesOnURLBuilder(final StringBuilder builder, final Properties queryProps) {
-        for (Entry<Object, Object> entry : queryProps.entrySet()) {
-            builder.append(entry.getKey());
-            if (null != entry.getValue()) {
-                builder.append("=").append(entry.getValue());
-            }
-            builder.append("&");
-        }
-        builder.deleteCharAt(builder.length() - 1);
     }
 }

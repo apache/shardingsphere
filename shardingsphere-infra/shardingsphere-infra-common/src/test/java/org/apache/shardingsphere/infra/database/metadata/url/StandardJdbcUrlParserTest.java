@@ -17,13 +17,10 @@
 
 package org.apache.shardingsphere.infra.database.metadata.url;
 
+import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
 import org.junit.Test;
 
-import java.util.Properties;
-
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -79,37 +76,8 @@ public final class StandardJdbcUrlParserTest {
         assertTrue(actual.getQueryProperties().isEmpty());
     }
     
-    @Test
+    @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertParseIncorrectURL() {
-        JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        assertThat(actual.getHostname(), is(""));
-        assertThat(actual.getPort(), is(-1));
-        assertThat(actual.getDatabase(), is(""));
-        assertTrue(actual.getQueryProperties().isEmpty());
-    }
-    
-    @Test
-    public void assertAppendQueryPropertiesWithoutOriginalQueryProperties() {
-        String actual = new StandardJdbcUrlParser().appendQueryProperties("jdbc:mysql://192.168.0.1:3306/foo_ds", createQueryProperties());
-        assertThat(actual, startsWith("jdbc:mysql://192.168.0.1:3306/foo_ds?"));
-        assertThat(actual, containsString("rewriteBatchedStatements=true"));
-        assertThat(actual, containsString("useSSL=false"));
-    }
-    
-    @Test
-    public void assertAppendQueryPropertiesWithOriginalQueryProperties() {
-        String actual = new StandardJdbcUrlParser().appendQueryProperties(
-                "jdbc:mysql://192.168.0.1:3306/foo_ds?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true", createQueryProperties());
-        assertThat(actual, startsWith("jdbc:mysql://192.168.0.1:3306/foo_ds?"));
-        assertThat(actual, containsString("serverTimezone=UTC"));
-        assertThat(actual, containsString("rewriteBatchedStatements=true"));
-        assertThat(actual, containsString("useSSL=false"));
-    }
-    
-    private Properties createQueryProperties() {
-        Properties result = new Properties();
-        result.put("useSSL", Boolean.FALSE.toString());
-        result.put("rewriteBatchedStatements", Boolean.TRUE.toString());
-        return result;
+        new StandardJdbcUrlParser().parse("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
     }
 }

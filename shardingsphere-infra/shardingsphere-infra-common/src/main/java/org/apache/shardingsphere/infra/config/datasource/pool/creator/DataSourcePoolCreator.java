@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.config.datasource.pool.creator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
@@ -47,23 +47,23 @@ public final class DataSourcePoolCreator {
     }
     
     /**
-     * Create data source configuration.
+     * Create data source properties.
      * 
      * @param dataSource data source
-     * @return data source configuration
+     * @return data source properties
      */
-    public DataSourceConfiguration createDataSourceConfiguration(final DataSource dataSource) {
-        DataSourceConfiguration result = new DataSourceConfiguration(dataSource.getClass().getName());
+    public DataSourceProperties createDataSourceProperties(final DataSource dataSource) {
+        DataSourceProperties result = new DataSourceProperties(dataSource.getClass().getName());
         filterInvalidProperties(result, new DataSourceReflection(dataSource).convertToProperties());
         return result;
     }
     
-    private void filterInvalidProperties(final DataSourceConfiguration dataSourceConfig, final Map<String, Object> reflectionProps) {
+    private void filterInvalidProperties(final DataSourceProperties dataSourceProps, final Map<String, Object> reflectionProps) {
         for (Entry<String, Object> entry : reflectionProps.entrySet()) {
             String propertyName = entry.getKey();
             Object propertyValue = entry.getValue();
             if (isValidProperty(propertyName, propertyValue)) {
-                dataSourceConfig.getProps().put(propertyName, propertyValue);
+                dataSourceProps.getProps().put(propertyName, propertyValue);
             }
         }
     }
@@ -71,15 +71,15 @@ public final class DataSourcePoolCreator {
     /**
      * Create data source.
      * 
-     * @param dataSourceConfig data source configuration
+     * @param dataSourceProps data source properties
      * @return data source
      */
-    public DataSource createDataSource(final DataSourceConfiguration dataSourceConfig) {
-        DataSource result = buildDataSource(dataSourceConfig.getDataSourceClassName());
-        addPropertySynonym(dataSourceConfig);
+    public DataSource createDataSource(final DataSourceProperties dataSourceProps) {
+        DataSource result = buildDataSource(dataSourceProps.getDataSourceClassName());
+        addPropertySynonym(dataSourceProps);
         DataSourceReflection dataSourceReflection = new DataSourceReflection(result);
         setDefaultFields(dataSourceReflection);
-        setConfiguredFields(dataSourceConfig, dataSourceReflection);
+        setConfiguredFields(dataSourceProps, dataSourceReflection);
         dataSourceReflection.addDefaultDataSourceProperties(creationMetaData.getJdbcUrlPropertiesFieldName(), creationMetaData.getJdbcUrlFieldName());
         return result;
     }
@@ -89,9 +89,9 @@ public final class DataSourcePoolCreator {
         return (DataSource) Class.forName(dataSourceClassName).getConstructor().newInstance();
     }
     
-    private void addPropertySynonym(final DataSourceConfiguration dataSourceConfig) {
+    private void addPropertySynonym(final DataSourceProperties dataSourceProps) {
         for (Entry<String, String> entry : creationMetaData.getPropertySynonyms().entrySet()) {
-            dataSourceConfig.addPropertySynonym(entry.getKey(), entry.getValue());
+            dataSourceProps.addPropertySynonym(entry.getKey(), entry.getValue());
         }
     }
     
@@ -101,8 +101,8 @@ public final class DataSourcePoolCreator {
         }
     }
     
-    private void setConfiguredFields(final DataSourceConfiguration dataSourceConfig, final DataSourceReflection dataSourceReflection) {
-        for (Entry<String, Object> entry : dataSourceConfig.getAllProperties().entrySet()) {
+    private void setConfiguredFields(final DataSourceProperties dataSourceProps, final DataSourceReflection dataSourceReflection) {
+        for (Entry<String, Object> entry : dataSourceProps.getAllProperties().entrySet()) {
             String fieldName = entry.getKey();
             Object fieldValue = entry.getValue();
             if (isValidProperty(fieldName, fieldValue)) {

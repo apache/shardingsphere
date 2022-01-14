@@ -35,9 +35,13 @@ public final class ExampleTemplateFactory {
      * @return rename template map
      */
     public static Map<String, String> getRenameTemplate(Map<String, String> dataModel) {
-        Map<String, String> result = new HashMap<>(2, 1);
+        Map<String, String> result = new HashMap<>(4, 1);
         result.put("Example", "java/Example.ftl");
         result.put("ExampleService", "java/ExampleService.ftl");
+        String framework = dataModel.get(FRAMEWORK_KEY);
+        if (FrameworkType.JDBC.getFramework().equals(framework)) {
+            result.put("Configuration", "java/config/configuration.ftl");
+        }
         return result;
     }
     

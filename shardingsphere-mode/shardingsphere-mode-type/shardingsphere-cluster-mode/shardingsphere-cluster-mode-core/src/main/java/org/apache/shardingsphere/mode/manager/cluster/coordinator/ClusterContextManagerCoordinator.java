@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.authority.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -128,7 +130,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final DataSourceChangedEvent event) {
-        contextManager.alterDataSourceConfiguration(event.getSchemaName(), event.getDataSourceConfigurations());
+        contextManager.alterDataSourceConfiguration(event.getSchemaName(), event.getDataSourcePropertiesMap());
     }
     
     /**
@@ -169,6 +171,30 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final GlobalRuleConfigurationsChangedEvent event) {
         contextManager.alterGlobalRuleConfiguration(event.getRuleConfigurations());
+    }
+    
+    /**
+     * Renew instance status.
+     *
+     * @param event state event
+     */
+    @Subscribe
+    public synchronized void renew(final StateEvent event) {
+        if (contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId().equals(event.getInstanceId())) {
+            contextManager.getInstanceContext().updateInstanceStatus(event.getStatus());
+        }
+    }
+    
+    /**
+     * Renew instance worker id.
+     *
+     * @param event worker id event
+     */
+    @Subscribe
+    public synchronized void renew(final WorkerIdEvent event) {
+        if (contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId().equals(event.getInstanceId())) {
+            contextManager.getInstanceContext().updateWorkerId(event.getWorkerId());
+        }
     }
     
     private void persistSchema(final String schemaName) {

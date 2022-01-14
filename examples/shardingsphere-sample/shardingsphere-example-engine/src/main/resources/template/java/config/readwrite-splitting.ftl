@@ -17,7 +17,6 @@
     
     private ReadwriteSplittingRuleConfiguration createReadwriteSplittingRuleConfiguration() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceRuleConfiguration(
-                "demo_read_query_ds", "", "demo_write_ds", Arrays.asList("demo_read_ds_0", "demo_read_ds_1"), null);
+                "ds_0", "", "ds_0", Arrays.asList("ds_1", "ds_2"), null);
         return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap());
     }
-    

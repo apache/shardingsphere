@@ -83,7 +83,7 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     }
     
     private Collection<List<Object>> buildInstanceRows(final MetaDataPersistService persistService) {
-        Collection<ComputeNodeInstance> instances = persistService.loadComputeNodeInstances();
+        Collection<ComputeNodeInstance> instances = persistService.getComputeNodePersistService().loadAllComputeNodeInstances();
         if (!instances.isEmpty()) {
             return instances.stream().filter(Objects::nonNull).map(each -> buildRow(each.getInstanceDefinition().getInstanceId().getId(), getStatus(each.getStatus())))
                     .collect(Collectors.toCollection(LinkedList::new));
@@ -99,6 +99,6 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     }
     
     private String getStatus(final Collection<String> computeNodeStatus) {
-        return computeNodeStatus.isEmpty() || !computeNodeStatus.contains(ComputeNodeStatus.CIRCUIT_BREAKER.name()) ? ENABLE : DISABLE;
+        return computeNodeStatus.isEmpty() || !computeNodeStatus.contains(ComputeNodeStatus.CIRCUIT_BREAK.name()) ? ENABLE : DISABLE;
     }
 }

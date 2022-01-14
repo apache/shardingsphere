@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSe
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -45,22 +46,23 @@ public final class ShadowNonDMLStatementRoutingEngine implements ShadowRouteEngi
     
     @Override
     public void route(final RouteContext routeContext, final ShadowRule shadowRule) {
-        findShadowDataSourceMappings(shadowRule).ifPresent(stringStringMap -> shadowRouteDecorate(routeContext, stringStringMap));
+        shadowRouteDecorate(routeContext, shadowRule, findShadowDataSourceMappings(shadowRule));
     }
     
-    private Optional<Map<String, String>> findShadowDataSourceMappings(final ShadowRule shadowRule) {
+    private Map<String, String> findShadowDataSourceMappings(final ShadowRule shadowRule) {
+        Map<String, String> result = new LinkedHashMap<>();
         Optional<Collection<String>> sqlComments = parseSQLComments();
         if (!sqlComments.isPresent()) {
-            return Optional.empty();
+            return result;
         }
         Optional<Collection<HintShadowAlgorithm<Comparable<?>>>> noteShadowAlgorithms = shadowRule.getAllHintShadowAlgorithms();
         if (!noteShadowAlgorithms.isPresent()) {
-            return Optional.empty();
+            return result;
         }
         if (isMatchAnyNoteShadowAlgorithms(noteShadowAlgorithms.get(), createShadowDetermineCondition(sqlComments.get()), shadowRule)) {
-            return Optional.of(shadowRule.getAllShadowDataSourceMappings());
+            return shadowRule.getAllShadowDataSourceMappings();
         }
-        return Optional.empty();
+        return result;
     }
     
     private Optional<Collection<String>> parseSQLComments() {

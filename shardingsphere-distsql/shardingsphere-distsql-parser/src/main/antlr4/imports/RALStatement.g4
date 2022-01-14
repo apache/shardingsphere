@@ -42,25 +42,37 @@ disableInstance
 showInstance
     : SHOW INSTANCE LIST
     ;
-    
-showSQLParserRule
-    : SHOW SQL_PARSER RULE
-    ;
-    
-alterSQLParserRule
-    : ALTER SQL_PARSER RULE sqlParserRuleDefinition
-    ;
-    
-sqlParserRuleDefinition
-    : (SQL_COMMENT_PARSE_ENABLE EQ sqlCommentParseEnable) (COMMA? PARSE_TREE_CACHE LP parseTreeCache RP)? (COMMA? SQL_STATEMENT_CACHE LP sqlStatementCache RP)?
-    ;
-    
+
 clearHint
     : CLEAR HINT
     ;
 
 refreshTableMetadata
     : REFRESH TABLE METADATA refreshScope?
+    ;
+
+showTableMetadata
+    : SHOW TABLE METADATA tableName (COMMA tableName*)? (FROM schemaName)?
+    ;
+
+showAuthorityRule
+    : SHOW AUTHORITY RULE
+    ;
+
+showTransactionRule
+    : SHOW TRANSACTION RULE
+    ;
+
+showSQLParserRule
+    : SHOW SQL_PARSER RULE
+    ;
+
+alterSQLParserRule
+    : ALTER SQL_PARSER RULE sqlParserRuleDefinition
+    ;
+
+sqlParserRuleDefinition
+    : (SQL_COMMENT_PARSE_ENABLE EQ sqlCommentParseEnable) (COMMA? PARSE_TREE_CACHE LP parseTreeCache RP)? (COMMA? SQL_STATEMENT_CACHE LP sqlStatementCache RP)?
     ;
 
 variableName
@@ -74,11 +86,11 @@ variableValue
 instanceDefination
     : IP EQ ip COMMA PORT EQ port
     ;
-    
+
 instanceId
     : ip AT port
     ;
-    
+
 ip
     : IDENTIFIER | NUMBER+
     ;
@@ -86,7 +98,7 @@ ip
 port
     : INT
     ;
-    
+
 refreshScope
     : tableName | tableName FROM RESOURCE resourceName
     ;
@@ -98,32 +110,35 @@ resourceName
 tableName
     : IDENTIFIER
     ;
-    
+
 sqlCommentParseEnable
     : TRUE | FALSE
     ;
-    
+
 parseTreeCache
     : cacheOption
     ;
-    
+
 sqlStatementCache
     : cacheOption
     ;
-    
+
 cacheOption
     : (INITIAL_CAPACITY EQ initialCapacity)? (COMMA? MAXIMUM_SIZE EQ maximumSize)? (COMMA? CONCURRENCY_LEVEL EQ concurrencyLevel)? 
     ;
-    
+
 initialCapacity
     : INT
     ;
-    
+
 maximumSize
     : INT
     ;
-    
+
 concurrencyLevel
     : INT
     ;
 
+schemaName
+    : IDENTIFIER
+    ;

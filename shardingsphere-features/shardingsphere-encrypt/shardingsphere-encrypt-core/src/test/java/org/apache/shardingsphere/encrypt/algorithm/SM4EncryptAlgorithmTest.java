@@ -52,7 +52,7 @@ public final class SM4EncryptAlgorithmTest {
         assertThat(encryptAlgorithm.encrypt("test"), is("028654f2ca4f575dee9e1faae85dadde"));
     }
     
-    @Test(expected = NullPointerException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void assertEncryptWithoutKey() {
         Properties props = new Properties();
         encryptAlgorithm.setProps(props);
@@ -72,7 +72,7 @@ public final class SM4EncryptAlgorithmTest {
         assertThat(encryptAlgorithm.decrypt("028654f2ca4f575dee9e1faae85dadde").toString(), is("test"));
     }
     
-    @Test(expected = NullPointerException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void assertDecryptWithoutKey() {
         Properties props = new Properties();
         encryptAlgorithm.setProps(props);

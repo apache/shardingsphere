@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdate
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 
 /**
  * Create default single table rule statement updater.
@@ -42,7 +42,7 @@ public final class CreateDefaultSingleTableRuleStatementUpdater implements RuleD
     }
     
     private void checkResourceExist(final String schemaName, final ShardingSphereMetaData metaData, final CreateDefaultSingleTableRuleStatement sqlStatement) throws DistSQLException {
-        Set<String> resourceNames = metaData.getResource().getDataSources().keySet();
+        Collection<String> resourceNames = metaData.getResource().getDataSources().keySet();
         DistSQLException.predictionThrow(resourceNames.contains(sqlStatement.getDefaultResource()),
                 new RequiredResourceMissedException(schemaName, Collections.singleton(sqlStatement.getDefaultResource())));
     }

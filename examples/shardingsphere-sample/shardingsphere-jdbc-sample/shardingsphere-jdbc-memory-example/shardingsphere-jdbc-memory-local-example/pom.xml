@@ -34,5 +34,6 @@
         <module>shardingsphere-jdbc-memory-local-encrypt-example</module>
         <module>shardingsphere-jdbc-memory-local-shadow-example</module>
         <module>shardingsphere-jdbc-memory-local-db-discovery-example</module>
+        <module>shardingsphere-jdbc-memory-local-mixed-example</module>
     </modules>
 </project>

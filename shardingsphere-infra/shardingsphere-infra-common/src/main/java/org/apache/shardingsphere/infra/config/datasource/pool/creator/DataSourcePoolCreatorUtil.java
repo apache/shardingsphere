@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.config.datasource.pool.creator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
@@ -36,31 +36,31 @@ public final class DataSourcePoolCreatorUtil {
     /**
      * Get data source.
      * 
-     * @param dataSourceConfig data source configuration
+     * @param dataSourceProps data source properties
      * @return data source
      */
-    public static DataSource getDataSource(final DataSourceConfiguration dataSourceConfig) {
-        return new DataSourcePoolCreator(dataSourceConfig.getDataSourceClassName()).createDataSource(dataSourceConfig);
+    public static DataSource getDataSource(final DataSourceProperties dataSourceProps) {
+        return new DataSourcePoolCreator(dataSourceProps.getDataSourceClassName()).createDataSource(dataSourceProps);
     }
     
     /**
-     * Get data source configuration.
+     * Get data source properties.
      * 
      * @param dataSource data source
-     * @return data source configuration
+     * @return data source properties
      */
-    public static DataSourceConfiguration getDataSourceConfiguration(final DataSource dataSource) {
-        return new DataSourcePoolCreator(dataSource.getClass().getCanonicalName()).createDataSourceConfiguration(dataSource);
+    public static DataSourceProperties getDataSourceConfiguration(final DataSource dataSource) {
+        return new DataSourcePoolCreator(dataSource.getClass().getCanonicalName()).createDataSourceProperties(dataSource);
     }
     
     /**
      * Get data source map.
      *
-     * @param dataSourceConfigMap data source configuration map
+     * @param dataSourcePropsMap data source configuration map
      * @return data source map
      */
-    public static Map<String, DataSource> getDataSourceMap(final Map<String, DataSourceConfiguration> dataSourceConfigMap) {
-        return dataSourceConfigMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> getDataSource(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    public static Map<String, DataSource> getDataSourceMap(final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        return dataSourcePropsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> getDataSource(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     /**
@@ -69,7 +69,7 @@ public final class DataSourcePoolCreatorUtil {
      * @param dataSourceMap data source map
      * @return data source configuration map
      */
-    public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, DataSource> dataSourceMap) {
+    public static Map<String, DataSourceProperties> getDataSourcePropertiesMap(final Map<String, DataSource> dataSourceMap) {
         return dataSourceMap.entrySet().stream().collect(
                 Collectors.toMap(Entry::getKey, entry -> getDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
