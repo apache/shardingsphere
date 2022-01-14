@@ -39,8 +39,8 @@ public final class DataSourcePoolCreator {
      * @param dataSourceProps data source properties
      * @return created data source
      */
-    public static DataSource createDataSource(final DataSourceProperties dataSourceProps) {
-        DataSource result = buildDataSource(dataSourceProps.getDataSourceClassName());
+    public static DataSource create(final DataSourceProperties dataSourceProps) {
+        DataSource result = createDataSource(dataSourceProps.getDataSourceClassName());
         DataSourcePoolMetaData poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceProps.getDataSourceClassName());
         addPropertySynonym(dataSourceProps, poolMetaData);
         DataSourceReflection dataSourceReflection = new DataSourceReflection(result);
@@ -51,7 +51,7 @@ public final class DataSourcePoolCreator {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static DataSource buildDataSource(final String dataSourceClassName) {
+    private static DataSource createDataSource(final String dataSourceClassName) {
         return (DataSource) Class.forName(dataSourceClassName).getConstructor().newInstance();
     }
     

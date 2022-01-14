@@ -56,7 +56,7 @@ public final class DataSourcePropertiesValidator {
     private void validate(final String dataSourcePropertyName, final DataSourceProperties dataSourceProps) throws InvalidDataSourcePropertiesException {
         DataSource dataSource = null;
         try {
-            dataSource = DataSourcePoolCreator.createDataSource(dataSourceProps);
+            dataSource = DataSourcePoolCreator.create(dataSourceProps);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

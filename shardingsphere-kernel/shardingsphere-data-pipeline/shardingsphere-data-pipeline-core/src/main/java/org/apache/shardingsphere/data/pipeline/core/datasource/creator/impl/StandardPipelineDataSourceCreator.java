@@ -31,7 +31,7 @@ public final class StandardPipelineDataSourceCreator implements PipelineDataSour
     
     @Override
     public DataSource createPipelineDataSource(final Object pipelineDataSourceConfig) {
-        return DataSourcePoolCreator.createDataSource((DataSourceProperties) pipelineDataSourceConfig);
+        return DataSourcePoolCreator.create((DataSourceProperties) pipelineDataSourceConfig);
     }
     
     @Override

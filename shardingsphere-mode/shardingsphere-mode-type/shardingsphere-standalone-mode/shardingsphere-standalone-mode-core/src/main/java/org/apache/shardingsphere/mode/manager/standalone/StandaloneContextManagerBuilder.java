@@ -144,7 +144,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
                         && DataSourcePoolCreatorUtil.getDataSourceProperties(localDataSources.get(entry.getKey())).equals(entry.getValue())) {
                     dataSources.put(entry.getKey(), localDataSources.get(entry.getKey()));
                 } else {
-                    dataSources.put(entry.getKey(), DataSourcePoolCreator.createDataSource(entry.getValue()));
+                    dataSources.put(entry.getKey(), DataSourcePoolCreator.create(entry.getValue()));
                 }
             }
             result.put(each.getKey(), dataSources);
