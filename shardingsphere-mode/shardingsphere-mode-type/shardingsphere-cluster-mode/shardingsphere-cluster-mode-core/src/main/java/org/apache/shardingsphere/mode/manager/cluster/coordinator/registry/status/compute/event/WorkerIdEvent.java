@@ -15,25 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
 
 import lombok.Getter;
-import lombok.Setter;
-
-import java.util.Collection;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Instance of compute node.
+ * Worker id changed event.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ComputeNodeInstance {
+public final class WorkerIdEvent implements GovernanceEvent {
     
-    private InstanceDefinition instanceDefinition;
+    private final String instanceId;
     
-    private Collection<String> labels;
-    
-    private Collection<String> status;
-    
-    private Long workerId;
+    private final Long workerId; 
 }
