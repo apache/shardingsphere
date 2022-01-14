@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource;
+package org.apache.shardingsphere.infra.config.datasource.props;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;

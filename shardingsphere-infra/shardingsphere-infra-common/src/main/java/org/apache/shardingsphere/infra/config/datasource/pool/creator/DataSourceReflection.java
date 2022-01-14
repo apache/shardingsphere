@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.creator;
+package org.apache.shardingsphere.infra.config.datasource.pool.creator;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.Sets;

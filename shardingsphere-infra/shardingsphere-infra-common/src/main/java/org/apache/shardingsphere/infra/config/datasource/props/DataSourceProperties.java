@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource;
+package org.apache.shardingsphere.infra.config.datasource.props;
 
 import com.google.common.base.Objects;
 import lombok.Getter;

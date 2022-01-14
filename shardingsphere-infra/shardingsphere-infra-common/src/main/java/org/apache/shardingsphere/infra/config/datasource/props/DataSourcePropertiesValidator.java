@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource;
+package org.apache.shardingsphere.infra.config.datasource.props;
 
-import org.apache.shardingsphere.infra.config.datasource.creator.DataSourcePoolCreatorUtil;
-import org.apache.shardingsphere.infra.config.datasource.destroyer.DataSourcePoolDestroyerFactory;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
+import org.apache.shardingsphere.infra.config.datasource.pool.destroyer.DataSourcePoolDestroyerFactory;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 
 import javax.sql.DataSource;

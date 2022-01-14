@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.creator;
+package org.apache.shardingsphere.infra.config.datasource.pool.creator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;

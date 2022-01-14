@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 

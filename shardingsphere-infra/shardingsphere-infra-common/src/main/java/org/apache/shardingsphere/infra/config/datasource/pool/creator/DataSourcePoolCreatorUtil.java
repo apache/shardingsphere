@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.creator;
+package org.apache.shardingsphere.infra.config.datasource.pool.creator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
