@@ -15,23 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.destroyer;
-
-import org.apache.shardingsphere.spi.required.RequiredSPI;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
-import javax.sql.DataSource;
-import java.sql.SQLException;
+package org.apache.shardingsphere.infra.config.datasource.props;
 
 /**
- * Data source pool destroyer.
+ * Invalid data source properties exception.
  */
-public interface DataSourcePoolDestroyer extends TypedSPI, RequiredSPI {
+public final class InvalidDataSourcePropertiesException extends Exception {
     
-    /**
-     * destroy data source pool gracefully.
-     * 
-     * @param dataSource data source pool to be destroyed
-     * @throws SQLException SQL exception
-     */
-    void destroy(DataSource dataSource) throws SQLException;
+    private static final long serialVersionUID = -7221138369057943935L;
+    
+    public InvalidDataSourcePropertiesException(final String dataSourcePropertyName, final String errorMessage) {
+        super(String.format("Invalid data source property name `%s`, error message is: %s", dataSourcePropertyName, errorMessage));
+    }
 }

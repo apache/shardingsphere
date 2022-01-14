@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.destroyer.impl;
+package org.apache.shardingsphere.infra.config.datasource.pool.destroyer.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.config.datasource.destroyer.DataSourcePoolDestroyer;
+import org.apache.shardingsphere.infra.config.datasource.pool.destroyer.DataSourcePoolDestroyer;
 
 import javax.sql.DataSource;
 import java.util.concurrent.ExecutorService;
