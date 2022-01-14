@@ -17,14 +17,23 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * MySQL show binlog statement.
+ * MySQL show binlog events statement.
  */
+@Getter
+@Setter
 @ToString
-public final class MySQLShowBinlogStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class MySQLShowBinlogEventsStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+    
+    private String logName;
+    
+    private LimitSegment limit;
 }
