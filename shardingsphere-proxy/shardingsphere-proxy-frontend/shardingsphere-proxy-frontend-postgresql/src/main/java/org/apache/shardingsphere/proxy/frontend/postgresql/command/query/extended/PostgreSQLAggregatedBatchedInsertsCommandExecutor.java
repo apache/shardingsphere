@@ -61,7 +61,7 @@ public final class PostgreSQLAggregatedBatchedInsertsCommandExecutor implements 
                 result.add(new PostgreSQLBindCompletePacket());
             }
             if (each instanceof PostgreSQLComDescribePacket) {
-                result.add(new PostgreSQLNoDataPacket());
+                result.add(preparedStatement.describeRows().orElseGet(PostgreSQLNoDataPacket::new));
             }
             if (each instanceof PostgreSQLComExecutePacket) {
                 String tag = PostgreSQLCommand.valueOf(preparedStatement.getSqlStatement().getClass()).orElse(PostgreSQLCommand.INSERT).getTag();
