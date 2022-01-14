@@ -17,33 +17,29 @@
 
 package org.apache.shardingsphere.infra.config.datasource.pool.creator;
 
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaData;
+import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
 import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 
 /**
  * Data source pool creator.
  */
-@RequiredArgsConstructor
 public final class DataSourcePoolCreator {
     
     static {
-        ShardingSphereServiceLoader.register(DataSourcePoolCreationMetaData.class);
+        ShardingSphereServiceLoader.register(DataSourcePoolMetaData.class);
     }
     
-    private final DataSourcePoolCreationMetaData creationMetaData;
+    private final DataSourcePoolMetaData creationMetaData;
     
     public DataSourcePoolCreator(final String dataSourceClassName) {
-        creationMetaData = TypedSPIRegistry.findRegisteredService(DataSourcePoolCreationMetaData.class, dataSourceClassName, new Properties())
-                .orElse(RequiredSPIRegistry.getRegisteredService(DataSourcePoolCreationMetaData.class));
+        creationMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceClassName);
     }
     
     /**

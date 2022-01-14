@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.pool.creator.impl;
+package org.apache.shardingsphere.infra.config.datasource.pool.metadata.impl;
 
 import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreator;
