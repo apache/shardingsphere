@@ -17,14 +17,11 @@
 
 package org.apache.shardingsphere.infra.config.datasource.pool.creator;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -35,15 +32,7 @@ import static org.junit.Assert.assertThat;
 public final class DataSourcePoolCreatorUtilTest {
     
     @Test
-    public void assertGetDataSourceMap() {
-        Map<String, DataSourceProperties> dataSourcePropsMap = new HashMap<>(1, 1);
-        dataSourcePropsMap.put("ds_0", createDataSourceProperties());
-        Map<String, DataSource> actual = DataSourcePoolCreatorUtil.getDataSourceMap(dataSourcePropsMap);
-        assertThat(actual.size(), is(1));
-    }
-    
-    @Test
-    public void assertGetDataSourceConfigurationMap() {
+    public void assertGetDataSourcePropertiesMap() {
         Map<String, DataSourceProperties> actual = DataSourcePoolCreatorUtil.getDataSourcePropertiesMap(createDataSourceMap());
         assertThat(actual.size(), is(2));
         assertNotNull(actual.get("ds_0"));
@@ -63,22 +52,6 @@ public final class DataSourcePoolCreatorUtilTest {
         result.setUrl("jdbc:mysql://localhost:3306/" + name);
         result.setUsername("root");
         result.setPassword("root");
-        return result;
-    }
-    
-    private DataSourceProperties createDataSourceProperties() {
-        Map<String, Object> props = new HashMap<>(16, 1);
-        props.put("driverClassName", MockedDataSource.class.getCanonicalName());
-        props.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
-        props.put("username", "root");
-        props.put("password", "root");
-        props.put("loginTimeout", "5000");
-        props.put("maximumPoolSize", "50");
-        props.put("minimumIdle", "1");
-        props.put("maxLifetime", "60000");
-        props.put("test", "test");
-        DataSourceProperties result = new DataSourceProperties(HikariDataSource.class.getName());
-        result.getProps().putAll(props);
         return result;
     }
 }

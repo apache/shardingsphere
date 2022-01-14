@@ -25,13 +25,26 @@ import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourc
 import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 
 import javax.sql.DataSource;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Data source pool creator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourcePoolCreator {
+    
+    /**
+     * Create data sources.
+     *
+     * @param dataSourcePropsMap data source properties map
+     * @return created data sources
+     */
+    public static Map<String, DataSource> create(final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        return dataSourcePropsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getValue()), (a, b) -> b, LinkedHashMap::new));
+    }
     
     /**
      * Create data source.
