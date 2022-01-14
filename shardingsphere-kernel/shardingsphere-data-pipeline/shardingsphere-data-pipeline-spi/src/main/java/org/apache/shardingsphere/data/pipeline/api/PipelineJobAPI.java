@@ -23,6 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.spi.required.RequiredSPI;
+import org.apache.shardingsphere.spi.singleton.SingletonSPI;
 
 import java.util.Collection;
 import java.util.List;
@@ -33,7 +34,7 @@ import java.util.Optional;
  * Pipeline job API.
  */
 // TODO separate dedicated methods for rule altered job
-public interface PipelineJobAPI extends RequiredSPI {
+public interface PipelineJobAPI extends RequiredSPI, SingletonSPI {
     
     /**
      * List all jobs.

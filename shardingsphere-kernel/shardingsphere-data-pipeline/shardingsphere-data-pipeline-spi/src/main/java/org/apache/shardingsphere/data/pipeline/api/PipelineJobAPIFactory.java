@@ -17,19 +17,14 @@
 
 package org.apache.shardingsphere.data.pipeline.api;
 
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
-
-import java.util.Collection;
+import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 
 /**
  * Pipeline job API factory.
  */
 public final class PipelineJobAPIFactory {
     
-    static {
-        ShardingSphereServiceLoader.register(PipelineJobAPI.class);
-    }
+    private static final PipelineJobAPI PIPELINE_JOB_API = RequiredSPIRegistry.getRegisteredService(PipelineJobAPI.class);
     
     /**
      * Get {@linkplain PipelineJobAPI}.
@@ -37,11 +32,7 @@ public final class PipelineJobAPIFactory {
      * @return pipeline job API
      */
     public static PipelineJobAPI getPipelineJobAPI() {
-        Collection<PipelineJobAPI> instances = ShardingSphereServiceLoader.getSingletonServiceInstances(PipelineJobAPI.class);
-        if (instances.isEmpty()) {
-            throw new ServiceProviderNotFoundException(PipelineJobAPI.class);
-        }
         // TODO checkServerConfig()
-        return instances.iterator().next();
+        return PIPELINE_JOB_API;
     }
 }
