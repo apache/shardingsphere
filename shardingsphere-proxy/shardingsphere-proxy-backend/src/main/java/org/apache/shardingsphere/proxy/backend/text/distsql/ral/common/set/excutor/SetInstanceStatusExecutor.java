@@ -64,7 +64,7 @@ public final class SetInstanceStatusExecutor implements SetStatementExecutor {
     
     private void checkDisablingIsValid(final InstanceId operationInstanceId) {
         InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
-        if (operationInstanceId.getId().equals(instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId())) {
+        if (isIdenticalInstance(instanceContext.getInstance().getInstanceDefinition(), operationInstanceId)) {
             throw new UnsupportedOperationException(String.format("`%s` is the currently in use instance and cannot be disabled", operationInstanceId.getId()));
         }
         checkExist(operationInstanceId);
