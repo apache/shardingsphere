@@ -21,9 +21,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.config.datasource.pool.destroyer.DataSourcePoolDestroyerFactory;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
@@ -190,7 +191,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                         && DataSourcePoolCreatorUtil.getDataSourceProperties(localDataSources.get(entry.getKey())).equals(entry.getValue())) {
                     dataSources.put(entry.getKey(), localDataSources.get(entry.getKey()));
                 } else {
-                    dataSources.put(entry.getKey(), DataSourcePoolCreatorUtil.getDataSource(entry.getValue()));
+                    dataSources.put(entry.getKey(), DataSourcePoolCreator.createDataSource(entry.getValue()));
                 }
             }
             result.put(each.getKey(), dataSources);

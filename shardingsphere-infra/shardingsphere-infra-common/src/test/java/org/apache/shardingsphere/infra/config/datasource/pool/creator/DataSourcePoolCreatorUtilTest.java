@@ -71,7 +71,7 @@ public final class DataSourcePoolCreatorUtilTest {
     
     @Test
     public void assertGetDataSource() {
-        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreatorUtil.getDataSource(createDataSourceProperties());
+        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreator.createDataSource(createDataSourceProperties());
         assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getCanonicalName()));
         assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getUsername(), is("root"));
@@ -91,7 +91,7 @@ public final class DataSourcePoolCreatorUtilTest {
         props.put("loginTimeout", "5000");
         DataSourceProperties dataSourceProps = new DataSourceProperties(HikariDataSource.class.getName());
         dataSourceProps.getProps().putAll(props);
-        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreatorUtil.getDataSource(dataSourceProps);
+        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreator.createDataSource(dataSourceProps);
         assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getCanonicalName()));
         assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getUsername(), is("root"));

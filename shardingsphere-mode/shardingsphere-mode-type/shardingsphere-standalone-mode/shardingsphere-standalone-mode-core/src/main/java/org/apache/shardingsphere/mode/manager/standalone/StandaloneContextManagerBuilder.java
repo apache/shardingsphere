@@ -20,9 +20,10 @@ package org.apache.shardingsphere.mode.manager.standalone;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.config.datasource.pool.destroyer.DataSourcePoolDestroyerFactory;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -143,7 +144,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
                         && DataSourcePoolCreatorUtil.getDataSourceProperties(localDataSources.get(entry.getKey())).equals(entry.getValue())) {
                     dataSources.put(entry.getKey(), localDataSources.get(entry.getKey()));
                 } else {
-                    dataSources.put(entry.getKey(), DataSourcePoolCreatorUtil.getDataSource(entry.getValue()));
+                    dataSources.put(entry.getKey(), DataSourcePoolCreator.createDataSource(entry.getValue()));
                 }
             }
             result.put(each.getKey(), dataSources);
