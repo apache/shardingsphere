@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * Data source properties.
@@ -38,6 +39,8 @@ public final class DataSourceProperties {
     private final String dataSourceClassName;
     
     private final Map<String, Object> props = new LinkedHashMap<>();
+    
+    private final Properties customPoolProps = new Properties();
     
     /**
      * Add property synonym to shared configuration.
@@ -59,8 +62,11 @@ public final class DataSourceProperties {
      * 
      * @return all properties
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Map<String, Object> getAllProperties() {
-        return new HashMap<>(props);
+        Map<String, Object> result = new HashMap<>(props);
+        result.putAll((Map) customPoolProps);
+        return result;
     }
     
     @Override
