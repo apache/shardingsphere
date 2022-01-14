@@ -36,12 +36,11 @@ public final class HikariDataSourcePoolCreatorTest {
     
     @Test
     public void assertCreateDataSource() {
-        DataSourcePoolCreator dataSourcePoolCreator = new DataSourcePoolCreator(HikariDataSource.class.getCanonicalName());
-        DataSource dataSource = dataSourcePoolCreator.createDataSource(createDataSourceProperties());
+        DataSource dataSource = DataSourcePoolCreator.createDataSource(createDataSourceProperties());
         assertThat(dataSource, instanceOf(HikariDataSource.class));
         HikariDataSource hikariDataSource = (HikariDataSource) dataSource;
         assertThat(hikariDataSource.getJdbcUrl(), is("jdbc:mysql://127.0.0.1/foo_ds"));
-        assertThat(hikariDataSource.getDriverClassName(), is(MockedDataSource.class.getCanonicalName()));
+        assertThat(hikariDataSource.getDriverClassName(), is(MockedDataSource.class.getName()));
         assertThat(hikariDataSource.getUsername(), is("root"));
         assertThat(hikariDataSource.getPassword(), is("root"));
         assertThat(hikariDataSource.getMaximumPoolSize(), is(10));
@@ -52,13 +51,13 @@ public final class HikariDataSourcePoolCreatorTest {
     private DataSourceProperties createDataSourceProperties() {
         Map<String, Object> props = new HashMap<>(16, 1);
         props.put("jdbcUrl", "jdbc:mysql://127.0.0.1/foo_ds");
-        props.put("driverClassName", MockedDataSource.class.getCanonicalName());
+        props.put("driverClassName", MockedDataSource.class.getName());
         props.put("username", "root");
         props.put("password", "root");
         props.put("maxPoolSize", 10);
         props.put("minPoolSize", 1);
         props.put("dataSourceProperties", getDataSourceProperties());
-        DataSourceProperties result = new DataSourceProperties("com.zaxxer.hikari.HikariDataSource");
+        DataSourceProperties result = new DataSourceProperties(HikariDataSource.class.getName());
         result.getProps().putAll(props);
         return result;
     }

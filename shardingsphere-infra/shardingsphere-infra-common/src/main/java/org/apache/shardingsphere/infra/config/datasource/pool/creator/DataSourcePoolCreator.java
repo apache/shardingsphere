@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.config.datasource.pool.creator;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
@@ -29,16 +31,11 @@ import java.util.Map.Entry;
 /**
  * Data source pool creator.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourcePoolCreator {
     
     static {
         ShardingSphereServiceLoader.register(DataSourcePoolMetaData.class);
-    }
-    
-    private final DataSourcePoolMetaData poolMetaData;
-    
-    public DataSourcePoolCreator(final String dataSourceClassName) {
-        poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceClassName);
     }
     
     /**
@@ -47,44 +44,45 @@ public final class DataSourcePoolCreator {
      * @param dataSourceProps data source properties
      * @return created data source
      */
-    public DataSource createDataSource(final DataSourceProperties dataSourceProps) {
+    public static DataSource createDataSource(final DataSourceProperties dataSourceProps) {
         DataSource result = buildDataSource(dataSourceProps.getDataSourceClassName());
-        addPropertySynonym(dataSourceProps);
+        DataSourcePoolMetaData poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceProps.getDataSourceClassName());
+        addPropertySynonym(dataSourceProps, poolMetaData);
         DataSourceReflection dataSourceReflection = new DataSourceReflection(result);
-        setDefaultFields(dataSourceReflection);
-        setConfiguredFields(dataSourceProps, dataSourceReflection);
+        setDefaultFields(dataSourceReflection, poolMetaData);
+        setConfiguredFields(dataSourceProps, dataSourceReflection, poolMetaData);
         dataSourceReflection.addDefaultDataSourceProperties(poolMetaData.getJdbcUrlPropertiesFieldName(), poolMetaData.getJdbcUrlFieldName());
         return result;
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private DataSource buildDataSource(final String dataSourceClassName) {
+    private static DataSource buildDataSource(final String dataSourceClassName) {
         return (DataSource) Class.forName(dataSourceClassName).getConstructor().newInstance();
     }
     
-    private void addPropertySynonym(final DataSourceProperties dataSourceProps) {
+    private static void addPropertySynonym(final DataSourceProperties dataSourceProps, final DataSourcePoolMetaData poolMetaData) {
         for (Entry<String, String> entry : poolMetaData.getPropertySynonyms().entrySet()) {
             dataSourceProps.addPropertySynonym(entry.getKey(), entry.getValue());
         }
     }
     
-    private void setDefaultFields(final DataSourceReflection dataSourceReflection) {
+    private static void setDefaultFields(final DataSourceReflection dataSourceReflection, final DataSourcePoolMetaData poolMetaData) {
         for (Entry<String, Object> entry : poolMetaData.getDefaultProperties().entrySet()) {
             dataSourceReflection.setField(entry.getKey(), entry.getValue());
         }
     }
     
-    private void setConfiguredFields(final DataSourceProperties dataSourceProps, final DataSourceReflection dataSourceReflection) {
+    private static void setConfiguredFields(final DataSourceProperties dataSourceProps, final DataSourceReflection dataSourceReflection, final DataSourcePoolMetaData poolMetaData) {
         for (Entry<String, Object> entry : dataSourceProps.getAllProperties().entrySet()) {
             String fieldName = entry.getKey();
             Object fieldValue = entry.getValue();
-            if (isValidProperty(fieldName, fieldValue)) {
+            if (isValidProperty(fieldName, fieldValue, poolMetaData)) {
                 dataSourceReflection.setField(fieldName, fieldValue);
             }
         }
     }
     
-    private boolean isValidProperty(final String key, final Object value) {
+    private static boolean isValidProperty(final String key, final Object value, final DataSourcePoolMetaData poolMetaData) {
         return !poolMetaData.getInvalidProperties().containsKey(key) || null == value || !value.equals(poolMetaData.getInvalidProperties().get(key));
     }
 }
