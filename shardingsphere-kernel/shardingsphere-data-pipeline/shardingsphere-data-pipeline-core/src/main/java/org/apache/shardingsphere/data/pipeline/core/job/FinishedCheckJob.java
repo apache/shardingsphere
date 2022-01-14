@@ -40,6 +40,7 @@ public final class FinishedCheckJob implements SimpleJob {
     
     private final RuleAlteredJobAPI ruleAlteredJobAPI = PipelineJobAPIFactory.getRuleAlteredJobAPI();
     
+    // TODO only one proxy node could do data consistency check in proxy cluster
     @Override
     public void execute(final ShardingContext shardingContext) {
         List<JobInfo> jobInfos = ruleAlteredJobAPI.list();
