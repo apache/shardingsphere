@@ -164,18 +164,17 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         }
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String schemaName = connectionSession.getSchemaName();
-        SQLStatementContext<?> sqlStatementContext = 
+        SQLStatementContext<?> sqlStatementContext =
                 SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), Collections.emptyList(), preparedStatement.getSqlStatement(), schemaName);
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, preparedStatement.getSql(), Collections.emptyList());
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(schemaName);
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(logicSQL, metaData, metaDataContexts.getProps());
         ExecutionUnit executionUnitSample = executionContext.getExecutionUnits().iterator().next();
         JDBCBackendConnection backendConnection = (JDBCBackendConnection) connectionSession.getBackendConnection();
-        try (Connection connection = backendConnection.getConnections(executionUnitSample.getDataSourceName(), 1, ConnectionMode.CONNECTION_STRICTLY).iterator().next()) {
-            try (PreparedStatement ps = connection.prepareStatement(executionUnitSample.getSqlUnit().getSql())) {
-                populateParameterTypes(preparedStatement, ps);
-                populateColumnTypes(preparedStatement, ps);
-            }
+        Connection connection = backendConnection.getConnections(executionUnitSample.getDataSourceName(), 1, ConnectionMode.CONNECTION_STRICTLY).iterator().next();
+        try (PreparedStatement ps = connection.prepareStatement(executionUnitSample.getSqlUnit().getSql())) {
+            populateParameterTypes(preparedStatement, ps);
+            populateColumnTypes(preparedStatement, ps);
         }
     }
     
