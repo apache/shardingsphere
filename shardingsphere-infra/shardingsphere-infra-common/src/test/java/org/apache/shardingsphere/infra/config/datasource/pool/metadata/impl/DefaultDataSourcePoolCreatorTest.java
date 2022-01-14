@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.config.datasource.pool.metadata.impl;
 
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,7 +29,7 @@ public final class DefaultDataSourcePoolCreatorTest {
     
     @Test
     public void assertCreateDataSource() {
-        MockedDataSource actual = (MockedDataSource) new DataSourcePoolCreator("Default").createDataSource(createDataSourceProperties());
+        BasicDataSource actual = (BasicDataSource) DataSourcePoolCreator.createDataSource(createDataSourceProperties());
         assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
         assertThat(actual.getUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getUsername(), is("root"));
@@ -37,7 +37,7 @@ public final class DefaultDataSourcePoolCreatorTest {
     }
     
     private DataSourceProperties createDataSourceProperties() {
-        DataSourceProperties result = new DataSourceProperties(MockedDataSource.class.getCanonicalName());
+        DataSourceProperties result = new DataSourceProperties(BasicDataSource.class.getName());
         result.getProps().put("driverClassName", "org.h2.Driver");
         result.getProps().put("url", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         result.getProps().put("username", "root");
