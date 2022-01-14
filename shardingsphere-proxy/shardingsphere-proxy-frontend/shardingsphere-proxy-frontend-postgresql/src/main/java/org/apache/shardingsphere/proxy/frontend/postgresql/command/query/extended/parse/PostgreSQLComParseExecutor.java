@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLParseCompletePacket;
@@ -35,10 +34,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
 import java.util.ArrayList;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.List;
 
 /**
@@ -47,7 +44,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class PostgreSQLComParseExecutor implements CommandExecutor {
     
-    private final PostgreSQLComParsePacket packet; 
+    private final PostgreSQLComParsePacket packet;
     
     private final ConnectionSession connectionSession;
     

@@ -93,7 +93,7 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
         }
         this.firstBindIndex = firstBindIndex;
         this.lastExecuteIndex = lastExecuteIndex;
-        if (this.containsBatchedInserts = (firstStatementBindTimes == firstStatementExecuteTimes && firstStatementBindTimes >= 3)) {
+        if (this.containsBatchedInserts = firstStatementBindTimes == firstStatementExecuteTimes && firstStatementBindTimes >= 3) {
             ensureRandomAccessible(packets);
         }
     }
