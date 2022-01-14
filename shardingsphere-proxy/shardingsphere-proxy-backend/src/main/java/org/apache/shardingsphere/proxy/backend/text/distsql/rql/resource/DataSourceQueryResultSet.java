@@ -34,7 +34,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -78,16 +77,28 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     
     private Map<String, Object> getAttributeMap(final DataSourceProperties dataSourceProps) {
         Map<String, Object> result = new LinkedHashMap<>(7, 1);
-        for (Entry<String, Object> entry : dataSourceProps.getProps().entrySet()) {
-            // TODO process synonym
-            String key = entry.getKey();
-            // TODO skip url, user and password from DataSourceProperties
-            if ("url".equalsIgnoreCase(key) || "jdbcUrl".equalsIgnoreCase(key) || "user".equalsIgnoreCase(key) || "username".equalsIgnoreCase(key) || "password".equalsIgnoreCase(key)) {
-                continue;
-            }
-            result.put(key, entry.getValue());
+        result.put("connectionTimeoutMilliseconds", getProperty(dataSourceProps, "connectionTimeoutMilliseconds", "connectionTimeout"));
+        result.put("idleTimeoutMilliseconds", getProperty(dataSourceProps, "idleTimeoutMilliseconds", "idleTimeout"));
+        result.put("maxLifetimeMilliseconds", getProperty(dataSourceProps, "maxLifetimeMilliseconds", "maxLifetime"));
+        result.put("maxPoolSize", getProperty(dataSourceProps, "maxPoolSize", "maximumPoolSize"));
+        result.put("minPoolSize", getProperty(dataSourceProps, "minPoolSize", "minimumIdle"));
+        result.put("readOnly", getProperty(dataSourceProps, "readOnly"));
+        if (!dataSourceProps.getCustomPoolProps().isEmpty()) {
+            result.put(DataSourceProperties.CUSTOM_POOL_PROPS_KEY, dataSourceProps.getCustomPoolProps());
         }
         return result;
+    }
+    
+    private Object getProperty(final DataSourceProperties dataSourceProps, final String key, final String... synonym) {
+        if (dataSourceProps.getProps().containsKey(key)) {
+            return dataSourceProps.getProps().get(key);
+        }
+        for (String each : synonym) {
+            if (dataSourceProps.getProps().containsKey(each)) {
+                return dataSourceProps.getProps().get(each);
+            }
+        }
+        return null;
     }
     
     @Override
