@@ -152,7 +152,7 @@ public final class CommandExecutorTaskTest {
         RuntimeException mockException = new RuntimeException("mock");
         doThrow(mockException).when(backendConnection).prepareForTaskExecution();
         when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
-        when(engine.getCommandExecuteEngine().getErrorPacket(mockException, connectionSession)).thenReturn(databasePacket);
+        when(engine.getCommandExecuteEngine().getErrorPacket(mockException)).thenReturn(databasePacket);
         when(engine.getCommandExecuteEngine().getOtherPacket(connectionSession)).thenReturn(Optional.of(databasePacket));
         CommandExecutorTask actual = new CommandExecutorTask(engine, connectionSession, handlerContext, message);
         actual.run();

@@ -68,11 +68,6 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     }
     
     @Override
-    public DatabasePacket<?> getErrorPacket(final Exception cause, final ConnectionSession connectionSession) {
-        return PostgreSQLErrPacketFactory.newInstance(cause);
-    }
-    
-    @Override
     public DatabasePacket<?> getErrorPacket(final Exception cause) {
         return PostgreSQLErrPacketFactory.newInstance(cause);
     }

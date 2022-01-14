@@ -126,7 +126,7 @@ public final class ReactiveCommandExecuteTask implements Runnable {
         if (!ExpectedExceptions.isExpected(cause.getClass())) {
             log.error("Exception occur: ", cause);
         }
-        context.write(reactiveDatabaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(cause, connectionSession));
+        context.write(reactiveDatabaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(cause));
         Optional<DatabasePacket<?>> databasePacket = reactiveDatabaseProtocolFrontendEngine.getCommandExecuteEngine().getOtherPacket(connectionSession);
         databasePacket.ifPresent(context::write);
         context.flush();

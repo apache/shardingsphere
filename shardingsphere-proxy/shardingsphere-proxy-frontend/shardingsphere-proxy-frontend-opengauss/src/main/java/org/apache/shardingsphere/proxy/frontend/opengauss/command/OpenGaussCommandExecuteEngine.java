@@ -63,11 +63,6 @@ public final class OpenGaussCommandExecuteEngine implements CommandExecuteEngine
     }
     
     @Override
-    public DatabasePacket<?> getErrorPacket(final Exception cause, final ConnectionSession connectionSession) {
-        return OpenGaussErrorPacketFactory.newInstance(cause);
-    }
-    
-    @Override
     public DatabasePacket<?> getErrorPacket(final Exception cause) {
         return OpenGaussErrorPacketFactory.newInstance(cause);
     }
