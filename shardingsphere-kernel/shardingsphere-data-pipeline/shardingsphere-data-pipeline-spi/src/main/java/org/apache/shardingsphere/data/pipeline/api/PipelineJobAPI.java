@@ -55,7 +55,7 @@ public interface PipelineJobAPI extends RequiredSPI {
      *
      * @param jobId job id
      */
-    void start(String jobId);
+    void startDisabledJob(String jobId);
     
     /**
      * Start scaling job by config.

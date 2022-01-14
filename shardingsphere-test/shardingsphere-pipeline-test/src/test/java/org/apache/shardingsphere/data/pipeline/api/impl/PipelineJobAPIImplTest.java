@@ -93,7 +93,7 @@ public final class PipelineJobAPIImplTest {
         assertTrue(getNonNullJobInfo(jobId.get()).isActive());
         pipelineJobAPI.stop(jobId.get());
         assertFalse(getNonNullJobInfo(jobId.get()).isActive());
-        pipelineJobAPI.start(jobId.get());
+        pipelineJobAPI.startDisabledJob(jobId.get());
         assertTrue(getNonNullJobInfo(jobId.get()).isActive());
     }
     

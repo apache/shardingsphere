@@ -135,8 +135,8 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     @Override
-    public void start(final String jobId) {
-        log.info("Start scaling job {}", jobId);
+    public void startDisabledJob(final String jobId) {
+        log.info("Start disabled job {}", jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         jobConfigPOJO.setDisabled(false);
         jobConfigPOJO.getProps().remove("stop_time");
