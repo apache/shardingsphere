@@ -111,13 +111,13 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
     
     private DataSourceProperties createDataSourceProperties(final ComputeNodeInstance instance, final Collection<ShardingSphereUser> users,
                                                             final DataSourceProperties dataSourcePropsSample, final String schema) {
-        Map<String, Object> props = dataSourcePropsSample.getProperties();
+        Map<String, Object> props = dataSourcePropsSample.getProps();
         props.put("jdbcUrl", createJdbcUrl(instance, schema, props));
         ShardingSphereUser user = users.iterator().next();
         props.put("username", user.getGrantee().getUsername());
         props.put("password", user.getPassword());
         DataSourceProperties result = new DataSourceProperties(HikariDataSource.class.getName());
-        result.getProperties().putAll(props);
+        result.getProps().putAll(props);
         return result;
     }
     

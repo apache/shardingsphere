@@ -127,8 +127,8 @@ public final class DataSourceQueryResultSetTest {
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap() {
         Map<String, DataSourceProperties> result = new HashMap<>();
         DataSourceProperties ds0 = new DataSourceProperties("ds_0");
-        ds0.getProperties().put("test", "test");
-        ds0.getProperties().put("readOnly", true);
+        ds0.getProps().put("test", "test");
+        ds0.getProps().put("readOnly", true);
         result.put("ds_0", ds0);
         return result;
     }

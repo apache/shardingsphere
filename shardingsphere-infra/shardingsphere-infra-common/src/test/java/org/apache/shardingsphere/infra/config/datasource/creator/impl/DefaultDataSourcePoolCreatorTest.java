@@ -54,10 +54,10 @@ public final class DefaultDataSourcePoolCreatorTest {
     
     private DataSourceProperties createDataSourceProperties() {
         DataSourceProperties result = new DataSourceProperties(MockedDataSource.class.getCanonicalName());
-        result.getProperties().put("driverClassName", "org.h2.Driver");
-        result.getProperties().put("url", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        result.getProperties().put("username", "root");
-        result.getProperties().put("password", "root");
+        result.getProps().put("driverClassName", "org.h2.Driver");
+        result.getProps().put("url", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        result.getProps().put("username", "root");
+        result.getProps().put("password", "root");
         return result;
     }
 }

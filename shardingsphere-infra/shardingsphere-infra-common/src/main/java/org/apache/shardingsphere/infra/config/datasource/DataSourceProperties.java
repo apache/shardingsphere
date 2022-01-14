@@ -21,6 +21,7 @@ import com.google.common.base.Objects;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -36,7 +37,7 @@ public final class DataSourceProperties {
     
     private final String dataSourceClassName;
     
-    private final Map<String, Object> properties = new LinkedHashMap<>();
+    private final Map<String, Object> props = new LinkedHashMap<>();
     
     /**
      * Add property synonym to shared configuration.
@@ -45,12 +46,21 @@ public final class DataSourceProperties {
      * @param synonym property synonym for configuration
      */
     public void addPropertySynonym(final String originalName, final String synonym) {
-        if (properties.containsKey(originalName)) {
-            properties.put(synonym, properties.get(originalName));
+        if (props.containsKey(originalName)) {
+            props.put(synonym, props.get(originalName));
         }
-        if (properties.containsKey(synonym)) {
-            properties.put(originalName, properties.get(synonym));
+        if (props.containsKey(synonym)) {
+            props.put(originalName, props.get(synonym));
         }
+    }
+    
+    /**
+     * Get all properties.
+     * 
+     * @return all properties
+     */
+    public Map<String, Object> getAllProperties() {
+        return new HashMap<>(props);
     }
     
     @Override
@@ -62,11 +72,11 @@ public final class DataSourceProperties {
         if (!dataSourceClassName.equals(dataSourceProperties.dataSourceClassName)) {
             return false;
         }
-        for (Entry<String, Object> entry : properties.entrySet()) {
-            if (!dataSourceProperties.properties.containsKey(entry.getKey())) {
+        for (Entry<String, Object> entry : props.entrySet()) {
+            if (!dataSourceProperties.props.containsKey(entry.getKey())) {
                 continue;
             }
-            if (!String.valueOf(entry.getValue()).equals(String.valueOf(dataSourceProperties.properties.get(entry.getKey())))) {
+            if (!String.valueOf(entry.getValue()).equals(String.valueOf(dataSourceProperties.props.get(entry.getKey())))) {
                 return false;
             }
         }
@@ -76,7 +86,7 @@ public final class DataSourceProperties {
     @Override
     public int hashCode() {
         StringBuilder stringBuilder = new StringBuilder();
-        for (Entry<String, Object> entry : properties.entrySet()) {
+        for (Entry<String, Object> entry : props.entrySet()) {
             stringBuilder.append(entry.getKey()).append(entry.getValue());
         }
         return Objects.hashCode(dataSourceClassName, stringBuilder.toString());
