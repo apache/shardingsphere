@@ -48,7 +48,7 @@ public final class OpenGaussCommandPacketFactory {
     /**
      * Create new instance of command packet.
      *
-     * @param commandPacketType command packet type for PostgreSQL
+     * @param commandPacketType command packet type for PostgreSQL/openGauss
      * @param payload packet payload for PostgreSQL
      * @return command packet for PostgreSQL
      */
