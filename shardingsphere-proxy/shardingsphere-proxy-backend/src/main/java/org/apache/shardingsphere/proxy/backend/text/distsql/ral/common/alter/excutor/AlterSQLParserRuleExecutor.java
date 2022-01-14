@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
+import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -50,19 +51,34 @@ public final class AlterSQLParserRuleExecutor implements AlterStatementExecutor 
     private void updateSQLParserRule() {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         Collection<RuleConfiguration> globalRuleConfigurations = metaDataContexts.getGlobalRuleMetaData().getConfigurations();
-        RuleConfiguration ruleConfiguration = globalRuleConfigurations.stream().filter(configuration -> configuration instanceof SQLParserRuleConfiguration).findFirst().orElse(null);
-        if (ruleConfiguration instanceof SQLParserRuleConfiguration) {
-            SQLParserRuleConfiguration toBeAdd = buildSQLParserRuleConfiguration((SQLParserRuleConfiguration) ruleConfiguration);
-            globalRuleConfigurations.removeIf(configuration -> configuration instanceof SQLParserRuleConfiguration);
-            globalRuleConfigurations.add(toBeAdd);
-            Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
-            if (metaDataPersistService.isPresent() && null != metaDataPersistService.get().getPropsService()) {
-                metaDataPersistService.get().getGlobalRuleService().persist(globalRuleConfigurations, true);
-            }
+        RuleConfiguration currentRuleConfiguration = globalRuleConfigurations.stream().filter(configuration -> configuration instanceof SQLParserRuleConfiguration).findFirst().orElse(null);
+        SQLParserRuleConfiguration toBeAlteredRuleConfiguration = getToBeAlteredRuleConfig(currentRuleConfiguration);
+        globalRuleConfigurations.removeIf(configuration -> configuration instanceof SQLParserRuleConfiguration);
+        globalRuleConfigurations.add(toBeAlteredRuleConfiguration);
+        Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
+        if (metaDataPersistService.isPresent() && null != metaDataPersistService.get().getGlobalRuleService()) {
+            metaDataPersistService.get().getGlobalRuleService().persist(globalRuleConfigurations, true);
         }
     }
-
-    private SQLParserRuleConfiguration buildSQLParserRuleConfiguration(final SQLParserRuleConfiguration ruleConfiguration) {
+    
+    private SQLParserRuleConfiguration getToBeAlteredRuleConfig(final RuleConfiguration currentRuleConfiguration) {
+        if (null == currentRuleConfiguration) {
+            return buildWithDefaultRuleConfiguration();
+        }
+        return buildWithCurrentRuleConfiguration((SQLParserRuleConfiguration) currentRuleConfiguration);
+    }
+    
+    private SQLParserRuleConfiguration buildWithDefaultRuleConfiguration() {
+        SQLParserRuleConfiguration result = new SQLParserRuleConfiguration();
+        result.setSqlCommentParseEnabled(sqlStatement.getSqlCommentParseEnable());
+        result.setParseTreeCache(null == sqlStatement.getParseTreeCache() ? DefaultSQLParserRuleConfigurationBuilder.PARSE_TREE_CACHE_OPTION
+                : buildCacheOption(DefaultSQLParserRuleConfigurationBuilder.PARSE_TREE_CACHE_OPTION, sqlStatement.getParseTreeCache()));
+        result.setSqlStatementCache(null == sqlStatement.getSqlStatementCache() ? DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION
+                : buildCacheOption(DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION, sqlStatement.getSqlStatementCache()));
+        return result;
+    }
+    
+    private SQLParserRuleConfiguration buildWithCurrentRuleConfiguration(final SQLParserRuleConfiguration ruleConfiguration) {
         SQLParserRuleConfiguration result = new SQLParserRuleConfiguration();
         result.setSqlCommentParseEnabled(null == sqlStatement.getSqlCommentParseEnable() ? ruleConfiguration.isSqlCommentParseEnabled() 
                 : sqlStatement.getSqlCommentParseEnable());
