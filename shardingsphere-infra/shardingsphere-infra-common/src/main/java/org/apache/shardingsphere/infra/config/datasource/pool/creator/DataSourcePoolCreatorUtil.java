@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.config.datasource.pool.creator;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourcePropertiesCreator;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
@@ -49,8 +50,8 @@ public final class DataSourcePoolCreatorUtil {
      * @param dataSource data source
      * @return data source properties
      */
-    public static DataSourceProperties getDataSourceConfiguration(final DataSource dataSource) {
-        return new DataSourcePoolCreator(dataSource.getClass().getCanonicalName()).createDataSourceProperties(dataSource);
+    public static DataSourceProperties getDataSourceProperties(final DataSource dataSource) {
+        return new DataSourcePropertiesCreator(dataSource.getClass().getCanonicalName()).createDataSourceProperties(dataSource);
     }
     
     /**
@@ -71,6 +72,6 @@ public final class DataSourcePoolCreatorUtil {
      */
     public static Map<String, DataSourceProperties> getDataSourcePropertiesMap(final Map<String, DataSource> dataSourceMap) {
         return dataSourceMap.entrySet().stream().collect(
-                Collectors.toMap(Entry::getKey, entry -> getDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                Collectors.toMap(Entry::getKey, entry -> getDataSourceProperties(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
 }

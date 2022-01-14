@@ -103,7 +103,7 @@ public final class MetaDataPersistServiceTest {
     
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap() {
         return createDataSourceMap().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> 
-                DataSourcePoolCreatorUtil.getDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                DataSourcePoolCreatorUtil.getDataSourceProperties(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private Map<String, DataSource> createDataSourceMap() {

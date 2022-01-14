@@ -134,9 +134,9 @@ public final class ClusterContextManagerCoordinatorTest {
     private Map<String, DataSourceProperties> getDataSourcePropertiesMap() {
         MockedDataSource dataSource = new MockedDataSource();
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(3, 1);
-        result.put("primary_ds", DataSourcePoolCreatorUtil.getDataSourceConfiguration(dataSource));
-        result.put("ds_0", DataSourcePoolCreatorUtil.getDataSourceConfiguration(dataSource));
-        result.put("ds_1", DataSourcePoolCreatorUtil.getDataSourceConfiguration(dataSource));
+        result.put("primary_ds", DataSourcePoolCreatorUtil.getDataSourceProperties(dataSource));
+        result.put("ds_0", DataSourcePoolCreatorUtil.getDataSourceProperties(dataSource));
+        result.put("ds_1", DataSourcePoolCreatorUtil.getDataSourceProperties(dataSource));
         return result;
     }
     
@@ -189,9 +189,9 @@ public final class ClusterContextManagerCoordinatorTest {
     private Map<String, DataSourceProperties> getChangedDataSourcePropertiesMap() {
         MockedDataSource dataSource = new MockedDataSource();
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(3, 1);
-        result.put("primary_ds", DataSourcePoolCreatorUtil.getDataSourceConfiguration(dataSource));
-        result.put("ds_1", DataSourcePoolCreatorUtil.getDataSourceConfiguration(dataSource));
-        result.put("ds_2", DataSourcePoolCreatorUtil.getDataSourceConfiguration(dataSource));
+        result.put("primary_ds", DataSourcePoolCreatorUtil.getDataSourceProperties(dataSource));
+        result.put("ds_1", DataSourcePoolCreatorUtil.getDataSourceProperties(dataSource));
+        result.put("ds_2", DataSourcePoolCreatorUtil.getDataSourceProperties(dataSource));
         return result;
     }
     

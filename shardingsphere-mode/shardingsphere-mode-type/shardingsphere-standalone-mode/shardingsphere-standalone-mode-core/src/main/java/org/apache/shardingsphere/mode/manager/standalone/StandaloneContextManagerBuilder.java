@@ -140,7 +140,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
             for (Entry<String, DataSourceProperties> entry : loadDataSourcePropsMap.entrySet()) {
                 Map<String, DataSource> localDataSources = localDataSourcesMap.get(each.getKey());
                 if (null != localDataSources && null != localDataSources.get(entry.getKey())
-                        && DataSourcePoolCreatorUtil.getDataSourceConfiguration(localDataSources.get(entry.getKey())).equals(entry.getValue())) {
+                        && DataSourcePoolCreatorUtil.getDataSourceProperties(localDataSources.get(entry.getKey())).equals(entry.getValue())) {
                     dataSources.put(entry.getKey(), localDataSources.get(entry.getKey()));
                 } else {
                     dataSources.put(entry.getKey(), DataSourcePoolCreatorUtil.getDataSource(entry.getValue()));

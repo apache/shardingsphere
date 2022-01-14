@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.config.datasource.pool.metadata.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreator;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
@@ -30,35 +30,9 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 public final class HikariDataSourcePoolCreatorTest {
-    
-    @Test
-    public void assertCreateDataSourcePropertiesWithoutDriverClassName() {
-        HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setJdbcUrl("jdbc:mysql://127.0.0.1/foo_ds");
-        dataSource.setUsername("root");
-        dataSource.setPassword("root");
-        DataSourceProperties dataSourceProps = new DataSourcePoolCreator(HikariDataSource.class.getCanonicalName()).createDataSourceProperties(dataSource);
-        Map<String, Object> props = dataSourceProps.getProps();
-        assertFalse(props.containsKey("driverClassName") && null == props.get("driverClassName"));
-    }
-    
-    @Test
-    public void assertCreateDataSourceProperties() {
-        DataSourcePoolCreator dataSourcePoolCreator = new DataSourcePoolCreator(HikariDataSource.class.getCanonicalName());
-        DataSourceProperties dataSourceProps = dataSourcePoolCreator.createDataSourceProperties(dataSourcePoolCreator.createDataSource(createDataSourceProperties()));
-        assertThat(dataSourceProps.getDataSourceClassName(), is("com.zaxxer.hikari.HikariDataSource"));
-        assertThat(dataSourceProps.getProps().get("jdbcUrl"), is("jdbc:mysql://127.0.0.1/foo_ds"));
-        assertThat(dataSourceProps.getProps().get("driverClassName"), is(MockedDataSource.class.getCanonicalName()));
-        assertThat(dataSourceProps.getProps().get("username"), is("root"));
-        assertThat(dataSourceProps.getProps().get("password"), is("root"));
-        assertThat(dataSourceProps.getProps().get("maximumPoolSize"), is(10));
-        assertThat(dataSourceProps.getProps().get("minimumIdle"), is(1));
-        assertDataSourceProperties((Properties) dataSourceProps.getProps().get("dataSourceProperties"));
-    }
     
     @Test
     public void assertCreateDataSource() {
