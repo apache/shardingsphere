@@ -21,7 +21,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.instance.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 
 import javax.sql.DataSource;
 import java.util.Collection;
