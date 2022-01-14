@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.command.query.extended.bind.OpenGaussComBatchBindPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatement;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -49,8 +51,8 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
-        PostgreSQLBatchedInsertsExecutor batchedInsertsExecutor = new PostgreSQLBatchedInsertsExecutor(connectionSession, packet.getPreparedStatement(), packet.readParameterSets());
-        updateCount = batchedInsertsExecutor.executeBatch();
+        PostgreSQLPreparedStatement preparedStatement = PostgreSQLPreparedStatementRegistry.getInstance().get(connectionSession.getConnectionId(), packet.getStatementId());
+        updateCount = new PostgreSQLBatchedInsertsExecutor(connectionSession, preparedStatement, packet.readParameterSets(preparedStatement.getParameterTypes())).executeBatch();
         return Collections.singletonList(new PostgreSQLBindCompletePacket());
     }
     
@@ -66,7 +68,8 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
     
     @Override
     public PostgreSQLPacket getQueryRowPacket() {
-        String sqlCommand = PostgreSQLCommand.valueOf(packet.getPreparedStatement().getSqlStatement().getClass()).map(PostgreSQLCommand::getTag).orElse("");
+        PostgreSQLPreparedStatement preparedStatement = PostgreSQLPreparedStatementRegistry.getInstance().get(connectionSession.getConnectionId(), packet.getStatementId());
+        String sqlCommand = PostgreSQLCommand.valueOf(preparedStatement.getSqlStatement().getClass()).map(PostgreSQLCommand::getTag).orElse("");
         return new PostgreSQLCommandCompletePacket(sqlCommand, updateCount);
     }
 }

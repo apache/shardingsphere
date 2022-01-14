@@ -49,13 +49,13 @@ public final class OpenGaussCommandPacketFactoryTest {
         PostgreSQLPreparedStatementRegistry.getInstance().register(1);
         PostgreSQLPreparedStatementRegistry.getInstance().register(1, "assertNewOpenGaussComBatchBindPacket", "", mock(SQLStatement.class), Collections.emptyList());
         when(payload.readStringNul()).thenReturn("assertNewOpenGaussComBatchBindPacket");
-        CommandPacket actual = OpenGaussCommandPacketFactory.newInstance(OpenGaussCommandPacketType.BATCH_BIND_COMMAND, payload, 1);
+        CommandPacket actual = OpenGaussCommandPacketFactory.newInstance(OpenGaussCommandPacketType.BATCH_BIND_COMMAND, payload);
         assertThat(actual, instanceOf(OpenGaussComBatchBindPacket.class));
     }
     
     @Test
     public void assertNewPostgreSQLPacket() {
-        CommandPacket actual = OpenGaussCommandPacketFactory.newInstance(mock(PostgreSQLCommandPacketType.class), payload, 1);
+        CommandPacket actual = OpenGaussCommandPacketFactory.newInstance(mock(PostgreSQLCommandPacketType.class), payload);
         assertTrue(actual instanceof PostgreSQLCommandPacket);
         assertFalse(actual instanceof OpenGaussCommandPacket);
     }
