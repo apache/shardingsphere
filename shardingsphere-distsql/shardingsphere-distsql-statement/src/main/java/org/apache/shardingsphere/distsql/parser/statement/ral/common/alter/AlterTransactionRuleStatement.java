@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-grammar BaseRule;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.alter;
 
-import Symbol, Keyword, Literals;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.TransactionProviderSegment;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.AlterDistSQLStatement;
 
-algorithmDefinition
-    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
-    ;
-
-algorithmName
-    : IDENTIFIER
-    ;
-
-algorithmProperties
-    : algorithmProperty (COMMA algorithmProperty)*
-    ;
-
-algorithmProperty
-    : key=(IDENTIFIER | STRING) EQ value=(INT | IDENTIFIER | STRING)
-    ;
+/**
+ * Alter Transaction rule statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class AlterTransactionRuleStatement extends AlterDistSQLStatement {
+    
+    private final String defaultType;
+    
+    private final TransactionProviderSegment provider;
+}

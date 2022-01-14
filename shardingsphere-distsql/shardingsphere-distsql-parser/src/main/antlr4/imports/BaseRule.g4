@@ -19,18 +19,14 @@ grammar BaseRule;
 
 import Symbol, Keyword, Literals;
 
-algorithmDefinition
-    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
+propertiesDefinition
+    : COMMA PROPERTIES LP properties? RP
     ;
 
-algorithmName
-    : IDENTIFIER
+properties
+    : property (COMMA property)*
     ;
 
-algorithmProperties
-    : algorithmProperty (COMMA algorithmProperty)*
-    ;
-
-algorithmProperty
+property
     : key=(IDENTIFIER | STRING) EQ value=(INT | IDENTIFIER | STRING)
     ;
