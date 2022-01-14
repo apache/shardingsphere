@@ -57,7 +57,7 @@ public final class ComputeNodePersistService {
      * @param instanceId instance id
      * @param workerId worker id
      */
-    public void persistInstanceWorkerId(final String instanceId, final Integer workerId) {
+    public void persistInstanceWorkerId(final String instanceId, final Long workerId) {
         repository.persist(ComputeNode.getInstanceWorkerIdNodePath(instanceId), String.valueOf(workerId));
     }
     
@@ -89,9 +89,9 @@ public final class ComputeNodePersistService {
      * @param instanceId instance id
      * @return worker id
      */
-    public Integer loadInstanceWorkerId(final String instanceId) {
+    public Long loadInstanceWorkerId(final String instanceId) {
         try {
-            return Integer.valueOf(repository.get(ComputeNode.getInstanceWorkerIdNodePath(instanceId)));
+            return Long.valueOf(repository.get(ComputeNode.getInstanceWorkerIdNodePath(instanceId)));
         } catch (final NumberFormatException ex) {
             log.error("Invalid worker id for instance: {}", instanceId);
         }
