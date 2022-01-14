@@ -19,8 +19,8 @@ package org.apache.shardingsphere.data.pipeline.api.impl;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
@@ -53,31 +53,31 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class PipelineJobAPIImplTest {
+public final class RuleAlteredJobAPIImplTest {
     
-    private static PipelineJobAPI pipelineJobAPI;
+    private static RuleAlteredJobAPI ruleAlteredJobAPI;
     
     @BeforeClass
     public static void beforeClass() {
         EmbedTestingServer.start();
         PipelineContextUtil.mockModeConfig();
-        pipelineJobAPI = PipelineJobAPIFactory.getPipelineJobAPI();
+        ruleAlteredJobAPI = PipelineJobAPIFactory.getRuleAlteredJobAPI();
     }
     
     @Test
     public void assertStartAndList() {
-        Optional<String> jobId = pipelineJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
         JobInfo jobInfo = getNonNullJobInfo(jobId.get());
         assertTrue(jobInfo.isActive());
         assertThat(jobInfo.getTables(), is("t_order"));
         assertThat(jobInfo.getShardingTotalCount(), is(1));
-        List<Long> uncompletedJobIds = pipelineJobAPI.getUncompletedJobIds("logic_db");
+        List<Long> uncompletedJobIds = ruleAlteredJobAPI.getUncompletedJobIds("logic_db");
         assertTrue(uncompletedJobIds.size() > 0);
     }
     
     private Optional<JobInfo> getJobInfo(final String jobId) {
-        return pipelineJobAPI.list().stream().filter(each -> Objects.equals(each.getJobId(), jobId)).reduce((a, b) -> a);
+        return ruleAlteredJobAPI.list().stream().filter(each -> Objects.equals(each.getJobId(), jobId)).reduce((a, b) -> a);
     }
     
     private JobInfo getNonNullJobInfo(final String jobId) {
@@ -88,35 +88,35 @@ public final class PipelineJobAPIImplTest {
     
     @Test
     public void assertStartOrStopById() {
-        Optional<String> jobId = pipelineJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
         assertTrue(getNonNullJobInfo(jobId.get()).isActive());
-        pipelineJobAPI.stop(jobId.get());
+        ruleAlteredJobAPI.stop(jobId.get());
         assertFalse(getNonNullJobInfo(jobId.get()).isActive());
-        pipelineJobAPI.start(jobId.get());
+        ruleAlteredJobAPI.startDisabledJob(jobId.get());
         assertTrue(getNonNullJobInfo(jobId.get()).isActive());
     }
     
     @Test
     public void assertRemove() {
-        Optional<String> jobId = pipelineJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
         assertTrue(getJobInfo(jobId.get()).isPresent());
-        pipelineJobAPI.remove(jobId.get());
+        ruleAlteredJobAPI.remove(jobId.get());
         assertFalse(getJobInfo(jobId.get()).isPresent());
     }
     
     @Test
     public void assertGetProgress() {
-        Optional<String> jobId = pipelineJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
-        Map<Integer, JobProgress> jobProgressMap = pipelineJobAPI.getProgress(jobId.get());
+        Map<Integer, JobProgress> jobProgressMap = ruleAlteredJobAPI.getProgress(jobId.get());
         assertThat(jobProgressMap.size(), is(1));
     }
     
     @Test
     public void assertListDataConsistencyCheckAlgorithms() {
-        Collection<DataConsistencyCheckAlgorithmInfo> algorithmInfos = pipelineJobAPI.listDataConsistencyCheckAlgorithms();
+        Collection<DataConsistencyCheckAlgorithmInfo> algorithmInfos = ruleAlteredJobAPI.listDataConsistencyCheckAlgorithms();
         assertTrue(algorithmInfos.size() > 0);
         Optional<DataConsistencyCheckAlgorithmInfo> algorithmInfoOptional = algorithmInfos.stream().filter(each -> each.getType().equals(FixtureDataConsistencyCheckAlgorithm.TYPE)).findFirst();
         assertTrue(algorithmInfoOptional.isPresent());
@@ -130,30 +130,30 @@ public final class PipelineJobAPIImplTest {
     
     @Test
     public void assertIsDataConsistencyCheckNeeded() {
-        Optional<String> jobId = pipelineJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
-        assertThat(pipelineJobAPI.isDataConsistencyCheckNeeded(jobId.get()), is(true));
+        assertThat(ruleAlteredJobAPI.isDataConsistencyCheckNeeded(jobId.get()), is(true));
     }
     
     @Test
     public void assertDataConsistencyCheck() {
-        Optional<String> jobId = pipelineJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
-        JobConfiguration jobConfig = pipelineJobAPI.getJobConfig(jobId.get());
+        JobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
         PipelineContextUtil.mockContextManager();
-        Map<String, DataConsistencyCheckResult> checkResultMap = pipelineJobAPI.dataConsistencyCheck(jobId.get());
+        Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get());
         assertThat(checkResultMap.size(), is(1));
     }
     
     @Test
     public void assertDataConsistencyCheckWithAlgorithm() {
-        Optional<String> jobId = pipelineJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
-        JobConfiguration jobConfig = pipelineJobAPI.getJobConfig(jobId.get());
+        JobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
         PipelineContextUtil.mockContextManager();
-        Map<String, DataConsistencyCheckResult> checkResultMap = pipelineJobAPI.dataConsistencyCheck(jobId.get(), FixtureDataConsistencyCheckAlgorithm.TYPE);
+        Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get(), FixtureDataConsistencyCheckAlgorithm.TYPE);
         assertThat(checkResultMap.size(), is(1));
         assertTrue(checkResultMap.get("t_order").isRecordsCountMatched());
         assertTrue(checkResultMap.get("t_order").isRecordsContentMatched());
@@ -165,31 +165,31 @@ public final class PipelineJobAPIImplTest {
         String jobId = "1";
         Map<String, DataConsistencyCheckResult> checkResultMap;
         checkResultMap = Collections.emptyMap();
-        assertThat(pipelineJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
+        assertThat(ruleAlteredJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
         DataConsistencyCheckResult trueResult = new DataConsistencyCheckResult(1, 1);
         trueResult.setRecordsContentMatched(true);
         DataConsistencyCheckResult checkResult;
         checkResult = new DataConsistencyCheckResult(100, 95);
         checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
-        assertThat(pipelineJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
+        assertThat(ruleAlteredJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
         checkResult = new DataConsistencyCheckResult(100, 100);
         checkResult.setRecordsContentMatched(false);
         checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
-        assertThat(pipelineJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
+        assertThat(ruleAlteredJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(false));
         checkResult = new DataConsistencyCheckResult(100, 100);
         checkResult.setRecordsContentMatched(true);
         checkResultMap = ImmutableMap.<String, DataConsistencyCheckResult>builder().put("t", trueResult).put("t_order", checkResult).build();
-        assertThat(pipelineJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(true));
+        assertThat(ruleAlteredJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap), is(true));
     }
     
     @Test
     public void assertResetTargetTable() {
-        Optional<String> jobId = pipelineJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
-        JobConfiguration jobConfig = pipelineJobAPI.getJobConfig(jobId.get());
+        JobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
-        pipelineJobAPI.reset(jobId.get());
-        Map<String, DataConsistencyCheckResult> checkResultMap = pipelineJobAPI.dataConsistencyCheck(jobId.get(), FixtureDataConsistencyCheckAlgorithm.TYPE);
+        ruleAlteredJobAPI.reset(jobId.get());
+        Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get(), FixtureDataConsistencyCheckAlgorithm.TYPE);
         assertThat(checkResultMap.get("t_order").getTargetRecordsCount(), is(0L));
     }
     

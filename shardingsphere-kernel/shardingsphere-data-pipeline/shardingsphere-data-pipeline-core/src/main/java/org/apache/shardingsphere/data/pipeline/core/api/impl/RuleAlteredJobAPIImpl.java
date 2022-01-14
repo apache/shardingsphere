@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.HandleConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
@@ -51,7 +51,7 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.environment.ScalingEnvironmentManager;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -64,23 +64,22 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Slf4j
-// TODO replace RuleAltered
-public final class PipelineJobAPIImpl implements PipelineJobAPI {
+public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl implements RuleAlteredJobAPI {
     
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
-    static {
-        ShardingSphereServiceLoader.register(DataConsistencyCheckAlgorithm.class);
-    }
+    private static final Map<String, DataConsistencyCheckAlgorithm> DATA_CONSISTENCY_CHECK_ALGORITHM_MAP = new TreeMap<>(
+            SingletonSPIRegistry.getTypedSingletonInstancesMap(DataConsistencyCheckAlgorithm.class));
     
     @Override
     public boolean isDefault() {
-        return true;
+        return false;
     }
     
     @Override
@@ -135,15 +134,6 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     @Override
-    public void start(final String jobId) {
-        log.info("Start scaling job {}", jobId);
-        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        jobConfigPOJO.setDisabled(false);
-        jobConfigPOJO.getProps().remove("stop_time");
-        PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
-    }
-    
-    @Override
     public Optional<String> start(final JobConfiguration jobConfig) {
         jobConfig.buildHandleConfig();
         if (jobConfig.getHandleConfig().getJobShardingCount() == 0) {
@@ -168,27 +158,11 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     @Override
-    public void stop(final String jobId) {
-        log.info("Stop scaling job {}", jobId);
-        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        jobConfigPOJO.setDisabled(true);
-        jobConfigPOJO.getProps().setProperty("stop_time", LocalDateTime.now().format(DATE_TIME_FORMATTER));
-        PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
-    }
-    
-    @Override
-    public void remove(final String jobId) {
-        log.info("Remove scaling job {}", jobId);
-        PipelineAPIFactory.getJobOperateAPI().remove(String.valueOf(jobId), null);
-        PipelineAPIFactory.getGovernanceRepositoryAPI().deleteJob(jobId);
-    }
-    
-    @Override
     public Map<Integer, JobProgress> getProgress(final String jobId) {
         return IntStream.range(0, getJobConfig(jobId).getHandleConfig().getJobShardingCount()).boxed().collect(LinkedHashMap::new, (map, each) -> {
             JobProgress jobProgress = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobId, each);
             JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-            if (jobProgress != null) {
+            if (null != jobProgress) {
                 jobProgress.setActive(!jobConfigPOJO.isDisabled());
             }
             map.put(each, jobProgress);
@@ -202,7 +176,7 @@ public final class PipelineJobAPIImpl implements PipelineJobAPI {
     
     @Override
     public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
-        return ShardingSphereServiceLoader.getSingletonServiceInstances(DataConsistencyCheckAlgorithm.class)
+        return DATA_CONSISTENCY_CHECK_ALGORITHM_MAP.values()
                 .stream().map(each -> {
                     DataConsistencyCheckAlgorithmInfo algorithmInfo = new DataConsistencyCheckAlgorithmInfo();
                     algorithmInfo.setType(each.getType());
