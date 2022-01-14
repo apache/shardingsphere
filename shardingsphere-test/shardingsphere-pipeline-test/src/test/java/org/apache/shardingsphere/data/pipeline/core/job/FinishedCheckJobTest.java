@@ -56,7 +56,7 @@ public final class FinishedCheckJobTest {
     @Before
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
-        ReflectionUtil.setFieldValue(finishedCheckJob, "RULE_ALTERED_JOB_API", ruleAlteredJobAPI);
+        ReflectionUtil.setFieldValue(finishedCheckJob, "ruleAlteredJobAPI", ruleAlteredJobAPI);
     }
     
     @Test
