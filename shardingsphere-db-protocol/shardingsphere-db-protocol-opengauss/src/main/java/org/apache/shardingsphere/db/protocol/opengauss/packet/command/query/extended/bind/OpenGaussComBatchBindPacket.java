@@ -87,6 +87,7 @@ public final class OpenGaussComBatchBindPacket extends OpenGaussCommandPacket {
     /**
      * Read parameter sets from payload.
      *
+     * @param parameterTypes types of parameters
      * @return parameter sets
      */
     public List<List<Object>> readParameterSets(final List<PostgreSQLColumnType> parameterTypes) {
