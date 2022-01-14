@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mode.manager;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
@@ -448,7 +448,7 @@ public final class ContextManagerTest {
         props.putIfAbsent("username", "root");
         props.putIfAbsent("password", "root");
         DataSourceProperties result = new DataSourceProperties(MockedDataSource.class.getCanonicalName());
-        result.getProperties().putAll(props);
+        result.getProps().putAll(props);
         return result;
     }
     

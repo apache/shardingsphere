@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mode.metadata.persist.service.impl;
 
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
-import org.apache.shardingsphere.infra.config.datasource.creator.DataSourcePoolCreatorUtil;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
@@ -67,10 +67,10 @@ public final class DataSourceMetaDataPersistServiceTest {
     
     private void assertDataSourceProperties(final DataSourceProperties actual, final DataSourceProperties expected) {
         assertThat(actual.getDataSourceClassName(), is(expected.getDataSourceClassName()));
-        assertThat(actual.getProperties().get("url"), is(expected.getProperties().get("url")));
-        assertThat(actual.getProperties().get("username"), is(expected.getProperties().get("username")));
-        assertThat(actual.getProperties().get("password"), is(expected.getProperties().get("password")));
-        assertThat(actual.getProperties().get("connectionInitSqls"), is(expected.getProperties().get("connectionInitSqls")));
+        assertThat(actual.getProps().get("url"), is(expected.getProps().get("url")));
+        assertThat(actual.getProps().get("username"), is(expected.getProps().get("username")));
+        assertThat(actual.getProps().get("password"), is(expected.getProps().get("password")));
+        assertThat(actual.getProps().get("connectionInitSqls"), is(expected.getProps().get("connectionInitSqls")));
     }
     
     @Test

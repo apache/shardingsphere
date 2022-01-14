@@ -19,13 +19,13 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import com.google.common.collect.Sets;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
-import org.apache.shardingsphere.infra.config.datasource.creator.DataSourcePoolCreatorUtil;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.InstanceType;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -105,9 +105,9 @@ public final class ConnectionManagerTest {
         Map<String, DataSourceProperties> result = new LinkedHashMap<>();
         DataSourceProperties dataSourceProps = new DataSourceProperties(HikariDataSource.class.getName());
         result.put(DefaultSchema.LOGIC_NAME, dataSourceProps);
-        dataSourceProps.getProperties().put("jdbcUrl", "jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false");
-        dataSourceProps.getProperties().put("username", "root");
-        dataSourceProps.getProperties().put("password", "123456");
+        dataSourceProps.getProps().put("jdbcUrl", "jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false");
+        dataSourceProps.getProps().put("username", "root");
+        dataSourceProps.getProps().put("password", "123456");
         return result;
     }
     

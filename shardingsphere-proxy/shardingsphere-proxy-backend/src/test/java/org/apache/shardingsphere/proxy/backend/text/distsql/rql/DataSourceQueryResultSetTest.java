@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
@@ -45,7 +45,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -119,16 +118,14 @@ public final class DataSourceQueryResultSetTest {
         assertThat(rowData.next(), is("localhost"));
         assertThat(rowData.next(), is(3306));
         assertThat(rowData.next(), is("demo_ds"));
-        String props = rowData.next().toString();
-        assertThat(props, containsString("\"readOnly\":true"));
-        assertThat(props, containsString("\"test\":\"test\""));
+        assertThat(rowData.next(), is("{\"readOnly\":true,\"customPoolProps\":{\"test\":\"test\"}}"));
     }
     
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap() {
         Map<String, DataSourceProperties> result = new HashMap<>();
         DataSourceProperties ds0 = new DataSourceProperties("ds_0");
-        ds0.getProperties().put("test", "test");
-        ds0.getProperties().put("readOnly", true);
+        ds0.getCustomPoolProps().put("test", "test");
+        ds0.getProps().put("readOnly", true);
         result.put("ds_0", ds0);
         return result;
     }

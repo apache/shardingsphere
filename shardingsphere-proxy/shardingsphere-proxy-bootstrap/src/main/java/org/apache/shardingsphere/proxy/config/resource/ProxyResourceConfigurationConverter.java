@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.config.resource;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyResourceConfiguration;
 
 import java.util.LinkedHashMap;
@@ -66,19 +66,17 @@ public final class ProxyResourceConfigurationConverter {
     
     private static DataSourceProperties createDataSourceConfiguration(final ProxyResourceConfiguration resourceConfig) {
         DataSourceProperties result = new DataSourceProperties(HikariDataSource.class.getName());
-        result.getProperties().put("jdbcUrl", resourceConfig.getConnection().getUrl());
-        result.getProperties().put("username", resourceConfig.getConnection().getUsername());
-        result.getProperties().put("password", resourceConfig.getConnection().getPassword());
-        result.getProperties().put("connectionTimeout", resourceConfig.getPool().getConnectionTimeoutMilliseconds());
-        result.getProperties().put("idleTimeout", resourceConfig.getPool().getIdleTimeoutMilliseconds());
-        result.getProperties().put("maxLifetime", resourceConfig.getPool().getMaxLifetimeMilliseconds());
-        result.getProperties().put("maximumPoolSize", resourceConfig.getPool().getMaxPoolSize());
-        result.getProperties().put("minimumIdle", resourceConfig.getPool().getMinPoolSize());
-        result.getProperties().put("readOnly", resourceConfig.getPool().getReadOnly());
+        result.getProps().put("jdbcUrl", resourceConfig.getConnection().getUrl());
+        result.getProps().put("username", resourceConfig.getConnection().getUsername());
+        result.getProps().put("password", resourceConfig.getConnection().getPassword());
+        result.getProps().put("connectionTimeout", resourceConfig.getPool().getConnectionTimeoutMilliseconds());
+        result.getProps().put("idleTimeout", resourceConfig.getPool().getIdleTimeoutMilliseconds());
+        result.getProps().put("maxLifetime", resourceConfig.getPool().getMaxLifetimeMilliseconds());
+        result.getProps().put("maximumPoolSize", resourceConfig.getPool().getMaxPoolSize());
+        result.getProps().put("minimumIdle", resourceConfig.getPool().getMinPoolSize());
+        result.getProps().put("readOnly", resourceConfig.getPool().getReadOnly());
         if (null != resourceConfig.getPool().getCustomProperties()) {
-            for (Entry<Object, Object> entry : resourceConfig.getPool().getCustomProperties().entrySet()) {
-                result.getProperties().put(entry.getKey().toString(), entry.getValue());
-            }
+            result.getCustomPoolProps().putAll(resourceConfig.getPool().getCustomProperties());
         }
         return result;
     }

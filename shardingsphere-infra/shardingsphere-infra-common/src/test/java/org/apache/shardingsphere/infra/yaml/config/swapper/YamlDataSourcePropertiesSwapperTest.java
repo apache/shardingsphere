@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
@@ -58,16 +58,16 @@ public final class YamlDataSourcePropertiesSwapperTest {
         yamlConfig.put("username", "root");
         DataSourceProperties actual = swapper.swapToDataSourceProperties(yamlConfig);
         assertThat(actual.getDataSourceClassName(), is(MockedDataSource.class.getCanonicalName()));
-        assertThat(actual.getProperties().size(), is(2));
-        assertThat(actual.getProperties().get("url").toString(), is("xx:xxx"));
-        assertThat(actual.getProperties().get("username").toString(), is("root"));
+        assertThat(actual.getProps().size(), is(2));
+        assertThat(actual.getProps().get("url").toString(), is("xx:xxx"));
+        assertThat(actual.getProps().get("username").toString(), is("root"));
     }
     
     @Test
     public void assertSwapToMap() {
         DataSourceProperties dataSourceProps = new DataSourceProperties(MockedDataSource.class.getCanonicalName());
-        dataSourceProps.getProperties().put("url", "xx:xxx");
-        dataSourceProps.getProperties().put("username", "root");
+        dataSourceProps.getProps().put("url", "xx:xxx");
+        dataSourceProps.getProps().put("username", "root");
         Map<String, Object> actual = swapper.swapToMap(dataSourceProps);
         assertThat(actual.get("dataSourceClassName"), is(MockedDataSource.class.getCanonicalName()));
         assertThat(actual.get("url").toString(), is("xx:xxx"));

@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.infra.instance;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Instance context.
@@ -33,9 +35,12 @@ public final class InstanceContext {
     
     private final StateContext state = new StateContext();
     
-    public InstanceContext(final ComputeNodeInstance instance) {
+    private final WorkerIdGenerator workerIdGenerator;
+    
+    public InstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator) {
         this.instance = instance;
         switchInstanceState(instance.getStatus());
+        this.workerIdGenerator = workerIdGenerator;
     }
     
     /**
@@ -50,5 +55,29 @@ public final class InstanceContext {
     
     private void switchInstanceState(final Collection<String> status) {
         state.switchState(StateType.CIRCUIT_BREAK, null != status && status.contains(StateType.CIRCUIT_BREAK.name()));
+    }
+    
+    /**
+     * Update instance worker id.
+     * 
+     * @param workerId worker id
+     */
+    public void updateWorkerId(final Long workerId) {
+        if (workerId != instance.getWorkerId()) {
+            instance.setWorkerId(workerId);
+        }
+    }
+    
+    /**
+     * Get worker id.
+     *
+     * @return worker id
+     */
+    public long getWorkerId() {
+        if (null == instance.getWorkerId()) {
+            // TODO process generate failed
+            Optional.ofNullable(workerIdGenerator.generate()).ifPresent(instance::setWorkerId);
+        }
+        return instance.getWorkerId();
     }
 }
