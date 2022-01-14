@@ -37,22 +37,20 @@ public final class DataSourcePoolCreatorUtil {
     /**
      * Get data source map.
      *
-     * @param dataSourcePropsMap data source configuration map
+     * @param dataSourcePropsMap data source properties map
      * @return data source map
      */
     public static Map<String, DataSource> getDataSourceMap(final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        return dataSourcePropsMap.entrySet().stream().collect(
-            Collectors.toMap(Entry::getKey, entry -> DataSourcePoolCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return dataSourcePropsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolCreator.create(entry.getValue()), (a, b) -> b, LinkedHashMap::new));
     }
     
     /**
      * Get data source configuration map.
      *
      * @param dataSourceMap data source map
-     * @return data source configuration map
+     * @return data source properties map
      */
     public static Map<String, DataSourceProperties> getDataSourcePropertiesMap(final Map<String, DataSource> dataSourceMap) {
-        return dataSourceMap.entrySet().stream().collect(
-                Collectors.toMap(Entry::getKey, entry -> DataSourcePropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return dataSourceMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePropertiesCreator.create(entry.getValue()), (a, b) -> b, LinkedHashMap::new));
     }
 }
