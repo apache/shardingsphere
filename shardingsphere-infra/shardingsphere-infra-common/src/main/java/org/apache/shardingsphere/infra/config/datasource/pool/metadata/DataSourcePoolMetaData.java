@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.pool.creator;
+package org.apache.shardingsphere.infra.config.datasource.pool.metadata;
 
 import org.apache.shardingsphere.spi.required.RequiredSPI;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
@@ -23,9 +23,9 @@ import org.apache.shardingsphere.spi.typed.TypedSPI;
 import java.util.Map;
 
 /**
- * Data source pool creation meta data.
+ * Data source pool meta data.
  */
-public interface DataSourcePoolCreationMetaData extends TypedSPI, RequiredSPI {
+public interface DataSourcePoolMetaData extends TypedSPI, RequiredSPI {
     
     /**
      * Get default properties.

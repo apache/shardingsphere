@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.pool.creator.impl;
+package org.apache.shardingsphere.infra.config.datasource.pool.metadata.impl;
 
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreationMetaData;
+import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaData;
 
 import java.util.Collections;
 import java.util.Map;
 
 /**
- * Default data source pool creator.
+ * Default data source pool meta data.
  */
-public final class DefaultDataSourcePoolCreationMetaData implements DataSourcePoolCreationMetaData {
+public final class DefaultDataSourcePoolMetaData implements DataSourcePoolMetaData {
     
     @Override
     public Map<String, Object> getDefaultProperties() {
