@@ -106,7 +106,12 @@ public final class EtcdRepository implements ClusterPersistRepository {
         client.getLeaseClient().keepAlive(leaseId, Observers.observer(response -> { }));
         client.getKVClient().put(ByteSequence.from(key, StandardCharsets.UTF_8), ByteSequence.from(value, StandardCharsets.UTF_8), PutOption.newBuilder().withLeaseId(leaseId).build()).get();
     }
-
+    
+    @Override
+    public String getSequentialId(final String key, final String value) {
+        return null;
+    }
+    
     @Override
     public void delete(final String key) {
         client.getKVClient().delete(ByteSequence.from(key, StandardCharsets.UTF_8), DeleteOption.newBuilder().withPrefix(ByteSequence.from(key, StandardCharsets.UTF_8)).build());
