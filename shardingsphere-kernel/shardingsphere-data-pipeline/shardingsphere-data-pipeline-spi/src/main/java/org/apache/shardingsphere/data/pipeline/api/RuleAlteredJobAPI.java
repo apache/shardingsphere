@@ -59,6 +59,14 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI, Singleto
     Optional<String> start(JobConfiguration jobConfig);
     
     /**
+     * Get job progress.
+     *
+     * @param jobId job id
+     * @return each sharding item progress
+     */
+    Map<Integer, JobProgress> getProgress(String jobId);
+    
+    /**
      * Stop cluster write to job source schema's underlying DB.
      *
      * @param jobId job id
@@ -119,14 +127,6 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI, Singleto
      * @param jobId job id
      */
     void reset(String jobId);
-    
-    /**
-     * Get job progress.
-     *
-     * @param jobId job id
-     * @return each sharding item progress
-     */
-    Map<Integer, JobProgress> getProgress(String jobId);
     
     /**
      * Get job configuration.

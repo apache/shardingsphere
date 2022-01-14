@@ -158,6 +158,18 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     }
     
     @Override
+    public Map<Integer, JobProgress> getProgress(final String jobId) {
+        return IntStream.range(0, getJobConfig(jobId).getHandleConfig().getJobShardingCount()).boxed().collect(LinkedHashMap::new, (map, each) -> {
+            JobProgress jobProgress = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobId, each);
+            JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+            if (null != jobProgress) {
+                jobProgress.setActive(!jobConfigPOJO.isDisabled());
+            }
+            map.put(each, jobProgress);
+        }, LinkedHashMap::putAll);
+    }
+    
+    @Override
     public void stopClusterWriteDB(final String jobId) {
         //TODO stopClusterWriteDB
     }
@@ -273,18 +285,6 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         } catch (final SQLException ex) {
             throw new PipelineJobExecutionException("Reset target table failed for job " + jobId);
         }
-    }
-    
-    @Override
-    public Map<Integer, JobProgress> getProgress(final String jobId) {
-        return IntStream.range(0, getJobConfig(jobId).getHandleConfig().getJobShardingCount()).boxed().collect(LinkedHashMap::new, (map, each) -> {
-            JobProgress jobProgress = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobId, each);
-            JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-            if (null != jobProgress) {
-                jobProgress.setActive(!jobConfigPOJO.isDisabled());
-            }
-            map.put(each, jobProgress);
-        }, LinkedHashMap::putAll);
     }
     
     @Override
