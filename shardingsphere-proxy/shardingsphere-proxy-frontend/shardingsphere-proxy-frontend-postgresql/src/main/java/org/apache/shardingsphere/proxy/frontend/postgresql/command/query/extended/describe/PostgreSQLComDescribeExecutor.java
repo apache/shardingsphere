@@ -112,6 +112,10 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     }
     
     private void describeInsertStatementByShardingSphereMetaData(final PostgreSQLPreparedStatement preparedStatement) {
+        if (!preparedStatement.describeRows().isPresent()) {
+            // TODO Consider the SQL `insert into table (col) values ($1) returning id`
+            preparedStatement.setRowDescription(new PostgreSQLNoDataPacket());
+        }
         InsertStatement insertStatement = (InsertStatement) preparedStatement.getSqlStatement();
         if (0 == insertStatement.getParameterCount()) {
             return;
@@ -156,7 +160,6 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     
     private void tryDescribePreparedStatementByJDBC(final PostgreSQLPreparedStatement preparedStatement) throws SQLException {
         if (!(connectionSession.getBackendConnection() instanceof JDBCBackendConnection)) {
-            // TODO Unsupported yet excepts JDBC.
             return;
         }
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
