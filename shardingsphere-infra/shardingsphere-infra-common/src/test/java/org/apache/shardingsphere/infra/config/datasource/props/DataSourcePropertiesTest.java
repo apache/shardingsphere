@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.config.datasource.props;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Rule;
@@ -160,7 +161,7 @@ public final class DataSourcePropertiesTest {
         DataSourceProperties dataSourceProps = new DataSourceProperties(HikariDataSource.class.getName());
         dataSourceProps.getProps().putAll(props);
         dataSourceProps.getProps().putAll(new HashMap(customPoolProps));
-        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreatorUtil.getDataSource(dataSourceProps);
+        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreator.createDataSource(dataSourceProps);
         assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getCanonicalName()));
         assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getUsername(), is("root"));
