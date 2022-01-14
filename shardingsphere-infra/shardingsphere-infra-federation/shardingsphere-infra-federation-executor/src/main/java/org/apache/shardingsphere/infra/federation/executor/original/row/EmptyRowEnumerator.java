@@ -15,23 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.original.table;
+package org.apache.shardingsphere.infra.federation.executor.original.row;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.federation.executor.FederationContext;
+import org.apache.calcite.linq4j.Enumerator;
 
 /**
- * Filterable table scan executor context.
+ * Empty row enumerator.
  */
-@RequiredArgsConstructor
-@Getter
-public final class FilterableTableScanExecutorContext {
+public final class EmptyRowEnumerator implements Enumerator<Object[]> {
     
-    private final String schemaName;
+    @Override
+    public Object[] current() {
+        return new Object[0];
+    }
     
-    private final ConfigurationProperties props;
+    @Override
+    public boolean moveNext() {
+        return false;
+    }
     
-    private final FederationContext federationContext;
+    @Override
+    public void reset() {
+    }
+    
+    @Override
+    public void close() {
+    }
 }

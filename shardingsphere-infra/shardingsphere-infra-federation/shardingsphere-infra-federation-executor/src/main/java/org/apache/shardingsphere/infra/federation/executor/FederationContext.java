@@ -15,23 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.original.table;
+package org.apache.shardingsphere.infra.federation.executor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.federation.executor.FederationContext;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
- * Filterable table scan executor context.
+ * Federation context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class FilterableTableScanExecutorContext {
+public final class FederationContext {
     
-    private final String schemaName;
+    private final Collection<ExecutionUnit> executionUnits = new LinkedList<>();
     
-    private final ConfigurationProperties props;
+    private final boolean preview;
     
-    private final FederationContext federationContext;
+    private final LogicSQL logicSQL;
+    
+    private final Map<String, ShardingSphereMetaData> metaDataMap;
 }
