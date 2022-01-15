@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.infra.config.datasource.props;
 
 import com.google.common.base.Objects;
+import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -37,7 +38,8 @@ public final class DataSourceProperties {
     
     private final String dataSourceClassName;
     
-    private final DataSourcePoolMetaData poolMetaData;
+    @Getter(AccessLevel.NONE)
+    private final Map<String, String> propertySynonyms;
     
     private final Map<String, Object> props;
     
@@ -45,23 +47,39 @@ public final class DataSourceProperties {
     
     public DataSourceProperties(final String dataSourceClassName, final Map<String, Object> props) {
         this.dataSourceClassName = dataSourceClassName;
-        this.props = props;
-        poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceClassName);
+        propertySynonyms = DataSourcePoolMetaDataFactory.newInstance(dataSourceClassName).getPropertySynonyms();
+        this.props = getLocalProperties(props);
+    }
+    
+    private Map<String, Object> getLocalProperties(final Map<String, Object> props) {
+        Map<String, Object> result = new LinkedHashMap<>(props);
+        for (Entry<String, String> entry : propertySynonyms.entrySet()) {
+            String standardPropertyName = entry.getKey();
+            String synonymsPropertyName = entry.getValue();
+            if (props.containsKey(standardPropertyName)) {
+                result.put(synonymsPropertyName, props.get(standardPropertyName));
+                result.remove(standardPropertyName);
+            }
+        }
+        return result;
     }
     
     /**
-     * Add property synonym to shared configuration.
-     *
-     * @param originalName original key for data source configuration property
-     * @param synonym property synonym for configuration
+     * Get standard properties.
+     * 
+     * @return standard properties
      */
-    public void addPropertySynonym(final String originalName, final String synonym) {
-        if (props.containsKey(originalName)) {
-            props.put(synonym, props.get(originalName));
+    public Map<String, Object> getStandardProperties() {
+        Map<String, Object> result = new LinkedHashMap<>(props);
+        for (Entry<String, String> entry : propertySynonyms.entrySet()) {
+            String standardPropertyName = entry.getKey();
+            String synonymsPropertyName = entry.getValue();
+            if (props.containsKey(synonymsPropertyName)) {
+                result.put(standardPropertyName, props.get(synonymsPropertyName));
+                result.remove(synonymsPropertyName);
+            }
         }
-        if (props.containsKey(synonym)) {
-            props.put(originalName, props.get(synonym));
-        }
+        return result;
     }
     
     /**
