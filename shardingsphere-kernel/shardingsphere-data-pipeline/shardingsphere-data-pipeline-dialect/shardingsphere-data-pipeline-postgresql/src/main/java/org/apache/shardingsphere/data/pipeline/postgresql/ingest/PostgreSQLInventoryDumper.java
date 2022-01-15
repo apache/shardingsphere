@@ -26,6 +26,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
 /**
  * PostgreSQL JDBC dumper.
@@ -53,15 +54,15 @@ public final class PostgreSQLInventoryDumper extends AbstractInventoryDumper {
             return resultSet.getBigDecimal(index);
         }
         if (isPgBitType(resultSet, index)) {
-            PGobject pGobject = new PGobject();
-            pGobject.setType("bit");
-            Object result = resultSet.getObject(index);
-            if (result == null) {
-                pGobject.setValue(null);
+            PGobject result = new PGobject();
+            result.setType("bit");
+            Object resultSetObject = resultSet.getObject(index);
+            if (resultSetObject == null) {
+                result.setValue(null);
             } else {
-                pGobject.setValue((Boolean) result ? "1" : "0");
+                result.setValue((Boolean) resultSetObject ? "1" : "0");
             }
-            return pGobject;
+            return result;
         }
         return resultSet.getObject(index);
     }
@@ -70,8 +71,10 @@ public final class PostgreSQLInventoryDumper extends AbstractInventoryDumper {
         return PG_MONEY_TYPE.equalsIgnoreCase(resultSet.getMetaData().getColumnTypeName(index));
     }
     
-    
     private boolean isPgBitType(final ResultSet resultSet, final int index) throws SQLException {
-        return PG_BIT_TYPE.equalsIgnoreCase(resultSet.getMetaData().getColumnTypeName(index));
+        if (Types.BIT == resultSet.getMetaData().getColumnType(index)) {
+            return PG_BIT_TYPE.equalsIgnoreCase(resultSet.getMetaData().getColumnTypeName(index));
+        }
+        return false;
     }
 }
