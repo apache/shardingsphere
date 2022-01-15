@@ -95,7 +95,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowRel
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowReplicaStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowReplicasContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowSlaveStatusContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowSlavehostContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowSlaveHostsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTablesContext;
@@ -170,6 +170,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowEngineStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowErrorsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowEventsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowFunctionStatusStatement;
@@ -260,8 +261,10 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitShowEngine(final ShowEngineContext ctx) {
-        return new MySQLShowOtherStatement();
-    }
+        MySQLShowEngineStatement result = new MySQLShowEngineStatement();
+        result.setEngineName(ctx.engineRef().getText());
+        return result;
+    } 
     
     @Override
     public ASTNode visitShowCharset(final ShowCharsetContext ctx) {
@@ -694,7 +697,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.setName(((IdentifierValue) visit(ctx.triggerName())).getValue());
         return result;
     }
-
+    
     @Override
     public ASTNode visitShowRelaylogEvent(final ShowRelaylogEventContext ctx) {
         MySQLShowRelaylogEventsStatement result = new MySQLShowRelaylogEventsStatement();
@@ -704,12 +707,12 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @Override
-    public ASTNode visitShowSlavehost(final ShowSlavehostContext ctx) {
+    public ASTNode visitShowSlaveHosts(final ShowSlaveHostsContext ctx) {
         return new MySQLShowSlaveHostsStatement();
     }
-
+    
     @Override
     public ASTNode visitShowReplicaStatus(final ShowReplicaStatusContext ctx) {
         MySQLShowReplicaStatusStatement result = new MySQLShowReplicaStatusStatement();
@@ -718,7 +721,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitShowSlaveStatus(final ShowSlaveStatusContext ctx) {
         MySQLShowSlaveStatusStatement result = new MySQLShowSlaveStatusStatement();
@@ -727,7 +730,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitCreateResourceGroup(final CreateResourceGroupContext ctx) {
         MySQLCreateResourceGroupStatement result = new MySQLCreateResourceGroupStatement();

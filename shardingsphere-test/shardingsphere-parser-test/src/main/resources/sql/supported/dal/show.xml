@@ -116,4 +116,6 @@
     <sql-case id="show_binlog_events_with_log_name" value="SHOW BINLOG EVENTS IN 'log_name'" db-types="MySQL" />
     <sql-case id="show_binlog_events_with_from_pos" value="SHOW BINLOG EVENTS FROM 1" db-types="MySQL" />
     <sql-case id="show_binlog_events_with_limit" value="SHOW BINLOG EVENTS LIMIT 1,2" db-types="MySQL" />
+    <sql-case id="show_engine_status" value="SHOW ENGINE INNODB STATUS" db-types="MySQL" />
+    <sql-case id="show_engine_mutex" value="SHOW ENGINE INNODB MUTEX" db-types="MySQL" />
 </sql-cases>

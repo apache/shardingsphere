@@ -33,31 +33,7 @@ explain
     | explainType? (explainableStatement | FOR CONNECTION connectionId)
     | ANALYZE (FORMAT EQ_ TREE)? select)
     ;
-
-showDatabases
-    : SHOW (DATABASES | SCHEMAS) showFilter?
-    ;
-
-showTables
-    : SHOW EXTENDED? FULL? TABLES fromSchema? showFilter?
-    ;
-
-showTableStatus
-    : SHOW TABLE STATUS fromSchema? showFilter?
-    ;
-
-showColumns
-    : SHOW EXTENDED? FULL? (COLUMNS | FIELDS) fromTable fromSchema? showFilter?
-    ;
-
-showIndex
-    : SHOW EXTENDED? (INDEX | INDEXES | KEYS) fromTable fromSchema? showWhereClause?
-    ;
-
-showCreateTable
-    : SHOW CREATE TABLE tableName
-    ;
-
+    
 fromSchema
     : (FROM | IN) schemaName
     ;
@@ -101,39 +77,47 @@ optionValueNoOptionType
 optionValue
     : optionType internalVariableName EQ_ setExprOrDefault | optionValueNoOptionType
     ;
-
+    
 showBinaryLogs
     : SHOW (BINARY | MASTER) LOGS
     ;
-
+    
 showBinlogEvents
     : SHOW BINLOG EVENTS (IN logName)? (FROM NUMBER_)? limitClause?
     ;
-
+    
 showCharacterSet
     : SHOW CHARACTER SET showFilter?
     ;
-
+    
 showCollation
     : SHOW COLLATION showFilter?
     ;
-
+    
+showColumns
+    : SHOW EXTENDED? FULL? (COLUMNS | FIELDS) fromTable fromSchema? showFilter?
+    ;
+    
 showCreateDatabase
     : SHOW CREATE (DATABASE | SCHEMA) notExistClause? schemaName
     ;
-
+    
 showCreateEvent
     : SHOW CREATE EVENT eventName 
     ;
-
+    
 showCreateFunction
     : SHOW CREATE FUNCTION functionName
     ;
-
+    
 showCreateProcedure
     : SHOW CREATE PROCEDURE functionName
     ;
-
+    
+showCreateTable
+    : SHOW CREATE TABLE tableName
+    ;
+    
 showCreateTrigger
     : SHOW CREATE TRIGGER triggerName
     ;
@@ -145,95 +129,116 @@ showCreateUser
 showCreateView
     : SHOW CREATE VIEW viewName
     ;
-
+    
+showDatabases
+    : SHOW (DATABASES | SCHEMAS) showFilter?
+    ;
+    
 showEngine
     : SHOW ENGINE engineRef (STATUS | MUTEX)
     ;
-
+    
 showEngines
     : SHOW STORAGE? ENGINES
-    ;
-
-showCharset
-    : SHOW CHARSET
     ;
     
 showErrors
     : SHOW (COUNT LP_ ASTERISK_ RP_)? ERRORS (LIMIT (NUMBER_ COMMA_)? NUMBER_)?
     ;
-
+    
 showEvents
     : SHOW EVENTS fromSchema? showFilter?
     ;
-
+    
 showFunctionCode
     : SHOW FUNCTION CODE functionName
     ;
-
+    
 showFunctionStatus
     : SHOW FUNCTION STATUS showFilter?
     ;
-
+    
+// todo check
 showGrant
     : SHOW GRANTS (FOR username (USING username (COMMA_ username)+)?)?
     ;
-
+    
+showIndex
+    : SHOW EXTENDED? (INDEX | INDEXES | KEYS) fromTable fromSchema? showWhereClause?
+    ;
+    
 showMasterStatus
     : SHOW MASTER STATUS
     ;
-
+    
 showOpenTables
     : SHOW OPEN TABLES fromSchema? showFilter?
     ;
-
+    
 showPlugins
     : SHOW PLUGINS
     ;
-
+    
 showPrivileges
     : SHOW PRIVILEGES
     ;
-
+    
 showProcedureCode
     : SHOW PROCEDURE CODE functionName
     ;
-
+    
 showProcedureStatus
     : SHOW PROCEDURE STATUS showFilter?
     ;
-
+    
 showProcesslist
     : SHOW FULL? PROCESSLIST
     ;
-
+    
 showProfile
-    : SHOW PROFILE ( showProfileType (COMMA_ showProfileType)*)? (FOR QUERY NUMBER_)? (LIMIT NUMBER_ (OFFSET NUMBER_)?)?
+    : SHOW PROFILE (showProfileType (COMMA_ showProfileType)*)? (FOR QUERY NUMBER_)? limitClause?
     ;
 
 showProfiles
     : SHOW PROFILES
     ;
-
+    
 showRelaylogEvent
-    : SHOW RELAYLOG EVENTS (IN logName)? (FROM NUMBER_)? (LIMIT (NUMBER_ COMMA_)? NUMBER_)? FOR CHANNEL channelName
+    : SHOW RELAYLOG EVENTS (IN logName)? (FROM NUMBER_)? (LIMIT (NUMBER_ COMMA_)? NUMBER_)? (FOR CHANNEL channelName)?
     ;
-
-showSlavehost
-    : SHOW SLAVE HOST
+    
+showReplicas
+    : SHOW REPLICAS
     ;
-
+    
+showSlaveHosts
+    : SHOW SLAVE HOSTS
+    ;
+    
+showReplicaStatus
+    : SHOW REPLICA STATUS (FOR CHANNEL channelName)?
+    ;
+    
 showSlaveStatus
-    : SHOW SLAVE STATUS (FOR CHANNEL channelName)?
+    : SHOW (REPLICA | SLAVE) STATUS (FOR CHANNEL channelName)?
     ;
-
+    
 showStatus
     : SHOW (GLOBAL | SESSION)? STATUS showFilter?
     ;
-
+    
+showTableStatus
+    : SHOW TABLE STATUS fromSchema? showFilter?
+    ;
+    
+showTables
+    : SHOW EXTENDED? FULL? TABLES fromSchema? showFilter?
+    ;
+    
 showTriggers
     : SHOW TRIGGERS fromSchema? showFilter?
     ;
-
+    
 showVariables
     : SHOW (GLOBAL | SESSION)? VARIABLES showFilter?
     ;
@@ -241,15 +246,11 @@ showVariables
 showWarnings
     : SHOW (COUNT LP_ ASTERISK_ RP_)? WARNINGS (LIMIT (NUMBER_ COMMA_)? NUMBER_)?
     ;
-
-showReplicas
-    : SHOW REPLICAS
+    
+showCharset
+    : SHOW CHARSET
     ;
     
-showReplicaStatus
-    : SHOW REPLICA STATUS (FOR CHANNEL channelName)?
-    ;
-
 setCharacter
     : SET (CHARACTER SET | CHARSET) (charsetName | DEFAULT)
     ;
@@ -458,7 +459,7 @@ show
     | showProfile
     | showProcedureStatus
     | showProfiles
-    | showSlavehost
+    | showSlaveHosts
     | showSlaveStatus
     | showRelaylogEvent
     | showStatus
