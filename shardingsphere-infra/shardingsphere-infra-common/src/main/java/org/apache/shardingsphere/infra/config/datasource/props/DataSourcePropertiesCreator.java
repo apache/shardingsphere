@@ -42,7 +42,7 @@ public final class DataSourcePropertiesCreator {
      * @return created data source properties
      */
     public static Map<String, DataSourceProperties> create(final Map<String, DataSource> dataSourceMap) {
-        return dataSourceMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getValue()), (a, b) -> b, LinkedHashMap::new));
+        return dataSourceMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     /**
