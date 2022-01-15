@@ -57,7 +57,7 @@
     <sql-case id="show_procedure_code_owner_func" value="SHOW PROCEDURE CODE TEST_USER.TEST_FUNC" db-types="MySQL" />
     <sql-case id="show_relaylog_events" value="SHOW RELAYLOG EVENTS FOR CHANNEL TEST_CHANNEL" db-types="MySQL" />
     <sql-case id="show_relaylog_events_with_log" value="SHOW RELAYLOG EVENTS IN 'TEST_LOG' FOR CHANNEL TEST_CHANNEL" db-types="MySQL" />
-    <sql-case id="show_slave_hosts" value="SHOW SLAVE HOST" db-types="MySQL" />
+    <sql-case id="show_slave_hosts" value="SHOW SLAVE HOSTS" db-types="MySQL" />
     <sql-case id="show_replica_status" value="SHOW REPLICA STATUS" db-types="MySQL" />
     <sql-case id="show_replica_status_with_channel" value="SHOW REPLICA STATUS FOR CHANNEL TEST_CHANNEL" db-types="MySQL" />
     <sql-case id="show_slave_status" value="SHOW SLAVE STATUS" db-types="MySQL" />
@@ -118,5 +118,4 @@
     <sql-case id="show_binlog_events_with_limit" value="SHOW BINLOG EVENTS LIMIT 1,2" db-types="MySQL" />
     <sql-case id="show_engine_status" value="SHOW ENGINE INNODB STATUS" db-types="MySQL" />
     <sql-case id="show_engine_mutex" value="SHOW ENGINE INNODB MUTEX" db-types="MySQL" />
-    <sql-case id="show_slave_hosts" value="show slave hosts" db-types="MySQL"/>
 </sql-cases>
