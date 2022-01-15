@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.config.datasource.props;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,7 +52,7 @@ public final class DataSourcePropertiesTest {
         actualDataSource.setJdbcUrl("jdbc:mock://127.0.0.1/foo_ds");
         actualDataSource.setUsername("root");
         actualDataSource.setPassword("root");
-        DataSourceProperties actual = DataSourcePoolCreatorUtil.getDataSourceProperties(actualDataSource);
+        DataSourceProperties actual = DataSourcePropertiesCreator.create(actualDataSource);
         actual.addPropertySynonym("url", "jdbcUrl");
         actual.addPropertySynonym("user", "username");
         assertThat(actual.getDataSourceClassName(), is(HikariDataSource.class.getName()));
@@ -132,7 +131,7 @@ public final class DataSourcePropertiesTest {
         actualDataSource.setUsername("root");
         actualDataSource.setPassword("root");
         actualDataSource.setConnectionInitSqls(Arrays.asList("set names utf8mb4;", "set names utf8;"));
-        DataSourceProperties actual = DataSourcePoolCreatorUtil.getDataSourceProperties(actualDataSource);
+        DataSourceProperties actual = DataSourcePropertiesCreator.create(actualDataSource);
         assertThat(actual.getDataSourceClassName(), is(BasicDataSource.class.getName()));
         assertThat(actual.getProps().get("driverClassName").toString(), is(MockedDataSource.class.getCanonicalName()));
         assertThat(actual.getProps().get("url").toString(), is("jdbc:mock://127.0.0.1/foo_ds"));
@@ -143,30 +142,6 @@ public final class DataSourcePropertiesTest {
         List<String> actualConnectionInitSql = (List<String>) actual.getProps().get("connectionInitSqls");
         assertThat(actualConnectionInitSql, hasItem("set names utf8mb4;"));
         assertThat(actualConnectionInitSql, hasItem("set names utf8;"));
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Test
-    public void assertCreateDataSourceWithCustomPoolProps() {
-        Map<String, Object> props = new HashMap<>(16, 1);
-        props.put("driverClassName", MockedDataSource.class.getCanonicalName());
-        props.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
-        props.put("username", "root");
-        props.put("password", "root");
-        props.put("loginTimeout", "5000");
-        Properties customPoolProps = new Properties();
-        customPoolProps.setProperty("maximumPoolSize", "30");
-        customPoolProps.setProperty("idleTimeout", "30000");
-        DataSourceProperties dataSourceProps = new DataSourceProperties(HikariDataSource.class.getName());
-        dataSourceProps.getProps().putAll(props);
-        dataSourceProps.getProps().putAll(new HashMap(customPoolProps));
-        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreatorUtil.getDataSource(dataSourceProps);
-        assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getCanonicalName()));
-        assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
-        assertThat(actual.getUsername(), is("root"));
-        assertThat(actual.getPassword(), is("root"));
-        assertThat(actual.getMaximumPoolSize(), is(30));
-        assertThat(actual.getIdleTimeout(), is(30000L));
     }
     
     @Test
@@ -187,7 +162,7 @@ public final class DataSourcePropertiesTest {
         assertNotNull(actualAllProperties);
         assertThat(actualAllProperties.size(), is(7));
         assertTrue(actualAllProperties.containsKey("driverClassName"));
-        assertTrue(actualAllProperties.containsValue(MockedDataSource.class.getCanonicalName()));
+        assertTrue(actualAllProperties.containsValue(MockedDataSource.class.getName()));
         assertTrue(actualAllProperties.containsKey("jdbcUrl"));
         assertTrue(actualAllProperties.containsValue("jdbc:mock://127.0.0.1/foo_ds"));
         assertTrue(actualAllProperties.containsKey("username"));

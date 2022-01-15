@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql.resource;
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -53,7 +53,7 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
         Optional<MetaDataPersistService> persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
         dataSourcePropsMap = persistService.isPresent()
                 ? persistService.get().getDataSourceService().load(metaData.getName())
-                : DataSourcePoolCreatorUtil.getDataSourcePropertiesMap(metaData.getResource().getDataSources());
+                : DataSourcePropertiesCreator.create(metaData.getResource().getDataSources());
         dataSourceNames = dataSourcePropsMap.keySet().iterator();
     }
     

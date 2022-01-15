@@ -21,6 +21,8 @@ import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -28,23 +30,32 @@ import static org.junit.Assert.assertThat;
 public final class DataSourcePropertiesCreatorTest {
     
     @Test
-    public void assertCreateDataSourceProperties() {
-        assertThat(new DataSourcePropertiesCreator("Default").createDataSourceProperties(createDataSource()), is(createDataSourceProperties()));
+    public void assertCreateMap() {
+        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
+        dataSourceMap.put("foo_ds", createDataSource());
+        Map<String, DataSourceProperties> actual = DataSourcePropertiesCreator.create(dataSourceMap);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get("foo_ds"), is(createDataSourceProperties()));
+    }
+    
+    @Test
+    public void assertCreate() {
+        assertThat(DataSourcePropertiesCreator.create(createDataSource()), is(createDataSourceProperties()));
     }
     
     private DataSource createDataSource() {
         MockedDataSource result = new MockedDataSource();
-        result.setDriverClassName("org.h2.Driver");
-        result.setUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        result.setDriverClassName(MockedDataSource.class.getName());
+        result.setUrl("jdbc:mock://127.0.0.1/foo_ds");
         result.setUsername("root");
         result.setPassword("root");
         return result;
     }
     
     private DataSourceProperties createDataSourceProperties() {
-        DataSourceProperties result = new DataSourceProperties(MockedDataSource.class.getCanonicalName());
-        result.getProps().put("driverClassName", "org.h2.Driver");
-        result.getProps().put("url", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        DataSourceProperties result = new DataSourceProperties(MockedDataSource.class.getName());
+        result.getProps().put("driverClassName", MockedDataSource.class.getName());
+        result.getProps().put("url", "jdbc:mock://127.0.0.1/foo_ds");
         result.getProps().put("username", "root");
         result.getProps().put("password", "root");
         result.getProps().put("maximumPoolSize", "-1");

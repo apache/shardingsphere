@@ -20,10 +20,10 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLEmptyQueryResponsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLComExecutePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLPortalSuspendedPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
@@ -39,9 +39,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -81,16 +79,13 @@ public final class PostgreSQLComExecuteExecutorTest {
     
     @Test
     public void assertExecuteQuery() throws SQLException {
-        when(connectionContext.getPendingExecutors()).thenReturn(new ArrayList<>(Collections.singletonList(queryCommandExecutor)));
-        when(queryCommandExecutor.execute()).thenReturn(Collections.singletonList(postgreSQLPacket));
         when(portal.getSqlStatement()).thenReturn(mock(PostgreSQLSelectStatement.class));
         when(portal.next()).thenReturn(true, false);
         when(portal.nextPacket()).thenReturn(dataRowPacket);
         PostgreSQLComExecuteExecutor actual = new PostgreSQLComExecuteExecutor(connectionContext, packet);
         Collection<DatabasePacket<?>> actualPackets = actual.execute();
-        assertThat(actualPackets.size(), is(3));
+        assertThat(actualPackets.size(), is(2));
         Iterator<DatabasePacket<?>> actualPacketsIterator = actualPackets.iterator();
-        assertThat(actualPacketsIterator.next(), is(postgreSQLPacket));
         assertThat(actualPacketsIterator.next(), is(dataRowPacket));
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLCommandCompletePacket.class));
     }

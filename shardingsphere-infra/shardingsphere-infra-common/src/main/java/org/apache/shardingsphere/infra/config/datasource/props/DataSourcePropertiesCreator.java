@@ -17,29 +17,32 @@
 
 package org.apache.shardingsphere.infra.config.datasource.props;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourceReflection;
 import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Data source properties creator.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourcePropertiesCreator {
     
-    static {
-        ShardingSphereServiceLoader.register(DataSourcePoolMetaData.class);
-    }
-    
-    private final DataSourcePoolMetaData poolMetaData;
-    
-    public DataSourcePropertiesCreator(final String dataSourceClassName) {
-        poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceClassName);
+    /**
+     * Create data source properties.
+     *
+     * @param dataSourceMap data source map
+     * @return created data source properties
+     */
+    public static Map<String, DataSourceProperties> create(final Map<String, DataSource> dataSourceMap) {
+        return dataSourceMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getValue()), (a, b) -> b, LinkedHashMap::new));
     }
     
     /**
@@ -48,25 +51,26 @@ public final class DataSourcePropertiesCreator {
      * @param dataSource data source
      * @return created data source properties
      */
-    public DataSourceProperties createDataSourceProperties(final DataSource dataSource) {
+    public static DataSourceProperties create(final DataSource dataSource) {
         DataSourceProperties result = new DataSourceProperties(dataSource.getClass().getName());
         result.getProps().putAll(createProperties(dataSource));
         return result;
     }
     
-    private Map<String, Object> createProperties(final DataSource dataSource) {
+    private static Map<String, Object> createProperties(final DataSource dataSource) {
         Map<String, Object> result = new LinkedHashMap<>();
+        DataSourcePoolMetaData poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSource.getClass().getName());
         for (Entry<String, Object> entry : new DataSourceReflection(dataSource).convertToProperties().entrySet()) {
             String propertyName = entry.getKey();
             Object propertyValue = entry.getValue();
-            if (isValidProperty(propertyName, propertyValue)) {
+            if (isValidProperty(propertyName, propertyValue, poolMetaData)) {
                 result.put(propertyName, propertyValue);
             }
         }
         return result;
     }
     
-    private boolean isValidProperty(final String key, final Object value) {
+    private static boolean isValidProperty(final String key, final Object value, final DataSourcePoolMetaData poolMetaData) {
         return !poolMetaData.getInvalidProperties().containsKey(key) || null == value || !value.equals(poolMetaData.getInvalidProperties().get(key));
     }
 }

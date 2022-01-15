@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -72,7 +73,7 @@ public final class ShowTransactionRuleExecutorTest {
     }
     
     private ShardingSphereRuleMetaData getGlobalRuleMetaData(final String defaultType, final String providerType) {
-        RuleConfiguration transactionRuleConfiguration = new TransactionRuleConfiguration(defaultType, providerType);
+        RuleConfiguration transactionRuleConfiguration = new TransactionRuleConfiguration(defaultType, providerType, new Properties());
         return new ShardingSphereRuleMetaData(Collections.singleton(transactionRuleConfiguration), Collections.emptyList());
     }
 }

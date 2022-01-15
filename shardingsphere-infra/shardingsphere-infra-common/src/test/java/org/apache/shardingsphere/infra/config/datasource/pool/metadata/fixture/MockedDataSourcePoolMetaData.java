@@ -23,38 +23,43 @@ import org.apache.shardingsphere.test.mock.MockedDataSource;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class FixtureDataSourcePoolMetaData implements DataSourcePoolMetaData {
+public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaData {
     
     @Override
     public Map<String, Object> getDefaultProperties() {
-        return null;
+        Map<String, Object> result = new HashMap<>(1, 1);
+        result.put("maxPoolSize", 100);
+        return result;
     }
     
     @Override
     public Map<String, Object> getInvalidProperties() {
         Map<String, Object> result = new HashMap<>(2, 1);
-        result.put("minimumIdle", -1);
-        result.put("maximumPoolSize", -1);
+        result.put("maxPoolSize", -1);
+        result.put("minPoolSize", -1);
         return result;
     }
     
     @Override
     public Map<String, String> getPropertySynonyms() {
-        return null;
+        Map<String, String> result = new HashMap<>(2, 1);
+        result.put("maxPoolSize", "maxPoolSize");
+        result.put("minPoolSize", "minPoolSize");
+        return result;
     }
     
     @Override
     public String getJdbcUrlFieldName() {
-        return null;
+        return "url";
     }
     
     @Override
     public String getJdbcUrlPropertiesFieldName() {
-        return null;
+        return "jdbcUrlProperties";
     }
     
     @Override
     public String getType() {
-        return MockedDataSource.class.getCanonicalName();
+        return MockedDataSource.class.getName();
     }
 }
