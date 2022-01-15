@@ -24,6 +24,7 @@ execute
     | alterResource
     | dropResource
     | showResources
+    | showUnusedResources
     | setVariable
     | showVariable
     | showAllVariables

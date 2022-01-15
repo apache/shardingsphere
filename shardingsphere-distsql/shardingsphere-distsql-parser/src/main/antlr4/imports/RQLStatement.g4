@@ -23,12 +23,16 @@ showResources
     : SHOW SCHEMA RESOURCES (FROM schemaName)?
     ;
 
+showUnusedResources
+    : SHOW UNUSED RESOURCES (FROM schemaName)?
+    ;
+
 showSingleTableRules
     : SHOW SINGLE TABLE RULES (FROM schemaName)?
     ;
     
 showSingleTable
-    : SHOW SINGLE (table | TABLES)  (FROM schemaName)?;
+    : SHOW SINGLE (table | TABLES) (FROM schemaName)?;
     
 showAuthorityRule
     : SHOW AUTHORITY RULE
