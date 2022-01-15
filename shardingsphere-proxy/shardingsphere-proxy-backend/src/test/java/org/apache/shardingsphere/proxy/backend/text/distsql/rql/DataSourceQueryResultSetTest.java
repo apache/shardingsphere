@@ -42,6 +42,7 @@ import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -123,10 +124,15 @@ public final class DataSourceQueryResultSetTest {
     
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap() {
         Map<String, DataSourceProperties> result = new HashMap<>();
-        DataSourceProperties ds0 = new DataSourceProperties("ds_0");
+        DataSourceProperties ds0 = new DataSourceProperties("ds_0", createProperties());
         ds0.getCustomPoolProps().put("test", "test");
-        ds0.getProps().put("readOnly", true);
         result.put("ds_0", ds0);
+        return result;
+    }
+    
+    private Map<String, Object> createProperties() {
+        Map<String, Object> result = new LinkedHashMap<>(1, 1);
+        result.put("readOnly", true);
         return result;
     }
 }

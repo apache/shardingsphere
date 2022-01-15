@@ -65,13 +65,17 @@ public final class YamlDataSourcePropertiesSwapperTest {
     
     @Test
     public void assertSwapToMap() {
-        DataSourceProperties dataSourceProps = new DataSourceProperties(MockedDataSource.class.getCanonicalName());
-        dataSourceProps.getProps().put("url", "xx:xxx");
-        dataSourceProps.getProps().put("username", "root");
-        Map<String, Object> actual = swapper.swapToMap(dataSourceProps);
+        Map<String, Object> actual = swapper.swapToMap(new DataSourceProperties(MockedDataSource.class.getName(), createProperties()));
         assertThat(actual.get("dataSourceClassName"), is(MockedDataSource.class.getCanonicalName()));
         assertThat(actual.get("url").toString(), is("xx:xxx"));
         assertThat(actual.get("username").toString(), is("root"));
+    }
+    
+    private Map<String, Object> createProperties() {
+        Map<String, Object> result = new LinkedHashMap<>(2, 1);
+        result.put("url", "xx:xxx");
+        result.put("username", "root");
+        return result;
     }
     
     private Map<String, Map<String, Object>> createYamlConfig() {
