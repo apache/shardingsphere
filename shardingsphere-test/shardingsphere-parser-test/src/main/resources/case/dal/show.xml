@@ -839,6 +839,7 @@
             <row-count value="2" literal-start-index="27" literal-stop-index="27" />
         </limit>
     </show-binlog-events>
-    <sql-case id="show_engine_status" value="SHOW ENGINE INNODB STATUS" db-types="MySQL" />
-    <sql-case id="show_engine_mutex" value="SHOW ENGINE INNODB MUTEX" db-types="MySQL" />
+    <show sql-case-id="show_engine_status" />
+    <show sql-case-id="show_engine_mutex" />
+    <show sql-case-id="show_slave_hosts" />
 </sql-parser-test-cases>

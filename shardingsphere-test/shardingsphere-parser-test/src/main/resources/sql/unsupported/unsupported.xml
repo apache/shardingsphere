@@ -6076,7 +6076,6 @@
     <sql-case id="show_by_mysql_source_test_case282" value="SHOW GRANTS FOR user1@localhost" db-types="MySQL"/>
     <sql-case id="show_by_mysql_source_test_case283" value="SHOW GRANTS for &quot;mysql.session&quot;@localhost" db-types="MySQL"/>
     <sql-case id="show_by_mysql_source_test_case284" value="SHOW RELAYLOG EVENTS" db-types="MySQL"/>
-    <sql-case id="show_by_mysql_source_test_case285" value="SHOW SLAVE HOSTS" db-types="MySQL"/>
     <sql-case id="signal_by_mysql_source_test_case1" value="SIGNAL SQLSTATE &apos;00000&apos;" db-types="MySQL"/>
     <sql-case id="signal_by_mysql_source_test_case2" value="SIGNAL SQLSTATE &apos;00001&apos;" db-types="MySQL"/>
     <sql-case id="signal_by_mysql_source_test_case3" value="SIGNAL SQLSTATE &apos;01000&apos;" db-types="MySQL"/>
@@ -9110,7 +9109,6 @@
     <sql-case id="low_show_by_mysql_source_test_case55" value="show local variables like &apos;SQL_MODE&apos;" db-types="MySQL"/>
     <sql-case id="low_show_by_mysql_source_test_case56" value="show local variables like &apos;default_storage_engine&apos;" db-types="MySQL"/>
     <sql-case id="low_show_by_mysql_source_test_case57" value="show local variables like &apos;default_storage_engine&apos;" db-types="MySQL"/>
-    <sql-case id="low_show_by_mysql_source_test_case58" value="show slave hosts" db-types="MySQL"/>
     <sql-case id="low_some_by_mysql_source_test_case1" value="some text remove_file $MYSQLD_LOG" db-types="MySQL"/>
     <sql-case id="low_some_by_mysql_source_test_case2" value="some text remove_file $MYSQLD_LOG" db-types="MySQL"/>
     <sql-case id="low_unlock_by_mysql_source_test_case1" value="unlock table" db-types="MySQL"/>
