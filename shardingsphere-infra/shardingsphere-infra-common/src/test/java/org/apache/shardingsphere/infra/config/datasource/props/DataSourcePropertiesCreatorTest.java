@@ -35,12 +35,12 @@ public final class DataSourcePropertiesCreatorTest {
         dataSourceMap.put("foo_ds", createDataSource());
         Map<String, DataSourceProperties> actual = DataSourcePropertiesCreator.create(dataSourceMap);
         assertThat(actual.size(), is(1));
-        assertThat(actual.get("foo_ds"), is(createDataSourceProperties()));
+        assertThat(actual.get("foo_ds"), is(new DataSourceProperties(MockedDataSource.class.getName(), createProperties())));
     }
     
     @Test
     public void assertCreate() {
-        assertThat(DataSourcePropertiesCreator.create(createDataSource()), is(createDataSourceProperties()));
+        assertThat(DataSourcePropertiesCreator.create(createDataSource()), is(new DataSourceProperties(MockedDataSource.class.getName(), createProperties())));
     }
     
     private DataSource createDataSource() {
@@ -52,13 +52,13 @@ public final class DataSourcePropertiesCreatorTest {
         return result;
     }
     
-    private DataSourceProperties createDataSourceProperties() {
-        DataSourceProperties result = new DataSourceProperties(MockedDataSource.class.getName());
-        result.getProps().put("driverClassName", MockedDataSource.class.getName());
-        result.getProps().put("url", "jdbc:mock://127.0.0.1/foo_ds");
-        result.getProps().put("username", "root");
-        result.getProps().put("password", "root");
-        result.getProps().put("maximumPoolSize", "-1");
+    private Map<String, Object> createProperties() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("driverClassName", MockedDataSource.class.getName());
+        result.put("url", "jdbc:mock://127.0.0.1/foo_ds");
+        result.put("username", "root");
+        result.put("password", "root");
+        result.put("maximumPoolSize", "-1");
         return result;
     }
 }

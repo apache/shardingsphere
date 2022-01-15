@@ -52,9 +52,7 @@ public final class DataSourcePropertiesCreator {
      * @return created data source properties
      */
     public static DataSourceProperties create(final DataSource dataSource) {
-        DataSourceProperties result = new DataSourceProperties(dataSource.getClass().getName());
-        result.getProps().putAll(createProperties(dataSource));
-        return result;
+        return new DataSourceProperties(dataSource.getClass().getName(), createProperties(dataSource));
     }
     
     private static Map<String, Object> createProperties(final DataSource dataSource) {

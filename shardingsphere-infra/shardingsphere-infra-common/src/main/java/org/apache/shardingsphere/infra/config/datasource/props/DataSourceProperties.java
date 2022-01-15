@@ -19,10 +19,10 @@ package org.apache.shardingsphere.infra.config.datasource.props;
 
 import com.google.common.base.Objects;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaData;
+import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -30,7 +30,6 @@ import java.util.Properties;
 /**
  * Data source properties.
  */
-@RequiredArgsConstructor
 @Getter
 public final class DataSourceProperties {
     
@@ -38,9 +37,17 @@ public final class DataSourceProperties {
     
     private final String dataSourceClassName;
     
-    private final Map<String, Object> props = new LinkedHashMap<>();
+    private final DataSourcePoolMetaData poolMetaData;
+    
+    private final Map<String, Object> props;
     
     private final Properties customPoolProps = new Properties();
+    
+    public DataSourceProperties(final String dataSourceClassName, final Map<String, Object> props) {
+        this.dataSourceClassName = dataSourceClassName;
+        this.props = props;
+        poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceClassName);
+    }
     
     /**
      * Add property synonym to shared configuration.

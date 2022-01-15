@@ -104,12 +104,16 @@ public final class ConnectionManagerTest {
     }
     
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap() {
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>();
-        DataSourceProperties dataSourceProps = new DataSourceProperties(HikariDataSource.class.getName());
-        result.put(DefaultSchema.LOGIC_NAME, dataSourceProps);
-        dataSourceProps.getProps().put("jdbcUrl", "jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false");
-        dataSourceProps.getProps().put("username", "root");
-        dataSourceProps.getProps().put("password", "123456");
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(1, 1);
+        result.put(DefaultSchema.LOGIC_NAME, new DataSourceProperties(HikariDataSource.class.getName(), createProperties()));
+        return result;
+    }
+    
+    private Map<String, Object> createProperties() {
+        Map<String, Object> result = new LinkedHashMap<>(3, 1);
+        result.put("jdbcUrl", "jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false");
+        result.put("username", "root");
+        result.put("password", "123456");
         return result;
     }
     

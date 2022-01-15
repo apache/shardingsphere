@@ -26,6 +26,7 @@ import org.junit.Test;
 import javax.sql.CommonDataSource;
 import javax.sql.DataSource;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -38,7 +39,7 @@ public final class DataSourcePoolCreatorTest {
     @Test
     public void assertCreateMap() {
         Map<String, DataSourceProperties> dataSourcePropsMap = new HashMap<>(1, 1);
-        dataSourcePropsMap.put("foo_ds", createDataSourceProperties());
+        dataSourcePropsMap.put("foo_ds", new DataSourceProperties(MockedDataSource.class.getName(), createProperties()));
         Map<String, DataSource> actual = DataSourcePoolCreator.create(dataSourcePropsMap);
         assertThat(actual.size(), is(1));
         assertDataSource((MockedDataSource) actual.get("foo_ds"));
@@ -46,17 +47,17 @@ public final class DataSourcePoolCreatorTest {
     
     @Test
     public void assertCreate() {
-        MockedDataSource actual = (MockedDataSource) DataSourcePoolCreator.create(createDataSourceProperties());
+        MockedDataSource actual = (MockedDataSource) DataSourcePoolCreator.create(new DataSourceProperties(MockedDataSource.class.getName(), createProperties()));
         assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getName()));
         assertDataSource(actual);
     }
     
-    private DataSourceProperties createDataSourceProperties() {
-        DataSourceProperties result = new DataSourceProperties(MockedDataSource.class.getName());
-        result.getProps().put("driverClassName", MockedDataSource.class.getName());
-        result.getProps().put("url", "jdbc:mock://127.0.0.1/foo_ds");
-        result.getProps().put("username", "root");
-        result.getProps().put("password", "root");
+    private Map<String, Object> createProperties() {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("driverClassName", MockedDataSource.class.getName());
+        result.put("url", "jdbc:mock://127.0.0.1/foo_ds");
+        result.put("username", "root");
+        result.put("password", "root");
         return result;
     }
     
@@ -70,33 +71,29 @@ public final class DataSourcePoolCreatorTest {
     
     @Test
     public void assertCreateDefaultDataSource() {
-        assertThat(DataSourcePoolCreator.create(createDefaultDataSourceProperties()), instanceOf(CommonDataSource.class));
+        assertThat(DataSourcePoolCreator.create(new DataSourceProperties(BasicDataSource.class.getName(), createDefaultProperties())), instanceOf(CommonDataSource.class));
     }
     
-    private DataSourceProperties createDefaultDataSourceProperties() {
-        Map<String, Object> props = new HashMap<>();
-        props.put("driverClassName", MockedDataSource.class.getName());
-        props.put("url", "jdbc:mock://127.0.0.1/foo_ds");
-        props.put("username", "root");
-        props.put("password", "root");
-        DataSourceProperties result = new DataSourceProperties(BasicDataSource.class.getName());
-        result.getProps().putAll(props);
+    private Map<String, Object> createDefaultProperties() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("driverClassName", MockedDataSource.class.getName());
+        result.put("url", "jdbc:mock://127.0.0.1/foo_ds");
+        result.put("username", "root");
+        result.put("password", "root");
         return result;
     }
     
     @Test
     public void assertCreateHikariDataSource() {
-        assertThat(DataSourcePoolCreator.create(createHikariDataSourceProperties()), instanceOf(HikariDataSource.class));
+        assertThat(DataSourcePoolCreator.create(new DataSourceProperties(HikariDataSource.class.getName(), createHikariProperties())), instanceOf(HikariDataSource.class));
     }
     
-    private DataSourceProperties createHikariDataSourceProperties() {
-        Map<String, Object> props = new HashMap<>();
-        props.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
-        props.put("driverClassName", MockedDataSource.class.getName());
-        props.put("username", "root");
-        props.put("password", "root");
-        DataSourceProperties result = new DataSourceProperties(HikariDataSource.class.getName());
-        result.getProps().putAll(props);
+    private Map<String, Object> createHikariProperties() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
+        result.put("driverClassName", MockedDataSource.class.getName());
+        result.put("username", "root");
+        result.put("password", "root");
         return result;
     }
 }
