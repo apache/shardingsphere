@@ -25,13 +25,26 @@ import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourc
 import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 
 import javax.sql.DataSource;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Data source pool creator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourcePoolCreator {
+    
+    /**
+     * Create data sources.
+     *
+     * @param dataSourcePropsMap data source properties map
+     * @return created data sources
+     */
+    public static Map<String, DataSource> create(final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        return dataSourcePropsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    }
     
     /**
      * Create data source.
@@ -42,7 +55,6 @@ public final class DataSourcePoolCreator {
     public static DataSource create(final DataSourceProperties dataSourceProps) {
         DataSource result = createDataSource(dataSourceProps.getDataSourceClassName());
         DataSourcePoolMetaData poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceProps.getDataSourceClassName());
-        addPropertySynonym(dataSourceProps, poolMetaData);
         DataSourceReflection dataSourceReflection = new DataSourceReflection(result);
         setDefaultFields(dataSourceReflection, poolMetaData);
         setConfiguredFields(dataSourceProps, dataSourceReflection, poolMetaData);
@@ -53,12 +65,6 @@ public final class DataSourcePoolCreator {
     @SneakyThrows(ReflectiveOperationException.class)
     private static DataSource createDataSource(final String dataSourceClassName) {
         return (DataSource) Class.forName(dataSourceClassName).getConstructor().newInstance();
-    }
-    
-    private static void addPropertySynonym(final DataSourceProperties dataSourceProps, final DataSourcePoolMetaData poolMetaData) {
-        for (Entry<String, String> entry : poolMetaData.getPropertySynonyms().entrySet()) {
-            dataSourceProps.addPropertySynonym(entry.getKey(), entry.getValue());
-        }
     }
     
     private static void setDefaultFields(final DataSourceReflection dataSourceReflection, final DataSourcePoolMetaData poolMetaData) {

@@ -25,8 +25,8 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -97,7 +97,7 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
         DataSourceProperties dataSourcePropsSample = dataSourcePropsMap.values().iterator().next();
         Collection<ShardingSphereUser> users = metaDataPersistService.get().getGlobalRuleService().loadUsers();
         Collection<ComputeNodeInstance> instances = metaDataPersistService.get().getComputeNodePersistService().loadComputeNodeInstances(InstanceType.PROXY, trafficRule.get().getLabels());
-        return DataSourcePoolCreatorUtil.getDataSourceMap(createDataSourcePropertiesMap(instances, users, dataSourcePropsSample, schema));
+        return DataSourcePoolCreator.create(createDataSourcePropertiesMap(instances, users, dataSourcePropsSample, schema));
     }
     
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Collection<ComputeNodeInstance> instances, final Collection<ShardingSphereUser> users,
@@ -111,14 +111,12 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
     
     private DataSourceProperties createDataSourceProperties(final ComputeNodeInstance instance, final Collection<ShardingSphereUser> users,
                                                             final DataSourceProperties dataSourcePropsSample, final String schema) {
-        Map<String, Object> props = dataSourcePropsSample.getProps();
+        Map<String, Object> props = dataSourcePropsSample.getLocalProperties();
         props.put("jdbcUrl", createJdbcUrl(instance, schema, props));
         ShardingSphereUser user = users.iterator().next();
         props.put("username", user.getGrantee().getUsername());
         props.put("password", user.getPassword());
-        DataSourceProperties result = new DataSourceProperties(HikariDataSource.class.getName());
-        result.getProps().putAll(props);
-        return result;
+        return new DataSourceProperties(HikariDataSource.class.getName(), props);
     }
     
     private String createJdbcUrl(final ComputeNodeInstance instance, final String schema, final Map<String, Object> props) {

@@ -160,7 +160,7 @@ public final class DataSourceReflection {
         if (null == dataSourcePropsFieldName || null == jdbcUrlFieldName) {
             return;
         }
-        Properties targetDataSourceProps = getDataSourcePropertiesFieldName(dataSourcePropsFieldName);
+        Properties targetDataSourceProps = getDataSourceProperties(dataSourcePropsFieldName);
         String jdbcUrl = getJdbcUrl(jdbcUrlFieldName);
         DataSourceMetaData dataSourceMetaData = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl).getDataSourceMetaData(jdbcUrl, null);
         Properties queryProps = dataSourceMetaData.getQueryProperties();
@@ -178,7 +178,7 @@ public final class DataSourceReflection {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private Properties getDataSourcePropertiesFieldName(final String dataSourcePropsFieldName) {
+    private Properties getDataSourceProperties(final String dataSourcePropsFieldName) {
         return (Properties) dataSource.getClass().getMethod(getGetterMethodName(dataSourcePropsFieldName)).invoke(dataSource);
     }
     

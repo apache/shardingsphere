@@ -57,6 +57,9 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     }
     
     private void buildPropertySynonyms() {
+        propertySynonyms.put("connectionTimeoutMilliseconds", "connectionTimeout");
+        propertySynonyms.put("idleTimeoutMilliseconds", "idleTimeout");
+        propertySynonyms.put("maxLifetimeMilliseconds", "maxLifetime");
         propertySynonyms.put("maxPoolSize", "maximumPoolSize");
         propertySynonyms.put("minPoolSize", "minimumIdle");
     }

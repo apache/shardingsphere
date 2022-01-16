@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -36,6 +37,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLXML;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -126,6 +128,7 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
         
         private final Collection<Collection<Object>> records;
     
+        @SneakyThrows
         @Override
         public boolean equals(final Object o) {
             if (this == o) {
@@ -153,7 +156,12 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
                 Iterator<Object> thisNextIterator = thisNext.iterator();
                 Iterator<Object> thatNextIterator = thatNext.iterator();
                 while (thisNextIterator.hasNext() && thatNextIterator.hasNext()) {
-                    if (!new EqualsBuilder().append(thisNextIterator.next(), thatNextIterator.next()).isEquals()) {
+                    Object thisResult = thisNextIterator.next();
+                    Object thatResult = thatNextIterator.next();
+                    if (thisResult instanceof SQLXML && thatResult instanceof SQLXML) {
+                        return ((SQLXML) thisResult).getString().equals(((SQLXML) thatResult).getString());
+                    }
+                    if (!new EqualsBuilder().append(thisResult, thatResult).isEquals()) {
                         return false;
                     }
                 }
