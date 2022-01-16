@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceId;
+import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ComputeNodeStatusChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -68,6 +69,18 @@ public final class SetInstanceStatusExecutor implements SetStatementExecutor {
             throw new UnsupportedOperationException(String.format("`%s` is the currently in use instance and cannot be disabled", operationInstanceId.getId()));
         }
         checkExist(operationInstanceId);
+        checkExistDisabled(operationInstanceId);
+    }
+    
+    private void checkExistDisabled(final InstanceId operationInstanceId) {
+        Optional<MetaDataPersistService> metaDataPersistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
+        if (metaDataPersistService.isPresent()) {
+            metaDataPersistService.get().getComputeNodePersistService().loadAllComputeNodeInstances().forEach(each -> {
+                if (each.getStatus().contains(StateType.CIRCUIT_BREAK.name()) && isIdenticalInstance(each.getInstanceDefinition(), operationInstanceId)) {
+                    throw new UnsupportedOperationException(String.format("`%s` compute node has been disabled", operationInstanceId.getId()));
+                }
+            });
+        }
     }
     
     private void checkExist(final InstanceId operationInstanceId) {
