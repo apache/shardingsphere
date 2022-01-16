@@ -89,7 +89,7 @@ public final class YamlDataSourceConfigurationSwapper {
      * @return data source map
      */
     public Map<String, Object> swapToMap(final DataSourceProperties dataSourceProps) {
-        Map<String, Object> result = new HashMap<>(dataSourceProps.getProps());
+        Map<String, Object> result = new HashMap<>(dataSourceProps.getStandardProperties());
         if (!dataSourceProps.getCustomPoolProps().isEmpty()) {
             result.put(DataSourceProperties.CUSTOM_POOL_PROPS_KEY, dataSourceProps.getCustomPoolProps());
         }

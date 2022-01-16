@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.config.datasource.props;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Rule;
@@ -44,25 +43,6 @@ public final class DataSourcePropertiesTest {
     
     @Rule
     public ExpectedException thrown = ExpectedException.none();
-    
-    @Test
-    public void assertAddSynonym() {
-        HikariDataSource actualDataSource = new HikariDataSource();
-        actualDataSource.setDriverClassName(MockedDataSource.class.getCanonicalName());
-        actualDataSource.setJdbcUrl("jdbc:mock://127.0.0.1/foo_ds");
-        actualDataSource.setUsername("root");
-        actualDataSource.setPassword("root");
-        DataSourceProperties actual = DataSourcePropertiesCreator.create(actualDataSource);
-        actual.addPropertySynonym("url", "jdbcUrl");
-        actual.addPropertySynonym("user", "username");
-        assertThat(actual.getDataSourceClassName(), is(HikariDataSource.class.getName()));
-        assertThat(actual.getProps().get("driverClassName").toString(), is(MockedDataSource.class.getCanonicalName()));
-        assertThat(actual.getProps().get("jdbcUrl").toString(), is("jdbc:mock://127.0.0.1/foo_ds"));
-        assertThat(actual.getProps().get("username").toString(), is("root"));
-        assertThat(actual.getProps().get("password").toString(), is("root"));
-        assertThat(actual.getProps().get("jdbcUrl"), is(actual.getProps().get("url")));
-        assertThat(actual.getProps().get("username"), is(actual.getProps().get("user")));
-    }
     
     @Test
     public void assertEquals() {
