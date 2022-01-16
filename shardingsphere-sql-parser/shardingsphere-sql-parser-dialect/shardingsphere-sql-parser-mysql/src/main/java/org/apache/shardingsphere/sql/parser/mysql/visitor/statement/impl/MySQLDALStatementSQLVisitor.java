@@ -301,7 +301,9 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitShowCreateProcedure(final ShowCreateProcedureContext ctx) {
-        return new MySQLShowCreateProcedureStatement();
+        MySQLShowCreateProcedureStatement result = new MySQLShowCreateProcedureStatement();
+        result.setProcName(((IdentifierValue) visit(ctx.procName())).getValue());
+        return result;
     }
     
     @Override
