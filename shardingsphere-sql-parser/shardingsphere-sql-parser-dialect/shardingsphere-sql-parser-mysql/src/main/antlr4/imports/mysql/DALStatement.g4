@@ -111,7 +111,7 @@ showCreateFunction
     ;
 
 showCreateProcedure
-    : SHOW CREATE PROCEDURE functionName
+    : SHOW CREATE PROCEDURE procName
     ;
 
 showCreateTable
@@ -143,7 +143,7 @@ showEngines
     ;
 
 showErrors
-    : SHOW (COUNT LP_ ASTERISK_ RP_)? ERRORS (LIMIT (NUMBER_ COMMA_)? NUMBER_)?
+    : SHOW (COUNT LP_ ASTERISK_ RP_)? ERRORS limitClause?
     ;
 
 showEvents
@@ -158,9 +158,8 @@ showFunctionStatus
     : SHOW FUNCTION STATUS showFilter?
     ;
 
-// todo check
-showGrant
-    : SHOW GRANTS (FOR username (USING username (COMMA_ username)+)?)?
+showGrants
+    : SHOW GRANTS (FOR (username | roleName) (USING roleName (COMMA_ roleName)*)?)?
     ;
 
 showIndex
@@ -244,7 +243,7 @@ showVariables
     ;
 
 showWarnings
-    : SHOW (COUNT LP_ ASTERISK_ RP_)? WARNINGS (LIMIT (NUMBER_ COMMA_)? NUMBER_)?
+    : SHOW (COUNT LP_ ASTERISK_ RP_)? WARNINGS limitClause?
     ;
 
 showCharset
@@ -449,7 +448,7 @@ show
     | showEvents
     | showFunctionCode
     | showFunctionStatus
-    | showGrant
+    | showGrants
     | showMasterStatus
     | showPlugins
     | showOpenTables

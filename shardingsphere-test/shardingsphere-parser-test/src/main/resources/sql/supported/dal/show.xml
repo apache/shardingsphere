@@ -118,4 +118,27 @@
     <sql-case id="show_binlog_events_with_limit" value="SHOW BINLOG EVENTS LIMIT 1,2" db-types="MySQL" />
     <sql-case id="show_engine_status" value="SHOW ENGINE INNODB STATUS" db-types="MySQL" />
     <sql-case id="show_engine_mutex" value="SHOW ENGINE INNODB MUTEX" db-types="MySQL" />
+    <sql-case id="show_binary_logs" value="SHOW BINARY LOGS" db-types="MySQL" />
+    <sql-case id="show_master_logs" value="SHOW MASTER LOGS" db-types="MySQL" />
+    <sql-case id="show_engines" value="SHOW ENGINES" db-types="MySQL" />
+    <sql-case id="show_storage_engines" value="SHOW STORAGE ENGINES" db-types="MySQL" />
+    <sql-case id="show_create_database" value="SHOW CREATE DATABASE schema_name" db-types="MySQL" />
+    <sql-case id="show_create_database_if_not_exist" value="SHOW CREATE DATABASE IF NOT EXISTS schema_name" db-types="MySQL" />
+    <sql-case id="show_create_schema" value="SHOW CREATE SCHEMA schema_name" db-types="MySQL" />
+    <sql-case id="show_create_schema_if_not_exist" value="SHOW CREATE SCHEMA IF NOT EXISTS schema_name" db-types="MySQL" />
+    <sql-case id="show_create_event" value="SHOW CREATE EVENT event_name" db-types="MySQL" />
+    <sql-case id="show_create_function" value="SHOW CREATE FUNCTION function_name" db-types="MySQL" />
+    <sql-case id="show_create_proc" value="SHOW CREATE PROCEDURE proc_name" db-types="MySQL" />
+    <sql-case id="show_create_view" value="SHOW CREATE VIEW view_name" db-types="MySQL" />
+    <sql-case id="show_function_code" value="SHOW FUNCTION CODE function_name" db-types="MySQL" />
+    <sql-case id="show_grants_for" value="SHOW GRANTS FOR 'jeffrey'@'localhost'" db-types="MySQL" />
+    <sql-case id="show_grants_for_using" value="SHOW GRANTS FOR 'u1'@'localhost' USING 'r1'" db-types="MySQL" />
+    <sql-case id="show_master_status" value="SHOW MASTER STATUS" db-types="MySQL" />
+    <sql-case id="show_plugins" value="SHOW PLUGINS" db-types="MySQL" />
+    <sql-case id="show_processlist" value="SHOW FULL PROCESSLIST" db-types="MySQL" />
+    <sql-case id="show_profile" value="SHOW PROFILE LIMIT 1, 2" db-types="MySQL" />
+    <sql-case id="show_profiles" value="SHOW PROFILES" db-types="MySQL" />
+    <sql-case id="show_charset" value="SHOW CHARSET" db-types="MySQL" />
+    <sql-case id="show_warnings_limit" value="SHOW WARNINGS limit 1" db-types="MySQL" />
+    <sql-case id="show_warnings_count" value="SHOW COUNT(*) WARNINGS" db-types="MySQL" />
 </sql-cases>

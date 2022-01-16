@@ -655,7 +655,7 @@ username
     ;
     
 eventName
-    : identifier (DOT_ identifier)?
+    : (owner DOT_)? identifier
     ;
     
 serverName
@@ -667,13 +667,15 @@ wrapperName
     ;
     
 functionName
-    : identifier
-    | (owner DOT_)? identifier
+    : (owner DOT_)? identifier
     ;
-    
+
+procName
+    : (owner DOT_)? identifier
+    ;
+
 viewName
-    : identifier
-    | (owner DOT_)? identifier
+    : (owner DOT_)? identifier
     ;
     
 owner

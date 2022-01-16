@@ -20,18 +20,17 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * MySQL show warnings statement.
+ * MySQL show function code statement.
  */
 @Getter
 @Setter
 @ToString
-public final class MySQLShowWarningsStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class MySQLShowFunctionCodeStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
-    private LimitSegment limit;
+    private String functionName;
 }
