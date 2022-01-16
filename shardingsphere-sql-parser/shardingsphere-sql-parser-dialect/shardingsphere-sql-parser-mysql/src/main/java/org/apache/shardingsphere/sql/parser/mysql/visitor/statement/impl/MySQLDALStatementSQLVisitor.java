@@ -295,7 +295,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitShowCreateFunction(final ShowCreateFunctionContext ctx) {
         MySQLShowCreateFunctionStatement result = new MySQLShowCreateFunctionStatement();
-        result.setFunction((FunctionSegment) visit(ctx.functionName()));
+        result.setFunctionName(((FunctionSegment) visit(ctx.functionName())).getFunctionName());
         return result;
     }
     
@@ -751,9 +751,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitShowFunctionCode(final ShowFunctionCodeContext ctx) {
         MySQLShowFunctionCodeStatement result = new MySQLShowFunctionCodeStatement();
-        if (null != ctx.functionName()) {
-            result.setFunction((FunctionSegment) visit(ctx.functionName()));
-        }
+        result.setFunctionName(((FunctionSegment) visit(ctx.functionName())).getFunctionName());
         return result;
     }
     
