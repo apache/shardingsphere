@@ -19,9 +19,10 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.function.ExpectedFunction;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * MySQL show procedure code statement test case.
@@ -30,6 +31,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class ShowProcedureCodeStatementTestCase extends SQLParserTestCase {
 
-    @XmlAttribute(name = "function")
-    private String function;
+    @XmlElement(name = "function")
+    private ExpectedFunction function;
 }

@@ -219,7 +219,7 @@ showReplicaStatus
     ;
 
 showSlaveStatus
-    : SHOW (REPLICA | SLAVE) STATUS (FOR CHANNEL channelName)?
+    : SHOW SLAVE STATUS (FOR CHANNEL channelName)?
     ;
 
 showStatus
@@ -420,7 +420,7 @@ formatName
     ;
 
 delimiter
-    : DELIMITER  delimiterName
+    : DELIMITER delimiterName
     ;
     
 show

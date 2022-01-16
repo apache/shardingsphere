@@ -21,10 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcedureCodeStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowProcedureCodeStatementTestCase;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 /**
  * Show procedure code statement assert.
@@ -40,6 +38,6 @@ public final class ShowProcedureCodeStatementAssert {
      * @param expected expected show procedure code statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowProcedureCodeStatement actual, final ShowProcedureCodeStatementTestCase expected) {
-        assertThat(actual.getFunctionName(), is(expected.getFunction()));
+        ExpressionAssert.assertFunction(assertContext, actual.getFunction(), expected.getFunction());
     }
 }

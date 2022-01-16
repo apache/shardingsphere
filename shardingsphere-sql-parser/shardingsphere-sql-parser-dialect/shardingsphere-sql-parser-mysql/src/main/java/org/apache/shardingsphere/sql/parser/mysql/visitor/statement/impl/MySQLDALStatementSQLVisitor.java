@@ -21,8 +21,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowPrivilegesContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowPluginsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowProfilesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterResourceGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AnalyzeTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BinaryLogFileIndexNumberContext;
@@ -86,13 +85,19 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowEng
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowErrorsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowEventsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowFilterContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowFunctionCodeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowFunctionStatusContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowGrantsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowLikeContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowMasterStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowOpenTablesContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowPluginsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowPrivilegesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowProcedureCodeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowProcedureStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowProcesslistContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowProfileContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowRelaylogEventContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowReplicaStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowReplicasContext;
@@ -123,6 +128,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegme
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
@@ -174,8 +180,11 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowEngineStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowErrorsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowEventsStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowFunctionCodeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowFunctionStatusStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowGrantsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowMasterStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowOpenTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowOtherStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowPluginsStatement;
@@ -183,6 +192,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcedureCodeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcedureStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcessListStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProfileStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProfilesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowRelaylogEventsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowReplicaStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowReplicasStatement;
@@ -233,7 +244,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitShowCreateDatabase(final ShowCreateDatabaseContext ctx) {
         MySQLShowCreateDatabaseStatement result = new MySQLShowCreateDatabaseStatement();
-        result.setSchema(((IdentifierValue) visit(ctx.schemaName())).getValue());
+        result.setSchemaName(((SchemaSegment) visit(ctx.schemaName())).getIdentifier().getValue());
         return result;
     }
     
@@ -284,7 +295,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitShowCreateFunction(final ShowCreateFunctionContext ctx) {
         MySQLShowCreateFunctionStatement result = new MySQLShowCreateFunctionStatement();
-        result.setFunctionName(((IdentifierValue) visit(ctx.functionName())).getValue());
+        result.setFunction((FunctionSegment) visit(ctx.functionName()));
         return result;
     }
     
@@ -297,7 +308,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitShowBinlogEvents(final ShowBinlogEventsContext ctx) {
         MySQLShowBinlogEventsStatement result = new MySQLShowBinlogEventsStatement();
         if (null != ctx.logName()) {
-            result.setLogName(((IdentifierValue) visit(ctx.logName())).getValue());
+            result.setLogName(ctx.logName().getText());
         }
         if (null != ctx.limitClause()) {
             result.setLimit((LimitSegment) visit(ctx.limitClause()));
@@ -588,10 +599,24 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitShowProcedureCode(final ShowProcedureCodeContext ctx) {
         MySQLShowProcedureCodeStatement result = new MySQLShowProcedureCodeStatement();
-        result.setFunctionName(((IdentifierValue) visit(ctx.functionName())).getValue());
+        result.setFunction((FunctionSegment) visit(ctx.functionName()));
         return result;
     }
-
+    
+    @Override
+    public ASTNode visitShowProfile(final ShowProfileContext ctx) {
+        MySQLShowProfileStatement result = new MySQLShowProfileStatement();
+        if (null != ctx.limitClause()) {
+            result.setLimit((LimitSegment) visit(ctx.limitClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowProfiles(final ShowProfilesContext ctx) {
+        return new MySQLShowProfilesStatement();
+    }
+    
     @Override
     public ASTNode visitShowDatabases(final ShowDatabasesContext ctx) {
         MySQLShowDatabasesStatement result = new MySQLShowDatabasesStatement();
@@ -721,6 +746,25 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
             result.setLogName(((StringLiteralValue) visit(ctx.logName().stringLiterals().string_())).getValue());
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitShowFunctionCode(final ShowFunctionCodeContext ctx) {
+        MySQLShowFunctionCodeStatement result = new MySQLShowFunctionCodeStatement();
+        if (null != ctx.functionName()) {
+            result.setFunction((FunctionSegment) visit(ctx.functionName()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowGrants(final ShowGrantsContext ctx) {
+        return new MySQLShowGrantsStatement();
+    }
+    
+    @Override
+    public ASTNode visitShowMasterStatus(final ShowMasterStatusContext ctx) {
+        return new MySQLShowMasterStatusStatement();
     }
     
     @Override
@@ -1035,7 +1079,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitDelimiter(final DelimiterContext ctx) {
         MySQLDelimiterStatement result = new MySQLDelimiterStatement();
-        result.setDelimiterName(((IdentifierValue) visit(ctx.delimiterName())).getValue());
+        result.setDelimiterName(ctx.delimiterName().getText());
         return result;
     }
     
