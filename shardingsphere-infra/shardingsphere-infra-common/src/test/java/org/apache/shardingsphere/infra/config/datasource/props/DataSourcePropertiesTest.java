@@ -102,13 +102,13 @@ public final class DataSourcePropertiesTest {
         actualDataSource.setConnectionInitSqls(Arrays.asList("set names utf8mb4;", "set names utf8;"));
         DataSourceProperties actual = DataSourcePropertiesCreator.create(actualDataSource);
         assertThat(actual.getDataSourceClassName(), is(BasicDataSource.class.getName()));
-        assertThat(actual.getProps().get("driverClassName").toString(), is(MockedDataSource.class.getCanonicalName()));
-        assertThat(actual.getProps().get("url").toString(), is("jdbc:mock://127.0.0.1/foo_ds"));
-        assertThat(actual.getProps().get("username").toString(), is("root"));
-        assertThat(actual.getProps().get("password").toString(), is("root"));
-        assertNull(actual.getProps().get("loginTimeout"));
-        assertThat(actual.getProps().get("connectionInitSqls"), instanceOf(List.class));
-        List<String> actualConnectionInitSql = (List<String>) actual.getProps().get("connectionInitSqls");
+        assertThat(actual.getLocalProperties().get("driverClassName").toString(), is(MockedDataSource.class.getCanonicalName()));
+        assertThat(actual.getLocalProperties().get("url").toString(), is("jdbc:mock://127.0.0.1/foo_ds"));
+        assertThat(actual.getLocalProperties().get("username").toString(), is("root"));
+        assertThat(actual.getLocalProperties().get("password").toString(), is("root"));
+        assertNull(actual.getLocalProperties().get("loginTimeout"));
+        assertThat(actual.getLocalProperties().get("connectionInitSqls"), instanceOf(List.class));
+        List<String> actualConnectionInitSql = (List<String>) actual.getLocalProperties().get("connectionInitSqls");
         assertThat(actualConnectionInitSql, hasItem("set names utf8mb4;"));
         assertThat(actualConnectionInitSql, hasItem("set names utf8;"));
     }
