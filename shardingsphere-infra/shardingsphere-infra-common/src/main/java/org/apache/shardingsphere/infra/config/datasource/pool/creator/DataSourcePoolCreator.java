@@ -43,7 +43,7 @@ public final class DataSourcePoolCreator {
      * @return created data sources
      */
     public static Map<String, DataSource> create(final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        return dataSourcePropsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getValue()), (a, b) -> b, LinkedHashMap::new));
+        return dataSourcePropsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     /**
@@ -55,7 +55,6 @@ public final class DataSourcePoolCreator {
     public static DataSource create(final DataSourceProperties dataSourceProps) {
         DataSource result = createDataSource(dataSourceProps.getDataSourceClassName());
         DataSourcePoolMetaData poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceProps.getDataSourceClassName());
-        addPropertySynonym(dataSourceProps, poolMetaData);
         DataSourceReflection dataSourceReflection = new DataSourceReflection(result);
         setDefaultFields(dataSourceReflection, poolMetaData);
         setConfiguredFields(dataSourceProps, dataSourceReflection, poolMetaData);
@@ -66,12 +65,6 @@ public final class DataSourcePoolCreator {
     @SneakyThrows(ReflectiveOperationException.class)
     private static DataSource createDataSource(final String dataSourceClassName) {
         return (DataSource) Class.forName(dataSourceClassName).getConstructor().newInstance();
-    }
-    
-    private static void addPropertySynonym(final DataSourceProperties dataSourceProps, final DataSourcePoolMetaData poolMetaData) {
-        for (Entry<String, String> entry : poolMetaData.getPropertySynonyms().entrySet()) {
-            dataSourceProps.addPropertySynonym(entry.getKey(), entry.getValue());
-        }
     }
     
     private static void setDefaultFields(final DataSourceReflection dataSourceReflection, final DataSourcePoolMetaData poolMetaData) {
