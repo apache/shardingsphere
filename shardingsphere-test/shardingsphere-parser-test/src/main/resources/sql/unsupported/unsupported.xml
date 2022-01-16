@@ -5793,14 +5793,6 @@
     <sql-case id="set_by_mysql_source_test_case61" value="SET @str_ascii=_ASCII&apos;abcxyz&apos;" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case62" value="SET @x:= (SELECT h FROM t1 WHERE (a,b,c,d,e,f,g)=(1,2,3,4,5,6,7))" db-types="MySQL"/>
     <sql-case id="show_by_mysql_source_test_case2" value="SHOW CREATE DATABASE db_charset_koi8r" db-types="MySQL"/>
-    <sql-case id="show_by_mysql_source_test_case3" value="SHOW CREATE DATABASE mysqltest1" db-types="MySQL"/>
-    <sql-case id="show_by_mysql_source_test_case4" value="SHOW CREATE DATABASE mysqltest1" db-types="MySQL"/>
-    <sql-case id="show_by_mysql_source_test_case5" value="SHOW CREATE DATABASE mysqltest2" db-types="MySQL"/>
-    <sql-case id="show_by_mysql_source_test_case6" value="SHOW CREATE DATABASE test" db-types="MySQL"/>
-    <sql-case id="show_by_mysql_source_test_case7" value="SHOW CREATE DATABASE test1" db-types="MySQL"/>
-    <sql-case id="show_by_mysql_source_test_case8" value="SHOW CREATE SCHEMA s" db-types="MySQL"/>
-    <sql-case id="show_by_mysql_source_test_case9" value="SHOW CREATE SCHEMA s" db-types="MySQL"/>
-    <sql-case id="show_by_mysql_source_test_case11" value="SHOW CREATE SCHEMA s" db-types="MySQL"/>
     <sql-case id="show_by_mysql_source_test_case12" value="SHOW CREATE TABLE ```a`" db-types="MySQL"/>
     <sql-case id="show_by_mysql_source_test_case13" value="SHOW CREATE TABLE ```ab````cd```" db-types="MySQL"/>
     <sql-case id="show_by_mysql_source_test_case14" value="SHOW CREATE TABLE ```ab``cd```" db-types="MySQL"/>
@@ -5809,16 +5801,6 @@
     <sql-case id="show_by_mysql_source_test_case17" value="SHOW CREATE USER user1@47.9.9.9" db-types="MySQL"/>
     <sql-case id="show_by_mysql_source_test_case18" value="SHOW CREATE USER user1@47.9.9.9" db-types="MySQL"/>
     <sql-case id="show_by_mysql_source_test_case19" value="SHOW CREATE USER user1@47.9.9.9" db-types="MySQL"/>
-    <sql-case id="show_by_mysql_source_test_case20" value="SHOW CREATE USER user1@47.9.9.9" db-types="MySQL"/>
-    <sql-case id="show_by_mysql_source_test_case21" value="SHOW EVENTS FROM ``" db-types="MySQL"/>
-    <sql-case id="show_by_mysql_source_test_case22" value="SHOW FUNCTION CODE TESTF_bug11763507" db-types="MySQL"/>
-    <sql-case id="show_by_mysql_source_test_case23" value="SHOW FUNCTION CODE f1" db-types="MySQL"/>
-    <sql-case id="show_by_mysql_source_test_case24" value="SHOW FUNCTION CODE f2" db-types="MySQL"/>
-    <sql-case id="show_by_mysql_source_test_case25" value="SHOW FUNCTION CODE f3" db-types="MySQL"/>
-    <sql-case id="show_by_mysql_source_test_case26" value="SHOW FUNCTION CODE f4" db-types="MySQL"/>
-    <sql-case id="show_by_mysql_source_test_case27" value="SHOW FUNCTION CODE f5" db-types="MySQL"/>
-    <sql-case id="show_by_mysql_source_test_case28" value="SHOW FUNCTION CODE f6" db-types="MySQL"/>
-    <sql-case id="show_by_mysql_source_test_case29" value="SHOW FUNCTION CODE testdb.func_definer" db-types="MySQL"/>
     <sql-case id="show_by_mysql_source_test_case284" value="SHOW RELAYLOG EVENTS" db-types="MySQL"/>
     <sql-case id="signal_by_mysql_source_test_case1" value="SIGNAL SQLSTATE &apos;00000&apos;" db-types="MySQL"/>
     <sql-case id="signal_by_mysql_source_test_case2" value="SIGNAL SQLSTATE &apos;00001&apos;" db-types="MySQL"/>
