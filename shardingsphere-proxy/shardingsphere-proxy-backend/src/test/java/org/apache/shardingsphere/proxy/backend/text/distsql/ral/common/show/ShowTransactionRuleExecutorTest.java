@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -56,7 +57,9 @@ public final class ShowTransactionRuleExecutorTest {
         assertThat(data.size(), is(3));
         assertThat(data.get(0), is("XA"));
         assertThat(data.get(1), is("Atomikos"));
-        assertThat(data.get(2), is("{\"host\":\"127.0.0.1\",\"databaseName\":\"jbossts\"}"));
+        String props = String.valueOf(data.get(2));
+        assertThat(props, containsString("\"host\":\"127.0.0.1\""));
+        assertThat(props, containsString("\"databaseName\":\"jbossts\""));
     }
     
     @Test
