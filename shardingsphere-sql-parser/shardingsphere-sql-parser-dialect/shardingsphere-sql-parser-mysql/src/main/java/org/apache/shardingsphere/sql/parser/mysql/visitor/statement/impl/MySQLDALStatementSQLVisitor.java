@@ -741,9 +741,14 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitShowRelaylogEvent(final ShowRelaylogEventContext ctx) {
         MySQLShowRelaylogEventsStatement result = new MySQLShowRelaylogEventsStatement();
-        result.setChannel(ctx.channelName().getText());
         if (null != ctx.logName()) {
             result.setLogName(((StringLiteralValue) visit(ctx.logName().stringLiterals().string_())).getValue());
+        }
+        if (null != ctx.limitClause()) {
+            result.setLimit((LimitSegment) visit(ctx.limitClause()));
+        }
+        if (null != ctx.channelName()) {
+            result.setChannel(((IdentifierValue) visit(ctx.channelName())).getValue());
         }
         return result;
     }

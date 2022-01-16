@@ -203,7 +203,7 @@ showProfiles
     ;
 
 showRelaylogEvent
-    : SHOW RELAYLOG EVENTS (IN logName)? (FROM NUMBER_)? (LIMIT (NUMBER_ COMMA_)? NUMBER_)? (FOR CHANNEL channelName)?
+    : SHOW RELAYLOG EVENTS (IN logName)? (FROM NUMBER_)? limitClause? (FOR CHANNEL channelName)?
     ;
 
 showReplicas
