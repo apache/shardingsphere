@@ -41,6 +41,8 @@ public final class DataSourceProperties {
     @Getter(AccessLevel.NONE)
     private final Map<String, String> propertySynonyms;
     
+    private final Map<String, Object> standardProperties;
+    
     private final Map<String, Object> localProperties;
     
     private final Properties customPoolProps = new Properties();
@@ -48,10 +50,11 @@ public final class DataSourceProperties {
     public DataSourceProperties(final String dataSourceClassName, final Map<String, Object> props) {
         this.dataSourceClassName = dataSourceClassName;
         propertySynonyms = DataSourcePoolMetaDataFactory.newInstance(dataSourceClassName).getPropertySynonyms();
-        this.localProperties = getLocalProperties(props);
+        standardProperties = buildStandardProperties(props);
+        localProperties = buildLocalProperties(props);
     }
     
-    private Map<String, Object> getLocalProperties(final Map<String, Object> props) {
+    private Map<String, Object> buildLocalProperties(final Map<String, Object> props) {
         Map<String, Object> result = new LinkedHashMap<>(props);
         for (Entry<String, String> entry : propertySynonyms.entrySet()) {
             String standardPropertyName = entry.getKey();
@@ -64,18 +67,13 @@ public final class DataSourceProperties {
         return result;
     }
     
-    /**
-     * Get standard properties.
-     * 
-     * @return standard properties
-     */
-    public Map<String, Object> getStandardProperties() {
-        Map<String, Object> result = new LinkedHashMap<>(localProperties);
+    private Map<String, Object> buildStandardProperties(final Map<String, Object> props) {
+        Map<String, Object> result = new LinkedHashMap<>(props);
         for (Entry<String, String> entry : propertySynonyms.entrySet()) {
             String standardPropertyName = entry.getKey();
             String synonymsPropertyName = entry.getValue();
-            if (localProperties.containsKey(synonymsPropertyName)) {
-                result.put(standardPropertyName, localProperties.get(synonymsPropertyName));
+            if (props.containsKey(synonymsPropertyName)) {
+                result.put(standardPropertyName, props.get(synonymsPropertyName));
                 result.remove(synonymsPropertyName);
             }
         }
