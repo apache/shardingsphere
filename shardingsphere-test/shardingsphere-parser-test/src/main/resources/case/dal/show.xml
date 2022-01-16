@@ -841,7 +841,6 @@
     </show-binlog-events>
     <show sql-case-id="show_engine_status" />
     <show sql-case-id="show_engine_mutex" />
-    <show sql-case-id="show_slave_hosts" />
     <show sql-case-id="show_binary_logs" />
     <show sql-case-id="show_master_logs" />
     <show sql-case-id="show_engines" />
