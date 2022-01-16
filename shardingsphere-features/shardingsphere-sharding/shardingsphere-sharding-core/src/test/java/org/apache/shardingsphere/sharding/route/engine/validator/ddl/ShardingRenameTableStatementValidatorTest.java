@@ -78,7 +78,6 @@ public final class ShardingRenameTableStatementValidatorTest {
 
     @Test(expected = ShardingSphereException.class)
     public void assertPostValidateDifferentRouteUnitsAndDataNodesSize() {
-        // route units and actual data nodes are different size
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(mock(RouteUnit.class));
         TableRule tableRule = mock(TableRule.class);
@@ -93,7 +92,6 @@ public final class ShardingRenameTableStatementValidatorTest {
 
     @Test
     public void assertPostValidateNormalCase() {
-        // route units and actual data nodes are equal size
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(mock(RouteUnit.class));
         TableRule tableRule = mock(TableRule.class);
