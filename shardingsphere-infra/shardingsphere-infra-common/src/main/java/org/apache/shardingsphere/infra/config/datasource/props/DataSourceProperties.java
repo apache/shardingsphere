@@ -45,10 +45,10 @@ public final class DataSourceProperties {
     
     private final Properties customPoolProps = new Properties();
     
-    public DataSourceProperties(final String dataSourceClassName, final Map<String, Object> localProperties) {
+    public DataSourceProperties(final String dataSourceClassName, final Map<String, Object> props) {
         this.dataSourceClassName = dataSourceClassName;
         propertySynonyms = DataSourcePoolMetaDataFactory.newInstance(dataSourceClassName).getPropertySynonyms();
-        this.localProperties = getLocalProperties(localProperties);
+        this.localProperties = getLocalProperties(props);
     }
     
     private Map<String, Object> getLocalProperties(final Map<String, Object> props) {
