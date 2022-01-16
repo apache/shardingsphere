@@ -44,7 +44,6 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
@@ -64,6 +63,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Command describe for PostgreSQL.
@@ -128,7 +128,12 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         String logicTableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
         TableMetaData tableMetaData = ProxyContext.getInstance().getMetaData(schemaName).getSchema().get(logicTableName);
         Map<String, ColumnMetaData> columnMetaData = tableMetaData.getColumns();
-        List<ColumnSegment> columns = new ArrayList<>(insertStatement.getColumns());
+        List<String> columnNames;
+        if (insertStatement.getColumns().isEmpty()) {
+            columnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
+        } else {
+            columnNames = insertStatement.getColumns().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
+        }
         Iterator<InsertValuesSegment> iterator = insertStatement.getValues().iterator();
         int parameterMarkerIndex = 0;
         while (iterator.hasNext()) {
@@ -136,11 +141,14 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
             ListIterator<ExpressionSegment> listIterator = each.getValues().listIterator();
             for (int columnIndex = listIterator.nextIndex(); listIterator.hasNext(); columnIndex = listIterator.nextIndex()) {
                 ExpressionSegment value = listIterator.next();
-                if (!(value instanceof ParameterMarkerExpressionSegment) || !unspecifiedTypeParameterIndexes.contains(parameterMarkerIndex)) {
+                if (!(value instanceof ParameterMarkerExpressionSegment)) {
+                    continue;
+                }
+                if (!unspecifiedTypeParameterIndexes.contains(parameterMarkerIndex)) {
                     parameterMarkerIndex++;
                     continue;
                 }
-                String columnName = columns.get(columnIndex).getIdentifier().getValue();
+                String columnName = columnNames.get(columnIndex);
                 PostgreSQLColumnType parameterType = PostgreSQLColumnType.valueOfJDBCType(columnMetaData.get(columnName).getDataType());
                 preparedStatement.getParameterTypes().set(parameterMarkerIndex++, parameterType);
             }
