@@ -25,21 +25,21 @@ import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionCon
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration.InputConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration.OutputConfiguration;
 import org.apache.shardingsphere.scaling.distsql.statement.segment.InputOrOutputSegment;
-import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScalingConfigurationSegment;
+import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScalingRuleConfigurationSegment;
 
 /**
- * Sharding scaling statement converter.
+ * Sharding scaling rule statement converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingScalingStatementConverter {
+public final class ShardingScalingRuleStatementConverter {
     
     /**
-     * Convert sharding scaling configuration segment to on rule altered action configuration.
+     * Convert sharding scaling rule configuration segment to on rule altered action configuration.
      *
-     * @param segment sharding scaling configuration segment
-     * @return sharding rule configuration
+     * @param segment sharding scaling rule configuration segment
+     * @return on rule altered action configuration
      */
-    public static OnRuleAlteredActionConfiguration convert(final ShardingScalingConfigurationSegment segment) {
+    public static OnRuleAlteredActionConfiguration convert(final ShardingScalingRuleConfigurationSegment segment) {
         InputConfiguration inputConfiguration = convertToInputConfiguration(segment.getInputSegment());
         OutputConfiguration outputConfiguration = convertToOutputConfiguration(segment.getOutputSegment());
         ShardingSphereAlgorithmConfiguration streamChannel = convertToAlgorithm(segment.getStreamChannel());

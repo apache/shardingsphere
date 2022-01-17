@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 
 /**
- * Drop sharding scaling statement.
+ * Drop sharding scaling rule statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropShardingScalingStatement extends DropRuleStatement {
+public final class DropShardingScalingRuleStatement extends DropRuleStatement {
     
     private final String scalingName;
 }

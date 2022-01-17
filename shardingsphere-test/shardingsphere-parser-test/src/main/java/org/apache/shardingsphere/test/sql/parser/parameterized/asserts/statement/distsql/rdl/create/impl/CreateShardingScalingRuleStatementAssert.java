@@ -20,15 +20,15 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.scaling.distsql.statement.CreateShardingScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.CreateShardingScalingRuleStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.segment.InputOrOutputSegment;
-import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScalingConfigurationSegment;
+import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScalingRuleConfigurationSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.PropertiesAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedAlgorithm;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.sharding.scaling.ExpectedInputOrOutputSegment;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.sharding.scaling.ExpectedShardingScalingConfigurationSegment;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingScalingStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.sharding.scaling.ExpectedShardingScalingRuleConfigurationSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingScalingRuleStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -36,35 +36,35 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Create sharding scaling statement assert.
+ * Create sharding scaling rule statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CreateShardingScalingStatementAssert {
+public final class CreateShardingScalingRuleStatementAssert {
     
     /**
-     * Assert create sharding scaling statement is correct with expected parser result.
+     * Assert create sharding scaling rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual create sharding scaling statement
-     * @param expected expected create sharding scaling statement test case
+     * @param actual actual create sharding scaling rule statement
+     * @param expected expected create sharding scaling rule statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final CreateShardingScalingStatement actual, final CreateShardingScalingStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final CreateShardingScalingRuleStatement actual, final CreateShardingScalingRuleStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
             assertThat(assertContext.getText(String.format("`%s`'s scaling name assertion error: ", actual.getClass().getSimpleName())),
                     actual.getScalingName(), is(expected.getScalingName()));
-            assertShardingScalingConfiguration(assertContext, actual.getConfigurationSegment(), expected.getConfigurationSegment());
+            assertShardingScalingRuleConfiguration(assertContext, actual.getConfigurationSegment(), expected.getConfigurationSegment());
         }
     }
     
-    private static void assertShardingScalingConfiguration(final SQLCaseAssertContext assertContext, final ShardingScalingConfigurationSegment actual, 
-                                                           final ExpectedShardingScalingConfigurationSegment expected) {
+    private static void assertShardingScalingRuleConfiguration(final SQLCaseAssertContext assertContext, final ShardingScalingRuleConfigurationSegment actual, 
+                                                               final ExpectedShardingScalingRuleConfigurationSegment expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual sharding scaling configuration segment should not exist."), actual);
+            assertNull(assertContext.getText("Actual sharding scaling rule configuration segment should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual sharding scaling configuration segment should exist."), actual);
+            assertNotNull(assertContext.getText("Actual sharding scaling rule configuration segment should exist."), actual);
             assertInputOrOutputSegment("input", assertContext, actual.getInputSegment(), expected.getInputSegment());
             assertInputOrOutputSegment("output", assertContext, actual.getOutputSegment(), expected.getOutputSegment());
             assertAlgorithmSegment("stream channel", assertContext, actual.getStreamChannel(), expected.getStreamChannel());

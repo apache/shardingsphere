@@ -86,5 +86,5 @@
     
     <drop-default-sharding-strategy sql-case-id="drop-default-sharding-strategy" type="table"/>
 
-    <drop-sharding-scaling sql-case-id="drop-sharding-scaling" scaling-name="default_scaling"/>
+    <drop-sharding-scaling-rule sql-case-id="drop-sharding-scaling-rule" scaling-name="default_scaling"/>
 </sql-parser-test-cases>

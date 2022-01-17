@@ -15,26 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.sharding.scaling.ExpectedShardingScalingConfigurationSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Create sharding scaling statement test case.
+ * Drop sharding scaling rule statement test case.
  */
 @Getter
 @Setter
-public final class CreateShardingScalingStatementTestCase extends SQLParserTestCase {
+public final class DropShardingScalingRuleStatementTestCase extends SQLParserTestCase {
 
     @XmlAttribute(name = "scaling-name")
     private String scalingName;
-
-    @XmlElement(name = "configuration")
-    private ExpectedShardingScalingConfigurationSegment configurationSegment;
 }
