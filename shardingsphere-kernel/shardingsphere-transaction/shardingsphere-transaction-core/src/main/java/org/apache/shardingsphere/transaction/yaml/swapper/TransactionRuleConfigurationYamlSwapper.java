@@ -32,12 +32,13 @@ public final class TransactionRuleConfigurationYamlSwapper implements YamlRuleCo
         YamlTransactionRuleConfiguration result = new YamlTransactionRuleConfiguration();
         result.setDefaultType(data.getDefaultType());
         result.setProviderType(data.getProviderType());
+        result.setProps(data.getProps());
         return result;
     }
     
     @Override
     public TransactionRuleConfiguration swapToObject(final YamlTransactionRuleConfiguration yamlConfig) {
-        return new TransactionRuleConfiguration(yamlConfig.getDefaultType(), yamlConfig.getProviderType());
+        return new TransactionRuleConfiguration(yamlConfig.getDefaultType(), yamlConfig.getProviderType(), yamlConfig.getProps());
     }
     
     @Override

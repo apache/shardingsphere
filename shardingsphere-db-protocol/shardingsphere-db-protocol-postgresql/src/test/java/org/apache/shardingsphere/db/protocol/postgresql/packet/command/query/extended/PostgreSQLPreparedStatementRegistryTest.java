@@ -41,7 +41,7 @@ public final class PostgreSQLPreparedStatementRegistryTest {
         PostgreSQLPreparedStatementRegistry.getInstance().register(1, statementId, sql, mock(SQLStatement.class), Collections.emptyList());
         PostgreSQLPreparedStatement preparedStatement = PostgreSQLPreparedStatementRegistry.getInstance().get(1, statementId);
         assertThat(preparedStatement.getSql(), is(sql));
-        assertTrue(preparedStatement.getColumnTypes().isEmpty());
+        assertTrue(preparedStatement.getParameterTypes().isEmpty());
     }
     
     @Test

@@ -34,6 +34,6 @@ public final class PostgreSQLCommandPacketTypeLoader {
      * @return command packet type for PostgreSQL
      */
     public static PostgreSQLCommandPacketType getCommandPacketType(final PostgreSQLPacketPayload payload) {
-        return PostgreSQLCommandPacketType.valueOf(payload.readInt1());
+        return PostgreSQLCommandPacketType.valueOf(payload.getByteBuf().getByte(payload.getByteBuf().readerIndex()));
     }
 }

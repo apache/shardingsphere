@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfig
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -110,8 +110,15 @@ public final class MemoryLocalMixedJdbcConfiguration {
     
     private ReadwriteSplittingRuleConfiguration createReadwriteSplittingRuleConfiguration() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceRuleConfiguration(
-                "ds_0", "", "ds_0", Arrays.asList("ds_1", "ds_2"), null);
+                "ds_0", "Static", getReadWriteProperties(), null);
         return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap());
+    }
+    
+    private static Properties getReadWriteProperties() {
+        Properties result = new Properties();
+        result.setProperty("write-data-source-name", "ds_0");
+        result.setProperty("read-data-source-names", "ds_1, ds_2");
+        return result;
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {

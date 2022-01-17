@@ -42,6 +42,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -57,7 +58,7 @@ public final class XAShardingSphereTransactionManagerTest {
     @Before
     public void setUp() {
         Collection<ResourceDataSource> resourceDataSources = createResourceDataSources(DatabaseTypeRegistry.getActualDatabaseType("H2"));
-        TransactionRule transactionRule = new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos"));
+        TransactionRule transactionRule = new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos", new Properties()));
         xaTransactionManager.init(DatabaseTypeRegistry.getActualDatabaseType("H2"), resourceDataSources, transactionRule);
     }
     

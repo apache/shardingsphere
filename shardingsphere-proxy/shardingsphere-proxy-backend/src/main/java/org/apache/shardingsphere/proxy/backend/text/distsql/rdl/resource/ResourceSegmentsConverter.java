@@ -21,7 +21,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import java.util.Collection;
@@ -50,13 +50,18 @@ public final class ResourceSegmentsConverter {
     }
     
     private static DataSourceProperties createDataSourceProperties(final DatabaseType databaseType, final DataSourceSegment segment) {
-        DataSourceProperties result = new DataSourceProperties(HikariDataSource.class.getCanonicalName());
-        result.getProps().put("jdbcUrl", getURL(databaseType, segment));
-        result.getProps().put("username", segment.getUser());
-        result.getProps().put("password", segment.getPassword());
+        DataSourceProperties result = new DataSourceProperties(HikariDataSource.class.getCanonicalName(), createProperties(databaseType, segment));
         if (null != segment.getProperties()) {
             result.getCustomPoolProps().putAll(segment.getProperties());
         }
+        return result;
+    }
+    
+    private static Map<String, Object> createProperties(final DatabaseType databaseType, final DataSourceSegment segment) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("jdbcUrl", getURL(databaseType, segment));
+        result.put("username", segment.getUser());
+        result.put("password", segment.getPassword());
         return result;
     }
     

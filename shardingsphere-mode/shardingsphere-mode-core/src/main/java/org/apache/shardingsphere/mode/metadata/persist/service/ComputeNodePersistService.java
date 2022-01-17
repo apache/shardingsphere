@@ -21,8 +21,8 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.InstanceType;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
@@ -57,7 +57,7 @@ public final class ComputeNodePersistService {
      * @param instanceId instance id
      * @param workerId worker id
      */
-    public void persistInstanceWorkerId(final String instanceId, final Integer workerId) {
+    public void persistInstanceWorkerId(final String instanceId, final Long workerId) {
         repository.persist(ComputeNode.getInstanceWorkerIdNodePath(instanceId), String.valueOf(workerId));
     }
     
@@ -89,9 +89,9 @@ public final class ComputeNodePersistService {
      * @param instanceId instance id
      * @return worker id
      */
-    public Integer loadInstanceWorkerId(final String instanceId) {
+    public Long loadInstanceWorkerId(final String instanceId) {
         try {
-            return Integer.valueOf(repository.get(ComputeNode.getInstanceWorkerIdNodePath(instanceId)));
+            return Long.valueOf(repository.get(ComputeNode.getInstanceWorkerIdNodePath(instanceId)));
         } catch (final NumberFormatException ex) {
             log.error("Invalid worker id for instance: {}", instanceId);
         }

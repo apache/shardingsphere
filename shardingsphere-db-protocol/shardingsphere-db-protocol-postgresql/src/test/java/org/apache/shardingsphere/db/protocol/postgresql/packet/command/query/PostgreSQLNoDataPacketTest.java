@@ -28,7 +28,7 @@ public final class PostgreSQLNoDataPacketTest {
     
     @Test
     public void assertIdentifier() {
-        PostgreSQLIdentifierTag actual = new PostgreSQLNoDataPacket().getIdentifier();
+        PostgreSQLIdentifierTag actual = PostgreSQLNoDataPacket.getInstance().getIdentifier();
         assertThat(actual, is(PostgreSQLMessagePacketType.NO_DATA));
     }
 }

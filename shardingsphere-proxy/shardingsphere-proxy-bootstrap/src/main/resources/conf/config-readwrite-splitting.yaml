@@ -57,10 +57,10 @@
 #- !READWRITE_SPLITTING
 #  dataSources:
 #    pr_ds:
-#      writeDataSourceName: primary_ds
-#      readDataSourceNames:
-#        - replica_ds_0
-#        - replica_ds_1
+#      type: Static
+#      props:
+#        write-data-source-name: primary_ds
+#        read-data-source-names: replica_ds_0,replica_ds_1
 
 ######################################################################################################
 #
@@ -103,7 +103,7 @@
 #- !READWRITE_SPLITTING
 #  dataSources:
 #    pr_ds:
-#      writeDataSourceName: write_ds
-#      readDataSourceNames:
-#        - read_ds_0
-#        - read_ds_1
+#      type: Static
+#      props:
+#        write-data-source-name: write_ds
+#        read-data-source-names: read_ds_0,read_ds_1

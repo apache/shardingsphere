@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
 
+import java.util.Properties;
+
 /**
  * Transaction rule configuration.
  * 
@@ -32,4 +34,6 @@ public final class TransactionRuleConfiguration implements GlobalRuleConfigurati
     private final String defaultType;
     
     private final String providerType;
+    
+    private final Properties props;
 }

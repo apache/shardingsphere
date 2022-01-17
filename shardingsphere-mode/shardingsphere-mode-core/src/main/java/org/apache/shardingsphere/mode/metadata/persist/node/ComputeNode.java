@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.node;
 
-import org.apache.shardingsphere.infra.instance.InstanceType;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -94,12 +94,12 @@ public final class ComputeNode {
     /**
      * Get instance id by status path.
      * 
-     * @param statusPath status path
+     * @param attributesPath attributes path
      * @return instance id
      */
-    public static String getInstanceIdByStatus(final String statusPath) {
-        Pattern pattern = Pattern.compile(getAttributesNodePath() + "/([\\S]+)/status$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(statusPath);
+    public static String getInstanceIdByAttributes(final String attributesPath) {
+        Pattern pattern = Pattern.compile(getAttributesNodePath() + "/([\\S]+)" + "(/status|/worker_id)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(attributesPath);
         return matcher.find() ? matcher.group(1) : "";
     }
     

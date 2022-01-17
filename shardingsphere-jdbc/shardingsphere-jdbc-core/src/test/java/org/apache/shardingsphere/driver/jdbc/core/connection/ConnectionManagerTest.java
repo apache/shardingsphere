@@ -19,16 +19,17 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import com.google.common.collect.Sets;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
-import org.apache.shardingsphere.infra.config.datasource.creator.DataSourcePoolCreatorUtil;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreator;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.InstanceType;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.After;
@@ -60,7 +61,7 @@ public final class ConnectionManagerTest {
     
     private ConnectionManager connectionManager;
     
-    private MockedStatic<DataSourcePoolCreatorUtil> dataSourcePoolCreatorUtil;
+    private MockedStatic<DataSourcePoolCreator> dataSourcePoolCreator;
     
     @Before
     public void setUp() throws SQLException {
@@ -69,9 +70,10 @@ public final class ConnectionManagerTest {
     
     @After
     public void cleanUp() {
-        dataSourcePoolCreatorUtil.close();
+        dataSourcePoolCreator.close();
     }
     
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private ContextManager mockContextManager() throws SQLException {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSourceMap = mockDataSourceMap();
@@ -81,16 +83,16 @@ public final class ConnectionManagerTest {
         when(result.getMetaDataContexts().getMetaDataPersistService()).thenReturn(Optional.of(metaDataPersistService));
         when(result.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.empty());
         when(result.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TrafficRule.class)).thenReturn(Optional.of(trafficRule));
-        dataSourcePoolCreatorUtil = mockStatic(DataSourcePoolCreatorUtil.class);
+        dataSourcePoolCreator = mockStatic(DataSourcePoolCreator.class);
         Map<String, DataSource> trafficDataSourceMap = mockTrafficDataSourceMap();
-        when(DataSourcePoolCreatorUtil.getDataSourceMap(any())).thenReturn(trafficDataSourceMap);
+        when(DataSourcePoolCreator.create((Map) any())).thenReturn(trafficDataSourceMap);
         return result;
     }
     
     private Map<String, DataSource> mockTrafficDataSourceMap() {
-        Map<String, DataSource> trafficDataSourceMap = new LinkedHashMap<>();
-        trafficDataSourceMap.put("127.0.0.1@3307", mock(DataSource.class));
-        return trafficDataSourceMap;
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        result.put("127.0.0.1@3307", new MockedDataSource());
+        return result;
     }
     
     private MetaDataPersistService mockMetaDataPersistService() {
@@ -102,12 +104,16 @@ public final class ConnectionManagerTest {
     }
     
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap() {
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>();
-        DataSourceProperties dataSourceProps = new DataSourceProperties(HikariDataSource.class.getName());
-        result.put(DefaultSchema.LOGIC_NAME, dataSourceProps);
-        dataSourceProps.getProps().put("jdbcUrl", "jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false");
-        dataSourceProps.getProps().put("username", "root");
-        dataSourceProps.getProps().put("password", "123456");
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(1, 1);
+        result.put(DefaultSchema.LOGIC_NAME, new DataSourceProperties(HikariDataSource.class.getName(), createProperties()));
+        return result;
+    }
+    
+    private Map<String, Object> createProperties() {
+        Map<String, Object> result = new LinkedHashMap<>(3, 1);
+        result.put("jdbcUrl", "jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false");
+        result.put("username", "root");
+        result.put("password", "123456");
         return result;
     }
     
@@ -126,7 +132,7 @@ public final class ConnectionManagerTest {
     
     private Map<String, DataSource> mockDataSourceMap() throws SQLException {
         Map<String, DataSource> result = new HashMap<>(2, 1);
-        result.put("ds", mock(DataSource.class, RETURNS_DEEP_STUBS));
+        result.put("ds", new MockedDataSource());
         DataSource invalidDataSource = mock(DataSource.class);
         when(invalidDataSource.getConnection()).thenThrow(new SQLException());
         result.put("invalid_ds", invalidDataSource);
