@@ -28,8 +28,8 @@ import static org.mockito.Mockito.mock;
 public final class PostgreSQLParseCompletePacketTest {
     
     @Test
-    public void assertNewInstance() {
-        PostgreSQLParseCompletePacket actual = new PostgreSQLParseCompletePacket();
+    public void assertGetInstance() {
+        PostgreSQLParseCompletePacket actual = PostgreSQLParseCompletePacket.getInstance();
         actual.write(mock(PostgreSQLPacketPayload.class));
         assertThat(actual.getIdentifier(), is(PostgreSQLMessagePacketType.PARSE_COMPLETE));
     }
