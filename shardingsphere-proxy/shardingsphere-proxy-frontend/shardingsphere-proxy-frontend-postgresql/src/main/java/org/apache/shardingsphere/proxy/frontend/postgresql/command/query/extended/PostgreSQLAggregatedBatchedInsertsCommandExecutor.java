@@ -58,7 +58,7 @@ public final class PostgreSQLAggregatedBatchedInsertsCommandExecutor implements 
         int executePacketCount = executePacketCount();
         for (PostgreSQLCommandPacket each : packets) {
             if (each instanceof PostgreSQLComBindPacket) {
-                result.add(new PostgreSQLBindCompletePacket());
+                result.add(PostgreSQLBindCompletePacket.getInstance());
             }
             if (each instanceof PostgreSQLComDescribePacket) {
                 result.add(preparedStatement.describeRows().orElseGet(PostgreSQLNoDataPacket::getInstance));

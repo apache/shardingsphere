@@ -53,7 +53,7 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
     public Collection<DatabasePacket<?>> execute() throws SQLException {
         PostgreSQLPreparedStatement preparedStatement = PostgreSQLPreparedStatementRegistry.getInstance().get(connectionSession.getConnectionId(), packet.getStatementId());
         updateCount = new PostgreSQLBatchedInsertsExecutor(connectionSession, preparedStatement, packet.readParameterSets(preparedStatement.getParameterTypes())).executeBatch();
-        return Collections.singletonList(new PostgreSQLBindCompletePacket());
+        return Collections.singletonList(PostgreSQLBindCompletePacket.getInstance());
     }
     
     @Override
