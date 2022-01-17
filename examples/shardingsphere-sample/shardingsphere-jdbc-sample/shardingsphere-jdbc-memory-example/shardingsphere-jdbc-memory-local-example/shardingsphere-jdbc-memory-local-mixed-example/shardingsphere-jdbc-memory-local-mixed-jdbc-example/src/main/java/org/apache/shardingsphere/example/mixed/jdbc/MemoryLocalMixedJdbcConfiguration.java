@@ -110,8 +110,15 @@ public final class MemoryLocalMixedJdbcConfiguration {
     
     private ReadwriteSplittingRuleConfiguration createReadwriteSplittingRuleConfiguration() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceRuleConfiguration(
-                "ds_0", "", "ds_0", Arrays.asList("ds_1", "ds_2"), null);
+                "ds_0", "Static", getReadWriteProperties(), null);
         return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap());
+    }
+    
+    private static Properties getReadWriteProperties() {
+        Properties result = new Properties();
+        result.setProperty("write-data-source-name", "ds_0");
+        result.setProperty("read-data-source-names", "ds_1, ds_2");
+        return result;
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
