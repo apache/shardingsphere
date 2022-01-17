@@ -159,7 +159,15 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     
     @Override
     public Map<Integer, JobProgress> getProgress(final String jobId) {
-        return IntStream.range(0, getJobConfig(jobId).getHandleConfig().getJobShardingCount()).boxed().collect(LinkedHashMap::new, (map, each) -> {
+        log.info("getProgress for job {}", jobId);
+        JobConfiguration jobConfig = getJobConfig(jobId);
+        return getProgress(jobConfig);
+    }
+    
+    @Override
+    public Map<Integer, JobProgress> getProgress(final JobConfiguration jobConfig) {
+        String jobId = jobConfig.getHandleConfig().getJobId();
+        return IntStream.range(0, jobConfig.getHandleConfig().getJobShardingCount()).boxed().collect(LinkedHashMap::new, (map, each) -> {
             JobProgress jobProgress = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobId, each);
             JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
             if (null != jobProgress) {
@@ -189,7 +197,13 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     
     @Override
     public boolean isDataConsistencyCheckNeeded(final String jobId) {
+        log.info("isDataConsistencyCheckNeeded for job {}", jobId);
         JobConfiguration jobConfig = getJobConfig(jobId);
+        return isDataConsistencyCheckNeeded(jobConfig);
+    }
+    
+    @Override
+    public boolean isDataConsistencyCheckNeeded(final JobConfiguration jobConfig) {
         RuleAlteredContext ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         return isDataConsistencyCheckNeeded(ruleAlteredContext);
     }
@@ -202,6 +216,11 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final String jobId) {
         log.info("Data consistency check for job {}", jobId);
         JobConfiguration jobConfig = getJobConfig(jobId);
+        return dataConsistencyCheck(jobConfig);
+    }
+    
+    @Override
+    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final JobConfiguration jobConfig) {
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig);
         if (!isDataConsistencyCheckNeeded(jobContext.getRuleAlteredContext())) {
             log.info("dataConsistencyCheckAlgorithm is not configured, data consistency check is ignored.");
@@ -254,6 +273,12 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     public void switchClusterConfiguration(final String jobId) {
         log.info("Switch cluster configuration for job {}", jobId);
         JobConfiguration jobConfig = getJobConfig(jobId);
+        switchClusterConfiguration(jobConfig);
+    }
+    
+    @Override
+    public void switchClusterConfiguration(final JobConfiguration jobConfig) {
+        String jobId = jobConfig.getHandleConfig().getJobId();
         RuleAlteredContext ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         if (isDataConsistencyCheckNeeded(ruleAlteredContext)) {
             Optional<Boolean> checkResultOptional = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobCheckResult(jobId);

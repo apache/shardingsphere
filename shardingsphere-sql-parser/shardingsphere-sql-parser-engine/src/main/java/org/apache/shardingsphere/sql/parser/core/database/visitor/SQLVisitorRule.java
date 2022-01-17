@@ -50,6 +50,10 @@ public enum SQLVisitorRule {
     
     ALTER_TABLE("AlterTable", SQLStatementType.DDL),
     
+    ALTER_AGGREGATE("AlterAggregate", SQLStatementType.DDL),
+    
+    ALTER_COLLATION("AlterCollation", SQLStatementType.DDL),
+    
     DROP_TABLE("DropTable", SQLStatementType.DDL),
     
     TRUNCATE_TABLE("TruncateTable", SQLStatementType.DDL),

@@ -74,7 +74,7 @@ public final class ShowCreateDatabaseExecutorTest {
     @Test
     public void assertExecute() throws SQLException {
         MySQLShowCreateDatabaseStatement statement = new MySQLShowCreateDatabaseStatement();
-        statement.setSchema("schema_0");
+        statement.setSchemaName("schema_0");
         ShowCreateDatabaseExecutor showCreateDatabaseExecutor = new ShowCreateDatabaseExecutor(statement);
         showCreateDatabaseExecutor.execute(mockConnectionSession());
         assertThat(showCreateDatabaseExecutor.getQueryResultMetaData().getColumnCount(), is(2));

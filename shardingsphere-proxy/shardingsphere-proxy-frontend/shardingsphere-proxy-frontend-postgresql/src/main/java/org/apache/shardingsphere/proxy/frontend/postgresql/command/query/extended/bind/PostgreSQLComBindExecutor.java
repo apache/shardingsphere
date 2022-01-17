@@ -48,7 +48,7 @@ public final class PostgreSQLComBindExecutor implements CommandExecutor {
     public Collection<DatabasePacket<?>> execute() throws SQLException {
         PostgreSQLPreparedStatement preparedStatement = PostgreSQLPreparedStatementRegistry.getInstance().get(connectionSession.getConnectionId(), packet.getStatementId());
         JDBCBackendConnection backendConnection = (JDBCBackendConnection) connectionSession.getBackendConnection();
-        connectionContext.createPortal(packet.getPortal(), preparedStatement, packet.getParameters(), packet.getResultFormats(), backendConnection).execute();
-        return Collections.singletonList(new PostgreSQLBindCompletePacket());
+        connectionContext.createPortal(packet.getPortal(), preparedStatement, packet.readParameters(preparedStatement.getParameterTypes()), packet.readResultFormats(), backendConnection).execute();
+        return Collections.singletonList(PostgreSQLBindCompletePacket.getInstance());
     }
 }

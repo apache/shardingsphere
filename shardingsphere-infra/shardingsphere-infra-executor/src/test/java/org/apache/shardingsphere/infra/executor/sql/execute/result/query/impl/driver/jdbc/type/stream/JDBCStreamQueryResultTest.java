@@ -32,6 +32,7 @@ import java.util.Calendar;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -242,6 +243,17 @@ public final class JDBCStreamQueryResultTest {
         assertFalse(queryResult.wasNull());
         queryResult.next();
         assertTrue(queryResult.wasNull());
+    }
+    
+    @Test
+    public void assertGetResultSet() throws SQLException {
+        JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(getResultSet());
+        ResultSet actual = queryResult.getResultSet();
+        assertNotNull(actual);
+        actual.next();
+        assertFalse(actual.wasNull());
+        actual.next();
+        assertTrue(actual.wasNull());
     }
     
     private ResultSet getResultSet() throws SQLException {

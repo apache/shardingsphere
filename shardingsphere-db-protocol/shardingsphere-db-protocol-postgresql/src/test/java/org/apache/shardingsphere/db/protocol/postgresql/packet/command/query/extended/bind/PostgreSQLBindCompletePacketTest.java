@@ -39,14 +39,14 @@ public final class PostgreSQLBindCompletePacketTest {
     
     @Test
     public void assertWrite() {
-        PostgreSQLBindCompletePacket rowPacket = new PostgreSQLBindCompletePacket();
+        PostgreSQLBindCompletePacket rowPacket = PostgreSQLBindCompletePacket.getInstance();
         rowPacket.write(payload);
         assertThat(byteBuf.writerIndex(), is(0));
     }
     
     @Test
     public void assertGetMessageType() {
-        PostgreSQLBindCompletePacket rowPacket = new PostgreSQLBindCompletePacket();
+        PostgreSQLBindCompletePacket rowPacket = PostgreSQLBindCompletePacket.getInstance();
         assertThat(rowPacket.getIdentifier(), is(PostgreSQLMessagePacketType.BIND_COMPLETE));
     }
 }

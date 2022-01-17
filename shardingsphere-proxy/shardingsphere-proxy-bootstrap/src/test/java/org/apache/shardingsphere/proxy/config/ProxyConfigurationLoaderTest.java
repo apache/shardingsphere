@@ -95,11 +95,9 @@ public final class ProxyConfigurationLoaderTest {
     }
     
     private void assertReadwriteSplittingRuleConfiguration(final YamlReadwriteSplittingDataSourceRuleConfiguration actual) {
-        assertThat(actual.getWriteDataSourceName(), is("write_ds"));
-        assertThat(actual.getReadDataSourceNames().size(), is(2));
-        Iterator<String> replicaDataSourceNames = actual.getReadDataSourceNames().iterator();
-        assertThat(replicaDataSourceNames.next(), is("read_ds_0"));
-        assertThat(replicaDataSourceNames.next(), is("read_ds_1"));
+        assertNotNull(actual.getProps());
+        assertThat(actual.getProps().get("write-data-source-name"), is("write_ds"));
+        assertThat(actual.getProps().get("read-data-source-names"), is("read_ds_0,read_ds_1"));
     }
     
     private void assertEncryptRuleConfiguration(final YamlProxySchemaConfiguration actual) {

@@ -38,7 +38,6 @@ import org.apache.calcite.tools.RelBuilder;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
@@ -59,8 +58,12 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.JDBCMemoryQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
+import org.apache.shardingsphere.infra.federation.executor.FederationContext;
+import org.apache.shardingsphere.infra.federation.executor.original.row.EmptyRowEnumerator;
 import org.apache.shardingsphere.infra.federation.executor.original.row.FilterableRowEnumerator;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationTableMetaData;
@@ -73,6 +76,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -131,25 +135,55 @@ public final class FilterableTableScanExecutor {
         DatabaseType databaseType = DatabaseTypeRegistry.getTrunkDatabaseType(optimizerContext.getParserContexts().get(schemaName).getDatabaseType().getName());
         SqlString sqlString = createSQLString(tableMetaData, scanContext, databaseType);
         // TODO replace sql parse with sql convert
-        SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getName(), optimizerContext.getSqlParserRule()).parse(sqlString.getSql(), false);
-        LogicSQL logicSQL = createLogicSQL(executorContext.getMetaDataMap(), sqlString.getSql(), getParameters(sqlString.getDynamicParameters()), sqlStatement);
-        ShardingSphereMetaData metaData = executorContext.getMetaDataMap().get(schemaName);
-        ConfigurationProperties props = executorContext.getProps();
-        ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, metaData, props);
+        FederationContext federationContext = executorContext.getFederationContext();
+        LogicSQL logicSQL = createLogicSQL(federationContext.getMetaDataMap(), sqlString, databaseType);
+        ShardingSphereMetaData metaData = federationContext.getMetaDataMap().get(schemaName);
+        ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, metaData, executorContext.getProps());
+        if (federationContext.isPreview()) {
+            federationContext.getExecutionUnits().addAll(context.getExecutionUnits());
+            return createEmptyEnumerable();
+        }
+        return execute(schemaName, databaseType, logicSQL, metaData, context);
+    }
+    
+    private AbstractEnumerable<Object[]> execute(final String schemaName, final DatabaseType databaseType, final LogicSQL logicSQL, 
+                                                 final ShardingSphereMetaData metaData, final ExecutionContext context) {
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
             setParameters(executionGroupContext.getInputGroups());
-            ExecuteProcessEngine.initialize(context.getLogicSQL(), executionGroupContext, props);
-            List<QueryResult> result = jdbcExecutor.execute(executionGroupContext, callback).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
+            ExecuteProcessEngine.initialize(context.getLogicSQL(), executionGroupContext, executorContext.getProps());
+            List<QueryResult> queryResults = execute(executionGroupContext);
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
-            MergeEngine mergeEngine = new MergeEngine(schemaName, databaseType, metaData.getSchema(), props, metaData.getRuleMetaData().getRules());
-            MergedResult mergedResult = mergeEngine.merge(result, logicSQL.getSqlStatementContext());
-            return createEnumerable(mergedResult, result.get(0).getMetaData());
+            MergeEngine mergeEngine = new MergeEngine(schemaName, databaseType, metaData.getSchema(), executorContext.getProps(), metaData.getRuleMetaData().getRules());
+            MergedResult mergedResult = mergeEngine.merge(queryResults, logicSQL.getSqlStatementContext());
+            Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());
+            return createEnumerable(mergedResult, queryResults.get(0).getMetaData(), statements);
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
         } finally {
             ExecuteProcessEngine.clean();
         }
+    }
+    
+    private List<QueryResult> execute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext) throws SQLException {
+        Collection<QueryResult> queryResults = jdbcExecutor.execute(executionGroupContext, callback).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
+        List<QueryResult> result = new LinkedList<>();
+        for (QueryResult each : queryResults) {
+            QueryResult queryResult = each instanceof JDBCStreamQueryResult 
+                    ? new JDBCMemoryQueryResult(((JDBCStreamQueryResult) each).getResultSet()) : each;
+            result.add(queryResult);
+        }
+        return result;
+    }
+    
+    private Collection<Statement> getStatements(final Collection<ExecutionGroup<JDBCExecutionUnit>> inputGroups) {
+        Collection<Statement> result = new LinkedList<>();
+        for (ExecutionGroup<JDBCExecutionUnit> each : inputGroups) {
+            for (JDBCExecutionUnit executionUnit : each.getInputs()) {
+                result.add(executionUnit.getStorageResource());
+            }
+        }
+        return result;
     }
     
     private SqlString createSQLString(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext, final DatabaseType databaseType) {
@@ -183,7 +217,7 @@ public final class FilterableTableScanExecutor {
         }
         List<Object> result = new ArrayList<>();
         for (Integer each : parameterIndices) {
-            result.add(executorContext.getParameters().get(each));
+            result.add(executorContext.getFederationContext().getLogicSQL().getParameters().get(each));
         }
         return result;
     }
@@ -207,18 +241,31 @@ public final class FilterableTableScanExecutor {
         return result;
     }
     
-    private AbstractEnumerable<Object[]> createEnumerable(final MergedResult mergedResult, final QueryResultMetaData metaData) {
+    private AbstractEnumerable<Object[]> createEnumerable(final MergedResult mergedResult, final QueryResultMetaData metaData, final Collection<Statement> statements) {
         return new AbstractEnumerable<Object[]>() {
             
             @Override
             public Enumerator<Object[]> enumerator() {
-                return new FilterableRowEnumerator(mergedResult, metaData);
+                return new FilterableRowEnumerator(mergedResult, metaData, statements);
             }
         };
     }
     
-    private LogicSQL createLogicSQL(final Map<String, ShardingSphereMetaData> metaDataMap, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
+    private LogicSQL createLogicSQL(final Map<String, ShardingSphereMetaData> metaDataMap, final SqlString sqlString, final DatabaseType databaseType) {
+        String sql = sqlString.getSql().replace("\n", " ");
+        SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getName(), optimizerContext.getSqlParserRule()).parse(sql, false);
+        List<Object> parameters = getParameters(sqlString.getDynamicParameters());
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataMap, parameters, sqlStatement, sql);
         return new LogicSQL(sqlStatementContext, sql, parameters);
+    }
+    
+    private AbstractEnumerable<Object[]> createEmptyEnumerable() {
+        return new AbstractEnumerable<Object[]>() {
+            
+            @Override
+            public Enumerator<Object[]> enumerator() {
+                return new EmptyRowEnumerator();
+            }
+        };
     }
 }
