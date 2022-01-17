@@ -83,9 +83,9 @@ public final class ShardingReadwriteSplittingConfigurationPrecise implements Exa
     
     private static ReadwriteSplittingRuleConfiguration createReadwriteSplittingConfiguration() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration1 = new ReadwriteSplittingDataSourceRuleConfiguration(
-                "ds_0", new ShardingSphereAlgorithmConfiguration("Static", getReadwriteProperties()), "");
+                "ds_0", "Static", getReadwriteProperties(), "");
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration2 = new ReadwriteSplittingDataSourceRuleConfiguration(
-                "ds_1", new ShardingSphereAlgorithmConfiguration("Static", getReadwriteProperties()), "");
+                "ds_1", "Static", getReadwriteProperties(), "");
         return new ReadwriteSplittingRuleConfiguration(Arrays.asList(dataSourceConfiguration1, dataSourceConfiguration2), Collections.emptyMap());
     }
     
