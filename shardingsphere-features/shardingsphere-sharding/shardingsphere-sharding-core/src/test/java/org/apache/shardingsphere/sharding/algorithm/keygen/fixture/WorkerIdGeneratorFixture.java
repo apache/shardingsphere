@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.sharding.algorithm.keygen.fixture;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 
+@RequiredArgsConstructor
 public final class WorkerIdGeneratorFixture implements WorkerIdGenerator {
+    
+    private final long fixtureWorkerId;
     
     @Override
     public long generate() {
-        return 0;
+        return fixtureWorkerId;
     }
 }
