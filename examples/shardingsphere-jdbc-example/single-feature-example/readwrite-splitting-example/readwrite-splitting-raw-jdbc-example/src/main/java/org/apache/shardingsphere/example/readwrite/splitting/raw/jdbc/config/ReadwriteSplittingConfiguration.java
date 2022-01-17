@@ -26,7 +26,6 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
