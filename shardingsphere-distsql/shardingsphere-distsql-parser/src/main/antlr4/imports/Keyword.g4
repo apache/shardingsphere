@@ -215,6 +215,10 @@ CONCURRENCY_LEVEL
     : C O N C U R R E N C Y UL_ L E V E L
     ;
 
+TYPE
+    : T Y P E
+    ;
+
 COUNT
     : C O U N T
     ;

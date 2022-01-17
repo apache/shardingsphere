@@ -43,6 +43,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ResetStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.SetParameterStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.SetResourceGroupStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowBinlogEventsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowCharacterSetStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowCollationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowColumnsStatementTestCase;
@@ -1011,6 +1012,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-unused-sharding-key-generators")
     private final List<ShowUnusedShardingKeyGeneratorsStatementTestCase> showUnusedShardingKeyGeneratorsStatementTestCases = new LinkedList<>();
+
+    @XmlElement(name = "show-binlog-events")
+    private final List<ShowBinlogEventsStatementTestCase> showBinlogEventsStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -1263,6 +1267,7 @@ public final class SQLParserTestCases {
         putAll(tableStatementTestCases, result);
         putAll(showUnusedShardingKeyGeneratorsStatementTestCases, result);
         putAll(renameTableStatementTestCases, result);
+        putAll(showBinlogEventsStatementTestCases, result);
         putAll(countSchemaRulesStatementTestCases, result);
         return result;
     }

@@ -23,8 +23,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValue
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatement;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLBinaryProtocolValue;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
@@ -34,6 +32,8 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -45,36 +45,40 @@ import java.util.List;
 @ToString
 public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     
+    private static final DateTimeFormatter LOCAL_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(
+            "[yyyy-MM-dd][yyyy_MM_dd][MM/dd/yy][yyyyMMdd][yyMMdd]"
+                    + "['T'][ ]"
+                    + "[HH:mm:ss][HHmmss][HH:mm][HHmm]"
+                    + "[.SSSSSS][.SSSSS][.SSSS][.SSS][.SS][.S]"
+                    + "[ ]"
+                    + "[XXXXX][XXXX][XXX][XX][X]"
+    );
+    
     private final PostgreSQLPacketPayload payload;
     
     private final String portal;
     
     private final String statementId;
     
-    private final List<Object> parameters;
-    
-    private final List<PostgreSQLValueFormat> resultFormats;
-    
-    public PostgreSQLComBindPacket(final PostgreSQLPacketPayload payload, final int connectionId) {
+    public PostgreSQLComBindPacket(final PostgreSQLPacketPayload payload) {
         this.payload = payload;
         payload.readInt4();
         portal = payload.readStringNul();
         statementId = payload.readStringNul();
+    }
+    
+    /**
+     * Read parameters from Bind message.
+     *
+     * @param parameterTypes parameter types
+     * @return values of parameter
+     */
+    public List<Object> readParameters(final List<PostgreSQLColumnType> parameterTypes) {
         int parameterFormatCount = payload.readInt2();
         List<Integer> parameterFormats = new ArrayList<>(parameterFormatCount);
         for (int i = 0; i < parameterFormatCount; i++) {
             parameterFormats.add(payload.readInt2());
         }
-        PostgreSQLPreparedStatement preparedStatement = PostgreSQLPreparedStatementRegistry.getInstance().get(connectionId, statementId);
-        parameters = preparedStatement.getSql().isEmpty() ? Collections.emptyList() : getParameters(payload, parameterFormats, preparedStatement.getColumnTypes());
-        int resultFormatsLength = payload.readInt2();
-        resultFormats = new ArrayList<>(resultFormatsLength);
-        for (int i = 0; i < resultFormatsLength; i++) {
-            resultFormats.add(PostgreSQLValueFormat.valueOf(payload.readInt2()));
-        }
-    }
-    
-    private List<Object> getParameters(final PostgreSQLPacketPayload payload, final List<Integer> parameterFormats, final List<PostgreSQLColumnType> columnTypes) {
         int parameterCount = payload.readInt2();
         List<Object> result = new ArrayList<>(parameterCount);
         for (int parameterIndex = 0; parameterIndex < parameterCount; parameterIndex++) {
@@ -84,7 +88,7 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
                 continue;
             }
             Object parameterValue = isTextParameterValue(parameterFormats, parameterIndex)
-                    ? getTextParameters(payload, parameterValueLength, columnTypes.get(parameterIndex)) : getBinaryParameters(payload, parameterValueLength, columnTypes.get(parameterIndex));
+                    ? getTextParameters(payload, parameterValueLength, parameterTypes.get(parameterIndex)) : getBinaryParameters(payload, parameterValueLength, parameterTypes.get(parameterIndex));
             result.add(parameterValue);
         }
         return result;
@@ -100,14 +104,14 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
         return 0 == parameterFormats.get(parameterIndex);
     }
     
-    private Object getTextParameters(final PostgreSQLPacketPayload payload, final int parameterValueLength, final PostgreSQLColumnType columnType) {
+    private Object getTextParameters(final PostgreSQLPacketPayload payload, final int parameterValueLength, final PostgreSQLColumnType parameterType) {
         byte[] bytes = new byte[parameterValueLength];
         payload.getByteBuf().readBytes(bytes);
-        return getTextParameters(new String(bytes), columnType);
+        return getTextParameters(new String(bytes, payload.getCharset()), parameterType);
     }
 
-    private Object getTextParameters(final String textValue, final PostgreSQLColumnType columnType) {
-        switch (columnType) {
+    private Object getTextParameters(final String textValue, final PostgreSQLColumnType parameterType) {
+        switch (parameterType) {
             case POSTGRESQL_TYPE_UNSPECIFIED:
                 return new PostgreSQLTypeUnspecifiedSQLParameter(textValue);
             case POSTGRESQL_TYPE_BOOL:
@@ -137,15 +141,39 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
                 return Time.valueOf(textValue);
             case POSTGRESQL_TYPE_TIMESTAMP:
             case POSTGRESQL_TYPE_TIMESTAMPTZ:
-                return Timestamp.valueOf(textValue);
+                try {
+                    return Timestamp.valueOf(textValue);
+                } catch (final IllegalArgumentException ignored) {
+                    return Timestamp.valueOf(LocalDateTime.from(LOCAL_DATE_TIME_FORMATTER.parse(textValue)));
+                }
             default:
                 return textValue;
         }
     }
     
-    private Object getBinaryParameters(final PostgreSQLPacketPayload payload, final int parameterValueLength, final PostgreSQLColumnType columnType) {
-        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(columnType);
+    private Object getBinaryParameters(final PostgreSQLPacketPayload payload, final int parameterValueLength, final PostgreSQLColumnType parameterType) {
+        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(parameterType);
         return binaryProtocolValue.read(payload, parameterValueLength);
+    }
+    
+    /**
+     * Read result formats from Bind message.
+     *
+     * @return formats of value
+     */
+    public List<PostgreSQLValueFormat> readResultFormats() {
+        int resultFormatsLength = payload.readInt2();
+        if (0 == resultFormatsLength) {
+            return Collections.emptyList();
+        }
+        if (1 == resultFormatsLength) {
+            return Collections.singletonList(PostgreSQLValueFormat.valueOf(payload.readInt2()));
+        }
+        List<PostgreSQLValueFormat> result = new ArrayList<>(resultFormatsLength);
+        for (int i = 0; i < resultFormatsLength; i++) {
+            result.add(PostgreSQLValueFormat.valueOf(payload.readInt2()));
+        }
+        return result;
     }
     
     @Override

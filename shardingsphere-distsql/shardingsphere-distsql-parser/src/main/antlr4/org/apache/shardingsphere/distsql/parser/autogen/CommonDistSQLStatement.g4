@@ -42,6 +42,7 @@ execute
     | alterSQLParserRule
     | showAuthorityRule
     | showTransactionRule
+    | alterTransactionRule
     | countSchemaRules
     ) SEMI?
     ;

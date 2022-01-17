@@ -39,10 +39,10 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -71,8 +71,8 @@ public final class PostgreSQLComBindExecutorTest {
         PostgreSQLPreparedStatementRegistry.getInstance().register(1, "2", "", new EmptyStatement(), Collections.emptyList());
         when(bindPacket.getStatementId()).thenReturn("1");
         when(bindPacket.getPortal()).thenReturn("C_1");
-        when(bindPacket.getParameters()).thenReturn(Collections.emptyList());
-        when(bindPacket.getResultFormats()).thenReturn(Collections.emptyList());
+        when(bindPacket.readParameters(anyList())).thenReturn(Collections.emptyList());
+        when(bindPacket.readResultFormats()).thenReturn(Collections.emptyList());
         when(connectionSession.getConnectionId()).thenReturn(1);
         JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
@@ -84,7 +84,7 @@ public final class PostgreSQLComBindExecutorTest {
         PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(connectionContext, bindPacket, connectionSession);
         Collection<DatabasePacket<?>> actual = executor.execute();
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLBindCompletePacket.class)));
+        assertThat(actual.iterator().next(), is(PostgreSQLBindCompletePacket.getInstance()));
         verify(portal).execute();
     }
     
@@ -93,7 +93,7 @@ public final class PostgreSQLComBindExecutorTest {
         PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(connectionContext, bindPacket, connectionSession);
         Collection<DatabasePacket<?>> actual = executor.execute();
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLBindCompletePacket.class)));
+        assertThat(actual.iterator().next(), is(PostgreSQLBindCompletePacket.getInstance()));
         verify(portal).execute();
     }
     
@@ -103,7 +103,7 @@ public final class PostgreSQLComBindExecutorTest {
         Collection<DatabasePacket<?>> actual = executor.execute();
         assertThat(actual.size(), is(1));
         Iterator<DatabasePacket<?>> actualPackets = actual.iterator();
-        assertThat(actualPackets.next(), is(instanceOf(PostgreSQLBindCompletePacket.class)));
+        assertThat(actualPackets.next(), is(PostgreSQLBindCompletePacket.getInstance()));
         verify(portal).execute();
     }
     
@@ -112,7 +112,7 @@ public final class PostgreSQLComBindExecutorTest {
         PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(connectionContext, bindPacket, connectionSession);
         Collection<DatabasePacket<?>> actual = executor.execute();
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLBindCompletePacket.class)));
+        assertThat(actual.iterator().next(), is(PostgreSQLBindCompletePacket.getInstance()));
         verify(portal).execute();
     }
 }

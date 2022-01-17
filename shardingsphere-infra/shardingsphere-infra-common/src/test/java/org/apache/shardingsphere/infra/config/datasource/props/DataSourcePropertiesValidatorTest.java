@@ -30,32 +30,26 @@ public final class DataSourcePropertiesValidatorTest {
     
     @Test
     public void assertValidateSuccess() throws InvalidResourcesException {
-        DataSourcePropertiesValidator validator = new DataSourcePropertiesValidator();
-        validator.validate(Collections.singletonMap("name", createValidDataSourceProperties()));
+        new DataSourcePropertiesValidator().validate(Collections.singletonMap("name", new DataSourceProperties(HikariDataSource.class.getName(), createValidProperties())));
     }
     
-    private DataSourceProperties createValidDataSourceProperties() {
-        Map<String, Object> props = new HashMap<>();
-        props.put("driverClassName", MockedDataSource.class.getCanonicalName());
-        props.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
-        props.put("username", "root");
-        props.put("password", "root");
-        DataSourceProperties result = new DataSourceProperties(HikariDataSource.class.getName());
-        result.getProps().putAll(props);
+    private Map<String, Object> createValidProperties() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("driverClassName", MockedDataSource.class.getName());
+        result.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
+        result.put("username", "root");
+        result.put("password", "root");
         return result;
     }
     
     @Test(expected = InvalidResourcesException.class)
     public void assertValidateFailed() throws InvalidResourcesException {
-        DataSourcePropertiesValidator validator = new DataSourcePropertiesValidator();
-        validator.validate(Collections.singletonMap("name", createInvalidDataSourceProperties()));
+        new DataSourcePropertiesValidator().validate(Collections.singletonMap("name", new DataSourceProperties(HikariDataSource.class.getName(), createInvalidProperties())));
     }
     
-    private DataSourceProperties createInvalidDataSourceProperties() {
-        Map<String, Object> props = new HashMap<>();
-        props.put("driverClassName", "InvalidDriver");
-        DataSourceProperties result = new DataSourceProperties(HikariDataSource.class.getName());
-        result.getProps().putAll(props);
+    private Map<String, Object> createInvalidProperties() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("driverClassName", "InvalidDriver");
         return result;
     }
 }

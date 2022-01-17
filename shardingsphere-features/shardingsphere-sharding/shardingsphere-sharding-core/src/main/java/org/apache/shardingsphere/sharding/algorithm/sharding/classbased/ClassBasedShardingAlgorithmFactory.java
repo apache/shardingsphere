@@ -22,30 +22,44 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
+
+import java.util.Properties;
 
 /**
  * ShardingSphere class based algorithm factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ClassBasedShardingAlgorithmFactory {
-
+    
     /**
      * Create sharding algorithm.
-     *
+     * 
      * @param shardingAlgorithmClassName sharding algorithm class name
      * @param superShardingAlgorithmClass sharding algorithm super class
+     * @param props properties
      * @param <T> class generic type
      * @return sharding algorithm instance
      */
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public static <T extends ShardingAlgorithm> T newInstance(final String shardingAlgorithmClassName, final Class<T> superShardingAlgorithmClass) {
+    public static <T extends ShardingAlgorithm> T newInstance(final String shardingAlgorithmClassName, final Class<T> superShardingAlgorithmClass, final Properties props) {
         Class<?> result = Class.forName(shardingAlgorithmClassName);
         if (!superShardingAlgorithmClass.isAssignableFrom(result)) {
             throw new ShardingSphereException("Class %s should be implement %s", shardingAlgorithmClassName, superShardingAlgorithmClass.getName());
         }
         T instance = (T) result.newInstance();
+        setProperties(instance, props);
         instance.init();
         return instance;
+    }
+    
+    private static <T extends TypedSPI> void setProperties(final T instance, final Properties props) {
+        if (null == props) {
+            return;
+        }
+        Properties newProps = new Properties();
+        props.forEach((key, value) -> newProps.setProperty(key.toString(), null == value ? null : value.toString()));
+        instance.setProps(newProps);
     }
 }

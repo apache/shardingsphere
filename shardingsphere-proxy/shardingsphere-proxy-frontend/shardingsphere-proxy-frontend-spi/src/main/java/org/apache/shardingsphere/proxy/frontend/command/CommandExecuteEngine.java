@@ -69,15 +69,6 @@ public interface CommandExecuteEngine {
      * Get error packet.
      *
      * @param cause cause of error
-     * @param connectionSession connection session
-     * @return error packet
-     */
-    DatabasePacket<?> getErrorPacket(Exception cause, ConnectionSession connectionSession);
-    
-    /**
-     * Get error packet.
-     *
-     * @param cause cause of error
      * @return error packet
      */
     DatabasePacket<?> getErrorPacket(Exception cause);

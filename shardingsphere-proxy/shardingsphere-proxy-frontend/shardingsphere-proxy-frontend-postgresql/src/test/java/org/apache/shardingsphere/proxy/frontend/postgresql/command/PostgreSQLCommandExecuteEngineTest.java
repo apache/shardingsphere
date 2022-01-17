@@ -24,11 +24,10 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQ
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ResourceLock;
-import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.sync.PostgreSQLComSyncExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.simple.PostgreSQLComQueryExecutor;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
@@ -44,7 +43,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -90,14 +88,6 @@ public final class PostgreSQLCommandExecuteEngineTest {
         when(queryCommandExecutor.getResponseType()).thenReturn(ResponseType.UPDATE);
         boolean actual = commandExecuteEngine.writeQueryData(channelHandlerContext, mock(JDBCBackendConnection.class), queryCommandExecutor, 0);
         assertFalse(actual);
-    }
-    
-    @Test
-    public void assertWriteQueryDataWithComSync() throws SQLException {
-        PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
-        boolean actual = commandExecuteEngine.writeQueryData(channelHandlerContext, mock(JDBCBackendConnection.class), new PostgreSQLComSyncExecutor(connectionContext, connectionSession), 0);
-        assertTrue(actual);
-        verify(channelHandlerContext, never()).write(any(Object.class));
     }
     
     @Test

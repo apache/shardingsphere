@@ -17,22 +17,38 @@
 
 package org.apache.shardingsphere.example.extension.sharding.algortihm.classbased.fixture;
 
+import com.google.common.base.Preconditions;
+import com.google.common.primitives.Ints;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
 import java.util.Collection;
+import java.util.Properties;
 
+@Getter
+@Setter
 public final class ClassBasedStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
-
+    
+    private static final String SHARDING_COUNT = "sharding-count";
+    
+    private Integer shardingCount;
+    
+    private Properties props = new Properties();
+    
     @Override
     public void init() {
+        Preconditions.checkArgument(props.containsKey(SHARDING_COUNT), "%s can not be null.", SHARDING_COUNT);
+        shardingCount = Ints.tryParse(props.getProperty(SHARDING_COUNT));
+        Preconditions.checkArgument(null != shardingCount, "%s is not valid.", SHARDING_COUNT);
     }
 
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(String.valueOf(shardingValue.getValue() % 2))) {
+            if (each.endsWith(String.valueOf(shardingValue.getValue() % shardingCount))) {
                 return each;
             }
         }

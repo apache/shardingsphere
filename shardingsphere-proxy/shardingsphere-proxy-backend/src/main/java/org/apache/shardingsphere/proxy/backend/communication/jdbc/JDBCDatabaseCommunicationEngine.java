@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.update.Update
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
+import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutorFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -138,7 +139,8 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
                 logicSQL.getSqlStatementContext().getSqlStatement(), this, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown(), true);
         backendConnection.setFederationExecutor(federationExecutor);
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaDataContexts);
-        return federationExecutor.executeQuery(prepareEngine, callback, logicSQL, metaDataContexts.getMetaDataMap());
+        FederationContext context = new FederationContext(false, logicSQL, metaDataContexts.getMetaDataMap());
+        return federationExecutor.executeQuery(prepareEngine, callback, context);
     }
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final boolean isReturnGeneratedKeys, final MetaDataContexts metaData) {

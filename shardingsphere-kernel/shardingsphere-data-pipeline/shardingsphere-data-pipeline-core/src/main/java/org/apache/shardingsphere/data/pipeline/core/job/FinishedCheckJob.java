@@ -56,7 +56,7 @@ public final class FinishedCheckJob implements SimpleJob {
                     log.info("completionDetector not configured, auto switch will not be enabled. You could query job progress and switch config manually with DistSQL.");
                     continue;
                 }
-                RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobInfo.getShardingTotalCount(), ruleAlteredJobAPI.getProgress(jobId).values());
+                RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobInfo.getShardingTotalCount(), ruleAlteredJobAPI.getProgress(jobConfig).values());
                 if (!ruleAlteredContext.getCompletionDetectAlgorithm().isAlmostCompleted(parameter)) {
                     continue;
                 }
@@ -67,17 +67,17 @@ public final class FinishedCheckJob implements SimpleJob {
                     if (null != sourceWritingStopAlgorithm) {
                         sourceWritingStopAlgorithm.lock(schemaName, jobId + "");
                     }
-                    if (!ruleAlteredJobAPI.isDataConsistencyCheckNeeded(jobId)) {
+                    if (!ruleAlteredJobAPI.isDataConsistencyCheckNeeded(jobConfig)) {
                         log.info("dataConsistencyCheckAlgorithm is not configured, data consistency check is ignored.");
-                        ruleAlteredJobAPI.switchClusterConfiguration(jobId);
+                        ruleAlteredJobAPI.switchClusterConfiguration(jobConfig);
                         continue;
                     }
-                    if (!dataConsistencyCheck(jobId)) {
+                    if (!dataConsistencyCheck(jobConfig)) {
                         log.error("data consistency check failed, job {}", jobId);
                         continue;
                     }
                     RuleBasedJobLockAlgorithm checkoutLockAlgorithm = ruleAlteredContext.getCheckoutLockAlgorithm();
-                    switchClusterConfiguration(schemaName, jobId, checkoutLockAlgorithm);
+                    switchClusterConfiguration(schemaName, jobConfig, checkoutLockAlgorithm);
                 } finally {
                     if (null != sourceWritingStopAlgorithm) {
                         sourceWritingStopAlgorithm.releaseLock(schemaName, jobId + "");
@@ -92,17 +92,20 @@ public final class FinishedCheckJob implements SimpleJob {
         }
     }
     
-    private boolean dataConsistencyCheck(final String jobId) {
-        Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId);
+    private boolean dataConsistencyCheck(final JobConfiguration jobConfig) {
+        String jobId = jobConfig.getHandleConfig().getJobId();
+        log.info("dataConsistencyCheck for job {}", jobId);
+        Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobConfig);
         return ruleAlteredJobAPI.aggregateDataConsistencyCheckResults(jobId, checkResultMap);
     }
     
-    private void switchClusterConfiguration(final String schemaName, final String jobId, final RuleBasedJobLockAlgorithm checkoutLockAlgorithm) {
+    private void switchClusterConfiguration(final String schemaName, final JobConfiguration jobConfig, final RuleBasedJobLockAlgorithm checkoutLockAlgorithm) {
+        String jobId = jobConfig.getHandleConfig().getJobId();
         try {
             if (null != checkoutLockAlgorithm) {
                 checkoutLockAlgorithm.lock(schemaName, jobId + "");
             }
-            ruleAlteredJobAPI.switchClusterConfiguration(jobId);
+            ruleAlteredJobAPI.switchClusterConfiguration(jobConfig);
         } finally {
             if (null != checkoutLockAlgorithm) {
                 checkoutLockAlgorithm.releaseLock(schemaName, jobId + "");

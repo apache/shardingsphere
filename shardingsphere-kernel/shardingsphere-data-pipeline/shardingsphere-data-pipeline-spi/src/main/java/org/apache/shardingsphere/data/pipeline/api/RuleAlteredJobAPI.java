@@ -67,6 +67,14 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI, Singleto
     Map<Integer, JobProgress> getProgress(String jobId);
     
     /**
+     * Get job progress.
+     *
+     * @param jobConfig job configuration
+     * @return each sharding item progress
+     */
+    Map<Integer, JobProgress> getProgress(JobConfiguration jobConfig);
+    
+    /**
      * Stop cluster write to job source schema's underlying DB.
      *
      * @param jobId job id
@@ -89,12 +97,28 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI, Singleto
     boolean isDataConsistencyCheckNeeded(String jobId);
     
     /**
+     * Is data consistency check needed.
+     *
+     * @param jobConfig job configuration
+     * @return data consistency check needed or not
+     */
+    boolean isDataConsistencyCheckNeeded(JobConfiguration jobConfig);
+    
+    /**
      * Do data consistency check.
      *
      * @param jobId job id
      * @return each logic table check result
      */
     Map<String, DataConsistencyCheckResult> dataConsistencyCheck(String jobId);
+    
+    /**
+     * Do data consistency check.
+     *
+     * @param jobConfig job configuration
+     * @return each logic table check result
+     */
+    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(JobConfiguration jobConfig);
     
     /**
      * Do data consistency check.
@@ -120,6 +144,13 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI, Singleto
      * @param jobId job id
      */
     void switchClusterConfiguration(String jobId);
+    
+    /**
+     * Switch job source schema's configuration to job target configuration.
+     *
+     * @param jobConfig job configuration
+     */
+    void switchClusterConfiguration(JobConfiguration jobConfig);
     
     /**
      * Reset scaling job.
