@@ -53,6 +53,7 @@ execute
     | set
     | resetParameter
     | call
+    | alterAggregate
     | alterFunction
     | alterDatabase
     | alterProcedure
