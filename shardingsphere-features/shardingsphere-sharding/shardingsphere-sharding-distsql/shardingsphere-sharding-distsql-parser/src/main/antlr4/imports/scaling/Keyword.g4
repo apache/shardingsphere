@@ -67,6 +67,10 @@ SCALING
     : S C A L I N G
     ;
 
+RULE
+    :  R U L E
+    ;
+
 JOB
     : J O B
     ;

@@ -25,11 +25,11 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Expected sharding scaling configuration segment.
+ * Expected sharding scaling rule configuration segment.
  */
 @Getter
 @Setter
-public final class ExpectedShardingScalingConfigurationSegment extends AbstractExpectedIdentifierSQLSegment {
+public final class ExpectedShardingScalingRuleConfigurationSegment extends AbstractExpectedIdentifierSQLSegment {
     
     @XmlElement(name = "input-segment")
     private ExpectedInputOrOutputSegment inputSegment;

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionCon
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration.InputConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration.OutputConfiguration;
 import org.apache.shardingsphere.scaling.distsql.statement.segment.InputOrOutputSegment;
-import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScalingConfigurationSegment;
+import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScalingRuleConfigurationSegment;
 
 /**
  * Sharding scaling statement converter.
@@ -39,7 +39,7 @@ public final class ShardingScalingStatementConverter {
      * @param segment sharding scaling configuration segment
      * @return sharding rule configuration
      */
-    public static OnRuleAlteredActionConfiguration convert(final ShardingScalingConfigurationSegment segment) {
+    public static OnRuleAlteredActionConfiguration convert(final ShardingScalingRuleConfigurationSegment segment) {
         InputConfiguration inputConfiguration = convertToInputConfiguration(segment.getInputSegment());
         OutputConfiguration outputConfiguration = convertToOutputConfiguration(segment.getOutputSegment());
         ShardingSphereAlgorithmConfiguration streamChannel = convertToAlgorithm(segment.getStreamChannel());
