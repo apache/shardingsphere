@@ -15,25 +15,14 @@
  * limitations under the License.
  */
 
-grammar ScalingStatement;
+grammar RQLStatement;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import Keyword, Literals;
 
-execute
-    : (showScalingList
-    | showScalingStatus
-    | startScaling
-    | stopScaling
-    | dropScaling
-    | resetScaling
-    | checkScaling
-    | showScalingCheckAlgorithms
-    | stopScalingSourceWriting
-    | applyScaling
-    | showShardingScalingRules
-    | createShardingScalingRule
-    | dropShardingScalingRule
-    | enableShardingScalingRule
-    | disableShardingScalingRule
-    ) SEMI?
+showShardingScalingRules
+    : SHOW SHARDING SCALING RULES (FROM schemaName)?
+    ;
+
+schemaName
+    : IDENTIFIER
     ;

@@ -15,25 +15,17 @@
  * limitations under the License.
  */
 
-grammar ScalingStatement;
+package org.apache.shardingsphere.scaling.distsql.statement;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
-execute
-    : (showScalingList
-    | showScalingStatus
-    | startScaling
-    | stopScaling
-    | dropScaling
-    | resetScaling
-    | checkScaling
-    | showScalingCheckAlgorithms
-    | stopScalingSourceWriting
-    | applyScaling
-    | showShardingScalingRules
-    | createShardingScalingRule
-    | dropShardingScalingRule
-    | enableShardingScalingRule
-    | disableShardingScalingRule
-    ) SEMI?
-    ;
+/**
+ * Show sharding scaling rules statement.
+ */
+public final class ShowShardingScalingRulesStatement extends ShowRulesStatement {
+    
+    public ShowShardingScalingRulesStatement(final SchemaSegment schema) {
+        super(schema);
+    }
+}
