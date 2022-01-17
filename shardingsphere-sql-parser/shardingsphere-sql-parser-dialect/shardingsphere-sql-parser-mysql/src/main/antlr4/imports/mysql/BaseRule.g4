@@ -670,7 +670,7 @@ functionName
     : (owner DOT_)? identifier
     ;
 
-procName
+procedureName
     : (owner DOT_)? identifier
     ;
 
