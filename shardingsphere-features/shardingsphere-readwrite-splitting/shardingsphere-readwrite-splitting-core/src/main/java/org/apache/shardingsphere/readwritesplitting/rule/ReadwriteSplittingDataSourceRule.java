@@ -127,8 +127,8 @@ public final class ReadwriteSplittingDataSourceRule {
         Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.getInstance().getDataSourceNameAware();
         Map<String, String> result = new HashMap<>(2, 1);
         if (!Strings.isNullOrEmpty(autoAwareDataSourceName) && dataSourceNameAware.isPresent() && dataSourceNameAware.get().getRule().isPresent()) {
-            result.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, dataSourceNameAware.get().getPrimaryDataSourceName(autoAwareDataSourceName));
-            result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", dataSourceNameAware.get().getReplicaDataSourceNames(autoAwareDataSourceName)));
+            result.put(ExportableConstants.CONTENT_KEY_PRIMARY_DATA_SOURCE_NAME, dataSourceNameAware.get().getPrimaryDataSourceName(autoAwareDataSourceName));
+            result.put(ExportableConstants.CONTENT_KEY_REPLICA_DATA_SOURCE_NAMES, String.join(",", dataSourceNameAware.get().getReplicaDataSourceNames(autoAwareDataSourceName)));
             return result;
         }
         return result;
@@ -142,8 +142,8 @@ public final class ReadwriteSplittingDataSourceRule {
     public Map<String, String> getDataSources() {
         Map<String, String> result = new HashMap<>(2, 1);
         if (Strings.isNullOrEmpty(autoAwareDataSourceName)) {
-            result.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, writeDataSourceName);
-            result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",",
+            result.put(ExportableConstants.CONTENT_KEY_PRIMARY_DATA_SOURCE_NAME, writeDataSourceName);
+            result.put(ExportableConstants.CONTENT_KEY_REPLICA_DATA_SOURCE_NAMES, String.join(",",
                     readDataSourceNames.stream().filter(each -> !disabledDataSourceNames.contains(each)).collect(Collectors.toCollection(LinkedHashSet::new))));
         }
         return result;

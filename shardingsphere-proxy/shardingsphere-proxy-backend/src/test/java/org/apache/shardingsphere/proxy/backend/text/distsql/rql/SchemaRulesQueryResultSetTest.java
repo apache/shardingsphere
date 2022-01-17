@@ -73,7 +73,7 @@ public final class SchemaRulesQueryResultSetTest {
     
     private SingleTableRule mockSingleTableRule() {
         SingleTableRule singleTableRule = mock(SingleTableRule.class);
-        when(singleTableRule.export()).thenReturn(Collections.singletonMap(ExportableConstants.SINGLE_TABLE_TABLES, Arrays.asList("single_table_1", "single_table_2")));
+        when(singleTableRule.export()).thenReturn(Collections.singletonMap(ExportableConstants.EXPORTED_KEY_SINGLE_TABLES, Arrays.asList("single_table_1", "single_table_2")));
         return singleTableRule;
     }
     

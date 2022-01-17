@@ -117,7 +117,7 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
     
     private Map<String, Object> createAutoAwareDataSources() {
         Map<String, Object> result = new HashMap<>(1, 1);
-        result.put(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY, exportAutoAwareDataSourceMap());
+        result.put(ExportableConstants.EXPORTED_KEY_AUTO_AWARE_DATA_SOURCE, exportAutoAwareDataSourceMap());
         return result;
     }
 
@@ -129,8 +129,8 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
         
     private Map<String, String> getAutoAwareDataSources() {
         Map<String, String> result = new HashMap<>(2, 1);
-        result.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, "write_ds");
-        result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, "read_ds_0,read_ds_1");
+        result.put(ExportableConstants.CONTENT_KEY_PRIMARY_DATA_SOURCE_NAME, "write_ds");
+        result.put(ExportableConstants.CONTENT_KEY_REPLICA_DATA_SOURCE_NAMES, "read_ds_0,read_ds_1");
         return result;
     }
 }

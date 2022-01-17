@@ -69,7 +69,7 @@ public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
     
     private static final String TABLE = "table";
     
-    private static final Map<String, Class<? extends RuleConfiguration>> FEATURE_MAP = new HashMap<>(5);
+    private static final Map<String, Class<? extends RuleConfiguration>> FEATURE_MAP = new HashMap<>(5, 1);
     
     private Iterator<Collection<Object>> data;
     
@@ -97,14 +97,14 @@ public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
     
     private void addSingleTableData(final Map<String, Collection<Object>> dataMap, final Collection<SingleTableRule> rules) {
         Optional<Integer> count = rules.stream().map(SingleTableRule::export)
-                .map(each -> (Collection) each.getOrDefault(ExportableConstants.SINGLE_TABLE_TABLES, Collections.emptyList()))
+                .map(each -> (Collection) each.getOrDefault(ExportableConstants.EXPORTED_KEY_SINGLE_TABLES, Collections.emptyList()))
                 .map(Collection::size).reduce(Integer::sum);
         dataMap.putIfAbsent(SINGLE_TABLE, buildRow(SINGLE_TABLE, TABLE, count.orElse(DEFAULT_COUNT)));
     }
     
     private void addShardingData(final Map<String, Collection<Object>> dataMap, final RuleConfiguration ruleConfiguration) {
         addData(dataMap, String.join("_", SHARDING, SHARDING_TABLE), SHARDING, SHARDING_TABLE, ruleConfiguration,
-            config -> ((ShardingRuleConfiguration) config).getTables().size() + ((ShardingRuleConfiguration) config).getAutoTables().size());
+                config -> ((ShardingRuleConfiguration) config).getTables().size() + ((ShardingRuleConfiguration) config).getAutoTables().size());
         addData(dataMap, String.join("_", SHARDING, BINDING_TABLE), SHARDING, BINDING_TABLE, ruleConfiguration, config -> ((ShardingRuleConfiguration) config).getBindingTableGroups().size());
         addData(dataMap, String.join("_", SHARDING, BROADCAST_TABLE), SHARDING, BROADCAST_TABLE, ruleConfiguration, config -> ((ShardingRuleConfiguration) config).getBroadcastTables().size());
     }

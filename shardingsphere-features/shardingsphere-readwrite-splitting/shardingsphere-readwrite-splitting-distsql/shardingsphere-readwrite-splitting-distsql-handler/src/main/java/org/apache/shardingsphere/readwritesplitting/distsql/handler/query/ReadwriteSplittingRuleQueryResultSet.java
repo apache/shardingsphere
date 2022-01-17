@@ -59,11 +59,11 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
         loadBalancers = ruleConfig.map(ReadwriteSplittingRuleConfiguration::getLoadBalancers).orElse(Collections.emptyMap());
         Optional<ExportableRule> exportableRule = metaData.getRuleMetaData().getRules().stream()
                 .filter(each -> each instanceof ExportableRule).map(each -> (ExportableRule) each)
-                .filter(each -> each.export().containsKey(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY)).findAny();
+                .filter(each -> each.export().containsKey(ExportableConstants.EXPORTED_KEY_AUTO_AWARE_DATA_SOURCE)).findAny();
         exportableRule.ifPresent(op -> {
             Map<String, Object> exportedReadwriteRules = op.export();
-            autoAwareDataSourceMap = (Map<String, Map<String, String>>) exportedReadwriteRules.getOrDefault(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY, Collections.emptyMap());
-            dataSourceMap = (Map<String, Map<String, String>>) exportedReadwriteRules.getOrDefault(ExportableConstants.DATA_SOURCE_KEY, Collections.emptyMap());
+            autoAwareDataSourceMap = (Map<String, Map<String, String>>) exportedReadwriteRules.getOrDefault(ExportableConstants.EXPORTED_KEY_AUTO_AWARE_DATA_SOURCE, Collections.emptyMap());
+            dataSourceMap = (Map<String, Map<String, String>>) exportedReadwriteRules.getOrDefault(ExportableConstants.EXPORTED_KEY_DATA_SOURCE_KEY, Collections.emptyMap());
         });
     }
     
@@ -86,8 +86,8 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
         Map<String, String> exportDataSources = !Strings.isNullOrEmpty(ruleConfig.getAutoAwareDataSourceName())
                 ? autoAwareDataSourceMap.get(ruleConfig.getName()) : dataSourceMap.get(ruleConfig.getName());
         if (null != exportDataSources && !exportDataSources.isEmpty()) {
-            writeDataSourceName = exportDataSources.get(ExportableConstants.PRIMARY_DATA_SOURCE_NAME);
-            readDataSourceNames = exportDataSources.get(ExportableConstants.REPLICA_DATA_SOURCE_NAMES);
+            writeDataSourceName = exportDataSources.get(ExportableConstants.CONTENT_KEY_PRIMARY_DATA_SOURCE_NAME);
+            readDataSourceNames = exportDataSources.get(ExportableConstants.CONTENT_KEY_REPLICA_DATA_SOURCE_NAMES);
         }
         return Arrays.asList(ruleConfig.getName(), ruleConfig.getAutoAwareDataSourceName(), writeDataSourceName, readDataSourceNames,
                 configuration.map(ShardingSphereAlgorithmConfiguration::getType).orElse(null),

@@ -132,10 +132,10 @@ public final class SetReadwriteSplittingStatusExecutor implements SetStatementEx
         Map<String, Map<String, String>> readwriteSplittingRules = new HashMap<>();
         ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().findRules(ReadwriteSplittingRule.class).stream().findAny()
                 .map(each -> ((ExportableRule) each).export())
-                .filter(each -> each.containsKey(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY) || each.containsKey(ExportableConstants.DATA_SOURCE_KEY))
+                .filter(each -> each.containsKey(ExportableConstants.EXPORTED_KEY_AUTO_AWARE_DATA_SOURCE) || each.containsKey(ExportableConstants.EXPORTED_KEY_DATA_SOURCE_KEY))
                 .ifPresent(each -> {
-                    readwriteSplittingRules.putAll((Map) each.getOrDefault(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY, Collections.emptyMap()));
-                    readwriteSplittingRules.putAll((Map) each.getOrDefault(ExportableConstants.DATA_SOURCE_KEY, Collections.emptyMap()));
+                    readwriteSplittingRules.putAll((Map) each.getOrDefault(ExportableConstants.EXPORTED_KEY_AUTO_AWARE_DATA_SOURCE, Collections.emptyMap()));
+                    readwriteSplittingRules.putAll((Map) each.getOrDefault(ExportableConstants.EXPORTED_KEY_DATA_SOURCE_KEY, Collections.emptyMap()));
                 });
         return readwriteSplittingRules;
     }
@@ -154,12 +154,12 @@ public final class SetReadwriteSplittingStatusExecutor implements SetStatementEx
     }
     
     private void addPrimaryResource(final Map<String, String> primaryResources, final Entry<String, Map<String, String>> entry) {
-        entry.getValue().entrySet().stream().filter(entry1 -> ExportableConstants.PRIMARY_DATA_SOURCE_NAME.equals(entry1.getKey()))
+        entry.getValue().entrySet().stream().filter(entry1 -> ExportableConstants.CONTENT_KEY_PRIMARY_DATA_SOURCE_NAME.equals(entry1.getKey()))
                 .forEach(entry1 -> put(primaryResources, entry1.getValue(), entry.getKey()));
     }
     
     private void addReplicaResource(final Map<String, String> replicaResources, final Entry<String, Map<String, String>> entry) {
-        entry.getValue().entrySet().stream().filter(entry1 -> ExportableConstants.REPLICA_DATA_SOURCE_NAMES.equals(entry1.getKey()))
+        entry.getValue().entrySet().stream().filter(entry1 -> ExportableConstants.CONTENT_KEY_REPLICA_DATA_SOURCE_NAMES.equals(entry1.getKey()))
                 .map(entry1 -> Arrays.asList(entry1.getValue().split(","))).flatMap(Collection::stream).forEach(each -> put(replicaResources, each, entry.getKey()));
     }
     
