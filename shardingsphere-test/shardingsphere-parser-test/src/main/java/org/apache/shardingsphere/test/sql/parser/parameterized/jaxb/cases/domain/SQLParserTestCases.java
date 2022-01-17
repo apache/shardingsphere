@@ -88,6 +88,8 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetDefaultRoleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetPasswordStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetRoleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterAggregateStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterCollationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterConversionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDimensionStatementTestCase;
@@ -979,8 +981,14 @@ public final class SQLParserTestCases {
     @XmlElement(name = "drop-conversion")
     private final List<DropConversionStatementTestCase> dropConversionStatementTestCase = new LinkedList<>();
     
+    @XmlElement(name = "alter-aggregate")
+    private final List<AlterAggregateStatementTestCase> alterAggregateStatementTestCase = new LinkedList<>();
+    
     @XmlElement(name = "alter-conversion")
     private final List<AlterConversionStatementTestCase> alterConversionStatementTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "alter-collation")
+    private final List<AlterCollationStatementTestCase> alterCollationStatementTestCase = new LinkedList<>();
     
     @XmlElement(name = "create-text-search")
     private final List<CreateTextSearchStatementTestCase> createTextSearchStatementTestCases = new LinkedList<>();
@@ -1251,7 +1259,9 @@ public final class SQLParserTestCases {
         putAll(createTypeStatementTestCases, result);
         putAll(createConversionStatementTestCase, result);
         putAll(dropConversionStatementTestCase, result);
+        putAll(alterAggregateStatementTestCase, result);
         putAll(alterConversionStatementTestCase, result);
+        putAll(alterCollationStatementTestCase, result);
         putAll(createTextSearchStatementTestCases, result);
         putAll(alterTextSearchStatementTestCases, result);
         putAll(createLanguageStatementTestCases, result);

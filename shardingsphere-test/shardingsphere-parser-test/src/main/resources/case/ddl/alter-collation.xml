@@ -17,7 +17,8 @@
   -->
 
 <sql-parser-test-cases>
-    <alter-aggregate sql-case-id="alter_aggregate" />
-    <alter-aggregate sql-case-id="alter_aggregate_owner" />
-    <alter-aggregate sql-case-id="alter_aggregate_set_schema" />
+    <alter-collation sql-case-id="alter_collation_refresh" />
+    <alter-collation sql-case-id="alter_collation_rename" />
+    <alter-collation sql-case-id="alter_collation_owner" />
+    <alter-collation sql-case-id="alter_collation_set_schema" />
 </sql-parser-test-cases>
