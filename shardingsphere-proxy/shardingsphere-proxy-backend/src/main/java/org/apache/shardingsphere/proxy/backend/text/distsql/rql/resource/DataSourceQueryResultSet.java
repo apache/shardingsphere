@@ -85,6 +85,10 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
         result.remove("user");
         result.remove("username");
         result.remove("password");
+        result.remove("running");
+        result.remove("poolName");
+        result.remove("registerMbeans");
+        result.remove("closed");
         for (Entry<String, Object> entry : standardProps.entrySet()) {
             if (entry.getValue() instanceof Collection || entry.getValue() instanceof Map) {
                 result.remove(entry.getKey());
