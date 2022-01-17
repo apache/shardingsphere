@@ -17,7 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <alter-conversion sql-case-id="alter_aggregate" />
-    <alter-conversion sql-case-id="alter_aggregate_owner" />
-    <alter-conversion sql-case-id="alter_aggregate_set_schema" />
+    <alter-aggregate sql-case-id="alter_aggregate" />
+    <alter-aggregate sql-case-id="alter_aggregate_owner" />
+    <alter-aggregate sql-case-id="alter_aggregate_set_schema" />
 </sql-parser-test-cases>

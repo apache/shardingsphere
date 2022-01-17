@@ -64,7 +64,20 @@
     <script src="{{"js/modernizr.custom.71422.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
     <script src="{{"js/learn.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
     <script src="{{"js/hugo-learn.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
+    <script>
+        try{
+            
+            $('.padding[href*=shardingsphere]').on('click', function(){
+                var locale = /cn/.test(location.pathname) ?'cn':'en';
+                window._hmt.push(['_trackEvent', 'document', 'download', 'PDF_'+locale]);
 
+                gtag('event', 'Downloads', {
+                    'event_category' : 'PDF',
+                    'event_label' : locale+'.pdf'
+                });
+            })
+        }catch(ex){}
+    </script>
     {{ partial "custom-footer.html" . }}
   </body>
 </html>

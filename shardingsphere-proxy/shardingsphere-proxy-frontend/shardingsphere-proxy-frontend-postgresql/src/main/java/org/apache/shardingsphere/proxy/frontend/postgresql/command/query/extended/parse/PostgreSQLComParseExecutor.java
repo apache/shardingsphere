@@ -53,7 +53,7 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
         SQLStatement sqlStatement = parseSql(packet.getSql(), connectionSession.getSchemaName());
         List<PostgreSQLColumnType> paddedColumnTypes = paddingColumnTypes(sqlStatement.getParameterCount(), packet.readParameterTypes());
         PostgreSQLPreparedStatementRegistry.getInstance().register(connectionSession.getConnectionId(), packet.getStatementId(), packet.getSql(), sqlStatement, paddedColumnTypes);
-        return Collections.singletonList(new PostgreSQLParseCompletePacket());
+        return Collections.singletonList(PostgreSQLParseCompletePacket.getInstance());
     }
     
     private SQLStatement parseSql(final String sql, final String schemaName) {
