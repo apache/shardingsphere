@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor;
 
 import com.zaxxer.hikari.pool.HikariProxyResultSet;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;

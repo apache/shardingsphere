@@ -34,4 +34,6 @@ public final class ComputeNodeInstance {
     private Collection<String> labels;
     
     private Collection<String> status;
+    
+    private Long workerId;
 }

@@ -48,16 +48,16 @@ public final class ColumnRegexMatchShadowAlgorithmTest extends AbstractColumnSha
     }
     
     private void assertFalseCase() {
-        createPreciseColumnShadowValuesFalseCase().forEach(each -> assertThat(shadowAlgorithm.isShadow(createTableNames(), each), is(false)));
+        createPreciseColumnShadowValuesFalseCase().forEach(each -> assertThat(shadowAlgorithm.isShadow(each), is(false)));
     }
     
     private void assertTrueCase() {
-        createPreciseColumnShadowValuesTrueCase().forEach(each -> assertThat(shadowAlgorithm.isShadow(createTableNames(), each), is(true)));
+        createPreciseColumnShadowValuesTrueCase().forEach(each -> assertThat(shadowAlgorithm.isShadow(each), is(true)));
     }
     
     @Test(expected = ShadowAlgorithmException.class)
     public void assertExceptionCase() {
-        createPreciseColumnShadowValuesExceptionCase().forEach(each -> assertThat(shadowAlgorithm.isShadow(createTableNames(), each), is(false)));
+        createPreciseColumnShadowValuesExceptionCase().forEach(each -> assertThat(shadowAlgorithm.isShadow(each), is(false)));
     }
     
     @Test

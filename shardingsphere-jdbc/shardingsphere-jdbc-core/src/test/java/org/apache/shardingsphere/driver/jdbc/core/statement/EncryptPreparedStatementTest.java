@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForEncryptTest;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.junit.Test;
 
 import java.sql.Connection;

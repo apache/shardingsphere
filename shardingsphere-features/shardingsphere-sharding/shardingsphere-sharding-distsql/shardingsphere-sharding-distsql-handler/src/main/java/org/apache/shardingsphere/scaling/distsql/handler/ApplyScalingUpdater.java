@@ -28,7 +28,7 @@ public final class ApplyScalingUpdater implements RALUpdater<ApplyScalingStateme
     
     @Override
     public void executeUpdate(final ApplyScalingStatement sqlStatement) {
-        PipelineJobAPIFactory.getPipelineJobAPI().switchClusterConfiguration(sqlStatement.getJobId());
+        PipelineJobAPIFactory.getRuleAlteredJobAPI().switchClusterConfiguration(sqlStatement.getJobId());
     }
     
     @Override

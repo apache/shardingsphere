@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.config.resource;
 
-import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyResourceConfiguration;
 import org.junit.Test;
 

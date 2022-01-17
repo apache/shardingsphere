@@ -61,12 +61,6 @@ public abstract class AbstractColumnShadowAlgorithmTest {
         result.add(new PreciseColumnShadowValue<>(SHADOW_TABLE, ShadowOperationType.UPDATE, SHADOW_COLUMN, '1'));
         result.add(new PreciseColumnShadowValue<>(SHADOW_TABLE, ShadowOperationType.UPDATE, SHADOW_COLUMN, new BigInteger("2")));
         result.add(new PreciseColumnShadowValue<>(SHADOW_TABLE, ShadowOperationType.UPDATE, SHADOW_COLUMN, new BigDecimal("1")));
-        result.add(new PreciseColumnShadowValue<>("t_order", ShadowOperationType.INSERT, SHADOW_COLUMN, 1));
-        result.add(new PreciseColumnShadowValue<>("t_order", ShadowOperationType.INSERT, SHADOW_COLUMN, 1L));
-        result.add(new PreciseColumnShadowValue<>("t_order", ShadowOperationType.INSERT, SHADOW_COLUMN, "1"));
-        result.add(new PreciseColumnShadowValue<>("t_order", ShadowOperationType.INSERT, SHADOW_COLUMN, '1'));
-        result.add(new PreciseColumnShadowValue<>("t_order", ShadowOperationType.INSERT, SHADOW_COLUMN, new BigInteger("1")));
-        result.add(new PreciseColumnShadowValue<>("t_order", ShadowOperationType.INSERT, SHADOW_COLUMN, new BigDecimal("1")));
         return result;
     }
     
@@ -75,11 +69,5 @@ public abstract class AbstractColumnShadowAlgorithmTest {
         result.add(new PreciseColumnShadowValue<>(SHADOW_TABLE, ShadowOperationType.INSERT, SHADOW_COLUMN, new Date()));
         result.add(new PreciseColumnShadowValue<>(SHADOW_TABLE, ShadowOperationType.INSERT, SHADOW_COLUMN, ShadowEnum.SHADOW_VALUE));
         return result;
-    }
-    
-    protected Collection<String> createTableNames() {
-        Collection<String> shadowTableNames = new LinkedList<>();
-        shadowTableNames.add(SHADOW_TABLE);
-        return shadowTableNames;
     }
 }

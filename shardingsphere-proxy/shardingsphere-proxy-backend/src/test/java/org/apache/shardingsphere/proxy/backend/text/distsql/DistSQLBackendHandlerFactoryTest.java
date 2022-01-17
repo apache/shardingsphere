@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql;
 
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -282,7 +282,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     private void mockScalingContext() {
         ModeConfiguration modeConfiguration = mock(ModeConfiguration.class);
         when(modeConfiguration.getType()).thenReturn("Cluster");
-        RuleAlteredContext.initModeConfig(modeConfiguration);
+        PipelineContext.initModeConfig(modeConfiguration);
     }
     
     @After
