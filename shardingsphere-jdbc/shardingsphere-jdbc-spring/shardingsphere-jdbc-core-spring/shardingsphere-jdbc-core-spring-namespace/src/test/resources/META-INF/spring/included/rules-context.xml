@@ -70,8 +70,8 @@
         <readwrite-splitting:data-source-rule id="ds_1" write-data-source-name="ds_1_write" read-data-source-names="ds_1_read_0,ds_1_read_1" />
     </readwrite-splitting:rule>
 
-    <sql-parser:rule id="sqlParseRule" sql-comment-parse-enable="true" parser-tree-cache-ref="parserTreeCache" sql-statement-cache-ref="sqlStatementCache" />
+    <sql-parser:rule id="sqlParseRule" sql-comment-parse-enable="true" parse-tree-cache-ref="parseTreeCache" sql-statement-cache-ref="sqlStatementCache" />
     
     <sql-parser:cache-option id="sqlStatementCache" initial-capacity="1024" maximum-size="1024" concurrency-level="4"/>
-    <sql-parser:cache-option id="parserTreeCache" initial-capacity="1024" maximum-size="1024" concurrency-level="4"/>
+    <sql-parser:cache-option id="parseTreeCache" initial-capacity="1024" maximum-size="1024" concurrency-level="4"/>
 </beans>

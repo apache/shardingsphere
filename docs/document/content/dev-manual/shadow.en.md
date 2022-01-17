@@ -1,7 +1,7 @@
 +++
-pre = "<b>6.13. </b>"
+pre = "<b>6.14. </b>"
 title = "Shadow DB"
-weight = 13
+weight = 14
 chapter = true
 +++
 
@@ -15,4 +15,4 @@ chapter = true
 | ------------------------------- | ----------------------------------- |
 | ColumnValueMatchShadowAlgorithm | Column value match shadow algorithm |
 | ColumnRegexMatchShadowAlgorithm | Column regex match shadow algorithm |
-| SimpleSQLNoteShadowAlgorithm    | Simple SQL note shadow algorithm    |
+| SimpleHintShadowAlgorithm    | Simple hint shadow algorithm    |

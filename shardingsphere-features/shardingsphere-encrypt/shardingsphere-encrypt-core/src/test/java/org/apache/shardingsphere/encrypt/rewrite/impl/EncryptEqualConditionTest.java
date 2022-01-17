@@ -31,7 +31,7 @@ public final class EncryptEqualConditionTest {
     
     @Test
     public void assertGetConditionValues() {
-        List<Object> actual = new EncryptEqualCondition("col", null, 0, 0, new LiteralExpressionSegment(0, 0, 1)).getValues(Collections.emptyList());
+        List<Object> actual = new EncryptEqualCondition("col", false, null, 0, 0, new LiteralExpressionSegment(0, 0, 1)).getValues(Collections.emptyList());
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), is(1));
     }

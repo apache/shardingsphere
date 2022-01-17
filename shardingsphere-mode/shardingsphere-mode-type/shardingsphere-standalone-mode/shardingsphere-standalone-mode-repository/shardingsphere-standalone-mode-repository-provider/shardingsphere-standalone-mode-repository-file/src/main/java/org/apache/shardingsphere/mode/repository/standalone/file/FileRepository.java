@@ -67,13 +67,20 @@ public final class FileRepository implements StandalonePersistRepository {
     @Override
     public List<String> getChildrenKeys(final String key) {
         File file = new File(path, key);
-        return file.exists() ? Arrays.stream(file.listFiles()).map(File::getName).collect(Collectors.toList())
+        if (!file.exists()) {
+            return Collections.emptyList();
+        }
+        return null != file.listFiles() ? Arrays.stream(file.listFiles()).map(File::getName).collect(Collectors.toList())
                 : Collections.emptyList();
     }
     
     @Override
     public void persist(final String key, final String value) {
         File file = new File(path, key);
+        if (Strings.isNullOrEmpty(value)) {
+            file.mkdirs();
+            return;
+        }
         if (!file.exists()) {
             file.getParentFile().mkdirs();
         }

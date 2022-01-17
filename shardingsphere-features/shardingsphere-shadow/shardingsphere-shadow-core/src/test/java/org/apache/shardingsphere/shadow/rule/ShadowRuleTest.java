@@ -21,7 +21,6 @@ import com.google.common.collect.Lists;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
 import org.apache.shardingsphere.shadow.algorithm.shadow.hint.SimpleHintShadowAlgorithm;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
@@ -50,7 +49,6 @@ public final class ShadowRuleTest {
     
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
         AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
-        result.setEnable(true);
         result.setDataSources(createDataSources());
         result.setTables(createTables());
         result.setShadowAlgorithms(createShadowAlgorithms());
@@ -121,14 +119,7 @@ public final class ShadowRuleTest {
     }
     
     @Test
-    public void assertNewShadowRulSuccessByShadowRuleConfiguration() {
-        ShadowRule shadowRule = new ShadowRule(new ShadowRuleConfiguration());
-        assertThat(shadowRule.isEnable(), is(false));
-    }
-    
-    @Test
     public void assertNewShadowRulSuccessByAlgorithmProvidedShadowRuleConfiguration() {
-        assertThat(shadowRuleWithAlgorithm.isEnable(), is(true));
         assertShadowDataSourceMappings(shadowRuleWithAlgorithm.getShadowDataSourceMappings());
         assertShadowTableRules(shadowRuleWithAlgorithm.getShadowTableRules());
     }

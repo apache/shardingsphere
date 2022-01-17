@@ -65,6 +65,11 @@ execute
     | createTrigger
     | createView
     | createSequence
+    | createDomain
+    | createRule
+    | createSchema
+    | createType
+    | createTextSearch
     | dropDatabase
     | dropFunction
     | dropProcedure
@@ -72,6 +77,8 @@ execute
     | dropTrigger
     | dropView
     | dropSequence
+    | dropDomain
+    | dropSchema
     | vacuum
     | prepare
     | executeStmt
@@ -84,5 +91,14 @@ execute
     | dropTablespace
     | setConstraints
     | copy
+    | createLanguage
+    | alterLanguage
+    | dropLanguage
+    | createConversion
+    | alterConversion
+    | dropConversion
+    | alterTextSearchDictionary
+    | alterTextSearchTemplate
+    | alterTextSearchParser
     ) SEMI_?
     ;

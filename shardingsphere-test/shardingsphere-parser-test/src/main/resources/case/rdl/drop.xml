@@ -79,4 +79,12 @@
     </drop-shadow-algorithm>
 
     <drop-default-single-table sql-case-id="drop-default-single-table" />
+
+    <drop-sharding-key-generator sql-case-id="drop-sharding-key-generator" >
+        <key-generator>uuid_key_generator</key-generator>
+    </drop-sharding-key-generator>
+    
+    <drop-default-sharding-strategy sql-case-id="drop-default-sharding-strategy" type="table"/>
+
+    <drop-sharding-scaling sql-case-id="drop-sharding-scaling" scaling-name="default_scaling"/>
 </sql-parser-test-cases>

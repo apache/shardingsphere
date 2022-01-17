@@ -30,6 +30,7 @@ public interface OrderItemRepository {
     void truncateTable();
     
     void dropTable();
+
     
     void insert(OrderItem orderItem);
     

@@ -18,17 +18,24 @@
 package org.apache.shardingsphere.infra.metadata.schema.event;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Schema altered event.
  */
-@RequiredArgsConstructor
 @Getter
 public final class SchemaAlteredEvent {
     
     private final String schemaName;
     
-    private final ShardingSphereSchema schema;
+    private final Collection<TableMetaData> alteredTables = new ArrayList<>();
+    
+    private final Collection<String> droppedTables = new ArrayList<>();
+    
+    public SchemaAlteredEvent(final String schemaName) {
+        this.schemaName = schemaName;
+    }
 }

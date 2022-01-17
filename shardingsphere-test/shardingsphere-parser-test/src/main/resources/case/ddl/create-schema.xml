@@ -18,4 +18,5 @@
 
 <sql-parser-test-cases>
     <create-schema sql-case-id="create_schema_grant_permissions" />
+    <create-schema sql-case-id="create_schema" />
 </sql-parser-test-cases>

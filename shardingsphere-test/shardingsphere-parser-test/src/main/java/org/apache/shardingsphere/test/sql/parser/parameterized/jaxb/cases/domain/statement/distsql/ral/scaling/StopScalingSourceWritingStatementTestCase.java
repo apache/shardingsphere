@@ -33,5 +33,5 @@ import java.util.List;
 public final class StopScalingSourceWritingStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "job-id")
-    private final List<Long> jobIds = new LinkedList<>();
+    private final List<String> jobIds = new LinkedList<>();
 }

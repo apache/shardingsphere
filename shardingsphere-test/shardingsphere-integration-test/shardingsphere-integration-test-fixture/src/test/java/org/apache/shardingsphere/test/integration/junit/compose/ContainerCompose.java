@@ -98,11 +98,11 @@ public abstract class ContainerCompose extends ExternalResource implements Close
         return createContainer(supplier, parameterizedArray.getDatabaseType().getName().toLowerCase() + "." + parameterizedArray.getScenario() + ".host");
     }
     
-    protected final <T extends ShardingSphereContainer> T createContainer(final Supplier<T> supplier, final String hostName) {
+    protected final <T extends ShardingSphereContainer> T createContainer(final Supplier<T> supplier, final String hostname) {
         T result = supplier.get();
         containers.add(result);
         result.setNetwork(network);
-        result.setNetworkAliases(Collections.singletonList(hostName));
+        result.setNetworkAliases(Collections.singletonList(hostname));
         result.withLogConsumer(ContainerLogs.newConsumer(String.join("-", clusterName, result.getDockerName())));
         return result;
     }

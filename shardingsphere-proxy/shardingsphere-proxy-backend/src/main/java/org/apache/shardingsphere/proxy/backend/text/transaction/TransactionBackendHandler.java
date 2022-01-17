@@ -17,14 +17,18 @@
 
 package org.apache.shardingsphere.proxy.backend.text.transaction;
 
+import io.vertx.core.Future;
+import org.apache.shardingsphere.proxy.backend.communication.TransactionManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.vertx.transaction.VertxLocalTransactionManager;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSavepointStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackToSavepointStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLBeginTransactionStatement;
@@ -42,7 +46,7 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
     
     private final TransactionOperationType operationType;
     
-    private final BackendTransactionManager backendTransactionManager;
+    private final TransactionManager backendTransactionManager;
 
     private final ConnectionSession connectionSession;
     
@@ -50,7 +54,40 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
         this.tclStatement = tclStatement;
         this.operationType = operationType;
         this.connectionSession = connectionSession;
-        backendTransactionManager = new BackendTransactionManager((JDBCBackendConnection) connectionSession.getBackendConnection());
+        if (connectionSession.getBackendConnection() instanceof JDBCBackendConnection) {
+            backendTransactionManager = new JDBCBackendTransactionManager((JDBCBackendConnection) connectionSession.getBackendConnection());
+        } else {
+            backendTransactionManager = new VertxLocalTransactionManager((VertxBackendConnection) connectionSession.getBackendConnection());
+        }
+    }
+    
+    @Override
+    public Future<ResponseHeader> executeFuture() {
+        VertxLocalTransactionManager transactionManager = (VertxLocalTransactionManager) backendTransactionManager;
+        Future<Void> future = determineFuture(transactionManager);
+        return future.compose(unused -> Future.succeededFuture(new UpdateResponseHeader(tclStatement)));
+    }
+    
+    private Future<Void> determineFuture(final VertxLocalTransactionManager transactionManager) {
+        switch (operationType) {
+            case BEGIN:
+                if (tclStatement instanceof MySQLBeginTransactionStatement && connectionSession.getTransactionStatus().isInTransaction()) {
+                    return transactionManager.commit().compose(unused -> transactionManager.begin());
+                }
+                return transactionManager.begin();
+            case SAVEPOINT:
+                return transactionManager.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
+            case ROLLBACK_TO_SAVEPOINT:
+                return transactionManager.rollbackTo(((RollbackStatement) tclStatement).getSavepointName().get());
+            case RELEASE_SAVEPOINT:
+                return transactionManager.releaseSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());
+            case COMMIT:
+                return transactionManager.commit();
+            case ROLLBACK:
+                return transactionManager.rollback();
+            default:
+                return Future.failedFuture(new UnsupportedOperationException());
+        }
     }
     
     @Override
@@ -66,7 +103,11 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
                 backendTransactionManager.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
                 break;
             case ROLLBACK_TO_SAVEPOINT:
-                backendTransactionManager.rollbackTo(((RollbackToSavepointStatement) tclStatement).getSavepointName());
+                if (((RollbackStatement) tclStatement).getSavepointName().isPresent()) {
+                    backendTransactionManager.rollbackTo(((RollbackStatement) tclStatement).getSavepointName().get());
+                    break;
+                }
+                backendTransactionManager.rollback();
                 break;
             case RELEASE_SAVEPOINT:
                 backendTransactionManager.releaseSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());

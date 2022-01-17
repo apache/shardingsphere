@@ -19,11 +19,14 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.DeleteStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.InsertStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.TableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.UpdateStatementTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -34,7 +37,10 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class ExplainStatementTestCase extends SQLParserTestCase {
-
+    
+    @XmlElement(name = "table")
+    private TableStatementTestCase tableClause;
+    
     @XmlElement(name = "select")
     private SelectStatementTestCase selectClause;
 
@@ -49,4 +55,10 @@ public final class ExplainStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "create-table")
     private CreateTableStatementTestCase createTableAsSelectClause;
+    
+    @XmlElement(name = "simple-table")
+    private ExpectedSimpleTable table;
+    
+    @XmlElement(name = "column-wild")
+    private ExpectedColumn column;
 }

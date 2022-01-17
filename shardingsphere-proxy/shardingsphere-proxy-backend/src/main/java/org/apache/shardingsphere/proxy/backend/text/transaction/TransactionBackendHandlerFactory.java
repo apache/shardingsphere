@@ -24,13 +24,14 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.BroadcastDatabaseBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.StartTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackToSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.XAStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 /**
@@ -49,7 +50,7 @@ public final class TransactionBackendHandlerFactory {
      */
     public static TextProtocolBackendHandler newInstance(final SQLStatementContext<? extends TCLStatement> sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
         TCLStatement tclStatement = sqlStatementContext.getSqlStatement();
-        if (tclStatement instanceof BeginTransactionStatement) {
+        if (tclStatement instanceof BeginTransactionStatement || tclStatement instanceof StartTransactionStatement) {
             return new TransactionBackendHandler(tclStatement, TransactionOperationType.BEGIN, connectionSession);
         }
         if (tclStatement instanceof SetAutoCommitStatement) {
@@ -61,14 +62,16 @@ public final class TransactionBackendHandlerFactory {
         if (tclStatement instanceof ReleaseSavepointStatement) {
             return new TransactionBackendHandler(tclStatement, TransactionOperationType.RELEASE_SAVEPOINT, connectionSession);
         }
-        if (tclStatement instanceof RollbackToSavepointStatement) {
-            return new TransactionBackendHandler(tclStatement, TransactionOperationType.ROLLBACK_TO_SAVEPOINT, connectionSession);
-        }
         if (tclStatement instanceof CommitStatement) {
             return new TransactionBackendHandler(tclStatement, TransactionOperationType.COMMIT, connectionSession);
         }
         if (tclStatement instanceof RollbackStatement) {
-            return new TransactionBackendHandler(tclStatement, TransactionOperationType.ROLLBACK, connectionSession);
+            return ((RollbackStatement) tclStatement).getSavepointName().isPresent() 
+                    ? new TransactionBackendHandler(tclStatement, TransactionOperationType.ROLLBACK_TO_SAVEPOINT, connectionSession)
+                    : new TransactionBackendHandler(tclStatement, TransactionOperationType.ROLLBACK, connectionSession); 
+        }
+        if (tclStatement instanceof XAStatement) {
+            return new TransactionXAHandler(sqlStatementContext, sql, connectionSession);
         }
         return new BroadcastDatabaseBackendHandler(sqlStatementContext, sql, connectionSession);
     }

@@ -17,13 +17,18 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.subscriber;
 
+import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.ClusterInstance;
+import org.apache.shardingsphere.infra.instance.definition.InstanceId;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ComputeNodeStatusChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.node.ComputeStatusNode;
+import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Compute node status subscriber.
@@ -44,11 +49,14 @@ public final class ComputeNodeStatusSubscriber {
      */
     @Subscribe
     public void update(final ComputeNodeStatusChangedEvent event) {
-        String computeNodePath = ComputeStatusNode.getStatusPath(ComputeNodeStatus.CIRCUIT_BREAKER, ClusterInstance.getInstance().getInstanceId(event.getIp(), event.getPort()));
-        if (event.getStatus() == ComputeNodeStatus.CIRCUIT_BREAKER) {
-            repository.persist(computeNodePath, "");
+        String computeStatusNodePath = ComputeNode.getInstanceStatusNodePath(new InstanceId(event.getIp(), Integer.valueOf(event.getPort())).getId());
+        String yamlContext = repository.get(computeStatusNodePath);
+        Collection<String> status = Strings.isNullOrEmpty(yamlContext) ? new ArrayList<>() : YamlEngine.unmarshal(yamlContext, Collection.class);
+        if (event.getStatus() == ComputeNodeStatus.CIRCUIT_BREAK) {
+            status.add(ComputeNodeStatus.CIRCUIT_BREAK.name());
         } else {
-            repository.delete(computeNodePath);
+            status.remove(ComputeNodeStatus.CIRCUIT_BREAK.name());
         }
+        repository.persist(computeStatusNodePath, YamlEngine.marshal(status));
     }
 }

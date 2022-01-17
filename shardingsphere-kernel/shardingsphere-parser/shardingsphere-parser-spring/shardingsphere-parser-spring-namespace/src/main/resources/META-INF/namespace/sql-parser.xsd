@@ -28,7 +28,7 @@
             <xsd:attribute name="id" type="xsd:string" use="required"/>
             <xsd:attribute name="sql-comment-parse-enable" type="xsd:boolean" default="false"/>
             <xsd:attribute name="sql-statement-cache-ref" type="xsd:string" />
-            <xsd:attribute name="parser-tree-cache-ref" type="xsd:string" />
+            <xsd:attribute name="parse-tree-cache-ref" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
     

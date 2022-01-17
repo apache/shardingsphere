@@ -34,12 +34,12 @@ public final class AutoAcknowledgeChannel extends AbstractBitSetChannel {
     }
     
     @Override
-    public List<Record> fetchRecords(final int batchSize, final int timeout) {
+    public List<Record> fetchRecords(final int batchSize, final int timeoutSeconds) {
         throw new UnsupportedOperationException("Auto ack channel can not fetch records.");
     }
     
     @Override
-    public void ack() {
+    public void ack(final List<Record> records) {
         throw new UnsupportedOperationException("Auto ack channel do not have to ack.");
     }
 }

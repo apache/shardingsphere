@@ -20,16 +20,23 @@ package org.apache.shardingsphere.infra.federation.optimizer.converter.segment.e
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlCharStringLiteral;
 import org.apache.calcite.sql.SqlDataTypeSpec;
+import org.apache.calcite.sql.SqlDynamicParam;
+import org.apache.calcite.sql.SqlFunctionCategory;
+import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlOperator;
+import org.apache.calcite.sql.SqlUnresolvedFunction;
 import org.apache.calcite.sql.SqlUserDefinedTypeNameSpec;
 import org.apache.calcite.sql.fun.SqlCastFunction;
 import org.apache.calcite.sql.fun.SqlPositionFunction;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.infra.federation.optimizer.converter.context.ConverterContextHolder;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 
 import java.util.ArrayList;
@@ -50,6 +57,10 @@ public final class FunctionConverter implements SQLSegmentConverter<FunctionSegm
         if ("CAST".equalsIgnoreCase(segment.getFunctionName())) {
             return Optional.of(new SqlBasicCall(new SqlCastFunction(), getSqlNodes(segment.getParameters()), SqlParserPos.ZERO));
         }
+        if ("CONCAT".equalsIgnoreCase(segment.getFunctionName())) {
+            return Optional.of(new SqlBasicCall(new SqlUnresolvedFunction(new SqlIdentifier("CONCAT", SqlParserPos.ZERO), 
+                    null, null, null, null, SqlFunctionCategory.USER_DEFINED_FUNCTION), getSqlNodes(segment.getParameters()), SqlParserPos.ZERO));
+        }
         return Optional.empty();
     }
     
@@ -64,7 +75,8 @@ public final class FunctionConverter implements SQLSegmentConverter<FunctionSegm
     }
     
     private String getFunctionText(final SqlBasicCall sqlBasicCall) {
-        if (null != sqlBasicCall.getOperator() && sqlBasicCall.getOperator() instanceof SqlCastFunction) {
+        SqlOperator operator;
+        if (null != (operator = sqlBasicCall.getOperator()) && (operator instanceof SqlCastFunction || operator instanceof SqlUnresolvedFunction)) {
             return sqlBasicCall.toString().replace("`", "");
         }
         return sqlBasicCall.toString();
@@ -81,6 +93,9 @@ public final class FunctionConverter implements SQLSegmentConverter<FunctionSegm
                 result.add(dataTypeSegment);
             } else if (operand instanceof SqlCharStringLiteral) {
                 result.add(new LiteralExpressionSegment(getStartIndex(operand), getStopIndex(operand), operand.toString().replace("'", "")));
+            } else if (operand instanceof SqlDynamicParam) {
+                ConverterContextHolder.get().getParameterCount().getAndIncrement();
+                result.add(new ParameterMarkerExpressionSegment(getStartIndex(operand), getStopIndex(operand), ((SqlDynamicParam) operand).getIndex()));
             }
         });
         return result;
@@ -94,6 +109,9 @@ public final class FunctionConverter implements SQLSegmentConverter<FunctionSegm
             }
             if (sqlSegment instanceof DataTypeSegment) {
                 sqlNodes.add(new SqlDataTypeSpec(new SqlUserDefinedTypeNameSpec(((DataTypeSegment) sqlSegment).getDataTypeName(), SqlParserPos.ZERO), SqlParserPos.ZERO));
+            }
+            if (sqlSegment instanceof ParameterMarkerExpressionSegment) {
+                sqlNodes.add(new SqlDynamicParam(((ParameterMarkerExpressionSegment) sqlSegment).getParameterMarkerIndex(), SqlParserPos.ZERO));
             }
         });
         return sqlNodes.toArray(new SqlNode[0]);

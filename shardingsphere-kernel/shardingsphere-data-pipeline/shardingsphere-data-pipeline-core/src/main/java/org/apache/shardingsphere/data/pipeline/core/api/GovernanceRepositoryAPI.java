@@ -43,7 +43,7 @@ public interface GovernanceRepositoryAPI {
      * @param shardingItem sharding item
      * @return job progress
      */
-    JobProgress getJobProgress(long jobId, int shardingItem);
+    JobProgress getJobProgress(String jobId, int shardingItem);
     
     /**
      * Persist job check result.
@@ -51,7 +51,7 @@ public interface GovernanceRepositoryAPI {
      * @param jobId job id
      * @param checkSuccess check success
      */
-    void persistJobCheckResult(long jobId, boolean checkSuccess);
+    void persistJobCheckResult(String jobId, boolean checkSuccess);
     
     /**
      * Get job check result.
@@ -59,21 +59,21 @@ public interface GovernanceRepositoryAPI {
      * @param jobId job id
      * @return job check result
      */
-    Optional<Boolean> getJobCheckResult(long jobId);
+    Optional<Boolean> getJobCheckResult(String jobId);
     
     /**
      * Delete job progress.
      *
      * @param jobId job id
      */
-    void deleteJobProgress(long jobId);
+    void deleteJobProgress(String jobId);
     
     /**
      * Delete job.
      *
      * @param jobId job id
      */
-    void deleteJob(long jobId);
+    void deleteJob(String jobId);
     
     /**
      * Get node's sub-nodes list.

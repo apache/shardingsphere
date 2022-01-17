@@ -22,13 +22,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.Channel;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.GroupedDataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
@@ -56,17 +56,17 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
     
     private final ImporterConfiguration importerConfig;
     
-    private final DataSourceManager dataSourceManager;
+    private final PipelineDataSourceManager dataSourceManager;
     
     private final PipelineSQLBuilder pipelineSqlBuilder;
     
     @Setter
-    private Channel channel;
+    private PipelineChannel channel;
     
     @Setter
     private ImporterListener importerListener;
     
-    protected AbstractImporter(final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
+    protected AbstractImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
         this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
         pipelineSqlBuilder = createSQLBuilder(importerConfig.getShardingColumnsMap());
@@ -98,12 +98,11 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
                 if (null != importerListener) {
                     importerListener.recordsImported(records);
                 }
+                channel.ack(records);
                 if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
-                    channel.ack();
                     break;
                 }
             }
-            channel.ack();
         }
         log.info("importer write, rowCount={}", rowCount);
     }

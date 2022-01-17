@@ -75,7 +75,6 @@ public final class FrontendChannelInboundHandlerTest {
         frontendChannelInboundHandler = new FrontendChannelInboundHandler(frontendEngine, channel);
         channel.pipeline().addLast(frontendChannelInboundHandler);
         connectionSession = getConnectionSession();
-        connectionSession.setBackendConnection(backendConnection);
     }
     
     @SneakyThrows
@@ -109,16 +108,8 @@ public final class FrontendChannelInboundHandlerTest {
         RuntimeException cause = new RuntimeException("assertChannelReadNotAuthenticatedAndExceptionOccur");
         doThrow(cause).when(authenticationEngine).authenticate(any(ChannelHandlerContext.class), any(PacketPayload.class));
         DatabasePacket expectedPacket = mock(DatabasePacket.class);
-        when(frontendEngine.getCommandExecuteEngine().getErrorPacket(cause, connectionSession)).thenReturn(expectedPacket);
+        when(frontendEngine.getCommandExecuteEngine().getErrorPacket(cause)).thenReturn(expectedPacket);
         channel.writeInbound(Unpooled.EMPTY_BUFFER);
         assertThat(channel.readOutbound(), is(expectedPacket));
-    }
-    
-    @Test
-    public void assertChannelInactive() throws Exception {
-        channel.register();
-        channel.close().sync();
-        verify(backendConnection).closeAllResources();
-        verify(frontendEngine).release(connectionSession);
     }
 }

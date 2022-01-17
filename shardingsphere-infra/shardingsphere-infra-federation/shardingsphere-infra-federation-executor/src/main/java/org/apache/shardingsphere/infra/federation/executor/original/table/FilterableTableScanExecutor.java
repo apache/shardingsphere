@@ -38,7 +38,7 @@ import org.apache.calcite.tools.RelBuilder;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
@@ -61,6 +61,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
+import org.apache.shardingsphere.infra.federation.executor.FederationContext;
+import org.apache.shardingsphere.infra.federation.executor.original.row.EmptyRowEnumerator;
 import org.apache.shardingsphere.infra.federation.executor.original.row.FilterableRowEnumerator;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationTableMetaData;
@@ -105,24 +107,18 @@ public final class FilterableTableScanExecutor {
     
     private final JDBCExecutorCallback<? extends ExecuteResult> callback;
     
-    private final ConfigurationProperties props;
-    
     private final OptimizerContext optimizerContext;
     
-    private final String schemaName;
+    private final FilterableTableScanExecutorContext executorContext;
     
-    private final List<Object> parameters;
-    
-    public FilterableTableScanExecutor(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final JDBCExecutor jdbcExecutor, 
-                                       final JDBCExecutorCallback<? extends ExecuteResult> callback, final ConfigurationProperties props, 
-                                       final OptimizerContext optimizerContext, final String schemaName, final List<Object> parameters) {
+    public FilterableTableScanExecutor(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
+                                       final JDBCExecutor jdbcExecutor, final JDBCExecutorCallback<? extends ExecuteResult> callback, 
+                                       final OptimizerContext optimizerContext, final FilterableTableScanExecutorContext executorContext) {
         this.jdbcExecutor = jdbcExecutor;
         this.callback = callback;
         this.prepareEngine = prepareEngine;
-        this.props = props;
         this.optimizerContext = optimizerContext;
-        this.schemaName = schemaName;
-        this.parameters = parameters;
+        this.executorContext = executorContext;
     }
     
     /**
@@ -133,13 +129,19 @@ public final class FilterableTableScanExecutor {
      * @return query results
      */
     public Enumerable<Object[]> execute(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext) {
+        String schemaName = executorContext.getSchemaName();
         DatabaseType databaseType = DatabaseTypeRegistry.getTrunkDatabaseType(optimizerContext.getParserContexts().get(schemaName).getDatabaseType().getName());
         SqlString sqlString = createSQLString(tableMetaData, scanContext, databaseType);
         // TODO replace sql parse with sql convert
-        SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getName(), optimizerContext.getSqlParserRule()).parse(sqlString.getSql(), false);
-        LogicSQL logicSQL = createLogicSQL(optimizerContext.getMetaDataMap(), sqlString.getSql(), getParameters(sqlString.getDynamicParameters()), sqlStatement);
-        ShardingSphereMetaData metaData = optimizerContext.getMetaDataMap().get(schemaName);
+        FederationContext federationContext = executorContext.getFederationContext();
+        LogicSQL logicSQL = createLogicSQL(federationContext.getMetaDataMap(), sqlString, databaseType);
+        ShardingSphereMetaData metaData = federationContext.getMetaDataMap().get(schemaName);
+        ConfigurationProperties props = executorContext.getProps();
         ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, metaData, props);
+        if (federationContext.isPreview()) {
+            federationContext.getExecutionUnits().addAll(context.getExecutionUnits());
+            return createEmptyEnumerable();
+        }
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
             setParameters(executionGroupContext.getInputGroups());
@@ -187,12 +189,13 @@ public final class FilterableTableScanExecutor {
         }
         List<Object> result = new ArrayList<>();
         for (Integer each : parameterIndices) {
-            result.add(parameters.get(each));
+            result.add(executorContext.getFederationContext().getLogicSQL().getParameters().get(each));
         }
         return result;
     }
     
     private RelNode createRelNode(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext) {
+        String schemaName = executorContext.getSchemaName();
         RelOptCluster relOptCluster = optimizerContext.getPlannerContexts().get(schemaName).getConverter().getCluster();
         RelOptSchema relOptSchema = (RelOptSchema) optimizerContext.getPlannerContexts().get(schemaName).getValidator().getCatalogReader();
         RelBuilder builder = RelFactories.LOGICAL_BUILDER.create(relOptCluster, relOptSchema).scan(tableMetaData.getName()).filter(scanContext.getFilters());
@@ -220,8 +223,21 @@ public final class FilterableTableScanExecutor {
         };
     }
     
-    private LogicSQL createLogicSQL(final Map<String, ShardingSphereMetaData> metaDataMap, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
+    private LogicSQL createLogicSQL(final Map<String, ShardingSphereMetaData> metaDataMap, final SqlString sqlString, final DatabaseType databaseType) {
+        String sql = sqlString.getSql().replace("\n", " ");
+        SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getName(), optimizerContext.getSqlParserRule()).parse(sql, false);
+        List<Object> parameters = getParameters(sqlString.getDynamicParameters());
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataMap, parameters, sqlStatement, sql);
         return new LogicSQL(sqlStatementContext, sql, parameters);
+    }
+    
+    private AbstractEnumerable<Object[]> createEmptyEnumerable() {
+        return new AbstractEnumerable<Object[]>() {
+            
+            @Override
+            public Enumerator<Object[]> enumerator() {
+                return new EmptyRowEnumerator();
+            }
+        };
     }
 }

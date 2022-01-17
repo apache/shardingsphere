@@ -25,6 +25,7 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -47,13 +48,19 @@ public final class MockedDataSource implements DataSource {
     
     private String password;
     
+    private Integer maxPoolSize;
+    
+    private Integer minPoolSize;
+    
     private List<String> connectionInitSqls;
+    
+    private Properties jdbcUrlProperties;
     
     @SuppressWarnings("MagicConstant")
     @Override
     public Connection getConnection() throws SQLException {
         Connection result = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaData().getURL()).thenReturn("jdbc:mock");
+        when(result.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
         when(result.createStatement(anyInt(), anyInt(), anyInt()).getConnection()).thenReturn(result);
         return result;
     }

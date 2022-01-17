@@ -62,8 +62,8 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
     private Properties props = new Properties();
     
     @Override
-    public void checkDatabaseDiscoveryConfiguration(final String schemaName, final Map<String, DataSource> dataSourceMap) throws SQLException {
-        try (Connection connection = dataSourceMap.get(oldPrimaryDataSource).getConnection();
+    public void checkDatabaseDiscoveryConfiguration(final String schemaName, final DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             checkPluginIsActive(statement);
             checkMemberCount(statement);

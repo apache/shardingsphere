@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
 
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,7 +33,7 @@ public final class SQL92DataSourceMetaData implements DataSourceMetaData {
     
     private static final int DEFAULT_PORT = -1;
     
-    private final String hostName;
+    private final String hostname;
     
     private final int port;
     
@@ -47,9 +48,19 @@ public final class SQL92DataSourceMetaData implements DataSourceMetaData {
         if (!matcher.find()) {
             throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
         }
-        hostName = "";
+        hostname = "";
         port = DEFAULT_PORT;
         catalog = "";
         schema = null;
+    }
+    
+    @Override
+    public Properties getQueryProperties() {
+        return new Properties();
+    }
+    
+    @Override
+    public Properties getDefaultQueryProperties() {
+        return new Properties();
     }
 }

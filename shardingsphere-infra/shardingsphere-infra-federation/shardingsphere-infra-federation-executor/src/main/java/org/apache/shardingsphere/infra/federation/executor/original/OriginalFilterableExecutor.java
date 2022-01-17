@@ -20,14 +20,16 @@ package org.apache.shardingsphere.infra.federation.executor.original;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
+import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 import org.apache.shardingsphere.infra.federation.executor.original.table.FilterableTableScanExecutor;
+import org.apache.shardingsphere.infra.federation.executor.original.table.FilterableTableScanExecutorContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
@@ -69,23 +71,26 @@ public final class OriginalFilterableExecutor implements FederationExecutor {
     
     @Override
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
-                                  final JDBCExecutorCallback<? extends ExecuteResult> callback, final LogicSQL logicSQL) throws SQLException {
-        PreparedStatement preparedStatement = createConnection(prepareEngine, callback, logicSQL.getParameters()).prepareStatement(SQLUtil.trimSemicolon(logicSQL.getSql()));
+                                  final JDBCExecutorCallback<? extends ExecuteResult> callback, final FederationContext federationContext) throws SQLException {
+        LogicSQL logicSQL = federationContext.getLogicSQL();
+        Connection connection = createConnection(prepareEngine, callback, federationContext);
+        PreparedStatement preparedStatement = connection.prepareStatement(SQLUtil.trimSemicolon(logicSQL.getSql()));
         setParameters(preparedStatement, logicSQL.getParameters());
         this.statement = preparedStatement;
         return preparedStatement.executeQuery();
     }
     
     private Connection createConnection(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
-                                        final JDBCExecutorCallback<? extends ExecuteResult> callback, final List<Object> parameters) throws SQLException {
+                                        final JDBCExecutorCallback<? extends ExecuteResult> callback, final FederationContext federationContext) throws SQLException {
         Connection result = DriverManager.getConnection(CONNECTION_URL, optimizerContext.getParserContexts().get(schemaName).getDialectProps());
-        addSchema(result.unwrap(CalciteConnection.class), prepareEngine, callback, parameters);
+        addSchema(result.unwrap(CalciteConnection.class), prepareEngine, callback, federationContext);
         return result;
     }
     
     private void addSchema(final CalciteConnection connection, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
-                           final JDBCExecutorCallback<? extends ExecuteResult> callback, final List<Object> parameters) throws SQLException {
-        FilterableTableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, props, optimizerContext, schemaName, parameters);
+                           final JDBCExecutorCallback<? extends ExecuteResult> callback, final FederationContext federationContext) throws SQLException {
+        FilterableTableScanExecutorContext executorContext = new FilterableTableScanExecutorContext(schemaName, props, federationContext);
+        FilterableTableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, executorContext);
         FilterableSchema schema = new FilterableSchema(optimizerContext.getFederationMetaData().getSchemas().get(schemaName), executor);
         connection.getRootSchema().add(schemaName, schema);
         connection.setSchema(schemaName);

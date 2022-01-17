@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.metadata;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
@@ -87,10 +87,10 @@ public final class MetaDataContexts implements AutoCloseable {
     }
     
     /**
-     * Get mata data.
+     * Get meta data.
      *
      * @param schemaName schema name
-     * @return mata data
+     * @return meta data
      */
     public ShardingSphereMetaData getMetaData(final String schemaName) {
         return metaDataMap.get(schemaName);

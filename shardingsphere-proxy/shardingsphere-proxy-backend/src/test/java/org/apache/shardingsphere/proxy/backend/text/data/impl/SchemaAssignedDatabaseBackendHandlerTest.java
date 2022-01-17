@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.data.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
@@ -95,13 +95,14 @@ public final class SchemaAssignedDatabaseBackendHandlerTest {
         for (int i = 0; i < 10; i++) {
             ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
             when(metaData.isComplete()).thenReturn(true);
+            when(metaData.hasDataSource()).thenReturn(true);
             when(metaData.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
             result.put(String.format(SCHEMA_PATTERN, i), metaData);
         }
         return result;
     }
     
-    private void mockDatabaseCommunicationEngine(final ResponseHeader responseHeader) throws SQLException {
+    private void mockDatabaseCommunicationEngine(final ResponseHeader responseHeader) {
         when(databaseCommunicationEngine.execute()).thenReturn(responseHeader);
         when(databaseCommunicationEngineFactory.newTextProtocolInstance(any(), anyString(), any())).thenReturn(databaseCommunicationEngine);
     }

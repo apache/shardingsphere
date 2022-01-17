@@ -20,12 +20,13 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest;
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.MemoryChannel;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.distribution.MemoryPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
@@ -33,8 +34,6 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.DeleteR
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.WriteRowsEvent;
-import org.apache.shardingsphere.infra.config.datasource.JdbcUri;
-import org.apache.shardingsphere.infra.config.datasource.jdbc.config.impl.StandardJDBCDataSourceConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -53,25 +52,22 @@ import static org.junit.Assert.assertTrue;
 
 public final class MySQLIncrementalDumperTest {
     
-    private static final String URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
-    
     private MySQLIncrementalDumper incrementalDumper;
     
-    private MemoryChannel channel;
+    private MemoryPipelineChannel channel;
     
     @Before
     public void setUp() {
         DumperConfiguration dumperConfig = mockDumperConfiguration();
         initTableData(dumperConfig);
-        channel = new MemoryChannel(records -> {
-        });
+        channel = new MemoryPipelineChannel(records -> { });
         incrementalDumper = new MySQLIncrementalDumper(dumperConfig, new BinlogPosition("binlog-000001", 4L));
         incrementalDumper.setChannel(channel);
     }
     
     private DumperConfiguration mockDumperConfiguration() {
         DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceConfig(new StandardJDBCDataSourceConfiguration(URL, "root", "root"));
+        result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "root", "root"));
         Map<String, String> tableNameMap = new HashedMap<>(1);
         tableNameMap.put("t_order", "t_order");
         result.setTableNameMap(tableNameMap);
@@ -80,7 +76,7 @@ public final class MySQLIncrementalDumperTest {
     
     @SneakyThrows(SQLException.class)
     private void initTableData(final DumperConfiguration dumperConfig) {
-        DataSource dataSource = new DataSourceManager().getDataSource(dumperConfig.getDataSourceConfig());
+        DataSource dataSource = new PipelineDataSourceManager().getDataSource(dumperConfig.getDataSourceConfig());
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -97,7 +93,7 @@ public final class MySQLIncrementalDumperTest {
         List<Serializable[]> rows = new ArrayList<>(1);
         rows.add(new String[]{"1", "order"});
         rowsEvent.setAfterRows(rows);
-        invokeHandleEvent(new JdbcUri(URL), rowsEvent);
+        invokeHandleEvent(rowsEvent);
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
         assertTrue(records.get(0) instanceof DataRecord);
@@ -115,7 +111,7 @@ public final class MySQLIncrementalDumperTest {
         afterRows.add(new String[]{"1", "order_new"});
         rowsEvent.setBeforeRows(beforeRows);
         rowsEvent.setAfterRows(afterRows);
-        invokeHandleEvent(new JdbcUri(URL), rowsEvent);
+        invokeHandleEvent(rowsEvent);
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
         assertTrue(records.get(0) instanceof DataRecord);
@@ -130,7 +126,7 @@ public final class MySQLIncrementalDumperTest {
         List<Serializable[]> rows = new ArrayList<>(1);
         rows.add(new String[]{"1", "order"});
         rowsEvent.setBeforeRows(rows);
-        invokeHandleEvent(new JdbcUri(URL), rowsEvent);
+        invokeHandleEvent(rowsEvent);
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
         assertTrue(records.get(0) instanceof DataRecord);
@@ -139,7 +135,7 @@ public final class MySQLIncrementalDumperTest {
     
     @Test
     public void assertPlaceholderEvent() {
-        invokeHandleEvent(new JdbcUri("jdbc:mysql://127.0.0.1:3306/test_db"), new PlaceholderEvent());
+        invokeHandleEvent(new PlaceholderEvent());
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
         assertTrue(records.get(0) instanceof PlaceholderRecord);
@@ -149,14 +145,14 @@ public final class MySQLIncrementalDumperTest {
     public void assertRowsEventFiltered() {
         WriteRowsEvent rowsEvent = new WriteRowsEvent();
         rowsEvent.setSchemaName("unknown_schema");
-        invokeHandleEvent(new JdbcUri(URL), rowsEvent);
+        invokeHandleEvent(rowsEvent);
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
         assertTrue(records.get(0) instanceof PlaceholderRecord);
     }
     
     @SneakyThrows({NoSuchMethodException.class, ReflectiveOperationException.class})
-    private void invokeHandleEvent(final JdbcUri uri, final AbstractBinlogEvent event) {
-        ReflectionUtil.invokeMethod(incrementalDumper, "handleEvent", new Class[]{JdbcUri.class, AbstractBinlogEvent.class}, new Object[]{uri, event});
+    private void invokeHandleEvent(final AbstractBinlogEvent event) {
+        ReflectionUtil.invokeMethod(incrementalDumper, "handleEvent", new Class[]{String.class, AbstractBinlogEvent.class}, new Object[]{"", event});
     }
 }

@@ -73,7 +73,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDef
     
     private void checkToBeAlteredRules(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement,
                                        final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
+        Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName).collect(Collectors.toSet());
         Collection<String> notExistedRuleNames = getToBeAlteredRuleNames(sqlStatement).stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
         DistSQLException.predictionThrow(notExistedRuleNames.isEmpty(), new RequiredRuleMissedException("database discovery", schemaName, notExistedRuleNames));
     }
@@ -125,13 +125,13 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDef
     
     private void dropRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeAlteredRuleConfig) {
         for (DatabaseDiscoveryDataSourceRuleConfiguration each : toBeAlteredRuleConfig.getDataSources()) {
-            dropDataSourceRuleConfiguration(currentRuleConfig, each.getName());
+            dropDataSourceRuleConfiguration(currentRuleConfig, each.getGroupName());
         }
     }
     
     private void dropDataSourceRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String toBeDroppedRuleNames) {
         Optional<DatabaseDiscoveryDataSourceRuleConfiguration> toBeDroppedDataSourceRuleConfig = currentRuleConfig.getDataSources().stream()
-                .filter(each -> each.getName().equals(toBeDroppedRuleNames)).findAny();
+                .filter(each -> each.getGroupName().equals(toBeDroppedRuleNames)).findAny();
         Preconditions.checkState(toBeDroppedDataSourceRuleConfig.isPresent());
         currentRuleConfig.getDataSources().remove(toBeDroppedDataSourceRuleConfig.get());
     }

@@ -4,15 +4,15 @@ weight = 9
 chapter = true
 +++
 
-## GPG Settings
+## Preparation
+
+### GPG Setup
 
 Please refer to [Release Guide](/en/contribute/release/).
 
-## Apache Maven Central Repository Release
+### Setting settings.xml
 
-**1. Set settings.xml**
-
-Add the following template to `~/.m2/settings.xml`, all the passwords need to be filled in after encryption. 
+Add the following template to `~/.m2/settings.xml`, all the passwords need to be filled in after encryption.
 For encryption settings, please see [here](http://maven.apache.org/guides/mini/guide-encryption.html).
 
 ```xml
@@ -32,7 +32,32 @@ For encryption settings, please see [here](http://maven.apache.org/guides/mini/g
 </settings>
 ```
 
-**2. Update Release Notes And Example Version**
+## Publishing Apache Snapshot
+
+### Deploying to Apache Snapshot Repository
+
+**1. Ensure that building project can be succeeded**
+
+```bash
+./mvnw clean install
+```
+
+**2. Deploying to Snapshot Repository**
+
+```bash
+./mvnw deploy -DrepositoryId=apache.snapshots.https -T1C
+```
+
+**3. Check if artifacts present in Snapshot Repository**
+
+<https://repository.apache.org/content/groups/snapshots/org/apache/shardingsphere/elasticjob/>
+
+## Publishing Apache Release
+
+### Deploying to Apache Maven Central Repository
+
+
+**1. Update Release Notes And Example Version**
 
 Update the following file in master branch, and submit a PR to master branch:
 
@@ -42,7 +67,7 @@ https://github.com/apache/shardingsphere-elasticjob/blob/master/RELEASE-NOTES.md
 
 Update the POM of the module `examples`, changing the version from ${CURRENT.VERSION} to ${RELEASE.VERSION}.
 
-**3. Create Release Branch**
+**2. Create Release Branch**
 
 Suppose ElasticJob source codes downloaded from github is under `~/elasticjob/` directory and the version to be released is `${RELEASE.VERSION}`. 
 Create `${RELEASE.VERSION}-release` branch, where all the following operations are performed.
@@ -56,7 +81,7 @@ git checkout -b ${RELEASE.VERSION}-release
 git push origin ${RELEASE.VERSION}-release
 ```
 
-**4. Pre-Release Check**
+**3. Pre-Release Check**
 
 ```shell
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github username}
@@ -68,7 +93,7 @@ mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 
 -DdryRun=true: rehearsal, which means not to generate or submit new version number and new tag.
 
-**5. Prepare for the Release**
+**4. Prepare for the Release**
 
 First, clean local pre-release check information.
 
@@ -91,7 +116,7 @@ git push origin ${RELEASE.VERSION}-release
 git push origin --tags
 ```
 
-**6. Deploy the Release**
+**5. Deploy the Release**
 
 ```shell
 mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -Dusername=${Github username}
@@ -102,7 +127,7 @@ Visit [https://repository.apache.org/#stagingRepositories](https://repository.ap
 Click `Close` to tell Nexus that the construction is finished, because only in this way, this version can be usable. 
 If there is any problem in gpg signature, `Close` will fail, but you can see the failure information through `Activity`.
 
-## Apache SVN Repository Release
+### Apache SVN Repository Release
 
 **1. Checkout ShardingSphere Release Directory**
 
@@ -154,7 +179,7 @@ svn add *
 svn --username=${APACHE LDAP username} commit -m "release elasticjob-${RELEASE.VERSION}"
 ```
 
-## Check Release
+### Check Release
 
 **Check sha512 hash**
 
@@ -335,7 +360,7 @@ I will process to publish the release and send ANNOUNCE.
 
 ```
 
-## Finish the Release
+### Finish the Release
 
 **1. Move source packages, binary packages and KEYS from the `dev` directory to `release` directory**
 

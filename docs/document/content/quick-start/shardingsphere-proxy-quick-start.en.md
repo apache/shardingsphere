@@ -12,7 +12,7 @@ Edit `%SHARDINGSPHERE_PROXY_HOME%/conf/server.yaml`.
 
 > %SHARDINGSPHERE_PROXY_HOME% is the shardingsphere proxy extract path. for example: /opt/shardingsphere-proxy-bin/
 
-Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/configuration/) for more details.
+Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/yaml-config/) for more details.
 
 ## Import Dependencies
 

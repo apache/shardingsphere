@@ -20,10 +20,13 @@ package org.apache.shardingsphere.data.pipeline.core.prepare;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPosition;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,18 +43,22 @@ import static org.junit.Assert.assertThat;
 
 public final class InventoryTaskSplitterTest {
     
+    private static final ExecuteEngine EXECUTE_ENGINE = PipelineContextUtil.getExecuteEngine();
+    
+    private static final PipelineChannelFactory PIPELINE_CHANNEL_FACTORY = PipelineContextUtil.getPipelineChannelFactory();
+    
     private RuleAlteredJobContext jobContext;
     
     private TaskConfiguration taskConfig;
     
-    private DataSourceManager dataSourceManager;
+    private PipelineDataSourceManager dataSourceManager;
     
     private InventoryTaskSplitter inventoryTaskSplitter;
     
     @Before
     public void setUp() {
         initJobContext();
-        dataSourceManager = new DataSourceManager();
+        dataSourceManager = new PipelineDataSourceManager();
         inventoryTaskSplitter = new InventoryTaskSplitter();
     }
     
@@ -59,7 +66,7 @@ public final class InventoryTaskSplitterTest {
     public void assertSplitInventoryDataWithEmptyTable() throws SQLException {
         taskConfig.getHandleConfig().setShardingSize(10);
         initEmptyTablePrimaryEnvironment(taskConfig.getDumperConfig());
-        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext, taskConfig, dataSourceManager);
+        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext, taskConfig, dataSourceManager, PIPELINE_CHANNEL_FACTORY, EXECUTE_ENGINE);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
         assertThat(((PrimaryKeyPosition) actual.get(0).getProgress().getPosition()).getBeginValue(), is(0L));
@@ -70,7 +77,7 @@ public final class InventoryTaskSplitterTest {
     public void assertSplitInventoryDataWithIntPrimary() throws SQLException {
         taskConfig.getHandleConfig().setShardingSize(10);
         initIntPrimaryEnvironment(taskConfig.getDumperConfig());
-        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext, taskConfig, dataSourceManager);
+        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext, taskConfig, dataSourceManager, PIPELINE_CHANNEL_FACTORY, EXECUTE_ENGINE);
         assertNotNull(actual);
         assertThat(actual.size(), is(10));
         assertThat(((PrimaryKeyPosition) actual.get(9).getProgress().getPosition()).getBeginValue(), is(91L));
@@ -80,7 +87,7 @@ public final class InventoryTaskSplitterTest {
     @Test
     public void assertSplitInventoryDataWithCharPrimary() throws SQLException {
         initCharPrimaryEnvironment(taskConfig.getDumperConfig());
-        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext, taskConfig, dataSourceManager);
+        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext, taskConfig, dataSourceManager, PIPELINE_CHANNEL_FACTORY, EXECUTE_ENGINE);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }
@@ -88,7 +95,7 @@ public final class InventoryTaskSplitterTest {
     @Test
     public void assertSplitInventoryDataWithUnionPrimary() throws SQLException {
         initUnionPrimaryEnvironment(taskConfig.getDumperConfig());
-        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext, taskConfig, dataSourceManager);
+        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext, taskConfig, dataSourceManager, PIPELINE_CHANNEL_FACTORY, EXECUTE_ENGINE);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }
@@ -96,7 +103,7 @@ public final class InventoryTaskSplitterTest {
     @Test
     public void assertSplitInventoryDataWithoutPrimary() throws SQLException {
         initNoPrimaryEnvironment(taskConfig.getDumperConfig());
-        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext, taskConfig, dataSourceManager);
+        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext, taskConfig, dataSourceManager, PIPELINE_CHANNEL_FACTORY, EXECUTE_ENGINE);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }

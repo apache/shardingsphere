@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
@@ -76,7 +77,7 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     }
     
     private Collection<String> getAllTableNames(final String schemaName) {
-        Collection<String> allTableNames = ProxyContext.getInstance().getMetaData(schemaName).getSchema().getAllTableNames();
+        Collection<String> allTableNames = ProxyContext.getInstance().getMetaData(schemaName).getSchema().getTables().values().stream().map(TableMetaData::getName).collect(Collectors.toList());
         if (showTablesStatement.getFilter().isPresent()) {
             Optional<String> pattern = showTablesStatement.getFilter().get().getLike().map(each -> SQLUtil.convertLikePatternToRegex(each.getPattern()));
             return pattern.isPresent() ? allTableNames.stream().filter(each -> each.matches(pattern.get())).collect(Collectors.toList()) : allTableNames;

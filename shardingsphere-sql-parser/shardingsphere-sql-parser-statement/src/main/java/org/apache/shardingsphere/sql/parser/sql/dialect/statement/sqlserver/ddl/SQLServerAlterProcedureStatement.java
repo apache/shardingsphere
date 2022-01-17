@@ -25,5 +25,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
  * SQLServer alter procedure statement.
  */
 @ToString
-public class SQLServerAlterProcedureStatement extends AlterProcedureStatement implements SQLServerStatement {
+public final class SQLServerAlterProcedureStatement extends AlterProcedureStatement implements SQLServerStatement {
 }

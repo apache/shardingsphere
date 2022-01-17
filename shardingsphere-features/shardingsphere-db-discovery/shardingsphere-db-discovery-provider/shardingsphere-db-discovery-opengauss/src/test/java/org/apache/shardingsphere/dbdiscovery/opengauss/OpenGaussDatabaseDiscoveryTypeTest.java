@@ -58,10 +58,7 @@ public final class OpenGaussDatabaseDiscoveryTypeTest {
         when(resultSet.getString("local_role")).thenReturn("Primary");
         when(resultSet.getString("db_state")).thenReturn("Normal");
         when(resultSet.getString("db_state")).thenReturn("Sync");
-        Map<String, DataSource> dataSourceMap = mock(HashMap.class);
-        when(dataSourceMap.get(null)).thenReturn(dataSource);
-        ogHaType.getProps().setProperty("groupName", "group_name");
-        ogHaType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSourceMap);
+        ogHaType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSource);
     }
     
     @Test
@@ -92,7 +89,6 @@ public final class OpenGaussDatabaseDiscoveryTypeTest {
         for (int i = 0; i < 3; i++) {
             dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
         }
-        ogHaType.getProps().setProperty("groupName", "group_name");
         ogHaType.updatePrimaryDataSource("discovery_db", dataSourceMap, Collections.emptySet(), "group_name");
         assertThat(ogHaType.getPrimaryDataSource(), is("ds_2"));
     }

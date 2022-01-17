@@ -100,7 +100,7 @@ public final class ProjectionEngine {
     }
 
     private ParameterMarkerProjection createProjection(final ParameterMarkerExpressionSegment projectionSegment) {
-        return new ParameterMarkerProjection(projectionSegment.getParameterMarkerIndex(), projectionSegment.getAlias().orElse(null));
+        return new ParameterMarkerProjection(projectionSegment.getParameterMarkerIndex(), projectionSegment.getParameterMarkerType(), projectionSegment.getAlias().orElse(null));
     }
     
     private SubqueryProjection createProjection(final SubqueryProjectionSegment projectionSegment) {

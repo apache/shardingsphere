@@ -49,14 +49,14 @@ docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -v /${you
 
 **Notice**
 
-* If you want to import external jar packages, whose directory is supposed to volume to /opt/shardingsphere-proxy/ext-lib.
+* If you need to import external jar packages (such as MySQL/openGauss JDBC driver, custom algorithm, etc.), you may bind mount a volume to `/opt/shardingsphere-proxy/ext-lib`.
 
 ## Access ShardingSphere-Proxy
 
 It is in the same way as connecting to PostgreSQL.
 
 ```bash
-psql -U ${your_user_name} -h ${your_host} -p 13308
+psql -U ${your_username} -h ${your_host} -p 13308
 ```
 
 ## FAQ

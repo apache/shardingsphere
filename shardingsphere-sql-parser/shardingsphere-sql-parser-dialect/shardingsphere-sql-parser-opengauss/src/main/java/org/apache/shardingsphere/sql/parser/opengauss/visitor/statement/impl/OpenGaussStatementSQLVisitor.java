@@ -101,6 +101,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Whe
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.UnionType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -190,7 +191,14 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
-        return new ParameterMarkerValue(currentParameterIndex++);
+        if (null != ctx.DOLLAR_()) {
+            int parameterIndex = ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().intValue();
+            if (parameterIndex > currentParameterIndex) {
+                currentParameterIndex = parameterIndex;
+            }
+            return new ParameterMarkerValue(parameterIndex - 1, ParameterMarkerType.DOLLAR);
+        }
+        return new ParameterMarkerValue(currentParameterIndex++, ParameterMarkerType.QUESTION);
     }
     
     @Override
@@ -314,7 +322,8 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
             return visit(ctx.columnref());
         }
         if (null != ctx.parameterMarker()) {
-            return new ParameterMarkerExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
+            ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
+            return new ParameterMarkerExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), parameterMarker.getValue(), parameterMarker.getType());
         }
         if (null != ctx.aexprConst()) {
             ASTNode astNode = visit(ctx.aexprConst());
@@ -641,7 +650,9 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
             expressionSegment = (ExpressionSegment) visit(ctx.aExpr());
         } else {
             String value = ctx.start.getInputStream().getText(new Interval(ctx.VALUES().getSymbol().getStartIndex(), ctx.stop.getStopIndex()));
-            expressionSegment = new CommonExpressionSegment(ctx.VALUES().getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), value);
+            FunctionSegment functionSegment = new FunctionSegment(ctx.VALUES().getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), ctx.VALUES().getText(), value);
+            functionSegment.getParameters().add(new ColumnSegment(ctx.name().getStart().getStartIndex(), ctx.name().getStop().getStopIndex(), new IdentifierValue(ctx.name().getText())));
+            expressionSegment = functionSegment;
         }
         return new ColumnAssignmentSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), columnSegments, expressionSegment);
     }

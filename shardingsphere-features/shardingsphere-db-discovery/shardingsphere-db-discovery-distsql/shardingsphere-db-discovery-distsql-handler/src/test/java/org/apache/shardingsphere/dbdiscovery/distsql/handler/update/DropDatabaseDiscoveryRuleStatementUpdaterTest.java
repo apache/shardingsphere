@@ -21,8 +21,8 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,12 +50,12 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     private final DropDatabaseDiscoveryRuleStatementUpdater updater = new DropDatabaseDiscoveryRuleStatementUpdater();
     
     @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
+    public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), null);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutToBeDroppedRules() throws RuleDefinitionViolationException {
+    public void assertCheckSQLStatementWithoutToBeDroppedRules() throws DistSQLException {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()));
     }
     

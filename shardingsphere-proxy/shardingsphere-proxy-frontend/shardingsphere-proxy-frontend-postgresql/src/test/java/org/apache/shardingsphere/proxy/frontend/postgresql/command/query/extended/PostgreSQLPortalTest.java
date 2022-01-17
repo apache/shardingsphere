@@ -19,11 +19,11 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatement;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLDataRowPacket;
-import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.data.impl.BinaryQueryResponseCell;
@@ -61,7 +61,7 @@ import static org.mockito.Mockito.when;
 public final class PostgreSQLPortalTest {
     
     @Mock
-    private DatabaseCommunicationEngine databaseCommunicationEngine;
+    private JDBCDatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Mock
     private TextProtocolBackendHandler textProtocolBackendHandler;
@@ -177,7 +177,7 @@ public final class PostgreSQLPortalTest {
     }
     
     @SneakyThrows
-    private void setDatabaseCommunicationEngine(final DatabaseCommunicationEngine databaseCommunicationEngine) {
+    private void setDatabaseCommunicationEngine(final JDBCDatabaseCommunicationEngine databaseCommunicationEngine) {
         Field field = PostgreSQLPortal.class.getDeclaredField("databaseCommunicationEngine");
         makeAccessible(field);
         field.set(portal, databaseCommunicationEngine);

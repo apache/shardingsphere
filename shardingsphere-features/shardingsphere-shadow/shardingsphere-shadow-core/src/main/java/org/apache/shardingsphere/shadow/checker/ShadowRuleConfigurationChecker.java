@@ -32,19 +32,17 @@ public final class ShadowRuleConfigurationChecker extends AbstractShadowRuleConf
     
     @Override
     protected void checkShadowRuleConfiguration(final ShadowRuleConfiguration config) {
-        if (config.isEnable()) {
-            Map<String, ShadowDataSourceConfiguration> dataSources = config.getDataSources();
-            Map<String, ShadowTableConfiguration> shadowTables = config.getTables();
-            Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithmConfigurations = config.getShadowAlgorithms();
-            String defaultShadowAlgorithmName = config.getDefaultShadowAlgorithmName();
-            sizeCheck(dataSources, shadowTables, defaultShadowAlgorithmName);
-            shadowAlgorithmConfigurationsSizeCheck(shadowAlgorithmConfigurations);
-            shadowTableDataSourcesAutoReferences(shadowTables, dataSources);
-            shadowTableDataSourcesReferencesCheck(shadowTables, dataSources);
-            defaultShadowAlgorithmConfigurationCheck(defaultShadowAlgorithmName, shadowAlgorithmConfigurations);
-            shadowTableAlgorithmsAutoReferences(shadowTables, shadowAlgorithmConfigurations.keySet(), defaultShadowAlgorithmName);
-            shadowTableAlgorithmsReferencesCheck(shadowTables);
-        }
+        Map<String, ShadowDataSourceConfiguration> dataSources = config.getDataSources();
+        Map<String, ShadowTableConfiguration> shadowTables = config.getTables();
+        Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithmConfigurations = config.getShadowAlgorithms();
+        String defaultShadowAlgorithmName = config.getDefaultShadowAlgorithmName();
+        sizeCheck(dataSources, shadowTables, defaultShadowAlgorithmName);
+        shadowAlgorithmConfigurationsSizeCheck(shadowAlgorithmConfigurations);
+        shadowTableDataSourcesAutoReferences(shadowTables, dataSources);
+        shadowTableDataSourcesReferencesCheck(shadowTables, dataSources);
+        defaultShadowAlgorithmConfigurationCheck(defaultShadowAlgorithmName, shadowAlgorithmConfigurations);
+        shadowTableAlgorithmsAutoReferences(shadowTables, shadowAlgorithmConfigurations.keySet(), defaultShadowAlgorithmName);
+        shadowTableAlgorithmsReferencesCheck(shadowTables);
     }
     
     @Override

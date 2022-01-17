@@ -28,9 +28,9 @@ rules:
   tables:
     t_user:
       columns:
-        user_name:
-          plainColumn: user_name_plain
-          cipherColumn: user_name
+        username:
+          plainColumn: username_plain
+          cipherColumn: username
           encryptorName: name-encryptor
         pwd:
           cipherColumn: pwd

@@ -18,12 +18,19 @@ You can report a bug, submit a new function enhancement suggestion, or submit a 
 
 ## Developer Flow
 
-**1. Fork ShardingSphere repo**
+**1. Prepare repository**
 
- - Fork a `ShardingSphere` repo to your own repo to work, then setting upstream.
+Go to [ShardingSphere GitHub Repo]( https://github.com/apache/shardingsphere ) and fork repository to your account.
 
+Clone repository to local machine.
 ```shell
-git remote add upstream https://github.com/apache/shardingsphere.git
+git clone https://github.com/(your_github_name)/shardingsphere.git
+```
+
+Add ShardingSphere remote repository.
+```shell
+git remote add apache https://github.com/apache/shardingsphere.git
+git remote -v
 ```
 
 **2. Choose Issue**
@@ -34,15 +41,17 @@ git remote add upstream https://github.com/apache/shardingsphere.git
 
 **3. Create Branch**
 
- - Switch to forked master branch, pull codes from upstream, then create a new branch.
+ - Switch to forked master branch, update local branch, then create a new branch.
 
 ```shell
 git checkout master
-git pull upstream master
+git fetch apache
+git rebase apache/master
+git push origin master # optional
 git checkout -b issueNo
 ```
 
- **Notice** ：We will merge PR using squash, commit log will be different form upstream if you use old branch.
+ **Notice** ：We will merge PR using squash, commit log will be different with upstream if you use old branch.
 
 **4. Coding**
 
@@ -68,6 +77,7 @@ git push origin issueNo
 ```shell
 git checkout master
 git branch -d issueNo
+git remote prune origin # If you delete branch on GitHub PR page, else you could delete origin branch with following command
 git push origin --delete issueNo
 ```
 **Notice**:  Please note that in order to show your id in the contributor list, don't forget the configurations below:

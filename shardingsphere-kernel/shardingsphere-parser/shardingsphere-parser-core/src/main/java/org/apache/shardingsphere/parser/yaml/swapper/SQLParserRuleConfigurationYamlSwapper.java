@@ -35,15 +35,15 @@ public final class SQLParserRuleConfigurationYamlSwapper implements YamlRuleConf
     public YamlSQLParserRuleConfiguration swapToYamlConfiguration(final SQLParserRuleConfiguration data) {
         YamlSQLParserRuleConfiguration result = new YamlSQLParserRuleConfiguration();
         result.setSqlCommentParseEnabled(data.isSqlCommentParseEnabled());
-        result.setParserTreeCache(cacheOptionSwapper.swapToYamlConfiguration(data.getParseTreeCache()));
+        result.setParseTreeCache(cacheOptionSwapper.swapToYamlConfiguration(data.getParseTreeCache()));
         result.setSqlStatementCache(cacheOptionSwapper.swapToYamlConfiguration(data.getSqlStatementCache()));
         return result;
     }
 
     @Override
     public SQLParserRuleConfiguration swapToObject(final YamlSQLParserRuleConfiguration yamlConfig) {
-        CacheOption parseTreeCacheOption = null == yamlConfig.getParserTreeCache() 
-                ? DefaultSQLParserRuleConfigurationBuilder.PARSER_TREE_CACHE_OPTION : cacheOptionSwapper.swapToObject(yamlConfig.getParserTreeCache());
+        CacheOption parseTreeCacheOption = null == yamlConfig.getParseTreeCache() 
+                ? DefaultSQLParserRuleConfigurationBuilder.PARSE_TREE_CACHE_OPTION : cacheOptionSwapper.swapToObject(yamlConfig.getParseTreeCache());
         CacheOption sqlStatementCacheOption = null == yamlConfig.getSqlStatementCache()
                 ? DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION : cacheOptionSwapper.swapToObject(yamlConfig.getSqlStatementCache());
         return new SQLParserRuleConfiguration(yamlConfig.isSqlCommentParseEnabled(), parseTreeCacheOption, sqlStatementCacheOption);

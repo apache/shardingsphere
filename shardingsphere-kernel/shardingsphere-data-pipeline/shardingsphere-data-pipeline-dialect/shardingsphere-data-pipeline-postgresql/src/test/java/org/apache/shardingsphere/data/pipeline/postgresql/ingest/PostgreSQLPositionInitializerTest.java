@@ -58,9 +58,11 @@ public final class PostgreSQLPositionInitializerTest {
     @Before
     public void setUp() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.getCatalog()).thenReturn("sharding_db");
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatement lsn96PreparedStatement = mockPostgreSQL96LSN();
-        when(connection.prepareStatement("SELECT * FROM pg_create_logical_replication_slot('sharding_scaling', 'test_decoding')")).thenReturn(mock(PreparedStatement.class));
+        when(connection.prepareStatement(String.format("SELECT * FROM pg_create_logical_replication_slot('%s', '%s')", PostgreSQLPositionInitializer.getUniqueSlotName(connection), "test_decoding")))
+                .thenReturn(mock(PreparedStatement.class));
         when(connection.prepareStatement("SELECT PG_CURRENT_XLOG_LOCATION()")).thenReturn(lsn96PreparedStatement);
         PreparedStatement lsn10PreparedStatement = mockPostgreSQL10LSN();
         when(connection.prepareStatement("SELECT PG_CURRENT_WAL_LSN()")).thenReturn(lsn10PreparedStatement);

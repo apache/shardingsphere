@@ -65,12 +65,32 @@ public final class SchemaMetaDataPersistService {
     }
     
     /**
+     * Persist table meta data.
+     * 
+     * @param schemaName schema name
+     * @param tableMetaData table meta data
+     */
+    public void persist(final String schemaName, final TableMetaData tableMetaData) {
+        repository.persist(SchemaMetaDataNode.getTableMetaDataPath(schemaName, tableMetaData.getName()), YamlEngine.marshal(new TableMetaDataYamlSwapper().swapToYamlConfiguration(tableMetaData)));
+    }
+    
+    /**
      * Delete schema.
      *
      * @param schemaName schema name to be deleted
      */
     public void delete(final String schemaName) {
         repository.delete(SchemaMetaDataNode.getSchemaNamePath(schemaName));
+    }
+    
+    /**
+     * Delete table meta data.
+     * 
+     * @param schemaName schema name
+     * @param tableName table name
+     */
+    public void delete(final String schemaName, final String tableName) {
+        repository.delete(SchemaMetaDataNode.getTableMetaDataPath(schemaName, tableName));
     }
     
     /**

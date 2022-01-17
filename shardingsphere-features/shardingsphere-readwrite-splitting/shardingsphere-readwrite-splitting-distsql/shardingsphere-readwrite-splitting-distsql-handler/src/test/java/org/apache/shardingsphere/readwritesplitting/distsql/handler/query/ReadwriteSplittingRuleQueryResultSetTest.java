@@ -19,11 +19,11 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingRuleConstants;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
 import org.junit.Test;
 
@@ -117,7 +117,7 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
     
     private Map<String, Object> createAutoAwareDataSources() {
         Map<String, Object> result = new HashMap<>(1, 1);
-        result.put(ReadwriteSplittingRuleConstants.AUTO_AWARE_DATA_SOURCE_KEY, exportAutoAwareDataSourceMap());
+        result.put(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY, exportAutoAwareDataSourceMap());
         return result;
     }
 
@@ -129,8 +129,8 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
         
     private Map<String, String> getAutoAwareDataSources() {
         Map<String, String> result = new HashMap<>(2, 1);
-        result.put(ReadwriteSplittingRuleConstants.PRIMARY_DATA_SOURCE_NAME, "write_ds");
-        result.put(ReadwriteSplittingRuleConstants.REPLICA_DATA_SOURCE_NAMES, "read_ds_0,read_ds_1");
+        result.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, "write_ds");
+        result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, "read_ds_0,read_ds_1");
         return result;
     }
 }

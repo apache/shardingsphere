@@ -98,7 +98,6 @@ public final class ShadowSelectStatementRoutingEngineTest {
 
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
         AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
-        result.setEnable(true);
         result.setDataSources(createDataSources());
         result.setTables(createTables());
         result.setShadowAlgorithms(createShadowAlgorithms());

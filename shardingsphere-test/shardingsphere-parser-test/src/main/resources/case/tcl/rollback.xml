@@ -20,7 +20,7 @@
     <rollback sql-case-id="rollback" />
     <rollback sql-case-id="rollback_transaction" />
     <rollback sql-case-id="rollback_with_name" />
-    <rollback sql-case-id="rollback_to_savepoint" name="savepoint1" />
+    <rollback sql-case-id="rollback_to_savepoint" savepoint-name="savepoint1" />
     <rollback sql-case-id="rollback_force" />
     <rollback sql-case-id="rollback_prepare" />
     <rollback sql-case-id="rollback_in_pg" />

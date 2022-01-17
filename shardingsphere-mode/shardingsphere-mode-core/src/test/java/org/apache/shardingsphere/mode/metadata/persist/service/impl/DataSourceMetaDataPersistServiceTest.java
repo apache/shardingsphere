@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mode.metadata.persist.service.impl;
 
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
@@ -53,10 +53,10 @@ public final class DataSourceMetaDataPersistServiceTest {
     @Test
     public void assertLoad() {
         when(repository.get("/metadata/foo_db/dataSources")).thenReturn(readDataSourceYaml("yaml/persist/data-source.yaml"));
-        Map<String, DataSourceConfiguration> actual = new DataSourcePersistService(repository).load("foo_db");
+        Map<String, DataSourceProperties> actual = new DataSourcePersistService(repository).load("foo_db");
         assertThat(actual.size(), is(2));
-        assertDataSourceConfiguration(actual.get("ds_0"), DataSourceConverter.getDataSourceConfiguration(createDataSource("ds_0")));
-        assertDataSourceConfiguration(actual.get("ds_1"), DataSourceConverter.getDataSourceConfiguration(createDataSource("ds_1")));
+        assertDataSourceProperties(actual.get("ds_0"), DataSourcePropertiesCreator.create(createDataSource("ds_0")));
+        assertDataSourceProperties(actual.get("ds_1"), DataSourcePropertiesCreator.create(createDataSource("ds_1")));
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class})
@@ -65,24 +65,24 @@ public final class DataSourceMetaDataPersistServiceTest {
                 .stream().filter(each -> StringUtils.isNotBlank(each) && !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
     
-    private void assertDataSourceConfiguration(final DataSourceConfiguration actual, final DataSourceConfiguration expected) {
+    private void assertDataSourceProperties(final DataSourceProperties actual, final DataSourceProperties expected) {
         assertThat(actual.getDataSourceClassName(), is(expected.getDataSourceClassName()));
-        assertThat(actual.getProps().get("url"), is(expected.getProps().get("url")));
-        assertThat(actual.getProps().get("username"), is(expected.getProps().get("username")));
-        assertThat(actual.getProps().get("password"), is(expected.getProps().get("password")));
-        assertThat(actual.getProps().get("connectionInitSqls"), is(expected.getProps().get("connectionInitSqls")));
+        assertThat(actual.getLocalProperties().get("url"), is(expected.getLocalProperties().get("url")));
+        assertThat(actual.getLocalProperties().get("username"), is(expected.getLocalProperties().get("username")));
+        assertThat(actual.getLocalProperties().get("password"), is(expected.getLocalProperties().get("password")));
+        assertThat(actual.getLocalProperties().get("connectionInitSqls"), is(expected.getLocalProperties().get("connectionInitSqls")));
     }
     
     @Test
     public void assertLoadWithoutPath() {
         when(repository.get("/metadata/foo_db/dataSources")).thenReturn("");
-        Map<String, DataSourceConfiguration> actual = new DataSourcePersistService(repository).load("foo_db");
+        Map<String, DataSourceProperties> actual = new DataSourcePersistService(repository).load("foo_db");
         assertTrue(actual.isEmpty());
     }
     
     @Test
     public void assertAppend() {
-        new DataSourcePersistService(repository).append("foo_db", Collections.singletonMap("foo_ds", DataSourceConverter.getDataSourceConfiguration(createDataSource("foo_ds"))));
+        new DataSourcePersistService(repository).append("foo_db", Collections.singletonMap("foo_ds", DataSourcePropertiesCreator.create(createDataSource("foo_ds"))));
         String expected = readDataSourceYaml("yaml/persist/data-source-foo.yaml");
         verify(repository).persist("/metadata/foo_db/dataSources", expected);
     }

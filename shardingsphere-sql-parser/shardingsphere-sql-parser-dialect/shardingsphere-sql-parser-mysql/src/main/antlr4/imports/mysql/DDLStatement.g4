@@ -421,7 +421,7 @@ dropTrigger
     ;
 
 renameTable
-    : RENAME TABLE tableName TO tableName (tableName TO tableName)*
+    : RENAME TABLE tableName TO tableName (COMMA_ tableName TO tableName)*
     ;
 
 createDefinitionClause
@@ -617,7 +617,7 @@ subpartitionDefinition
     ;
 
 ownerStatement
-    : DEFINER EQ_ (userName | CURRENT_USER ( LP_ RP_)?)
+    : DEFINER EQ_ (username | CURRENT_USER ( LP_ RP_)?)
     ;
 
 scheduleExpression

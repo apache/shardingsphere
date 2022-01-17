@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.infra.database.metadata.dialect;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrl;
+import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Properties;
 
 /**
  * Data source meta data for MariaDB.
@@ -33,7 +32,7 @@ public final class MariaDBDataSourceMetaData implements DataSourceMetaData {
     
     private static final int DEFAULT_PORT = 3306;
     
-    private final String hostName;
+    private final String hostname;
     
     private final int port;
     
@@ -41,16 +40,34 @@ public final class MariaDBDataSourceMetaData implements DataSourceMetaData {
     
     private final String schema;
     
-    private final Pattern pattern = Pattern.compile("jdbc:(mysql|mariadb)(:replication|:failover|:sequential|:aurora)?:(\\w*:)?//([\\w\\-\\.]+):?([0-9]*)/([\\w\\-]+);?\\S*", Pattern.CASE_INSENSITIVE);
+    private final Properties queryProperties;
+    
+    private final Properties defaultQueryProperties = new Properties();
     
     public MariaDBDataSourceMetaData(final String url) {
-        Matcher matcher = pattern.matcher(url);
-        if (!matcher.find()) {
-            throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
-        }
-        hostName = matcher.group(4);
-        port = Strings.isNullOrEmpty(matcher.group(5)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(5));
-        catalog = matcher.group(6);
+        JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
+        hostname = jdbcUrl.getHostname();
+        port = -1 == jdbcUrl.getPort() ? DEFAULT_PORT : jdbcUrl.getPort();
+        catalog = jdbcUrl.getDatabase();
         schema = null;
+        queryProperties = jdbcUrl.getQueryProperties();
+        buildDefaultQueryProperties();
+    }
+    
+    private void buildDefaultQueryProperties() {
+        defaultQueryProperties.setProperty("useServerPrepStmts", Boolean.TRUE.toString());
+        defaultQueryProperties.setProperty("cachePrepStmts", Boolean.TRUE.toString());
+        defaultQueryProperties.setProperty("prepStmtCacheSize", "200000");
+        defaultQueryProperties.setProperty("prepStmtCacheSqlLimit", "2048");
+        defaultQueryProperties.setProperty("useLocalSessionState", Boolean.TRUE.toString());
+        defaultQueryProperties.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
+        defaultQueryProperties.setProperty("cacheResultSetMetadata", Boolean.FALSE.toString());
+        defaultQueryProperties.setProperty("cacheServerConfiguration", Boolean.TRUE.toString());
+        defaultQueryProperties.setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
+        defaultQueryProperties.setProperty("maintainTimeStats", Boolean.FALSE.toString());
+        defaultQueryProperties.setProperty("netTimeoutForStreamingResults", "0");
+        defaultQueryProperties.setProperty("tinyInt1isBit", Boolean.FALSE.toString());
+        defaultQueryProperties.setProperty("useSSL", Boolean.FALSE.toString());
+        defaultQueryProperties.setProperty("serverTimezone", "UTC");
     }
 }

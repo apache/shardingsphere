@@ -64,6 +64,24 @@
         <output sql="SELECT `a`.`account_id`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount`, `a`.`status` FROM t_account_1 a, t_account_detail_1 b where a.assisted_query_password = b.assisted_query_password" />
     </rewrite-assertion>
 
+    <rewrite-assertion id="select_not_nested_subquery_in_table_alias" db-types="MySQL">
+        <input sql="SELECT count(*) as cnt FROM (SELECT ab.password FROM t_account ab) X" />
+        <output sql="SELECT count(*) as cnt FROM (SELECT ab.cipher_password, ab.assisted_query_password FROM t_account_0 ab) X" />
+        <output sql="SELECT count(*) as cnt FROM (SELECT ab.cipher_password, ab.assisted_query_password FROM t_account_1 ab) X" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_not_nested_subquery_in_table_segment_with_shorthand_project_alias" db-types="MySQL">
+        <input sql="SELECT u.amount, u.password, o.certificate_number FROM (SELECT a.* FROM t_account a) o, t_account u WHERE o.certificate_number=u.certificate_number AND u.password=?" parameters="1" />
+        <output sql="SELECT u.cipher_amount AS amount, u.cipher_password AS password, o.certificate_number FROM (SELECT `a`.`account_id`, `a`.`cipher_password`, `a`.`assisted_query_password`, `a`.`cipher_amount`, `a`.`status` FROM t_account_0 a) o, t_account_0 u WHERE o.certificate_number=u.certificate_number AND u.assisted_query_password=?" parameters="assisted_query_1" />
+        <output sql="SELECT u.cipher_amount AS amount, u.cipher_password AS password, o.certificate_number FROM (SELECT `a`.`account_id`, `a`.`cipher_password`, `a`.`assisted_query_password`, `a`.`cipher_amount`, `a`.`status` FROM t_account_1 a) o, t_account_1 u WHERE o.certificate_number=u.certificate_number AND u.assisted_query_password=?" parameters="assisted_query_1" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_not_nested_subquery_in_table_segment_alias" db-types="MySQL">
+        <input sql="SELECT o.password FROM (SELECT a.password FROM t_account a) o" />
+        <output sql="SELECT o.cipher_password AS password FROM (SELECT a.cipher_password, a.assisted_query_password FROM t_account_0 a) o" />
+        <output sql="SELECT o.cipher_password AS password FROM (SELECT a.cipher_password, a.assisted_query_password FROM t_account_1 a) o" />
+    </rewrite-assertion>
+
     <rewrite-assertion id="select_with_encrypt_left_join_table" db-types="MySQL">
         <input sql="SELECT a.* FROM t_account a left join t_account_bak b on a.password = b.account_id left join t_account_detail c on a.password = c.password" />
         <output sql="SELECT `a`.`account_id`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount`, `a`.`status` FROM t_account_0 a left join t_account_bak_0 b on a.assisted_query_password = b.account_id left join t_account_detail_0 c on a.assisted_query_password = c.assisted_query_password" />

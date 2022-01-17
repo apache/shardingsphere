@@ -61,7 +61,7 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
                 assertEncryptRule((EncryptRule) each);
             }
         }
-        assertThat(globalRules.size(), is(3));
+        assertThat(globalRules.size(), is(4));
         for (ShardingSphereRule each : globalRules) {
             if (each instanceof SQLParserRule) {
                 assertSQLParserRule((SQLParserRule) each);
@@ -105,7 +105,7 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
     private void assertSQLParserRule(final SQLParserRule sqlParserRule) {
         assertThat(sqlParserRule.isSqlCommentParseEnabled(), is(true));
         assertCacheOption(sqlParserRule.getSqlStatementCache());
-        assertCacheOption(sqlParserRule.getParserTreeCache());
+        assertCacheOption(sqlParserRule.getParseTreeCache());
     }
     
     private void assertCacheOption(final CacheOption cacheOption) {

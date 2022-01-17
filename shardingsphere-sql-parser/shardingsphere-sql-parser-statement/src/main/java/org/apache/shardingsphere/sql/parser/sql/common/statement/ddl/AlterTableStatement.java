@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ChangeColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
@@ -52,6 +53,8 @@ public abstract class AlterTableStatement extends AbstractSQLStatement implement
     private final Collection<AddColumnDefinitionSegment> addColumnDefinitions = new LinkedList<>();
     
     private final Collection<ModifyColumnDefinitionSegment> modifyColumnDefinitions = new LinkedList<>();
+    
+    private final Collection<ChangeColumnDefinitionSegment> changeColumnDefinitions = new LinkedList<>();
     
     private final Collection<DropColumnDefinitionSegment> dropColumnDefinitions = new LinkedList<>();
     

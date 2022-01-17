@@ -53,6 +53,6 @@ public final class StorageNodeStateChangedWatcher implements GovernanceWatcher<G
         if (primaryStateChangedEvent.isPresent()) {
             return primaryStateChangedEvent;
         }
-        return StorageStatusNode.extractQualifiedSchema(StorageNodeStatus.DISABLE, event.getKey()).map(schema -> new DisabledStateChangedEvent(schema, Type.ADDED == event.getType()));
+        return StorageStatusNode.extractQualifiedSchema(StorageNodeStatus.DISABLE, event.getKey()).map(schema -> new DisabledStateChangedEvent(schema, Type.DELETED != event.getType()));
     }
 }

@@ -27,22 +27,22 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
  * Clone instance segment.
  */
 @RequiredArgsConstructor
-@ToString
 @Getter
 @Setter
+@ToString
 public final class CloneInstanceSegment implements SQLSegment {
-
+    
     private final int startIndex;
-
+    
     private final int stopIndex;
-
-    private String userName;
-
-    private String hostName;
-
+    
+    private String username;
+    
+    private String hostname;
+    
     private String password;
-
+    
     private int port;
-
+    
     private boolean sslRequired;
 }

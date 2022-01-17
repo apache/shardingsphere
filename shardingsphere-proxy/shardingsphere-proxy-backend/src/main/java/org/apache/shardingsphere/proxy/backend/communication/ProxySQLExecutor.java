@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.communication;
 
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -36,6 +36,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrep
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.ProxyJDBCExecutor;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
@@ -68,7 +69,7 @@ public final class ProxySQLExecutor {
     
     private final RawExecutor rawExecutor;
     
-    public ProxySQLExecutor(final String type, final JDBCBackendConnection backendConnection, final DatabaseCommunicationEngine databaseCommunicationEngine) {
+    public ProxySQLExecutor(final String type, final JDBCBackendConnection backendConnection, final JDBCDatabaseCommunicationEngine databaseCommunicationEngine) {
         this.type = type;
         this.backendConnection = backendConnection;
         ExecutorEngine executorEngine = BackendExecutorContext.getInstance().getExecutorEngine();

@@ -38,13 +38,13 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
     /**
      * Validate sharding table.
      *
-     * @param schema ShardingSphere schema
+     * @param shardingRule sharding rule
      * @param tables tables
      */
-    protected void validateShardingTable(final ShardingSphereSchema schema, final Collection<SimpleTableSegment> tables) {
+    protected void validateShardingTable(final ShardingRule shardingRule, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            if (schema.getAllTableNames().contains(tableName)) {
+            if (shardingRule.isShardingTable(tableName)) {
                 throw new ShardingSphereException("Can not support sharding table '%s'.", tableName);
             }
         }

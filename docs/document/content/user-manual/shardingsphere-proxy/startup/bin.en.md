@@ -22,14 +22,14 @@ weight = 1
 
 ### Using openGauss
 
-1. Copy openGauss's JDBC driver to folder `ext-lib/`.
+1. Copy openGauss's JDBC driver whose package prefixed with `org.opengauss` to folder `ext-lib/`.
 1. Use any openGauss terminal to connect, such as `gsql -U root -h 127.0.0.1 -p 3307`.
 
 ## Using metadata persist repository
 
 ### Using ZooKeeper
 
-Default integration.
+Integrated ZooKeeper Curator client by default.
 
 ### Using Etcd
 

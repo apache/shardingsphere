@@ -50,4 +50,3 @@ props:
   proxy-hint-enabled: true
   sql-show: true
   check-table-metadata-enabled: false
-  sql-comment-parse-enabled: true

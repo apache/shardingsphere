@@ -24,14 +24,14 @@ use
     ;
 
 help
-    : HELP string_
+    : HELP textOrIdentifier
     ;
 
 explain
     : (DESC | DESCRIBE | EXPLAIN)
     (tableName (columnRef | textString)?
     | explainType? (explainableStatement | FOR CONNECTION connectionId)
-    | ANALYZE select)
+    | ANALYZE (FORMAT EQ_ TREE)? select)
     ;
 
 showDatabases
@@ -47,7 +47,7 @@ showTableStatus
     ;
 
 showColumns
-    : SHOW EXTENDED? FULL? COLUMNS fromTable fromSchema? showFilter?
+    : SHOW EXTENDED? FULL? (COLUMNS | FIELDS) fromTable fromSchema? showFilter?
     ;
 
 showIndex
@@ -107,7 +107,7 @@ showBinaryLogs
     ;
 
 showBinlogEvents
-    : SHOW BINLOG EVENTS (IN DEFINER)? (FROM NUMBER_)? (LIMIT (NUMBER_ COMMA_)? NUMBER_)?
+    : SHOW BINLOG EVENTS (IN logName)? (FROM NUMBER_)? limitClause?
     ;
 
 showCharacterSet
@@ -139,7 +139,7 @@ showCreateTrigger
     ;
 
 showCreateUser
-    : SHOW CREATE USER userName
+    : SHOW CREATE USER username
     ;
 
 showCreateView
@@ -175,7 +175,7 @@ showFunctionStatus
     ;
 
 showGrant
-    : SHOW GRANTS (FOR userName (USING userName (COMMA_ userName)+)?)?
+    : SHOW GRANTS (FOR username (USING username (COMMA_ username)+)?)?
     ;
 
 showMasterStatus
@@ -372,7 +372,7 @@ tablesOption
     ;
 
 kill
-    : KILL (CONNECTION | QUERY)? NUMBER_+
+    : KILL (CONNECTION | QUERY)? NUMBER_
     ;
 
 loadIndexInfo
@@ -391,6 +391,8 @@ resetStatement
 resetOption
     : MASTER (TO binaryLogFileIndexNumber)?
     | SLAVE ALL? channelOption?
+    | REPLICA
+    | QUERY CACHE
     ;
 
 resetPersist
@@ -408,15 +410,19 @@ shutdown
 explainType
     : FORMAT EQ_ formatName
     ;
-
+    
 explainableStatement
-    : select | delete | insert | replace | update
+    : table | select | delete | insert | replace | update
     ;
 
 formatName
     : TRADITIONAL | JSON | TREE
     ;
 
+delimiter
+    : DELIMITER  delimiterName
+    ;
+    
 show
     : showDatabases
     | showTables

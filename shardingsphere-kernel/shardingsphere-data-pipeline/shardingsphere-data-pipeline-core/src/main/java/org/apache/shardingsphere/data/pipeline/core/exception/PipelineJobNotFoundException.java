@@ -27,9 +27,9 @@ public final class PipelineJobNotFoundException extends RuntimeException {
     
     private static final long serialVersionUID = -903289953649758722L;
     
-    private final long jobId;
+    private final String jobId;
     
-    public PipelineJobNotFoundException(final String message, final long jobId) {
+    public PipelineJobNotFoundException(final String message, final String jobId) {
         super(message);
         this.jobId = jobId;
     }

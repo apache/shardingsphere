@@ -28,6 +28,9 @@ public final class ShardingSphereAlgorithmConfigurationYamlSwapper implements Ya
     
     @Override
     public YamlShardingSphereAlgorithmConfiguration swapToYamlConfiguration(final ShardingSphereAlgorithmConfiguration data) {
+        if (null == data) {
+            return null;
+        }
         YamlShardingSphereAlgorithmConfiguration result = new YamlShardingSphereAlgorithmConfiguration();
         result.setType(data.getType());
         result.setProps(data.getProps());
@@ -36,6 +39,9 @@ public final class ShardingSphereAlgorithmConfigurationYamlSwapper implements Ya
     
     @Override
     public ShardingSphereAlgorithmConfiguration swapToObject(final YamlShardingSphereAlgorithmConfiguration yamlConfig) {
+        if (null == yamlConfig) {
+            return null;
+        }
         return new ShardingSphereAlgorithmConfiguration(yamlConfig.getType(), yamlConfig.getProps());
     }
 }

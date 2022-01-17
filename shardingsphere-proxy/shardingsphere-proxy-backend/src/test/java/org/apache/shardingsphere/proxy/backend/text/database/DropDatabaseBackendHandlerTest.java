@@ -74,7 +74,14 @@ public final class DropDatabaseBackendHandlerTest {
         when(sqlStatement.getDatabaseName()).thenReturn("test_not_exist_db");
         handler.execute();
     }
-
+    
+    @Test
+    public void assertExecuteDropNotExistDatabaseWithIfExists() {
+        when(sqlStatement.getDatabaseName()).thenReturn("test_not_exist_db");
+        when(sqlStatement.isContainsExistClause()).thenReturn(true);
+        handler.execute();
+    }
+    
     @Test
     public void assertExecuteDropWithoutCurrentDatabase() {
         when(sqlStatement.getDatabaseName()).thenReturn("test_db");

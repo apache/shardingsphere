@@ -37,7 +37,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -61,6 +61,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecuti
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -73,6 +74,9 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.traffic.context.TrafficContext;
+import org.apache.shardingsphere.traffic.engine.TrafficEngine;
+import org.apache.shardingsphere.traffic.rule.TrafficRule;
 
 import java.sql.Connection;
 import java.sql.ParameterMetaData;
@@ -124,6 +128,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private ExecutionContext executionContext;
     
     private ResultSet currentResultSet;
+    
+    private TrafficContext trafficContext;
 
     public ShardingSpherePreparedStatement(final ShardingSphereConnection connection, final String sql) throws SQLException {
         this(connection, sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT, false);
@@ -173,6 +179,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     @Override
     public ResultSet executeQuery() throws SQLException {
+        ResultSet result;
         try {
             if (statementsCacheable && !statements.isEmpty()) {
                 resetParameters();
@@ -180,6 +187,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             clearPrevious();
             LogicSQL logicSQL = createLogicSQL();
+            trafficContext = createTrafficContext(logicSQL);
+            if (trafficContext.isMatchTraffic()) {
+                JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficContext);
+                return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).executeQuery());
+            }
             // TODO move federation route logic to binder
             executionContext = createExecutionContext(logicSQL);
             if (executionContext.getRouteContext().isFederated()) {
@@ -187,10 +199,23 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             List<QueryResult> queryResults = executeQuery0();
             MergedResult mergedResult = mergeQuery(queryResults);
-            return new ShardingSphereResultSet(getShardingSphereResultSet(), mergedResult, this, executionContext);
+            result = new ShardingSphereResultSet(getShardingSphereResultSet(), mergedResult, this, executionContext);
         } finally {
             clearBatch();
         }
+        currentResultSet = result;
+        return result;
+    }
+    
+    private JDBCExecutionUnit createTrafficExecutionUnit(final TrafficContext trafficContext) throws SQLException {
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine();
+        ExecutionGroupContext<JDBCExecutionUnit> context = prepareEngine.prepare(trafficContext.getRouteContext(), trafficContext.getExecutionUnits());
+        return context.getInputGroups().stream().flatMap(each -> each.getInputs().stream()).findFirst().orElseThrow(() -> new ShardingSphereException("Can not get traffic execution unit."));
+    }
+    
+    private TrafficContext createTrafficContext(final LogicSQL logicSQL) {
+        Optional<TrafficRule> trafficRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(TrafficRule.class);
+        return trafficRule.map(optional -> new TrafficEngine(optional, metaDataContexts).dispatch(logicSQL)).orElse(new TrafficContext());
     }
     
     private void resetParameters() throws SQLException {
@@ -223,7 +248,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private ResultSet executeFederationQuery(final LogicSQL logicSQL) throws SQLException {
         PreparedStatementExecuteQueryCallback callback = new PreparedStatementExecuteQueryCallback(metaDataContexts.getMetaData(connection.getSchema()).getResource().getDatabaseType(),
                  sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown());
-        return executor.getFederationExecutor().executeQuery(createDriverExecutionPrepareEngine(), callback, logicSQL);
+        FederationContext context = new FederationContext(false, logicSQL, metaDataContexts.getMetaDataMap());
+        return executor.getFederationExecutor().executeQuery(createDriverExecutionPrepareEngine(), callback, context);
     }
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine() {
@@ -240,7 +266,13 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 return statements.iterator().next().executeUpdate();
             }
             clearPrevious();
-            executionContext = createExecutionContext(createLogicSQL());
+            LogicSQL logicSQL = createLogicSQL();
+            trafficContext = createTrafficContext(logicSQL);
+            if (trafficContext.isMatchTraffic()) {
+                JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficContext);
+                return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).executeUpdate());
+            }
+            executionContext = createExecutionContext(logicSQL);
             if (metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
                 Collection<ExecuteResult> executeResults = executor.getRawExecutor().execute(createRawExecutionGroupContext(), executionContext.getLogicSQL(), new RawSQLExecutorCallback());
                 return accumulate(executeResults);
@@ -287,6 +319,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             clearPrevious();
             LogicSQL logicSQL = createLogicSQL();
+            trafficContext = createTrafficContext(logicSQL);
+            if (trafficContext.isMatchTraffic()) {
+                JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficContext);
+                return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).execute());
+            }
             executionContext = createExecutionContext(logicSQL);
             if (metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
                 // TODO process getStatement
@@ -337,6 +374,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     public ResultSet getResultSet() throws SQLException {
         if (null != currentResultSet) {
             return currentResultSet;
+        }
+        if (trafficContext.isMatchTraffic()) {
+            return executor.getTrafficExecutor().getResultSet();
         }
         if (executionContext.getRouteContext().isFederated()) {
             return executor.getFederationExecutor().getResultSet();

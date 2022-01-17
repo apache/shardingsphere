@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardin
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -57,7 +56,7 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements Rul
     private void checkToBeCreatedBindingTables(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement,
                                                final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> currentLogicTables = getCurrentLogicTables(currentRuleConfig);
-        Set<String> notExistedBindingTables = sqlStatement.getBindingTables().stream().filter(each -> !currentLogicTables.contains(each)).collect(Collectors.toSet());
+        Collection<String> notExistedBindingTables = sqlStatement.getBindingTables().stream().filter(each -> !currentLogicTables.contains(each)).collect(Collectors.toSet());
         DistSQLException.predictionThrow(notExistedBindingTables.isEmpty(), new RequiredRuleMissedException("Sharding", schemaName, notExistedBindingTables));
     }
     

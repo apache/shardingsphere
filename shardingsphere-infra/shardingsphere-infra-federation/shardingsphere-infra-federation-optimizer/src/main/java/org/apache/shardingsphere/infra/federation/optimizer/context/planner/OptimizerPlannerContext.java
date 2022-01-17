@@ -32,6 +32,4 @@ public final class OptimizerPlannerContext {
     private final SqlValidator validator;
     
     private final SqlToRelConverter converter;
-    
-    // TODO refresh validator and converter after federation schema changed
 }

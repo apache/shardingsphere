@@ -29,48 +29,18 @@ import java.util.Properties;
  */
 public final class SQLHintExtractor {
     
-    private static final String SQL_COMMENT_SUFFIX = "*/";
-    
-    private static final String SQL_HINT_TOKEN = "shardingsphere hint:";
-    
-    private static final String SQL_HINT_SPLIT = "=";
-    
     private final SQLHintProperties sqlHintProperties;
     
     public SQLHintExtractor(final SQLStatement sqlStatement) {
         sqlHintProperties = sqlStatement instanceof AbstractSQLStatement ? extract((AbstractSQLStatement) sqlStatement) : new SQLHintProperties(new Properties());
     }
     
-    /**
-     * Extract from statement.
-     *
-     * @param statement statement
-     * @return sql hint properties
-     */
-    public SQLHintProperties extract(final AbstractSQLStatement statement) {
+    private SQLHintProperties extract(final AbstractSQLStatement statement) {
         Properties properties = new Properties();
         for (CommentSegment each : statement.getCommentSegments()) {
-            appendHintProperties(each.getText(), properties);
+            properties.putAll(SQLHintUtils.getSQLHintProps(each.getText()));
         }
         return new SQLHintProperties(properties);
-    }
-    
-    private void appendHintProperties(final String comment, final Properties properties) {
-        int startIndex = comment.toLowerCase().indexOf(SQL_HINT_TOKEN);
-        if (startIndex < 0) {
-            return;
-        }
-        startIndex = startIndex + SQL_HINT_TOKEN.length();
-        int endIndex = comment.endsWith(SQL_COMMENT_SUFFIX) ? comment.indexOf(SQL_COMMENT_SUFFIX) : comment.length();
-        String[] hintValue = comment.substring(startIndex, endIndex).trim().split(SQL_HINT_SPLIT);
-        if (2 == hintValue.length && hintValue[0].trim().length() > 0 && hintValue[1].trim().length() > 0) {
-            if (SQLHintPropertiesKey.DATASOURCE_NAME_KEY.getKey().equalsIgnoreCase(hintValue[0].trim())) {
-                properties.setProperty(SQLHintPropertiesKey.DATASOURCE_NAME_KEY.getKey(), hintValue[1].trim());
-            }
-            if (SQLHintPropertiesKey.WRITE_ROUTE_ONLY_KEY.getKey().equalsIgnoreCase(hintValue[0].trim())) {
-                properties.setProperty(SQLHintPropertiesKey.WRITE_ROUTE_ONLY_KEY.getKey(), hintValue[1].trim());
-            }
-        }
     }
     
     /**

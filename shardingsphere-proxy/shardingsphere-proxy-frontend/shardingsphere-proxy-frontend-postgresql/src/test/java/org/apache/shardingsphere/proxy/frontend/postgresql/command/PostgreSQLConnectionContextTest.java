@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPortal;
@@ -32,7 +31,6 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doThrow;
@@ -94,16 +92,6 @@ public final class PostgreSQLConnectionContextTest {
         doThrow(mock(SQLException.class)).when(portal).close();
         portals.put("P_1", portal);
         actual.closeAllPortals();
-    }
-    
-    @Test
-    public void assertClearContext() {
-        PostgreSQLConnectionContext actual = new PostgreSQLConnectionContext();
-        actual.setErrorOccurred(true);
-        actual.setCurrentPacketType(mock(PostgreSQLCommandPacketType.class));
-        actual.clearContext();
-        assertNull(actual.getCurrentPacketType());
-        assertFalse(actual.isErrorOccurred());
     }
     
     @SuppressWarnings("unchecked")

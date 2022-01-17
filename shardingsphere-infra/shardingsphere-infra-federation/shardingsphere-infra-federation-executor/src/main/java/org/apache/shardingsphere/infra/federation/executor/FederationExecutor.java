@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.federation.executor;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
@@ -37,12 +36,12 @@ public interface FederationExecutor extends AutoCloseable {
      *
      * @param prepareEngine prepare engine
      * @param callback callback
-     * @param logicSQL logic SQL
+     * @param federationContext federation context
      * @return result set
      * @throws SQLException SQL exception
      */
     ResultSet executeQuery(DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
-                           JDBCExecutorCallback<? extends ExecuteResult> callback, LogicSQL logicSQL) throws SQLException;
+                           JDBCExecutorCallback<? extends ExecuteResult> callback, FederationContext federationContext) throws SQLException;
     
     /**
      * Get result set.

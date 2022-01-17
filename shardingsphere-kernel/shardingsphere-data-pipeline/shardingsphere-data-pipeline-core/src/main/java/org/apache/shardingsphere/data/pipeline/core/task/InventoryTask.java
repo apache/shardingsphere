@@ -23,16 +23,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.MemoryChannel;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
+import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.Dumper;
 import org.apache.shardingsphere.scaling.core.job.dumper.DumperFactory;
 import org.apache.shardingsphere.scaling.core.job.importer.ImporterFactory;
@@ -45,8 +46,8 @@ import java.util.concurrent.Future;
  * Inventory task.
  */
 @Slf4j
-@ToString(exclude = {"dataSourceManager", "dumper"})
-public final class InventoryTask extends AbstractLifecycleExecutor implements PipelineTask {
+@ToString(exclude = {"importerExecuteEngine", "dataSourceManager", "dumper"})
+public final class InventoryTask extends AbstractLifecycleExecutor implements PipelineTask, AutoCloseable {
     
     @Getter
     private final String taskId;
@@ -55,20 +56,23 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     
     private final ImporterConfiguration importerConfig;
     
-    private final DataSourceManager dataSourceManager;
+    private final PipelineChannelFactory pipelineChannelFactory;
+    
+    private final ExecuteEngine importerExecuteEngine;
+    
+    private final PipelineDataSourceManager dataSourceManager;
     
     private Dumper dumper;
     
-    private IngestPosition<?> position;
+    private volatile IngestPosition<?> position;
     
-    public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig) {
-        this(inventoryDumperConfig, importerConfig, new DataSourceManager());
-    }
-    
-    public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
+    public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig,
+                         final PipelineChannelFactory pipelineChannelFactory, final ExecuteEngine importerExecuteEngine) {
         this.inventoryDumperConfig = inventoryDumperConfig;
         this.importerConfig = importerConfig;
-        this.dataSourceManager = dataSourceManager;
+        this.pipelineChannelFactory = pipelineChannelFactory;
+        this.importerExecuteEngine = importerExecuteEngine;
+        this.dataSourceManager = new PipelineDataSourceManager();
         taskId = generateTaskId(inventoryDumperConfig);
         position = inventoryDumperConfig.getPosition();
     }
@@ -83,10 +87,11 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
         instanceDumper();
         Importer importer = ImporterFactory.newInstance(importerConfig, dataSourceManager);
         instanceChannel(importer);
-        Future<?> future = RuleAlteredContext.getInstance().getImporterExecuteEngine().submit(importer, new ExecuteCallback() {
+        Future<?> future = importerExecuteEngine.submit(importer, new ExecuteCallback() {
             
             @Override
             public void onSuccess() {
+                log.info("importer onSuccess");
             }
             
             @Override
@@ -97,6 +102,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
         });
         dumper.start();
         waitForResult(future);
+        log.info("importer future done");
         dataSourceManager.close();
     }
     
@@ -105,7 +111,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     }
     
     private void instanceChannel(final Importer importer) {
-        MemoryChannel channel = new MemoryChannel(records -> {
+        PipelineChannel channel = pipelineChannelFactory.createPipelineChannel(1, records -> {
             Optional<Record> record = records.stream().filter(each -> !(each.getPosition() instanceof PlaceholderPosition)).reduce((a, b) -> b);
             record.ifPresent(value -> position = value.getPosition());
         });
@@ -133,5 +139,12 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     @Override
     public InventoryTaskProgress getProgress() {
         return new InventoryTaskProgress(position);
+    }
+    
+    @Override
+    public void close() {
+        if (null != dataSourceManager) {
+            dataSourceManager.close();
+        }
     }
 }

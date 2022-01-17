@@ -36,5 +36,4 @@ public final class ShardingSphereRunner extends Parameterized {
             }
         }
     }
-    
 }

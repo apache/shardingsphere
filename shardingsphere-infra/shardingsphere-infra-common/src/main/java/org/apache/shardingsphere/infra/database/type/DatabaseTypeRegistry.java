@@ -21,6 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -93,5 +95,14 @@ public final class DatabaseTypeRegistry {
      */
     public static DatabaseType getDefaultDatabaseType() {
         return DATABASE_TYPES.get(DEFAULT_DATABASE_TYPE);
+    }
+    
+    /**
+     * Get names of all database types.
+     *
+     * @return database type names
+     */
+    public static Collection<String> getDatabaseTypeNames() {
+        return Collections.unmodifiableSet(DATABASE_TYPES.keySet());
     }
 }

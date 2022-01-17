@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ChangeColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
@@ -38,6 +39,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.d
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.definition.ConstraintDefinitionAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.definition.ExpectedAddColumnDefinition;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.definition.ExpectedChangeColumnDefinition;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.definition.ExpectedColumnDefinition;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.definition.ExpectedModifyColumnDefinition;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTableStatementTestCase;
@@ -73,6 +75,7 @@ public final class AlterTableStatementAssert {
         assertAddColumnDefinitions(assertContext, actual, expected);
         assertAddConstraintDefinitions(assertContext, actual, expected);
         assertModifyColumnDefinitions(assertContext, actual, expected);
+        assertChangeColumnDefinitions(assertContext, actual, expected);
         assertDropColumns(assertContext, actual, expected);
         assertConvertTable(assertContext, actual, expected);
     }
@@ -146,6 +149,25 @@ public final class AlterTableStatementAssert {
                 ColumnPositionAssert.assertIs(assertContext, each.getColumnPosition().get(), expectedModifyColumnDefinition.getColumnPosition());
             } else {
                 assertNull(assertContext.getText("Column position should not exist."), expectedModifyColumnDefinition.getColumnPosition());
+            }
+            count++;
+        }
+    }
+    
+    private static void assertChangeColumnDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Change column definitions size assertion error: "), actual.getChangeColumnDefinitions().size(), is(expected.getChangeColumns().size()));
+        int count = 0;
+        for (ChangeColumnDefinitionSegment each : actual.getChangeColumnDefinitions()) {
+            ExpectedChangeColumnDefinition expectedChangeColumnDefinition = expected.getChangeColumns().get(count);
+            ColumnDefinitionAssert.assertIs(assertContext, each.getColumnDefinition(), expectedChangeColumnDefinition.getColumnDefinition());
+            if (each.getColumnPosition().isPresent()) {
+                assertNotNull(assertContext.getText("Column position should exist."), expectedChangeColumnDefinition.getColumnPosition());
+                ColumnPositionAssert.assertIs(assertContext, each.getColumnPosition().get(), expectedChangeColumnDefinition.getColumnPosition());
+            } else {
+                assertNull(assertContext.getText("Column position should not exist."), expectedChangeColumnDefinition.getColumnPosition());
+            }
+            if (null != each.getPreviousColumn()) {
+                ColumnAssert.assertIs(assertContext, each.getPreviousColumn(), expectedChangeColumnDefinition.getPreviousColumn());
             }
             count++;
         }

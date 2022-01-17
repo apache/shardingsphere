@@ -17,50 +17,37 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.watcher;
 
-import org.apache.shardingsphere.infra.state.StateEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.ClusterInstance;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Optional;
 
-import static org.junit.Assert.assertFalse;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ComputeNodeStateChangedWatcherTest {
     
-    private String originalClusterInstanceId;
-    
-    @Before
-    public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        originalClusterInstanceId = ClusterInstance.getInstance().getId();
-        Field field = ClusterInstance.class.getDeclaredField("id");
-        field.setAccessible(true);
-        field.set(ClusterInstance.getInstance(), "127.0.0.1@3307");
-    }
-    
-    @After
-    public void tearDown() throws NoSuchFieldException, IllegalAccessException {
-        Field field = ClusterInstance.class.getDeclaredField("id");
-        field.setAccessible(true);
-        field.set(ClusterInstance.getInstance(), originalClusterInstanceId);
-    }
-    
     @Test
     public void assertCreateEventWhenEnabled() {
-        Optional<StateEvent> actual = new ComputeNodeStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/status/compute_nodes/circuit_breaker/127.0.0.1@3307", "", Type.ADDED));
+        Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/attributes/127.0.0.1@3307/status", 
+                YamlEngine.marshal(Arrays.asList(ComputeNodeStatus.CIRCUIT_BREAK.name())), Type.ADDED));
         assertTrue(actual.isPresent());
-        assertTrue(actual.get().isOn());
+        assertThat(((StateEvent) actual.get()).getStatus(), is(Arrays.asList(ComputeNodeStatus.CIRCUIT_BREAK.name())));
+        assertThat(((StateEvent) actual.get()).getInstanceId(), is("127.0.0.1@3307"));
     }
     
     @Test
     public void assertCreateEventWhenDisabled() {
-        Optional<StateEvent> actual = new ComputeNodeStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/status/compute_nodes/circuit_breaker/127.0.0.1@3307", "", Type.DELETED));
+        Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/attributes/127.0.0.1@3307/status", "", Type.UPDATED));
         assertTrue(actual.isPresent());
-        assertFalse(actual.get().isOn());
+        assertTrue(((StateEvent) actual.get()).getStatus().isEmpty());
+        assertThat(((StateEvent) actual.get()).getInstanceId(), is("127.0.0.1@3307"));
     }
 }

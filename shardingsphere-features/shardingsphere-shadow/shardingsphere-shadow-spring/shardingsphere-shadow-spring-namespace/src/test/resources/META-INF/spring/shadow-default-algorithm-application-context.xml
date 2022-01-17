@@ -31,7 +31,7 @@
         </props>
     </shadow:shadow-algorithm>
 
-    <shadow:rule id="shadowRule" enable="true">
+    <shadow:rule id="shadowRule">
         <shadow:data-source id="shadow-data-source" source-data-source-name="ds" shadow-data-source-name="ds-shadow"/>
         <shadow:default-shadow-algorithm-name name="simple-hint-algorithm"/>
     </shadow:rule>

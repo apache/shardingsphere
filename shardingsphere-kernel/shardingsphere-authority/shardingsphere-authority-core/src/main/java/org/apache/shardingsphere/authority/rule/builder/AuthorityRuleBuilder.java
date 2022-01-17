@@ -31,8 +31,8 @@ import java.util.Map;
 public final class AuthorityRuleBuilder implements GlobalRuleBuilder<AuthorityRuleConfiguration> {
     
     @Override
-    public AuthorityRule build(final AuthorityRuleConfiguration ruleConfig, final Map<String, ShardingSphereMetaData> mataDataMap) {
-        return new AuthorityRule(ruleConfig, mataDataMap, ruleConfig.getUsers());
+    public AuthorityRule build(final AuthorityRuleConfiguration ruleConfig, final Map<String, ShardingSphereMetaData> metaDataMap) {
+        return new AuthorityRule(ruleConfig, metaDataMap, ruleConfig.getUsers());
     }
     
     @Override

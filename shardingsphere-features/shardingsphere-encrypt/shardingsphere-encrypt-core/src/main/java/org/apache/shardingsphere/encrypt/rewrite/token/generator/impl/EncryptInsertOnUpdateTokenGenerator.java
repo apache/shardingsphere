@@ -20,13 +20,17 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAssignmentToken;
+import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptFunctionAssignmentToken;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptLiteralAssignmentToken;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptParameterAssignmentToken;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
@@ -61,9 +65,18 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
         }
         String schemaName = insertStatementContext.getSchemaName();
         for (AssignmentSegment each : onDuplicateKeyColumnsSegments) {
-            if (getEncryptRule().findEncryptor(schemaName, tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent()) {
-                generateSQLToken(schemaName, tableName, each).ifPresent(result::add);
+            boolean leftEncryptorPresent = getEncryptRule().findEncryptor(schemaName, tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent();
+            if (each.getValue() instanceof FunctionSegment && "VALUES".equalsIgnoreCase(((FunctionSegment) each.getValue()).getFunctionName())) {
+                ColumnSegment rightColumn = (ColumnSegment) ((FunctionSegment) each.getValue()).getParameters().stream().findFirst().get();
+                boolean rightEncryptorPresent = getEncryptRule().findEncryptor(schemaName, tableName, rightColumn.getIdentifier().getValue()).isPresent();
+                if (!leftEncryptorPresent && !rightEncryptorPresent) {
+                    continue;
+                }
             }
+            if (!leftEncryptorPresent) {
+                continue;
+            }
+            generateSQLToken(schemaName, tableName, each).ifPresent(result::add);
         }
         return result;
     }
@@ -71,6 +84,9 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
     private Optional<EncryptAssignmentToken> generateSQLToken(final String schemaName, final String tableName, final AssignmentSegment assignmentSegment) {
         if (assignmentSegment.getValue() instanceof ParameterMarkerExpressionSegment) {
             return Optional.of(generateParameterSQLToken(tableName, assignmentSegment));
+        }
+        if (assignmentSegment.getValue() instanceof FunctionSegment && "VALUES".equalsIgnoreCase(((FunctionSegment) assignmentSegment.getValue()).getFunctionName())) {
+            return Optional.of(generateValuesSQLToken(schemaName, tableName, assignmentSegment, (FunctionSegment) assignmentSegment.getValue()));
         }
         if (assignmentSegment.getValue() instanceof LiteralExpressionSegment) {
             return Optional.of(generateLiteralSQLToken(schemaName, tableName, assignmentSegment));
@@ -92,6 +108,41 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
         addCipherAssignment(schemaName, tableName, assignmentSegment, result);
         addAssistedQueryAssignment(schemaName, tableName, assignmentSegment, result);
         addPlainAssignment(tableName, assignmentSegment, result);
+        return result;
+    }
+    
+    private EncryptAssignmentToken generateValuesSQLToken(final String schemaName, final String tableName, final AssignmentSegment assignmentSegment, final FunctionSegment functionSegment) {
+        ColumnSegment columnSegment = assignmentSegment.getColumns().get(0);
+        String column = columnSegment.getIdentifier().getValue();
+        ColumnSegment valueColumnSegment = (ColumnSegment) functionSegment.getParameters().stream().findFirst().get();
+        String valueColumn = valueColumnSegment.getIdentifier().getValue();
+        EncryptFunctionAssignmentToken result = new EncryptFunctionAssignmentToken(columnSegment.getStartIndex(), assignmentSegment.getStopIndex());
+        boolean cipherColumnPresent = getEncryptRule().findEncryptor(schemaName, tableName, column).isPresent();
+        boolean cipherValueColumnPresent = getEncryptRule().findEncryptor(schemaName, tableName, valueColumn).isPresent();
+        if (cipherColumnPresent && cipherValueColumnPresent) {
+            String cipherColumn = getEncryptRule().getCipherColumn(tableName, column);
+            String cipherValueColumn = getEncryptRule().getCipherColumn(tableName, valueColumn);
+            result.addAssignment(cipherColumn, String.format("VALUES(%s)", cipherValueColumn));
+        } else if (cipherColumnPresent != cipherValueColumnPresent) {
+            throw new ShardingSphereException("The SQL clause `%s` is unsupported in encrypt rule.", String.format("%s=VALUES(%s)", column, valueColumn));
+        }
+        Optional<String> assistedQueryColumn = getEncryptRule().findAssistedQueryColumn(tableName, column);
+        Optional<String> valueAssistedQueryColumn = getEncryptRule().findAssistedQueryColumn(tableName, valueColumn);
+        if (assistedQueryColumn.isPresent() && valueAssistedQueryColumn.isPresent()) {
+            result.addAssignment(assistedQueryColumn.get(), String.format("VALUES(%s)", valueAssistedQueryColumn.get()));
+        } else if (assistedQueryColumn.isPresent() != valueAssistedQueryColumn.isPresent()) {
+            throw new ShardingSphereException("The SQL clause `%s` is unsupported in encrypt rule.", String.format("%s=VALUES(%s)", column, valueColumn));
+        }
+        Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, column);
+        Optional<String> valuePlainColumn = getEncryptRule().findPlainColumn(tableName, valueColumn);
+        if (plainColumn.isPresent() && valuePlainColumn.isPresent()) {
+            result.addAssignment(plainColumn.get(), String.format("VALUES(%s)", valuePlainColumn.get()));
+        } else if (plainColumn.isPresent() != valuePlainColumn.isPresent()) {
+            throw new ShardingSphereException("The SQL clause `%s` is unsupported in encrypt rule.", String.format("%s=VALUES(%s)", column, valueColumn));
+        }
+        if (result.getAssignment().isEmpty()) {
+            throw new ShardingSphereException("The SQL clause `%s` is unsupported in encrypt rule.", String.format("%s=VALUES(%s)", column, valueColumn));
+        }
         return result;
     }
     

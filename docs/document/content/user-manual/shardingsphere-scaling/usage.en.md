@@ -33,7 +33,8 @@ Supported features:
 | Inventory migration                      | Supported     | Supported     | Supported     |
 | Incremental migration                    | Supported     | Supported     | Supported     |
 | Create table automatically               | Supported     | Unsupported   | Supported     |
-| Default data consistency check algorithm | Supported     | Unsupported   | Unsupported   |
+| DATA_MATCH data consistency check        | Supported     | Supported     | Supported     |
+| CRC32_MATCH data consistency check       | Supported     | Unsupported   | Unsupported   |
 
 **Attention**:
 
@@ -41,17 +42,27 @@ For RDBMS which `Create table automatically` feature is not supported, we need t
 
 ### Privileges
 
-We need to enable `binlog` for MySQL. Privileges of users scaling used should include Replication privileges.
+#### MySQL
+
+1. Enable `binlog`
+
+Configuration Example of MySQL 5.7 `my.cnf`:
+```
+[mysqld]
+server-id=1
+log-bin=mysql-bin
+binlog-format=row
+binlog-row-image=full
+max_connections=600
+```
 
 Execute the following SQL to confirm whether binlog is turned on or not:
-
 ```sql
 show variables like '%log_bin%';
 show variables like '%binlog%';
 ```
 
 As shown below, it means binlog has been turned on:
-
 ```
 +-----------------------------------------+---------------------------------------+
 | Variable_name                           | Value                                 |
@@ -62,12 +73,14 @@ As shown below, it means binlog has been turned on:
 +-----------------------------------------+---------------------------------------+
 ```
 
-Execute the following SQL to confirm whether the user has migration permission or not:
+2. Privileges of account that scaling use should include Replication privileges.
 
+Execute the following SQL to confirm whether the user has migration permission or not:
 ```sql
 SHOW GRANTS 'user';
 ```
 
+Result Example:
 ```
 +------------------------------------------------------------------------------+
 |Grants for ${username}@${host}                                                |
@@ -77,7 +90,19 @@ SHOW GRANTS 'user';
 +------------------------------------------------------------------------------+
 ```
 
-PostgreSQL need to support and open [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html) feature.
+#### PostgreSQL
+
+1. Enable [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html) feature.
+
+2. Adjust WAL configuration
+
+Configuration Example of `postgresql.conf`:
+```
+wal_level = logical
+max_replication_slots = 10
+```
+
+Please refer to [Write Ahead Log](https://www.postgresql.org/docs/9.6/runtime-config-wal.html) and [Replication](https://www.postgresql.org/docs/9.6/runtime-config-replication.html ) for more details.
 
 ### DistSQL API for auto mode
 
@@ -113,15 +138,26 @@ Create database on underlying RDBMS first, it will be used in following `DistSQL
 Example:
 ```sql
 ADD RESOURCE ds_2 (
-    URL="jdbc:mysql://127.0.0.1:3306/db2?serverTimezone=UTC&useSSL=false",
+    URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_2?serverTimezone=UTC&useSSL=false",
+    USER=root,
+    PASSWORD=root,
+    PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
+), ds_3 (
+    URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_3?serverTimezone=UTC&useSSL=false",
+    USER=root,
+    PASSWORD=root,
+    PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
+), ds_4 (
+    URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_4?serverTimezone=UTC&useSSL=false",
     USER=root,
     PASSWORD=root,
     PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
 );
--- ds_3, ds_4
 ```
 
-2. Alter sharding table rule
+2. Alter all sharding table rule
+
+Currently, scaling job could only be emitted by executing `ALTER SHARDING TABLE RULE` DistSQL.
 
 Please refer to [RDL#Sharding](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/) for more details.
 
@@ -138,12 +174,12 @@ Example of alter `AutoTableRule`:
 ALTER SHARDING TABLE RULE t_order (
 RESOURCES(ds_2, ds_3, ds_4),
 SHARDING_COLUMN=order_id,
-TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=10)),
+TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=6)),
 GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
 );
 ```
 
-If `RESOURCES` and `sharding-count` is changed, then scaling job will be emitted.
+`RESOURCES` is altered from `(ds_0, ds_1)` to `(ds_2, ds_3, ds_4)`, and `sharding-count` is altered from `4` to `6`, it will emit scaling job.
 
 Uncompleted example of alter `TableRule`:
 ```sql
@@ -164,7 +200,9 @@ GENERATED_KEY(COLUMN=order_item_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=12
 );
 ```
 
-If `algorithm-expression` of `database_inline` and `DATANODES` of `t_order` is changed, then scaling job will be emitted.
+`algorithm-expression` of `database_inline` is alerted from `ds_${user_id % 2}` to `ds_${user_id % 3 + 2}`, and `DATANODES` of `t_order` is alerted from `ds_${0..1}.t_order_${0..1}` to `ds_${2..4}.t_order_${0..1}`, it will emit scaling job.
+
+Currently, `ALTER SHARDING ALGORITHM` will take effect immediately, but table rule will not, it might cause inserting data into source side failure, so alter sharding table rule to `AutoTableRule` is recommended for now.
 
 #### List scaling jobs
 
@@ -181,8 +219,8 @@ mysql> show scaling list;
 +--------------------+-----------------------+----------------------+--------+---------------------+---------------------+
 | id                 | tables                | sharding_total_count | active | create_time         | stop_time           |
 +--------------------+-----------------------+----------------------+--------+---------------------+---------------------+
-| 659853312085983232 | t_order_item, t_order | 2                    | 0      | 2021-10-26 20:21:31 | 2021-10-26 20:24:01 |
-| 660152090995195904 | t_order_item, t_order | 2                    | 0      | 2021-10-27 16:08:43 | 2021-10-27 16:11:00 |
+| 659853312085983232 | t_order_item, t_order | 2                    | false  | 2021-10-26 20:21:31 | 2021-10-26 20:24:01 |
+| 660152090995195904 | t_order_item, t_order | 2                    | false  | 2021-10-27 16:08:43 | 2021-10-27 16:11:00 |
 +--------------------+-----------------------+----------------------+--------+---------------------+---------------------+
 2 rows in set (0.04 sec)
 ```

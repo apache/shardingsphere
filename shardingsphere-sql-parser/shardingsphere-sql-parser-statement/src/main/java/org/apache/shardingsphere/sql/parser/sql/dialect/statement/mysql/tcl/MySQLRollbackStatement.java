@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
@@ -27,9 +25,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
  * MySQL rollback statement.
  */
 @ToString
-@Getter
-@Setter
 public final class MySQLRollbackStatement extends RollbackStatement implements MySQLStatement {
-
-    private String savepointName;
 }

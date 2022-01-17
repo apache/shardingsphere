@@ -76,7 +76,9 @@ public final class MySQLErrPacketFactory {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((UnknownDatabaseException) cause).getDatabaseName());
         }
         if (cause instanceof SchemaNotExistedException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((SchemaNotExistedException) cause).getSchemaName());
+            return null != ((SchemaNotExistedException) cause).getSchemaName()
+                    ? new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((SchemaNotExistedException) cause).getSchemaName())
+                    : new MySQLErrPacket(1, MySQLServerErrorCode.ER_NO_DB_ERROR);
         }
         if (cause instanceof NoDatabaseSelectedException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_NO_DB_ERROR);
@@ -110,7 +112,7 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof TableLockWaitTimeoutException) {
             TableLockWaitTimeoutException exception = (TableLockWaitTimeoutException) cause;
-            return new MySQLErrPacket(1, CommonErrorCode.TABLE_LOCK_WAIT_TIMEOUT, exception.getTableName(), 
+            return new MySQLErrPacket(1, CommonErrorCode.TABLE_LOCK_WAIT_TIMEOUT, exception.getTableName(),
                     exception.getSchemaName(), exception.getTimeoutMilliseconds());
         }
         if (cause instanceof TableLockedException) {
@@ -122,7 +124,7 @@ public final class MySQLErrPacketFactory {
             return new MySQLErrPacket(1, CommonErrorCode.SCALING_JOB_NOT_EXIST, ((PipelineJobNotFoundException) cause).getJobId());
         }
         if (cause instanceof FrontendTooManyConnectionsException) {
-            return new MySQLErrPacket(1, CommonErrorCode.TOO_MANY_CONNECTIONS_EXCEPTION, CommonErrorCode.TOO_MANY_CONNECTIONS_EXCEPTION.getErrorMessage());
+            return new MySQLErrPacket(0, MySQLServerErrorCode.ER_CON_COUNT_ERROR, MySQLServerErrorCode.ER_CON_COUNT_ERROR.getErrorMessage());
         }
         if (cause instanceof RuntimeException) {
             return new MySQLErrPacket(1, CommonErrorCode.RUNTIME_EXCEPTION, cause.getMessage());

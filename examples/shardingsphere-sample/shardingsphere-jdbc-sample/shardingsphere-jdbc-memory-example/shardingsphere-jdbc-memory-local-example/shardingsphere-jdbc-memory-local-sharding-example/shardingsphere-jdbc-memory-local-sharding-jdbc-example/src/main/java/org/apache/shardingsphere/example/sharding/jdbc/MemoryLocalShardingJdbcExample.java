@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.example.sharding.jdbc;
 
 import javax.sql.DataSource;
-
 import java.sql.SQLException;
 
 public class MemoryLocalShardingJdbcExample {
     
     public static void main(final String[] args) throws SQLException {
-        MemoryLocalShardingJdbcConfiguration shardingConfiguration = new MemoryLocalShardingJdbcConfiguration();
-        DataSource dataSource = shardingConfiguration.getDataSource();
+        MemoryLocalShardingJdbcConfiguration configuration = new MemoryLocalShardingJdbcConfiguration();
+        DataSource dataSource = configuration.getDataSource();
         MemoryLocalShardingJdbcExampleService exampleService = new MemoryLocalShardingJdbcExampleService(dataSource);
         exampleService.run();
     }

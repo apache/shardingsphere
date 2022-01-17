@@ -31,8 +31,8 @@ import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
@@ -65,7 +65,7 @@ public final class PostgreSQLPortal {
     
     private final List<PostgreSQLValueFormat> resultFormats;
     
-    private final DatabaseCommunicationEngine databaseCommunicationEngine;
+    private final JDBCDatabaseCommunicationEngine databaseCommunicationEngine;
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
@@ -86,8 +86,7 @@ public final class PostgreSQLPortal {
         }
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), parameters, sqlStatement, backendConnection.getConnectionSession().getDefaultSchemaName());
-        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, 
-                preparedStatement.getSql(), parameters, backendConnection);
+        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, preparedStatement.getSql(), parameters, backendConnection);
         textProtocolBackendHandler = null;
     }
     

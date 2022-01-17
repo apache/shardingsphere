@@ -73,7 +73,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
         if (!privileges.isPresent()) {
             return new SQLCheckResult(false, String.format("Access denied for user '%s'@'%s'", grantee.getUsername(), grantee.getHostname()));
         }
-        if (!privileges.filter(optional -> optional.hasPrivileges(currentSchema)).isPresent()) {
+        if (null != currentSchema && !privileges.filter(optional -> optional.hasPrivileges(currentSchema)).isPresent()) {
             return new SQLCheckResult(false, String.format("Unknown database '%s'", currentSchema));
         }
         PrivilegeType privilegeType = getPrivilege(sqlStatement);

@@ -642,11 +642,15 @@ constraintName
     : identifier
     ;
 
+delimiterName
+    : textOrIdentifier | ('\\'. | ~('\'' | '"' | '`' | '\\'))+
+    ; 
+
 userIdentifierOrText
     : textOrIdentifier (AT_ textOrIdentifier)?
     ;
     
-userName
+username
     : userIdentifierOrText | CURRENT_USER (LP_ RP_)?
     ;
     
@@ -716,7 +720,7 @@ pluginName
     : identifier
     ;
     
-hostName
+hostname
     : string_
     ;
     
@@ -725,7 +729,7 @@ port
     ;
     
 cloneInstance
-    : userName AT_ hostName COLON_ port
+    : username AT_ hostname COLON_ port
     ;
     
 cloneDir
@@ -765,7 +769,7 @@ tableOrTables
     ;
     
 userOrRole
-    : userName | roleName
+    : username | roleName
     ;
     
 partitionName

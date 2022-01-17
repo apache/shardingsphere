@@ -17,26 +17,35 @@
 
 package org.apache.shardingsphere.example.encrypt.spring.boot.starter.jdbc;
 
-import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.example.encrypt.spring.boot.starter.jdbc.entity.User;
+import org.apache.shardingsphere.example.encrypt.spring.boot.starter.jdbc.entity.Address;
+import org.apache.shardingsphere.example.encrypt.spring.boot.starter.jdbc.entity.Order;
+import org.apache.shardingsphere.example.encrypt.spring.boot.starter.jdbc.entity.OrderItem;
+import org.apache.shardingsphere.example.encrypt.spring.boot.starter.jdbc.repository.AddressRepository;
+import org.apache.shardingsphere.example.encrypt.spring.boot.starter.jdbc.repository.OrderItemRepository;
+import org.apache.shardingsphere.example.encrypt.spring.boot.starter.jdbc.repository.OrderRepository;
+
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
 public final class MemoryLocalEncryptSpringBootStarterJdbcExampleService {
     
-    private final DataSource dataSource;
-
+    private final OrderRepository orderRepository;
+    
+    private final OrderItemRepository orderItemRepository;
+    
+    private final AddressRepository addressRepository;
+    
+    public MemoryLocalEncryptSpringBootStarterJdbcExampleService(final DataSource dataSource) {
+        orderRepository = new OrderRepository(dataSource);
+        orderItemRepository = new OrderItemRepository(dataSource);
+        addressRepository = new AddressRepository(dataSource);
+    }
+    
     /**
      * Execute test.
      *
@@ -51,91 +60,83 @@ public final class MemoryLocalEncryptSpringBootStarterJdbcExampleService {
         }
     }
     
-
     /**
      * Initialize the database test environment.
      * @throws SQLException
      */
     private void initEnvironment() throws SQLException {
-        String createUserTableSql = "CREATE TABLE IF NOT EXISTS t_user" 
-                + "(user_id INT NOT NULL AUTO_INCREMENT, user_name VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id))";
-        String truncateUserTable = "TRUNCATE TABLE t_user";
-        
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.executeUpdate(createUserTableSql);
-            statement.executeUpdate(truncateUserTable);
-        }
+        orderRepository.createTableIfNotExists();
+        orderItemRepository.createTableIfNotExists();
+        addressRepository.createTableIfNotExists();
+        orderRepository.truncateTable();
+        orderItemRepository.truncateTable();
+        addressRepository.truncateTable();
     }
     
     private void processSuccess() throws SQLException {
         System.out.println("-------------- Process Success Begin ---------------");
-        List<Long> ids = insertData();
+        List<Long> orderIds = insertData();
         printData(); 
-        deleteData(ids);
+        deleteData(orderIds);
         printData();
         System.out.println("-------------- Process Success Finish --------------");
     }
-
+    
     private List<Long> insertData() throws SQLException {
         System.out.println("---------------------------- Insert Data ----------------------------");
         List<Long> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
-            User user = new User();
-            user.setUserId(i);
-            user.setUserName("test_" + i);
-            user.setPwd("pwd" + i);
-            insert(user);
-            result.add((long) user.getUserId());
+            Order order = new Order();
+            order.setUserId(i);
+            order.setOrderType(i % 2);
+            order.setAddressId(i);
+            order.setStatus("INSERT_TEST");
+            orderRepository.insert(order);
+            
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrderId(order.getOrderId());
+            orderItem.setUserId(i);
+            orderItem.setPhone("13800000001");
+            orderItem.setStatus("INSERT_TEST");
+            orderItemRepository.insert(orderItem);
+
+            Address address = new Address();
+            address.setAddressId((long) i);
+            address.setAddressName("address_test_" + i);
+            addressRepository.insert(address);
+            
+            result.add(order.getOrderId());
         }
         return result;
     }
     
-    private long insert(final User user) throws SQLException {
-        String sql = "INSERT INTO t_user (user_id, user_name, pwd) VALUES (?, ?, ?)";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, user.getUserId());
-            preparedStatement.setString(2, user.getUserName());
-            preparedStatement.setString(3, user.getPwd());
-            preparedStatement.executeUpdate();
-        }
-        return user.getUserId();
-    }
-
     private void deleteData(final List<Long> orderIds) throws SQLException {
         System.out.println("---------------------------- Delete Data ----------------------------");
-        String sql = "DELETE FROM t_user WHERE user_id=?";
+        long count = 1;
         for (Long each : orderIds) {
-            try (Connection connection = dataSource.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                preparedStatement.setLong(1, each);
-                preparedStatement.executeUpdate();
-            }
+            orderRepository.delete(each);
+            orderItemRepository.delete(each);
+            addressRepository.delete(count++);
         }
     }
     
     private void printData() throws SQLException {
-        System.out.println("---------------------------- Print User Data -----------------------");
-        for (Object each : this.getUsers()) {
+        System.out.println("---------------------------- Print Order Data -----------------------");
+        for (Object each : this.selectAll()) {
+            System.out.println(each);
+        }
+        System.out.println("---------------------------- Print OrderItem Data -------------------");
+        for (Object each : orderItemRepository.selectAll()) {
+            System.out.println(each);
+        } 
+        System.out.println("---------------------------- Print Address Data -------------------");
+        for (Object each : addressRepository.selectAll()) {
             System.out.println(each);
         }
     }
-
-    protected List<User> getUsers() throws SQLException {
-        List<User> result = new LinkedList<>();
-        String sql = "SELECT * FROM t_user";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
-            while (resultSet.next()) {
-                User user = new User();
-                user.setUserId(resultSet.getInt("user_id"));
-                user.setUserName(resultSet.getString("user_name"));
-                user.setPwd(resultSet.getString("pwd"));
-                result.add(user);
-            }
-        }
+    
+    private List<Order> selectAll() throws SQLException {
+        List<Order> result = orderRepository.selectAll();
         return result;
     }
     
@@ -144,10 +145,8 @@ public final class MemoryLocalEncryptSpringBootStarterJdbcExampleService {
      * @throws SQLException
      */
     private void cleanEnvironment() throws SQLException {
-        String dropUserSql = "DROP TABLE t_user";
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.executeUpdate(dropUserSql);
-        }
+        orderRepository.dropTable();
+        orderItemRepository.dropTable();
+        addressRepository.dropTable();
     }
 }

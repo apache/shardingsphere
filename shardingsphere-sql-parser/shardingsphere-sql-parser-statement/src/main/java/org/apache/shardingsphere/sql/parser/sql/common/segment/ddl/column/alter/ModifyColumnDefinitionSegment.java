@@ -23,7 +23,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.position.ColumnPositionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
 import java.util.Optional;
 
@@ -40,8 +39,6 @@ public final class ModifyColumnDefinitionSegment implements AlterDefinitionSegme
     private final int stopIndex;
     
     private final ColumnDefinitionSegment columnDefinition;
-    
-    private ColumnSegment previousColumn;
     
     private ColumnPositionSegment columnPosition;
     

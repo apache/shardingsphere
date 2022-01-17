@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.data.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
@@ -84,7 +84,7 @@ public final class UnicastDatabaseBackendHandlerTest {
                 mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
-        when(connectionSession.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
+        when(connectionSession.getDefaultSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
         mockDatabaseCommunicationEngine(new UpdateResponseHeader(mock(SQLStatement.class)));
         unicastDatabaseBackendHandler = new UnicastDatabaseBackendHandler(mock(SQLStatementContext.class), EXECUTE_SQL, connectionSession);
         setBackendHandlerFactory(unicastDatabaseBackendHandler);
@@ -101,7 +101,7 @@ public final class UnicastDatabaseBackendHandlerTest {
         return result;
     }
     
-    private void mockDatabaseCommunicationEngine(final ResponseHeader responseHeader) throws SQLException {
+    private void mockDatabaseCommunicationEngine(final ResponseHeader responseHeader) {
         when(databaseCommunicationEngine.execute()).thenReturn(responseHeader);
         when(databaseCommunicationEngineFactory.newTextProtocolInstance(any(), anyString(), any())).thenReturn(databaseCommunicationEngine);
     }

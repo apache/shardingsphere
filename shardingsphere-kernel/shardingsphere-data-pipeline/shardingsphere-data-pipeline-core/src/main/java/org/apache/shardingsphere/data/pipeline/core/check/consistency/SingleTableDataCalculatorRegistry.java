@@ -37,11 +37,13 @@ public final class SingleTableDataCalculatorRegistry {
     static {
         ShardingSphereServiceLoader.register(SingleTableDataCalculator.class);
         for (SingleTableDataCalculator each : ShardingSphereServiceLoader.getSingletonServiceInstances(SingleTableDataCalculator.class)) {
-            SingleTableDataCalculator replaced = ALGORITHM_DATABASE_CALCULATOR_MAP.computeIfAbsent(each.getAlgorithmType(), algorithmType -> new HashMap<>())
-                    .put(each.getDatabaseType(), each);
-            if (null != replaced) {
-                log.info("element replaced, algorithmType={}, databaseType={}, current={}, replaced={}",
-                        each.getAlgorithmType(), each.getDatabaseType(), each.getClass().getName(), replaced.getClass().getName());
+            Map<String, SingleTableDataCalculator> dataCalculatorMap = ALGORITHM_DATABASE_CALCULATOR_MAP.computeIfAbsent(each.getAlgorithmType(), algorithmType -> new HashMap<>());
+            for (String databaseType : each.getDatabaseTypes()) {
+                SingleTableDataCalculator replaced = dataCalculatorMap.put(databaseType, each);
+                if (null != replaced) {
+                    log.warn("element replaced, algorithmType={}, databaseTypes={}, current={}, replaced={}",
+                            each.getAlgorithmType(), each.getDatabaseTypes(), each.getClass().getName(), replaced.getClass().getName());
+                }
             }
         }
     }

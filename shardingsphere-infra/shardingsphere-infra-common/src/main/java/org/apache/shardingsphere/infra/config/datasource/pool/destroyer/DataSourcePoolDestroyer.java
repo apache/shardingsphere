@@ -30,7 +30,7 @@ public interface DataSourcePoolDestroyer extends TypedSPI, RequiredSPI {
     /**
      * destroy data source pool gracefully.
      * 
-     * @param dataSource data source
+     * @param dataSource data source pool to be destroyed
      * @throws SQLException SQL exception
      */
     void destroy(DataSource dataSource) throws SQLException;

@@ -8,7 +8,6 @@ weight = 5
 ```yaml
 rules:
   - !SHADOW
-    enable: # Shadow DB switch. Optional values: true/false, the default is false
     dataSources:
       shadowDataSource:
         sourceDataSourceName: # Production data source name

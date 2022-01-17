@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer.converter.segment.projection;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlKind;
@@ -100,7 +101,7 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
     private Optional<ProjectionSegment> getProjectionSegment(final SqlNode sqlNode) {
         if (sqlNode instanceof SqlIdentifier) {
             SqlIdentifier sqlIdentifier = (SqlIdentifier) sqlNode;
-            if (SqlIdentifier.STAR.names.equals(sqlIdentifier.names)) {
+            if (SqlIdentifier.STAR.names.equals(sqlIdentifier.names) || isOwnerShorthandProjection(sqlIdentifier)) {
                 return new ShorthandProjectionConverter().convertToSQLSegment(sqlIdentifier).map(optional -> optional);    
             }
             return new ColumnProjectionConverter().convertToSQLSegment(sqlIdentifier).map(optional -> optional);
@@ -118,5 +119,10 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
         }
         // TODO process other projection
         return Optional.empty();
+    }
+    
+    private boolean isOwnerShorthandProjection(final SqlIdentifier sqlIdentifier) {
+        return 2 == sqlIdentifier.names.size() 
+                && SqlIdentifier.STAR.names.equals(ImmutableList.of(sqlIdentifier.names.get(1)));
     }
 }

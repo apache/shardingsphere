@@ -12,6 +12,16 @@ SHOW SHARDING TABLE tableRule | RULES [FROM schemaName]
 
 SHOW SHARDING ALGORITHMS [FROM schemaName]
 
+SHOW UNUSED SHARDING ALGORITHMS [FROM schemaName]
+
+SHOW SHARDING KEY GENERATORS [FROM schemaName]
+
+SHOW UNUSED SHARDING KEY GENERATORS [FROM schemaName]
+
+SHOW DEFAULT SHARDING STRATEGY 
+
+SHOW SHARDING TABLE NODES;
+
 tableRule:
     RULE tableName
 ```
@@ -59,6 +69,48 @@ SHOW SHARDING BROADCAST TABLE RULES [FROM schemaName]
 | type  | 分片算法类型    |
 | props | 分片算法参数    |
 
+### Unused Sharding Algorithms
+
+| 列     | 说明          |
+| ------| --------------|
+| name  | 分片算法名称    |
+| type  | 分片算法类型    |
+| props | 分片算法参数    |
+
+### Sharding Key Generators
+
+| 列     | 说明             |
+| ------| -----------------|
+| name  | 分片列生成器名称    |
+| type  | 分片列生成器类型    |
+| props | 分片列生成器参数    |
+
+### Unused Sharding Key Generators
+
+| 列     | 说明             |
+| ------| -----------------|
+| name  | 分片列生成器名称    |
+| type  | 分片列生成器类型    |
+| props | 分片列生成器参数    |
+
+### Default Sharding Strategy
+
+| 列                        | 说明          |
+| --------------------------| -------------|
+| name                      | 策略名称      |
+| type                      | 分片策略类型   |
+| sharding_column           | 分片键        |
+| sharding_algorithm_name   | 分片算法名称   |
+| sharding_algorithm_type   | 分片算法类型   |
+| sharding_algorithm_props  | 分片算法参数   |
+
+### Sharding Table Nodes
+
+| 列     | 说明          |
+| ------| --------------|
+| name  | 分片规则名称    |
+| nodes | 分片节点       |
+
 ### Sharding Binding Table Rule
 
 | 列                      | 说明      |
@@ -104,11 +156,71 @@ mysql> show sharding table rule t_order;
 mysql> show sharding algorithms;
 +-------------------------+--------+-----------------------------------------------------+
 | name                    | type   | props                                               |
-+-------------------------+--------------------------------------------------------------+
++-------------------------+--------+-----------------------------------------------------+
 | t_order_inline          | INLINE | algorithm-expression=t_order_${order_id % 2}        |
 | t_order_item_inline     | INLINE | algorithm-expression=t_order_item_${order_id % 2}   |
 +-------------------------+--------+-----------------------------------------------------+
 2 row in set (0.01 sec)
+```
+
+*SHOW UNUSED SHARDING ALGORITHMS*
+```sql
+mysql> show unused sharding algorithms;
++---------------+--------+-----------------------------------------------------+
+| name          | type   | props                                               |
++---------------+--------+-----------------------------------------------------+
+| t1_inline     | INLINE | algorithm-expression=t_order_${order_id % 2}        |
++---------------+--------+-----------------------------------------------------+
+1 row in set (0.01 sec)
+```
+
+*SHOW SHARDING KEY GENERATORS*
+```sql
+mysql> show sharding key generators;
++------------------------+-----------+-----------------+
+| name                   | type      | props           |
++------------------------+-----------+-----------------+
+| t_order_snowflake      | snowflake | {worker-id=123} |
+| t_order_item_snowflake | snowflake | {worker-id=123} |
+| uuid_key_generator     | uuid      |                 |
++------------------------+-----------+-----------------+
+3 row in set (0.01 sec)
+```
+
+*SHOW UNUSED SHARDING KEY GENERATORS*
+```sql
+mysql> show unused sharding key generators;
++------------------------+-----------+-----------------+
+| name                   | type      | props           |
++------------------------+-----------+-----------------+
+| uuid_key_generator     | uuid      |                 |
++------------------------+-----------+-----------------+
+1 row in set (0.01 sec)
+```
+
+*SHOW DEFAULT SHARDING STRATEGY*
+```sql
+mysql> SHOW DEFAULT SHARDING STRATEGY ;
+
++----------+---------+--------------------+-------------------------+-------------------------+------------------------------------------+
+| name     | type    | sharding_column    | sharding_algorithm_name | sharding_algorithm_type | sharding_algorithm_props                 |
++----------+---------+--------------------+-------------------------+-------------------------+------------------------------------------+
+| TABLE    | NONE    |                    |                         |                         |                                          |
+| DATABASE | STANDARD| order_id           | database_inline         | INLINE                  | {algorithm-expression=ds_${user_id % 2}} |
++----------+---------+--------------------+-------------------------+-------------------------+------------------------------------------+
+2 rows in set (0.07 sec)
+```
+
+*SHOW SHARDING TABLE NODES*
+
+```sql
+mysql> show sharding table nodes;
++---------+----------------------------------------------------------------+
+| name    | nodes                                                          |
++---------+----------------------------------------------------------------+
+| t_order | ds_0.t_order_0, ds_1.t_order_1, ds_0.t_order_2, ds_1.t_order_3 |
++---------+----------------------------------------------------------------+
+1 row in set (0.02 sec)
 ```
 
 ### Sharding Binding Table Rule

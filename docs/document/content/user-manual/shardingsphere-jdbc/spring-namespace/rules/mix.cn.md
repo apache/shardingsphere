@@ -1,6 +1,6 @@
 +++
 title = "混合规则"
-weight = 6
+weight = 7
 +++
 
 混合配置的规则项之间的叠加使用是通过数据源名称和表名称关联的。
@@ -107,7 +107,7 @@ weight = 6
     
     <encrypt:rule id="encryptRule">
         <encrypt:table name="t_user">
-            <encrypt:column logic-column="user_name" cipher-column="user_name" plain-column="user_name_plain" encrypt-algorithm-ref="name_encryptor" />
+            <encrypt:column logic-column="username" cipher-column="username" plain-column="username_plain" encrypt-algorithm-ref="name_encryptor" />
             <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encrypt-algorithm-ref="pwd_encryptor" />
         </encrypt:table>
     </encrypt:rule>

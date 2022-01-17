@@ -30,8 +30,7 @@ import java.util.List;
  */
 @Getter
 public final class CheckTableStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement(name = "table")
     private final List<ExpectedSimpleTable> tables = new LinkedList<>();
-
 }

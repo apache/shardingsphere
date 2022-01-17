@@ -18,20 +18,26 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractInventoryDumper;
+import org.postgresql.util.PGobject;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
 /**
  * PostgreSQL JDBC dumper.
  */
 public final class PostgreSQLInventoryDumper extends AbstractInventoryDumper {
     
-    public PostgreSQLInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
+    private static final String PG_MONEY_TYPE = "money";
+    
+    private static final String PG_BIT_TYPE = "bit";
+    
+    public PostgreSQLInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineDataSourceManager dataSourceManager) {
         super(inventoryDumperConfig, dataSourceManager);
     }
     
@@ -40,5 +46,35 @@ public final class PostgreSQLInventoryDumper extends AbstractInventoryDumper {
         PreparedStatement result = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         result.setFetchSize(1);
         return result;
+    }
+    
+    @Override
+    protected Object readValue(final ResultSet resultSet, final int index) throws SQLException {
+        if (isPgMoneyType(resultSet, index)) {
+            return resultSet.getBigDecimal(index);
+        }
+        if (isPgBitType(resultSet, index)) {
+            PGobject result = new PGobject();
+            result.setType("bit");
+            Object resultSetObject = resultSet.getObject(index);
+            if (resultSetObject == null) {
+                result.setValue(null);
+            } else {
+                result.setValue((Boolean) resultSetObject ? "1" : "0");
+            }
+            return result;
+        }
+        return resultSet.getObject(index);
+    }
+    
+    private boolean isPgMoneyType(final ResultSet resultSet, final int index) throws SQLException {
+        return PG_MONEY_TYPE.equalsIgnoreCase(resultSet.getMetaData().getColumnTypeName(index));
+    }
+    
+    private boolean isPgBitType(final ResultSet resultSet, final int index) throws SQLException {
+        if (Types.BIT == resultSet.getMetaData().getColumnType(index)) {
+            return PG_BIT_TYPE.equalsIgnoreCase(resultSet.getMetaData().getColumnTypeName(index));
+        }
+        return false;
     }
 }

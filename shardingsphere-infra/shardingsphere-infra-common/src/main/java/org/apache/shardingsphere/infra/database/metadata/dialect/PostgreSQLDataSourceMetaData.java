@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.infra.database.metadata.dialect;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrl;
+import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Properties;
 
 /**
  * Data source meta data for PostgreSQL.
@@ -33,7 +32,7 @@ public final class PostgreSQLDataSourceMetaData implements DataSourceMetaData {
     
     private static final int DEFAULT_PORT = 5432;
     
-    private final String hostName;
+    private final String hostname;
     
     private final int port;
     
@@ -41,16 +40,19 @@ public final class PostgreSQLDataSourceMetaData implements DataSourceMetaData {
     
     private final String schema;
     
-    private final Pattern pattern = Pattern.compile("jdbc:postgresql://([\\w\\-\\.]+):?([0-9]*),?.*?/([\\w\\-]+)?\\S*", Pattern.CASE_INSENSITIVE);
+    private final Properties queryProperties;
     
     public PostgreSQLDataSourceMetaData(final String url) {
-        Matcher matcher = pattern.matcher(url);
-        if (!matcher.find()) {
-            throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
-        }
-        hostName = matcher.group(1);
-        port = Strings.isNullOrEmpty(matcher.group(2)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(2));
-        catalog = matcher.group(3);
+        JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
+        hostname = jdbcUrl.getHostname();
+        port = -1 == jdbcUrl.getPort() ? DEFAULT_PORT : jdbcUrl.getPort();
+        catalog = jdbcUrl.getDatabase();
         schema = null;
+        queryProperties = jdbcUrl.getQueryProperties();
+    }
+    
+    @Override
+    public Properties getDefaultQueryProperties() {
+        return new Properties();
     }
 }

@@ -17,70 +17,96 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.config.server.ServerConfiguration;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCompletedParameter;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.spi.ingest.channel.MemoryPipelineChannelFactory;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobCompletionDetectAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
+import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLockAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLockAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
+import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
+import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration.InputConfiguration;
+import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration.OutputConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rulealtered.YamlOnRuleAlteredActionConfiguration.YamlInputConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rulealtered.YamlOnRuleAlteredActionConfiguration.YamlOutputConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rulealtered.OnRuleAlteredActionConfigurationYamlSwapper.InputConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rulealtered.OnRuleAlteredActionConfigurationYamlSwapper.OutputConfigurationSwapper;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+
+import java.util.Properties;
 
 /**
  * Rule altered context.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
+@Slf4j
 // TODO extract Pipeline Context
 public final class RuleAlteredContext {
     
     static {
-        ShardingSphereServiceLoader.register(RuleAlteredJobCompletionDetectAlgorithm.class);
+        ShardingSphereServiceLoader.register(JobRateLimitAlgorithm.class);
+        ShardingSphereServiceLoader.register(PipelineChannelFactory.class);
+        ShardingSphereServiceLoader.register(JobCompletionDetectAlgorithm.class);
+        ShardingSphereServiceLoader.register(RowBasedJobLockAlgorithm.class);
         ShardingSphereServiceLoader.register(DataConsistencyCheckAlgorithm.class);
+        ShardingSphereServiceLoader.register(RuleBasedJobLockAlgorithm.class);
     }
     
-    private static final RuleAlteredContext INSTANCE = new RuleAlteredContext();
+    private final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig;
     
-    private volatile ServerConfiguration serverConfig;
+    private final JobRateLimitAlgorithm inputRateLimitAlgorithm;
     
-    private volatile RuleAlteredJobCompletionDetectAlgorithm clusterAutoSwitchAlgorithm;
+    private final JobRateLimitAlgorithm outputRateLimitAlgorithm;
     
-    private volatile DataConsistencyCheckAlgorithm dataConsistencyCheckAlgorithm;
+    private final PipelineChannelFactory pipelineChannelFactory;
     
-    private ExecuteEngine inventoryDumperExecuteEngine;
+    private final JobCompletionDetectAlgorithm<RuleAlteredJobAlmostCompletedParameter> completionDetectAlgorithm;
     
-    private ExecuteEngine incrementalDumperExecuteEngine;
+    private final RowBasedJobLockAlgorithm sourceWritingStopAlgorithm;
     
-    private ExecuteEngine importerExecuteEngine;
+    private final DataConsistencyCheckAlgorithm dataConsistencyCheckAlgorithm;
     
-    /**
-     * Get instance of context.
-     *
-     * @return instance of context
-     */
-    public static RuleAlteredContext getInstance() {
-        return INSTANCE;
-    }
+    private final RuleBasedJobLockAlgorithm checkoutLockAlgorithm;
     
-    /**
-     * Initialize context.
-     *
-     * @param serverConfig server configuration
-     */
-    public void init(final ServerConfiguration serverConfig) {
-        if (null != this.serverConfig) {
-            return;
+    private final ExecuteEngine inventoryDumperExecuteEngine;
+    
+    private final ExecuteEngine incrementalDumperExecuteEngine;
+    
+    private final ExecuteEngine importerExecuteEngine;
+    
+    public RuleAlteredContext(final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
+        this.onRuleAlteredActionConfig = onRuleAlteredActionConfig;
+        InputConfiguration inputConfig = onRuleAlteredActionConfig.getInput();
+        if (null == inputConfig) {
+            inputConfig = new InputConfigurationSwapper().swapToObject(new YamlInputConfiguration());
         }
-        this.serverConfig = serverConfig;
-        if (null != serverConfig.getClusterAutoSwitchAlgorithm()) {
-            clusterAutoSwitchAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(serverConfig.getClusterAutoSwitchAlgorithm(), RuleAlteredJobCompletionDetectAlgorithm.class);
+        ShardingSphereAlgorithmConfiguration inputRateLimiter = inputConfig.getRateLimiter();
+        inputRateLimitAlgorithm = null != inputRateLimiter ? ShardingSphereAlgorithmFactory.createAlgorithm(inputRateLimiter, JobRateLimitAlgorithm.class) : null;
+        OutputConfiguration outputConfig = onRuleAlteredActionConfig.getOutput();
+        if (null == outputConfig) {
+            outputConfig = new OutputConfigurationSwapper().swapToObject(new YamlOutputConfiguration());
         }
-        if (null != serverConfig.getDataConsistencyCheckAlgorithm()) {
-            dataConsistencyCheckAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(serverConfig.getDataConsistencyCheckAlgorithm(), DataConsistencyCheckAlgorithm.class);
+        ShardingSphereAlgorithmConfiguration outputRateLimiter = outputConfig.getRateLimiter();
+        outputRateLimitAlgorithm = null != outputRateLimiter ? ShardingSphereAlgorithmFactory.createAlgorithm(outputRateLimiter, JobRateLimitAlgorithm.class) : null;
+        ShardingSphereAlgorithmConfiguration streamChannel = onRuleAlteredActionConfig.getStreamChannel();
+        if (null == streamChannel) {
+            streamChannel = new ShardingSphereAlgorithmConfiguration(MemoryPipelineChannelFactory.TYPE, new Properties());
         }
-        inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(serverConfig.getWorkerThread());
+        pipelineChannelFactory = ShardingSphereAlgorithmFactory.createAlgorithm(streamChannel, PipelineChannelFactory.class);
+        ShardingSphereAlgorithmConfiguration completionDetector = onRuleAlteredActionConfig.getCompletionDetector();
+        completionDetectAlgorithm = null != completionDetector ? ShardingSphereAlgorithmFactory.createAlgorithm(completionDetector, JobCompletionDetectAlgorithm.class) : null;
+        sourceWritingStopAlgorithm = null;
+        ShardingSphereAlgorithmConfiguration dataConsistencyChecker = onRuleAlteredActionConfig.getDataConsistencyChecker();
+        dataConsistencyCheckAlgorithm = null != dataConsistencyChecker ? ShardingSphereAlgorithmFactory.createAlgorithm(dataConsistencyChecker, DataConsistencyCheckAlgorithm.class) : null;
+        checkoutLockAlgorithm = null;
+        inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(inputConfig.getWorkerThread());
         incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance();
-        importerExecuteEngine = ExecuteEngine.newFixedThreadInstance(serverConfig.getWorkerThread());
+        importerExecuteEngine = ExecuteEngine.newFixedThreadInstance(outputConfig.getWorkerThread());
     }
 }

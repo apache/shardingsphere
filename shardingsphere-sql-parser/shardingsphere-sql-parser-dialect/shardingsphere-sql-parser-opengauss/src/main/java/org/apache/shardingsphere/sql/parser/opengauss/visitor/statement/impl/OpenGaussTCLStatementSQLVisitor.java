@@ -36,7 +36,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussRollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussRollbackToSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussSetConstraintsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussSetTransactionStatement;
@@ -89,9 +88,8 @@ public final class OpenGaussTCLStatementSQLVisitor extends OpenGaussStatementSQL
     
     @Override
     public ASTNode visitRollbackToSavepoint(final RollbackToSavepointContext ctx) {
-        String savepointName = ctx.colId().getText();
-        OpenGaussRollbackToSavepointStatement result = new OpenGaussRollbackToSavepointStatement();
-        result.setSavepointName(savepointName);
+        OpenGaussRollbackStatement result = new OpenGaussRollbackStatement();
+        result.setSavepointName(ctx.colId().getText());
         return result;
     }
     

@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
@@ -37,7 +36,7 @@ public final class MGRDatabaseDiscoveryTypeFixture implements DatabaseDiscoveryT
     }
     
     @Override
-    public void checkDatabaseDiscoveryConfiguration(final String schemaName, final Map<String, DataSource> dataSourceMap) throws SQLException {
+    public void checkDatabaseDiscoveryConfiguration(final String schemaName, final DataSource dataSource) {
         
     }
     

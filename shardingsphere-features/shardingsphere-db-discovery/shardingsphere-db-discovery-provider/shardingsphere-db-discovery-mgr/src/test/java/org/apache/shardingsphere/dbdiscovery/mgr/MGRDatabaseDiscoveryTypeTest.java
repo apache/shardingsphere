@@ -72,10 +72,8 @@ public final class MGRDatabaseDiscoveryTypeTest {
         when(resultSet.getString("PLUGIN_STATUS")).thenReturn("ACTIVE");
         when(resultSet.getInt(1)).thenReturn(3);
         when(resultSet.getString("VARIABLE_VALUE")).thenReturn("group_name", "ON");
-        Map<String, DataSource> dataSourceMap = mock(HashMap.class);
-        when(dataSourceMap.get(null)).thenReturn(dataSource);
         mgrHaType.getProps().setProperty("group-name", "group_name");
-        mgrHaType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSourceMap);
+        mgrHaType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSource);
     }
     
     @Test

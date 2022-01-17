@@ -37,7 +37,7 @@ public abstract class AbstractBitSetChannel implements BitSetChannel {
     
     private final ManualBitSet manualBitSet = new ManualBitSet();
     
-    private long acknowledgedIndex;
+    private volatile long acknowledgedIndex;
     
     @Override
     public BitSet getAckBitSet(final long fromIndex) {

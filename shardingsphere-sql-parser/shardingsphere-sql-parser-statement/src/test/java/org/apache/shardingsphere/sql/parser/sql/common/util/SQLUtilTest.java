@@ -64,6 +64,14 @@ public final class SQLUtilTest {
         assertThat(SQLUtil.getExactlyValue("\"xxx\""), is("xxx"));
         assertThat(SQLUtil.getExactlyValue("'xxx'"), is("xxx"));
     }
+
+    @Test
+    public void assertGetExactlyValueWithReservedCharacters() {
+        assertThat(SQLUtil.getExactlyValue("`xxx`", "`"), is("`xxx`"));
+        assertThat(SQLUtil.getExactlyValue("[xxx]", "[]"), is("[xxx]"));
+        assertThat(SQLUtil.getExactlyValue("\"xxx\"", "\""), is("\"xxx\""));
+        assertThat(SQLUtil.getExactlyValue("'xxx'", "'"), is("'xxx'"));
+    }
     
     @Test
     public void assertGetExactlyValueUsingNull() {

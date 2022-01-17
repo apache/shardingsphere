@@ -78,7 +78,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
-    public JobProgress getJobProgress(final long jobId, final int shardingItem) {
+    public JobProgress getJobProgress(final String jobId, final int shardingItem) {
         String data = repository.get(getOffsetPath(jobId, shardingItem));
         if (Strings.isNullOrEmpty(data)) {
             return null;
@@ -87,31 +87,31 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
-    public void persistJobCheckResult(final long jobId, final boolean checkSuccess) {
+    public void persistJobCheckResult(final String jobId, final boolean checkSuccess) {
         log.info("persist job check result '{}' for job {}", checkSuccess, jobId);
         repository.persist(getCheckResultPath(jobId), String.valueOf(checkSuccess));
     }
     
-    private String getCheckResultPath(final long jobId) {
-        return String.format("%s/%d/check/result", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId);
+    private String getCheckResultPath(final String jobId) {
+        return String.format("%s/%s/check/result", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId);
     }
     
     @Override
-    public Optional<Boolean> getJobCheckResult(final long jobId) {
+    public Optional<Boolean> getJobCheckResult(final String jobId) {
         String data = repository.get(getCheckResultPath(jobId));
         return Strings.isNullOrEmpty(data) ? Optional.empty() : Optional.of(Boolean.parseBoolean(data));
     }
     
     @Override
-    public void deleteJobProgress(final long jobId) {
+    public void deleteJobProgress(final String jobId) {
         log.info("delete job progress {}", jobId);
-        repository.delete(String.format("%s/%d/offset", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId));
+        repository.delete(String.format("%s/%s/offset", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId));
     }
     
     @Override
-    public void deleteJob(final long jobId) {
+    public void deleteJob(final String jobId) {
         log.info("delete job {}", jobId);
-        repository.delete(String.format("%s/%d", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId));
+        repository.delete(String.format("%s/%s", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId));
     }
     
     @Override
@@ -129,7 +129,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
         repository.persist(key, value);
     }
     
-    private String getOffsetPath(final long jobId, final int shardingItem) {
-        return String.format("%s/%d/offset/%d", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, shardingItem);
+    private String getOffsetPath(final String jobId, final int shardingItem) {
+        return String.format("%s/%s/offset/%d", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, shardingItem);
     }
 }

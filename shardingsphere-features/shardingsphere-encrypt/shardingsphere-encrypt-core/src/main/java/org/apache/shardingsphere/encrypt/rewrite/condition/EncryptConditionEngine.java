@@ -43,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -116,17 +117,24 @@ public final class EncryptConditionEngine {
     
     private Optional<EncryptCondition> createEncryptCondition(final ExpressionSegment expression, final String tableName) {
         if (expression instanceof BinaryOperationExpression) {
-            String operator = ((BinaryOperationExpression) expression).getOperator();
-            if (!LOGICAL_OPERATOR.contains(operator)) {
-                ExpressionSegment rightValue = ((BinaryOperationExpression) expression).getRight();
-                return isSupportedOperator(operator) ? createCompareEncryptCondition(tableName, (BinaryOperationExpression) expression, rightValue) : Optional.empty();
-            }
+            return createEncryptCondition((BinaryOperationExpression) expression, tableName);
         }
         if (expression instanceof InExpression) {
             return createInEncryptCondition(tableName, (InExpression) expression, ((InExpression) expression).getRight());
         }
         if (expression instanceof BetweenExpression) {
             throw new ShardingSphereException("The SQL clause 'BETWEEN...AND...' is unsupported in encrypt rule.");
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<EncryptCondition> createEncryptCondition(final BinaryOperationExpression expression, final String tableName) {
+        String operator = expression.getOperator();
+        if (!LOGICAL_OPERATOR.contains(operator)) {
+            if (isSupportedOperator(operator)) {
+                return createCompareEncryptCondition(tableName, expression, operator, expression.getRight());
+            }
+            throw new ShardingSphereException("The SQL clause '%s' is unsupported in encrypt rule.", operator);
         }
         return Optional.empty();
     }
@@ -157,12 +165,13 @@ public final class EncryptConditionEngine {
         return new ColumnProjection(owner, segment.getIdentifier().getValue(), null);
     }
     
-    private static Optional<EncryptCondition> createCompareEncryptCondition(final String tableName, final BinaryOperationExpression expression, final ExpressionSegment compareRightValue) {
+    private Optional<EncryptCondition> createCompareEncryptCondition(final String tableName, final BinaryOperationExpression expression, final String operator, 
+                                                                     final ExpressionSegment compareRightValue) {
         if (!(expression.getLeft() instanceof ColumnSegment)) {
             return Optional.empty();
         }
         return (compareRightValue instanceof SimpleExpressionSegment && !(compareRightValue instanceof SubqueryExpressionSegment))
-                ? Optional.of(new EncryptEqualCondition(((ColumnSegment) expression.getLeft()).getIdentifier().getValue(), tableName, compareRightValue.getStartIndex(),
+                ? Optional.of(new EncryptEqualCondition(((ColumnSegment) expression.getLeft()).getIdentifier().getValue(), isSortableOperator(operator), tableName, compareRightValue.getStartIndex(),
                 expression.getStopIndex(), compareRightValue))
                 : Optional.empty();
     }
@@ -180,11 +189,17 @@ public final class EncryptConditionEngine {
         if (expressionSegments.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(new EncryptInCondition(((ColumnSegment) inExpression.getLeft()).getIdentifier().getValue(),
+        return Optional.of(new EncryptInCondition(((ColumnSegment) inExpression.getLeft()).getIdentifier().getValue(), isSortableOperator("IN"),
                 tableName, inRightValue.getStartIndex(), inRightValue.getStopIndex(), expressionSegments));
     }
     
     private boolean isSupportedOperator(final String operator) {
-        return "=".equals(operator) || "<>".equals(operator) || "!=".equals(operator);
+        Collection<String> operators = Arrays.asList("=", "<>", "!=", ">", "<", ">=", "<=");
+        return operators.contains(operator);
+    }
+    
+    private static boolean isSortableOperator(final String operator) {
+        Collection<String> operators = Arrays.asList(">", "<", ">=", "<=");
+        return operators.contains(operator);
     }
 }

@@ -60,7 +60,7 @@ public final class PostgreSQLPositionInitializer implements PositionInitializer 
             log.info("replication slot already exist, slot name: {}", SLOT_NAME);
             return;
         }
-        try (PreparedStatement ps = connection.prepareStatement(String.format("SELECT * FROM pg_create_logical_replication_slot('%s', '%s')", SLOT_NAME, DECODE_PLUGIN))) {
+        try (PreparedStatement ps = connection.prepareStatement(String.format("SELECT * FROM pg_create_logical_replication_slot('%s', '%s')", getUniqueSlotName(connection), DECODE_PLUGIN))) {
             ps.execute();
         } catch (final PSQLException ex) {
             if (!DUPLICATE_OBJECT_ERROR_CODE.equals(ex.getSQLState())) {
@@ -72,7 +72,7 @@ public final class PostgreSQLPositionInitializer implements PositionInitializer 
     private boolean checkSlotExistsOrNot(final Connection connection) throws SQLException {
         String checkSlotSQL = "SELECT slot_name FROM pg_replication_slots WHERE slot_name=? AND plugin=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(checkSlotSQL)) {
-            preparedStatement.setString(1, SLOT_NAME);
+            preparedStatement.setString(1, getUniqueSlotName(connection));
             preparedStatement.setString(2, DECODE_PLUGIN);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 return resultSet.next();
@@ -113,8 +113,19 @@ public final class PostgreSQLPositionInitializer implements PositionInitializer 
         log.info("drop, slot exist, slot name: {}", SLOT_NAME);
         String dropSlotSQL = "SELECT pg_drop_replication_slot(?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(dropSlotSQL)) {
-            preparedStatement.setString(1, SLOT_NAME);
+            preparedStatement.setString(1, getUniqueSlotName(connection));
             preparedStatement.execute();
         }
+    }
+    
+    /**
+     * Get the unique slot name by connection.
+     *
+     * @param connection the connection
+     * @return the unique name by connection
+     * @throws SQLException failed when getCatalog
+     */
+    public static String getUniqueSlotName(final Connection connection) throws SQLException {
+        return String.format("%s_%s", SLOT_NAME, connection.getCatalog());
     }
 }

@@ -47,12 +47,12 @@ public final class DatabaseDiscoveryRuleStatementConverterTest {
         Iterator<DatabaseDiscoveryDataSourceRuleConfiguration> iterator = ruleConfiguration.getDataSources().iterator();
         DatabaseDiscoveryDataSourceRuleConfiguration configuration = iterator.next();
         assertThat(configuration.getDataSourceNames(), is(Arrays.asList("resource0", "resource1")));
-        assertThat(configuration.getName(), is("definition"));
+        assertThat(configuration.getGroupName(), is("definition"));
         assertThat(configuration.getDiscoveryTypeName(), is("definition_mgr"));
         assertThat(configuration.getDiscoveryHeartbeatName(), is("definition_heartbeat"));
         configuration = iterator.next();
         assertThat(configuration.getDataSourceNames(), is(Arrays.asList("resource0", "resource1")));
-        assertThat(configuration.getName(), is("construction"));
+        assertThat(configuration.getGroupName(), is("construction"));
         assertThat(configuration.getDiscoveryTypeName(), is("type"));
         assertThat(configuration.getDiscoveryHeartbeatName(), is("heartbeat"));
     }

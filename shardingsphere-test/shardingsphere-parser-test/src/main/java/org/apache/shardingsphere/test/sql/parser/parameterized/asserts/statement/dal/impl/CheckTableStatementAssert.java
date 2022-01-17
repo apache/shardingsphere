@@ -29,7 +29,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CheckTableStatementAssert {
-
+    
     /**
      * Assert check table statement is correct with expected parser result.
      *
@@ -37,7 +37,6 @@ public final class CheckTableStatementAssert {
      * @param actual actual check table statement
      * @param expected expected check table statement test case
      */
-
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLCheckTableStatement actual, final CheckTableStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }

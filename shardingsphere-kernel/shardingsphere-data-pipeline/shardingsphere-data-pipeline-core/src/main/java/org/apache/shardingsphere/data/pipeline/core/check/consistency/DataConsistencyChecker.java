@@ -28,17 +28,17 @@ import java.util.Map;
 public interface DataConsistencyChecker {
     
     /**
-     * Check each table count is valid.
+     * Check whether each table's records count is valid.
      *
-     * @return count check result. key is logic table name, value is check result.
+     * @return records count check result. key is logic table name, value is check result.
      */
-    Map<String, DataConsistencyCheckResult> countCheck();
+    Map<String, DataConsistencyCheckResult> checkRecordsCount();
     
     /**
-     * Check each table data is valid.
+     * Check whether each table's records content is valid.
      *
      * @param checkAlgorithm check algorithm
-     * @return data is valid or not. key is logic table name, value is check result.
+     * @return records content check result. key is logic table name, value is check result.
      */
-    Map<String, Boolean> dataCheck(DataConsistencyCheckAlgorithm checkAlgorithm);
+    Map<String, Boolean> checkRecordsContent(DataConsistencyCheckAlgorithm checkAlgorithm);
 }
