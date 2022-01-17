@@ -28,7 +28,7 @@ alterReadwriteSplittingRule
     ;
 
 dropReadwriteSplittingRule
-    : DROP existClause? READWRITE_SPLITTING RULE ruleName (COMMA ruleName)*
+    : DROP READWRITE_SPLITTING RULE existClause? ruleName (COMMA ruleName)*
     ;
 
 readwriteSplittingRuleDefinition

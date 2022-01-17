@@ -28,7 +28,7 @@ alterEncryptRule
     ;
 
 dropEncryptRule
-    : DROP existClause? ENCRYPT RULE tableName (COMMA tableName)*
+    : DROP ENCRYPT RULE existClause? tableName (COMMA tableName)*
     ;
 
 encryptRuleDefinition

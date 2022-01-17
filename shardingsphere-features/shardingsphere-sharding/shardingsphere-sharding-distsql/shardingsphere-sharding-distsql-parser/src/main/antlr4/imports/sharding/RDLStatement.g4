@@ -72,19 +72,19 @@ alterShardingKeyGenerator
     ;
 
 dropShardingTableRule
-    : DROP existClause? SHARDING TABLE RULE tableName (COMMA tableName)*
+    : DROP SHARDING TABLE RULE existClause? tableName (COMMA tableName)*
     ;
 
 dropShardingBindingTableRules
-    : DROP existClause? SHARDING BINDING TABLE RULES (bindTableRulesDefinition (COMMA bindTableRulesDefinition)*)?
+    : DROP SHARDING BINDING TABLE RULES existClause? (bindTableRulesDefinition (COMMA bindTableRulesDefinition)*)?
     ;
 
 dropShardingBroadcastTableRules
-    : DROP existClause? SHARDING BROADCAST TABLE RULES (tableName (COMMA tableName)*)?
+    : DROP SHARDING BROADCAST TABLE RULES existClause? (tableName (COMMA tableName)*)?
     ;
 
 dropShardingAlgorithm
-    : DROP existClause? SHARDING ALGORITHM algorithmName (COMMA algorithmName)*
+    : DROP SHARDING ALGORITHM existClause?  algorithmName (COMMA algorithmName)*
     ;
 
 dropShardingKeyGenerator
