@@ -59,7 +59,6 @@ import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TransactionProviderSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.RefreshTableMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterSQLParserRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterTransactionRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.hint.ClearHintStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetInstanceStatusStatement;

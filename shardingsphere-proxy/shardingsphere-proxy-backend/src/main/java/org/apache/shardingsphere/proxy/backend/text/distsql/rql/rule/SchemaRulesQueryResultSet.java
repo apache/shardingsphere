@@ -104,7 +104,7 @@ public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
     
     private void addShardingData(final Map<String, Collection<Object>> dataMap, final RuleConfiguration ruleConfiguration) {
         addData(dataMap, String.join("_", SHARDING, SHARDING_TABLE), SHARDING, SHARDING_TABLE, ruleConfiguration,
-                config -> ((ShardingRuleConfiguration) config).getTables().size() + ((ShardingRuleConfiguration) config).getAutoTables().size());
+            config -> ((ShardingRuleConfiguration) config).getTables().size() + ((ShardingRuleConfiguration) config).getAutoTables().size());
         addData(dataMap, String.join("_", SHARDING, BINDING_TABLE), SHARDING, BINDING_TABLE, ruleConfiguration, config -> ((ShardingRuleConfiguration) config).getBindingTableGroups().size());
         addData(dataMap, String.join("_", SHARDING, BROADCAST_TABLE), SHARDING, BROADCAST_TABLE, ruleConfiguration, config -> ((ShardingRuleConfiguration) config).getBroadcastTables().size());
     }
