@@ -22,19 +22,15 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 
 /**
  * Data source properties.
  */
 @Getter
 public final class DataSourceProperties {
-    
-    public static final String CUSTOM_POOL_PROPS_KEY = "customPoolProps";
     
     private final String dataSourceClassName;
     
@@ -44,8 +40,6 @@ public final class DataSourceProperties {
     private final Map<String, Object> standardProperties;
     
     private final Map<String, Object> localProperties;
-    
-    private final Properties customPoolProps = new Properties();
     
     public DataSourceProperties(final String dataSourceClassName, final Map<String, Object> props) {
         this.dataSourceClassName = dataSourceClassName;
@@ -77,18 +71,6 @@ public final class DataSourceProperties {
                 result.remove(synonymsPropertyName);
             }
         }
-        return result;
-    }
-    
-    /**
-     * Get all properties.
-     * 
-     * @return all properties
-     */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public Map<String, Object> getAllProperties() {
-        Map<String, Object> result = new HashMap<>(localProperties);
-        result.putAll((Map) customPoolProps);
         return result;
     }
     
