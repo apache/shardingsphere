@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.distsql.handler;
 
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.scaling.distsql.statement.ResetScalingStatement;
 
@@ -26,9 +27,11 @@ import org.apache.shardingsphere.scaling.distsql.statement.ResetScalingStatement
  */
 public final class ResetScalingUpdater implements RALUpdater<ResetScalingStatement> {
     
+    private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = PipelineJobAPIFactory.getRuleAlteredJobAPI();
+    
     @Override
     public void executeUpdate(final ResetScalingStatement sqlStatement) {
-        PipelineJobAPIFactory.getRuleAlteredJobAPI().reset(sqlStatement.getJobId());
+        RULE_ALTERED_JOB_API.reset(sqlStatement.getJobId());
     }
     
     @Override
