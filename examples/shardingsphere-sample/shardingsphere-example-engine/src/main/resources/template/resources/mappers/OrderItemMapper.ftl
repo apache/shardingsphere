@@ -16,9 +16,15 @@
   ~ limitations under the License.
   -->
 
+<#assign package="" />
+<#if feature?split(",")?size gt 1>
+    <#assign package="mixed" />
+<#else>
+    <#assign package = feature?replace('-', '.') />
+</#if>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository.OrderItemRepository">
-    <resultMap id="baseResultMap" type="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.OrderItem">
+<mapper namespace="org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.repository.OrderItemRepository">
+    <resultMap id="baseResultMap" type="org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.entity.OrderItem">
         <result column="order_item_id" property="orderItemId" jdbcType="INTEGER"/>
         <result column="order_id" property="orderId" jdbcType="INTEGER"/>
         <result column="user_id" property="userId" jdbcType="INTEGER"/>
@@ -37,7 +43,7 @@
     <update id="dropTable">
         DROP TABLE IF EXISTS t_order_item;
     </update>
- <#if feature=="shadow">
+ <#if feature?contains("shadow")>
     
     <update id="createTableIfNotExistsShadow">
         CREATE TABLE IF NOT EXISTS t_order_item (order_item_id BIGINT AUTO_INCREMENT, order_id BIGINT, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50) , PRIMARY KEY (order_item_id));

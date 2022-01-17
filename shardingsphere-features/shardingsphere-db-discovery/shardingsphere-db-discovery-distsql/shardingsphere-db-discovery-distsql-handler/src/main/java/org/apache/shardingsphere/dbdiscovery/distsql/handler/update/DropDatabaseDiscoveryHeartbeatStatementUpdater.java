@@ -27,8 +27,6 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -63,8 +61,8 @@ public final class DropDatabaseDiscoveryHeartbeatStatementUpdater implements Rul
     
     private void checkIsInUse(final String schemaName, final DropDatabaseDiscoveryHeartbeatStatement sqlStatement,
                               final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        Set<String> heartbeatInUse = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getDiscoveryHeartbeatName).collect(Collectors.toSet());
-        List<String> invalid = sqlStatement.getHeartbeatNames().stream().filter(heartbeatInUse::contains).collect(Collectors.toList());
+        Collection<String> heartbeatInUse = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getDiscoveryHeartbeatName).collect(Collectors.toSet());
+        Collection<String> invalid = sqlStatement.getHeartbeatNames().stream().filter(heartbeatInUse::contains).collect(Collectors.toList());
         DistSQLException.predictionThrow(invalid.isEmpty(), new RuleInUsedException(RULE_TYPE, schemaName, invalid));
     }
     

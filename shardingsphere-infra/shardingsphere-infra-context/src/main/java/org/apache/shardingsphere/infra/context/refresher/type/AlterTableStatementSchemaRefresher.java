@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.context.refresher.type;
 
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
@@ -43,18 +43,23 @@ import java.util.Optional;
  */
 public final class AlterTableStatementSchemaRefresher implements MetaDataRefresher<AlterTableStatement> {
     
+    private static final String TYPE = AlterTableStatement.class.getName();
+    
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
                         final Collection<String> logicDataSourceNames, final AlterTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
+        SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getName());
         if (sqlStatement.getRenameTable().isPresent()) {
-            putTableMetaData(schemaMetaData, schema, optimizerPlanners, logicDataSourceNames, sqlStatement.getRenameTable().get().getTableName().getIdentifier().getValue(), props);
+            String renameTable = sqlStatement.getRenameTable().get().getTableName().getIdentifier().getValue();
+            putTableMetaData(schemaMetaData, schema, optimizerPlanners, logicDataSourceNames, renameTable, props);
             removeTableMetaData(schemaMetaData, schema, optimizerPlanners, tableName);
+            event.getAlteredTables().add(schemaMetaData.getSchema().get(renameTable));
+            event.getDroppedTables().add(tableName);
         } else {
             putTableMetaData(schemaMetaData, schema, optimizerPlanners, logicDataSourceNames, tableName, props);
+            event.getAlteredTables().add(schemaMetaData.getSchema().get(tableName));
         }
-        SchemaAlteredEvent event = new SchemaAlteredEvent(schemaMetaData.getName());
-        event.getAlteredTables().add(schemaMetaData.getSchema().get(tableName));
         ShardingSphereEventBus.getInstance().post(event);
     }
     
@@ -87,6 +92,6 @@ public final class AlterTableStatementSchemaRefresher implements MetaDataRefresh
     
     @Override
     public String getType() {
-        return AlterTableStatement.class.getCanonicalName();
+        return TYPE;
     }
 }

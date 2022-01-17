@@ -30,6 +30,8 @@ public enum SQLVisitorRule {
     
     SELECT("Select", SQLStatementType.DML),
     
+    TABLE("Table", SQLStatementType.DML),
+    
     INSERT("Insert", SQLStatementType.DML),
     
     UPDATE("Update", SQLStatementType.DML),
@@ -44,7 +46,11 @@ public enum SQLVisitorRule {
     
     CREATE_TABLE("CreateTable", SQLStatementType.DDL),
     
+    RENAME_TABLE("RenameTable", SQLStatementType.DDL),
+    
     ALTER_TABLE("AlterTable", SQLStatementType.DDL),
+    
+    ALTER_AGGREGATE("AlterAggregate", SQLStatementType.DDL),
     
     DROP_TABLE("DropTable", SQLStatementType.DDL),
     
@@ -235,6 +241,8 @@ public enum SQLVisitorRule {
     USE("Use", SQLStatementType.DAL),
     
     DESC("Desc", SQLStatementType.DAL),
+
+    HELP("Help", SQLStatementType.DAL),
     
     EXPLAIN("Explain", SQLStatementType.DAL),
     

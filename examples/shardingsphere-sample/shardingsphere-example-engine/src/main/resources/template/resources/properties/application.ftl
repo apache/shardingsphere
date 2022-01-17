@@ -23,7 +23,10 @@ spring.jpa.properties.hibernate.hbm2ddl.auto=create-drop
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL5Dialect
 spring.jpa.properties.hibernate.show_sql=false
 </#if>
-<#if feature!="db-discovery">
+
+spring.shardingsphere.datasource.names=ds-0,ds-1,ds-2
+
+# Notice: If you are using the db-discovery module, please replace the database address with the corresponding database cluster address
 
 spring.shardingsphere.datasource.ds-0.type=com.zaxxer.hikari.HikariDataSource
 spring.shardingsphere.datasource.ds-0.driver-class-name=com.mysql.jdbc.Driver
@@ -38,5 +41,15 @@ spring.shardingsphere.datasource.ds-1.jdbc-url=jdbc:mysql://localhost:3306/demo_
 spring.shardingsphere.datasource.ds-1.username=root
 spring.shardingsphere.datasource.ds-1.password=root
 spring.shardingsphere.datasource.ds-1.max-active=16
-</#if>
-<#include "${feature}.ftl">
+
+spring.shardingsphere.datasource.ds-2.type=com.zaxxer.hikari.HikariDataSource
+spring.shardingsphere.datasource.ds-2.driver-class-name=com.mysql.jdbc.Driver
+spring.shardingsphere.datasource.ds-2.jdbc-url=jdbc:mysql://localhost:3306/demo_ds_2?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+spring.shardingsphere.datasource.ds-2.username=root
+spring.shardingsphere.datasource.ds-2.password=root
+spring.shardingsphere.datasource.ds-2.max-active=16
+<#list feature?split(",") as item>
+    <#include "${item}.ftl">
+</#list>
+
+spring.shardingsphere.props.sql-show=true

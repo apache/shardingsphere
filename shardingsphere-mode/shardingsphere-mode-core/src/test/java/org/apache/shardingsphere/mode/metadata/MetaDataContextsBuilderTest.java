@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.metadata;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -34,7 +34,6 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
@@ -58,7 +57,7 @@ public final class MetaDataContextsBuilderTest {
         MetaDataContexts actual = new MetaDataContextsBuilder(Collections.singletonMap("logic_db", Collections.emptyMap()),
                 Collections.singletonMap("logic_db", Collections.singletonList(new FixtureRuleConfiguration())),
                 Collections.singleton(authorityRuleConfig), Collections.singletonMap("logic_db", mock(ShardingSphereSchema.class)),
-                Collections.singletonMap("logic_db", Arrays.asList(mock(FixtureRule.class))), props)
+                Collections.singletonMap("logic_db", Collections.singletonList(mock(FixtureRule.class))), props)
                 .build(mock(MetaDataPersistService.class));
         assertRules(actual);
         assertTrue(actual.getMetaData("logic_db").getResource().getDataSources().isEmpty());

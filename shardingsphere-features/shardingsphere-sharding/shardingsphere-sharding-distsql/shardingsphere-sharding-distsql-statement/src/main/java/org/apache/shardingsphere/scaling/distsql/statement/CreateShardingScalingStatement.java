@@ -19,14 +19,19 @@ package org.apache.shardingsphere.scaling.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScalingConfigurationSegment;
 
 /**
  * Create sharding scaling statement.
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 public final class CreateShardingScalingStatement extends CreateRuleStatement {
     
     private final String scalingName;
+    
+    private ShardingScalingConfigurationSegment configurationSegment;
 }

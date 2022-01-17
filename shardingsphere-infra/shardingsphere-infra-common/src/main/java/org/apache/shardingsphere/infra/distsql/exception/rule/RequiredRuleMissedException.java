@@ -30,6 +30,10 @@ public final class RequiredRuleMissedException extends RuleDefinitionViolationEx
         super(1112, String.format("%s rule does not exist in schema `%s`.", ruleType, schemaName));
     }
     
+    public RequiredRuleMissedException(final String ruleType, final String schemaName, final String ruleName) {
+        super(1112, String.format("%s rule `%s` do not exist in schema `%s`.", ruleType, ruleName, schemaName));
+    }
+    
     public RequiredRuleMissedException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
         super(1112, String.format("%s rules `%s` do not exist in schema `%s`.", ruleType, ruleNames, schemaName));
     }

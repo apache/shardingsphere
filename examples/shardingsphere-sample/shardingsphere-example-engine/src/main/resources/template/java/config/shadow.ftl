@@ -15,32 +15,6 @@
   ~ limitations under the License.
   -->
     
-    public DataSource getDataSource() throws SQLException {
-        Map<String, DataSource> dataSourceMap = createDataSourceMap();
-        Collection<RuleConfiguration> ruleConfigurations = createRuleConfiguration();
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, ruleConfigurations, createShardingSphereProps());
-    }
-
-    private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>();
-        result.put("demo_ds_0", createDataSource("demo_ds_0"));
-        result.put("ds_shadow", createDataSource("ds_shadow"));
-        return result;
-    }
-
-    private Properties createShardingSphereProps() {
-        Properties result = new Properties();
-        result.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
-        return result;
-    }
-
-    private Collection<RuleConfiguration> createRuleConfiguration() {
-        Collection<RuleConfiguration> result = new LinkedList<>();
-        result.add(createShadowRuleConfiguration());
-        result.add(createSQLParserRuleConfiguration());
-        return result;
-    }
-    
     private RuleConfiguration createShadowRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.setShadowAlgorithms(createShadowAlgorithmConfigurations());
@@ -78,7 +52,7 @@
 
     private Map<String, ShadowDataSourceConfiguration> createShadowDataSources() {
         Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
-        result.put("shadow-data-source", new ShadowDataSourceConfiguration("demo_ds_0", "ds_shadow"));
+        result.put("shadow-data-source", new ShadowDataSourceConfiguration("ds_0", "ds_1"));
         return result;
     }
 
@@ -105,4 +79,3 @@
         result.put("simple-hint-algorithm", new ShardingSphereAlgorithmConfiguration("SIMPLE_HINT", noteAlgorithmProps));
         return result;
     }
-    

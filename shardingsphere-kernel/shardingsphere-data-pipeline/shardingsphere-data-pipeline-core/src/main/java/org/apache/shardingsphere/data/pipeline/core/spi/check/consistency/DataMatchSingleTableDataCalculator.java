@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
 import com.google.common.base.Strings;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
@@ -35,8 +37,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLXML;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -115,7 +119,6 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
     
     @RequiredArgsConstructor
     @Getter
-    @EqualsAndHashCode
     private static final class CalculatedResult {
         
         @NonNull
@@ -124,5 +127,51 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
         private final int recordCount;
         
         private final Collection<Collection<Object>> records;
+    
+        @SneakyThrows
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof CalculatedResult)) {
+                return false;
+            }
+        
+            final CalculatedResult that = (CalculatedResult) o;
+    
+            boolean equalsFirst = new EqualsBuilder().append(getRecordCount(), that.getRecordCount()).append(getMaxUniqueKeyValue(), that.getMaxUniqueKeyValue()).isEquals();
+            if (!equalsFirst) {
+                return false;
+            }
+            
+            Iterator<Collection<Object>> thisIterator = this.records.iterator();
+            Iterator<Collection<Object>> thatIterator = that.records.iterator();
+            while (thisIterator.hasNext() && thatIterator.hasNext()) {
+                Collection<Object> thisNext = thisIterator.next();
+                Collection<Object> thatNext = thatIterator.next();
+                if (thisNext.size() != thatNext.size()) {
+                    return false;
+                }
+                Iterator<Object> thisNextIterator = thisNext.iterator();
+                Iterator<Object> thatNextIterator = thatNext.iterator();
+                while (thisNextIterator.hasNext() && thatNextIterator.hasNext()) {
+                    Object thisResult = thisNextIterator.next();
+                    Object thatResult = thatNextIterator.next();
+                    if (thisResult instanceof SQLXML && thatResult instanceof SQLXML) {
+                        return ((SQLXML) thisResult).getString().equals(((SQLXML) thatResult).getString());
+                    }
+                    if (!new EqualsBuilder().append(thisResult, thatResult).isEquals()) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+    
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(17, 37).append(getMaxUniqueKeyValue()).append(getRecordCount()).append(getRecords()).toHashCode();
+        }
     }
 }

@@ -83,11 +83,13 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LoopSta
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ModifyColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PlaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReferenceDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RepeatStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RoutineBodyContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SimpleStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableConstraintDefContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableElementContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ValidStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhileStatementContext;
@@ -151,6 +153,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLDropTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLDropTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLDropViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLRenameTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLTruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
@@ -372,6 +375,24 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitAlterRenameTable(final AlterRenameTableContext ctx) {
         RenameTableDefinitionSegment result = new RenameTableDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         result.setRenameTable((SimpleTableSegment) visit(ctx.tableName()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitRenameTable(final RenameTableContext ctx) {
+        MySQLRenameTableStatement result = new MySQLRenameTableStatement();
+        for (int i = 0, len = ctx.tableName().size(); i < len; i += 2) {
+            TableNameContext tableName = ctx.tableName(i);
+            TableNameContext renameTableName = ctx.tableName(i + 1);
+            result.getRenameTables().add(createRenameTableDefinitionSegment(tableName, renameTableName));
+        }
+        return result;
+    }
+    
+    private RenameTableDefinitionSegment createRenameTableDefinitionSegment(final TableNameContext tableName, final TableNameContext renameTableName) {
+        RenameTableDefinitionSegment result = new RenameTableDefinitionSegment(tableName.start.getStartIndex(), renameTableName.stop.getStopIndex());
+        result.setTable((SimpleTableSegment) visit(tableName));
+        result.setRenameTable((SimpleTableSegment) visit(renameTableName));
         return result;
     }
     

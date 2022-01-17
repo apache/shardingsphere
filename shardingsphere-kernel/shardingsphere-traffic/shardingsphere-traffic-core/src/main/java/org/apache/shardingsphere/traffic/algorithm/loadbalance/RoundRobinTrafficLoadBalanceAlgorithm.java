@@ -17,25 +17,18 @@
 
 package org.apache.shardingsphere.traffic.algorithm.loadbalance;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Round-robin traffic load balance algorithm.
  */
-@Getter
-@Setter
 public final class RoundRobinTrafficLoadBalanceAlgorithm implements TrafficLoadBalanceAlgorithm {
     
     private static final ConcurrentHashMap<String, AtomicInteger> COUNTS = new ConcurrentHashMap<>();
-    
-    private Properties props = new Properties();
     
     @Override
     public String getInstanceId(final String name, final List<String> instanceIds) {

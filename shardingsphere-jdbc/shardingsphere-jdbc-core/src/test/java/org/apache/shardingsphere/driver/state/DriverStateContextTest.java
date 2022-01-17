@@ -46,7 +46,7 @@ public final class DriverStateContextTest {
     @Before
     public void setUp() {
         when(contextManager.getMetaDataContexts()).thenReturn(new MetaDataContexts(mock(MetaDataPersistService.class)));
-        when(contextManager.getStateContext()).thenReturn(new StateContext());
+        when(contextManager.getInstanceContext().getState()).thenReturn(new StateContext());
     }
     
     @Test

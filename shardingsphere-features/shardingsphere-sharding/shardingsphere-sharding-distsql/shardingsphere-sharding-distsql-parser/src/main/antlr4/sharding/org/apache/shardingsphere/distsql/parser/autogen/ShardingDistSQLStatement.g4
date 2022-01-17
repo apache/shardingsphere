@@ -50,5 +50,7 @@ execute
     | showShardingDefaultShardingStrategy
     | alterDefaultShardingStrategy
     | dropDefaultShardingStrategy
+    | showUnusedShardingAlgorithms
+    | showUnusedShardingKeyGenerators
     ) SEMI?
     ;

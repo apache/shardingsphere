@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.ratelimit;
 
+import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 
@@ -26,7 +27,10 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmP
 public interface JobRateLimitAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
     
     /**
-     * Action before query.
+     * Intercept.
+     *
+     * @param type job operation type
+     * @param data it's delta that means how much changed if type is INSERT, DELETE, UPDATE, SELECT; it's null if type is SYSTEM_LOAD, CPU_USAGE
      */
-    void onQuery();
+    void intercept(JobOperationType type, Number data);
 }

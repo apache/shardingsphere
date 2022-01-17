@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
@@ -42,9 +43,18 @@ public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment
     private final int stopIndex;
     
     private final int parameterMarkerIndex;
-
+    
+    private final ParameterMarkerType parameterMarkerType;
+    
     @Setter
     private AliasSegment alias;
+    
+    public ParameterMarkerExpressionSegment(final int startIndex, final int stopIndex, final int parameterMarkerIndex) {
+        this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
+        this.parameterMarkerIndex = parameterMarkerIndex;
+        this.parameterMarkerType = ParameterMarkerType.QUESTION;
+    }
 
     @Override
     public Optional<String> getAlias() {

@@ -222,3 +222,7 @@ IF
 EXISTS
     : E X I S T S
     ;
+
+TYPE
+    : T Y P E
+    ;

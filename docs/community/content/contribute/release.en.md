@@ -353,7 +353,10 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-src-release shardingsphere-${RE
 
 **Check binary packages**
 
-Decompress `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz`, `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz`
+Decompress 
+`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz`, 
+`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz`,
+`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-agent-bin.tar.gz`
 to check the following items:
 
 *   `LICENSE` and `NOTICE` files exist

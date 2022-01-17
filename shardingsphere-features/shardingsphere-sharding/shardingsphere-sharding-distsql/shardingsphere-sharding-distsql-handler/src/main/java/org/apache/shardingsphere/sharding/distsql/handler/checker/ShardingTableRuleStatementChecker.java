@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedR
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyTypeEnum;
+import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyType;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AbstractTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingStrategySegment;
@@ -210,13 +210,15 @@ public final class ShardingTableRuleStatementChecker {
     private static void checkStrategy(final String schemaName, final ShardingRuleConfiguration currentRuleConfig, final Collection<TableRuleSegment> rules) throws DistSQLException {
         Collection<String> currentAlgorithms = null == currentRuleConfig ? Collections.emptySet() : currentRuleConfig.getShardingAlgorithms().keySet();
         Collection<String> invalidAlgorithms = rules.stream().map(each -> Arrays.asList(each.getDatabaseStrategySegment(), each.getTableStrategySegment()))
-                .flatMap(Collection::stream).filter(Objects::nonNull).filter(each -> isAlgorithmInvalid(currentAlgorithms, each))
+                .flatMap(Collection::stream).filter(Objects::nonNull).filter(each -> isInvalidStrategy(currentAlgorithms, each))
                 .map(ShardingStrategySegment::getShardingAlgorithmName).collect(Collectors.toCollection(LinkedList::new));
         DistSQLException.predictionThrow(invalidAlgorithms.isEmpty(), new InvalidAlgorithmConfigurationException(schemaName, invalidAlgorithms));
     }
     
-    private static boolean isAlgorithmInvalid(final Collection<String> currentAlgorithms, final ShardingStrategySegment shardingStrategySegment) {
-        return !ShardingStrategyTypeEnum.contain(shardingStrategySegment.getType()) || !isAlgorithmExists(currentAlgorithms, shardingStrategySegment);
+    private static boolean isInvalidStrategy(final Collection<String> currentAlgorithms, final ShardingStrategySegment shardingStrategySegment) {
+        return !ShardingStrategyType.contain(shardingStrategySegment.getType())
+                || !ShardingStrategyType.getValueOf(shardingStrategySegment.getType()).isValid(shardingStrategySegment.getShardingColumn())
+                || !isAlgorithmExists(currentAlgorithms, shardingStrategySegment);
     }
     
     private static boolean isAlgorithmExists(final Collection<String> currentAlgorithms, final ShardingStrategySegment shardingStrategySegment) {

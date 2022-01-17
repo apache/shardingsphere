@@ -19,9 +19,11 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.sharding.scaling.ExpectedShardingScalingConfigurationSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Create sharding scaling statement test case.
@@ -32,4 +34,7 @@ public final class CreateShardingScalingStatementTestCase extends SQLParserTestC
 
     @XmlAttribute(name = "scaling-name")
     private String scalingName;
+
+    @XmlElement(name = "configuration")
+    private ExpectedShardingScalingConfigurationSegment configurationSegment;
 }

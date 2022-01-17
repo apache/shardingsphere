@@ -14,10 +14,10 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
+    
     <sharding:sharding-algorithm id="databaseAlgorithm" type="INLINE">
         <props>
-            <prop key="algorithm-expression">demo_ds_${r'${user_id % 2}'}</prop>
+            <prop key="algorithm-expression">ds_${r'${user_id % 2}'}</prop>
         </props>
     </sharding:sharding-algorithm>
     <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="databaseAlgorithm" />
@@ -45,5 +45,3 @@
             <sharding:broadcast-table-rule table="t_address"/>
         </sharding:broadcast-table-rules>
     </sharding:rule>
-    
-    <shardingsphere:data-source id="dataSource" data-source-names="demo_ds_0, demo_ds_1" rule-refs="shardingRule" />

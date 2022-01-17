@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.conf
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 
 import java.util.Collection;
 import java.util.Map;
@@ -34,7 +34,7 @@ public final class ClusterSwitchConfigurationEvent {
     
     private final String targetSchemaName;
     
-    private final Map<String, DataSourceConfiguration> targetDataSourceConfigs;
+    private final Map<String, DataSourceProperties> targetDataSourcePropertiesMap;
     
     private final Collection<RuleConfiguration> targetRuleConfigs;
 }

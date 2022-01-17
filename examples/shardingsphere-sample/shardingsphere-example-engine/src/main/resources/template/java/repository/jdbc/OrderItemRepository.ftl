@@ -15,9 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository;
+<#assign package="" />
+<#if feature?split(",")?size gt 1>
+    <#assign package="mixed" />
+<#else>
+    <#assign package = feature?replace('-', '.') />
+</#if>
+package org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.repository;
 
-import org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity.OrderItem;
+import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.entity.OrderItem;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -60,7 +66,7 @@ public final class OrderItemRepository {
             statement.executeUpdate(sql);
         }
     }
-<#if feature=="shadow">
+<#if feature?contains("shadow")>
     
     public void createTableIfNotExistsShadow() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS t_order_item "
@@ -89,12 +95,13 @@ public final class OrderItemRepository {
 </#if>
     
     public Long insert(final OrderItem orderItem) throws SQLException {
-        String sql = "INSERT INTO t_order_item (order_id, user_id, status) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO t_order_item (order_id, user_id, phone, status) VALUES (?, ?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setLong(1, orderItem.getOrderId());
             preparedStatement.setInt(2, orderItem.getUserId());
-            preparedStatement.setString(3, orderItem.getStatus());
+            preparedStatement.setString(3, orderItem.getPhone());
+            preparedStatement.setString(4, orderItem.getStatus());
             preparedStatement.executeUpdate();
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                 if (resultSet.next()) {
@@ -129,7 +136,8 @@ public final class OrderItemRepository {
                 orderItem.setOrderItemId(resultSet.getLong(1));
                 orderItem.setOrderId(resultSet.getLong(2));
                 orderItem.setUserId(resultSet.getInt(3));
-                orderItem.setStatus(resultSet.getString(4));
+                orderItem.setPhone(resultSet.getString(4));
+                orderItem.setStatus(resultSet.getString(5));
                 result.add(orderItem);
             }
         }

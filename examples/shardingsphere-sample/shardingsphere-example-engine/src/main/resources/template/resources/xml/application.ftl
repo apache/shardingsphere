@@ -49,15 +49,22 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/sql-parser 
                            http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser.xsd
                            ">
+<#assign package="" />
+<#if feature?split(",")?size gt 1>
+    <#assign package="mixed" />
+<#else>
+    <#assign package = feature?replace('-', '.') />
+</#if>
     <context:annotation-config />
-    <context:component-scan base-package="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}"/>
+    <context:component-scan base-package="org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}"/>
 <#if framework=="spring-namespace-jpa">
+    
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="dataSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
-        <property name="packagesToScan" value="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.entity" />
+        <property name="packagesToScan" value="org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.entity" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
@@ -69,37 +76,71 @@
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
     <tx:annotation-driven />
 </#if>
-<#if feature!="db-discovery">
-    <bean id="demo_ds_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+    
+    <!--
+    Notice: If you are using the db-discovery module, please replace the database address with the corresponding database cluster address
+    -->
+    
+    <bean id="ds_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_0?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="root"/>
         <property name="password" value="root"/>
     </bean>
     
-    <bean id="demo_ds_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+    <bean id="ds_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_1?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="root"/>
         <property name="password" value="root"/>
     </bean>
-</#if>
-<#include "${feature}.ftl">
+    
+    <bean id="ds_2" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_2?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+        <property name="username" value="root"/>
+        <property name="password" value="root"/>
+    </bean>
+<#list feature?split(",") as item>
+    <#include "${item}.ftl">
+</#list>
     
 <#if framework=="spring-namespace-mybatis">
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource" />
     </bean>
     <tx:annotation-driven />
-
+    
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
         <property name="mapperLocations" value="classpath*:mappers/*.xml"/>
     </bean>
-
+    
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="org.apache.shardingsphere.example.${feature?replace('-', '.')}.${framework?replace('-', '.')}.repository"/>
+        <property name="basePackage" value="org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.repository"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
 </#if>
+<#assign ruleRefs="">
+<#list feature?split(",") as item>
+    <#assign ruleRefs += toCamel(item) + "Rule" />
+    <#if item_has_next>
+        <#assign ruleRefs += ", " />
+    </#if>
+</#list>
+    <shardingsphere:data-source id="dataSource" data-source-names="ds_0, ds_1, ds_2" rule-refs="${ruleRefs}">
+        <props>
+            <prop key="sql-show">true</prop>
+        </props>
+    </shardingsphere:data-source>
 </beans>
+<#function toCamel(s)>
+    <#return s
+    ?replace('(^-+)|(-+$)', '', 'r')
+    ?replace('\\-+(\\w)?', ' $1', 'r')
+    ?replace('([A-Z])', ' $1', 'r')
+    ?capitalize
+    ?replace(' ' , '')
+    ?uncap_first
+    >
+</#function>

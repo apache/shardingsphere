@@ -90,6 +90,7 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
     private void appendDataTypes(final Map<String, Integer> dataTypes) {
         dataTypes.putIfAbsent("JSON", Types.LONGVARCHAR);
         dataTypes.putIfAbsent("GEOMETRY", Types.BINARY);
+        dataTypes.putIfAbsent("YEAR", Types.DATE);
     }
     
     private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet) throws SQLException {

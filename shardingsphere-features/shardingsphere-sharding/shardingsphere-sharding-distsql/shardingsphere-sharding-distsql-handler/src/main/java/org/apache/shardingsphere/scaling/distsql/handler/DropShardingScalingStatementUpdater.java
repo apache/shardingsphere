@@ -24,8 +24,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.scaling.distsql.statement.DropShardingScalingStatement;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 
-import java.util.Arrays;
-
 /**
  * Drop sharding scaling statement updater.
  */
@@ -38,7 +36,7 @@ public final class DropShardingScalingStatementUpdater implements RuleDefinition
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkStatement(schemaName, sqlStatement, currentRuleConfig);
     }
-
+    
     private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         if (null == currentRuleConfig) {
             throw new RequiredRuleMissedException("Sharding", schemaName);
@@ -52,7 +50,7 @@ public final class DropShardingScalingStatementUpdater implements RuleDefinition
     
     private void checkExist(final String schemaName, final DropShardingScalingStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         if (!currentRuleConfig.getScaling().containsKey(sqlStatement.getScalingName())) {
-            throw new RequiredRuleMissedException("Scaling", schemaName, Arrays.asList(sqlStatement.getScalingName()));
+            throw new RequiredRuleMissedException("Scaling", schemaName, sqlStatement.getScalingName());
         }
     }
     

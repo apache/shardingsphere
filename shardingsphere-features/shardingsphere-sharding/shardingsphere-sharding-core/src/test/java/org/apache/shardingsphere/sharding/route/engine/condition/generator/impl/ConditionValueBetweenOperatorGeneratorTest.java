@@ -41,6 +41,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -145,12 +146,13 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         assertThat(conditionValue.getValueRange(), is(Range.closed(1, 2)));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertGenerateConditionValueWithoutParameter() {
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("id"));
         ParameterMarkerExpressionSegment between = new ParameterMarkerExpressionSegment(0, 0, 0);
         ParameterMarkerExpressionSegment and = new ParameterMarkerExpressionSegment(0, 0, 1);
         BetweenExpression predicate = new BetweenExpression(0, 0, left, between, and, false);
-        generator.generate(predicate, column, new LinkedList<>());
+        Optional<ShardingConditionValue> actual = generator.generate(predicate, column, new LinkedList<>());
+        assertFalse(actual.isPresent());
     }
 }

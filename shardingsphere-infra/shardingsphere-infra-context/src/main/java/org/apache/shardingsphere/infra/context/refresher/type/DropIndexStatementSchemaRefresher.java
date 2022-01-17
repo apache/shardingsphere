@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.context.refresher.type;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
@@ -43,6 +43,8 @@ import java.util.stream.Collectors;
  * Schema refresher for drop index statement.
  */
 public final class DropIndexStatementSchemaRefresher implements MetaDataRefresher<DropIndexStatement> {
+    
+    private static final String TYPE = DropIndexStatement.class.getName();
     
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
@@ -89,6 +91,6 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
     
     @Override
     public String getType() {
-        return DropIndexStatement.class.getCanonicalName();
+        return TYPE;
     }
 }

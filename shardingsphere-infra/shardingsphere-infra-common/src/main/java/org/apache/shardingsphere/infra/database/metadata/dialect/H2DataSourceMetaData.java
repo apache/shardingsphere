@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
 
 import java.util.Objects;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -81,6 +82,16 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
         } else {
             model = modelMemFromMatcher;
         }
+    }
+    
+    @Override
+    public Properties getQueryProperties() {
+        return new Properties();
+    }
+    
+    @Override
+    public Properties getDefaultQueryProperties() {
+        return new Properties();
     }
     
     @Override

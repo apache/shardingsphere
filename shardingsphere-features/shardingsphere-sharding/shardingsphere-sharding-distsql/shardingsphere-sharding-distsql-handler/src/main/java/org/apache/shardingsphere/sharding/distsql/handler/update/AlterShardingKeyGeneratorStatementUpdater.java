@@ -36,7 +36,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -48,25 +47,25 @@ public final class AlterShardingKeyGeneratorStatementUpdater implements RuleDefi
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterShardingKeyGeneratorStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         String schemaName = shardingSphereMetaData.getName();
-        LinkedList<String> requireNames = sqlStatement.getKeyGeneratorSegments().stream().map(ShardingKeyGeneratorSegment::getKeyGeneratorName).collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> requireNames = sqlStatement.getKeyGeneratorSegments().stream().map(ShardingKeyGeneratorSegment::getKeyGeneratorName).collect(Collectors.toCollection(LinkedList::new));
         checkDuplicate(schemaName, requireNames);
         checkExist(requireNames, currentRuleConfig);
         checkAlgorithmType(sqlStatement);
     }
 
     private void checkDuplicate(final String schemaName, final Collection<String> requireNames) throws DistSQLException {
-        Set<String> duplicateRequire = requireNames.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
+        Collection<String> duplicateRequire = requireNames.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
                 .filter(each -> each.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
         DistSQLException.predictionThrow(duplicateRequire.isEmpty(), new DuplicateRuleException("sharding", schemaName, duplicateRequire));
     }
     
     private void checkExist(final Collection<String> requireNames, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        LinkedList<String> notExistAlgorithms = requireNames.stream().filter(each -> !currentRuleConfig.getKeyGenerators().containsKey(each)).collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> notExistAlgorithms = requireNames.stream().filter(each -> !currentRuleConfig.getKeyGenerators().containsKey(each)).collect(Collectors.toCollection(LinkedList::new));
         DistSQLException.predictionThrow(notExistAlgorithms.isEmpty(), new RequiredAlgorithmMissedException("sharding", notExistAlgorithms));
     }
     
     private void checkAlgorithmType(final AlterShardingKeyGeneratorStatement sqlStatement) throws DistSQLException {
-        LinkedList<String> requireNames = sqlStatement.getKeyGeneratorSegments().stream()
+        Collection<String> requireNames = sqlStatement.getKeyGeneratorSegments().stream()
                 .map(ShardingKeyGeneratorSegment::getAlgorithmSegment).map(AlgorithmSegment::getName).collect(Collectors.toCollection(LinkedList::new));
         Collection<String> invalidAlgorithmNames = requireNames.stream()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(KeyGenerateAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());

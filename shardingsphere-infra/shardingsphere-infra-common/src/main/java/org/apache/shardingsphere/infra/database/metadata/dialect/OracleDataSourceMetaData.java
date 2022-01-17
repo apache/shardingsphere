@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURL
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -70,5 +71,15 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
             catalog = matcher.group(8);
             schema = username;
         }
+    }
+    
+    @Override
+    public Properties getQueryProperties() {
+        return new Properties();
+    }
+    
+    @Override
+    public Properties getDefaultQueryProperties() {
+        return new Properties();
     }
 }

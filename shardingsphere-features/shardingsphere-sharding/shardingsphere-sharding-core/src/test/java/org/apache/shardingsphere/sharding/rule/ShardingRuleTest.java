@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rule;
 
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
@@ -40,6 +41,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOp
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.Test;
@@ -481,6 +484,30 @@ public final class ShardingRuleTest {
         when(sqlStatementContext.getTablesContext().findTableName(Arrays.asList(buildColumnProjection(leftDatabaseJoin), 
                 buildColumnProjection(rightDatabaseJoin)), schema)).thenReturn(createColumnTableNameMap());
         assertFalse(createMaximumShardingRule().isAllBindingTables(schema, sqlStatementContext, Arrays.asList("logic_Table", "sub_Logic_Table")));
+    }
+    
+    @Test
+    public void assertIsAllBindingTableWithJoinQueryWithDatabaseJoinConditionInUpperCaseAndNoOwner() {
+        ColumnSegment leftDatabaseJoin = createColumnSegment("USER_ID", "LOGIC_TABLE");
+        ColumnSegment rightDatabaseJoin = createColumnSegment("UID", null);
+        BinaryOperationExpression condition = createBinaryOperationExpression(leftDatabaseJoin, rightDatabaseJoin, EQUAL);
+        JoinTableSegment joinTable = mock(JoinTableSegment.class);
+        when(joinTable.getCondition()).thenReturn(condition);
+        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        when(selectStatement.getFrom()).thenReturn(joinTable);
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
+        when(sqlStatementContext.isContainsJoinQuery()).thenReturn(true);
+        Collection<SimpleTableSegment> tableSegments = Arrays.asList(
+                new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("LOGIC_TABLE"))),
+                new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("SUB_LOGIC_TABLE")))
+        );
+        TablesContext tablesContext = new TablesContext(tableSegments, Collections.EMPTY_MAP);
+        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.getAllColumnNames("LOGIC_TABLE")).thenReturn(Arrays.asList("user_id", "order_id"));
+        when(schema.getAllColumnNames("SUB_LOGIC_TABLE")).thenReturn(Arrays.asList("uid", "order_id"));
+        assertFalse(createMaximumShardingRule().isAllBindingTables(schema, sqlStatementContext, Arrays.asList("LOGIC_TABLE", "SUB_LOGIC_TABLE")));
     }
     
     @Test

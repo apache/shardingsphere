@@ -86,6 +86,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Tab
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.TableNamesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ValidateConstraintSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterAggregateContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
@@ -111,6 +112,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterAggregateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterConversionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterIndexStatement;
@@ -226,6 +228,11 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
             }
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitAlterAggregate(final AlterAggregateContext ctx) {
+        return new OpenGaussAlterAggregateStatement();
     }
     
     @SuppressWarnings("unchecked")

@@ -15,8 +15,6 @@
   ~ limitations under the License.
   -->
 
-spring.shardingsphere.datasource.names=ds-0
-
 spring.shardingsphere.rules.encrypt.encryptors.phone-encryptor.type=AES
 spring.shardingsphere.rules.encrypt.encryptors.phone-encryptor.props.aes-key-value=123456
 

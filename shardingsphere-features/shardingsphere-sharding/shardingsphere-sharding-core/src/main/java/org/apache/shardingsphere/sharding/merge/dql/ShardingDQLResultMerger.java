@@ -124,7 +124,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
             return mergedResult;
         }
         String trunkDatabaseName = DatabaseTypeRegistry.getTrunkDatabaseType(databaseType.getName()).getName();
-        if ("MySQL".equals(trunkDatabaseName) || "PostgreSQL".equals(trunkDatabaseName)) {
+        if ("MySQL".equals(trunkDatabaseName) || "PostgreSQL".equals(trunkDatabaseName) || "openGauss".equals(trunkDatabaseName)) {
             return new LimitDecoratorMergedResult(mergedResult, paginationContext);
         }
         if ("Oracle".equals(trunkDatabaseName)) {

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor;
 
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.utils.IpUtils;
+import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -76,14 +76,13 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     
     private Collection<List<Object>> buildInstanceRows() {
         List<List<Object>> rows = new LinkedList<>();
-        // TODO port is not saved in metadata, add port after saving
-        String instanceId = String.join(DELIMITER, IpUtils.getIp(), " ");
-        rows.add(buildRow(instanceId, ENABLE));
+        InstanceId instanceId = new InstanceId();
+        rows.add(buildRow(instanceId.getId(), ENABLE));
         return rows;
     }
     
     private Collection<List<Object>> buildInstanceRows(final MetaDataPersistService persistService) {
-        Collection<ComputeNodeInstance> instances = persistService.loadComputeNodeInstances();
+        Collection<ComputeNodeInstance> instances = persistService.getComputeNodePersistService().loadAllComputeNodeInstances();
         if (!instances.isEmpty()) {
             return instances.stream().filter(Objects::nonNull).map(each -> buildRow(each.getInstanceDefinition().getInstanceId().getId(), getStatus(each.getStatus())))
                     .collect(Collectors.toCollection(LinkedList::new));
@@ -99,6 +98,6 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     }
     
     private String getStatus(final Collection<String> computeNodeStatus) {
-        return computeNodeStatus.isEmpty() || !computeNodeStatus.contains(ComputeNodeStatus.CIRCUIT_BREAKER.name()) ? ENABLE : DISABLE;
+        return computeNodeStatus.isEmpty() || !computeNodeStatus.contains(ComputeNodeStatus.CIRCUIT_BREAK.name()) ? ENABLE : DISABLE;
     }
 }

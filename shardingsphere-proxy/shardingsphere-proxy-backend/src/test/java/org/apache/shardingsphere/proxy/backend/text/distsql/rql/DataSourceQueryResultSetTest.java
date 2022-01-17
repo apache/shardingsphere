@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
@@ -42,6 +42,7 @@ import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -107,7 +108,7 @@ public final class DataSourceQueryResultSetTest {
         assertThat(rowData.next(), is("demo_ds"));
         assertThat(rowData.next(), is("{\"maxPoolSize\":100,\"minPoolSize\":10}"));
         MetaDataPersistService persistService = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
-        when(persistService.getDataSourceService().load(any())).thenReturn(createDataSourceConfigurationMap());
+        when(persistService.getDataSourceService().load(any())).thenReturn(createDataSourcePropertiesMap());
         when(manager.getMetaDataContexts().getMetaDataPersistService()).thenReturn(Optional.of(persistService));
         resultSet.init(shardingSphereMetaData, mock(ShowResourcesStatement.class));
         actual = resultSet.getRowData();
@@ -121,12 +122,17 @@ public final class DataSourceQueryResultSetTest {
         assertThat(rowData.next(), is("{\"readOnly\":true,\"customPoolProps\":{\"test\":\"test\"}}"));
     }
     
-    private Map<String, DataSourceConfiguration> createDataSourceConfigurationMap() {
-        Map<String, DataSourceConfiguration> result = new HashMap<>();
-        DataSourceConfiguration ds0 = new DataSourceConfiguration("ds_0");
+    private Map<String, DataSourceProperties> createDataSourcePropertiesMap() {
+        Map<String, DataSourceProperties> result = new HashMap<>();
+        DataSourceProperties ds0 = new DataSourceProperties("ds_0", createProperties());
         ds0.getCustomPoolProps().put("test", "test");
-        ds0.getProps().put("readOnly", true);
         result.put("ds_0", ds0);
+        return result;
+    }
+    
+    private Map<String, Object> createProperties() {
+        Map<String, Object> result = new LinkedHashMap<>(1, 1);
+        result.put("readOnly", true);
         return result;
     }
 }

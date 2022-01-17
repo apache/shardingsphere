@@ -23,6 +23,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.AlterDefaultSingleTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.AlterResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.AlterSQLParserRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.AlterTransactionRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.CacheOptionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ClearHintContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.CreateDefaultSingleTableRuleContext;
@@ -34,8 +35,9 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.InstanceDefinationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.InstanceIdContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PasswordContext;
-import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PoolPropertiesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PoolPropertyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PropertiesDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PropertyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ProviderDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.RefreshTableMetadataContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.SetVariableContext;
@@ -46,12 +48,17 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowSQLParserRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowSingleTableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowSingleTableRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowTableMetadataContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowTransactionRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowVariableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.SqlParserRuleDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.TransactionRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.segment.CacheOptionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.segment.TransactionProviderSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.RefreshTableMetadataStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterSQLParserRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterTransactionRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.hint.ClearHintStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetInstanceStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
@@ -59,9 +66,10 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAl
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowSQLParserRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTableMetadataStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AlterDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateDefaultSingleTableRuleStatement;
@@ -70,12 +78,12 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceS
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -97,6 +105,12 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     }
     
     @Override
+    public ASTNode visitShowTableMetadata(final ShowTableMetadataContext ctx) {
+        Collection<String> tableNames = ctx.tableName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toSet());
+        return new ShowTableMetadataStatement(tableNames, null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
+    }
+    
+    @Override
     public ASTNode visitDataSource(final DataSourceContext ctx) {
         String url = null;
         String hostname = null;
@@ -110,9 +124,9 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
             port = ctx.simpleSource().port().getText();
             dbName = ctx.simpleSource().dbName().getText();
         }
-        return new DataSourceSegment(getIdentifierValue(ctx.dataSourceName()), url, hostname, port, dbName,
-                ctx.user().getText(), null == ctx.password() ? "" : getPassword(ctx.password()),
-                null == ctx.poolProperties() ? new Properties() : getPoolProperties(ctx.poolProperties()));
+        String password = null == ctx.password() ? "" : getPassword(ctx.password());
+        Properties properties = getProperties(ctx.propertiesDefinition());
+        return new DataSourceSegment(getIdentifierValue(ctx.dataSourceName()), url, hostname, port, dbName, ctx.user().getText(), password, properties);
     }
     
     private String getPassword(final List<PasswordContext> passwordContexts) {
@@ -162,9 +176,13 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
         return new DropDefaultSingleTableRuleStatement(ctx.existClause() != null);
     }
     
-    private Properties getPoolProperties(final PoolPropertiesContext ctx) {
+    private Properties getProperties(final PropertiesDefinitionContext ctx) {
         Properties result = new Properties();
-        for (PoolPropertyContext each : ctx.poolProperty()) {
+        if (null == ctx || null == ctx.properties()) {
+            return result;
+        }
+        List<PropertyContext> properties = ctx.properties().property();
+        for (PropertyContext each : properties) {
             result.setProperty(new IdentifierValue(each.key.getText()).getValue(), new IdentifierValue(each.value.getText()).getValue());
         }
         return result;
@@ -204,16 +222,6 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     }
     
     @Override
-    public ASTNode visitShowSQLParserRule(final ShowSQLParserRuleContext ctx) {
-        return new ShowSQLParserRuleStatement();
-    }
-    
-    @Override
-    public ASTNode visitShowAuthorityRule(final ShowAuthorityRuleContext ctx) {
-        return new ShowAuthorityRuleStatement();
-    }
-    
-    @Override
     public ASTNode visitShowVariable(final ShowVariableContext ctx) {
         return new ShowVariableStatement(getIdentifierValue(ctx.variableName()).toUpperCase());
     }
@@ -244,8 +252,37 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     }
     
     @Override
+    public ASTNode visitShowAuthorityRule(final ShowAuthorityRuleContext ctx) {
+        return new ShowAuthorityRuleStatement();
+    }
+    
+    @Override
     public ASTNode visitShowTransactionRule(final ShowTransactionRuleContext ctx) {
-        return new ShowTransactionRuleStatement(null);
+        return new ShowTransactionRuleStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterTransactionRule(final AlterTransactionRuleContext ctx) {
+        return visit(ctx.transactionRuleDefinition());
+    }
+    
+    @Override
+    public ASTNode visitTransactionRuleDefinition(final TransactionRuleDefinitionContext ctx) {
+        String defaultType = getIdentifierValue(ctx.defaultType());
+        TransactionProviderSegment provider = (TransactionProviderSegment) visit(ctx.providerDefinition());
+        return new AlterTransactionRuleStatement(defaultType, provider);
+    }
+
+    @Override
+    public ASTNode visitProviderDefinition(final ProviderDefinitionContext ctx) {
+        String providerType = getIdentifierValue(ctx.providerName());
+        Properties props = getProperties(ctx.propertiesDefinition());
+        return new TransactionProviderSegment(providerType, props);
+    }
+
+    @Override
+    public ASTNode visitShowSQLParserRule(final ShowSQLParserRuleContext ctx) {
+        return new ShowSQLParserRuleStatement();
     }
     
     @Override

@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -65,7 +64,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
     }
     
     private void checkIsInUse(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereMetaData shardingSphereMetaData) throws DistSQLException {
-        Set<String> rulesInUse = shardingSphereMetaData.getRuleMetaData().findRules(ExportableRule.class).stream().map(ExportableRule::export)
+        Collection<String> rulesInUse = shardingSphereMetaData.getRuleMetaData().findRules(ExportableRule.class).stream().map(ExportableRule::export)
                 .filter(each -> each.containsKey(ExportableConstants.AUTO_AWARE_DATA_SOURCE_NAME)).map(each -> (Collection<String>) each.get(ExportableConstants.AUTO_AWARE_DATA_SOURCE_NAME))
                 .flatMap(Collection::stream).collect(Collectors.toSet());
         Collection<String> invalid = sqlStatement.getRuleNames().stream().filter(each -> rulesInUse.contains(each)).collect(Collectors.toList());

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLResetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowBinaryLogsStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowBinlogStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowBinlogEventsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateEventStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateProcedureStatement;
@@ -88,7 +88,7 @@ public final class MySQLComStmtPrepareCheckerTest {
             new MySQLGrantStatement(), new MySQLInsertStatement(), new MySQLInstallPluginStatement(), new MySQLKillStatement(), 
             new MySQLLoadIndexInfoStatement(), new MySQLOptimizeTableStatement(), new MySQLRenameTableStatement(), new MySQLRepairTableStatement(), 
             new MySQLResetStatement(), new MySQLRevokeStatement(), new MySQLSelectStatement(), new MySQLSetStatement(), new MySQLShowWarningsStatement(),
-            new MySQLShowErrorsStatement(), new MySQLShowBinlogStatement(), new MySQLShowCreateProcedureStatement(), new MySQLShowCreateFunctionStatement(), new MySQLShowCreateEventStatement(),
+            new MySQLShowErrorsStatement(), new MySQLShowBinlogEventsStatement(), new MySQLShowCreateProcedureStatement(), new MySQLShowCreateFunctionStatement(), new MySQLShowCreateEventStatement(),
             new MySQLShowCreateTableStatement(), new MySQLShowCreateViewStatement(), new MySQLShowBinaryLogsStatement(), new MySQLShowStatusStatement(), new MySQLStartSlaveStatement(),
             new MySQLStopSlaveStatement(), new MySQLTruncateStatement(), new MySQLUninstallPluginStatement(), new MySQLUpdateStatement(), new MySQLXAStatement());
         for (SQLStatement each : sqlStatements) {

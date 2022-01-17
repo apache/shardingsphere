@@ -17,16 +17,76 @@
 
 grammar RDLStatement;
 
-import Keyword, Literals, Symbol;
+import Keyword, Literals, Symbol, BaseRule;
 
 createShardingScaling
-    : CREATE SHARDING SCALING scalingName
+    : CREATE SHARDING SCALING scalingName scalingDefinition?
     ;
 
 dropShardingScaling
     : DROP SHARDING SCALING scalingName
     ;
 
+enableShardingScaling
+    : ENABLE SHARDING SCALING scalingName
+    ;
+
+disableShardingScaling
+    : DISABLE SHARDING SCALING scalingName
+    ;
+
 scalingName
     : IDENTIFIER
+    ;
+
+scalingDefinition
+    : minimumAutoDefinition | completeAutoDefinition | manualDefinition
+    ;
+
+minimumAutoDefinition
+    : LP completionDetector COMMA dataConsistencyChecker RP
+    ;
+
+completeAutoDefinition
+    : LP inputDefinition COMMA outputDefinition COMMA streamChannel COMMA completionDetector COMMA dataConsistencyChecker RP
+    ;
+
+manualDefinition
+    : LP inputDefinition COMMA outputDefinition COMMA streamChannel RP
+    ;
+
+inputDefinition
+    : INPUT LP workerThread COMMA batchSize COMMA rateLimiter RP
+    ;
+
+outputDefinition
+    : OUTPUT LP workerThread COMMA batchSize COMMA rateLimiter RP
+    ;
+
+completionDetector
+    : COMPLETION_DETECTOR LP algorithmDefinition RP
+    ;
+
+dataConsistencyChecker
+    : DATA_CONSISTENCY_CHECKER LP algorithmDefinition RP
+    ;
+
+workerThread
+    : WORKER_THREAD EQ intValue
+    ;
+
+batchSize
+    : BATCH_SIZE EQ intValue
+    ;
+
+rateLimiter
+    : RATE_LIMITER LP algorithmDefinition RP
+    ;
+
+streamChannel
+    : STREAM_CHANNEL LP algorithmDefinition RP
+    ;
+
+intValue
+    : INT
     ;

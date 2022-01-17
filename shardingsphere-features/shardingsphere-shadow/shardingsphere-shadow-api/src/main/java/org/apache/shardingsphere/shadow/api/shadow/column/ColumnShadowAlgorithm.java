@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shadow.api.shadow.column;
 
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
-import java.util.Collection;
-
 /**
  * Column shadow algorithm.
  */
@@ -29,9 +27,8 @@ public interface ColumnShadowAlgorithm<T extends Comparable<?>> extends ShadowAl
     /**
      * Is need shadow.
      *
-     * @param relatedShadowTables related shadow tables
      * @param columnShadowValue column shadow value
      * @return is need shadow or not
      */
-    boolean isShadow(Collection<String> relatedShadowTables, PreciseColumnShadowValue<T> columnShadowValue);
+    boolean isShadow(PreciseColumnShadowValue<T> columnShadowValue);
 }

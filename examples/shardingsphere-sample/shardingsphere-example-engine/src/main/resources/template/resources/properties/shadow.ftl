@@ -15,8 +15,6 @@
   ~ limitations under the License.
   -->
 
-spring.shardingsphere.datasource.names=ds-0,ds-1
-
 spring.shardingsphere.rules.shadow.data-sources.shadow-data-source.source-data-source-name=ds-0
 spring.shardingsphere.rules.shadow.data-sources.shadow-data-source.shadow-data-source-name=ds-1
 
@@ -43,3 +41,5 @@ spring.shardingsphere.rules.shadow.shadow-algorithms.simple-hint-algorithm.props
 spring.shardingsphere.rules.shadow.shadow-algorithms.simple-hint-algorithm.props.foo=bar
 
 spring.shardingsphere.rules.sql-parser.sql-comment-parse-enabled=true
+
+spring.shardingsphere.props.sql-show=true

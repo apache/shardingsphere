@@ -90,8 +90,8 @@ public final class CreateShardingKeyGeneratorStatementUpdaterTest {
     }
     
     private Properties buildProps() {
-        Properties props = new Properties();
-        props.put("worker-id", "123");
-        return props;
+        Properties result = new Properties();
+        result.put("worker-id", "123");
+        return result;
     }
 }

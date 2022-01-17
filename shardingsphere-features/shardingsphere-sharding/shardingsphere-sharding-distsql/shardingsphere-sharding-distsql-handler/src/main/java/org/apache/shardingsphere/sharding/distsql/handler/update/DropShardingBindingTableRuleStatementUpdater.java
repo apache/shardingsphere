@@ -51,7 +51,7 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
             return;
         }
         Collection<String> bindingTableGroups = currentRuleConfig.getBindingTableGroups();
-        LinkedList<String> notExistBindingGroup = sqlStatement.getBindingGroups().stream().filter(each -> !bindingTableGroups.contains(each)).collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> notExistBindingGroup = sqlStatement.getBindingGroups().stream().filter(each -> !bindingTableGroups.contains(each)).collect(Collectors.toCollection(LinkedList::new));
         DistSQLException.predictionThrow(notExistBindingGroup.isEmpty(), new RequiredRuleMissedException("Binding", schemaName, notExistBindingGroup));
     }
     

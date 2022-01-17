@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.context.refresher.type;
 
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
@@ -42,6 +42,8 @@ import java.util.Optional;
  * Schema refresher for create table statement.
  */
 public final class CreateTableStatementSchemaRefresher implements MetaDataRefresher<CreateTableStatement> {
+    
+    private static final String TYPE = CreateTableStatement.class.getName();
     
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
@@ -69,6 +71,6 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
     
     @Override
     public String getType() {
-        return CreateTableStatement.class.getCanonicalName();
+        return TYPE;
     }
 }
