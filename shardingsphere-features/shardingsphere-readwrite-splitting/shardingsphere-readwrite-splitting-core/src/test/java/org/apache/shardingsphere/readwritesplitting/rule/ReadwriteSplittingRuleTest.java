@@ -34,6 +34,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 public final class ReadwriteSplittingRuleTest {
     
@@ -55,16 +56,21 @@ public final class ReadwriteSplittingRuleTest {
     }
     
     private ReadwriteSplittingRule createReadwriteSplittingRule() {
-        ReadwriteSplittingDataSourceRuleConfiguration config = 
-                new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", "", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), "random");
+        Properties props = new Properties();
+        props.setProperty("write-data-source-name", "write_ds");
+        props.setProperty("read-data-source-names", "read_ds_0,read_ds_1");
+        ReadwriteSplittingDataSourceRuleConfiguration config =
+                new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", "Static", props, "random");
         return new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(
                 Collections.singleton(config), ImmutableMap.of("random", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties()))));
     }
     
     private void assertDataSourceRule(final ReadwriteSplittingDataSourceRule actual) {
         assertThat(actual.getName(), is("test_pr"));
-        assertThat(actual.getWriteDataSourceName(), is("write_ds"));
-        assertThat(actual.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
+        assertNotNull(actual.getReadwriteSplittingType().getProps());
+        Properties props = actual.getReadwriteSplittingType().getProps();
+        assertThat(props.getProperty("write-data-source-name"), is("write_ds"));
+        assertThat(props.getProperty("read-data-source-names"), is("read_ds_0,read_ds_1"));
         assertThat(actual.getLoadBalancer().getType(), is("RANDOM"));
     }
     

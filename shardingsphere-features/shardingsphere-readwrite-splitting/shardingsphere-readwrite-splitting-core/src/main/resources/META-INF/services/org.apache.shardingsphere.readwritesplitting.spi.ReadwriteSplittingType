@@ -15,10 +15,5 @@
 # limitations under the License.
 #
 
-spring.shardingsphere.datasource.names=jndi0,jndi1
-spring.shardingsphere.datasource.jndi0.jndi-name=java:comp/env/jdbc/jndi0
-spring.shardingsphere.datasource.jndi1.jndi-name=jdbc/jndi1
-
-spring.shardingsphere.rules.readwrite-splitting.data-sources.pr_ds.type=Static
-spring.shardingsphere.rules.readwrite-splitting.data-sources.pr_ds.props.write-data-source-name=jndi0
-spring.shardingsphere.rules.readwrite-splitting.data-sources.pr_ds.props.read-data-source-names=jndi1
+org.apache.shardingsphere.readwritesplitting.algorithm.StaticReadwriteSplittingType
+org.apache.shardingsphere.readwritesplitting.algorithm.DynamicReadwriteSplittingType
