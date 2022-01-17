@@ -111,7 +111,7 @@ showCreateFunction
     ;
 
 showCreateProcedure
-    : SHOW CREATE PROCEDURE procName
+    : SHOW CREATE PROCEDURE procedureName
     ;
 
 showCreateTable

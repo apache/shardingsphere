@@ -32,5 +32,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 @ToString
 public final class MySQLShowCreateProcedureStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
-    private String procName;
+    private String procedureName;
 }
