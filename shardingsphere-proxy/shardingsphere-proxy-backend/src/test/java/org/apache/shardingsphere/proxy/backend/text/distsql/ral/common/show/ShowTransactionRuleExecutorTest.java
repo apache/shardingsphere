@@ -31,7 +31,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -46,33 +48,44 @@ public final class ShowTransactionRuleExecutorTest {
     @Test
     public void assertExecutorWithXA() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData("XA", "Atomikos"));
+        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData("XA", "Atomikos", getProperties()));
         ProxyContext.getInstance().init(contextManager);
         executor.execute();
         executor.next();
         QueryResponseRow queryResponseRow = executor.getQueryResponseRow();
         ArrayList<Object> data = new ArrayList<>(queryResponseRow.getData());
-        assertThat(data.size(), is(2));
+        assertThat(data.size(), is(3));
         assertThat(data.get(0), is("XA"));
         assertThat(data.get(1), is("Atomikos"));
+        String props = String.valueOf(data.get(2));
+        assertThat(props, containsString("\"host\":\"127.0.0.1\""));
+        assertThat(props, containsString("\"databaseName\":\"jbossts\""));
     }
     
     @Test
     public void assertExecutorWithLocal() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData("LOCAL", null));
+        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData("LOCAL", null, null));
         ProxyContext.getInstance().init(contextManager);
         executor.execute();
         executor.next();
         QueryResponseRow queryResponseRow = executor.getQueryResponseRow();
         ArrayList<Object> data = new ArrayList<>(queryResponseRow.getData());
-        assertThat(data.size(), is(2));
+        assertThat(data.size(), is(3));
         assertThat(data.get(0), is("LOCAL"));
         assertThat(data.get(1), is(""));
+        assertThat(data.get(2), is(""));
     }
     
-    private ShardingSphereRuleMetaData getGlobalRuleMetaData(final String defaultType, final String providerType) {
-        RuleConfiguration transactionRuleConfiguration = new TransactionRuleConfiguration(defaultType, providerType);
+    private ShardingSphereRuleMetaData getGlobalRuleMetaData(final String defaultType, final String providerType, final Properties props) {
+        RuleConfiguration transactionRuleConfiguration = new TransactionRuleConfiguration(defaultType, providerType, props);
         return new ShardingSphereRuleMetaData(Collections.singleton(transactionRuleConfiguration), Collections.emptyList());
+    }
+    
+    private Properties getProperties() {
+        Properties result = new Properties();
+        result.setProperty("host", "127.0.0.1");
+        result.setProperty("databaseName", "jbossts");
+        return result;
     }
 }

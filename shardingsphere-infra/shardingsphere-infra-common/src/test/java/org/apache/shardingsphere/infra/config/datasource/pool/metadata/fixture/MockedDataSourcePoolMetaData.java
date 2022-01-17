@@ -15,50 +15,51 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.pool.creator.impl;
+package org.apache.shardingsphere.infra.config.datasource.pool.metadata.fixture;
 
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreationMetaData;
+import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaData;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Default data source pool creator.
- */
-public final class DefaultDataSourcePoolCreationMetaData implements DataSourcePoolCreationMetaData {
+public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaData {
     
     @Override
     public Map<String, Object> getDefaultProperties() {
-        return Collections.emptyMap();
+        Map<String, Object> result = new HashMap<>(1, 1);
+        result.put("maxPoolSize", 100);
+        return result;
     }
     
     @Override
     public Map<String, Object> getInvalidProperties() {
-        return Collections.emptyMap();
+        Map<String, Object> result = new HashMap<>(2, 1);
+        result.put("maxPoolSize", -1);
+        result.put("minPoolSize", -1);
+        return result;
     }
     
     @Override
     public Map<String, String> getPropertySynonyms() {
-        return Collections.emptyMap();
+        Map<String, String> result = new HashMap<>(2, 1);
+        result.put("maxPoolSize", "maxPoolSize");
+        result.put("minPoolSize", "minPoolSize");
+        return result;
     }
     
     @Override
     public String getJdbcUrlFieldName() {
-        return null;
+        return "url";
     }
     
     @Override
     public String getJdbcUrlPropertiesFieldName() {
-        return null;
+        return "jdbcUrlProperties";
     }
     
     @Override
     public String getType() {
-        return "Default";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
+        return MockedDataSource.class.getName();
     }
 }

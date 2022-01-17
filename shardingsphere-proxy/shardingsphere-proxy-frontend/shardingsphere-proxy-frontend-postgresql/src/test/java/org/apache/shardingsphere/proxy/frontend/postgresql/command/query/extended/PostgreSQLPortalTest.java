@@ -118,7 +118,7 @@ public final class PostgreSQLPortalTest {
     public void assertDescribeWithUpdateResponseHeader() {
         UpdateResponseHeader responseHeader = mock(UpdateResponseHeader.class);
         setResponseHeader(responseHeader);
-        assertTrue(portal.describe() instanceof PostgreSQLNoDataPacket);
+        assertThat(portal.describe(), is(PostgreSQLNoDataPacket.getInstance()));
     }
     
     @Test(expected = UnsupportedOperationException.class)

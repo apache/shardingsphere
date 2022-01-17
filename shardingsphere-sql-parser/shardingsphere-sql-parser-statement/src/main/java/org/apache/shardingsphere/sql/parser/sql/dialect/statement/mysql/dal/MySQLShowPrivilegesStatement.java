@@ -15,12 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Instance type.
+ * MySQL show privileges statement.
  */
-public enum InstanceType {
-    
-    PROXY, JDBC
+@ToString
+public final class MySQLShowPrivilegesStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }

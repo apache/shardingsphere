@@ -15,34 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance;
+package org.apache.shardingsphere.infra.federation.executor.original.row;
 
-import lombok.Getter;
+import org.apache.calcite.linq4j.Enumerator;
 
 /**
- * Instance definition.
+ * Empty row enumerator.
  */
-@Getter
-public final class InstanceDefinition {
+public final class EmptyRowEnumerator implements Enumerator<Object[]> {
     
-    private static final String DELIMITER = "@";
-    
-    private final InstanceType instanceType;
-    
-    private final InstanceId instanceId;
-    
-    public InstanceDefinition(final InstanceType instanceType) {
-        this.instanceType = instanceType;
-        instanceId = new InstanceId();
+    @Override
+    public Object[] current() {
+        return new Object[0];
     }
     
-    public InstanceDefinition(final InstanceType instanceType, final Integer port) {
-        this.instanceType = instanceType;
-        instanceId = new InstanceId(port);
+    @Override
+    public boolean moveNext() {
+        return false;
     }
     
-    public InstanceDefinition(final InstanceType instanceType, final String id) {
-        this.instanceType = instanceType;
-        instanceId = new InstanceId(id);
+    @Override
+    public void reset() {
+    }
+    
+    @Override
+    public void close() {
     }
 }

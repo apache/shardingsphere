@@ -21,10 +21,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
-import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPortal;
 
 import java.sql.SQLException;
@@ -43,12 +41,6 @@ public final class PostgreSQLConnectionContext {
     
     @Getter(AccessLevel.NONE)
     private final Map<String, PostgreSQLPortal> portals = new LinkedHashMap<>();
-    
-    private final Collection<CommandExecutor> pendingExecutors = new LinkedList<>();
-    
-    private PostgreSQLCommandPacketType currentPacketType;
-    
-    private boolean errorOccurred;
     
     /**
      * Create a portal.
@@ -112,14 +104,5 @@ public final class PostgreSQLConnectionContext {
         SQLException ex = new SQLException("Close all portals failed.");
         result.forEach(ex::setNextException);
         throw ex;
-    }
-    
-    /**
-     * Clear context.
-     */
-    public void clearContext() {
-        pendingExecutors.clear();
-        currentPacketType = null;
-        errorOccurred = false;
     }
 }

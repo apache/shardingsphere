@@ -109,7 +109,7 @@ public final class PostgreSQLPortal {
             return createRowDescriptionPacket((QueryResponseHeader) responseHeader);
         }
         if (responseHeader instanceof UpdateResponseHeader) {
-            return new PostgreSQLNoDataPacket();
+            return PostgreSQLNoDataPacket.getInstance();
         }
         throw new UnsupportedOperationException("Failed to describe portal");
     }

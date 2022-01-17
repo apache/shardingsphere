@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance;
+package org.apache.shardingsphere.infra.instance.definition;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;

@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.pool.creator.impl;
+package org.apache.shardingsphere.infra.config.datasource.pool.metadata.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreationMetaData;
+import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaData;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Hikari data source pool creator.
+ * Hikari data source pool meta data.
  */
 @Getter
-public final class HikariDataSourcePoolCreationMetaData implements DataSourcePoolCreationMetaData {
+public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaData {
     
     private final Map<String, Object> defaultProperties = new HashMap<>(6, 1);
     
@@ -36,7 +36,7 @@ public final class HikariDataSourcePoolCreationMetaData implements DataSourcePoo
     
     private final Map<String, String> propertySynonyms = new HashMap<>(2, 1);
     
-    public HikariDataSourcePoolCreationMetaData() {
+    public HikariDataSourcePoolMetaData() {
         buildDefaultProperties();
         buildInvalidProperties();
         buildPropertySynonyms();
@@ -57,6 +57,9 @@ public final class HikariDataSourcePoolCreationMetaData implements DataSourcePoo
     }
     
     private void buildPropertySynonyms() {
+        propertySynonyms.put("connectionTimeoutMilliseconds", "connectionTimeout");
+        propertySynonyms.put("idleTimeoutMilliseconds", "idleTimeout");
+        propertySynonyms.put("maxLifetimeMilliseconds", "maxLifetime");
         propertySynonyms.put("maxPoolSize", "maximumPoolSize");
         propertySynonyms.put("minPoolSize", "minimumIdle");
     }
