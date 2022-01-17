@@ -66,7 +66,6 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.nullable;
@@ -158,7 +157,7 @@ public final class PostgreSQLComDescribeExecutorTest {
         verify(mockPayload).writeInt2(4);
         verify(mockPayload, times(2)).writeInt4(23);
         verify(mockPayload, times(2)).writeInt4(18);
-        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLNoDataPacket);
+        assertThat(actualPacketsIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
     }
     
     @Test
@@ -185,7 +184,7 @@ public final class PostgreSQLComDescribeExecutorTest {
         verify(mockPayload).writeInt2(5);
         verify(mockPayload, times(2)).writeInt4(23);
         verify(mockPayload, times(3)).writeInt4(18);
-        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLNoDataPacket);
+        assertThat(actualPacketsIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
     }
     
     @Test
