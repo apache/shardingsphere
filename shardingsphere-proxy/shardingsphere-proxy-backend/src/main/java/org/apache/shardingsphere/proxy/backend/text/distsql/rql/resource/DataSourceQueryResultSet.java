@@ -31,10 +31,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.TreeMap;
 
 /**
  * Result set for show data source.
@@ -77,13 +79,18 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     
     // TODO to be configured
     private Map<String, Object> getFilteredUndisplayedProperties(final Map<String, Object> standardProps) {
-        Map<String, Object> result = new LinkedHashMap<>(standardProps);
+        Map<String, Object> result = new HashMap<>(standardProps);
         result.remove("url");
         result.remove("jdbcUrl");
         result.remove("user");
         result.remove("username");
         result.remove("password");
-        return result;
+        for (Entry<String, Object> entry : standardProps.entrySet()) {
+            if (entry.getValue() instanceof Collection || entry.getValue() instanceof Map) {
+                result.remove(entry.getKey());
+            }
+        }
+        return new TreeMap<>(result);
     }
     
     @Override

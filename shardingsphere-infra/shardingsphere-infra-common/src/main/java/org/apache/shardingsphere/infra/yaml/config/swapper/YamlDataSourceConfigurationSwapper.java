@@ -36,6 +36,8 @@ public final class YamlDataSourceConfigurationSwapper {
     
     private static final String DATA_SOURCE_CLASS_NAME_KEY = "dataSourceClassName";
     
+    private static final String CUSTOM_POOL_PROPS_KEY = "customPoolProps";
+    
     /**
      * Swap to data sources from YAML data sources.
      *
@@ -74,10 +76,10 @@ public final class YamlDataSourceConfigurationSwapper {
     private Map<String, Object> getProperties(final Map<String, Object> yamlConfig) {
         Map<String, Object> result = new HashMap<>(yamlConfig);
         result.remove(DATA_SOURCE_CLASS_NAME_KEY);
-        if (null != yamlConfig.get(DataSourceProperties.CUSTOM_POOL_PROPS_KEY)) {
-            result.putAll((Map) yamlConfig.get(DataSourceProperties.CUSTOM_POOL_PROPS_KEY));
+        if (null != yamlConfig.get(CUSTOM_POOL_PROPS_KEY)) {
+            result.putAll((Map) yamlConfig.get(CUSTOM_POOL_PROPS_KEY));
         }
-        result.remove(DataSourceProperties.CUSTOM_POOL_PROPS_KEY);
+        result.remove(CUSTOM_POOL_PROPS_KEY);
         return result;
     }
     

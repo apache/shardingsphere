@@ -32,8 +32,6 @@ import java.util.Map.Entry;
 @Getter
 public final class DataSourceProperties {
     
-    public static final String CUSTOM_POOL_PROPS_KEY = "customPoolProps";
-    
     private final String dataSourceClassName;
     
     @Getter(AccessLevel.NONE)
