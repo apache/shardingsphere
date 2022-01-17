@@ -99,6 +99,6 @@ public class DynamicReadwriteSplittingType implements ReadwriteSplittingType {
     
     @Override
     public String getType() {
-        return null;
+        return "DYNAMIC";
     }
 }
