@@ -43,9 +43,6 @@ jobs:
             database: PostgreSQL
           - adapter: proxy
             database: PostgreSQL
-            scenario: tbl
-          - adapter: proxy
-            database: PostgreSQL
             scenario: empty_rules
     steps:
       - name: Cache Maven Repos
