@@ -59,12 +59,12 @@ public final class CreateShardingScalingRuleStatementAssert {
         }
     }
     
-    private static void assertShardingScalingRuleConfiguration(final SQLCaseAssertContext assertContext, final ShardingScalingRuleConfigurationSegment actual,
+    private static void assertShardingScalingRuleConfiguration(final SQLCaseAssertContext assertContext, final ShardingScalingRuleConfigurationSegment actual, 
                                                                final ExpectedShardingScalingRuleConfigurationSegment expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual sharding scaling configuration segment should not exist."), actual);
+            assertNull(assertContext.getText("Actual sharding scaling rule configuration segment should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual sharding scaling configuration segment should exist."), actual);
+            assertNotNull(assertContext.getText("Actual sharding scaling rule configuration segment should exist."), actual);
             assertInputOrOutputSegment("input", assertContext, actual.getInputSegment(), expected.getInputSegment());
             assertInputOrOutputSegment("output", assertContext, actual.getOutputSegment(), expected.getOutputSegment());
             assertAlgorithmSegment("stream channel", assertContext, actual.getStreamChannel(), expected.getStreamChannel());
