@@ -24,11 +24,11 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Enable sharding scaling statement test case.
+ * Enable sharding scaling rule statement test case.
  */
 @Getter
 @Setter
-public final class EnableShardingScalingStatementTestCase extends SQLParserTestCase {
+public final class EnableShardingScalingRuleStatementTestCase extends SQLParserTestCase {
 
     @XmlAttribute(name = "scaling-name")
     private String scalingName;

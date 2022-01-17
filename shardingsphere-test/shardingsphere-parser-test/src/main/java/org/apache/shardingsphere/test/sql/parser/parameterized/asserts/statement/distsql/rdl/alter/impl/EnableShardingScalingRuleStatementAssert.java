@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.drop.impl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.alter.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.scaling.distsql.statement.DropShardingScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.EnableShardingScalingRuleStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingScalingStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.EnableShardingScalingRuleStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -29,19 +29,19 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Drop sharding scaling statement assert.
+ * Enable sharding scaling rule statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DropShardingScalingStatementAssert {
+public final class EnableShardingScalingRuleStatementAssert {
     
     /**
-     * Assert drop sharding scaling statement is correct with expected parser result.
+     * Assert enable sharding scaling rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual drop sharding scaling statement
-     * @param expected expected drop sharding scaling statement test case
+     * @param actual actual enable sharding scaling rule statement
+     * @param expected expected enable sharding scaling rule statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DropShardingScalingStatement actual, final DropShardingScalingStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final EnableShardingScalingRuleStatement actual, final EnableShardingScalingRuleStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

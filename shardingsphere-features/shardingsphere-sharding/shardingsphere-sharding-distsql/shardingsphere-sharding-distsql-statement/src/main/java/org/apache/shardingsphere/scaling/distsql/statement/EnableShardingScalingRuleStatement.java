@@ -15,27 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.distsql.statement.segment;
+package org.apache.shardingsphere.scaling.distsql.statement;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
 
 /**
- * Sharding scaling configuration segment.
+ * Enable sharding scaling rule statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ShardingScalingConfigurationSegment implements ASTNode {
-
-    private InputOrOutputSegment inputSegment;
-
-    private InputOrOutputSegment outputSegment;
-
-    private AlgorithmSegment streamChannel;
-
-    private AlgorithmSegment completionDetector;
-
-    private AlgorithmSegment dataConsistencyChecker;
+public final class EnableShardingScalingRuleStatement extends AlterRuleStatement {
+    
+    private final String scalingName;
 }
