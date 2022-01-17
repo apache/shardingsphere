@@ -39,7 +39,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -85,7 +84,7 @@ public final class PostgreSQLComBindExecutorTest {
         PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(connectionContext, bindPacket, connectionSession);
         Collection<DatabasePacket<?>> actual = executor.execute();
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLBindCompletePacket.class)));
+        assertThat(actual.iterator().next(), is(PostgreSQLBindCompletePacket.getInstance()));
         verify(portal).execute();
     }
     
@@ -94,7 +93,7 @@ public final class PostgreSQLComBindExecutorTest {
         PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(connectionContext, bindPacket, connectionSession);
         Collection<DatabasePacket<?>> actual = executor.execute();
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLBindCompletePacket.class)));
+        assertThat(actual.iterator().next(), is(PostgreSQLBindCompletePacket.getInstance()));
         verify(portal).execute();
     }
     
@@ -104,7 +103,7 @@ public final class PostgreSQLComBindExecutorTest {
         Collection<DatabasePacket<?>> actual = executor.execute();
         assertThat(actual.size(), is(1));
         Iterator<DatabasePacket<?>> actualPackets = actual.iterator();
-        assertThat(actualPackets.next(), is(instanceOf(PostgreSQLBindCompletePacket.class)));
+        assertThat(actualPackets.next(), is(PostgreSQLBindCompletePacket.getInstance()));
         verify(portal).execute();
     }
     
@@ -113,7 +112,7 @@ public final class PostgreSQLComBindExecutorTest {
         PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(connectionContext, bindPacket, connectionSession);
         Collection<DatabasePacket<?>> actual = executor.execute();
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLBindCompletePacket.class)));
+        assertThat(actual.iterator().next(), is(PostgreSQLBindCompletePacket.getInstance()));
         verify(portal).execute();
     }
 }
