@@ -28,7 +28,7 @@ alterResource
     ;
 
 dropResource
-    : DROP  RESOURCE existClause? IDENTIFIER (COMMA IDENTIFIER)* ignoreSingleTables?
+    : DROP RESOURCE existClause? IDENTIFIER (COMMA IDENTIFIER)* ignoreSingleTables?
     ;
 
 createDefaultSingleTableRule
