@@ -9096,13 +9096,6 @@
     <sql-case id="low_xa_by_mysql_source_test_case8" value="xa start 0x7465737462, 0x2030405060, 0xb" db-types="MySQL"/>
     <sql-case id="low_xa_by_mysql_source_test_case9" value="xa start 0xABCDEF1234567890, 0x01, 0x02" db-types="MySQL"/>
     <sql-case id="table_union" value="TABLE T1 UNION TABLE T2" db-types="MySQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case14" value="ALTER COLLATION &quot;en-x-icu&quot; REFRESH VERSION;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case15" value="ALTER COLLATION test0 RENAME TO test11;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case16" value="ALTER COLLATION test1 RENAME TO test11;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case17" value="ALTER COLLATION test1 RENAME TO test22;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case18" value="ALTER COLLATION test11 OWNER TO nonsense;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case19" value="ALTER COLLATION test11 OWNER TO regress_test_role;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case20" value="ALTER COLLATION test11 SET SCHEMA test_schema;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case21" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_addr_user IN SCHEMA public GRANT ALL ON TABLES TO regress_addr_user;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case22" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_addr_user REVOKE DELETE ON TABLES FROM regress_addr_user;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case23" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_dep_user1 IN SCHEMA deptest   GRANT ALL ON TABLES TO regress_dep_user2;" db-types="PostgreSQL"/>

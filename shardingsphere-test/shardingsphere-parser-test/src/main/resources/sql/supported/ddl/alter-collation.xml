@@ -16,8 +16,9 @@
   ~ limitations under the License.
   -->
 
-<sql-parser-test-cases>
-    <alter-aggregate sql-case-id="alter_aggregate" />
-    <alter-aggregate sql-case-id="alter_aggregate_owner" />
-    <alter-aggregate sql-case-id="alter_aggregate_set_schema" />
-</sql-parser-test-cases>
+<sql-cases>
+    <sql-case id="alter_collation_refresh" value="ALTER COLLATION &quot;en-x-icu&quot; REFRESH VERSION;" db-types="PostgreSQL" />
+    <sql-case id="alter_collation_rename" value="ALTER COLLATION test0 RENAME TO test11;" db-types="PostgreSQL" />
+    <sql-case id="alter_collation_owner" value="ALTER COLLATION test11 OWNER TO nonsense;" db-types="PostgreSQL" />
+    <sql-case id="alter_collation_set_schema" value="ALTER COLLATION test11 SET SCHEMA test_schema;" db-types="PostgreSQL" />
+</sql-cases>
