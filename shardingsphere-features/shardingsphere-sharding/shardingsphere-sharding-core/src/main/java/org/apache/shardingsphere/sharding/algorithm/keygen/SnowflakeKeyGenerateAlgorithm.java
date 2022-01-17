@@ -63,6 +63,8 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     private static final int MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS = 10;
     
+    private static final long DEFAULT_WORKER_ID = 0;
+    
     @Setter
     private static TimeService timeService = new TimeService();
     
@@ -99,6 +101,9 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     }
     
     private long getWorkerId() {
+        if (null == instanceContext) {
+            return DEFAULT_WORKER_ID;
+        }
         long result = instanceContext.getWorkerId();
         Preconditions.checkArgument(result >= 0L && result < WORKER_ID_MAX_VALUE, "Illegal worker id.");
         return result;
