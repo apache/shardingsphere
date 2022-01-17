@@ -40,7 +40,7 @@ public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSe
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         long currentTimeMillis = System.currentTimeMillis();
-        data = PipelineJobAPIFactory.getPipelineJobAPI().getProgress(((ShowScalingStatusStatement) sqlStatement).getJobId()).entrySet().stream()
+        data = PipelineJobAPIFactory.getRuleAlteredJobAPI().getProgress(((ShowScalingStatusStatement) sqlStatement).getJobId()).entrySet().stream()
                 .map(entry -> {
                     Collection<Object> list = new LinkedList<>();
                     list.add(entry.getKey());

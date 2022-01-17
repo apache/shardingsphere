@@ -25,6 +25,7 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -52,6 +53,8 @@ public final class MockedDataSource implements DataSource {
     private Integer minPoolSize;
     
     private List<String> connectionInitSqls;
+    
+    private Properties jdbcUrlProperties;
     
     @SuppressWarnings("MagicConstant")
     @Override

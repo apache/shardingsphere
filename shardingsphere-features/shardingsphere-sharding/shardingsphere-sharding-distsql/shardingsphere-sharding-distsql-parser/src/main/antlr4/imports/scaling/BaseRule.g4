@@ -33,4 +33,4 @@ algorithmProperties
 
 algorithmProperty
     : key=(IDENTIFIER | STRING) EQ value=(INT | IDENTIFIER | STRING)
-    ;  
+    ;

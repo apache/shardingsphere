@@ -28,7 +28,7 @@ public final class ResetScalingUpdater implements RALUpdater<ResetScalingStateme
     
     @Override
     public void executeUpdate(final ResetScalingStatement sqlStatement) {
-        PipelineJobAPIFactory.getPipelineJobAPI().reset(sqlStatement.getJobId());
+        PipelineJobAPIFactory.getRuleAlteredJobAPI().reset(sqlStatement.getJobId());
     }
     
     @Override

@@ -61,6 +61,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
+import org.apache.shardingsphere.infra.federation.executor.FederationContext;
+import org.apache.shardingsphere.infra.federation.executor.original.row.EmptyRowEnumerator;
 import org.apache.shardingsphere.infra.federation.executor.original.row.FilterableRowEnumerator;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationTableMetaData;
@@ -131,11 +133,15 @@ public final class FilterableTableScanExecutor {
         DatabaseType databaseType = DatabaseTypeRegistry.getTrunkDatabaseType(optimizerContext.getParserContexts().get(schemaName).getDatabaseType().getName());
         SqlString sqlString = createSQLString(tableMetaData, scanContext, databaseType);
         // TODO replace sql parse with sql convert
-        SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getName(), optimizerContext.getSqlParserRule()).parse(sqlString.getSql(), false);
-        LogicSQL logicSQL = createLogicSQL(executorContext.getMetaDataMap(), sqlString.getSql(), getParameters(sqlString.getDynamicParameters()), sqlStatement);
-        ShardingSphereMetaData metaData = executorContext.getMetaDataMap().get(schemaName);
+        FederationContext federationContext = executorContext.getFederationContext();
+        LogicSQL logicSQL = createLogicSQL(federationContext.getMetaDataMap(), sqlString, databaseType);
+        ShardingSphereMetaData metaData = federationContext.getMetaDataMap().get(schemaName);
         ConfigurationProperties props = executorContext.getProps();
         ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, metaData, props);
+        if (federationContext.isPreview()) {
+            federationContext.getExecutionUnits().addAll(context.getExecutionUnits());
+            return createEmptyEnumerable();
+        }
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
             setParameters(executionGroupContext.getInputGroups());
@@ -183,7 +189,7 @@ public final class FilterableTableScanExecutor {
         }
         List<Object> result = new ArrayList<>();
         for (Integer each : parameterIndices) {
-            result.add(executorContext.getParameters().get(each));
+            result.add(executorContext.getFederationContext().getLogicSQL().getParameters().get(each));
         }
         return result;
     }
@@ -217,8 +223,21 @@ public final class FilterableTableScanExecutor {
         };
     }
     
-    private LogicSQL createLogicSQL(final Map<String, ShardingSphereMetaData> metaDataMap, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
+    private LogicSQL createLogicSQL(final Map<String, ShardingSphereMetaData> metaDataMap, final SqlString sqlString, final DatabaseType databaseType) {
+        String sql = sqlString.getSql().replace("\n", " ");
+        SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getName(), optimizerContext.getSqlParserRule()).parse(sql, false);
+        List<Object> parameters = getParameters(sqlString.getDynamicParameters());
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataMap, parameters, sqlStatement, sql);
         return new LogicSQL(sqlStatementContext, sql, parameters);
+    }
+    
+    private AbstractEnumerable<Object[]> createEmptyEnumerable() {
+        return new AbstractEnumerable<Object[]>() {
+            
+            @Override
+            public Enumerator<Object[]> enumerator() {
+                return new EmptyRowEnumerator();
+            }
+        };
     }
 }
