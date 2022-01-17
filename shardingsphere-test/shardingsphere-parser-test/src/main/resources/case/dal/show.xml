@@ -839,4 +839,29 @@
             <row-count value="2" literal-start-index="27" literal-stop-index="27" />
         </limit>
     </show-binlog-events>
+    <show sql-case-id="show_engine_status" />
+    <show sql-case-id="show_engine_mutex" />
+    <show sql-case-id="show_binary_logs" />
+    <show sql-case-id="show_master_logs" />
+    <show sql-case-id="show_engines" />
+    <show sql-case-id="show_storage_engines" />
+    <show sql-case-id="show_create_database" />
+    <show sql-case-id="show_create_database_if_not_exist" />
+    <show sql-case-id="show_create_schema" />
+    <show sql-case-id="show_create_schema_if_not_exist" />
+    <show sql-case-id="show_create_event" />
+    <show sql-case-id="show_create_function" />
+    <show sql-case-id="show_create_proc" />
+    <show sql-case-id="show_create_view" />
+    <show sql-case-id="show_function_code" />
+    <show sql-case-id="show_grants_for" />
+    <show sql-case-id="show_grants_for_using" />
+    <show sql-case-id="show_master_status" />
+    <show sql-case-id="show_plugins" />
+    <show sql-case-id="show_processlist" />
+    <show sql-case-id="show_profile" />
+    <show sql-case-id="show_profiles" />
+    <show sql-case-id="show_charset" />
+    <show sql-case-id="show_warnings_limit" />
+    <show sql-case-id="show_warnings_count" />
 </sql-parser-test-cases>
