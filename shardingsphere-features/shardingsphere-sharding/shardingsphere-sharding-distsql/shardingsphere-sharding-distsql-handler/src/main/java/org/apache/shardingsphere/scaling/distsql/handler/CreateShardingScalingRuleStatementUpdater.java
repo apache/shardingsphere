@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmCo
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.scaling.distsql.handler.converter.ShardingScalingStatementConverter;
+import org.apache.shardingsphere.scaling.distsql.handler.converter.ShardingScalingRuleStatementConverter;
 import org.apache.shardingsphere.scaling.distsql.statement.CreateShardingScalingRuleStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScalingRuleConfigurationSegment;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -129,7 +129,7 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
         if (null == segment) {
             return buildNullScalingConfiguration();
         }
-        return ShardingScalingStatementConverter.convert(segment);
+        return ShardingScalingRuleStatementConverter.convert(segment);
     }
     
     private OnRuleAlteredActionConfiguration buildNullScalingConfiguration() {
