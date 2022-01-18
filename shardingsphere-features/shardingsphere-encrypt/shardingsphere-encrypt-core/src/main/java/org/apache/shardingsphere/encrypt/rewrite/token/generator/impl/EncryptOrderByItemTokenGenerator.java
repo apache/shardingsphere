@@ -101,7 +101,10 @@ public final class EncryptOrderByItemTokenGenerator extends BaseEncryptSQLTokenG
             Collection<OrderByItem> orderByItemList = new LinkedList<>();
             orderByItemList.addAll(((SelectStatementContext) sqlStatementContext).getOrderByContext().getItems());
             orderByItemList.addAll(((SelectStatementContext) sqlStatementContext).getGroupByContext().getItems());
-            result.addAll(orderByItemList.stream().map(each -> each.getSegment()).collect(Collectors.toList()));
+            result.addAll(orderByItemList.stream().map(OrderByItem::getSegment).collect(Collectors.toList()));
+            for (SelectStatementContext each : ((SelectStatementContext) sqlStatementContext).getSubqueryContexts().values()) {
+                result.addAll(getColumnSegments(each));
+            }
         }
         return result;
     }
