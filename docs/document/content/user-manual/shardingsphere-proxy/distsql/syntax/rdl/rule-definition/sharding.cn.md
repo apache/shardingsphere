@@ -201,11 +201,11 @@ intValue:
 
 ```sql
 CREATE SHARDING KEY GENERATOR snowflake_key_generator (
-TYPE(NAME=SNOWFLAKE, PROPERTIES("worker-id"=123))
+TYPE(NAME=SNOWFLAKE)
 );
 
 ALTER SHARDING KEY GENERATOR snowflake_key_generator (
-TYPE(NAME=SNOWFLAKE, PROPERTIES("worker-id"=456))
+TYPE(NAME=SNOWFLAKE)
 );
 
 DROP SHARDING KEY GENERATOR snowflake_key_generator;
@@ -216,13 +216,13 @@ DROP SHARDING KEY GENERATOR snowflake_key_generator;
 CREATE SHARDING TABLE RULE t_order (
 RESOURCES(resource_0,resource_1),
 SHARDING_COLUMN=order_id,TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=4)),
-GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
+GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake))
 );
 
 ALTER SHARDING TABLE RULE t_order (
 RESOURCES(resource_0,resource_1,resource_2,resource_3),
 SHARDING_COLUMN=order_id,TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=16)),
-GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
+GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake))
 );
 
 DROP SHARDING TABLE RULE t_order;
