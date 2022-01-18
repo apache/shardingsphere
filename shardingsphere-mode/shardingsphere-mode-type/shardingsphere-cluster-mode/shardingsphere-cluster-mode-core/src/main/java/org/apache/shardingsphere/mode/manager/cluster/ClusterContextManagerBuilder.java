@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
+import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
@@ -117,7 +118,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private void afterBuildContextManager(final ContextManagerBuilderParameter parameter) {
         new ClusterContextManagerCoordinator(metaDataPersistService, contextManager);
-        disableDataSources();
+        buildSpecialRules();
         registryCenter.onlineInstance(parameter.getInstanceDefinition());
     }
     
@@ -225,9 +226,14 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
             each -> each, each -> metaDataPersistService.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private void disableDataSources() {
-        metaDataContexts.getMetaDataMap().forEach((key, value)
-            -> value.getRuleMetaData().getRules().stream().filter(each -> each instanceof StatusContainedRule).forEach(each -> disableDataSources(key, (StatusContainedRule) each)));
+    private void buildSpecialRules() {
+        metaDataContexts.getMetaDataMap().forEach((key, value) -> value.getRuleMetaData().getRules().stream().forEach(each -> {
+            if (each instanceof StatusContainedRule) {
+                disableDataSources(key, (StatusContainedRule) each);
+            } else if (each instanceof InstanceAwareRule) {
+                ((InstanceAwareRule) each).setInstanceContext(instanceContext);
+            }
+        }));
     }
     
     private void disableDataSources(final String schemaName, final StatusContainedRule rule) {

@@ -88,6 +88,8 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetDefaultRoleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetPasswordStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetRoleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterAggregateStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterCollationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterConversionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDimensionStatementTestCase;
@@ -193,8 +195,8 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingBroadcastTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingKeyGeneratorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingTableRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.DisableShardingScalingStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.EnableShardingScalingStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.DisableShardingScalingRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.EnableShardingScalingRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.AddResourceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDatabaseDiscoveryConstructionRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDatabaseDiscoveryDefinitionRuleStatementTestCase;
@@ -212,7 +214,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingBroadcastTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingKeyGeneratorStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingScalingStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingScalingRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingTableRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropDataBaseDiscoveryHeartbeatStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropDataBaseDiscoveryRuleStatementTestCase;
@@ -227,7 +229,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingBroadcastTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingKeyGeneratorStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingScalingStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingScalingRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingTableRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountSchemaRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowDataBaseDiscoveryRulesStatementTestCase;
@@ -719,17 +721,17 @@ public final class SQLParserTestCases {
     @XmlElement(name = "apply-scaling")
     private final List<ApplyScalingStatementTestCase> applyScalingStatementTestCases = new LinkedList<>();
     
-    @XmlElement(name = "create-sharding-scaling")
-    private final List<CreateShardingScalingStatementTestCase> createShardingScalingStatementTestCases = new LinkedList<>();
+    @XmlElement(name = "create-sharding-scaling-rule")
+    private final List<CreateShardingScalingRuleStatementTestCase> createShardingScalingRuleStatementTestCases = new LinkedList<>();
     
-    @XmlElement(name = "drop-sharding-scaling")
-    private final List<DropShardingScalingStatementTestCase> dropShardingScalingStatementTestCases = new LinkedList<>();
+    @XmlElement(name = "drop-sharding-scaling-rule")
+    private final List<DropShardingScalingRuleStatementTestCase> dropShardingScalingRuleStatementTestCases = new LinkedList<>();
     
-    @XmlElement(name = "enable-sharding-scaling")
-    private final List<EnableShardingScalingStatementTestCase> enableShardingScalingStatementTestCases = new LinkedList<>();
+    @XmlElement(name = "enable-sharding-scaling-rule")
+    private final List<EnableShardingScalingRuleStatementTestCase> enableShardingScalingRuleStatementTestCases = new LinkedList<>();
     
-    @XmlElement(name = "disable-sharding-scaling")
-    private final List<DisableShardingScalingStatementTestCase> disableShardingScalingStatementTestCases = new LinkedList<>();
+    @XmlElement(name = "disable-sharding-scaling-rule")
+    private final List<DisableShardingScalingRuleStatementTestCase> disableShardingScalingRuleStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "preview-sql")
     private final List<PreviewStatementTestCase> previewStatementTestCase = new LinkedList<>();
@@ -980,8 +982,14 @@ public final class SQLParserTestCases {
     @XmlElement(name = "drop-conversion")
     private final List<DropConversionStatementTestCase> dropConversionStatementTestCase = new LinkedList<>();
     
+    @XmlElement(name = "alter-aggregate")
+    private final List<AlterAggregateStatementTestCase> alterAggregateStatementTestCase = new LinkedList<>();
+    
     @XmlElement(name = "alter-conversion")
     private final List<AlterConversionStatementTestCase> alterConversionStatementTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "alter-collation")
+    private final List<AlterCollationStatementTestCase> alterCollationStatementTestCase = new LinkedList<>();
     
     @XmlElement(name = "create-text-search")
     private final List<CreateTextSearchStatementTestCase> createTextSearchStatementTestCases = new LinkedList<>();
@@ -1159,10 +1167,10 @@ public final class SQLParserTestCases {
         putAll(showScalingCheckAlgorithmsStatementTestCase, result);
         putAll(stopScalingSourceWritingStatementTestCase, result);
         putAll(applyScalingStatementTestCases, result);
-        putAll(createShardingScalingStatementTestCases, result);
-        putAll(dropShardingScalingStatementTestCases, result);
-        putAll(enableShardingScalingStatementTestCases, result);
-        putAll(disableShardingScalingStatementTestCases, result);
+        putAll(createShardingScalingRuleStatementTestCases, result);
+        putAll(dropShardingScalingRuleStatementTestCases, result);
+        putAll(enableShardingScalingRuleStatementTestCases, result);
+        putAll(disableShardingScalingRuleStatementTestCases, result);
         putAll(showVariableStatementTestCase, result);
         putAll(showAllVariablesStatementTestCase, result);
         putAll(setVariableStatementTestCase, result);
@@ -1255,7 +1263,9 @@ public final class SQLParserTestCases {
         putAll(createTypeStatementTestCases, result);
         putAll(createConversionStatementTestCase, result);
         putAll(dropConversionStatementTestCase, result);
+        putAll(alterAggregateStatementTestCase, result);
         putAll(alterConversionStatementTestCase, result);
+        putAll(alterCollationStatementTestCase, result);
         putAll(createTextSearchStatementTestCases, result);
         putAll(alterTextSearchStatementTestCases, result);
         putAll(createLanguageStatementTestCases, result);

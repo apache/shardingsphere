@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.api.rule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
+import java.util.Properties;
 
 /**
  * Readwrite-splitting data source rule configuration.
@@ -31,11 +31,9 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
     
     private final String name;
     
-    private final String autoAwareDataSourceName;
+    private final String type;
     
-    private final String writeDataSourceName;
-    
-    private final List<String> readDataSourceNames;
+    private final Properties props;
     
     private final String loadBalancerName;
 }

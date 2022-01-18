@@ -25,6 +25,7 @@ import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -49,8 +50,15 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
     private ReadwriteSplittingRuleConfiguration createValidConfiguration() {
         ReadwriteSplittingRuleConfiguration result = mock(ReadwriteSplittingRuleConfiguration.class);
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = mock(ReadwriteSplittingDataSourceRuleConfiguration.class);
-        when(dataSourceConfig.getAutoAwareDataSourceName()).thenReturn("ds0");
+        when(dataSourceConfig.getType()).thenReturn("Dynamic");
+        when(dataSourceConfig.getProps()).thenReturn(getProperties());
         when(result.getDataSources()).thenReturn(Collections.singletonList(dataSourceConfig));
+        return result;
+    }
+    
+    private Properties getProperties() {
+        Properties result = new Properties();
+        result.setProperty("auto-aware-data-source-name", "ds0");
         return result;
     }
     
@@ -66,9 +74,9 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
     private ReadwriteSplittingRuleConfiguration createInvalidConfiguration() {
         ReadwriteSplittingRuleConfiguration result = mock(ReadwriteSplittingRuleConfiguration.class);
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = mock(ReadwriteSplittingDataSourceRuleConfiguration.class);
-        when(dataSourceConfig.getAutoAwareDataSourceName()).thenReturn("");
-        when(dataSourceConfig.getWriteDataSourceName()).thenReturn("");
-        when(result.getDataSources()).thenReturn(Collections.singletonList(dataSourceConfig));
+        when(dataSourceConfig.getType()).thenReturn("Dynamic");
+        when(dataSourceConfig.getProps()).thenReturn(new Properties());
+        when(result.getDataSources()).thenReturn(Collections.singleton(dataSourceConfig));
         return result;
     }
 }

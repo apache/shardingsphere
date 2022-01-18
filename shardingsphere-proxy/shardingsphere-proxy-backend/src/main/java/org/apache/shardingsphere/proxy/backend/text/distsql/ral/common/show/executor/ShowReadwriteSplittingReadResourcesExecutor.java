@@ -31,8 +31,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingReadResourcesStatement;
 import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
 
@@ -103,11 +101,13 @@ public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractS
                 .map(each -> buildRow(each, ENABLE)).collect(Collectors.toCollection(LinkedList::new));
     }
     
+    // TODO Fix it.
     private LinkedList<String> getConfiguredResourceRows(final ShardingSphereMetaData metaData) {
-        Collection<ReadwriteSplittingRuleConfiguration> ruleConfiguration = metaData.getRuleMetaData().findRuleConfiguration(ReadwriteSplittingRuleConfiguration.class);
+/*        Collection<ReadwriteSplittingRuleConfiguration> ruleConfiguration = metaData.getRuleMetaData().findRuleConfiguration(ReadwriteSplittingRuleConfiguration.class);
         return ruleConfiguration.stream().map(ReadwriteSplittingRuleConfiguration::getDataSources).flatMap(Collection::stream).filter(Objects::nonNull)
                 .map(ReadwriteSplittingDataSourceRuleConfiguration::getReadDataSourceNames)
-                .flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));
+                .flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));*/
+        return new LinkedList<>();
     }
     
     private Collection<String> getAutoAwareResourceRows(final ShardingSphereMetaData metaData, final Collection<Object> notShownResourceRows) {
