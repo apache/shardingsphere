@@ -63,7 +63,7 @@ public final class ProxyConfigurationLoader {
         return new YamlProxyConfiguration(serverConfig, schemaConfigs.stream().collect(Collectors.toMap(
                 YamlProxySchemaConfiguration::getSchemaName, each -> each, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
-
+    
     @SneakyThrows(URISyntaxException.class)
     private static File getResourceFile(final String path) {
         URL url = ProxyConfigurationLoader.class.getResource(path);
