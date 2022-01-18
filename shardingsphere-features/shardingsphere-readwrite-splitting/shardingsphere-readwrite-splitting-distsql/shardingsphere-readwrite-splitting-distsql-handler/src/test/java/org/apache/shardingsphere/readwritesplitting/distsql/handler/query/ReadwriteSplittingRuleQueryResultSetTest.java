@@ -135,7 +135,7 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
     
     private Map<String, Object> createAutoAwareDataSources() {
         Map<String, Object> result = new HashMap<>(1, 1);
-        result.put(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY, exportAutoAwareDataSourceMap());
+        result.put(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_KEY, exportAutoAwareDataSourceMap());
         return result;
     }
 

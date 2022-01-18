@@ -55,11 +55,11 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
         loadBalancers = ruleConfig.map(ReadwriteSplittingRuleConfiguration::getLoadBalancers).orElse(Collections.emptyMap());
         Optional<ExportableRule> exportableRule = metaData.getRuleMetaData().getRules().stream()
                 .filter(each -> each instanceof ExportableRule).map(each -> (ExportableRule) each)
-                .filter(each -> each.containExportableKey(Arrays.asList(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY, ExportableConstants.DATA_SOURCE_KEY))).findAny();
+                .filter(each -> each.containExportableKey(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_KEY, ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE_KEY))).findAny();
         exportableRule.ifPresent(op -> {
-            Map<String, Object> exportedReadwriteRules = op.export(Arrays.asList(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY, ExportableConstants.DATA_SOURCE_KEY));
-            autoAwareDataSourceMap = (Map<String, Map<String, String>>) exportedReadwriteRules.getOrDefault(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY, Collections.emptyMap());
-            dataSourceMap = (Map<String, Map<String, String>>) exportedReadwriteRules.getOrDefault(ExportableConstants.DATA_SOURCE_KEY, Collections.emptyMap());
+            Map<String, Object> exportedReadwriteRules = op.export(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_KEY, ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE_KEY));
+            autoAwareDataSourceMap = (Map<String, Map<String, String>>) exportedReadwriteRules.getOrDefault(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_KEY, Collections.emptyMap());
+            dataSourceMap = (Map<String, Map<String, String>>) exportedReadwriteRules.getOrDefault(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE_KEY, Collections.emptyMap());
         });
     }
     

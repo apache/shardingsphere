@@ -130,11 +130,11 @@ public final class SetReadwriteSplittingStatusExecutor implements SetStatementEx
     private Map<String, Map<String, String>> getExportedReadwriteSplittingRules(final String schemaName) {
         Map<String, Map<String, String>> readwriteSplittingRules = new HashMap<>();
         ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().findRules(ReadwriteSplittingRule.class).stream().findAny()
-                .filter(each -> each.containExportableKey(Arrays.asList(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY, ExportableConstants.DATA_SOURCE_KEY)))
-                .map(each -> each.export(Arrays.asList(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY, ExportableConstants.DATA_SOURCE_KEY)))
+                .filter(each -> each.containExportableKey(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_KEY, ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE_KEY)))
+                .map(each -> each.export(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_KEY, ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE_KEY)))
                 .ifPresent(each -> {
-                    readwriteSplittingRules.putAll((Map) each.getOrDefault(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY, Collections.emptyMap()));
-                    readwriteSplittingRules.putAll((Map) each.getOrDefault(ExportableConstants.DATA_SOURCE_KEY, Collections.emptyMap()));
+                    readwriteSplittingRules.putAll((Map) each.getOrDefault(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_KEY, Collections.emptyMap()));
+                    readwriteSplittingRules.putAll((Map) each.getOrDefault(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE_KEY, Collections.emptyMap()));
                 });
         return readwriteSplittingRules;
     }
