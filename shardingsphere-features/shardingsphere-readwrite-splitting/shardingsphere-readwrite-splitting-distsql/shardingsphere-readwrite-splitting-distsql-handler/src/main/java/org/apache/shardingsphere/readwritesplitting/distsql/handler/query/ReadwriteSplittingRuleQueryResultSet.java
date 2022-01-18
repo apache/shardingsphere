@@ -89,7 +89,7 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
         return Arrays.asList(ruleConfig.getName(), ruleConfig.getAutoAwareDataSourceName(), writeDataSourceName, readDataSourceNames,
                 configuration.map(ShardingSphereAlgorithmConfiguration::getType).orElse(null),
                 PropertiesConverter.convert(configuration.map(ShardingSphereAlgorithmConfiguration::getProps).orElseGet(Properties::new)));*/
-        return Arrays.asList("mockData", "mockData", "mockData", "mockData", "mockData", "mockData");
+        return null;
     }
     
     @Override
