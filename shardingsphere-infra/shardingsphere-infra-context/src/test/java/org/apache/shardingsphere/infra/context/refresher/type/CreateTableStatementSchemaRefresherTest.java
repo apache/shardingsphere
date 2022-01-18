@@ -19,13 +19,9 @@ package org.apache.shardingsphere.infra.context.refresher.type;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -39,10 +35,8 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -84,15 +78,14 @@ public final class CreateTableStatementSchemaRefresherTest {
         refresh(createTableStatement);
     }
     
-    private void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
-    final Collection<String> logicDataSourceNames, final CreateTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+    private void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, final Collection<String> logicDataSourceNames, final CreateTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))));
         DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
         when(dataSource.getConnection().getMetaData().getTables(any(), any(), any(), any())).thenReturn(mock(ResultSet.class));
         //ShardingSphereSchema schema = ShardingSphereSchemaBuildUtil.buildSchema();
         //ShardingSphereMetaData metaData = new ShardingSphereMetaData("", mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), schema);
-        SchemaRefresher<CreateTableStatement> schemaRefresher = new CreateTableStatementSchemaRefresher();
-        schemaRefresher.refresh(schemaMetaData, Collections.singleton("ds"), sqlStatement, props);
+        MetaDataRefresher<CreateTableStatement> schemaRefresher = new CreateTableStatementSchemaRefresher();
+        schemaRefresher.refresh(schemaMetaData, schema, optimizerPlanners, Collection.singleton("ds"), sqlStatement, props);
         assertTrue(schema.containsTable("t_order_0"));
     }
 }
