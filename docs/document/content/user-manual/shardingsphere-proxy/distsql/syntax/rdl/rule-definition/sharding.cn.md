@@ -189,9 +189,9 @@ batchSize:
 intValue:
     INT
 ```
-- `ENABLE` is used to set which scaling rule is enabled
-- `DISABLE` is the opposite of ENABLE
-- The first scaling rule created is enabled by default
+- `ENABLE` 用于设置启用哪个弹性伸缩配置
+- `DISABLE` 将禁用当前正在使用的配置
+- 创建 schema 中第一个弹性伸缩配置时，默认启用
 
 ## 示例
 
