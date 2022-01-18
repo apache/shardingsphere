@@ -67,60 +67,60 @@ property:
 ### When creating a `discoveryRule`, create both `discoveryType` and `discoveryHeartbeat`
 
 ```sql
-CREATE DB_DISCOVERY RULE ha_group_0 (
+CREATE DB_DISCOVERY RULE db_discovery_group_0 (
 RESOURCES(ds_0, ds_1, ds_2),
 TYPE(NAME=mgr,PROPERTIES('group-name'='92504d5b-6dec')),
 HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
 
-ALTER DB_DISCOVERY RULE ha_group_0 (
+ALTER DB_DISCOVERY RULE db_discovery_group_0 (
 RESOURCES(ds_0, ds_1, ds_2),
 TYPE(NAME=mgr,PROPERTIES('group-name'='246e9612-aaf1')),
 HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
 
-DROP DB_DISCOVERY RULE ha_group_0;
+DROP DB_DISCOVERY RULE db_discovery_group_0;
 
-DROP DB_DISCOVERY TYPE ha_group_0_mgr;
+DROP DB_DISCOVERY TYPE db_discovery_group_0_mgr;
 
-DROP DB_DISCOVERY HEARTBEAT ha_group_0_heartbeat;
+DROP DB_DISCOVERY HEARTBEAT db_discovery_group_0_heartbeat;
 
 ```
 
 ### Use the existing `discoveryType` and `discoveryHeartbeat` to create a `discoveryRule`
 
 ```sql
-CREATE DB_DISCOVERY TYPE ha_group_1_mgr(
+CREATE DB_DISCOVERY TYPE db_discovery_group_1_mgr(
   TYPE(NAME=mgr,PROPERTIES('group-name'='92504d5b-6dec'))
 );
 
-CREATE DB_DISCOVERY HEARTBEAT ha_group_1_heartbeat(
+CREATE DB_DISCOVERY HEARTBEAT db_discovery_group_1_heartbeat(
   PROPERTIES('keep-alive-cron'='0/5 * * * * ?')
 );
 
-CREATE DB_DISCOVERY RULE ha_group_1 (
+CREATE DB_DISCOVERY RULE db_discovery_group_1 (
 RESOURCES(ds_0, ds_1, ds_2),
-TYPE=ha_group_1_mgr,
-HEARTBEAT=ha_group_1_heartbeat
+TYPE=db_discovery_group_1_mgr,
+HEARTBEAT=db_discovery_group_1_heartbeat
 );
 
-ALTER DB_DISCOVERY TYPE ha_group_1_mgr(
+ALTER DB_DISCOVERY TYPE db_discovery_group_1_mgr(
   TYPE(NAME=mgr,PROPERTIES('group-name'='246e9612-aaf1'))
 );
 
-ALTER DB_DISCOVERY HEARTBEAT ha_group_1_heartbeat(
+ALTER DB_DISCOVERY HEARTBEAT db_discovery_group_1_heartbeat(
   PROPERTIES('keep-alive-cron'='0/10 * * * * ?')
 );
 
-ALTER DB_DISCOVERY RULE ha_group_1 (
+ALTER DB_DISCOVERY RULE db_discovery_group_1 (
 RESOURCES(ds_0, ds_1),
-TYPE=ha_group_1_mgr,
-HEARTBEAT=ha_group_1_heartbeat
+TYPE=db_discovery_group_1_mgr,
+HEARTBEAT=db_discovery_group_1_heartbeat
 );
 
-DROP DB_DISCOVERY RULE ha_group_1;
+DROP DB_DISCOVERY RULE db_discovery_group_1;
 
-DROP DB_DISCOVERY TYPE ha_group_1_mgr;
+DROP DB_DISCOVERY TYPE db_discovery_group_1_mgr;
 
-DROP DB_DISCOVERY HEARTBEAT ha_group_1_heartbeat;
+DROP DB_DISCOVERY HEARTBEAT db_discovery_group_1_heartbeat;
 ```
