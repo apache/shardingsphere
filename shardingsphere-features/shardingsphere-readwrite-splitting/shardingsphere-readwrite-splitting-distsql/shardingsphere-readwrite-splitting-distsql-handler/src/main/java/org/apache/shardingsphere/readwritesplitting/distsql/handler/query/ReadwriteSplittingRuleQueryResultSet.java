@@ -104,6 +104,6 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
     private Optional<ExportableRule> getExportableRule(final ShardingSphereMetaData metaData) {
         return metaData.getRuleMetaData().getRules().stream()
                 .filter(each -> each instanceof ExportableRule).map(each -> (ExportableRule) each)
-                .filter(each -> each.export().containsKey(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_KEY)).findAny();
+                .filter(each -> each.containExportableKey(Collections.singletonList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_KEY))).findAny();
     }
 }
