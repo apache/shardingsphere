@@ -26,6 +26,7 @@ Apache ShardingSphere 提供属性配置的方式配置系统级配置。
 | proxy-backend-executor-suitable (?)| String    | 可选选项：OLAP、OLTP。OLTP 选项可能会减少向客户端写入数据包的时间开销，但如果客户端连接数超过 `proxy-frontend-executor-size`，尤其是执行慢 SQL 时，它可能会增加 SQL 执行的延迟甚至阻塞其他客户端的连接。    | OLAP     | 否      |
 | proxy-frontend-max-connections (?) | int       | 允许连接 Proxy 的最大客户端数量，默认值 0 代表不限制。                                                                                                                                  | 0        | 是      |
 | sql-federation-enabled (?)         | boolean   | 是否开启 federation 查询。                                                                                                                                                         | false    | 是      |
+| show-process-list-enabled (?)      | boolean   | 是否开启 processlist 功能，同时仅在 Cluster 模式生效。功能和 MySQL show processlist 类似。目前只对 DDL 和 DML 语句生效。                                                                   | false    | 是      |
 
 属性配置可以通过 [DistSQL](/cn/user-manual/shardingsphere-proxy/distsql/) 修改。
 支持动态修改的属性可以立即生效，不支持动态修改的属性需要重启后生效。
