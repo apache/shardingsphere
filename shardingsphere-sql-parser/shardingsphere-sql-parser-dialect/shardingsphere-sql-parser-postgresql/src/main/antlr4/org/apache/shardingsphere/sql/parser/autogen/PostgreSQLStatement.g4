@@ -57,6 +57,7 @@ execute
     | alterCollation
     | alterFunction
     | alterDatabase
+    | alterDomain
     | alterProcedure
     | alterServer
     | alterSequence
