@@ -57,7 +57,7 @@ public final class StandaloneContextManagerBuilderTextTest {
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = getSchemaRuleConfigs();
         Collection<RuleConfiguration> globalRuleConfigurationCollection = getGlobalRuleConfigurationCollection();
         Properties props = new Properties();
-        ModeConfiguration modeConfiguration = new ModeConfiguration("testType", null, false);
+        ModeConfiguration modeConfiguration = new ModeConfiguration("Standalone", null, false);
         StandaloneContextManagerBuilder standaloneContextManagerBuilder = new StandaloneContextManagerBuilder();
         ContextManager actual = standaloneContextManagerBuilder.build(ContextManagerBuilderParameter.builder().modeConfig(modeConfiguration)
             .dataSourcesMap(dataSourceMap).schemaRuleConfigs(schemaRuleConfigs).globalRuleConfigs(globalRuleConfigurationCollection).props(props)

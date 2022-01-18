@@ -24,13 +24,16 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 public final class PostgreSQLParseCompletePacketTest {
     
     @Test
-    public void assertNewInstance() {
-        PostgreSQLParseCompletePacket actual = new PostgreSQLParseCompletePacket();
-        actual.write(mock(PostgreSQLPacketPayload.class));
+    public void assertGetInstanceAndWrite() {
+        PostgreSQLParseCompletePacket actual = PostgreSQLParseCompletePacket.getInstance();
         assertThat(actual.getIdentifier(), is(PostgreSQLMessagePacketType.PARSE_COMPLETE));
+        PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class);
+        actual.write(payload);
+        verifyNoInteractions(payload);
     }
 }

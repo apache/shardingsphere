@@ -17,27 +17,29 @@
 
 package org.apache.shardingsphere.infra.federation.executor.original.row;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.calcite.linq4j.Enumerator;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Collection;
 
 /**
  * Filterable row enumerator.
  */
+@RequiredArgsConstructor
 public final class FilterableRowEnumerator implements Enumerator<Object[]> {
     
-    private final MergedResult result;
+    private final MergedResult queryResult;
     
     private final QueryResultMetaData metaData;
     
-    private Object[] currentRow;
+    private final Collection<Statement> statements;
     
-    public FilterableRowEnumerator(final MergedResult queryResult, final QueryResultMetaData metaData) {
-        this.result = queryResult;
-        this.metaData = metaData;
-    }
+    private Object[] currentRow;
     
     @Override
     public Object[] current() {
@@ -54,7 +56,7 @@ public final class FilterableRowEnumerator implements Enumerator<Object[]> {
     }
     
     private boolean moveNext0() throws SQLException {
-        if (result.next()) {
+        if (queryResult.next()) {
             setCurrentRow();
             return true;
         }
@@ -64,7 +66,7 @@ public final class FilterableRowEnumerator implements Enumerator<Object[]> {
     private void setCurrentRow() throws SQLException {
         currentRow = new Object[metaData.getColumnCount()];
         for (int i = 0; i < metaData.getColumnCount(); i++) {
-            currentRow[i] = result.getValue(i + 1, Object.class);
+            currentRow[i] = queryResult.getValue(i + 1, Object.class);
         }
     }
     
@@ -74,6 +76,13 @@ public final class FilterableRowEnumerator implements Enumerator<Object[]> {
     
     @Override
     public void close() {
-        currentRow = null;
+        try {
+            for (Statement each : statements) {
+                each.close();
+            }
+            currentRow = null;
+        } catch (final SQLException ex) {
+            throw new ShardingSphereException(ex);
+        }
     }
 }

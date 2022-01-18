@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.distsql.handler;
 
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingCheckAlgorithmsStatement;
@@ -35,11 +36,13 @@ import java.util.stream.Collectors;
  */
 public final class ShowScalingCheckAlgorithmsQueryResultSet implements DistSQLResultSet {
     
+    private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = PipelineJobAPIFactory.getRuleAlteredJobAPI();
+    
     private Iterator<Collection<Object>> data;
     
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        data = PipelineJobAPIFactory.getRuleAlteredJobAPI().listDataConsistencyCheckAlgorithms().stream()
+        data = RULE_ALTERED_JOB_API.listDataConsistencyCheckAlgorithms().stream()
                 .map(each -> {
                     Collection<Object> list = new LinkedList<>();
                     list.add(each.getType());
