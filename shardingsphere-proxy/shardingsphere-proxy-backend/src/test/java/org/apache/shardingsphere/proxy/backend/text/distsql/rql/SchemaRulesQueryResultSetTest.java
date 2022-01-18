@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -73,7 +74,7 @@ public final class SchemaRulesQueryResultSetTest {
     
     private SingleTableRule mockSingleTableRule() {
         SingleTableRule singleTableRule = mock(SingleTableRule.class);
-        when(singleTableRule.export()).thenReturn(Collections.singletonMap(ExportableConstants.EXPORTED_KEY_SINGLE_TABLES, Arrays.asList("single_table_1", "single_table_2")));
+        when(singleTableRule.export()).thenReturn(Collections.singletonMap(ExportableConstants.SINGLE_TABLE_TABLES, Arrays.asList("single_table_1", "single_table_2")));
         return singleTableRule;
     }
     
@@ -88,7 +89,7 @@ public final class SchemaRulesQueryResultSetTest {
     
     private RuleConfiguration mockReadwriteSplittingRule() {
         ReadwriteSplittingRuleConfiguration configuration = mock(ReadwriteSplittingRuleConfiguration.class);
-        when(configuration.getDataSources()).thenReturn(Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_splitting", "", "", Collections.emptyList(), null)));
+        when(configuration.getDataSources()).thenReturn(Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_splitting", "", new Properties(), "")));
         return configuration;
     }
     

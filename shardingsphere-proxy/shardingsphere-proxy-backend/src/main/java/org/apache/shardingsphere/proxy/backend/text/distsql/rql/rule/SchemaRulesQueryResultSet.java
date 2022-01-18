@@ -97,7 +97,7 @@ public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
     
     private void addSingleTableData(final Map<String, Collection<Object>> dataMap, final Collection<SingleTableRule> rules) {
         Optional<Integer> count = rules.stream().map(SingleTableRule::export)
-                .map(each -> (Collection) each.getOrDefault(ExportableConstants.EXPORTED_KEY_SINGLE_TABLES, Collections.emptyList()))
+                .map(each -> (Collection) each.getOrDefault(ExportableConstants.SINGLE_TABLE_TABLES, Collections.emptyList()))
                 .map(Collection::size).reduce(Integer::sum);
         dataMap.putIfAbsent(SINGLE_TABLE, buildRow(SINGLE_TABLE, TABLE, count.orElse(DEFAULT_COUNT)));
     }

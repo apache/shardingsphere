@@ -26,17 +26,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExportableConstants {
     
-    public static final String EXPORTED_KEY_PRIMARY_DATA_SOURCE = "primary_data_source";
+    public static final String PRIMARY_DATA_SOURCE_KEY = "primary_data_source_key";
     
-    public static final String EXPORTED_KEY_AUTO_AWARE_DATA_SOURCE = "auto_aware_data_source";
+    public static final String AUTO_AWARE_DATA_SOURCE_KEY = "auto_aware_data_source_key";
     
-    public static final String EXPORTED_KEY_AUTO_AWARE_DATA_SOURCE_NAME = "auto_aware_data_source_name";
+    public static final String AUTO_AWARE_DATA_SOURCE_NAME = "auto_aware_data_source_name";
     
-    public static final String CONTENT_KEY_PRIMARY_DATA_SOURCE_NAME = "primary_data_source_name";
+    public static final String PRIMARY_DATA_SOURCE_NAME = "primary_data_source_name";
     
-    public static final String CONTENT_KEY_REPLICA_DATA_SOURCE_NAMES = "replica_data_source_names";
+    public static final String REPLICA_DATA_SOURCE_NAMES = "replica_data_source_names";
     
-    public static final String EXPORTED_KEY_SINGLE_TABLES = "single_tables";
+    public static final String SINGLE_TABLE_TABLES = "single_table_tables";
     
-    public static final String EXPORTED_KEY_DATA_SOURCE_KEY = "data_source_key";
+    public static final String DATA_SOURCE_KEY = "data_source_key";
 }

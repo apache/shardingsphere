@@ -112,14 +112,14 @@ public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractS
     
     private Collection<String> getAutoAwareResourceRows(final ShardingSphereMetaData metaData, final Collection<Object> notShownResourceRows) {
         Map<String, Map<String, String>> autoAwareResourceData = getAutoAwareResourceData(metaData);
-        return autoAwareResourceData.entrySet().stream().peek(entry -> notShownResourceRows.add(entry.getValue().get(ExportableConstants.CONTENT_KEY_PRIMARY_DATA_SOURCE_NAME)))
-                .map(entry -> entry.getValue().get(ExportableConstants.CONTENT_KEY_REPLICA_DATA_SOURCE_NAMES)).filter(Objects::nonNull).map(this::deconstructString)
+        return autoAwareResourceData.entrySet().stream().peek(entry -> notShownResourceRows.add(entry.getValue().get(ExportableConstants.PRIMARY_DATA_SOURCE_NAME)))
+                .map(entry -> entry.getValue().get(ExportableConstants.REPLICA_DATA_SOURCE_NAMES)).filter(Objects::nonNull).map(this::deconstructString)
                 .flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));
     }
     
     private Map<String, Map<String, String>> getAutoAwareResourceData(final ShardingSphereMetaData metaData) {
         return metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof ExportableRule)
-                .map(each -> ((ExportableRule) each).export().get(ExportableConstants.EXPORTED_KEY_AUTO_AWARE_DATA_SOURCE))
+                .map(each -> ((ExportableRule) each).export().get(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY))
                 .filter(Objects::nonNull).map(each -> (Map<String, Map<String, String>>) each)
                 .map(Map::entrySet).flatMap(Collection::stream).filter(entry -> !entry.getValue().isEmpty()).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
