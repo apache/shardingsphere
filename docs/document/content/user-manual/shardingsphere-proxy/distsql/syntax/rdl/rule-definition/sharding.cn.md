@@ -189,7 +189,7 @@ batchSize:
 intValue:
     INT
 ```
-- `ENABLE` is used to set which scaling configuration is enabled
+- `ENABLE` is used to set which scaling rule is enabled
 - `DISABLE` is the opposite of ENABLE
 - The first scaling rule created is enabled by default
 
