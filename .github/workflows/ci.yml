@@ -44,6 +44,7 @@ jobs:
         uses: apache/skywalking-eyes@main
         
   windows:
+    needs: check-license
     runs-on: windows-latest
     steps:
       - name: Cache Maven Repos
@@ -74,6 +75,7 @@ jobs:
   
   unix:
     name: CI Tests - JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
+    needs: check-license
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -112,6 +114,7 @@ jobs:
 
   macos:
     name: CI Tests - JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
+    needs: check-license
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
