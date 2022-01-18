@@ -23,6 +23,7 @@ import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLT
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -34,9 +35,15 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaM
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.SubqueryType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -85,12 +92,36 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
                 result.add(generateSQLTokens(tableName, columnSegment, columnProjection, subqueryType));
             }
         }
+        if (projection instanceof ExpressionProjectionSegment) {
+            ExpressionSegment expr = ((ExpressionProjectionSegment) projection).getExpr();
+            if (expr instanceof FunctionSegment && null != ((FunctionSegment) expr).getParameters()) {
+                for (ExpressionSegment expressionSegment : ((FunctionSegment) expr).getParameters()) {
+                    if (expressionSegment instanceof ColumnSegment) {
+                        ColumnProjectionSegment columnSegment = buildColumnProjectionSegment((ColumnSegment) expressionSegment);
+                        ColumnProjection columnProjection = buildColumnProjection(columnSegment);
+                        String tableName = columnTableNames.get(columnProjection.getExpression());
+                        if (null != tableName && getEncryptRule().findEncryptor(tableName, columnProjection.getName()).isPresent()) {
+                            result.add(generateSQLTokens(tableName, columnSegment, columnProjection, subqueryType));
+                        }
+                    }
+                }
+            }
+        }
         if (projection instanceof ShorthandProjectionSegment) {
             ShorthandProjectionSegment shorthandSegment = (ShorthandProjectionSegment) projection;
             Collection<ColumnProjection> actualColumns = getShorthandProjection(shorthandSegment, selectStatementContext.getProjectionsContext()).getActualColumns().values();
             if (!actualColumns.isEmpty()) {
                 result.add(generateSQLTokens(shorthandSegment, actualColumns, selectStatementContext.getDatabaseType(), subqueryType, columnTableNames));
             }
+        }
+        return result;
+    }
+    
+    private ColumnProjectionSegment buildColumnProjectionSegment(final ColumnSegment columnSegment) {
+        ColumnProjectionSegment result = new ColumnProjectionSegment(columnSegment);
+        if (columnSegment.getOwner().isPresent()) {
+            OwnerSegment ownerSegment = columnSegment.getOwner().get();
+            result.setAlias(new AliasSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier()));
         }
         return result;
     }
@@ -128,6 +159,9 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         for (Projection projection : selectStatementContext.getProjectionsContext().getProjections()) {
             if (projection instanceof ColumnProjection) {
                 columns.add((ColumnProjection) projection);
+            }
+            if (projection instanceof ExpressionProjection) {
+                //todo parse ExpressionProject
             }
             if (projection instanceof ShorthandProjection) {
                 columns.addAll(((ShorthandProjection) projection).getActualColumns().values());
