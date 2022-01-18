@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.config.datasource.props;
 
-import lombok.EqualsAndHashCode;
+import com.google.common.base.Objects;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
 import org.apache.shardingsphere.infra.config.datasource.props.custom.CustomDataSourceProperties;
@@ -28,12 +28,12 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Data source properties.
  */
 @Getter
-@EqualsAndHashCode
 public final class DataSourceProperties {
     
     private final String dataSourceClassName;
@@ -84,5 +84,34 @@ public final class DataSourceProperties {
         result.putAll(poolPropertySynonyms.getLocalProperties());
         result.putAll(customDataSourceProperties.getProperties());
         return result;
+    }
+    
+    @Override
+    public boolean equals(final Object obj) {
+        return this == obj || null != obj && getClass() == obj.getClass() && equalsByProperties((DataSourceProperties) obj);
+    }
+    
+    private boolean equalsByProperties(final DataSourceProperties dataSourceProperties) {
+        if (!dataSourceClassName.equals(dataSourceProperties.dataSourceClassName)) {
+            return false;
+        }
+        for (Entry<String, Object> entry : getAllLocalProperties().entrySet()) {
+            if (!dataSourceProperties.getAllLocalProperties().containsKey(entry.getKey())) {
+                continue;
+            }
+            if (!String.valueOf(entry.getValue()).equals(String.valueOf(dataSourceProperties.getAllLocalProperties().get(entry.getKey())))) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    @Override
+    public int hashCode() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Entry<String, Object> entry : getAllLocalProperties().entrySet()) {
+            stringBuilder.append(entry.getKey()).append(entry.getValue());
+        }
+        return Objects.hashCode(dataSourceClassName, stringBuilder.toString());
     }
 }

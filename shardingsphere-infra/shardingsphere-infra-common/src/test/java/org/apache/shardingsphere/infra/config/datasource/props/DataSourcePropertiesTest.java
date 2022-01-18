@@ -33,6 +33,7 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -42,24 +43,6 @@ public final class DataSourcePropertiesTest {
     
     @Rule
     public ExpectedException thrown = ExpectedException.none();
-    
-    @Test
-    public void assertDifferentHashCodeWithDifferentDataSourceClassName() {
-        assertThat(new DataSourceProperties("FooDataSourceClass", createUserProperties("foo")).hashCode(),
-                not(new DataSourceProperties("BarDataSourceClass", createUserProperties("foo")).hashCode()));
-    }
-    
-    @Test
-    public void assertDifferentHashCodeWithDifferentProperties() {
-        assertThat(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("foo")).hashCode(), 
-                not(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("bar")).hashCode()));
-    }
-    
-    private Map<String, Object> createUserProperties(final String username) {
-        Map<String, Object> result = new LinkedHashMap<>(1, 1);
-        result.put("username", username);
-        return result;
-    }
 
     @SuppressWarnings("unchecked")
     @Test
@@ -114,6 +97,53 @@ public final class DataSourcePropertiesTest {
         result.put("loginTimeout", "5000");
         result.put("maximumPoolSize", "30");
         result.put("idleTimeout", "30000");
+        return result;
+    }
+    
+    @Test
+    public void assertEquals() {
+        assertThat(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("root")),
+                is(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("root"))));
+    }
+    
+    @Test
+    public void assertNotEqualsWithNullValue() {
+        assertFalse(new DataSourceProperties(MockedDataSource.class.getName(), new HashMap<>()).equals(null));
+    }
+    
+    @Test
+    public void assertNotEqualsWithDifferentDataSourceClassName() {
+        assertThat(new DataSourceProperties("FooDataSourceClass", new HashMap<>()), not(new DataSourceProperties("BarDataSourceClass", new HashMap<>())));
+    }
+    
+    @Test
+    public void assertNotEqualsWithDifferentProperties() {
+        DataSourceProperties actual = new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("foo"));
+        DataSourceProperties expected = new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("bar"));
+        assertThat(actual, not(expected));
+    }
+    
+    @Test
+    public void assertSameHashCode() {
+        assertThat(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("root")).hashCode(),
+                is(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("root")).hashCode()));
+    }
+    
+    @Test
+    public void assertDifferentHashCodeWithDifferentDataSourceClassName() {
+        assertThat(new DataSourceProperties("FooDataSourceClass", createUserProperties("foo")).hashCode(),
+                not(new DataSourceProperties("BarDataSourceClass", createUserProperties("foo")).hashCode()));
+    }
+    
+    @Test
+    public void assertDifferentHashCodeWithDifferentProperties() {
+        assertThat(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("foo")).hashCode(),
+                not(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("bar")).hashCode()));
+    }
+    
+    private Map<String, Object> createUserProperties(final String username) {
+        Map<String, Object> result = new LinkedHashMap<>(1, 1);
+        result.put("username", username);
         return result;
     }
 }
