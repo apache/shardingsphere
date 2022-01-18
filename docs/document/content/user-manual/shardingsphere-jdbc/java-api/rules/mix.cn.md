@@ -71,7 +71,6 @@ defaultDatabaseStrategyInlineProps.setProperty("algorithm-expression", "ds_${use
 shardingRuleConfiguration.getShardingAlgorithms().put("default_db_strategy_inline", new ShardingSphereAlgorithmConfiguration("INLINE", defaultDatabaseStrategyInlineProps));
 // 分布式序列算法配置
 Properties snowflakeProperties = new Properties();
-snowflakeProperties.setProperty("worker-id", "123");
 shardingRuleConfiguration.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", snowflakeProperties));
 
 /* 数据加密规则配置 */
