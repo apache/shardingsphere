@@ -48,10 +48,10 @@ public final class DataSourceProperties {
         Map<String, Object> result = new LinkedHashMap<>(props);
         for (Entry<String, String> entry : propertySynonyms.entrySet()) {
             String standardPropertyName = entry.getKey();
-            String synonymsPropertyName = entry.getValue();
-            if (props.containsKey(synonymsPropertyName)) {
-                result.put(standardPropertyName, props.get(synonymsPropertyName));
-                result.remove(synonymsPropertyName);
+            String localPropertyName = entry.getValue();
+            if (props.containsKey(localPropertyName)) {
+                result.put(standardPropertyName, props.get(localPropertyName));
+                result.remove(localPropertyName);
             }
         }
         return result;
