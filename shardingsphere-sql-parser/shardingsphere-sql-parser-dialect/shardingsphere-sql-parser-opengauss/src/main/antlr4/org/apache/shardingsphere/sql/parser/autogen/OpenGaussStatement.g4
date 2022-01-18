@@ -56,6 +56,7 @@ execute
     | alterAggregate
     | alterFunction
     | alterDatabase
+    | alterDefaultPrivileges
     | alterProcedure
     | alterServer
     | alterSequence

@@ -92,6 +92,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterCollationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterConversionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDatabaseStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDefaultPrivilegesTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDimensionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterIndexStatementTestCase;
@@ -990,6 +991,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "alter-collation")
     private final List<AlterCollationStatementTestCase> alterCollationStatementTestCase = new LinkedList<>();
     
+    @XmlElement(name = "alter-default-privileges")
+    private final List<AlterDefaultPrivilegesTestCase> alterDefaultPrivilegesTestCase = new LinkedList<>();
+    
     @XmlElement(name = "create-text-search")
     private final List<CreateTextSearchStatementTestCase> createTextSearchStatementTestCases = new LinkedList<>();
     
@@ -1262,6 +1266,7 @@ public final class SQLParserTestCases {
         putAll(alterAggregateStatementTestCase, result);
         putAll(alterConversionStatementTestCase, result);
         putAll(alterCollationStatementTestCase, result);
+        putAll(alterDefaultPrivilegesTestCase, result);
         putAll(createTextSearchStatementTestCases, result);
         putAll(alterTextSearchStatementTestCases, result);
         putAll(createLanguageStatementTestCases, result);
