@@ -73,7 +73,7 @@ public final class ReadwriteSplittingRuleStatementConverter {
     private static Properties createProperties(final ReadwriteSplittingRuleSegment segment) {
         Properties properties = new Properties();
         properties.setProperty("write-data-source-name", segment.getWriteDataSource());
-        properties.setProperty("read-data-source-name", String.join(",", segment.getReadDataSources()));
+        properties.setProperty("read-data-source-names", String.join(",", segment.getReadDataSources()));
         return properties;
     }
 }

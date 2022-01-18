@@ -75,7 +75,7 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
                 }
                 rows.add(Arrays.asList(each.getName(), autoWareDataSourceName, writeDataSourceName, readDataSourceNames,
                         loadBalancer.map(TypedSPIConfiguration::getType).orElse(null),
-                        loadBalancer.map(TypedSPIConfiguration::getProps).map(PropertiesConverter::convert).orElse(null)));
+                        loadBalancer.map(TypedSPIConfiguration::getProps).map(PropertiesConverter::convert).orElse("")));
             }
             data = rows.iterator();
         });
