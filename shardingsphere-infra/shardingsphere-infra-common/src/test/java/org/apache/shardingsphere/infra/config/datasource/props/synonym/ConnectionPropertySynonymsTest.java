@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.props.connection;
+package org.apache.shardingsphere.infra.config.datasource.props.synonym;
 
 import org.junit.Test;
 
@@ -25,11 +25,11 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ConnectionPropertiesTest {
+public final class ConnectionPropertySynonymsTest {
     
     @Test
     public void assertGetStandardPropertiesWithStandardProperties() {
-        ConnectionProperties actual = new ConnectionProperties(createStandardProperties(), createPropertySynonyms());
+        ConnectionPropertySynonyms actual = new ConnectionPropertySynonyms(createStandardProperties(), createPropertySynonyms());
         assertThat(actual.getStandardProperties().size(), is(3));
         assertThat(actual.getStandardProperties().get("url"), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getStandardProperties().get("username"), is("root"));
@@ -38,7 +38,7 @@ public final class ConnectionPropertiesTest {
     
     @Test
     public void assertGetStandardPropertiesWithLocalProperties() {
-        ConnectionProperties actual = new ConnectionProperties(createLocalProperties(), createPropertySynonyms());
+        ConnectionPropertySynonyms actual = new ConnectionPropertySynonyms(createLocalProperties(), createPropertySynonyms());
         assertThat(actual.getStandardProperties().size(), is(3));
         assertThat(actual.getStandardProperties().get("url"), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getStandardProperties().get("username"), is("root"));
@@ -47,7 +47,7 @@ public final class ConnectionPropertiesTest {
     
     @Test
     public void assertGetLocalPropertiesWithStandardProperties() {
-        ConnectionProperties actual = new ConnectionProperties(createStandardProperties(), createPropertySynonyms());
+        ConnectionPropertySynonyms actual = new ConnectionPropertySynonyms(createStandardProperties(), createPropertySynonyms());
         assertThat(actual.getLocalProperties().size(), is(3));
         assertThat(actual.getLocalProperties().get("jdbcUrl"), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getLocalProperties().get("user"), is("root"));
@@ -56,7 +56,7 @@ public final class ConnectionPropertiesTest {
     
     @Test
     public void assertGetLocalPropertiesWithLocalProperties() {
-        ConnectionProperties actual = new ConnectionProperties(createLocalProperties(), createPropertySynonyms());
+        ConnectionPropertySynonyms actual = new ConnectionPropertySynonyms(createLocalProperties(), createPropertySynonyms());
         assertThat(actual.getLocalProperties().size(), is(3));
         assertThat(actual.getLocalProperties().get("jdbcUrl"), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getLocalProperties().get("user"), is("root"));
