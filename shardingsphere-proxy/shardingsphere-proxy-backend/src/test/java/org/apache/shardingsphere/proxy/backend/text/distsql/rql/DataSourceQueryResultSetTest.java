@@ -119,13 +119,13 @@ public final class DataSourceQueryResultSetTest {
         assertThat(rowData.next(), is("localhost"));
         assertThat(rowData.next(), is(3306));
         assertThat(rowData.next(), is("demo_ds"));
-        assertThat(rowData.next(), is("{\"readOnly\":true,\"customPoolProps\":{\"test\":\"test\"}}"));
+        assertThat(rowData.next(), is("{\"readOnly\":true,\"test\":\"test\"}"));
     }
     
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap() {
         Map<String, DataSourceProperties> result = new HashMap<>();
         DataSourceProperties ds0 = new DataSourceProperties("ds_0", createProperties());
-        ds0.getCustomPoolProps().put("test", "test");
+        ds0.getStandardProperties().put("test", "test");
         result.put("ds_0", ds0);
         return result;
     }
