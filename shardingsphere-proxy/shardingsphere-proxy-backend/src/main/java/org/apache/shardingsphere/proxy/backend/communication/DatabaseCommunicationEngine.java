@@ -112,17 +112,18 @@ public abstract class DatabaseCommunicationEngine<T> {
     protected List<QueryHeader> createQueryHeaders(final ExecutionContext executionContext, final QueryResult queryResultSample) throws SQLException {
         int columnCount = getColumnCount(executionContext, queryResultSample);
         List<QueryHeader> result = new ArrayList<>(columnCount);
+        DataNodeContainedRule dataNodeContainedRule = metaData.getRuleMetaData().findSingleRule(DataNodeContainedRule.class).orElse(null);
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            result.add(createQueryHeader(executionContext, queryResultSample, metaData, columnIndex));
+            result.add(createQueryHeader(executionContext, queryResultSample, metaData, columnIndex, dataNodeContainedRule));
         }
         return result;
     }
     
     protected QueryHeader createQueryHeader(final ExecutionContext executionContext,
-                                            final QueryResult queryResultSample, final ShardingSphereMetaData metaData, final int columnIndex) throws SQLException {
+                                            final QueryResult queryResultSample, final ShardingSphereMetaData metaData, final int columnIndex, final DataNodeContainedRule dataNodeContainedRule) throws SQLException {
         return hasSelectExpandProjections(executionContext.getSqlStatementContext())
-                ? QueryHeaderBuilder.build(((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), queryResultSample.getMetaData(), metaData, columnIndex)
-                : QueryHeaderBuilder.build(queryResultSample.getMetaData(), metaData, columnIndex);
+                ? QueryHeaderBuilder.build(((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), queryResultSample.getMetaData(), metaData, columnIndex, dataNodeContainedRule)
+                : QueryHeaderBuilder.build(queryResultSample.getMetaData(), metaData, columnIndex, dataNodeContainedRule);
     }
     
     protected int getColumnCount(final ExecutionContext executionContext, final QueryResult queryResultSample) throws SQLException {
