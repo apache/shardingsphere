@@ -467,8 +467,6 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-        worker-id: 123
 ```
 
 config-readwrite-splitting.yaml
@@ -664,8 +662,6 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-        worker-id: 123
 - !READWRITE_SPLITTING
   dataSources:
     ds_0:
