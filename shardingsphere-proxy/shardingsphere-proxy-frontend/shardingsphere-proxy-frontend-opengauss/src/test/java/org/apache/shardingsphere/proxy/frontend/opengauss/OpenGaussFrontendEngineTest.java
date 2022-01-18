@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.opengauss;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.db.protocol.opengauss.codec.OpenGaussPacketCodecEngine;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.OpenGaussAuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.opengauss.command.OpenGaussCommandExecuteEngine;
@@ -74,8 +75,7 @@ public final class OpenGaussFrontendEngineTest {
     
     @Test
     public void assertGetCodecEngine() {
-        openGaussFrontendEngine.getCodecEngine();
-        verify(mockPostgreSQLFrontendEngine).getCodecEngine();
+        assertThat(openGaussFrontendEngine.getCodecEngine(), instanceOf(OpenGaussPacketCodecEngine.class));
     }
     
     @Test

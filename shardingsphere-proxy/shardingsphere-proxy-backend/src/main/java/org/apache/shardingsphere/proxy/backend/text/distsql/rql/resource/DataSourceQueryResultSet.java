@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql.resource;
 
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
-import org.apache.shardingsphere.infra.config.datasource.creator.DataSourcePoolCreatorUtil;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -31,10 +31,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.TreeMap;
 
 /**
  * Result set for show data source.
@@ -53,7 +55,7 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
         Optional<MetaDataPersistService> persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
         dataSourcePropsMap = persistService.isPresent()
                 ? persistService.get().getDataSourceService().load(metaData.getName())
-                : DataSourcePoolCreatorUtil.getDataSourcePropertiesMap(metaData.getResource().getDataSources());
+                : DataSourcePropertiesCreator.create(metaData.getResource().getDataSources());
         dataSourceNames = dataSourcePropsMap.keySet().iterator();
     }
     
@@ -71,34 +73,28 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     public Collection<Object> getRowData() {
         String dataSourceName = dataSourceNames.next();
         DataSourceMetaData metaData = resource.getDataSourcesMetaData().getDataSourceMetaData(dataSourceName);
-        return Arrays.asList(dataSourceName, resource.getDatabaseType().getName(), 
-                metaData.getHostname(), metaData.getPort(), metaData.getCatalog(), (new Gson()).toJson(getAttributeMap(dataSourcePropsMap.get(dataSourceName))));
+        return Arrays.asList(dataSourceName, resource.getDatabaseType().getName(), metaData.getHostname(), metaData.getPort(), metaData.getCatalog(), 
+                new Gson().toJson(getFilteredUndisplayedProperties(dataSourcePropsMap.get(dataSourceName).getStandardProperties())));
     }
     
-    private Map<String, Object> getAttributeMap(final DataSourceProperties dataSourceProps) {
-        Map<String, Object> result = new LinkedHashMap<>(7, 1);
-        result.put("connectionTimeoutMilliseconds", getProperty(dataSourceProps, "connectionTimeoutMilliseconds", "connectionTimeout"));
-        result.put("idleTimeoutMilliseconds", getProperty(dataSourceProps, "idleTimeoutMilliseconds", "idleTimeout"));
-        result.put("maxLifetimeMilliseconds", getProperty(dataSourceProps, "maxLifetimeMilliseconds", "maxLifetime"));
-        result.put("maxPoolSize", getProperty(dataSourceProps, "maxPoolSize", "maximumPoolSize"));
-        result.put("minPoolSize", getProperty(dataSourceProps, "minPoolSize", "minimumIdle"));
-        result.put("readOnly", getProperty(dataSourceProps, "readOnly"));
-        if (!dataSourceProps.getCustomPoolProps().isEmpty()) {
-            result.put(DataSourceProperties.CUSTOM_POOL_PROPS_KEY, dataSourceProps.getCustomPoolProps());
-        }
-        return result;
-    }
-    
-    private Object getProperty(final DataSourceProperties dataSourceProps, final String key, final String... synonym) {
-        if (dataSourceProps.getProps().containsKey(key)) {
-            return dataSourceProps.getProps().get(key);
-        }
-        for (String each : synonym) {
-            if (dataSourceProps.getProps().containsKey(each)) {
-                return dataSourceProps.getProps().get(each);
+    // TODO to be configured
+    private Map<String, Object> getFilteredUndisplayedProperties(final Map<String, Object> standardProps) {
+        Map<String, Object> result = new HashMap<>(standardProps);
+        result.remove("url");
+        result.remove("jdbcUrl");
+        result.remove("user");
+        result.remove("username");
+        result.remove("password");
+        result.remove("running");
+        result.remove("poolName");
+        result.remove("registerMbeans");
+        result.remove("closed");
+        for (Entry<String, Object> entry : standardProps.entrySet()) {
+            if (entry.getValue() instanceof Collection || entry.getValue() instanceof Map) {
+                result.remove(entry.getKey());
             }
         }
-        return null;
+        return new TreeMap<>(result);
     }
     
     @Override

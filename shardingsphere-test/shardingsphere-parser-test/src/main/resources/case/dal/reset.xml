@@ -41,6 +41,8 @@
     <reset sql-case-id="reset_slave_with_all_channel">
         <option master="false" all="true" channel="TEST_CHANNEL" start-index="6" stop-index="41"/>
     </reset>
+    <reset sql-case-id="reset_query_cache" />
+    <reset sql-case-id="reset_replica" />
     <reset-persist sql-case-id="reset_persist"/>
     <reset-persist sql-case-id="reset_persist_identifier" identifier="TEST_ID"/>
     <reset-persist sql-case-id="reset_persist_exist_identifier" exist-clause="true" identifier="TEST_ID"/>

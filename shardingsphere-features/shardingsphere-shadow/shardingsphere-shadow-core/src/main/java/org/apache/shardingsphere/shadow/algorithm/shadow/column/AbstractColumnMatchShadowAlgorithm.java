@@ -50,12 +50,12 @@ public abstract class AbstractColumnMatchShadowAlgorithm implements ColumnShadow
     private ShadowOperationType shadowOperationType;
     
     @Override
-    public boolean isShadow(final Collection<String> relatedShadowTables, final PreciseColumnShadowValue<Comparable<?>> shadowValue) {
+    public boolean isShadow(final PreciseColumnShadowValue<Comparable<?>> shadowValue) {
         String table = shadowValue.getLogicTableName();
         String column = shadowValue.getColumnName();
         Comparable<?> value = shadowValue.getValue();
         SHADOW_VALUE_VALIDATORS.forEach(each -> each.preValidate(table, column, value));
-        return shadowOperationType == shadowValue.getShadowOperationType() && relatedShadowTables.contains(table) && String.valueOf(props.get(COLUMN_PROPS_KEY)).equals(column) && isMatchValue(value);
+        return shadowOperationType == shadowValue.getShadowOperationType() && String.valueOf(props.get(COLUMN_PROPS_KEY)).equals(column) && isMatchValue(value);
     }
     
     @Override

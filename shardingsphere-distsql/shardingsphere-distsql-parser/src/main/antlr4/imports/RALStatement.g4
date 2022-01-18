@@ -17,7 +17,7 @@
 
 grammar RALStatement;
 
-import Keyword, Literals, Symbol;
+import Keyword, Literals, Symbol, BaseRule;
 
 setVariable
     : SET VARIABLE variableName EQ variableValue
@@ -63,6 +63,10 @@ showTransactionRule
     : SHOW TRANSACTION RULE
     ;
 
+alterTransactionRule
+    : ALTER TRANSACTION RULE transactionRuleDefinition
+    ;
+
 showSQLParserRule
     : SHOW SQL_PARSER RULE
     ;
@@ -71,8 +75,24 @@ alterSQLParserRule
     : ALTER SQL_PARSER RULE sqlParserRuleDefinition
     ;
 
+transactionRuleDefinition
+    : LP DEFAULT EQ defaultType COMMA providerDefinition
+    ;
+
+providerDefinition
+    : TYPE LP NAME EQ providerName propertiesDefinition? RP
+    ;
+
+defaultType
+    : IDENTIFIER
+    ;
+
+providerName
+    : IDENTIFIER
+    ;
+
 sqlParserRuleDefinition
-    : (SQL_COMMENT_PARSE_ENABLE EQ sqlCommentParseEnable) (COMMA? PARSE_TREE_CACHE LP parseTreeCache RP)? (COMMA? SQL_STATEMENT_CACHE LP sqlStatementCache RP)?
+    : SQL_COMMENT_PARSE_ENABLE EQ sqlCommentParseEnable (COMMA PARSE_TREE_CACHE LP parseTreeCache RP)? (COMMA SQL_STATEMENT_CACHE LP sqlStatementCache RP)?
     ;
 
 variableName

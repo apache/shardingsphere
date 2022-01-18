@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.config.resource;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyResourceConfiguration;
 
 import java.util.LinkedHashMap;
@@ -60,23 +60,24 @@ public final class ProxyResourceConfigurationConverter {
      * @return data source properties map
      */
     public static Map<String, DataSourceProperties> getDataSourceConfigurationMap(final Map<String, ProxyResourceConfiguration> resourceConfigMap) {
-        return resourceConfigMap.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return resourceConfigMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, 
+            entry -> new DataSourceProperties(HikariDataSource.class.getName(), createProperties(entry.getValue())), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private static DataSourceProperties createDataSourceConfiguration(final ProxyResourceConfiguration resourceConfig) {
-        DataSourceProperties result = new DataSourceProperties(HikariDataSource.class.getName());
-        result.getProps().put("jdbcUrl", resourceConfig.getConnection().getUrl());
-        result.getProps().put("username", resourceConfig.getConnection().getUsername());
-        result.getProps().put("password", resourceConfig.getConnection().getPassword());
-        result.getProps().put("connectionTimeout", resourceConfig.getPool().getConnectionTimeoutMilliseconds());
-        result.getProps().put("idleTimeout", resourceConfig.getPool().getIdleTimeoutMilliseconds());
-        result.getProps().put("maxLifetime", resourceConfig.getPool().getMaxLifetimeMilliseconds());
-        result.getProps().put("maximumPoolSize", resourceConfig.getPool().getMaxPoolSize());
-        result.getProps().put("minimumIdle", resourceConfig.getPool().getMinPoolSize());
-        result.getProps().put("readOnly", resourceConfig.getPool().getReadOnly());
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static Map<String, Object> createProperties(final ProxyResourceConfiguration resourceConfig) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("jdbcUrl", resourceConfig.getConnection().getUrl());
+        result.put("username", resourceConfig.getConnection().getUsername());
+        result.put("password", resourceConfig.getConnection().getPassword());
+        result.put("connectionTimeout", resourceConfig.getPool().getConnectionTimeoutMilliseconds());
+        result.put("idleTimeout", resourceConfig.getPool().getIdleTimeoutMilliseconds());
+        result.put("maxLifetime", resourceConfig.getPool().getMaxLifetimeMilliseconds());
+        result.put("maximumPoolSize", resourceConfig.getPool().getMaxPoolSize());
+        result.put("minimumIdle", resourceConfig.getPool().getMinPoolSize());
+        result.put("readOnly", resourceConfig.getPool().getReadOnly());
         if (null != resourceConfig.getPool().getCustomProperties()) {
-            result.getCustomPoolProps().putAll(resourceConfig.getPool().getCustomProperties());
+            result.putAll((Map) resourceConfig.getPool().getCustomProperties());
         }
         return result;
     }

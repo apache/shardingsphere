@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.config.resource;
 
-import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyResourceConfiguration;
 import org.junit.Test;
 
@@ -49,7 +49,7 @@ public final class ProxyProxyResourceConfigurationConverterTest {
     }
     
     private void assertParameter(final DataSourceProperties actual) {
-        Map<String, Object> props = actual.getProps();
+        Map<String, Object> props = actual.getLocalProperties();
         assertThat(props.size(), is(9));
         assertThat(props.get("jdbcUrl"), is("jdbc:mysql://localhost:3306/demo_ds"));
         assertThat(props.get("username"), is("root"));

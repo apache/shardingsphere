@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
-import org.apache.shardingsphere.infra.config.datasource.creator.DataSourcePoolCreatorUtil;
+import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreator;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 
 import javax.sql.DataSource;
@@ -36,6 +36,8 @@ public final class YamlDataSourceConfigurationSwapper {
     
     private static final String DATA_SOURCE_CLASS_NAME_KEY = "dataSourceClassName";
     
+    private static final String CUSTOM_POOL_PROPS_KEY = "customPoolProps";
+    
     /**
      * Swap to data sources from YAML data sources.
      *
@@ -43,7 +45,7 @@ public final class YamlDataSourceConfigurationSwapper {
      * @return data sources
      */
     public Map<String, DataSource> swapToDataSources(final Map<String, Map<String, Object>> yamlDataSources) {
-        return DataSourcePoolCreatorUtil.getDataSourceMap(yamlDataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapToDataSourceProperties(entry.getValue()))));
+        return DataSourcePoolCreator.create(yamlDataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapToDataSourceProperties(entry.getValue()))));
     }
     
     /**
@@ -65,17 +67,19 @@ public final class YamlDataSourceConfigurationSwapper {
      * @param yamlConfig YAML configurations
      * @return data source properties
      */
-    @SuppressWarnings("rawtypes")
     public DataSourceProperties swapToDataSourceProperties(final Map<String, Object> yamlConfig) {
         Preconditions.checkState(yamlConfig.containsKey(DATA_SOURCE_CLASS_NAME_KEY), "%s can not be null.", DATA_SOURCE_CLASS_NAME_KEY);
-        Map<String, Object> newDataSourceMap = new HashMap<>(yamlConfig);
-        newDataSourceMap.remove(DATA_SOURCE_CLASS_NAME_KEY);
-        DataSourceProperties result = new DataSourceProperties(yamlConfig.get(DATA_SOURCE_CLASS_NAME_KEY).toString());
-        if (null != newDataSourceMap.get(DataSourceProperties.CUSTOM_POOL_PROPS_KEY)) {
-            result.getCustomPoolProps().putAll((Map) newDataSourceMap.get(DataSourceProperties.CUSTOM_POOL_PROPS_KEY));
-            newDataSourceMap.remove(DataSourceProperties.CUSTOM_POOL_PROPS_KEY);
+        return new DataSourceProperties(yamlConfig.get(DATA_SOURCE_CLASS_NAME_KEY).toString(), getProperties(yamlConfig));
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private Map<String, Object> getProperties(final Map<String, Object> yamlConfig) {
+        Map<String, Object> result = new HashMap<>(yamlConfig);
+        result.remove(DATA_SOURCE_CLASS_NAME_KEY);
+        if (null != yamlConfig.get(CUSTOM_POOL_PROPS_KEY)) {
+            result.putAll((Map) yamlConfig.get(CUSTOM_POOL_PROPS_KEY));
         }
-        result.getProps().putAll(newDataSourceMap);
+        result.remove(CUSTOM_POOL_PROPS_KEY);
         return result;
     }
     
@@ -86,10 +90,7 @@ public final class YamlDataSourceConfigurationSwapper {
      * @return data source map
      */
     public Map<String, Object> swapToMap(final DataSourceProperties dataSourceProps) {
-        Map<String, Object> result = new HashMap<>(dataSourceProps.getProps());
-        if (!dataSourceProps.getCustomPoolProps().isEmpty()) {
-            result.put(DataSourceProperties.CUSTOM_POOL_PROPS_KEY, dataSourceProps.getCustomPoolProps());
-        }
+        Map<String, Object> result = new HashMap<>(dataSourceProps.getStandardProperties());
         result.put(DATA_SOURCE_CLASS_NAME_KEY, dataSourceProps.getDataSourceClassName());
         return result;
     }

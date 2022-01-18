@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mode.manager;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
@@ -233,8 +233,8 @@ public final class ContextManagerTest {
         Properties dataSourceProps = new Properties();
         dataSourceProps.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
         Map<String, DataSourceProperties> result = new LinkedHashMap<>();
-        result.put("test_ds_1", createDataSourceProperties(dataSourceProps));
-        result.put("test_ds_2", createDataSourceProperties(dataSourceProps));
+        result.put("test_ds_1", new DataSourceProperties(MockedDataSource.class.getName(), createProperties(dataSourceProps)));
+        result.put("test_ds_2", new DataSourceProperties(MockedDataSource.class.getName(), createProperties(dataSourceProps)));
         return result;
     }
     
@@ -284,7 +284,7 @@ public final class ContextManagerTest {
         dataSourceProps.put("username", "test");
         dataSourceProps.put("password", "test");
         Map<String, DataSourceProperties> result = new LinkedHashMap<>();
-        result.put("test_ds", createDataSourceProperties(dataSourceProps));
+        result.put("test_ds", new DataSourceProperties(MockedDataSource.class.getName(), createProperties(dataSourceProps)));
         return result;
     }
     
@@ -360,7 +360,7 @@ public final class ContextManagerTest {
         Properties dataSourceProps = new Properties();
         dataSourceProps.put("username", "test");
         dataSourceProps.put("password", "test");
-        newDataSourceProps.put("ds_1", createDataSourceProperties(dataSourceProps));
+        newDataSourceProps.put("ds_1", new DataSourceProperties(MockedDataSource.class.getName(), createProperties(dataSourceProps)));
         contextManager.alterDataSourceConfiguration("test_schema", newDataSourceProps);
         assertTrue(contextManager.getMetaDataContexts().getMetaDataMap().containsKey("test_schema"));
         assertThat(contextManager.getMetaDataContexts().getMetaDataMap().get("test_schema").getResource().getDataSources().size(), is(1));
@@ -441,14 +441,12 @@ public final class ContextManagerTest {
         assertTrue(contextManager.getMetaDataContexts().getMetaData("test_schema").getResource().getDataSources().containsKey("test_ds"));
     }
     
-    private DataSourceProperties createDataSourceProperties(final Properties dataSourceProps) {
-        Map<String, Object> props = new HashMap(dataSourceProps);
-        props.putIfAbsent("driverClassName", MockedDataSource.class.getCanonicalName());
-        props.putIfAbsent("url", "jdbc:mock://127.0.0.1/foo_ds");
-        props.putIfAbsent("username", "root");
-        props.putIfAbsent("password", "root");
-        DataSourceProperties result = new DataSourceProperties(MockedDataSource.class.getCanonicalName());
-        result.getProps().putAll(props);
+    private Map<String, Object> createProperties(final Properties dataSourceProps) {
+        Map<String, Object> result = new HashMap(dataSourceProps);
+        result.putIfAbsent("driverClassName", MockedDataSource.class.getName());
+        result.putIfAbsent("url", "jdbc:mock://127.0.0.1/foo_ds");
+        result.putIfAbsent("username", "root");
+        result.putIfAbsent("password", "root");
         return result;
     }
     

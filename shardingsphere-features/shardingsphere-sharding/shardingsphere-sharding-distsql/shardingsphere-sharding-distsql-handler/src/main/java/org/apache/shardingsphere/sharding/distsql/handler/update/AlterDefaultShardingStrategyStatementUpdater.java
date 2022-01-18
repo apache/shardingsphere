@@ -40,6 +40,8 @@ import java.util.Optional;
  */
 public final class AlterDefaultShardingStrategyStatementUpdater implements RuleDefinitionAlterUpdater<AlterDefaultShardingStrategyStatement, ShardingRuleConfiguration> {
     
+    private static final String TYPE = AlterDefaultShardingStrategyStatement.class.getCanonicalName();
+    
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterDefaultShardingStrategyStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
@@ -99,15 +101,15 @@ public final class AlterDefaultShardingStrategyStatementUpdater implements RuleD
     }
     
     private String createDefaultAlgorithm(final AlterDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration shardingRuleConfiguration) {
-        String algorithmName = getDefaultShardingAlgorithmName(sqlStatement.getDefaultType(), sqlStatement.getAlgorithmSegment().getName());
-        shardingRuleConfiguration.getShardingAlgorithms().put(algorithmName, createAlgorithmConfiguration(sqlStatement.getAlgorithmSegment()));
-        return algorithmName;
+        String result = getDefaultShardingAlgorithmName(sqlStatement.getDefaultType(), sqlStatement.getAlgorithmSegment().getName());
+        shardingRuleConfiguration.getShardingAlgorithms().put(result, createAlgorithmConfiguration(sqlStatement.getAlgorithmSegment()));
+        return result;
     }
-
+    
     private static ShardingSphereAlgorithmConfiguration createAlgorithmConfiguration(final AlgorithmSegment segment) {
         return new ShardingSphereAlgorithmConfiguration(segment.getName(), segment.getProps());
     }
-
+    
     private static String getDefaultShardingAlgorithmName(final String defaultType, final String algorithmType) {
         return String.format("default_%s_%s", defaultType.toLowerCase(), algorithmType);
     }
@@ -125,10 +127,10 @@ public final class AlterDefaultShardingStrategyStatementUpdater implements RuleD
         if (!toBeAlteredRuleConfig.getShardingAlgorithms().isEmpty()) {
             currentRuleConfig.getShardingAlgorithms().putAll(toBeAlteredRuleConfig.getShardingAlgorithms());
         }
-        if (toBeAlteredRuleConfig.getDefaultTableShardingStrategy() != null) {
+        if (null != toBeAlteredRuleConfig.getDefaultTableShardingStrategy()) {
             currentRuleConfig.setDefaultTableShardingStrategy(toBeAlteredRuleConfig.getDefaultTableShardingStrategy());
         }
-        if (toBeAlteredRuleConfig.getDefaultDatabaseShardingStrategy() != null) {
+        if (null != toBeAlteredRuleConfig.getDefaultDatabaseShardingStrategy()) {
             currentRuleConfig.setDefaultDatabaseShardingStrategy(toBeAlteredRuleConfig.getDefaultDatabaseShardingStrategy());
         }
     }
@@ -140,6 +142,6 @@ public final class AlterDefaultShardingStrategyStatementUpdater implements RuleD
     
     @Override
     public String getType() {
-        return AlterDefaultShardingStrategyStatement.class.getCanonicalName();
+        return TYPE;
     }
 }

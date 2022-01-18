@@ -37,7 +37,7 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 @Getter
 public final class PostgreSQLFrontendEngine implements DatabaseProtocolFrontendEngine {
     
-    private final FrontendContext frontendContext = new FrontendContext(true, false);
+    private final FrontendContext frontendContext = new FrontendContext(true, true);
     
     private final AuthenticationEngine authenticationEngine = new PostgreSQLAuthenticationEngine();
     
