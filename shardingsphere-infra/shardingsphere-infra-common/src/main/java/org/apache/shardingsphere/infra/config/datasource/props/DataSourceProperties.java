@@ -21,6 +21,7 @@ import com.google.common.base.Objects;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
 import org.apache.shardingsphere.infra.config.datasource.props.synonym.ConnectionPropertySynonyms;
+import org.apache.shardingsphere.infra.config.datasource.props.synonym.PoolPropertySynonyms;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -34,7 +35,9 @@ public final class DataSourceProperties {
     
     private final String dataSourceClassName;
     
-    private final ConnectionPropertySynonyms connectionProperties;
+    private final ConnectionPropertySynonyms connectionPropertySynonyms;
+    
+    private final PoolPropertySynonyms poolPropertySynonyms;
     
     private final Map<String, Object> standardProperties;
     
@@ -43,7 +46,8 @@ public final class DataSourceProperties {
     public DataSourceProperties(final String dataSourceClassName, final Map<String, Object> props) {
         this.dataSourceClassName = dataSourceClassName;
         Map<String, String> propertySynonyms = DataSourcePoolMetaDataFactory.newInstance(dataSourceClassName).getPropertySynonyms();
-        connectionProperties = new ConnectionPropertySynonyms(props, propertySynonyms);
+        connectionPropertySynonyms = new ConnectionPropertySynonyms(props, propertySynonyms);
+        poolPropertySynonyms = new PoolPropertySynonyms(props, propertySynonyms);
         standardProperties = buildStandardProperties(props, propertySynonyms);
         localProperties = buildLocalProperties(props, propertySynonyms);
     }

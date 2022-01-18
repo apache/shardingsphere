@@ -32,11 +32,14 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode
 public abstract class PropertySynonyms {
     
+    private final Collection<String> standardPropertyKeys;
+    
     private final Map<String, Object> standardProperties;
     
     private final Map<String, Object> localProperties;
     
     public PropertySynonyms(final Map<String, Object> props, final Collection<String> standardPropertyKeys, final Map<String, String> propertySynonyms) {
+        this.standardPropertyKeys = standardPropertyKeys;
         standardProperties = buildStandardProperties(props, standardPropertyKeys, propertySynonyms);
         localProperties = buildLocalProperties(props, standardPropertyKeys, propertySynonyms);
     }
