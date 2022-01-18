@@ -51,9 +51,6 @@ public final class HandleConfiguration {
     
     private List<String> jobShardingDataNodes;
     
-    /**
-     * Logic tables. Separated by ','. e.g. t_order,t_order_item.
-     */
     private String logicTables;
     
     /**
