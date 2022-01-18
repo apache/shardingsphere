@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.config.datasource.props;
 
 import com.google.common.base.Objects;
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
 
@@ -34,34 +33,18 @@ public final class DataSourceProperties {
     
     private final String dataSourceClassName;
     
-    @Getter(AccessLevel.NONE)
-    private final Map<String, String> propertySynonyms;
-    
     private final Map<String, Object> standardProperties;
     
     private final Map<String, Object> localProperties;
     
     public DataSourceProperties(final String dataSourceClassName, final Map<String, Object> props) {
         this.dataSourceClassName = dataSourceClassName;
-        propertySynonyms = DataSourcePoolMetaDataFactory.newInstance(dataSourceClassName).getPropertySynonyms();
-        standardProperties = buildStandardProperties(props);
-        localProperties = buildLocalProperties(props);
+        Map<String, String> propertySynonyms = DataSourcePoolMetaDataFactory.newInstance(dataSourceClassName).getPropertySynonyms();
+        standardProperties = buildStandardProperties(props, propertySynonyms);
+        localProperties = buildLocalProperties(props, propertySynonyms);
     }
     
-    private Map<String, Object> buildLocalProperties(final Map<String, Object> props) {
-        Map<String, Object> result = new LinkedHashMap<>(props);
-        for (Entry<String, String> entry : propertySynonyms.entrySet()) {
-            String standardPropertyName = entry.getKey();
-            String synonymsPropertyName = entry.getValue();
-            if (props.containsKey(standardPropertyName)) {
-                result.put(synonymsPropertyName, props.get(standardPropertyName));
-                result.remove(standardPropertyName);
-            }
-        }
-        return result;
-    }
-    
-    private Map<String, Object> buildStandardProperties(final Map<String, Object> props) {
+    private Map<String, Object> buildStandardProperties(final Map<String, Object> props, final Map<String, String> propertySynonyms) {
         Map<String, Object> result = new LinkedHashMap<>(props);
         for (Entry<String, String> entry : propertySynonyms.entrySet()) {
             String standardPropertyName = entry.getKey();
@@ -69,6 +52,19 @@ public final class DataSourceProperties {
             if (props.containsKey(synonymsPropertyName)) {
                 result.put(standardPropertyName, props.get(synonymsPropertyName));
                 result.remove(synonymsPropertyName);
+            }
+        }
+        return result;
+    }
+    
+    private Map<String, Object> buildLocalProperties(final Map<String, Object> props, final Map<String, String> propertySynonyms) {
+        Map<String, Object> result = new LinkedHashMap<>(props);
+        for (Entry<String, String> entry : propertySynonyms.entrySet()) {
+            String standardPropertyName = entry.getKey();
+            String synonymsPropertyName = entry.getValue();
+            if (props.containsKey(standardPropertyName)) {
+                result.put(synonymsPropertyName, props.get(standardPropertyName));
+                result.remove(standardPropertyName);
             }
         }
         return result;
