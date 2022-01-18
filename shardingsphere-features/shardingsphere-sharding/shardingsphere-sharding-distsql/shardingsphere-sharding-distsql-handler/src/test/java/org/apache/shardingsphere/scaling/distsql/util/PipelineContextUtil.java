@@ -15,18 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.keygen.fixture;
+package org.apache.shardingsphere.scaling.distsql.util;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 
-@RequiredArgsConstructor
-public final class WorkerIdGeneratorFixture implements WorkerIdGenerator {
+import java.util.Properties;
+
+public final class PipelineContextUtil {
     
-    private final long fixtureWorkerId;
+    /**
+     * Mock mode configuration.
+     */
+    @SneakyThrows
+    public static void mockModeConfig() {
+        PipelineContext.initModeConfig(createModeConfig());
+    }
     
-    @Override
-    public long generate() {
-        return fixtureWorkerId;
+    private static ModeConfiguration createModeConfig() {
+        return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("Zookeeper", "test", "localhost:2181", new Properties()), true);
     }
 }

@@ -19,6 +19,8 @@ package org.apache.shardingsphere.scaling.distsql.handler;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingCheckAlgorithmsStatement;
+import org.apache.shardingsphere.scaling.distsql.util.PipelineContextUtil;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -41,6 +43,11 @@ public final class ShowScalingCheckAlgorithmsQueryResultSetTest {
     
     @Mock
     private ShowScalingCheckAlgorithmsStatement showScalingCheckAlgorithmsStatement;
+    
+    @BeforeClass
+    public static void beforeClass() {
+        PipelineContextUtil.mockModeConfig();
+    }
     
     @Test
     public void assertGetRowData() {

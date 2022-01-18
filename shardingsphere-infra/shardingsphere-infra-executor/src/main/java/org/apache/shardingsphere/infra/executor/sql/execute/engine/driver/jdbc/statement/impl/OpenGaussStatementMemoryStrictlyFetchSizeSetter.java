@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.impl;
+package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.statement.impl;
 
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -30,8 +31,8 @@ public final class OpenGaussStatementMemoryStrictlyFetchSizeSetter implements St
     private final PostgreSQLStatementMemoryStrictlyFetchSizeSetter delegated = new PostgreSQLStatementMemoryStrictlyFetchSizeSetter();
     
     @Override
-    public void setFetchSize(final Statement statement) throws SQLException {
-        delegated.setFetchSize(statement);
+    public void setFetchSize(final Statement statement, final ConfigurationProperties props) throws SQLException {
+        delegated.setFetchSize(statement, props);
     }
     
     @Override

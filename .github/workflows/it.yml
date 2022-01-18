@@ -23,6 +23,10 @@ on:
   pull_request:
     branches: [ master ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
 
@@ -79,6 +83,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - uses: actions/checkout@v2
+      - name: Dump concurrency group
+        env:
+          CON_GROUP: ${{ github.workflow }}-${{ github.ref }}
+        run: echo "$CON_GROUP"
       - name: Set up JDK 8
         uses: actions/setup-java@v1
         with:

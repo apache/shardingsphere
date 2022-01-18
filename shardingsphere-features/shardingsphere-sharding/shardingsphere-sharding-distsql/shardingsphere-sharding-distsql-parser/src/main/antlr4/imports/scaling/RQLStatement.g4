@@ -15,24 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement;
+grammar RQLStatement;
 
-import org.apache.shardingsphere.spi.singleton.SingletonSPI;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import Keyword, Literals;
 
-import java.sql.SQLException;
-import java.sql.Statement;
+showShardingScalingRules
+    : SHOW SHARDING SCALING RULES (FROM schemaName)?
+    ;
 
-/**
- * Statement memory strictly fetch size setter.
- */
-public interface StatementMemoryStrictlyFetchSizeSetter extends TypedSPI, SingletonSPI {
-    
-    /**
-     * Set fetch size.
-     * 
-     * @param statement statement to be set
-     * @throws SQLException SQL exception
-     */
-    void setFetchSize(Statement statement) throws SQLException;
-}
+schemaName
+    : IDENTIFIER
+    ;

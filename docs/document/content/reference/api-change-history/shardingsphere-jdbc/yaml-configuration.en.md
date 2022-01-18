@@ -195,7 +195,7 @@ shardingRule:
       keyGenerator:
         column: # Column name of key generator
         type: # Type of key generator, use default key generator if absent, and there are three types to choose, that is, SNOWFLAKE/UUID
-        props: # Properties, Notice: when use SNOWFLAKE, `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set. To use the generated value of this algorithm as sharding value, it is recommended to configure `max.vibration.offset`         
+        props: # Properties, Notice: when use SNOWFLAKE, `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set. To use the generated value of this algorithm as sharding value, it is recommended to configure `max.vibration.offset`         
 
   bindingTables: # Binding table rule configurations
     - <logic_table_name1, logic_table_name2, ...>
@@ -212,7 +212,7 @@ shardingRule:
   defaultKeyGenerator:
     type: # Type of default key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID. Default key generator is `org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator`
     column: # Column name of default key generator
-    props: # Properties of default key generator, e.g. `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` 
+    props: # Properties of default key generator, e.g. `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` 
 
   masterSlaveRules: # Read-write splitting rule configuration, more details can reference Read-write splitting part
     <data_source_name>: # Data sources configuration, need consist with data source map, multiple `data_source_name` available
