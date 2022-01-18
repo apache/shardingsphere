@@ -119,10 +119,10 @@ public abstract class DatabaseCommunicationEngine<T> {
         return result;
     }
     
-    protected QueryHeader createQueryHeader(final ExecutionContext executionContext,
-                                            final QueryResult queryResultSample, final ShardingSphereMetaData metaData, final int columnIndex, final DataNodeContainedRule dataNodeContainedRule) throws SQLException {
-        return hasSelectExpandProjections(executionContext.getSqlStatementContext())
-                ? QueryHeaderBuilder.build(((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), queryResultSample.getMetaData(), metaData, columnIndex, dataNodeContainedRule)
+    protected QueryHeader createQueryHeader(final ExecutionContext executionContext, final QueryResult queryResultSample, final ShardingSphereMetaData metaData,
+                                            final int columnIndex, final DataNodeContainedRule dataNodeContainedRule) throws SQLException {
+        return hasSelectExpandProjections(executionContext.getSqlStatementContext()) ? QueryHeaderBuilder.build(
+                ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), queryResultSample.getMetaData(), metaData, columnIndex, dataNodeContainedRule)
                 : QueryHeaderBuilder.build(queryResultSample.getMetaData(), metaData, columnIndex, dataNodeContainedRule);
     }
     
