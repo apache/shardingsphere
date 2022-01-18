@@ -15,18 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.keygen.fixture;
+package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.statement;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.spi.singleton.SingletonSPI;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
 
-@RequiredArgsConstructor
-public final class WorkerIdGeneratorFixture implements WorkerIdGenerator {
+import java.sql.SQLException;
+import java.sql.Statement;
+
+/**
+ * Statement memory strictly fetch size setter.
+ */
+public interface StatementMemoryStrictlyFetchSizeSetter extends TypedSPI, SingletonSPI {
     
-    private final long fixtureWorkerId;
-    
-    @Override
-    public long generate() {
-        return fixtureWorkerId;
-    }
+    /**
+     * Set fetch size.
+     * 
+     * @param statement statement to be set
+     * @param props configuration properties
+     * @throws SQLException SQL exception
+     */
+    void setFetchSize(Statement statement, ConfigurationProperties props) throws SQLException;
 }

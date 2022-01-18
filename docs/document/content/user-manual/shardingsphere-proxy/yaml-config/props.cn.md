@@ -23,7 +23,7 @@ Apache ShardingSphere 提供属性配置的方式配置系统级配置。
 | proxy-backend-query-fetch-size (?) | int       | Proxy 后端与数据库交互的每次获取数据行数（使用游标的情况下）。数值增大可能会增加 ShardingSphere Proxy 的内存使用。默认值为 -1，代表设置为 JDBC 驱动的最小值。                                          | -1       | 否      |
 | check-duplicate-table-enabled (?)  | boolean   | 在程序启动和更新时，是否检查重复表。                                                                                                                                                   | false    | 否      |
 | proxy-frontend-executor-size (?)   | int       | Proxy 前端 Netty 线程池线程数量，默认值 0 代表使用 Netty 默认值。                                                                                                                       | 0        | 否      |
-| proxy-backend-executor-suitable (?)| String    | 可选选项：OLAP、OLTP。OLTP 选项可能会减少向客户端写入数据包的时间开销，但如果客户端连接数超过 `proxy-frontend-netty-executor-size`，尤其是执行慢 SQL 时，它可能会增加 SQL 执行的延迟。                 | OLAP     | 否      |
+| proxy-backend-executor-suitable (?)| String    | 可选选项：OLAP、OLTP。OLTP 选项可能会减少向客户端写入数据包的时间开销，但如果客户端连接数超过 `proxy-frontend-executor-size`，尤其是执行慢 SQL 时，它可能会增加 SQL 执行的延迟甚至阻塞其他客户端的连接。    | OLAP     | 否      |
 | proxy-frontend-max-connections (?) | int       | 允许连接 Proxy 的最大客户端数量，默认值 0 代表不限制。                                                                                                                                  | 0        | 是      |
 | sql-federation-enabled (?)         | boolean   | 是否开启 federation 查询。                                                                                                                                                         | false    | 是      |
 
