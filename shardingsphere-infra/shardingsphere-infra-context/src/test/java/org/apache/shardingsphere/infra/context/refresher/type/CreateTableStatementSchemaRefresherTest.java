@@ -78,7 +78,8 @@ public final class CreateTableStatementSchemaRefresherTest {
         refresh(createTableStatement);
     }
     
-    private void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, final Collection<String> logicDataSourceNames, final CreateTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+    private void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
+                         final Collection<String> logicDataSourceNames, final CreateTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))));
         DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
         when(dataSource.getConnection().getMetaData().getTables(any(), any(), any(), any())).thenReturn(mock(ResultSet.class));
