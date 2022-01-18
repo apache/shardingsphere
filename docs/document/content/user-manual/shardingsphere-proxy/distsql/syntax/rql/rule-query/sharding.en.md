@@ -40,6 +40,11 @@ SHOW SHARDING BINDING TABLE RULES [FROM schemaName]
 SHOW SHARDING BROADCAST TABLE RULES [FROM schemaName]
 ```
 
+### Sharding Scaling Rule
+```sql
+SHOW SHARDING SCALING RULES [FROM schemaName]
+```
+
 ## Return Value Description
 
 ### Sharding Table Rule
@@ -123,13 +128,24 @@ SHOW SHARDING BROADCAST TABLE RULES [FROM schemaName]
 | ------------------------- | ----------------------------- |
 | sharding_broadcast_tables | sharding Broadcast Table list |
 
+### Sharding Scaling Rule
+
+| Column                   | Description                            |
+|--------------------------|----------------------------------------|
+| name                     | name of sharding scaling rule          |
+| input                    | data read configuration                |
+| output                   | data write configuration               |
+| stream_channel           | algorithm of stream channel            |
+| completion_detector      | algorithm of completion detecting      |
+| data_consistency_checker | algorithm of data consistency checking |
+
 ## Example
 
 ### Sharding Table Rule
 
 *SHOW SHARDING TABLE RULES*
 ```sql
-mysql> show sharding table rules;
+mysql> SHOW SHARDING TABLE RULES;
 +--------------+---------------------------------+-------------------+----------------------+------------------------+-------------------------------+----------------------------------------+-------------------+---------------------+----------------------------+---------------------------------------------------+-------------------+------------------+-------------------+
 | table        | actual_data_nodes               | actual_data_sources | database_strategy_type | database_sharding_column | database_sharding_algorithm_type | database_sharding_algorithm_props         | table_strategy_type | table_sharding_column | table_sharding_algorithm_type | table_sharding_algorithm_props                       | key_generate_column | key_generator_type | key_generator_props |
 +--------------+---------------------------------+-------------------+----------------------+------------------------+-------------------------------+----------------------------------------+-------------------+---------------------+----------------------------+---------------------------------------------------+-------------------+------------------+-------------------+
@@ -142,7 +158,7 @@ mysql> show sharding table rules;
 
 *SHOW SHARDING TABLE RULE tableName*
 ```sql
-mysql> show sharding table rule t_order;
+mysql> SHOW SHARDING TABLE RULE t_order;
 +---------+----------------------------+-------------------+----------------------+------------------------+-------------------------------+----------------------------------------+-------------------+---------------------+----------------------------+----------------------------------------------+-------------------+------------------+-------------------+
 | table   | actual_data_nodes          | actual_data_sources | database_strategy_type | database_sharding_column | database_sharding_algorithm_type | database_sharding_algorithm_props         | table_strategy_type | table_sharding_column | table_sharding_algorithm_type | table_sharding_algorithm_props                  | key_generate_column | key_generator_type | key_generator_props |
 +---------+----------------------------+-------------------+----------------------+------------------------+-------------------------------+----------------------------------------+-------------------+---------------------+----------------------------+----------------------------------------------+-------------------+------------------+-------------------+
@@ -153,7 +169,7 @@ mysql> show sharding table rule t_order;
 
 *SHOW SHARDING ALGORITHMS*
 ```sql
-mysql> show sharding algorithms;
+mysql> SHOW SHARDING ALGORITHMS;
 +-------------------------+--------+-----------------------------------------------------+
 | name                    | type   | props                                               |
 +-------------------------+--------+-----------------------------------------------------+
@@ -165,7 +181,7 @@ mysql> show sharding algorithms;
 
 *SHOW UNUSED SHARDING ALGORITHMS*
 ```sql
-mysql> show unused sharding algorithms;
+mysql> SHOW UNUSED SHARDING ALGORITHMS;
 +---------------+--------+-----------------------------------------------------+
 | name          | type   | props                                               |
 +---------------+--------+-----------------------------------------------------+
@@ -176,7 +192,7 @@ mysql> show unused sharding algorithms;
 
 *SHOW SHARDING KEY GENERATORS*
 ```sql
-mysql> show sharding key generators;
+mysql> SHOW SHARDING KEY GENERATORS;
 +------------------------+-----------+-----------------+
 | name                   | type      | props           |
 +------------------------+-----------+-----------------+
@@ -189,7 +205,7 @@ mysql> show sharding key generators;
 
 *SHOW UNUSED SHARDING KEY GENERATORS*
 ```sql
-mysql> show unused sharding key generators;
+mysql> SHOW UNUSED SHARDING KEY GENERATORS;
 +------------------------+-----------+-----------------+
 | name                   | type      | props           |
 +------------------------+-----------+-----------------+
@@ -214,7 +230,7 @@ mysql> SHOW DEFAULT SHARDING STRATEGY ;
 *SHOW SHARDING TABLE NODES*
 
 ```sql
-mysql> show sharding table nodes;
+mysql> SHOW SHARDING TABLE NODES;
 +---------+----------------------------------------------------------------+
 | name    | nodes                                                          |
 +---------+----------------------------------------------------------------+
@@ -226,7 +242,7 @@ mysql> show sharding table nodes;
 ### Sharding Binding Table Rule
 
 ```sql
-mysql> show sharding binding table rules from sharding_db;
+mysql> SHOW SHARDING BINDING TABLE RULES;
 +----------------------+
 | sharding_binding_tables |
 +----------------------+
@@ -239,7 +255,7 @@ mysql> show sharding binding table rules from sharding_db;
 ### Sharding Broadcast Table Rule
 
 ```sql
-mysql> show sharding broadcast table rules;
+mysql> SHOW SHARDING BROADCAST TABLE RULES;
 +------------------------+
 | sharding_broadcast_tables |
 +------------------------+
@@ -247,4 +263,16 @@ mysql> show sharding broadcast table rules;
 | t_2                    |
 +------------------------+
 2 rows in set (0.00 sec)
+```
+
+### Sharding Scaling Rule
+
+```sql
+mysql> SHOW SHARDING SCALING RULES;
++------------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+--------------------------------------------------------+-------------------------------------------------------------------------+-----------------------------------------------------+
+| name             | input                                                                                  | output                                                                                   | stream_channel                                         | completion_detector                                                     | data_consistency_checker                            |
++------------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+--------------------------------------------------------+-------------------------------------------------------------------------+-----------------------------------------------------+
+| sharding_scaling | {"workerThread":40,"batchSize":1000,"rateLimiter":{"type":"QPS","props":{"qps":"50"}}} | {"workerThread":40,"batchSize":1000,"rateLimiter":{"type":"TPS","props":{"tps":"2000"}}} | {"type":"MEMORY","props":{"block-queue-size":"10000"}} | {"type":"IDLE","props":{"incremental-task-idle-minute-threshold":"30"}} | {"type":"DATA_MATCH","props":{"chunk-size":"1000"}} |
++------------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+--------------------------------------------------------+-------------------------------------------------------------------------+-----------------------------------------------------+
+1 row in set (0.00 sec)
 ```

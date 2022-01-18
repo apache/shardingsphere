@@ -142,25 +142,25 @@ DROP SHARDING BROADCAST TABLE RULES
 ### Sharding Scaling Rule
 
 ```sql
-CREATE SHARDING SCALING scalingName [scalingDefinition]
+CREATE SHARDING SCALING RULE scalingName [scalingDefinition]
 
-DROP SHARDING SCALING scalingName
+DROP SHARDING SCALING RULE scalingName
 
-ENABLE SHARDING SCALING scalingName
+ENABLE SHARDING SCALING RULE scalingName
 
-DISABLE SHARDING SCALING scalingName
+DISABLE SHARDING SCALING RULE scalingName
 
 scalingDefinition:
-    minimumAutoDefinition | completeAutoDefinition | manualDefinition
+    (minimumAutoDefinition | completeAutoDefinition | manualDefinition)
 
 minimumAutoDefinition:
-    (completionDetector, dataConsistencyChecker)
+    completionDetector, dataConsistencyChecker
 
 completeAutoDefinition:
-    (inputDefinition, outputDefinition, streamChannel, completionDetector, dataConsistencyChecker)
+    inputDefinition, outputDefinition, streamChannel, completionDetector, dataConsistencyChecker
 
 manualDefinition:
-    (inputDefinition, outputDefinition, streamChannel)
+    inputDefinition, outputDefinition, streamChannel
 
 inputDefinition:
     INPUT (workerThread, batchSize, rateLimiter)
@@ -294,10 +294,10 @@ ALTER SHARDING BROADCAST TABLE RULES (t_b,t_a,t_3);
 DROP SHARDING BROADCAST TABLE RULES;
 ```
 
-### Sharding Broadcast Table Rule
+### Sharding Scaling Rule
 
 ```sql
-CREATE SHARDING SCALING scaling_name(
+CREATE SHARDING SCALING RULE sharding_scaling(
 INPUT(
   WORKER_THREAD=40,
   BATCH_SIZE=1000,
@@ -313,9 +313,9 @@ COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-minute-thr
 DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
 );
 
-ENABLE SHARDING SCALING scaling_name;
+ENABLE SHARDING SCALING RULE sharding_scaling;
 
-DISABLE SHARDING SCALING scaling_name;
+DISABLE SHARDING SCALING RULE sharding_scaling;
 
-DROP SHARDING SCALING scaling_name;
+DROP SHARDING SCALING RULE sharding_scaling;
 ```
