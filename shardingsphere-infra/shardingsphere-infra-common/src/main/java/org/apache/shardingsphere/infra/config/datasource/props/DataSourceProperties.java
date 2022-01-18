@@ -17,20 +17,23 @@
 
 package org.apache.shardingsphere.infra.config.datasource.props;
 
-import com.google.common.base.Objects;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
+import org.apache.shardingsphere.infra.config.datasource.props.custom.CustomDataSourceProperties;
 import org.apache.shardingsphere.infra.config.datasource.props.synonym.ConnectionPropertySynonyms;
 import org.apache.shardingsphere.infra.config.datasource.props.synonym.PoolPropertySynonyms;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Data source properties.
  */
 @Getter
+@EqualsAndHashCode
 public final class DataSourceProperties {
     
     private final String dataSourceClassName;
@@ -39,71 +42,47 @@ public final class DataSourceProperties {
     
     private final PoolPropertySynonyms poolPropertySynonyms;
     
-    private final Map<String, Object> standardProperties;
-    
-    private final Map<String, Object> localProperties;
+    private final CustomDataSourceProperties customDataSourceProperties;
     
     public DataSourceProperties(final String dataSourceClassName, final Map<String, Object> props) {
-        this.dataSourceClassName = dataSourceClassName;
         Map<String, String> propertySynonyms = DataSourcePoolMetaDataFactory.newInstance(dataSourceClassName).getPropertySynonyms();
+        this.dataSourceClassName = dataSourceClassName;
         connectionPropertySynonyms = new ConnectionPropertySynonyms(props, propertySynonyms);
         poolPropertySynonyms = new PoolPropertySynonyms(props, propertySynonyms);
-        standardProperties = buildStandardProperties(props, propertySynonyms);
-        localProperties = buildLocalProperties(props, propertySynonyms);
+        customDataSourceProperties = new CustomDataSourceProperties(props, getStandardPropertyKeys(), propertySynonyms);
     }
     
-    private Map<String, Object> buildStandardProperties(final Map<String, Object> props, final Map<String, String> propertySynonyms) {
-        Map<String, Object> result = new LinkedHashMap<>(props);
-        for (Entry<String, String> entry : propertySynonyms.entrySet()) {
-            String standardPropertyName = entry.getKey();
-            String localPropertyName = entry.getValue();
-            if (props.containsKey(localPropertyName)) {
-                result.put(standardPropertyName, props.get(localPropertyName));
-                result.remove(localPropertyName);
-            }
-        }
+    private Collection<String> getStandardPropertyKeys() {
+        Collection<String> result = new LinkedList<>(connectionPropertySynonyms.getStandardPropertyKeys());
+        result.addAll(poolPropertySynonyms.getStandardPropertyKeys());
         return result;
     }
     
-    private Map<String, Object> buildLocalProperties(final Map<String, Object> props, final Map<String, String> propertySynonyms) {
-        Map<String, Object> result = new LinkedHashMap<>(props);
-        for (Entry<String, String> entry : propertySynonyms.entrySet()) {
-            String standardPropertyName = entry.getKey();
-            String synonymsPropertyName = entry.getValue();
-            if (props.containsKey(standardPropertyName)) {
-                result.put(synonymsPropertyName, props.get(standardPropertyName));
-                result.remove(standardPropertyName);
-            }
-        }
+    /**
+     * Get all standard properties.
+     * 
+     * @return all standard properties
+     */
+    public Map<String, Object> getAllStandardProperties() {
+        Map<String, Object> result = new LinkedHashMap<>(
+                connectionPropertySynonyms.getStandardProperties().size() + poolPropertySynonyms.getStandardProperties().size() + customDataSourceProperties.getProperties().size(), 1);
+        result.putAll(connectionPropertySynonyms.getStandardProperties());
+        result.putAll(poolPropertySynonyms.getStandardProperties());
+        result.putAll(customDataSourceProperties.getProperties());
         return result;
     }
     
-    @Override
-    public boolean equals(final Object obj) {
-        return this == obj || null != obj && getClass() == obj.getClass() && equalsByProperties((DataSourceProperties) obj);
-    }
-    
-    private boolean equalsByProperties(final DataSourceProperties dataSourceProperties) {
-        if (!dataSourceClassName.equals(dataSourceProperties.dataSourceClassName)) {
-            return false;
-        }
-        for (Entry<String, Object> entry : localProperties.entrySet()) {
-            if (!dataSourceProperties.localProperties.containsKey(entry.getKey())) {
-                continue;
-            }
-            if (!String.valueOf(entry.getValue()).equals(String.valueOf(dataSourceProperties.localProperties.get(entry.getKey())))) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    @Override
-    public int hashCode() {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Entry<String, Object> entry : localProperties.entrySet()) {
-            stringBuilder.append(entry.getKey()).append(entry.getValue());
-        }
-        return Objects.hashCode(dataSourceClassName, stringBuilder.toString());
+    /**
+     * Get all local properties.
+     *
+     * @return all local properties
+     */
+    public Map<String, Object> getAllLocalProperties() {
+        Map<String, Object> result = new LinkedHashMap<>(
+                connectionPropertySynonyms.getLocalProperties().size() + poolPropertySynonyms.getLocalProperties().size() + customDataSourceProperties.getProperties().size(), 1);
+        result.putAll(connectionPropertySynonyms.getLocalProperties());
+        result.putAll(poolPropertySynonyms.getLocalProperties());
+        result.putAll(customDataSourceProperties.getProperties());
+        return result;
     }
 }
