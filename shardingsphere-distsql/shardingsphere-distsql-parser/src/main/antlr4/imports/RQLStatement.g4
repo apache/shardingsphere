@@ -42,7 +42,7 @@ schemaName
 table
     : TABLE tableName
     ;
-    
+
 tableName
     : IDENTIFIER
     ;
