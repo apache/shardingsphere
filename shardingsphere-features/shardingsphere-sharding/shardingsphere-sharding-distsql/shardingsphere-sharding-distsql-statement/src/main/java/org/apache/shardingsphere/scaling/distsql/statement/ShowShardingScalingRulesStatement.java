@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.keygen.fixture;
+package org.apache.shardingsphere.scaling.distsql.statement;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
-@RequiredArgsConstructor
-public final class WorkerIdGeneratorFixture implements WorkerIdGenerator {
+/**
+ * Show sharding scaling rules statement.
+ */
+public final class ShowShardingScalingRulesStatement extends ShowRulesStatement {
     
-    private final long fixtureWorkerId;
-    
-    @Override
-    public long generate() {
-        return fixtureWorkerId;
+    public ShowShardingScalingRulesStatement(final SchemaSegment schema) {
+        super(schema);
     }
 }

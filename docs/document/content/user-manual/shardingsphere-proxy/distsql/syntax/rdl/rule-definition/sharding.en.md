@@ -34,12 +34,12 @@ DROP SHARDING KEY GENERATOR keyGeneratorName [, keyGeneratorName] ...
 
 shardingTableRuleDefinition:
     shardingAutoTableRule | shardingTableRule
-   
+
 shardingAutoTableRule:
-    tableName(resources COMMA shardingColumn COMMA algorithmDefinition (COMMA keyGenerateDeclaration)?)
-    
+    tableName(resources, shardingColumn, algorithmDefinition [, keyGenerateDeclaration])
+
 shardingTableRule:
-    tableName(dataNodes (COMMA  databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateDeclaration)?)
+    tableName(dataNodes [, databaseStrategy] [, tableStrategy] [, keyGenerateDeclaration])
 
 resources:
     RESOURCES(resource [, resource] ...)
@@ -79,7 +79,7 @@ keyGenerateConstruction
 
 shardingStrategy:
     TYPE=strategyType, shardingColumn, shardingAlgorithm
-    
+
 shardingAlgorithm:
     existingAlgorithm | autoCreativeAlgorithm
 
@@ -99,7 +99,7 @@ algorithmProperties:
     algorithmProperty [, algorithmProperty] ...
 
 algorithmProperty:
-    key=value    
+    key=value   
 
 keyGeneratorDefinition: 
     keyGeneratorName (algorithmDefinition)
@@ -139,6 +139,60 @@ DROP SHARDING BROADCAST TABLE RULES
 ```
 - `ALTER` will overwrite the broadcast table configuration in the database with the new configuration
 
+### Sharding Scaling Rule
+
+```sql
+CREATE SHARDING SCALING RULE scalingName [scalingDefinition]
+
+DROP SHARDING SCALING RULE scalingName
+
+ENABLE SHARDING SCALING RULE scalingName
+
+DISABLE SHARDING SCALING RULE scalingName
+
+scalingDefinition:
+    (minimumAutoDefinition | completeAutoDefinition | manualDefinition)
+
+minimumAutoDefinition:
+    completionDetector, dataConsistencyChecker
+
+completeAutoDefinition:
+    inputDefinition, outputDefinition, streamChannel, completionDetector, dataConsistencyChecker
+
+manualDefinition:
+    inputDefinition, outputDefinition, streamChannel
+
+inputDefinition:
+    INPUT (workerThread, batchSize, rateLimiter)
+
+outputDefinition:
+    INPUT (workerThread, batchSize, rateLimiter)
+
+completionDetector:
+    COMPLETION_DETECTOR (algorithmDefinition)
+
+dataConsistencyChecker:
+    DATA_CONSISTENCY_CHECKER (algorithmDefinition)
+
+rateLimiter:
+    RATE_LIMITER (algorithmDefinition)
+
+streamChannel:
+    STREAM_CHANNEL (algorithmDefinition)
+
+workerThread:
+    WORKER_THREAD=intValue
+
+batchSize:
+    BATCH_SIZE=intValue
+
+intValue:
+    INT
+```
+- `ENABLE` is used to set which sharding scaling rule is enabled
+- `DISABLE` will disable the sharding scaling rule currently in use
+- Enabled by default when creating the first sharding scaling rule in a schema
+
 ## Example
 
 ### Sharding Table Rule
@@ -147,11 +201,11 @@ DROP SHARDING BROADCAST TABLE RULES
 
 ```sql
 CREATE SHARDING KEY GENERATOR snowflake_key_generator (
-TYPE(NAME=SNOWFLAKE, PROPERTIES("worker-id"=123))
+TYPE(NAME=SNOWFLAKE)
 );
 
 ALTER SHARDING KEY GENERATOR snowflake_key_generator (
-TYPE(NAME=SNOWFLAKE, PROPERTIES("worker-id"=456))
+TYPE(NAME=SNOWFLAKE))
 );
 
 DROP SHARDING KEY GENERATOR snowflake_key_generator;
@@ -162,13 +216,13 @@ DROP SHARDING KEY GENERATOR snowflake_key_generator;
 CREATE SHARDING TABLE RULE t_order (
 RESOURCES(resource_0,resource_1),
 SHARDING_COLUMN=order_id,TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=4)),
-GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
+GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake))
 );
 
 ALTER SHARDING TABLE RULE t_order (
 RESOURCES(resource_0,resource_1,resource_2,resource_3),
 SHARDING_COLUMN=order_id,TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=16)),
-GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123)))
+GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake))
 );
 
 DROP SHARDING TABLE RULE t_order;
@@ -238,4 +292,30 @@ CREATE SHARDING BROADCAST TABLE RULES (t_b,t_a);
 ALTER SHARDING BROADCAST TABLE RULES (t_b,t_a,t_3);
 
 DROP SHARDING BROADCAST TABLE RULES;
+```
+
+### Sharding Scaling Rule
+
+```sql
+CREATE SHARDING SCALING RULE sharding_scaling(
+INPUT(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000,
+  RATE_LIMITER(TYPE(NAME=QPS, PROPERTIES("qps"=50)))
+),
+OUTPUT(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000,
+  RATE_LIMITER(TYPE(NAME=TPS, PROPERTIES("tps"=2000)))
+),
+STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
+COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-minute-threshold"=30))),
+DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
+);
+
+ENABLE SHARDING SCALING RULE sharding_scaling;
+
+DISABLE SHARDING SCALING RULE sharding_scaling;
+
+DROP SHARDING SCALING RULE sharding_scaling;
 ```

@@ -74,7 +74,7 @@ public final class DataSourcePoolCreator {
     }
     
     private static void setConfiguredFields(final DataSourceProperties dataSourceProps, final DataSourceReflection dataSourceReflection, final DataSourcePoolMetaData poolMetaData) {
-        for (Entry<String, Object> entry : dataSourceProps.getAllProperties().entrySet()) {
+        for (Entry<String, Object> entry : dataSourceProps.getLocalProperties().entrySet()) {
             String fieldName = entry.getKey();
             Object fieldValue = entry.getValue();
             if (isValidProperty(fieldName, fieldValue, poolMetaData)) {

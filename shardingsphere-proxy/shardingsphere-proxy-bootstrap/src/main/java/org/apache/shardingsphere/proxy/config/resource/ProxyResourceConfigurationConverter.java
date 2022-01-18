@@ -60,18 +60,11 @@ public final class ProxyResourceConfigurationConverter {
      * @return data source properties map
      */
     public static Map<String, DataSourceProperties> getDataSourceConfigurationMap(final Map<String, ProxyResourceConfiguration> resourceConfigMap) {
-        return resourceConfigMap.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return resourceConfigMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, 
+            entry -> new DataSourceProperties(HikariDataSource.class.getName(), createProperties(entry.getValue())), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private static DataSourceProperties createDataSourceConfiguration(final ProxyResourceConfiguration resourceConfig) {
-        DataSourceProperties result = new DataSourceProperties(HikariDataSource.class.getName(), createProperties(resourceConfig));
-        if (null != resourceConfig.getPool().getCustomProperties()) {
-            result.getCustomPoolProps().putAll(resourceConfig.getPool().getCustomProperties());
-        }
-        return result;
-    }
-    
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private static Map<String, Object> createProperties(final ProxyResourceConfiguration resourceConfig) {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("jdbcUrl", resourceConfig.getConnection().getUrl());
@@ -83,6 +76,9 @@ public final class ProxyResourceConfigurationConverter {
         result.put("maximumPoolSize", resourceConfig.getPool().getMaxPoolSize());
         result.put("minimumIdle", resourceConfig.getPool().getMinPoolSize());
         result.put("readOnly", resourceConfig.getPool().getReadOnly());
+        if (null != resourceConfig.getPool().getCustomProperties()) {
+            result.putAll((Map) resourceConfig.getPool().getCustomProperties());
+        }
         return result;
     }
 }
