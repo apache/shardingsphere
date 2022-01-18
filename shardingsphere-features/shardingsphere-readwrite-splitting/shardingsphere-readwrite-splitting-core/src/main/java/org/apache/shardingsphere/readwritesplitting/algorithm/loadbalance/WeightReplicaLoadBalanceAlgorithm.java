@@ -54,7 +54,7 @@ public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalan
 
     private String getDataSourceName(final List<String> readDataSourceNames, final double[] weight) {
         if (1 == readDataSourceNames.size()) {
-            return readDataSourceNames.stream().findFirst().get();
+            return readDataSourceNames.get(0);
         }
         double randomWeight = ThreadLocalRandom.current().nextDouble(0, 1);
         int index = Arrays.binarySearch(weight, randomWeight);
