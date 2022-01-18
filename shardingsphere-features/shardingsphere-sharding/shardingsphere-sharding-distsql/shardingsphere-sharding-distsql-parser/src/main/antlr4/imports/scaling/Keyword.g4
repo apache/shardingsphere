@@ -71,6 +71,14 @@ RULE
     :  R U L E
     ;
 
+RULES
+    :  R U L E S
+    ;
+
+FROM
+    : F R O M
+    ;
+
 JOB
     : J O B
     ;
