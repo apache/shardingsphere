@@ -28,5 +28,5 @@ Apache ShardingSphere provides the way of property configuration to configure sy
 | sql-federation-enabled (?)          | boolean     | Whether enable sql federation.                                                                                                                                                                                                                                                                                            | false           | true             |
 | show-process-list-enabled (?)       | boolean     | Whether enable show process list, and it only take effect when mode is Cluster. This function is similar as MySQL show processlist. It just apply on DDL and DML statements currently.                                                                                                                                    | false           | true             |
 
-Properties can be updated by [DistSQL](/en/user-manual/shardingsphere-proxy/distsql/).
+Properties can be updated by [DistSQL#RAL](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/).
 Dynamic update can take effect immediately, static update can take effect after restarted.
