@@ -64,8 +64,6 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-          worker-id: 123
 
 - !TRANSACTION
   defaultType: XA
