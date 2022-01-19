@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateExtensionStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterExtensionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss alter extension statement.
  */
 @ToString
-public final class OpenGaussAlterExtensionStatement extends CreateExtensionStatement implements OpenGaussStatement {
+public final class OpenGaussAlterExtensionStatement extends AlterExtensionStatement implements OpenGaussStatement {
 }

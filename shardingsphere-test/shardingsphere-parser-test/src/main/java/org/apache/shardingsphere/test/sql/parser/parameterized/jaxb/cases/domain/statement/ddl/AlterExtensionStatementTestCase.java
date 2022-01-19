@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Alter aggregate statement test case.
+ * Alter extension statement test case.
  */
 public final class AlterExtensionStatementTestCase extends SQLParserTestCase {
 }
