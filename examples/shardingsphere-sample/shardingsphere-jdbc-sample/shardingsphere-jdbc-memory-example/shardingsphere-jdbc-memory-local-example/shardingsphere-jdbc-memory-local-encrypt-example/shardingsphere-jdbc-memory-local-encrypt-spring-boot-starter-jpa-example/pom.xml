@@ -45,7 +45,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
-            <version>5.2.0.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate.javax.persistence</groupId>
