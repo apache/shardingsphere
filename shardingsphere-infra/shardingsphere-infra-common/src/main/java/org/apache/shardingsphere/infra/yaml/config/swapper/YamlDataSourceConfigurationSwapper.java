@@ -36,6 +36,8 @@ public final class YamlDataSourceConfigurationSwapper {
     
     private static final String DATA_SOURCE_CLASS_NAME_KEY = "dataSourceClassName";
     
+    private static final String CUSTOM_POOL_PROPS_KEY = "customPoolProps";
+    
     /**
      * Swap to data sources from YAML data sources.
      *
@@ -65,20 +67,19 @@ public final class YamlDataSourceConfigurationSwapper {
      * @param yamlConfig YAML configurations
      * @return data source properties
      */
-    @SuppressWarnings("rawtypes")
     public DataSourceProperties swapToDataSourceProperties(final Map<String, Object> yamlConfig) {
         Preconditions.checkState(yamlConfig.containsKey(DATA_SOURCE_CLASS_NAME_KEY), "%s can not be null.", DATA_SOURCE_CLASS_NAME_KEY);
-        DataSourceProperties result = new DataSourceProperties(yamlConfig.get(DATA_SOURCE_CLASS_NAME_KEY).toString(), getProperties(yamlConfig));
-        if (null != yamlConfig.get(DataSourceProperties.CUSTOM_POOL_PROPS_KEY)) {
-            result.getCustomPoolProps().putAll((Map) yamlConfig.get(DataSourceProperties.CUSTOM_POOL_PROPS_KEY));
-        }
-        return result;
+        return new DataSourceProperties(yamlConfig.get(DATA_SOURCE_CLASS_NAME_KEY).toString(), getProperties(yamlConfig));
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private Map<String, Object> getProperties(final Map<String, Object> yamlConfig) {
         Map<String, Object> result = new HashMap<>(yamlConfig);
         result.remove(DATA_SOURCE_CLASS_NAME_KEY);
-        result.remove(DataSourceProperties.CUSTOM_POOL_PROPS_KEY);
+        if (null != yamlConfig.get(CUSTOM_POOL_PROPS_KEY)) {
+            result.putAll((Map) yamlConfig.get(CUSTOM_POOL_PROPS_KEY));
+        }
+        result.remove(CUSTOM_POOL_PROPS_KEY);
         return result;
     }
     
@@ -89,10 +90,7 @@ public final class YamlDataSourceConfigurationSwapper {
      * @return data source map
      */
     public Map<String, Object> swapToMap(final DataSourceProperties dataSourceProps) {
-        Map<String, Object> result = new HashMap<>(dataSourceProps.getStandardProperties());
-        if (!dataSourceProps.getCustomPoolProps().isEmpty()) {
-            result.put(DataSourceProperties.CUSTOM_POOL_PROPS_KEY, dataSourceProps.getCustomPoolProps());
-        }
+        Map<String, Object> result = new HashMap<>(dataSourceProps.getAllStandardProperties());
         result.put(DATA_SOURCE_CLASS_NAME_KEY, dataSourceProps.getDataSourceClassName());
         return result;
     }

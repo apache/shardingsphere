@@ -43,10 +43,66 @@ public final class DataSourcePropertiesTest {
     
     @Rule
     public ExpectedException thrown = ExpectedException.none();
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void assertGetDataSourceConfigurationWithConnectionInitSqls() {
+        BasicDataSource actualDataSource = new BasicDataSource();
+        actualDataSource.setDriverClassName(MockedDataSource.class.getCanonicalName());
+        actualDataSource.setUrl("jdbc:mock://127.0.0.1/foo_ds");
+        actualDataSource.setUsername("root");
+        actualDataSource.setPassword("root");
+        actualDataSource.setConnectionInitSqls(Arrays.asList("set names utf8mb4;", "set names utf8;"));
+        DataSourceProperties actual = DataSourcePropertiesCreator.create(actualDataSource);
+        assertThat(actual.getDataSourceClassName(), is(BasicDataSource.class.getName()));
+        assertThat(actual.getAllLocalProperties().get("driverClassName").toString(), is(MockedDataSource.class.getCanonicalName()));
+        assertThat(actual.getAllLocalProperties().get("url").toString(), is("jdbc:mock://127.0.0.1/foo_ds"));
+        assertThat(actual.getAllLocalProperties().get("username").toString(), is("root"));
+        assertThat(actual.getAllLocalProperties().get("password").toString(), is("root"));
+        assertNull(actual.getAllLocalProperties().get("loginTimeout"));
+        assertThat(actual.getAllLocalProperties().get("connectionInitSqls"), instanceOf(List.class));
+        List<String> actualConnectionInitSql = (List<String>) actual.getAllLocalProperties().get("connectionInitSqls");
+        assertThat(actualConnectionInitSql, hasItem("set names utf8mb4;"));
+        assertThat(actualConnectionInitSql, hasItem("set names utf8;"));
+    }
+
+    @Test
+    public void assertgetAllLocalProperties() {
+        DataSourceProperties originalDataSourceProps = new DataSourceProperties(MockedDataSource.class.getName(), getProperties());
+        Map<String, Object> actualAllProperties = originalDataSourceProps.getAllLocalProperties();
+        assertNotNull(actualAllProperties);
+        assertThat(actualAllProperties.size(), is(7));
+        assertTrue(actualAllProperties.containsKey("driverClassName"));
+        assertTrue(actualAllProperties.containsValue(MockedDataSource.class.getName()));
+        assertTrue(actualAllProperties.containsKey("jdbcUrl"));
+        assertTrue(actualAllProperties.containsValue("jdbc:mock://127.0.0.1/foo_ds"));
+        assertTrue(actualAllProperties.containsKey("username"));
+        assertTrue(actualAllProperties.containsValue("root"));
+        assertTrue(actualAllProperties.containsKey("password"));
+        assertTrue(actualAllProperties.containsValue("root"));
+        assertTrue(actualAllProperties.containsKey("loginTimeout"));
+        assertTrue(actualAllProperties.containsValue("5000"));
+        assertTrue(actualAllProperties.containsKey("maximumPoolSize"));
+        assertTrue(actualAllProperties.containsValue("30"));
+        assertTrue(actualAllProperties.containsKey("idleTimeout"));
+        assertTrue(actualAllProperties.containsValue("30000"));
+    }
+
+    private Map<String, Object> getProperties() {
+        Map<String, Object> result = new HashMap<>(7, 1);
+        result.put("driverClassName", MockedDataSource.class.getCanonicalName());
+        result.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
+        result.put("username", "root");
+        result.put("password", "root");
+        result.put("loginTimeout", "5000");
+        result.put("maximumPoolSize", "30");
+        result.put("idleTimeout", "30000");
+        return result;
+    }
     
     @Test
     public void assertEquals() {
-        assertThat(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("root")), 
+        assertThat(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("root")),
                 is(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("root"))));
     }
     
@@ -69,7 +125,7 @@ public final class DataSourcePropertiesTest {
     
     @Test
     public void assertSameHashCode() {
-        assertThat(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("root")).hashCode(), 
+        assertThat(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("root")).hashCode(),
                 is(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("root")).hashCode()));
     }
     
@@ -81,69 +137,13 @@ public final class DataSourcePropertiesTest {
     
     @Test
     public void assertDifferentHashCodeWithDifferentProperties() {
-        assertThat(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("foo")).hashCode(), 
+        assertThat(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("foo")).hashCode(),
                 not(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("bar")).hashCode()));
     }
     
     private Map<String, Object> createUserProperties(final String username) {
         Map<String, Object> result = new LinkedHashMap<>(1, 1);
         result.put("username", username);
-        return result;
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Test
-    public void assertGetDataSourceConfigurationWithConnectionInitSqls() {
-        BasicDataSource actualDataSource = new BasicDataSource();
-        actualDataSource.setDriverClassName(MockedDataSource.class.getCanonicalName());
-        actualDataSource.setUrl("jdbc:mock://127.0.0.1/foo_ds");
-        actualDataSource.setUsername("root");
-        actualDataSource.setPassword("root");
-        actualDataSource.setConnectionInitSqls(Arrays.asList("set names utf8mb4;", "set names utf8;"));
-        DataSourceProperties actual = DataSourcePropertiesCreator.create(actualDataSource);
-        assertThat(actual.getDataSourceClassName(), is(BasicDataSource.class.getName()));
-        assertThat(actual.getLocalProperties().get("driverClassName").toString(), is(MockedDataSource.class.getCanonicalName()));
-        assertThat(actual.getLocalProperties().get("url").toString(), is("jdbc:mock://127.0.0.1/foo_ds"));
-        assertThat(actual.getLocalProperties().get("username").toString(), is("root"));
-        assertThat(actual.getLocalProperties().get("password").toString(), is("root"));
-        assertNull(actual.getLocalProperties().get("loginTimeout"));
-        assertThat(actual.getLocalProperties().get("connectionInitSqls"), instanceOf(List.class));
-        List<String> actualConnectionInitSql = (List<String>) actual.getLocalProperties().get("connectionInitSqls");
-        assertThat(actualConnectionInitSql, hasItem("set names utf8mb4;"));
-        assertThat(actualConnectionInitSql, hasItem("set names utf8;"));
-    }
-    
-    @Test
-    public void assertGetAllProperties() {
-        DataSourceProperties originalDataSourceProps = new DataSourceProperties(MockedDataSource.class.getName(), getProperties());
-        Map<String, Object> actualAllProperties = originalDataSourceProps.getAllProperties();
-        assertNotNull(actualAllProperties);
-        assertThat(actualAllProperties.size(), is(7));
-        assertTrue(actualAllProperties.containsKey("driverClassName"));
-        assertTrue(actualAllProperties.containsValue(MockedDataSource.class.getName()));
-        assertTrue(actualAllProperties.containsKey("jdbcUrl"));
-        assertTrue(actualAllProperties.containsValue("jdbc:mock://127.0.0.1/foo_ds"));
-        assertTrue(actualAllProperties.containsKey("username"));
-        assertTrue(actualAllProperties.containsValue("root"));
-        assertTrue(actualAllProperties.containsKey("password"));
-        assertTrue(actualAllProperties.containsValue("root"));
-        assertTrue(actualAllProperties.containsKey("loginTimeout"));
-        assertTrue(actualAllProperties.containsValue("5000"));
-        assertTrue(actualAllProperties.containsKey("maximumPoolSize"));
-        assertTrue(actualAllProperties.containsValue("30"));
-        assertTrue(actualAllProperties.containsKey("idleTimeout"));
-        assertTrue(actualAllProperties.containsValue("30000"));
-    }
-    
-    private Map<String, Object> getProperties() {
-        Map<String, Object> result = new HashMap<>(7, 1);
-        result.put("driverClassName", MockedDataSource.class.getCanonicalName());
-        result.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
-        result.put("username", "root");
-        result.put("password", "root");
-        result.put("loginTimeout", "5000");
-        result.put("maximumPoolSize", "30");
-        result.put("idleTimeout", "30000");
         return result;
     }
 }

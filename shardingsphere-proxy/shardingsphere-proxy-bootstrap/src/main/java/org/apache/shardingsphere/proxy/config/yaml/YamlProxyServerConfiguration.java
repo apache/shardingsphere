@@ -41,4 +41,26 @@ public final class YamlProxyServerConfiguration implements YamlConfiguration {
     private Properties props = new Properties();
     
     private Collection<String> labels;
+    
+    /**
+     * Set rules if the param rules is not null.
+     *
+     * @param rules the rules to set
+     */
+    public void setRules(final Collection<YamlRuleConfiguration> rules) {
+        if (null != rules) {
+            this.rules = rules;
+        }
+    }
+    
+    /**
+     * Set props if the param props is not null.
+     *
+     * @param props the props to set
+     */
+    public void setProps(final Properties props) {
+        if (null != props) {
+            this.props = props;
+        }
+    }
 }

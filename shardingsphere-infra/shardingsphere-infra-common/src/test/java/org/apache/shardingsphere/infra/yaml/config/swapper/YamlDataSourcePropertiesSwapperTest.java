@@ -58,9 +58,9 @@ public final class YamlDataSourcePropertiesSwapperTest {
         yamlConfig.put("username", "root");
         DataSourceProperties actual = swapper.swapToDataSourceProperties(yamlConfig);
         assertThat(actual.getDataSourceClassName(), is(MockedDataSource.class.getCanonicalName()));
-        assertThat(actual.getLocalProperties().size(), is(2));
-        assertThat(actual.getLocalProperties().get("url").toString(), is("xx:xxx"));
-        assertThat(actual.getLocalProperties().get("username").toString(), is("root"));
+        assertThat(actual.getAllLocalProperties().size(), is(2));
+        assertThat(actual.getAllLocalProperties().get("url").toString(), is("xx:xxx"));
+        assertThat(actual.getAllLocalProperties().get("username").toString(), is("root"));
     }
     
     @Test

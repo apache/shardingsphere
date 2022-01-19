@@ -22,8 +22,6 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.sharding.algorithm.keygen.fixture.FixedTimeService;
 import org.apache.shardingsphere.sharding.algorithm.keygen.fixture.WorkerIdGeneratorFixture;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -49,11 +47,6 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     private static final int DEFAULT_KEY_AMOUNT = 10;
     
     private SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
-    
-    @Before
-    public void setUp() {
-        keyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(), new WorkerIdGeneratorFixture()));
-    }
     
     @Test
     public void assertGenerateKeyWithMultipleThreads() throws ExecutionException, InterruptedException {
@@ -181,14 +174,11 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test(expected = IllegalArgumentException.class)
-    @Ignore
-    // TODO use fixture spi to mock
     public void assertSetWorkerIdFailureWhenNegative() {
-        Properties props = new Properties();
-        props.setProperty("worker-id", String.valueOf(-1L));
-        keyGenerateAlgorithm.setProps(props);
+        keyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(), new WorkerIdGeneratorFixture(-1L)));
         keyGenerateAlgorithm.init();
         keyGenerateAlgorithm.generateKey();
+        clearInstanceContext();
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -201,14 +191,11 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test(expected = IllegalArgumentException.class)
-    @Ignore
-    // TODO use fixture spi to mock
     public void assertSetWorkerIdFailureWhenOutOfRange() {
-        Properties props = new Properties();
-        props.setProperty("worker-id", String.valueOf(Long.MIN_VALUE));
-        keyGenerateAlgorithm.setProps(props);
+        keyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(), new WorkerIdGeneratorFixture(Long.MIN_VALUE)));
         keyGenerateAlgorithm.init();
         keyGenerateAlgorithm.generateKey();
+        clearInstanceContext();
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -221,17 +208,6 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test
-    public void assertSetWorkerIdSuccess() throws NoSuchFieldException, IllegalAccessException {
-        Properties props = new Properties();
-        props.setProperty("worker-id", String.valueOf(1L));
-        keyGenerateAlgorithm.setProps(props);
-        keyGenerateAlgorithm.init();
-        Field field = keyGenerateAlgorithm.getClass().getDeclaredField("props");
-        field.setAccessible(true);
-        assertThat(((Properties) field.get(keyGenerateAlgorithm)).getProperty("worker-id"), is("1"));
-    }
-    
-    @Test
     public void assertSetMaxTolerateTimeDifferenceMilliseconds() throws NoSuchFieldException, IllegalAccessException {
         Properties props = new Properties();
         props.setProperty("max-tolerate-time-difference-milliseconds", String.valueOf(1));
@@ -240,5 +216,9 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         Field field = keyGenerateAlgorithm.getClass().getDeclaredField("props");
         field.setAccessible(true);
         assertThat(((Properties) field.get(keyGenerateAlgorithm)).getProperty("max-tolerate-time-difference-milliseconds"), is("1"));
+    }
+    
+    private void clearInstanceContext() {
+        keyGenerateAlgorithm.setInstanceContext(null);
     }
 }

@@ -31,10 +31,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.TreeMap;
 
 /**
  * Result set for show data source.
@@ -71,22 +73,24 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     public Collection<Object> getRowData() {
         String dataSourceName = dataSourceNames.next();
         DataSourceMetaData metaData = resource.getDataSourcesMetaData().getDataSourceMetaData(dataSourceName);
-        return Arrays.asList(dataSourceName, resource.getDatabaseType().getName(), 
-                metaData.getHostname(), metaData.getPort(), metaData.getCatalog(), (new Gson()).toJson(getAttributeMap(dataSourcePropsMap.get(dataSourceName))));
+        return Arrays.asList(dataSourceName, resource.getDatabaseType().getName(), metaData.getHostname(), metaData.getPort(), metaData.getCatalog(), 
+                new Gson().toJson(getFilteredUndisplayedProperties(dataSourcePropsMap.get(dataSourceName))));
     }
     
-    private Map<String, Object> getAttributeMap(final DataSourceProperties dataSourceProps) {
-        Map<String, Object> result = new LinkedHashMap<>(7, 1);
-        result.put("connectionTimeoutMilliseconds", dataSourceProps.getStandardProperties().get("connectionTimeoutMilliseconds"));
-        result.put("idleTimeoutMilliseconds", dataSourceProps.getStandardProperties().get("idleTimeoutMilliseconds"));
-        result.put("maxLifetimeMilliseconds", dataSourceProps.getStandardProperties().get("maxLifetimeMilliseconds"));
-        result.put("maxPoolSize", dataSourceProps.getStandardProperties().get("maxPoolSize"));
-        result.put("minPoolSize", dataSourceProps.getStandardProperties().get("minPoolSize"));
-        result.put("readOnly", dataSourceProps.getStandardProperties().get("readOnly"));
-        if (!dataSourceProps.getCustomPoolProps().isEmpty()) {
-            result.put(DataSourceProperties.CUSTOM_POOL_PROPS_KEY, dataSourceProps.getCustomPoolProps());
+    private Map<String, Object> getFilteredUndisplayedProperties(final DataSourceProperties dataSourceProperties) {
+        Map<String, Object> result = new HashMap<>(dataSourceProperties.getPoolPropertySynonyms().getStandardProperties());
+        result.putAll(dataSourceProperties.getCustomDataSourceProperties().getProperties());
+        // TODO to be configured
+        result.remove("running");
+        result.remove("poolName");
+        result.remove("registerMbeans");
+        result.remove("closed");
+        for (Entry<String, Object> entry : dataSourceProperties.getCustomDataSourceProperties().getProperties().entrySet()) {
+            if (entry.getValue() instanceof Collection || entry.getValue() instanceof Map) {
+                result.remove(entry.getKey());
+            }
         }
-        return result;
+        return new TreeMap<>(result);
     }
     
     @Override

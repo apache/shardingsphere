@@ -41,6 +41,7 @@ import static org.junit.Assert.assertFalse;
 
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDMLIT extends BaseDMLIT {
+    
     @ClassRule
     public static ComposeManager composeManager = new ComposeManager("GeneralDMLIT");
     
