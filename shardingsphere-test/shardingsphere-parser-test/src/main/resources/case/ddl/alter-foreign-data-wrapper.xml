@@ -17,19 +17,18 @@
   -->
 
 <sql-parser-test-cases>
-    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_case1" />
-    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_case2" />
-    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_case3" />
-    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_case4" />
-    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_case5" />
-    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_case6" />
-    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_case7" />
-    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_case8" />
-    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_case9" />
-    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_case10" />
-    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_case11" />
-    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_case12" />
-    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_case13" />
-    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_case14" />
-    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_case15" />
+    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_rename" />
+    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_handler" />
+    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_multi_handler" />
+    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_no_validator" />
+    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_options_add" />
+    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_options_add_drop" />
+    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_options_drop_set_add" />
+    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_options_drop" />
+    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_options_set" />
+    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_options_option" />
+    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_options_option_defined" />
+    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_options_option_nonexistent" />
+    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_owner" />
+    <alter-foreign-data-wrapper sql-case-id="alter_foreign_data_wrapper_with_validator" />
 </sql-parser-test-cases>
