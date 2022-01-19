@@ -36,8 +36,7 @@ public final class WeightReplicaLoadBalanceAlgorithmTest {
         Properties properties = new Properties();
         properties.setProperty("test_read_ds_1", "5");
         weightReplicaLoadBalanceAlgorithm.setProps(properties);
-        String writeDataSourceName = "test_write_ds";
-        assertThat(weightReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, Arrays.asList("test_read_ds_1")), is("test_read_ds_1"));
+        assertThat(weightReplicaLoadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Arrays.asList("test_read_ds_1")), is("test_read_ds_1"));
     }
     
     @Test
