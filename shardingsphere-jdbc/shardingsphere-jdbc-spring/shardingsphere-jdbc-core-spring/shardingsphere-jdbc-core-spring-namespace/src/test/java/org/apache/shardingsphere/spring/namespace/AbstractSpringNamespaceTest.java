@@ -27,7 +27,6 @@ import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.spring.transaction.TransactionTypeScanner;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
@@ -36,6 +35,7 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -47,9 +47,7 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
     @Resource
     private ShardingSphereDataSource dataSource;
     
-    // TODO Adjust readwrite-splitting api fix it.
     @Test
-    @Ignore
     public void assertShardingSphereDataSource() {
         assertDataSources();
         Collection<ShardingSphereRule> rules = dataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules();
@@ -92,9 +90,13 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
     
     private void assertReadwriteSplittingRule(final ReadwriteSplittingRule rule) {
         assertTrue(rule.findDataSourceRule("ds_0").isPresent());
-        assertThat(rule.findDataSourceRule("ds_0").get().getReadDataSourceNames(), is(Arrays.asList("ds_0_read_0", "ds_0_read_1")));
+        Properties props = rule.findDataSourceRule("ds_0").get().getReadwriteSplittingType().getProps();
+        assertNotNull(props);
+        assertThat(props.getProperty("read-data-source-names"), is("ds_0_read_0, ds_0_read_1"));
         assertTrue(rule.findDataSourceRule("ds_1").isPresent());
-        assertThat(rule.findDataSourceRule("ds_1").get().getReadDataSourceNames(), is(Arrays.asList("ds_1_read_0", "ds_1_read_1")));
+        props = rule.findDataSourceRule("ds_1").get().getReadwriteSplittingType().getProps();
+        assertNotNull(props);
+        assertThat(props.getProperty("read-data-source-names"), is("ds_1_read_0, ds_1_read_1"));
     }
     
     private void assertEncryptRule(final EncryptRule rule) {
@@ -115,9 +117,7 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
         assertThat(cacheOption.getConcurrencyLevel(), is(4));
     }
     
-    // TODO Adjust readwrite-splitting api fix it.
     @Test
-    @Ignore
     public void assertTransactionTypeScanner() {
         assertNotNull(applicationContext.getBean(TransactionTypeScanner.class));
     }
