@@ -28,5 +28,3 @@
     <artifactId>shardingsphere-proxy-standalone-file-local-shadow-example</artifactId>
     <name>${project.artifactId}</name>
 </project>
-
-

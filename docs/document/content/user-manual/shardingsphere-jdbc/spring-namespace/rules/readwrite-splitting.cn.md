@@ -16,13 +16,12 @@ weight = 2
 
 \<readwrite-splitting:data-source-rule />
 
-| *名称*                     | *类型* | *说明*                          |
-| -------------------------- | ----- | ------------------------------- |
-| id                         | 属性  | 读写分离数据源规则名称             |
-| auto-aware-data-source-name| 属性  | 自动发现数据源名称(与数据库发现配合使用)                      |
-| write-data-source-name     | 属性  | 写数据源名称                      |
-| read-data-source-names     | 属性  | 读数据源名称，多个读数据源用逗号分隔 |
-| load-balance-algorithm-ref | 属性  | 负载均衡算法名称                   |
+| *名称*                     | *类型* | *说明*                                        |
+| -------------------------- | ----- | -------------------------------------------- |
+| id                         | 属性  | 读写分离数据源规则名称                           |
+| type                       | 属性  | 读写分离类型，分为静态和动态。如 Static、Dynamic  |
+| props                      | 标签  | 读写分离所需属性，如静态：write-data-source-name、read-data-source-names，动态：auto-aware-data-source-name  |
+| load-balance-algorithm-ref | 属性  | 负载均衡算法名称                               |
 
 
 \<readwrite-splitting:load-balance-algorithm />

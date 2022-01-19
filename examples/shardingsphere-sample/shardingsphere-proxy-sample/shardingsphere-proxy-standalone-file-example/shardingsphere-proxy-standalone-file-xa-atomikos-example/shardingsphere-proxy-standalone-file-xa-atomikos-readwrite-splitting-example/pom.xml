@@ -26,4 +26,5 @@
         <version>${revision}</version>
     </parent>
     <artifactId>shardingsphere-proxy-standalone-file-xa-atomikos-readwrite-splitting-example</artifactId>
+    <name>${project.artifactId}</name>
 </project>

@@ -36,12 +36,14 @@ import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TreeSet;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -236,7 +238,9 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     }
     
     @Override
-    public Map<String, Object> export() {
-        return Collections.singletonMap(ExportableConstants.SINGLE_TABLES, tableNames.keySet());
+    public Map<String, Supplier<Object>> getExportedMethods() {
+        Map<String, Supplier<Object>> result = new HashMap<>(1, 1);
+        result.put(ExportableConstants.EXPORTABLE_KEY_SINGLE_TABLES, tableNames::keySet);
+        return result;
     }
 }
