@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -59,12 +60,12 @@ public interface ExportableRule extends ShardingSphereRule {
      * @param key specified key
      * @return data
      */
-    default Object export(final String key) {
+    default Optional<Object> export(final String key) {
         Map<String, Supplier<Object>> exportMethods = getExportedMethods();
         if (exportMethods.containsKey(key)) {
-            return exportMethods.get(key).get();
+            return Optional.ofNullable(exportMethods.get(key).get());
         }
-        return null;
+        return Optional.empty();
     }
     
     /**

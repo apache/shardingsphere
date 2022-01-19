@@ -57,10 +57,10 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
             Map<String, Map<String, String>> autoAwareDataSourceMap = Collections.emptyMap();
             Map<String, Map<String, String>> dataSourceMap = Collections.emptyMap();
             if (exportableRule.isPresent()) {
-                Map<String, Object> exportable = exportableRule.get().export(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_KEY,
-                        ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE_KEY));
-                autoAwareDataSourceMap = (Map<String, Map<String, String>>) exportable.getOrDefault(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_KEY, Collections.emptyMap());
-                dataSourceMap = (Map<String, Map<String, String>>) exportable.getOrDefault(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE_KEY, Collections.emptyMap());
+                Map<String, Object> exportable = exportableRule.get().export(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE,
+                        ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE));
+                autoAwareDataSourceMap = (Map<String, Map<String, String>>) exportable.getOrDefault(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, Collections.emptyMap());
+                dataSourceMap = (Map<String, Map<String, String>>) exportable.getOrDefault(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE, Collections.emptyMap());
             }
             for (ReadwriteSplittingDataSourceRuleConfiguration each : op.getDataSources()) {
                 Properties props = each.getProps();
@@ -105,6 +105,6 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
     private Optional<ExportableRule> getExportableRule(final ShardingSphereMetaData metaData) {
         return metaData.getRuleMetaData().getRules().stream()
                 .filter(each -> each instanceof ExportableRule).map(each -> (ExportableRule) each)
-                .filter(each -> each.containExportableKey(Collections.singletonList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_KEY))).findAny();
+                .filter(each -> each.containExportableKey(Collections.singletonList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE))).findAny();
     }
 }

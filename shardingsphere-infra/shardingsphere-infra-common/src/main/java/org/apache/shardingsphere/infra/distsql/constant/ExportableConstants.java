@@ -26,13 +26,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExportableConstants {
     
-    public static final String EXPORTABLE_KEY_PRIMARY_DATA_SOURCE_KEY = "primary_data_source_key";
+    public static final String EXPORTABLE_KEY_PRIMARY_DATA_SOURCE = "primary_data_source";
     
-    public static final String EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_KEY = "auto_aware_data_source_key";
+    public static final String EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE = "auto_aware_data_source";
     
     public static final String EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_NAME = "auto_aware_data_source_name";
     
-    public static final String EXPORTABLE_KEY_DATA_SOURCE_KEY = "data_source_key";
+    public static final String EXPORTABLE_KEY_DATA_SOURCE = "data_source";
     
     public static final String EXPORTABLE_KEY_SINGLE_TABLES = "single_tables";
     

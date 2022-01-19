@@ -179,7 +179,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     @Override
     public Map<String, Supplier<Object>> getExportedMethods() {
         Map<String, Supplier<Object>> result = new HashMap<>(1, 1);
-        result.put(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE_KEY, this::exportPrimaryDataSourceMap);
+        result.put(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE, this::exportPrimaryDataSourceMap);
         return result;
     }
     
