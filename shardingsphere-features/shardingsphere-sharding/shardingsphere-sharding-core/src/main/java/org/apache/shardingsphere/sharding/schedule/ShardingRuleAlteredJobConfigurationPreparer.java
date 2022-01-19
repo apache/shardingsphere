@@ -139,7 +139,7 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
                 tableMap.put(dataNode.getTableName(), each.getLogicTableName());
             }
         }
-        DumperConfiguration dumperConfig = createDumperConfig(dataSourceName, dataSourcePropsMap.get(dataSourceName).getLocalProperties(), tableMap);
+        DumperConfiguration dumperConfig = createDumperConfig(dataSourceName, dataSourcePropsMap.get(dataSourceName).getAllLocalProperties(), tableMap);
         ImporterConfiguration importerConfig = createImporterConfig(pipelineConfig, handleConfig, shardingColumnsMap);
         TaskConfiguration taskConfig = new TaskConfiguration(handleConfig, dumperConfig, importerConfig);
         log.info("toTaskConfigs, dataSourceName={}, taskConfig={}", dataSourceName, taskConfig);
