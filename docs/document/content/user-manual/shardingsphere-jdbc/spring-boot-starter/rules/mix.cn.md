@@ -83,11 +83,11 @@ spring.shardingsphere.rules.sharding.key-generators.snowflake.type=SNOWFLAKE
 
 # 读写分离策略配置
 # ds_0,ds_1 为读写分离配置的逻辑数据源名称
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.props.type=Static
+spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.type=Static
 spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.props.write-data-source-name=write-ds0
 spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.props.read-data-source-names=write-ds0-read0
 spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.load-balancer-name=read-random
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.props.type=Static
+spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.type=Static
 spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.props.write-data-source-name=write-ds1
 spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.props.read-data-source-names=write-ds1-read0
 spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.load-balancer-name=read-random
