@@ -61,16 +61,22 @@ public final class ExampleTemplateFactory {
         result.put("java/entity/Address", "entity/Address.java");
         switch (dataModel.get(FRAMEWORK_KEY)) {
             case "jdbc":
+            case "springboot-starter-jdbc":
+            case "spring-namespace-jdbc":
                 result.put("java/repository/jdbc/OrderItemRepository", "repository/OrderItemRepository.java");
                 result.put("java/repository/jdbc/OrderRepository", "repository/OrderRepository.java");
                 result.put("java/repository/jdbc/AddressRepository", "repository/AddressRepository.java");
                 break;
             case "jpa":
+            case "springboot-starter-jpa":
+            case "spring-namespace-jpa":
                 result.put("java/repository/jpa/OrderItemRepository", "repository/OrderItemRepository.java");
                 result.put("java/repository/jpa/OrderRepository", "repository/OrderRepository.java");
                 result.put("java/repository/jpa/AddressRepository", "repository/AddressRepository.java");
                 break;
             case "mybatis":
+            case "springboot-starter-mybatis":
+            case "spring-namespace-mybatis":
                 result.put("java/repository/mybatis/OrderItemRepository", "repository/OrderItemRepository.java");
                 result.put("java/repository/mybatis/OrderRepository", "repository/OrderRepository.java");
                 result.put("java/repository/mybatis/AddressRepository", "repository/AddressRepository.java");
@@ -93,13 +99,22 @@ public final class ExampleTemplateFactory {
             result.put("resources/spi/encryptAlgorithm", "META-INF/services/org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm");
         }
         switch (dataModel.get(FRAMEWORK_KEY)) {
-            case "spring-boot-starter":
+            case "springboot-starter-jdbc":
+            case "springboot-starter-jpa":
                 result.put("resources/properties/application", "application.properties");
                 break;
-            case "spring-namespace":
+            case "spring-namespace-jdbc":
+            case "spring-namespace-jpa":
                 result.put("resources/xml/application", "application.xml");
                 break;
-            case "mybatis":
+            case "spring-namespace-mybatis":
+                result.put("resources/xml/application", "application.xml");
+                result.put("resources/mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
+                result.put("resources/mappers/OrderMapper", "mappers/OrderMapper.xml");
+                result.put("resources/mappers/AddressMapper", "mappers/AddressMapper.xml");
+                break;
+            case "springboot-starter-mybatis":
+                result.put("resources/properties/application", "application.properties");
                 result.put("resources/mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
                 result.put("resources/mappers/OrderMapper", "mappers/OrderMapper.xml");
                 result.put("resources/mappers/AddressMapper", "mappers/AddressMapper.xml");
