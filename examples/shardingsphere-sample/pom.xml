@@ -31,10 +31,10 @@
     
     <modules>
         <module>shardingsphere-proxy-sample</module>
-        <module>shardingsphere-example-engine</module>
         <module>shardingsphere-jdbc-sample</module>
+        <module>shardingsphere-example-engine</module>
     </modules>
-
+    
     <build>
         <pluginManagement>
             <plugins>
@@ -55,7 +55,7 @@
                                     </goals>
                                 </pluginExecutionFilter>
                                 <action>
-                                    <ignore></ignore>
+                                    <ignore />
                                 </action>
                             </pluginExecution>
                         </pluginExecutions>
@@ -64,6 +64,4 @@
             </plugins>
         </pluginManagement>
     </build>
-
 </project>
-
