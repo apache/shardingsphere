@@ -23,12 +23,22 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 public final class WeightReplicaLoadBalanceAlgorithmTest {
     
     private final WeightReplicaLoadBalanceAlgorithm weightReplicaLoadBalanceAlgorithm = new WeightReplicaLoadBalanceAlgorithm();
+    
+    @Test
+    public void assertGetOneReadDataSource() {
+        Properties properties = new Properties();
+        properties.setProperty("test_read_ds_1", "5");
+        weightReplicaLoadBalanceAlgorithm.setProps(properties);
+        String writeDataSourceName = "test_write_ds";
+        assertThat(weightReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, Arrays.asList("test_read_ds_1")), is("test_read_ds_1"));
+    }
     
     @Test
     public void assertGetDataSource() {
