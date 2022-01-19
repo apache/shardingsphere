@@ -57,7 +57,8 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
             Map<String, Map<String, String>> autoAwareDataSourceMap = Collections.emptyMap();
             Map<String, Map<String, String>> dataSourceMap = Collections.emptyMap();
             if (exportableRule.isPresent()) {
-                Map<String, Object> exportable = exportableRule.get().export(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_KEY, ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE_KEY));
+                Map<String, Object> exportable = exportableRule.get().export(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_KEY,
+                        ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE_KEY));
                 autoAwareDataSourceMap = (Map<String, Map<String, String>>) exportable.getOrDefault(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_KEY, Collections.emptyMap());
                 dataSourceMap = (Map<String, Map<String, String>>) exportable.getOrDefault(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE_KEY, Collections.emptyMap());
             }
