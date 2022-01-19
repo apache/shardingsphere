@@ -28,7 +28,7 @@
     <artifactId>shardingsphere-proxy-cluster-zookeeper-example</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
-
+    
     <modules>
         <module>shardingsphere-proxy-cluster-zookeeper-local-example</module>
         <module>shardingsphere-proxy-cluster-zookeeper-xa-atomikos-example</module>

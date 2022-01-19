@@ -26,6 +26,7 @@
         <version>${revision}</version>
     </parent>
     <artifactId>shardingsphere-proxy-cluster-zookeeper-base-seata-readwrite-splitting-example</artifactId>
+    <name>${project.artifactId}</name>
     
     <!--
     Note：the following dependent jars need to be downloaded and copied to conf/lib in proxy.
