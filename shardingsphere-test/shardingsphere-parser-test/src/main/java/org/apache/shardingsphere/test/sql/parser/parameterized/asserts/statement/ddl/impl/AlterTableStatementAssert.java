@@ -36,6 +36,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.c
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.definition.ColumnDefinitionAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.definition.ColumnPositionAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.definition.ConstraintDefinitionAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.definition.ExpectedAddColumnDefinition;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.definition.ExpectedChangeColumnDefinition;
@@ -84,7 +85,11 @@ public final class AlterTableStatementAssert {
         if (null != expected.getConvertTable()) {
             assertTrue(assertContext.getText("Actual convert table segment should exist."), convertTable.isPresent());
             CharsetAssert.assertIs(assertContext, convertTable.get().getCharsetName(), expected.getConvertTable().getCharsetName());
-            //CollateAssert.assertIs(assertContext, convertTable.get().getCollateClause(), expected.getConvertTable().getCollate());
+            if (null != expected.getConvertTable().getCollateExpression()) {
+                ExpressionAssert.assertExpression(assertContext, convertTable.get().getCollateValue(), expected.getConvertTable().getCollateExpression().getCollateName());
+            } else {
+                assertNull(assertContext.getText("Actual collate expression should not exist."), convertTable.get().getCollateValue());
+            }
             SQLSegmentAssert.assertIs(assertContext, convertTable.get(), expected.getConvertTable());
         } else {
             assertFalse(assertContext.getText("Actual convert table segment should not exist."), convertTable.isPresent());

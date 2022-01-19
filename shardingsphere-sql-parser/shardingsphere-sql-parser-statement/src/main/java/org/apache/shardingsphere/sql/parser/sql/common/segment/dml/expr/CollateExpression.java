@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 
 /**
- * Collate segment.
+ * Collate expression.
  */
 @RequiredArgsConstructor
 @Getter

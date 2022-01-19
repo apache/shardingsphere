@@ -312,8 +312,8 @@ public final class ExpressionAssert {
      * Assert collate.
      *
      * @param assertContext assert context
-     * @param actual actual function segment
-     * @param expected expected function segment
+     * @param actual actual collate expression
+     * @param expected expected collate expression
      */
     public static void assertCollateExpression(final SQLCaseAssertContext assertContext, final CollateExpression actual, final ExpectedCollateExpression expected) {
         if (null == expected) {
