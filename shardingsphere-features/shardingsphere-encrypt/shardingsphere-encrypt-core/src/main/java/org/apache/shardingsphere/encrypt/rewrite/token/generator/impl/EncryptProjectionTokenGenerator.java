@@ -101,7 +101,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         return result;
     }
     
-    private Collection<SubstitutableColumnNameToken> generateSQLTokens (final ExpressionSegment expr, final Map<String, String> columnTableNames, 
+    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final ExpressionSegment expr, final Map<String, String> columnTableNames, 
                                                                         final SubqueryType subqueryType, final boolean forceNoneAlias) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         if (!(expr instanceof FunctionSegment) || (expr instanceof FunctionSegment && null == ((FunctionSegment) expr).getParameters())) {
