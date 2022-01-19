@@ -35,7 +35,7 @@ public final class ExampleTemplateFactory {
      * @param dataModel data model
      * @return rename template map
      */
-    public static Map<String, String> getRenameTemplate(Map<String, String> dataModel) {
+    public static Map<String, String> getRenameTemplate(final Map<String, String> dataModel) {
         Map<String, String> result = new HashMap<>(4, 1);
         result.put("Example", "java/Example.ftl");
         result.put("ExampleService", "java/ExampleService.ftl");
