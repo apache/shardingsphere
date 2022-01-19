@@ -21,7 +21,9 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaData;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -36,10 +38,13 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     
     private final Map<String, String> propertySynonyms = new HashMap<>(2, 1);
     
+    private final Collection<String> transientFieldNames = new LinkedList<>();
+    
     public HikariDataSourcePoolMetaData() {
         buildDefaultProperties();
         buildInvalidProperties();
         buildPropertySynonyms();
+        buildTransientFieldNames();
     }
     
     private void buildDefaultProperties() {
@@ -57,11 +62,19 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     }
     
     private void buildPropertySynonyms() {
+        propertySynonyms.put("url", "jdbcUrl");
         propertySynonyms.put("connectionTimeoutMilliseconds", "connectionTimeout");
         propertySynonyms.put("idleTimeoutMilliseconds", "idleTimeout");
         propertySynonyms.put("maxLifetimeMilliseconds", "maxLifetime");
         propertySynonyms.put("maxPoolSize", "maximumPoolSize");
         propertySynonyms.put("minPoolSize", "minimumIdle");
+    }
+    
+    private void buildTransientFieldNames() {
+        transientFieldNames.add("running");
+        transientFieldNames.add("poolName");
+        transientFieldNames.add("registerMbeans");
+        transientFieldNames.add("closed");
     }
     
     @Override

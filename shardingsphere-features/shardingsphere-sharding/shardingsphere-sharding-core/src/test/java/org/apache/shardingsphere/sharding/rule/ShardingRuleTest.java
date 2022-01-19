@@ -77,8 +77,10 @@ public final class ShardingRuleTest {
     public void assertNewShardingRuleWithMaximumConfiguration() {
         ShardingRule actual = createMaximumShardingRule();
         assertThat(actual.getTableRules().size(), is(2));
-        assertThat(actual.getBindingTableRules().size(), is(1));
-        assertThat(actual.getBindingTableRules().iterator().next().getTableRules().size(), is(2));
+        assertThat(actual.getBindingTableRules().size(), is(2));
+        assertTrue(actual.getBindingTableRules().containsKey("logic_table"));
+        assertTrue(actual.getBindingTableRules().containsKey("sub_logic_table"));
+        assertThat(actual.getBindingTableRules().values().iterator().next().getTableRules().size(), is(2));
         assertThat(actual.getBroadcastTables(), is(new TreeSet<>(Collections.singletonList("BROADCAST_TABLE"))));
         assertThat(actual.getDefaultKeyGenerateAlgorithm(), instanceOf(IncrementKeyGenerateAlgorithm.class));
         assertThat(actual.getDefaultShardingColumn(), is("table_id"));

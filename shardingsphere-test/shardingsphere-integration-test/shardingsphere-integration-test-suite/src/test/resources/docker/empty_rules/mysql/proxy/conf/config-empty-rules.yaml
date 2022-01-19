@@ -211,6 +211,15 @@ dataSources:
 rules:
 - !SHARDING
   autoTables:
+    t_user:
+      actualDataSources: encrypt_write_ds_${0..9}
+      shardingStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: mod
+      keyGenerateStrategy:
+        column: user_id
+        keyGeneratorName: constant
     t_user_item:
       actualDataSources: encrypt_write_ds_${0..9}
       shardingStrategy:
@@ -220,6 +229,7 @@ rules:
       keyGenerateStrategy:
         column: user_id
         keyGeneratorName: constant
+    
   shardingAlgorithms:
     mod:
       type: MOD

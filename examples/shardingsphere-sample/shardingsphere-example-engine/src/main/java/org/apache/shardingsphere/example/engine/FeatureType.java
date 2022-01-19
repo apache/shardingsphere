@@ -17,13 +17,16 @@
 
 package org.apache.shardingsphere.example.engine;
 
-import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Feature type.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
+@Getter
 public enum FeatureType {
+    
     SHARDING("sharding"),
     ENCRYPT("encrypt"),
     READWRITE_SPLITTING("readwrite-splitting"),
@@ -31,8 +34,4 @@ public enum FeatureType {
     DB_DISCOVERY("db-discovery");
     
     private final String feature;
-    
-    public String getFeature() {
-        return feature;
-    }
 }

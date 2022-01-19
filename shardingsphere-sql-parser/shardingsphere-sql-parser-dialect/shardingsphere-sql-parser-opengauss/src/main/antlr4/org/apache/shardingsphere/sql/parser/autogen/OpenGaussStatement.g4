@@ -56,6 +56,8 @@ execute
     | alterAggregate
     | alterFunction
     | alterDatabase
+    | alterDomain
+    | alterDefaultPrivileges
     | alterProcedure
     | alterServer
     | alterSequence
@@ -101,5 +103,8 @@ execute
     | alterTextSearchDictionary
     | alterTextSearchTemplate
     | alterTextSearchParser
+    | createExtension
+    | alterExtension
+    | dropExtension
     ) SEMI_?
     ;

@@ -26,4 +26,5 @@
         <version>${revision}</version>
     </parent>
     <artifactId>shardingsphere-proxy-memory-local-readwrite-splitting-example</artifactId>
+    <name>${project.artifactId}</name>
 </project>

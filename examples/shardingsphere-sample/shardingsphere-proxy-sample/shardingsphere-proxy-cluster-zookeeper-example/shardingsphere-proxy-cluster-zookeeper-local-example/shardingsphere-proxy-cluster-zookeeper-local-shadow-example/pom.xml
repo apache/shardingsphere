@@ -28,5 +28,3 @@
     <artifactId>shardingsphere-proxy-cluster-zookeeper-local-shadow-example</artifactId>
     <name>${project.artifactId}</name>
 </project>
-
-

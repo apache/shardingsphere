@@ -9095,17 +9095,6 @@
     <sql-case id="low_xa_by_mysql_source_test_case8" value="xa start 0x7465737462, 0x2030405060, 0xb" db-types="MySQL"/>
     <sql-case id="low_xa_by_mysql_source_test_case9" value="xa start 0xABCDEF1234567890, 0x01, 0x02" db-types="MySQL"/>
     <sql-case id="table_union" value="TABLE T1 UNION TABLE T2" db-types="MySQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case21" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_addr_user IN SCHEMA public GRANT ALL ON TABLES TO regress_addr_user;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case22" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_addr_user REVOKE DELETE ON TABLES FROM regress_addr_user;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case23" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_dep_user1 IN SCHEMA deptest   GRANT ALL ON TABLES TO regress_dep_user2;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case24" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_matview_user   GRANT INSERT ON TABLES TO regress_matview_user;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case25" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_matview_user   REVOKE INSERT ON TABLES FROM regress_matview_user;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case26" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_selinto_user 	  GRANT INSERT ON TABLES TO regress_selinto_user;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case27" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_selinto_user 	  REVOKE INSERT ON TABLES FROM regress_selinto_user;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case28" value="ALTER DOMAIN things ADD CONSTRAINT meow CHECK (VALUE &lt; 11) NOT VALID;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case29" value="ALTER DOMAIN things ADD CONSTRAINT meow CHECK (VALUE &lt; 11);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case30" value="ALTER DOMAIN things VALIDATE CONSTRAINT meow;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case31" value="ALTER DOMAIN things VALIDATE CONSTRAINT meow;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case32" value="ALTER FOREIGN DATA WRAPPER alt_fdw1 RENAME TO alt_fdw2;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case33" value="ALTER FOREIGN DATA WRAPPER alt_fdw1 RENAME TO alt_fdw3;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case34" value="ALTER FOREIGN DATA WRAPPER foo HANDLER invalid_fdw_handler;" db-types="PostgreSQL"/>
@@ -10706,8 +10695,6 @@
     <sql-case id="drop_by_postgresql_source_test_case36" value="DROP EVENT TRIGGER sql_drop_command;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case37" value="DROP EVENT TRIGGER start_rls_command;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case38" value="DROP EVENT TRIGGER undroppable;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case39" value="DROP EXTENSION IF EXISTS test_extension_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case40" value="DROP EXTENSION test_extension_exists;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case41" value="DROP FOREIGN DATA WRAPPER IF EXISTS nonexistent;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case42" value="DROP FOREIGN DATA WRAPPER IF EXISTS test_fdw_exists;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case43" value="DROP FOREIGN DATA WRAPPER addr_fdw CASCADE;" db-types="PostgreSQL"/>
@@ -13356,44 +13343,6 @@
     <sql-case id="with_by_postgresql_source_test_case20" value="WITH v(val) AS   (VALUES(&apos;0&apos;::numeric),(&apos;-4.2&apos;),(&apos;4.2e9&apos;),(&apos;1.2e-5&apos;),(&apos;inf&apos;),(&apos;-inf&apos;),(&apos;nan&apos;)) SELECT val,   to_char(val, &apos;MI99.99&apos;) as numeric,   to_char(val::float8, &apos;MI99.99&apos;) as float8,   to_char(val::float4, &apos;MI99.99&apos;) as float4 FROM v;" db-types="PostgreSQL"/>
     <sql-case id="with_by_postgresql_source_test_case21" value="WITH v(val) AS   (VALUES(&apos;0&apos;::numeric),(&apos;-4.2&apos;),(&apos;4.2e9&apos;),(&apos;1.2e-5&apos;),(&apos;inf&apos;),(&apos;-inf&apos;),(&apos;nan&apos;)) SELECT val,   to_char(val, &apos;MI9999999999.99&apos;) as numeric,   to_char(val::float8, &apos;MI9999999999.99&apos;) as float8,   to_char(val::float4, &apos;MI9999999999.99&apos;) as float4 FROM v;" db-types="PostgreSQL"/>
     <sql-case id="with_by_postgresql_source_test_case22" value="WITH v(x) AS   (VALUES(&apos;0&apos;::numeric),(&apos;1&apos;),(&apos;-1&apos;),(&apos;4.2&apos;),(&apos;inf&apos;),(&apos;-inf&apos;),(&apos;nan&apos;)) SELECT x1, x2,   x1 / x2 AS quot,   x1 % x2 AS mod,   div(x1, x2) AS div FROM v AS v1(x1), v AS v2(x2) WHERE x2 != 0;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case3" value="alter default privileges for role regress_evt_user  revoke delete on tables from regress_evt_user;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case4" value="alter domain alter1.posint set schema alter2;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case5" value="alter domain con add check (VALUE &gt; 0);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case6" value="alter domain con add constraint t check (VALUE &lt; 1);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case7" value="alter domain con add constraint t check (VALUE &lt; 34);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case8" value="alter domain con drop constraint if exists nonexistent;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case9" value="alter domain con drop constraint nonexistent;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case10" value="alter domain con drop constraint t;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case11" value="alter domain dcomptype add constraint c1 check ((value).r &lt;= (value).i);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case12" value="alter domain dcomptype add constraint c1 check ((value).r &gt; 0);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case13" value="alter domain dcomptype add constraint c2 check ((value).r &gt; (value).i);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case14" value="alter domain dcomptypea add constraint c1 check (value[1].r &lt;= value[1].i);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case15" value="alter domain dcomptypea add constraint c2 check (value[1].r &gt; value[1].i);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case16" value="alter domain ddef1 drop default;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case17" value="alter domain ddef1 set default &apos;42&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case18" value="alter domain di add constraint pos check (value &gt; 0);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case19" value="alter domain di add constraint pos check (value &gt; 0);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case20" value="alter domain di drop constraint pos;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case21" value="alter domain di drop constraint pos;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case22" value="alter domain dnotnulltest drop not null;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case23" value="alter domain dnotnulltest set not null;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case24" value="alter domain dnotnulltest set not null;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case25" value="alter domain dnotnulltest set not null;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case26" value="alter domain dom add constraint domchkgt6 check(value &gt; 6);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case27" value="alter domain dom drop constraint domchkgt6 restrict;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case28" value="alter domain dom drop not null;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case29" value="alter domain dom set not null;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case30" value="alter domain posint add constraint c1 check(value &gt;= 0);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case31" value="alter domain posint add constraint c1 check(value &gt;= 0);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case32" value="alter domain posint add constraint c1 check(value &gt;= 0);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case33" value="alter domain posint add constraint c1 check(value &gt;= 0);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case34" value="alter domain posint add constraint c1 check(value &gt;= 0);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case35" value="alter domain posint add constraint c1 check(value &gt;= 0);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case36" value="alter domain posint add constraint c2 check(value &gt; 0);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case37" value="alter domain posint add constraint c2 check(value &gt;= 10);" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case38" value="alter domain testdomain1 drop constraint unsigned_foo;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case39" value="alter domain testdomain1 rename constraint unsigned to unsigned_foo;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case40" value="alter domain testdomain1 rename to testdomain2;" db-types="PostgreSQL"/>
     <sql-case id="low_alter_by_postgresql_source_test_case41" value="alter event trigger regress_event_trigger disable;" db-types="PostgreSQL"/>
     <sql-case id="low_alter_by_postgresql_source_test_case42" value="alter event trigger regress_event_trigger disable;" db-types="PostgreSQL"/>
     <sql-case id="low_alter_by_postgresql_source_test_case43" value="alter event trigger regress_event_trigger enable always;" db-types="PostgreSQL"/>
