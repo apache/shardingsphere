@@ -94,6 +94,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDefaultPrivilegesTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDimensionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDomainStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterLanguageStatementTestCase;
@@ -986,6 +987,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "drop-conversion")
     private final List<DropConversionStatementTestCase> dropConversionStatementTestCase = new LinkedList<>();
     
+    @XmlElement(name = "alter-domain")
+    private final List<AlterDomainStatementTestCase> alterDomainStatementTestCase = new LinkedList<>();
+    
     @XmlElement(name = "alter-aggregate")
     private final List<AlterAggregateStatementTestCase> alterAggregateStatementTestCase = new LinkedList<>();
     
@@ -1268,6 +1272,7 @@ public final class SQLParserTestCases {
         putAll(createTypeStatementTestCases, result);
         putAll(createConversionStatementTestCase, result);
         putAll(dropConversionStatementTestCase, result);
+        putAll(alterDomainStatementTestCase, result);
         putAll(alterAggregateStatementTestCase, result);
         putAll(alterConversionStatementTestCase, result);
         putAll(alterCollationStatementTestCase, result);
