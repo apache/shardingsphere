@@ -18,15 +18,20 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLDataRowPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLEmptyQueryResponsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatement;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLPortalSuspendedPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -44,6 +49,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryH
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
@@ -58,7 +64,10 @@ import java.util.Optional;
 /**
  * PostgreSQL portal.
  */
-public final class PostgreSQLPortal {
+public final class JDBCPortal implements Portal<Void> {
+    
+    @Getter
+    private final String name;
     
     @Getter
     private final SQLStatement sqlStatement;
@@ -73,8 +82,9 @@ public final class PostgreSQLPortal {
     
     private ResponseHeader responseHeader;
     
-    public PostgreSQLPortal(final PostgreSQLPreparedStatement preparedStatement, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats,
-                            final JDBCBackendConnection backendConnection) throws SQLException {
+    public JDBCPortal(final String name, final PostgreSQLPreparedStatement preparedStatement, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats,
+                      final JDBCBackendConnection backendConnection) throws SQLException {
+        this.name = name;
         this.sqlStatement = preparedStatement.getSqlStatement();
         this.resultFormats = resultFormats;
         this.backendConnection = backendConnection;
@@ -90,20 +100,14 @@ public final class PostgreSQLPortal {
         textProtocolBackendHandler = null;
     }
     
-    /**
-     * Execute portal.
-     *
-     * @throws SQLException SQL exception
-     */
-    public void execute() throws SQLException {
+    @SneakyThrows(SQLException.class)
+    @Override
+    public Void bind() {
         responseHeader = null != databaseCommunicationEngine ? databaseCommunicationEngine.execute() : textProtocolBackendHandler.execute();
+        return null;
     }
     
-    /**
-     * Describe portal.
-     *
-     * @return portal description packet
-     */
+    @Override
     public PostgreSQLPacket describe() {
         if (responseHeader instanceof QueryResponseHeader) {
             return createRowDescriptionPacket((QueryResponseHeader) responseHeader);
@@ -111,7 +115,7 @@ public final class PostgreSQLPortal {
         if (responseHeader instanceof UpdateResponseHeader) {
             return PostgreSQLNoDataPacket.getInstance();
         }
-        throw new UnsupportedOperationException("Failed to describe portal");
+        throw new IllegalStateException("Cannot describe portal [" + name + "] before bind");
     }
     
     private PostgreSQLRowDescriptionPacket createRowDescriptionPacket(final QueryResponseHeader queryResponseHeader) {
@@ -128,32 +132,23 @@ public final class PostgreSQLPortal {
         return result;
     }
     
-    /**
-     * Get update count.
-     * 
-     * @return update count
-     */
-    public long getUpdateCount() {
-        return responseHeader instanceof UpdateResponseHeader ? ((UpdateResponseHeader) responseHeader).getUpdateCount() : 0;
+    @SneakyThrows(SQLException.class)
+    @Override
+    public List<PostgreSQLPacket> execute(final int maxRows) {
+        int fetchSize = maxRows > 0 ? maxRows : Integer.MAX_VALUE;
+        List<PostgreSQLPacket> result = new LinkedList<>();
+        for (int i = 0; i < fetchSize && hasNext(); i++) {
+            result.add(nextPacket());
+        }
+        result.add(createExecutionCompletedPacket(maxRows > 0 && maxRows == result.size(), result.size()));
+        return result;
     }
     
-    /**
-     * Next.
-     *
-     * @return true if the portal has next packet; else false
-     * @throws SQLException SQL exception
-     */
-    public boolean next() throws SQLException {
+    private boolean hasNext() throws SQLException {
         return null != databaseCommunicationEngine && databaseCommunicationEngine.next() || null != textProtocolBackendHandler && textProtocolBackendHandler.next();
     }
     
-    /**
-     * Fetch next packet from the portal.
-     *
-     * @return next packet
-     * @throws SQLException SQL exception
-     */
-    public PostgreSQLPacket nextPacket() throws SQLException {
+    private PostgreSQLPacket nextPacket() throws SQLException {
         return null != databaseCommunicationEngine ? new PostgreSQLDataRowPacket(getData(databaseCommunicationEngine.getQueryResponseRow()))
                 : new PostgreSQLDataRowPacket(textProtocolBackendHandler.getRowData());
     }
@@ -177,19 +172,29 @@ public final class PostgreSQLPortal {
         return new BinaryCell(PostgreSQLColumnType.valueOfJDBCType(((BinaryQueryResponseCell) cell).getJdbcType()), cell.getData());
     }
     
-    /**
-     * Suspend the portal.
-     */
-    public void suspend() {
+    private PostgreSQLIdentifierPacket createExecutionCompletedPacket(final boolean isSuspended, final int fetchedRows) {
+        if (isSuspended) {
+            suspendPortal();
+            return new PostgreSQLPortalSuspendedPacket();
+        }
+        if (getSqlStatement() instanceof EmptyStatement) {
+            return new PostgreSQLEmptyQueryResponsePacket();
+        }
+        String sqlCommand = PostgreSQLCommand.valueOf(getSqlStatement().getClass()).map(PostgreSQLCommand::getTag).orElse("");
+        return new PostgreSQLCommandCompletePacket(sqlCommand, Math.max(fetchedRows, getUpdateCount()));
+    }
+    
+    private void suspendPortal() {
         backendConnection.markResourceInUse(databaseCommunicationEngine);
     }
     
-    /**
-     * Close portal.
-     *
-     * @throws SQLException SQL exception
-     */
-    public void close() throws SQLException {
+    private long getUpdateCount() {
+        return responseHeader instanceof UpdateResponseHeader ? ((UpdateResponseHeader) responseHeader).getUpdateCount() : 0;
+    }
+    
+    @SneakyThrows(SQLException.class)
+    @Override
+    public void close() {
         if (null != databaseCommunicationEngine) {
             backendConnection.unmarkResourceInUse(databaseCommunicationEngine);
         }
