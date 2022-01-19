@@ -56,6 +56,8 @@ public enum SQLVisitorRule {
     
     ALTER_DEFAULT_PRIVILEGES("AlterDefaultPrivileges", SQLStatementType.DDL),
     
+    ALTER_FOREIGN_DATA_WRAPPER("AlterForeignDataWrapper", SQLStatementType.DDL),
+    
     DROP_TABLE("DropTable", SQLStatementType.DDL),
     
     TRUNCATE_TABLE("TruncateTable", SQLStatementType.DDL),
