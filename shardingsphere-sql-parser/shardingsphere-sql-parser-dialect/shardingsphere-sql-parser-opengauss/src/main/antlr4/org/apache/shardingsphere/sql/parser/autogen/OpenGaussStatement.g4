@@ -103,5 +103,6 @@ execute
     | alterTextSearchDictionary
     | alterTextSearchTemplate
     | alterTextSearchParser
+    | createExtension
     ) SEMI_?
     ;

@@ -170,6 +170,8 @@ public enum SQLVisitorRule {
 
     RENAME("Rename", SQLStatementType.DDL),
     
+    CREATE_EXTENSION("CreateExtension", SQLStatementType.DDL),
+    
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
     
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),
