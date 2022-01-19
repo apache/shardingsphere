@@ -28,5 +28,3 @@
     <artifactId>shardingsphere-proxy-cluster-zookeeper-xa-atomikos-shadow-example</artifactId>
     <name>${project.artifactId}</name>
 </project>
-
-

@@ -27,7 +27,7 @@
     </parent>
     <artifactId>shardingsphere-proxy-cluster-etcd-xa-narayana-sharding-example</artifactId>
     <name>${project.artifactId}</name>
-
+    
     <properties>
         <narayana.version>5.9.1.Final</narayana.version>
         <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>

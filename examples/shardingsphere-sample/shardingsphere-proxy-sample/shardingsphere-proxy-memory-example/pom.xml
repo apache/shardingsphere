@@ -36,5 +36,4 @@
         <module>shardingsphere-proxy-memory-xa-narayana-example</module>
         <module>shardingsphere-proxy-memory-base-seata-example</module>
     </modules>
-    
 </project>
