@@ -74,14 +74,13 @@ public final class PostgreSQLConnectionContextTest {
     
     @Test
     public void assertCloseAllPortals() {
-        PostgreSQLConnectionContext actual = new PostgreSQLConnectionContext();
         Portal<?> portal1 = mock(JDBCPortal.class);
         when(portal1.getName()).thenReturn("P_1");
         Portal<?> portal2 = mock(JDBCPortal.class);
         when(portal2.getName()).thenReturn("P_2");
         connectionContext.addPortal(portal1);
         connectionContext.addPortal(portal2);
-        actual.closeAllPortals();
+        connectionContext.closeAllPortals();
         verify(portal1).close();
         verify(portal2).close();
     }
