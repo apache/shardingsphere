@@ -79,15 +79,9 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     
     private Map<String, Object> getFilteredUndisplayedProperties(final DataSourceProperties dataSourceProperties) {
         Map<String, Object> result = new HashMap<>(dataSourceProperties.getPoolPropertySynonyms().getStandardProperties());
-        result.putAll(dataSourceProperties.getCustomDataSourceProperties().getProperties());
-        // TODO to be configured
-        result.remove("running");
-        result.remove("poolName");
-        result.remove("registerMbeans");
-        result.remove("closed");
         for (Entry<String, Object> entry : dataSourceProperties.getCustomDataSourceProperties().getProperties().entrySet()) {
-            if (entry.getValue() instanceof Collection || entry.getValue() instanceof Map) {
-                result.remove(entry.getKey());
+            if (!(entry.getValue() instanceof Collection) && !(entry.getValue() instanceof Map)) {
+                result.put(entry.getKey(), entry.getValue());
             }
         }
         return new TreeMap<>(result);
