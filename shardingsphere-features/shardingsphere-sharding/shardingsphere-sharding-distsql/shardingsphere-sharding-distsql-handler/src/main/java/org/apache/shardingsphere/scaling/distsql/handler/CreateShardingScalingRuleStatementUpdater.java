@@ -33,6 +33,7 @@ import org.apache.shardingsphere.scaling.distsql.handler.converter.ShardingScali
 import org.apache.shardingsphere.scaling.distsql.statement.CreateShardingScalingRuleStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScalingRuleConfigurationSegment;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
@@ -46,6 +47,13 @@ import java.util.Properties;
  * Create sharding scaling rule statement updater.
  */
 public final class CreateShardingScalingRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingScalingRuleStatement, ShardingRuleConfiguration> {
+    
+    static {
+        ShardingSphereServiceLoader.register(JobRateLimitAlgorithm.class);
+        ShardingSphereServiceLoader.register(PipelineChannelFactory.class);
+        ShardingSphereServiceLoader.register(JobCompletionDetectAlgorithm.class);
+        ShardingSphereServiceLoader.register(DataConsistencyCheckAlgorithm.class);
+    }
     
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingScalingRuleStatement sqlStatement,
