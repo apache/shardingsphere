@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.engine;
+package org.apache.shardingsphere.example.generator;
 
 import java.util.HashMap;
 import java.util.Map;
