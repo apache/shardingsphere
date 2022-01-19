@@ -120,14 +120,14 @@ public final class ExampleGenerateEngine {
             processFile(dataModel, "/template/" + renameTemplateMap.get(each), outputPath + "/" + fileName + each + ".java");
         }
         for (String each : unRenameTemplateMap.keySet()) {
-            processFile(dataModel, "/template/" + each + ".ftl", outputPath + "/" + unRenameTemplateMap.get(each));
+            processFile(dataModel, "/template/" + each, outputPath + "/" + unRenameTemplateMap.get(each));
         }
     }
     
     private static void generateResourcesFile(final Map<String, String> dataModel) throws IOException, TemplateException {
         String outputPath = processString(dataModel, OUTPUT_PATH + RESOURCES_PATH);
         for (String each : resourceTemplateMap.keySet()) {
-            processFile(dataModel, "/template/" + each + ".ftl", outputPath + "/" + resourceTemplateMap.get(each));
+            processFile(dataModel, "/template/" + each, outputPath + "/" + resourceTemplateMap.get(each));
         }
     }
     
@@ -145,4 +145,3 @@ public final class ExampleGenerateEngine {
         }
     }
 }
-
