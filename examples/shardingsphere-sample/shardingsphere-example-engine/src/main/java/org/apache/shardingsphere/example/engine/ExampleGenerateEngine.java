@@ -48,7 +48,7 @@ public final class ExampleGenerateEngine {
             + "</#if>"
             + "/shardingsphere-jdbc-${mode}-${transaction}-example/shardingsphere-jdbc-${mode}-${transaction}-${package}-example"
             + "/shardingsphere-jdbc-${mode}-${transaction}-${package}-${framework}-example/src/main/";
-
+    
     private static final String JAVA_CLASS_PATH = "java/org/apache/shardingsphere/example/"
             + "<#assign package=\"\">"
             + "<#if feature?split(\",\")?size gt 1>"
@@ -91,10 +91,11 @@ public final class ExampleGenerateEngine {
     }
     
     /**
-     * Generate file 
+     * Generate file.
+     * 
      * @param args args
      */
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         Yaml yaml = new Yaml();
         InputStream in = ExampleGenerateEngine.class.getResourceAsStream(DATA_MODEL_PATH);
         Map<String, String> dataModel = yaml.loadAs(in, Map.class);
@@ -105,6 +106,7 @@ public final class ExampleGenerateEngine {
     
     /**
      * Generate files based on data model.
+     * 
      * @param model data model
      * @param templateFile Equivalent to the template name of the template base directory.
      * @param outputFile Output directory and file name.
@@ -120,6 +122,7 @@ public final class ExampleGenerateEngine {
     
     /**
      * Placeholder replacement.
+     * 
      * @param model data model
      * @param templateString String template
      * @return Replace the placeholder string
@@ -136,7 +139,7 @@ public final class ExampleGenerateEngine {
         return null;
     }
     
-    private static void fillTemplateMap(Map<String, String> dataModel) {
+    private static void fillTemplateMap(final Map<String, String> dataModel) {
         renameTemplateMap = ExampleTemplateFactory.getRenameTemplate(dataModel);
         unRenameTemplateMap = ExampleTemplateFactory.getUnReNameTemplate(dataModel);
         resourceTemplateMap = ExampleTemplateFactory.getResourceTemplate(dataModel);

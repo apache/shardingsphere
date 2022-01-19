@@ -28,9 +28,10 @@ public final class ExampleTemplateFactory {
     private static final String FEATURE_KEY = "feature";
     
     private static final String FRAMEWORK_KEY = "framework";
-
+    
     /**
-     * Get the template resource that needs to be renamed
+     * Get the template resource that needs to be renamed.
+     * 
      * @param dataModel data model
      * @return rename template map
      */
@@ -46,11 +47,12 @@ public final class ExampleTemplateFactory {
     }
     
     /**
-     * Get template resources that do not need to be renamed
+     * Get template resources that do not need to be renamed.
+     * 
      * @param dataModel data model
      * @return not need rename map
      */
-    public static Map<String, String> getUnReNameTemplate(Map<String, String> dataModel) {
+    public static Map<String, String> getUnReNameTemplate(final Map<String, String> dataModel) {
         String feature = dataModel.get(FEATURE_KEY);
         String framework = dataModel.get(FRAMEWORK_KEY);
         Map<String, String> result = new HashMap<>(8, 1);
@@ -77,11 +79,12 @@ public final class ExampleTemplateFactory {
     }
     
     /**
-     * Get template resources map
+     * Get template resources map.
+     * 
      * @param dataModel data model
      * @return resource map
      */
-    public static Map<String, String> getResourceTemplate(Map<String, String> dataModel) {
+    public static Map<String, String> getResourceTemplate(final Map<String, String> dataModel) {
         String feature = dataModel.get(FEATURE_KEY);
         String framework = dataModel.get(FRAMEWORK_KEY);
         Map<String, String> result = new HashMap<>(8, 1);
