@@ -61,16 +61,22 @@ public final class ExampleTemplateFactory {
         result.put("java/entity/Address", "entity/Address.java");
         switch (dataModel.get(FRAMEWORK_KEY)) {
             case "jdbc":
+            case "springboot-starter-jdbc":
+            case "spring-namespace-jdbc":
                 result.put("java/repository/jdbc/OrderItemRepository", "repository/OrderItemRepository.java");
                 result.put("java/repository/jdbc/OrderRepository", "repository/OrderRepository.java");
                 result.put("java/repository/jdbc/AddressRepository", "repository/AddressRepository.java");
                 break;
             case "jpa":
+            case "springboot-starter-jpa":
+            case "spring-namespace-jpa":
                 result.put("java/repository/jpa/OrderItemRepository", "repository/OrderItemRepository.java");
                 result.put("java/repository/jpa/OrderRepository", "repository/OrderRepository.java");
                 result.put("java/repository/jpa/AddressRepository", "repository/AddressRepository.java");
                 break;
             case "mybatis":
+            case "springboot-starter-mybatis":
+            case "spring-namespace-mybatis":
                 result.put("java/repository/mybatis/OrderItemRepository", "repository/OrderItemRepository.java");
                 result.put("java/repository/mybatis/OrderRepository", "repository/OrderRepository.java");
                 result.put("java/repository/mybatis/AddressRepository", "repository/AddressRepository.java");
