@@ -118,8 +118,6 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-        worker-id: 123
 ```
 
 #### 主从配置
@@ -256,8 +254,6 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-          worker-id: 123
 - !READWRITE_SPLITTING
   dataSources:
     pr_ds_0:
@@ -371,8 +367,6 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-        worker-id: 123
 ```
 
 ## 测试结果验证

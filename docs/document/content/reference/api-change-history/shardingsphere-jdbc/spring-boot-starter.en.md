@@ -191,7 +191,6 @@ spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inl
 
 # Key generate algorithm configuration
 spring.shardingsphere.rules.sharding.key-generators.snowflake.type=SNOWFLAKE
-spring.shardingsphere.rules.sharding.key-generators.snowflake.props.worker-id=123
 
 # read query configuration
 # ds_0,ds_1 is the logical data source name of the readwrite-splitting
@@ -247,7 +246,7 @@ spring.shardingsphere.sharding.tables.<logic-table-name>.table-strategy.xxx= #Om
 
 spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.column= #Auto-increment column name; default means not using auto-increment key generator
 spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.type= #Auto-increament key generator type; default means using default auto-increament key generator; user defined generator or internal generator (SNOWFLAKE, UUID) can both be selected
-spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.props.<property-name>= #Properties, Notice: when use SNOWFLAKE, `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set. To use the generated value of this algorithm as sharding value, it is recommended to configure `max.vibration.offset`
+spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.props.<property-name>= #Properties, Notice: when use SNOWFLAKE, `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set. To use the generated value of this algorithm as sharding value, it is recommended to configure `max.vibration.offset`
 
 spring.shardingsphere.sharding.binding-tables[0]= #Binding table rule list
 spring.shardingsphere.sharding.binding-tables[1]= #Binding table rule list
@@ -261,7 +260,7 @@ spring.shardingsphere.sharding.default-data-source-name= #Tables without shardin
 spring.shardingsphere.sharding.default-database-strategy.xxx= #Default database sharding strategy
 spring.shardingsphere.sharding.default-table-strategy.xxx= #Default table sharding strategy
 spring.shardingsphere.sharding.default-key-generator.type= #Default auto-increament key generator of type; it will use org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator in default; user defined generator or internal generator (SNOWFLAKE or UUID) can both be used
-spring.shardingsphere.sharding.default-key-generator.props.<property-name>= #Auto-increament key generator property configuration, such as worker.id and max.tolerate.time.difference.milliseconds of SNOWFLAKE algorithm
+spring.shardingsphere.sharding.default-key-generator.props.<property-name>= #Auto-increament key generator property configuration, such as max.tolerate.time.difference.milliseconds of SNOWFLAKE algorithm
 
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.master-data-source-name= #Refer to readwrite-splitting part for more details
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[0]= #Refer to readwrite-splitting part for more details

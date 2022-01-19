@@ -67,7 +67,6 @@ spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inl
 
 # Key generate algorithm configuration
 spring.shardingsphere.rules.sharding.key-generators.snowflake.type=SNOWFLAKE
-spring.shardingsphere.rules.sharding.key-generators.snowflake.props.worker-id=123
 
 # read query configuration
 # ds_0,ds_1 is the logical data source name of the readwrite-splitting

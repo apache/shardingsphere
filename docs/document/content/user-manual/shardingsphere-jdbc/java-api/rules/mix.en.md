@@ -67,7 +67,6 @@ shardingRuleConfiguration.getShardingAlgorithms().put("default_db_strategy_inlin
 
 // Key generate algorithm configuration
 Properties snowflakeProperties = new Properties();
-snowflakeProperties.setProperty("worker-id", "123");
 shardingRuleConfiguration.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", snowflakeProperties));
 
 /* Data encrypt rule configuration */
