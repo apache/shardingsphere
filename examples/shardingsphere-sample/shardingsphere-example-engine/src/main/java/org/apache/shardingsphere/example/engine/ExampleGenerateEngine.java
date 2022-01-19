@@ -37,7 +37,22 @@ import java.util.Objects;
  */
 public final class ExampleGenerateEngine {
     
-    private static final Configuration CONFIGURATION = new Configuration(Configuration.VERSION_2_3_31);
+    private static final Configuration TEMPLATE_CONFIG = new Configuration(Configuration.VERSION_2_3_31);
+    
+    private static final String DATA_MODEL_PATH = "/data-model/data-model.yaml";
+    
+    private static final String FILE_NAME_PREFIX = "${mode?cap_first}${transaction?cap_first}"
+            + "<#assign featureName=\"\">"
+            + "<#if feature?split(\",\")?size gt 1>"
+            + "<#assign featureName=\"Mixed\">"
+            + "<#else>"
+            + "<#list feature?split(\"-\") as item>"
+            + "<#assign featureName=featureName + item?cap_first>"
+            + "</#list></#if>${featureName}"
+            + "<#assign frameworkName=\"\">"
+            + "<#list framework?split(\"-\") as item>"
+            + "<#assign frameworkName=frameworkName + item?cap_first>"
+            + "</#list>${frameworkName}";
     
     private static final String OUTPUT_PATH = "./examples/shardingsphere-sample/shardingsphere-jdbc-sample/shardingsphere-jdbc-${mode}-example"
             + "<#assign package=\"\">"
@@ -60,21 +75,6 @@ public final class ExampleGenerateEngine {
     
     private static final String RESOURCES_PATH = "resources";
     
-    private static final String FILE_NAME_PREFIX = "${mode?cap_first}${transaction?cap_first}"
-            + "<#assign featureName=\"\">"
-            + "<#if feature?split(\",\")?size gt 1>"
-            + "<#assign featureName=\"Mixed\">"
-            + "<#else>"
-            + "<#list feature?split(\"-\") as item>"
-            + "<#assign featureName=featureName + item?cap_first>"
-            + "</#list></#if>${featureName}"
-            + "<#assign frameworkName=\"\">"
-            + "<#list framework?split(\"-\") as item>"
-            + "<#assign frameworkName=frameworkName + item?cap_first>"
-            + "</#list>${frameworkName}";
-    
-    private static final String DATA_MODEL_PATH = "/data-model/data-model.yaml";
-    
     private static Map<String, String> renameTemplateMap;
     
     private static Map<String, String> unRenameTemplateMap;
@@ -83,10 +83,10 @@ public final class ExampleGenerateEngine {
     
     static {
         try {
-            CONFIGURATION.setDirectoryForTemplateLoading(new File(Objects.requireNonNull(ExampleGenerateEngine.class.getClassLoader().getResource("")).getFile()));
-            CONFIGURATION.setDefaultEncoding("UTF-8");
-        } catch (IOException e) {
-            e.printStackTrace();
+            TEMPLATE_CONFIG.setDirectoryForTemplateLoading(new File(Objects.requireNonNull(ExampleGenerateEngine.class.getClassLoader().getResource("")).getFile()));
+            TEMPLATE_CONFIG.setDefaultEncoding("UTF-8");
+        } catch (final IOException ex) {
+            ex.printStackTrace();
         }
     }
     
@@ -94,49 +94,17 @@ public final class ExampleGenerateEngine {
      * Generate file.
      * 
      * @param args args
+     * @throws IOException IO exception
+     * @throws TemplateException template exception
      */
-    public static void main(final String[] args) {
-        Yaml yaml = new Yaml();
-        InputStream in = ExampleGenerateEngine.class.getResourceAsStream(DATA_MODEL_PATH);
-        Map<String, String> dataModel = yaml.loadAs(in, Map.class);
-        fillTemplateMap(dataModel);
-        generateJavaCode(dataModel);
-        generateResourcesFile(dataModel);
-    }
-    
-    /**
-     * Generate files based on data model.
-     * 
-     * @param model data model
-     * @param templateFile Equivalent to the template name of the template base directory.
-     * @param outputFile Output directory and file name.
-     */
-    public static void processFile(final Object model, final String templateFile, final String outputFile) {
-        try (Writer writer = new FileWriter(outputFile)) {
-            Template template = CONFIGURATION.getTemplate(templateFile);
-            template.process(model, writer);
-        } catch (TemplateException | IOException e) {
-            e.printStackTrace();
+    @SuppressWarnings("unchecked")
+    public static void main(final String[] args) throws IOException, TemplateException {
+        try (InputStream input = ExampleGenerateEngine.class.getResourceAsStream(DATA_MODEL_PATH)) {
+            Map<String, String> dataModel = new Yaml().loadAs(input, Map.class);
+            fillTemplateMap(dataModel);
+            generateJavaCodes(dataModel);
+            generateResourcesFile(dataModel);
         }
-    }
-    
-    /**
-     * Placeholder replacement.
-     * 
-     * @param model data model
-     * @param templateString String template
-     * @return Replace the placeholder string
-     */
-    public static String processString(final Object model, final String templateString) {
-        try (StringWriter result = new StringWriter();
-             StringReader reader = new StringReader(templateString)) {
-            Template t = new Template("string", reader, CONFIGURATION);
-            t.process(model, result);
-            return result.toString();
-        } catch (IOException | TemplateException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
     
     private static void fillTemplateMap(final Map<String, String> dataModel) {
@@ -145,21 +113,35 @@ public final class ExampleGenerateEngine {
         resourceTemplateMap = ExampleTemplateFactory.getResourceTemplate(dataModel);
     }
     
-    private static void generateJavaCode(final Map<String, String> dataModel) {
+    private static void generateJavaCodes(final Map<String, String> dataModel) throws IOException, TemplateException {
         String fileName = processString(dataModel, FILE_NAME_PREFIX);
         String outputPath = processString(dataModel, OUTPUT_PATH + JAVA_CLASS_PATH);
-        for (String key : renameTemplateMap.keySet()) {
-            processFile(dataModel, "/template/" + renameTemplateMap.get(key), outputPath + "/" + fileName + key + ".java");
+        for (String each : renameTemplateMap.keySet()) {
+            processFile(dataModel, "/template/" + renameTemplateMap.get(each), outputPath + "/" + fileName + each + ".java");
         }
-        for (String key : unRenameTemplateMap.keySet()) {
-            processFile(dataModel, "/template/" + key + ".ftl", outputPath + "/" + unRenameTemplateMap.get(key));
+        for (String each : unRenameTemplateMap.keySet()) {
+            processFile(dataModel, "/template/" + each + ".ftl", outputPath + "/" + unRenameTemplateMap.get(each));
         }
     }
     
-    private static void generateResourcesFile(final Map<String, String> dataModel) {
+    private static void generateResourcesFile(final Map<String, String> dataModel) throws IOException, TemplateException {
         String outputPath = processString(dataModel, OUTPUT_PATH + RESOURCES_PATH);
-        for (String key : resourceTemplateMap.keySet()) {
-            processFile(dataModel, "/template/" + key + ".ftl", outputPath + "/" + resourceTemplateMap.get(key));
+        for (String each : resourceTemplateMap.keySet()) {
+            processFile(dataModel, "/template/" + each + ".ftl", outputPath + "/" + resourceTemplateMap.get(each));
+        }
+    }
+    
+    private static String processString(final Object model, final String templateString) throws IOException, TemplateException {
+        try (StringWriter result = new StringWriter();
+             StringReader reader = new StringReader(templateString)) {
+            new Template("string", reader, TEMPLATE_CONFIG).process(model, result);
+            return result.toString();
+        }
+    }
+    
+    private static void processFile(final Object model, final String templateFile, final String outputFile) throws IOException, TemplateException {
+        try (Writer writer = new FileWriter(outputFile)) {
+            TEMPLATE_CONFIG.getTemplate(templateFile).process(model, writer);
         }
     }
 }
