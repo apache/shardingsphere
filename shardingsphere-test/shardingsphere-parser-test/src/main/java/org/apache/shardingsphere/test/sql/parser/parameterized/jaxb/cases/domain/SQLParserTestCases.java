@@ -92,7 +92,9 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterCollationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterConversionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDatabaseStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDefaultPrivilegesTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDimensionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDomainStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterLanguageStatementTestCase;
@@ -115,6 +117,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDimensionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDomainStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateExtensionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateLanguageStatementTestCase;
@@ -511,6 +514,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-type")
     private final List<CreateTypeStatementTestCase> createTypeStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-extension")
+    private final List<CreateExtensionStatementTestCase> createExtensionStatementTestCase = new LinkedList<>();
     
     @XmlElement(name = "drop-database")
     private final List<DropDatabaseStatementTestCase> dropDatabaseTestCase = new LinkedList<>();
@@ -986,6 +992,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "drop-conversion")
     private final List<DropConversionStatementTestCase> dropConversionStatementTestCase = new LinkedList<>();
     
+    @XmlElement(name = "alter-domain")
+    private final List<AlterDomainStatementTestCase> alterDomainStatementTestCase = new LinkedList<>();
+    
     @XmlElement(name = "alter-aggregate")
     private final List<AlterAggregateStatementTestCase> alterAggregateStatementTestCase = new LinkedList<>();
     
@@ -994,6 +1003,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "alter-collation")
     private final List<AlterCollationStatementTestCase> alterCollationStatementTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "alter-default-privileges")
+    private final List<AlterDefaultPrivilegesTestCase> alterDefaultPrivilegesTestCase = new LinkedList<>();
     
     @XmlElement(name = "create-text-search")
     private final List<CreateTextSearchStatementTestCase> createTextSearchStatementTestCases = new LinkedList<>();
@@ -1268,9 +1280,11 @@ public final class SQLParserTestCases {
         putAll(createTypeStatementTestCases, result);
         putAll(createConversionStatementTestCase, result);
         putAll(dropConversionStatementTestCase, result);
+        putAll(alterDomainStatementTestCase, result);
         putAll(alterAggregateStatementTestCase, result);
         putAll(alterConversionStatementTestCase, result);
         putAll(alterCollationStatementTestCase, result);
+        putAll(alterDefaultPrivilegesTestCase, result);
         putAll(createTextSearchStatementTestCases, result);
         putAll(alterTextSearchStatementTestCases, result);
         putAll(createLanguageStatementTestCases, result);
@@ -1283,6 +1297,7 @@ public final class SQLParserTestCases {
         putAll(showUnusedShardingKeyGeneratorsStatementTestCases, result);
         putAll(renameTableStatementTestCases, result);
         putAll(showBinlogEventsStatementTestCases, result);
+        putAll(createExtensionStatementTestCase, result);
         putAll(countSchemaRulesStatementTestCases, result);
         return result;
     }

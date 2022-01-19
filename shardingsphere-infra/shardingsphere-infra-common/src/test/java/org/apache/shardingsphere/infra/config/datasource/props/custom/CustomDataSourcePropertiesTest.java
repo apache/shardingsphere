@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.config.datasource.props.custom;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -30,7 +31,8 @@ public final class CustomDataSourcePropertiesTest {
     
     @Test
     public void assertGetProperties() {
-        Map<String, Object> actual = new CustomDataSourceProperties(createProperties(), Arrays.asList("username", "password"), createPropertySynonyms()).getProperties();
+        Map<String, Object> actual = new CustomDataSourceProperties(
+                createProperties(), Arrays.asList("username", "password", "closed"), Collections.singletonList("closed"), createPropertySynonyms()).getProperties();
         assertThat(actual.size(), is(1));
         assertThat(actual.get("foo"), is("bar"));
     }
@@ -39,6 +41,7 @@ public final class CustomDataSourcePropertiesTest {
         Map<String, Object> result = new LinkedHashMap<>(3, 1);
         result.put("user", "root");
         result.put("password", "root");
+        result.put("closed", false);
         result.put("foo", "bar");
         return result;
     }

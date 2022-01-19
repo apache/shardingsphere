@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.config.datasource.pool.metadata.fixture;
 import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,6 +58,11 @@ public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaDat
     @Override
     public String getJdbcUrlPropertiesFieldName() {
         return "jdbcUrlProperties";
+    }
+    
+    @Override
+    public Collection<String> getTransientFieldNames() {
+        return Collections.emptyList();
     }
     
     @Override
