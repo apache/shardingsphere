@@ -105,6 +105,6 @@ ReadwriteSplittingRuleConfiguration readWriteSplittingyRuleConfiguration = new R
 Properties otherProperties = new Properties();
 otherProperties.setProperty("sql-show", "true");
 
-/* shardingDataSource 就是最终被ORM框架或其他jdbc框架引用的数据源名称 */
+/* shardingDataSource 就是最终被 ORM 框架或其他 jdbc 框架引用的数据源名称 */
 DataSource shardingDataSource = ShardingSphereDataSourceFactory.createDataSource(datasourceMaps, Arrays.asList(shardingRuleConfiguration, readWriteSplittingyRuleConfiguration, encryptRuleConfiguration), otherProperties);
 ```
