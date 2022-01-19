@@ -80,7 +80,6 @@ spring.shardingsphere.rules.sharding.sharding-algorithms.user-detail-table-strat
 
 # 分布式序列算法配置
 spring.shardingsphere.rules.sharding.key-generators.snowflake.type=SNOWFLAKE
-spring.shardingsphere.rules.sharding.key-generators.snowflake.props.worker-id=123
 
 # 读写分离策略配置
 # ds_0,ds_1为读写分离配置的逻辑数据源名称
