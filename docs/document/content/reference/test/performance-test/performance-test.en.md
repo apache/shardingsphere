@@ -119,8 +119,6 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-        worker-id: 123
 ```
 
 #### Readwrite-splitting Configuration
@@ -257,8 +255,6 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-          worker-id: 123
 - !READWRITE_SPLITTING
   dataSources:
     pr_ds_0:
@@ -372,8 +368,6 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-        worker-id: 123  
 ```
 
 ## Test Result Verification
