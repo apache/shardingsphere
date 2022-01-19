@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.config.datasource.pool.metadata;
 import org.apache.shardingsphere.spi.required.RequiredSPI;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -61,4 +62,11 @@ public interface DataSourcePoolMetaData extends TypedSPI, RequiredSPI {
      * @return JDBC URL properties field name
      */
     String getJdbcUrlPropertiesFieldName();
+    
+    /**
+     * Get transient field names.
+     * 
+     * @return transient field names
+     */
+    Collection<String> getTransientFieldNames();
 }

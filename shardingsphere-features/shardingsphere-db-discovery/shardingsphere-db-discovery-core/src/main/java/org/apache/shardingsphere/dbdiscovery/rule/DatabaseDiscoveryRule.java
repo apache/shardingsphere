@@ -53,6 +53,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -176,9 +177,9 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     }
     
     @Override
-    public Map<String, Object> export() {
-        Map<String, Object> result = new HashMap<>(1, 1);
-        result.put(ExportableConstants.PRIMARY_DATA_SOURCE_KEY, exportPrimaryDataSourceMap());
+    public Map<String, Supplier<Object>> getExportedMethods() {
+        Map<String, Supplier<Object>> result = new HashMap<>(1, 1);
+        result.put(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE, this::exportPrimaryDataSourceMap);
         return result;
     }
     

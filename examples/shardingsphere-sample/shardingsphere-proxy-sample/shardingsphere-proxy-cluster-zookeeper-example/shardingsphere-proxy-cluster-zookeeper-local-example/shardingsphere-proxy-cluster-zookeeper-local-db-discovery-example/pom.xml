@@ -28,4 +28,3 @@
     <artifactId>shardingsphere-proxy-cluster-zookeeper-local-db-discovery-example</artifactId>
     <name>${project.artifactId}</name>
 </project>
-

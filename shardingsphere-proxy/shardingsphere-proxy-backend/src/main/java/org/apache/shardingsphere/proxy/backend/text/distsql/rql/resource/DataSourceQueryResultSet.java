@@ -74,24 +74,14 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
         String dataSourceName = dataSourceNames.next();
         DataSourceMetaData metaData = resource.getDataSourcesMetaData().getDataSourceMetaData(dataSourceName);
         return Arrays.asList(dataSourceName, resource.getDatabaseType().getName(), metaData.getHostname(), metaData.getPort(), metaData.getCatalog(), 
-                new Gson().toJson(getFilteredUndisplayedProperties(dataSourcePropsMap.get(dataSourceName).getStandardProperties())));
+                new Gson().toJson(getFilteredUndisplayedProperties(dataSourcePropsMap.get(dataSourceName))));
     }
     
-    // TODO to be configured
-    private Map<String, Object> getFilteredUndisplayedProperties(final Map<String, Object> standardProps) {
-        Map<String, Object> result = new HashMap<>(standardProps);
-        result.remove("url");
-        result.remove("jdbcUrl");
-        result.remove("user");
-        result.remove("username");
-        result.remove("password");
-        result.remove("running");
-        result.remove("poolName");
-        result.remove("registerMbeans");
-        result.remove("closed");
-        for (Entry<String, Object> entry : standardProps.entrySet()) {
-            if (entry.getValue() instanceof Collection || entry.getValue() instanceof Map) {
-                result.remove(entry.getKey());
+    private Map<String, Object> getFilteredUndisplayedProperties(final DataSourceProperties dataSourceProperties) {
+        Map<String, Object> result = new HashMap<>(dataSourceProperties.getPoolPropertySynonyms().getStandardProperties());
+        for (Entry<String, Object> entry : dataSourceProperties.getCustomDataSourceProperties().getProperties().entrySet()) {
+            if (!(entry.getValue() instanceof Collection) && !(entry.getValue() instanceof Map)) {
+                result.put(entry.getKey(), entry.getValue());
             }
         }
         return new TreeMap<>(result);

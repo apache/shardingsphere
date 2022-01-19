@@ -50,17 +50,17 @@ public final class BindingTableRuleTest {
     
     @Test
     public void assertGetBindingActualTablesSuccess() {
-        assertThat(createBindingTableRule().getBindingActualTable("ds1", "Sub_Logic_Table", "table_1"), is("SUB_TABLE_1"));
+        assertThat(createBindingTableRule().getBindingActualTable("ds1", "Sub_Logic_Table", "LOGIC_TABLE", "table_1"), is("SUB_TABLE_1"));
     }
     
     @Test(expected = ShardingSphereConfigurationException.class)
     public void assertGetBindingActualTablesFailureWhenNotFound() {
-        createBindingTableRule().getBindingActualTable("no_ds", "Sub_Logic_Table", "table_1");
+        createBindingTableRule().getBindingActualTable("no_ds", "Sub_Logic_Table", "LOGIC_TABLE", "table_1");
     }
     
     @Test(expected = ShardingSphereConfigurationException.class)
     public void assertGetBindingActualTablesFailureWhenLogicTableNotFound() {
-        createBindingTableRule().getBindingActualTable("ds0", "No_Logic_Table", "table_1");
+        createBindingTableRule().getBindingActualTable("ds0", "No_Logic_Table", "LOGIC_TABLE", "table_1");
     }
     
     @Test

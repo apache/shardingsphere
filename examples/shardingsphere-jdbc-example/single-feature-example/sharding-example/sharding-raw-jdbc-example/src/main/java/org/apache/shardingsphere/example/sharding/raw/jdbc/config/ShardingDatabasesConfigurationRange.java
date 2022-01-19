@@ -52,7 +52,7 @@ public final class ShardingDatabasesConfigurationRange implements ExampleConfigu
         result.getBroadcastTables().add("t_address");
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "standard_test_db"));
         result.getShardingAlgorithms() .put("standard_test_db", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST_DB", new Properties()));
-        result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", getProperties()));
+        result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties()));
         return result;
     }
     
@@ -72,12 +72,6 @@ public final class ShardingDatabasesConfigurationRange implements ExampleConfigu
         Map<String, DataSource> result = new HashMap<>();
         result.put("demo_ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
         result.put("demo_ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
-        return result;
-    }
-    
-    private static Properties getProperties() {
-        Properties result = new Properties();
-        result.setProperty("worker-id", "123");
         return result;
     }
 }

@@ -70,8 +70,11 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
         discoveryTypes = ruleConfig.map(DatabaseDiscoveryRuleConfiguration::getDiscoveryTypes).orElse(Collections.emptyMap());
         discoveryHeartbeats = ruleConfig.map(DatabaseDiscoveryRuleConfiguration::getDiscoveryHeartbeats).orElse(Collections.emptyMap());
         Optional<ExportableRule> exportableRule = metaData.getRuleMetaData().getRules()
-                .stream().filter(each -> each instanceof ExportableRule).map(each -> (ExportableRule) each).findAny();
-        primaryDataSources = (Map<String, String>) exportableRule.map(optional -> optional.export().get(ExportableConstants.PRIMARY_DATA_SOURCE_KEY)).orElse(Collections.emptyMap());
+                .stream().filter(each -> each instanceof ExportableRule)
+                .filter(each -> ((ExportableRule) each).containExportableKey(Collections.singleton(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE)))
+                .map(each -> (ExportableRule) each).findAny();
+        primaryDataSources = (Map<String, String>) (exportableRule.map(optional -> optional.export(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE).orElse(Collections.emptyMap()))
+                .orElseGet(Collections::emptyMap));
     }
     
     @Override

@@ -17,9 +17,27 @@
 
 package org.apache.shardingsphere.spring.namespace;
 
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.spring.namespace.util.EmbedTestingServer;
+import org.apache.shardingsphere.spring.namespace.util.FieldValueUtil;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
-// TODO Adjust readwrite-splitting api fix it
-/*@ContextConfiguration(locations = "classpath:META-INF/rdb/cluster-application-context-sharding-readwrite-splitting.xml")
+import javax.sql.DataSource;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
+
+@ContextConfiguration(locations = "classpath:META-INF/rdb/cluster-application-context-sharding-readwrite-splitting.xml")
 public final class SpringNamespaceWithShardingAndReadwriteSplittingForClusterTest extends AbstractJUnit4SpringContextTests {
     
     @BeforeClass
@@ -54,4 +72,4 @@ public final class SpringNamespaceWithShardingAndReadwriteSplittingForClusterTes
         return contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules().stream().filter(
             each -> each instanceof ShardingRule).map(each -> (ShardingRule) each).findFirst();
     }
-}*/
+}

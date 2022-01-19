@@ -17,13 +17,16 @@
 
 package org.apache.shardingsphere.example.engine;
 
-import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Framework type.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
+@Getter
 public enum FrameworkType {
+    
     JDBC("jdbc"),
     SPRING_BOOT_STARTER_JDBC("spring-boot-starter-jdbc"),
     SPRING_BOOT_STARTER_JPA("spring-boot-starter-jpa"),
@@ -33,8 +36,4 @@ public enum FrameworkType {
     SPRING_BOOT_NAMESPACE_MYBATIS("spring-namespace-mybatis");
     
     private final String framework;
-    
-    public String getFramework() {
-        return framework;
-    }
 }

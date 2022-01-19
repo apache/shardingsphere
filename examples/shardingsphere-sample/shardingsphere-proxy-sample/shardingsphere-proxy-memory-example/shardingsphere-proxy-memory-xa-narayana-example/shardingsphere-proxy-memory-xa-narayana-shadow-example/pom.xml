@@ -27,7 +27,7 @@
     </parent>
     <artifactId>shardingsphere-proxy-memory-xa-narayana-shadow-example</artifactId>
     <name>${project.artifactId}</name>
-
+    
     <!--
     Note：the following dependent jars need to be downloaded and copied to conf/lib in proxy.
     -->
@@ -54,5 +54,3 @@
         </dependency>
     </dependencies>
 </project>
-
-

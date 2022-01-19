@@ -28,4 +28,3 @@
     <artifactId>shardingsphere-proxy-standalone-file-local-encrypt-example</artifactId>
     <name>${project.artifactId}</name>
 </project>
-
