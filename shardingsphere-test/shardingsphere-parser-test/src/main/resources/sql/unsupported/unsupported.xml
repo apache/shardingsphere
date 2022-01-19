@@ -9096,13 +9096,6 @@
     <sql-case id="low_xa_by_mysql_source_test_case8" value="xa start 0x7465737462, 0x2030405060, 0xb" db-types="MySQL"/>
     <sql-case id="low_xa_by_mysql_source_test_case9" value="xa start 0xABCDEF1234567890, 0x01, 0x02" db-types="MySQL"/>
     <sql-case id="table_union" value="TABLE T1 UNION TABLE T2" db-types="MySQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case21" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_addr_user IN SCHEMA public GRANT ALL ON TABLES TO regress_addr_user;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case22" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_addr_user REVOKE DELETE ON TABLES FROM regress_addr_user;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case23" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_dep_user1 IN SCHEMA deptest   GRANT ALL ON TABLES TO regress_dep_user2;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case24" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_matview_user   GRANT INSERT ON TABLES TO regress_matview_user;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case25" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_matview_user   REVOKE INSERT ON TABLES FROM regress_matview_user;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case26" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_selinto_user 	  GRANT INSERT ON TABLES TO regress_selinto_user;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case27" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_selinto_user 	  REVOKE INSERT ON TABLES FROM regress_selinto_user;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case32" value="ALTER FOREIGN DATA WRAPPER alt_fdw1 RENAME TO alt_fdw2;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case33" value="ALTER FOREIGN DATA WRAPPER alt_fdw1 RENAME TO alt_fdw3;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case34" value="ALTER FOREIGN DATA WRAPPER foo HANDLER invalid_fdw_handler;" db-types="PostgreSQL"/>
@@ -13353,7 +13346,6 @@
     <sql-case id="with_by_postgresql_source_test_case20" value="WITH v(val) AS   (VALUES(&apos;0&apos;::numeric),(&apos;-4.2&apos;),(&apos;4.2e9&apos;),(&apos;1.2e-5&apos;),(&apos;inf&apos;),(&apos;-inf&apos;),(&apos;nan&apos;)) SELECT val,   to_char(val, &apos;MI99.99&apos;) as numeric,   to_char(val::float8, &apos;MI99.99&apos;) as float8,   to_char(val::float4, &apos;MI99.99&apos;) as float4 FROM v;" db-types="PostgreSQL"/>
     <sql-case id="with_by_postgresql_source_test_case21" value="WITH v(val) AS   (VALUES(&apos;0&apos;::numeric),(&apos;-4.2&apos;),(&apos;4.2e9&apos;),(&apos;1.2e-5&apos;),(&apos;inf&apos;),(&apos;-inf&apos;),(&apos;nan&apos;)) SELECT val,   to_char(val, &apos;MI9999999999.99&apos;) as numeric,   to_char(val::float8, &apos;MI9999999999.99&apos;) as float8,   to_char(val::float4, &apos;MI9999999999.99&apos;) as float4 FROM v;" db-types="PostgreSQL"/>
     <sql-case id="with_by_postgresql_source_test_case22" value="WITH v(x) AS   (VALUES(&apos;0&apos;::numeric),(&apos;1&apos;),(&apos;-1&apos;),(&apos;4.2&apos;),(&apos;inf&apos;),(&apos;-inf&apos;),(&apos;nan&apos;)) SELECT x1, x2,   x1 / x2 AS quot,   x1 % x2 AS mod,   div(x1, x2) AS div FROM v AS v1(x1), v AS v2(x2) WHERE x2 != 0;" db-types="PostgreSQL"/>
-    <sql-case id="low_alter_by_postgresql_source_test_case3" value="alter default privileges for role regress_evt_user  revoke delete on tables from regress_evt_user;" db-types="PostgreSQL"/>
     <sql-case id="low_alter_by_postgresql_source_test_case41" value="alter event trigger regress_event_trigger disable;" db-types="PostgreSQL"/>
     <sql-case id="low_alter_by_postgresql_source_test_case42" value="alter event trigger regress_event_trigger disable;" db-types="PostgreSQL"/>
     <sql-case id="low_alter_by_postgresql_source_test_case43" value="alter event trigger regress_event_trigger enable always;" db-types="PostgreSQL"/>

@@ -58,6 +58,7 @@ execute
     | alterFunction
     | alterDatabase
     | alterDomain
+    | alterDefaultPrivileges
     | alterProcedure
     | alterServer
     | alterSequence
