@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResour
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
-import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node.StorageStatusNode;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -131,11 +130,11 @@ public final class SetReadwriteSplittingStatusExecutor implements SetStatementEx
     private Map<String, Map<String, String>> getExportedReadwriteSplittingRules(final String schemaName) {
         Map<String, Map<String, String>> readwriteSplittingRules = new HashMap<>();
         ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().findRules(ReadwriteSplittingRule.class).stream().findAny()
-                .map(each -> ((ExportableRule) each).export())
-                .filter(each -> each.containsKey(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY) || each.containsKey(ExportableConstants.DATA_SOURCE_KEY))
+                .filter(each -> each.containExportableKey(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE)))
+                .map(each -> each.export(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE)))
                 .ifPresent(each -> {
-                    readwriteSplittingRules.putAll((Map) each.getOrDefault(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY, Collections.emptyMap()));
-                    readwriteSplittingRules.putAll((Map) each.getOrDefault(ExportableConstants.DATA_SOURCE_KEY, Collections.emptyMap()));
+                    readwriteSplittingRules.putAll((Map) each.getOrDefault(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, Collections.emptyMap()));
+                    readwriteSplittingRules.putAll((Map) each.getOrDefault(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE, Collections.emptyMap()));
                 });
         return readwriteSplittingRules;
     }

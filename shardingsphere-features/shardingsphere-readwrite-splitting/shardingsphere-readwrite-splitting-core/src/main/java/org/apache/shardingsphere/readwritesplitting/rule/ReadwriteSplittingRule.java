@@ -43,6 +43,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Map.Entry;
+import java.util.function.Supplier;
 
 /**
  * Readwrite-splitting rule.
@@ -120,11 +121,11 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     }
     
     @Override
-    public Map<String, Object> export() {
-        Map<String, Object> result = new HashMap<>(1, 1);
-        result.put(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY, exportDataSourceNames());
-        result.put(ExportableConstants.AUTO_AWARE_DATA_SOURCE_NAME, exportAutoAwareDataSourceNames());
-        result.put(ExportableConstants.DATA_SOURCE_KEY, exportDataSourceNames());
+    public Map<String, Supplier<Object>> getExportedMethods() {
+        Map<String, Supplier<Object>> result = new HashMap<>(3, 1);
+        result.put(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, this::exportDataSourceNames);
+        result.put(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_NAME, this::exportAutoAwareDataSourceNames);
+        result.put(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE, this::exportDataSourceNames);
         return result;
     }
     
