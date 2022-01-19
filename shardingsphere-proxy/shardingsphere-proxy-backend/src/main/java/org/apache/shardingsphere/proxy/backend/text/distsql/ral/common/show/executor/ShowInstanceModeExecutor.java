@@ -71,11 +71,11 @@ public final class ShowInstanceModeExecutor extends AbstractShowExecutor {
     
     private Collection<List<Object>> buildRows(final ComputeNodeInstance instance, final PersistRepository persistService) {
         // TODO After metadata is saved overwrite, add the display of overwrite
-        return Collections.singleton(Arrays.asList(instance.getInstanceDefinition().getInstanceId().getId(), persistService.getType().toLowerCase(),
-                getRepositoryName(persistService), PropertiesConverter.convert(persistService.getProps())));
+        return Collections.singleton(Arrays.asList(instance.getInstanceDefinition().getInstanceId().getId(), getTypeName(persistService), persistService.getType().toLowerCase(),
+                PropertiesConverter.convert(persistService.getProps())));
     }
     
-    private String getRepositoryName(final PersistRepository persistRepository) {
+    private String getTypeName(final PersistRepository persistRepository) {
         if (persistRepository instanceof ClusterPersistRepository) {
             return "cluster";
         } else if (persistRepository instanceof StandalonePersistRepository) {
