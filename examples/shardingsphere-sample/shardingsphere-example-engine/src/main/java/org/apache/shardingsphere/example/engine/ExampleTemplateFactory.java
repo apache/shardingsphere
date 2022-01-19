@@ -21,26 +21,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Example template resource factory.
+ * Example template factory.
  */
 public final class ExampleTemplateFactory {
     
-    private static final String FEATURE_KEY = "feature";
-    
     private static final String FRAMEWORK_KEY = "framework";
     
+    private static final String FEATURE_KEY = "feature";
+    
     /**
-     * Get the template resource that needs to be renamed.
+     * Get template resources that need to be renamed.
      * 
      * @param dataModel data model
      * @return rename template map
      */
     public static Map<String, String> getRenameTemplate(final Map<String, String> dataModel) {
-        Map<String, String> result = new HashMap<>(4, 1);
+        Map<String, String> result = new HashMap<>(3, 1);
         result.put("Example", "java/Example.ftl");
         result.put("ExampleService", "java/ExampleService.ftl");
-        String framework = dataModel.get(FRAMEWORK_KEY);
-        if (FrameworkType.JDBC.getFramework().equals(framework)) {
+        if (FrameworkType.JDBC.getFramework().equals(dataModel.get(FRAMEWORK_KEY))) {
             result.put("Configuration", "java/config/configuration.ftl");
         }
         return result;
@@ -50,30 +49,34 @@ public final class ExampleTemplateFactory {
      * Get template resources that do not need to be renamed.
      * 
      * @param dataModel data model
-     * @return not need rename map
+     * @return not need rename template map
      */
     public static Map<String, String> getUnReNameTemplate(final Map<String, String> dataModel) {
-        String feature = dataModel.get(FEATURE_KEY);
-        String framework = dataModel.get(FRAMEWORK_KEY);
-        Map<String, String> result = new HashMap<>(8, 1);
-        if (null != feature && feature.contains(FeatureType.ENCRYPT.getFeature())) {
+        Map<String, String> result = new HashMap<>(7, 1);
+        if (dataModel.getOrDefault(FEATURE_KEY, "").contains(FeatureType.ENCRYPT.getFeature())) {
             result.put("java/TestQueryAssistedShardingEncryptAlgorithm", "TestQueryAssistedShardingEncryptAlgorithm.java");
         }
         result.put("java/entity/Order", "entity/Order.java");
         result.put("java/entity/OrderItem", "entity/OrderItem.java");
         result.put("java/entity/Address", "entity/Address.java");
-        if (framework.contains("jdbc")) {
-            result.put("java/repository/jdbc/OrderItemRepository", "repository/OrderItemRepository.java");
-            result.put("java/repository/jdbc/OrderRepository", "repository/OrderRepository.java");
-            result.put("java/repository/jdbc/AddressRepository", "repository/AddressRepository.java");
-        } else if (framework.contains("jpa")) {
-            result.put("java/repository/jpa/OrderItemRepository", "repository/OrderItemRepository.java");
-            result.put("java/repository/jpa/OrderRepository", "repository/OrderRepository.java");
-            result.put("java/repository/jpa/AddressRepository", "repository/AddressRepository.java");
-        } else if (framework.contains("mybatis")) {
-            result.put("java/repository/mybatis/OrderItemRepository", "repository/OrderItemRepository.java");
-            result.put("java/repository/mybatis/OrderRepository", "repository/OrderRepository.java");
-            result.put("java/repository/mybatis/AddressRepository", "repository/AddressRepository.java");
+        switch (dataModel.get(FRAMEWORK_KEY)) {
+            case "jdbc":
+                result.put("java/repository/jdbc/OrderItemRepository", "repository/OrderItemRepository.java");
+                result.put("java/repository/jdbc/OrderRepository", "repository/OrderRepository.java");
+                result.put("java/repository/jdbc/AddressRepository", "repository/AddressRepository.java");
+                break;
+            case "jpa":
+                result.put("java/repository/jpa/OrderItemRepository", "repository/OrderItemRepository.java");
+                result.put("java/repository/jpa/OrderRepository", "repository/OrderRepository.java");
+                result.put("java/repository/jpa/AddressRepository", "repository/AddressRepository.java");
+                break;
+            case "mybatis":
+                result.put("java/repository/mybatis/OrderItemRepository", "repository/OrderItemRepository.java");
+                result.put("java/repository/mybatis/OrderRepository", "repository/OrderRepository.java");
+                result.put("java/repository/mybatis/AddressRepository", "repository/AddressRepository.java");
+                break;
+            default:
+                break;
         }
         return result;
     }
@@ -85,23 +88,26 @@ public final class ExampleTemplateFactory {
      * @return resource map
      */
     public static Map<String, String> getResourceTemplate(final Map<String, String> dataModel) {
-        String feature = dataModel.get(FEATURE_KEY);
-        String framework = dataModel.get(FRAMEWORK_KEY);
-        Map<String, String> result = new HashMap<>(8, 1);
-        result.put("resources/logback", "logback.xml");
-        if (null != feature && feature.contains(FeatureType.ENCRYPT.getFeature())) {
+        Map<String, String> result = new HashMap<>(6, 1);
+        if (dataModel.getOrDefault(FEATURE_KEY, "").contains(FeatureType.ENCRYPT.getFeature())) {
             result.put("resources/spi/encryptAlgorithm", "META-INF/services/org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm");
         }
-        if (framework.contains("spring-boot-starter")) {
-            result.put("resources/properties/application", "application.properties");
-        } else if (framework.contains("spring-namespace")) {
-            result.put("resources/xml/application", "application.xml");
+        switch (dataModel.get(FRAMEWORK_KEY)) {
+            case "spring-boot-starter":
+                result.put("resources/properties/application", "application.properties");
+                break;
+            case "spring-namespace":
+                result.put("resources/xml/application", "application.xml");
+                break;
+            case "mybatis":
+                result.put("resources/mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
+                result.put("resources/mappers/OrderMapper", "mappers/OrderMapper.xml");
+                result.put("resources/mappers/AddressMapper", "mappers/AddressMapper.xml");
+                break;
+            default:
+                break;
         }
-        if (framework.contains("mybatis")) {
-            result.put("resources/mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
-            result.put("resources/mappers/OrderMapper", "mappers/OrderMapper.xml");
-            result.put("resources/mappers/AddressMapper", "mappers/AddressMapper.xml");
-        }
+        result.put("resources/logback", "logback.xml");
         return result;
     }
 }
