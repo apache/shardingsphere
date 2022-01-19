@@ -54,6 +54,8 @@ public enum SQLVisitorRule {
     
     ALTER_COLLATION("AlterCollation", SQLStatementType.DDL),
     
+    ALTER_DEFAULT_PRIVILEGES("AlterDefaultPrivileges", SQLStatementType.DDL),
+    
     DROP_TABLE("DropTable", SQLStatementType.DDL),
     
     TRUNCATE_TABLE("TruncateTable", SQLStatementType.DDL),
