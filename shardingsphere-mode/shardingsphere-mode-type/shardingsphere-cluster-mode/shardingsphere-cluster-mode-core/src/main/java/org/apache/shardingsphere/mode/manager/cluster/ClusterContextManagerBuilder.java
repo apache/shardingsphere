@@ -27,20 +27,15 @@ import org.apache.shardingsphere.infra.config.datasource.props.DataSourcePropert
 import org.apache.shardingsphere.infra.config.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
-import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
-import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.ClusterContextManagerCoordinator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.generator.ClusterWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
@@ -117,8 +112,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private void afterBuildContextManager(final ContextManagerBuilderParameter parameter) {
-        new ClusterContextManagerCoordinator(metaDataPersistService, contextManager);
-        buildSpecialRules();
+        new ClusterContextManagerCoordinator(metaDataPersistService, contextManager, registryCenter);
         registryCenter.onlineInstance(parameter.getInstanceDefinition());
     }
     
@@ -224,25 +218,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final MetaDataPersistService metaDataPersistService, final Collection<String> schemaNames) {
         return schemaNames.stream().collect(Collectors.toMap(
             each -> each, each -> metaDataPersistService.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-    }
-    
-    private void buildSpecialRules() {
-        metaDataContexts.getMetaDataMap().forEach((key, value) -> value.getRuleMetaData().getRules().stream().forEach(each -> {
-            if (each instanceof StatusContainedRule) {
-                disableDataSources(key, (StatusContainedRule) each);
-            } else if (each instanceof InstanceAwareRule) {
-                ((InstanceAwareRule) each).setInstanceContext(instanceContext);
-            }
-        }));
-    }
-    
-    private void disableDataSources(final String schemaName, final StatusContainedRule rule) {
-        Collection<String> disabledDataSources = registryCenter.getStorageNodeStatusService().loadStorageNodes(schemaName, StorageNodeStatus.DISABLE);
-        disabledDataSources.stream().map(this::getDataSourceName).forEach(each -> rule.updateStatus(new DataSourceNameDisabledEvent(each, true)));
-    }
-    
-    private String getDataSourceName(final String disabledDataSource) {
-        return new QualifiedSchema(disabledDataSource).getDataSourceName();
     }
     
     private void persistMetaData(final Map<String, ShardingSphereSchema> schemas) {

@@ -44,7 +44,9 @@ jobs:
         uses: apache/skywalking-eyes@main
         
   windows:
+    needs: check-license
     runs-on: windows-latest
+    timeout-minutes: 60
     steps:
       - name: Cache Maven Repos
         uses: actions/cache@v2
@@ -74,11 +76,13 @@ jobs:
   
   unix:
     name: CI Tests - JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
+    needs: check-license
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, macos-latest ]
+        os: [ ubuntu-latest ]
         java:
           - {
             version: 8,
@@ -91,6 +95,38 @@ jobs:
           - {
             version: 17,
             maven_args: "-Dmaven.javadoc.skip=true"
+          }
+    steps:
+      - name: Cache Maven Repos
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - uses: actions/checkout@v2
+      - name: Set up JDK ${{ matrix.java.version }}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java.version }}
+      - name: Build with Maven
+        run: echo y | ./mvnw -B clean install ${{ matrix.java.maven_args }}
+      - name: Build examples with Maven
+        run: echo y | ./mvnw -B -f examples/pom.xml clean package -DskipTests
+
+  macos:
+    name: CI Tests - JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
+    needs: check-license
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ macos-latest ]
+        java:
+          - {
+            version: 8,
+            maven_args: "cobertura:cobertura -Dmaven.javadoc.skip=true"
           }
     steps:
       - name: Cache Maven Repos

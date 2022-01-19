@@ -99,6 +99,10 @@
         <schema name="sharding_db" start-index="36" stop-index="46"/>
     </show-default-sharding-strategy>
 
+    <show-sharding-scaling-rules sql-case-id="show-sharding-scaling-rules">
+        <schema name="schemaName" start-index="33" stop-index="42"/>
+    </show-sharding-scaling-rules>
+
     <show-unused-sharding-algorithms sql-case-id="show-unused-sharding-algorithms">
         <schema name="schemaName" start-index="37" stop-index="46"/>
     </show-unused-sharding-algorithms>
