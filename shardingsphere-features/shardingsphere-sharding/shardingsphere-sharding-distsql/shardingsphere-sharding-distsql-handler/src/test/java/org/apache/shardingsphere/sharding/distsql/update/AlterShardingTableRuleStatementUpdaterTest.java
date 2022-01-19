@@ -157,7 +157,7 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
         result.setKeyGenerateSegment(new KeyGenerateSegment("product_id", new AlgorithmSegment("SNOWFLAKE_TEST", newProperties("work", "123"))));
         return result;
     }
-
+    
     private AlgorithmSegment getAutoCreativeAlgorithmSegment(final String name, final Properties properties) {
         return new AlgorithmSegment(name, properties);
     }
@@ -172,16 +172,16 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     }
     
     private ShardingTableRuleConfiguration createTableRuleConfiguration() {
-        ShardingTableRuleConfiguration tableRuleConfiguration = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order${0..1}");
-        tableRuleConfiguration.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_algorithm"));
-        return tableRuleConfiguration;
+        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order${0..1}");
+        result.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_algorithm"));
+        return result;
     }
     
     private ShardingAutoTableRuleConfiguration createAutoTableRuleConfiguration() {
-        ShardingAutoTableRuleConfiguration autoTableRuleConfiguration = new ShardingAutoTableRuleConfiguration("t_order_item", "ds_0");
-        autoTableRuleConfiguration.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_MOD_TEST"));
-        autoTableRuleConfiguration.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("product_id", "product_id_snowflake_test"));
-        return autoTableRuleConfiguration;
+        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("t_order_item", "ds_0");
+        result.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_MOD_TEST"));
+        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("product_id", "product_id_snowflake_test"));
+        return result;
     }
     
     private static Collection<ShardingSphereRule> createShardingSphereRule() {
@@ -189,9 +189,9 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     }
     
     private static Properties newProperties(final String key, final String value) {
-        Properties properties = new Properties();
-        properties.put(key, value);
-        return properties;
+        Properties result = new Properties();
+        result.put(key, value);
+        return result;
     }
     
     private static Map<String, DataSource> createDataSource() {

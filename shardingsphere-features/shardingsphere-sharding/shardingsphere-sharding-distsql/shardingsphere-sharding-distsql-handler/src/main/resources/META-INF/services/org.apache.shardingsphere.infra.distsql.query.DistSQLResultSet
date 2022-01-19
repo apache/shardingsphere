@@ -22,6 +22,7 @@ org.apache.shardingsphere.sharding.distsql.handler.query.ShardingAlgorithmQueryR
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableNodesQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingKeyGeneratorsQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.DefaultShardingStrategyQueryResultSet
+org.apache.shardingsphere.scaling.distsql.handler.query.ShardingScalingRulesQueryResultSet
 org.apache.shardingsphere.scaling.distsql.handler.CheckScalingQueryResultSet
 org.apache.shardingsphere.scaling.distsql.handler.ShowScalingListQueryResultSet
 org.apache.shardingsphere.scaling.distsql.handler.ShowScalingJobStatusQueryResultSet

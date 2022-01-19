@@ -26,6 +26,7 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -80,7 +81,8 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
     }
     
     private boolean isLoadBalancerNotInUse(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final String toBeDroppedLoadBalancerName) {
-        return !currentRuleConfig.getDataSources().stream().anyMatch(each -> each.getLoadBalancerName().equals(toBeDroppedLoadBalancerName));
+        return currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getLoadBalancerName)
+                .filter(Objects::nonNull).noneMatch(toBeDroppedLoadBalancerName::equals);
     }
     
     @Override

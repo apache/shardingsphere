@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.impl;
+package org.apache.shardingsphere.infra.config.datasource.props.custom;
 
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Statement memory strictly fetch size setter for openGauss.
+ * Custom data source properties.
  */
-public final class OpenGaussStatementMemoryStrictlyFetchSizeSetter implements StatementMemoryStrictlyFetchSizeSetter {
+@Getter
+@EqualsAndHashCode
+public final class CustomDataSourceProperties {
     
-    private final PostgreSQLStatementMemoryStrictlyFetchSizeSetter delegated = new PostgreSQLStatementMemoryStrictlyFetchSizeSetter();
+    private final Map<String, Object> properties;
     
-    @Override
-    public void setFetchSize(final Statement statement) throws SQLException {
-        delegated.setFetchSize(statement);
-    }
-    
-    @Override
-    public String getType() {
-        return "openGauss";
+    public CustomDataSourceProperties(final Map<String, Object> props, final Collection<String> standardPropertyKeys, final Map<String, String> propertySynonyms) {
+        properties = new LinkedHashMap<>(props);
+        standardPropertyKeys.forEach(properties::remove);
+        propertySynonyms.values().forEach(properties::remove);
     }
 }

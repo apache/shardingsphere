@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
 
-import org.apache.shardingsphere.spi.singleton.SingletonSPI;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import java.sql.SQLException;
-import java.sql.Statement;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Statement memory strictly fetch size setter.
+ * Show sharding scaling rules statement test case.
  */
-public interface StatementMemoryStrictlyFetchSizeSetter extends TypedSPI, SingletonSPI {
+@Getter
+@Setter
+public final class ShowShardingScalingRulesStatementTestCase extends SQLParserTestCase {
     
-    /**
-     * Set fetch size.
-     * 
-     * @param statement statement to be set
-     * @throws SQLException SQL exception
-     */
-    void setFetchSize(Statement statement) throws SQLException;
+    @XmlElement
+    private ExpectedSchema schema;
 }
