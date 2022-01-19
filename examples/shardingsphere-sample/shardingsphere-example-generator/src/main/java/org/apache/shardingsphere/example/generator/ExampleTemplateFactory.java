@@ -99,13 +99,22 @@ public final class ExampleTemplateFactory {
             result.put("resources/spi/encryptAlgorithm", "META-INF/services/org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm");
         }
         switch (dataModel.get(FRAMEWORK_KEY)) {
-            case "spring-boot-starter":
+            case "springboot-starter-jdbc":
+            case "springboot-starter-jpa":
                 result.put("resources/properties/application", "application.properties");
                 break;
-            case "spring-namespace":
+            case "spring-namespace-jdbc":
+            case "spring-namespace-jpa":
                 result.put("resources/xml/application", "application.xml");
                 break;
-            case "mybatis":
+            case "spring-namespace-mybatis":
+                result.put("resources/xml/application", "application.xml");
+                result.put("resources/mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
+                result.put("resources/mappers/OrderMapper", "mappers/OrderMapper.xml");
+                result.put("resources/mappers/AddressMapper", "mappers/AddressMapper.xml");
+                break;
+            case "springboot-starter-mybatis":
+                result.put("resources/properties/application", "application.properties");
                 result.put("resources/mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
                 result.put("resources/mappers/OrderMapper", "mappers/OrderMapper.xml");
                 result.put("resources/mappers/AddressMapper", "mappers/AddressMapper.xml");
