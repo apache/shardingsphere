@@ -8,9 +8,10 @@ weight = 2
 ```properties
 spring.shardingsphere.datasource.names= # Omit the data source configuration, please refer to the usage
 
-spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.auto-aware-data-source-name= # Auto aware data source name(Use with database discovery)
-spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.write-data-source-name= # Write data source name
-spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.read-data-source-names= # Read data source names, multiple data source names separated with comma
+spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.props.type= # Readwrite-splitting type, such as: Static, Dynamic
+spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.props.auto-aware-data-source-name= # Auto aware data source name(Use with database discovery)
+spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.props.write-data-source-name= # Write data source name
+spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.props.read-data-source-names= # Read data source names, multiple data source names separated with comma
 spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.load-balancer-name= # Load balance algorithm name
 
 # Load balance algorithm configuration
