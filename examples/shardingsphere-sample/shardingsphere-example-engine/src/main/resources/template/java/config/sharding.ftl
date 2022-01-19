@@ -24,7 +24,7 @@
         Properties props = new Properties();
         props.setProperty("algorithm-expression", "${r"ds_${user_id % 2}"}");
         result.getShardingAlgorithms() .put("inline", new ShardingSphereAlgorithmConfiguration("INLINE", props));
-        result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", getProperties()));
+        result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties()));
         return result;
     }
     
@@ -37,11 +37,5 @@
     private static ShardingTableRuleConfiguration getOrderItemTableRuleConfiguration() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order_item");
         result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_item_id", "snowflake"));
-        return result;
-    }
-    
-    private static Properties getProperties() {
-        Properties result = new Properties();
-        result.setProperty("worker-id", "123");
         return result;
     }

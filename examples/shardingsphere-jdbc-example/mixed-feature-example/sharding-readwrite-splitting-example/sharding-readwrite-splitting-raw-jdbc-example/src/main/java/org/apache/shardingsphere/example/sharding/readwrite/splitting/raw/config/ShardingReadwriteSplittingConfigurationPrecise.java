@@ -65,7 +65,7 @@ public final class ShardingReadwriteSplittingConfigurationPrecise implements Exa
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "standard_test_tbl"));
         result.getShardingAlgorithms().put("standard_test_db", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST_DB", new Properties()));
         result.getShardingAlgorithms().put("standard_test_tbl", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
-        result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", getProperties()));
+        result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties()));
         return result;
     }
     
@@ -93,12 +93,6 @@ public final class ShardingReadwriteSplittingConfigurationPrecise implements Exa
         Properties result = new Properties();
         result.setProperty("write-data-source-name", "demo_write_ds_0");
         result.setProperty("read-data-source-names", "demo_write_ds_1_read_0, demo_write_ds_0_read_1");
-        return result;
-    }
-    
-    private static Properties getProperties() {
-        Properties result = new Properties();
-        result.setProperty("worker-id", "123");
         return result;
     }
 }

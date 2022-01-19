@@ -35,14 +35,14 @@ public final class ShardingExecutor extends AbstractFeatureExecutor {
             "RESOURCES(ds_0,ds_1),\n" +
             "SHARDING_COLUMN=order_id,\n" +
             "TYPE(NAME=hash_mod,PROPERTIES(\"sharding-count\"=4)),\n" +
-            "GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES(\"worker-id\"=123)))\n" +
+            "GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake))\n" +
             ");";
     
     private final static String ALTER_RULE = "ALTER SHARDING TABLE RULE t_order (\n" +
             "RESOURCES(ds_0,ds_1),\n" +
             "SHARDING_COLUMN=order_id,\n" +
             "TYPE(NAME=hash_mod,PROPERTIES(\"sharding-count\"=5)),\n" +
-            "GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES(\"worker-id\"=123)))\n" +
+            "GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake))\n" +
             ");";
     
     private final static String DROP_RULE = "DROP SHARDING TABLE RULE t_order;\n";

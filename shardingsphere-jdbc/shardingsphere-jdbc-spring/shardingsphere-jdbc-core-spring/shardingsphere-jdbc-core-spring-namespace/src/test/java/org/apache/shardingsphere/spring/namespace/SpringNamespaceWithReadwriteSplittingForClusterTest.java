@@ -30,7 +30,6 @@ import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgori
 import org.apache.shardingsphere.spring.namespace.util.EmbedTestingServer;
 import org.apache.shardingsphere.spring.namespace.util.FieldValueUtil;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -42,8 +41,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-// TODO Adjust readwrite-splitting api fix it
-@Ignore
 @ContextConfiguration(locations = "classpath:META-INF/rdb/cluster-application-context-readwrite-splitting.xml")
 public final class SpringNamespaceWithReadwriteSplittingForClusterTest extends AbstractJUnit4SpringContextTests {
     

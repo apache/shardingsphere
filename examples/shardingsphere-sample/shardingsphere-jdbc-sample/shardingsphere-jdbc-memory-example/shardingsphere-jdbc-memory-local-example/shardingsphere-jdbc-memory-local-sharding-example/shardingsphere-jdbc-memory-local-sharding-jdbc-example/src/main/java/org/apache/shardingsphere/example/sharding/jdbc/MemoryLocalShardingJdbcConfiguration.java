@@ -63,7 +63,7 @@ public final class MemoryLocalShardingJdbcConfiguration {
         Properties props = new Properties();
         props.setProperty("algorithm-expression", "demo_ds_${user_id % 2}");
         result.getShardingAlgorithms() .put("inline", new ShardingSphereAlgorithmConfiguration("INLINE", props));
-        result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", getProperties()));
+        result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties()));
         return result;
     }
     
@@ -87,12 +87,6 @@ public final class MemoryLocalShardingJdbcConfiguration {
         Map<String, DataSource> result = new HashMap<>(2, 1);
         result.put("demo_ds_0", createDataSource("demo_ds_0"));
         result.put("demo_ds_1", createDataSource("demo_ds_1"));
-        return result;
-    }
-    
-    private static Properties getProperties() {
-        Properties result = new Properties();
-        result.setProperty("worker-id", "123");
         return result;
     }
     
