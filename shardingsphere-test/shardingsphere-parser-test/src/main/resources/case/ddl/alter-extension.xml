@@ -16,7 +16,8 @@
   ~ limitations under the License.
   -->
 
-<sql-cases>
-    <sql-case id="create_extension" value="CREATE EXTENSION hstore;" db-types="PostgreSQL,openGauss" />
-    <sql-case id="create_extension_with_schema" value="CREATE EXTENSION hstore SCHEMA public FROM unpackaged;" db-types="PostgreSQL,openGauss" />
-</sql-cases>
+<sql-parser-test-cases>
+    <alter-extension sql-case-id="alter_extension" />
+    <alter-extension sql-case-id="alter_extension_set_schema" />
+    <alter-extension sql-case-id="alter_extension_add_function" />
+</sql-parser-test-cases>

@@ -17,6 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="create_extension" value="CREATE EXTENSION hstore;" db-types="PostgreSQL,openGauss" />
-    <sql-case id="create_extension_with_schema" value="CREATE EXTENSION hstore SCHEMA public FROM unpackaged;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_extension" value="ALTER EXTENSION hstore UPDATE TO '2.0';" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_extension_set_schema" value="ALTER EXTENSION hstore SET SCHEMA utils;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_extension_add_function" value="ALTER EXTENSION hstore ADD FUNCTION populate_record(anyelement, hstore);" db-types="PostgreSQL,openGauss" />
 </sql-cases>

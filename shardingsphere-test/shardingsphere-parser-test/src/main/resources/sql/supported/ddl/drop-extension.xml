@@ -17,6 +17,5 @@
   -->
 
 <sql-cases>
-    <sql-case id="create_extension" value="CREATE EXTENSION hstore;" db-types="PostgreSQL,openGauss" />
-    <sql-case id="create_extension_with_schema" value="CREATE EXTENSION hstore SCHEMA public FROM unpackaged;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="drop_extension" value="DROP EXTENSION hstore;" db-types="PostgreSQL,openGauss" />
 </sql-cases>
