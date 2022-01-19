@@ -28,7 +28,7 @@ public final class DropShardingScalingRuleStatement extends DropRuleStatement {
     
     private final String scalingName;
     
-    public DropShardingScalingStatement(final String scalingName) {
+    public DropShardingScalingRuleStatement(final String scalingName) {
         super(false);
         this.scalingName = scalingName;
     }
