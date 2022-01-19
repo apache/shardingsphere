@@ -95,7 +95,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         ModeScheduleContextFactory.getInstance().init(parameter.getInstanceDefinition().getInstanceId().getId(), parameter.getModeConfig());
         metaDataPersistService = new MetaDataPersistService(repository);
         persistConfigurations(metaDataPersistService, parameter.getDataSourcesMap(), parameter.getSchemaRuleConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), parameter.isOverwrite());
-        persistInstanceConfigurations(parameter.getLabels(), parameter.getInstanceDefinition());
+        persistInstanceConfigurations(parameter.getLabels(), parameter.getInstanceDefinition(), parameter.isOverwrite());
         Collection<String> schemaNames = Strings.isNullOrEmpty(parameter.getSchemaName()) ? metaDataPersistService.getSchemaMetaDataService()
                 .loadAllNames() : Collections.singletonList(parameter.getSchemaName());
         Map<String, Map<String, DataSource>> clusterDataSources = loadDataSourcesMap(metaDataPersistService, parameter.getDataSourcesMap(), schemaNames);
@@ -131,10 +131,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         }
     }
     
-    private void persistInstanceConfigurations(final Collection<String> labels, final InstanceDefinition instanceDefinition) {
-        if (null != labels && !labels.isEmpty()) {
-            metaDataPersistService.persistInstanceConfigurations(instanceDefinition.getInstanceId().getId(), labels);
-        }
+    private void persistInstanceConfigurations(final Collection<String> labels, final InstanceDefinition instanceDefinition, final boolean overwrite) {
+        metaDataPersistService.persistInstanceConfigurations(instanceDefinition.getInstanceId().getId(), labels, overwrite);
     }
     
     private boolean isEmptyLocalConfiguration(final Map<String, Map<String, DataSource>> dataSourcesMap,
