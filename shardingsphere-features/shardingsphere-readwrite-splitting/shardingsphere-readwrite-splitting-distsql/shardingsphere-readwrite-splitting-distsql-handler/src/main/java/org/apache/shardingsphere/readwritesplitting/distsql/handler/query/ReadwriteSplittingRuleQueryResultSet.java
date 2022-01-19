@@ -49,7 +49,7 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = metaData.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ReadwriteSplittingRuleConfiguration).map(each -> (ReadwriteSplittingRuleConfiguration) each).findAny();
-        ruleConfig.map(optional -> optional.getDataSources().iterator()).orElse(Collections.emptyIterator());
+        ruleConfig.map(optional -> optional.getDataSources().iterator()).orElseGet(Collections::emptyIterator);
         Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = ruleConfig.map(ReadwriteSplittingRuleConfiguration::getLoadBalancers).orElse(Collections.emptyMap());
         Optional<ExportableRule> exportableRule = getExportableRule(metaData);
         ruleConfig.ifPresent(op -> {
@@ -57,7 +57,7 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
             Map<String, Map<String, String>> autoAwareDataSourceMap = Collections.emptyMap();
             Map<String, Map<String, String>> dataSourceMap = Collections.emptyMap();
             if (exportableRule.isPresent()) {
-                Map<String, Object> exportable = exportableRule.get().export(Arrays.asList());
+                Map<String, Object> exportable = exportableRule.get().export(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_KEY, ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE_KEY));
                 autoAwareDataSourceMap = (Map<String, Map<String, String>>) exportable.getOrDefault(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_KEY, Collections.emptyMap());
                 dataSourceMap = (Map<String, Map<String, String>>) exportable.getOrDefault(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE_KEY, Collections.emptyMap());
             }
