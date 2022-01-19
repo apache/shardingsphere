@@ -63,9 +63,6 @@ public final class SQLTokenGenerators {
         List<SQLToken> result = new LinkedList<>();
         for (SQLTokenGenerator each : sqlTokenGenerators.values()) {
             setUpSQLTokenGenerator(each, parameters, schema, result);
-            if (!each.isGenerateSQLToken(sqlStatementContext)) {
-                continue;
-            }
             if (each instanceof OptionalSQLTokenGenerator) {
                 SQLToken sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(sqlStatementContext);
                 if (!result.contains(sqlToken)) {
