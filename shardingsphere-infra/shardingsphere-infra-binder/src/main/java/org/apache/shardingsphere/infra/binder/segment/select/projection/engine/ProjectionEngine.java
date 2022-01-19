@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Sub
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
@@ -122,7 +123,11 @@ public final class ProjectionEngine {
     }
     
     private ExpressionProjection createProjection(final ExpressionProjectionSegment projectionSegment) {
-        return new ExpressionProjection(projectionSegment.getText(), projectionSegment.getAlias().orElse(null));
+        ExpressionProjection result = new ExpressionProjection(projectionSegment.getText(), projectionSegment.getAlias().orElse(null));
+        if (projectionSegment.getExpr() instanceof FunctionSegment) {
+            result.getExpressionSegments().addAll(((FunctionSegment) projectionSegment.getExpr()).getParameters());
+        }
+        return result;
     }
     
     private AggregationDistinctProjection createProjection(final AggregationDistinctProjectionSegment projectionSegment) {
