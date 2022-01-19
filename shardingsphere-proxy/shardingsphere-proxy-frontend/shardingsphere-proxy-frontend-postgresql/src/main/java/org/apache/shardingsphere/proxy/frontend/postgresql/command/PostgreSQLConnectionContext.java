@@ -48,6 +48,7 @@ public final class PostgreSQLConnectionContext {
     /**
      * Get portal.
      *
+     * @param <T> type of Portal
      * @param portal portal name
      * @return portal
      */

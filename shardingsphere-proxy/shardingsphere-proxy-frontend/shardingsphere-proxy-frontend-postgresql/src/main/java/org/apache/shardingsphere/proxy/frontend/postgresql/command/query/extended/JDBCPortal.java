@@ -62,7 +62,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * PostgreSQL portal.
+ * PostgreSQL portal using JDBC backend.
  */
 public final class JDBCPortal implements Portal<Void> {
     
