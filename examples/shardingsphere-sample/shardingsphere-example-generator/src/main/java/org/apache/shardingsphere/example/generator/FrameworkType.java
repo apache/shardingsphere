@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.engine;
+package org.apache.shardingsphere.example.generator;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
