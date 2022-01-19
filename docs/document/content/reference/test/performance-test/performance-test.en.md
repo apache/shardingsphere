@@ -147,9 +147,10 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     pr_ds:
-      writeDataSourceName: primary_ds
-      readDataSourceNames:
-        - replica_ds_0
+      type: Static
+      props:
+        write-data-source-name: primary_ds
+        read-data-source-names: replica_ds_0
 ```
 
 #### Readwrite-splitting & Encrypt & Sharding Configuration
@@ -258,24 +259,28 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     pr_ds_0:
-      writeDataSourceName: primary_ds_0
-      readDataSourceNames:
-        - replica_ds_0
+      type: Static
+      props:
+        write-data-source-name: primary_ds_0
+        read-data-source-names: replica_ds_0
       loadBalancerName: round_robin
     pr_ds_1:
-      writeDataSourceName: primary_ds_1
-      readDataSourceNames:
-        - replica_ds_1
+      type: Static
+      props:
+        write-data-source-name: primary_ds_1
+        read-data-source-names: replica_ds_1
       loadBalancerName: round_robin
     pr_ds_2:
-      writeDataSourceName: primary_ds_2
-      readDataSourceNames:
-        - replica_ds_2
+      type: Static
+      props:
+        write-data-source-name: primary_ds_2
+        read-data-source-names: replica_ds_2
       loadBalancerName: round_robin
     pr_ds_3:
-      writeDataSourceName: primary_ds_3
-      readDataSourceNames:
-        - replica_ds_3
+      type: Static
+      props:
+        write-data-source-name: primary_ds_3
+        read-data-source-names: replica_ds_3
       loadBalancerName: round_robin
   loadBalancers:
     round_robin:
