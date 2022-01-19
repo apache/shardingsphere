@@ -83,7 +83,7 @@ public final class ExampleGenerateEngine {
     
     static {
         try {
-            TEMPLATE_CONFIG.setDirectoryForTemplateLoading(new File(Objects.requireNonNull(ExampleGenerateEngine.class.getClassLoader().getResource("")).getFile()));
+            TEMPLATE_CONFIG.setDirectoryForTemplateLoading(new File(Objects.requireNonNull(ExampleGenerateEngine.class.getClassLoader().getResource("template")).getFile()));
             TEMPLATE_CONFIG.setDefaultEncoding("UTF-8");
         } catch (final IOException ex) {
             ex.printStackTrace();
@@ -117,17 +117,17 @@ public final class ExampleGenerateEngine {
         String fileName = processString(dataModel, FILE_NAME_PREFIX);
         String outputPath = processString(dataModel, OUTPUT_PATH + JAVA_CLASS_PATH);
         for (String each : renameTemplateMap.keySet()) {
-            processFile(dataModel, "/template/" + renameTemplateMap.get(each), outputPath + "/" + fileName + each + ".java");
+            processFile(dataModel, renameTemplateMap.get(each), outputPath + "/" + fileName + each + ".java");
         }
         for (String each : unRenameTemplateMap.keySet()) {
-            processFile(dataModel, "/template/" + each + ".ftl", outputPath + "/" + unRenameTemplateMap.get(each));
+            processFile(dataModel, each, outputPath + "/" + unRenameTemplateMap.get(each));
         }
     }
     
     private static void generateResourcesFile(final Map<String, String> dataModel) throws IOException, TemplateException {
         String outputPath = processString(dataModel, OUTPUT_PATH + RESOURCES_PATH);
         for (String each : resourceTemplateMap.keySet()) {
-            processFile(dataModel, "/template/" + each + ".ftl", outputPath + "/" + resourceTemplateMap.get(each));
+            processFile(dataModel, each, outputPath + "/" + resourceTemplateMap.get(each));
         }
     }
     
@@ -145,4 +145,3 @@ public final class ExampleGenerateEngine {
         }
     }
 }
-

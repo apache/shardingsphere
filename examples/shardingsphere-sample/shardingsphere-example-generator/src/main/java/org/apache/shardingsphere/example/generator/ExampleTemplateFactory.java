@@ -54,32 +54,32 @@ public final class ExampleTemplateFactory {
     public static Map<String, String> getUnReNameTemplate(final Map<String, String> dataModel) {
         Map<String, String> result = new HashMap<>(7, 1);
         if (dataModel.getOrDefault(FEATURE_KEY, "").contains(FeatureType.ENCRYPT.getFeature())) {
-            result.put("java/TestQueryAssistedShardingEncryptAlgorithm", "TestQueryAssistedShardingEncryptAlgorithm.java");
+            result.put("java/TestQueryAssistedShardingEncryptAlgorithm.ftl", "TestQueryAssistedShardingEncryptAlgorithm.java");
         }
-        result.put("java/entity/Order", "entity/Order.java");
-        result.put("java/entity/OrderItem", "entity/OrderItem.java");
-        result.put("java/entity/Address", "entity/Address.java");
+        result.put("java/entity/Order.ftl", "entity/Order.java");
+        result.put("java/entity/OrderItem.ftl", "entity/OrderItem.java");
+        result.put("java/entity/Address.ftl", "entity/Address.java");
         switch (dataModel.get(FRAMEWORK_KEY)) {
             case "jdbc":
             case "springboot-starter-jdbc":
             case "spring-namespace-jdbc":
-                result.put("java/repository/jdbc/OrderItemRepository", "repository/OrderItemRepository.java");
-                result.put("java/repository/jdbc/OrderRepository", "repository/OrderRepository.java");
-                result.put("java/repository/jdbc/AddressRepository", "repository/AddressRepository.java");
+                result.put("java/repository/jdbc/OrderItemRepository.ftl", "repository/OrderItemRepository.java");
+                result.put("java/repository/jdbc/OrderRepository.ftl", "repository/OrderRepository.java");
+                result.put("java/repository/jdbc/AddressRepository.ftl", "repository/AddressRepository.java");
                 break;
             case "jpa":
             case "springboot-starter-jpa":
             case "spring-namespace-jpa":
-                result.put("java/repository/jpa/OrderItemRepository", "repository/OrderItemRepository.java");
-                result.put("java/repository/jpa/OrderRepository", "repository/OrderRepository.java");
-                result.put("java/repository/jpa/AddressRepository", "repository/AddressRepository.java");
+                result.put("java/repository/jpa/OrderItemRepository.ftl", "repository/OrderItemRepository.java");
+                result.put("java/repository/jpa/OrderRepository.ftl", "repository/OrderRepository.java");
+                result.put("java/repository/jpa/AddressRepository.ftl", "repository/AddressRepository.java");
                 break;
             case "mybatis":
             case "springboot-starter-mybatis":
             case "spring-namespace-mybatis":
-                result.put("java/repository/mybatis/OrderItemRepository", "repository/OrderItemRepository.java");
-                result.put("java/repository/mybatis/OrderRepository", "repository/OrderRepository.java");
-                result.put("java/repository/mybatis/AddressRepository", "repository/AddressRepository.java");
+                result.put("java/repository/mybatis/OrderItemRepository.ftl", "repository/OrderItemRepository.java");
+                result.put("java/repository/mybatis/OrderRepository.ftl", "repository/OrderRepository.java");
+                result.put("java/repository/mybatis/AddressRepository.ftl", "repository/AddressRepository.java");
                 break;
             default:
                 break;
@@ -96,33 +96,33 @@ public final class ExampleTemplateFactory {
     public static Map<String, String> getResourceTemplate(final Map<String, String> dataModel) {
         Map<String, String> result = new HashMap<>(6, 1);
         if (dataModel.getOrDefault(FEATURE_KEY, "").contains(FeatureType.ENCRYPT.getFeature())) {
-            result.put("resources/spi/encryptAlgorithm", "META-INF/services/org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm");
+            result.put("resources/spi/encryptAlgorithm.ftl", "META-INF/services/org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm");
         }
         switch (dataModel.get(FRAMEWORK_KEY)) {
             case "springboot-starter-jdbc":
             case "springboot-starter-jpa":
-                result.put("resources/properties/application", "application.properties");
+                result.put("resources/properties/application.ftl", "application.properties");
                 break;
             case "spring-namespace-jdbc":
             case "spring-namespace-jpa":
-                result.put("resources/xml/application", "application.xml");
+                result.put("resources/xml/application.ftl", "application.xml");
                 break;
             case "spring-namespace-mybatis":
-                result.put("resources/xml/application", "application.xml");
-                result.put("resources/mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
-                result.put("resources/mappers/OrderMapper", "mappers/OrderMapper.xml");
-                result.put("resources/mappers/AddressMapper", "mappers/AddressMapper.xml");
+                result.put("resources/xml/application.ftl", "application.xml");
+                result.put("resources/mappers/OrderItemMapper.ftl", "mappers/OrderItemMapper.xml");
+                result.put("resources/mappers/OrderMapper.ftl", "mappers/OrderMapper.xml");
+                result.put("resources/mappers/AddressMapper.ftl", "mappers/AddressMapper.xml");
                 break;
             case "springboot-starter-mybatis":
-                result.put("resources/properties/application", "application.properties");
-                result.put("resources/mappers/OrderItemMapper", "mappers/OrderItemMapper.xml");
-                result.put("resources/mappers/OrderMapper", "mappers/OrderMapper.xml");
-                result.put("resources/mappers/AddressMapper", "mappers/AddressMapper.xml");
+                result.put("resources/properties/application.ftl", "application.properties");
+                result.put("resources/mappers/OrderItemMapper.ftl", "mappers/OrderItemMapper.xml");
+                result.put("resources/mappers/OrderMapper.ftl", "mappers/OrderMapper.xml");
+                result.put("resources/mappers/AddressMapper.ftl", "mappers/AddressMapper.xml");
                 break;
             default:
                 break;
         }
-        result.put("resources/logback", "logback.xml");
+        result.put("resources/logback.ftl", "logback.xml");
         return result;
     }
 }
