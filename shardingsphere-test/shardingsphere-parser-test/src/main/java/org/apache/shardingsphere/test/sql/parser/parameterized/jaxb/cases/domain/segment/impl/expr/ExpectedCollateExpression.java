@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.charset;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Collate clause segment.
+ * Expected expression.
  */
-@RequiredArgsConstructor
 @Getter
-public final class CollateClauseSegment implements SQLSegment {
+@Setter
+public final class ExpectedCollateExpression extends AbstractExpectedSQLSegment {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final String name;
+    @XmlElement(name = "collate-name")
+    private ExpectedExpression collateName;
 }

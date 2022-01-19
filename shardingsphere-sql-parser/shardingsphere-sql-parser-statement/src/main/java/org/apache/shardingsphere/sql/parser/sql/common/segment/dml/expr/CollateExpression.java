@@ -19,19 +19,18 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 
-import java.util.LinkedList;
-import java.util.List;
-
+/**
+ * Collate segment.
+ */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public final class ListExpression implements ExpressionSegment {
+public final class CollateExpression implements ExpressionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final List<ExpressionSegment> items = new LinkedList<>();
+    private final SimpleExpressionSegment collateName;
 }

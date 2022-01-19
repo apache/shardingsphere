@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.charset.CollateClauseSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CollateExpression;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.charset.ExpectedCollate;
@@ -44,10 +44,10 @@ public final class CollateAssert {
      * @param actual actual collate segment
      * @param expected expected collate
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final CollateClauseSegment actual, final ExpectedCollate expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final CollateExpression actual, final ExpectedCollate expected) {
         if (null != expected) {
             assertTrue(assertContext.getText("Actual collate should exist."), Optional.ofNullable(actual).isPresent());
-            assertThat(assertContext.getText("collate assertion error. "), actual.getName(), is(expected.getName()));
+            assertThat(assertContext.getText("collate assertion error. "), actual.getCollateName(), is(expected.getName()));
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
         } else {
             assertFalse(assertContext.getText("Actual collate should not exist."), Optional.ofNullable(actual).isPresent());
