@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.config.datasource.pool.metadata.impl;
 
 import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaData;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -50,6 +51,11 @@ public final class DefaultDataSourcePoolMetaData implements DataSourcePoolMetaDa
     @Override
     public String getJdbcUrlPropertiesFieldName() {
         return null;
+    }
+    
+    @Override
+    public Collection<String> getTransientFieldNames() {
+        return Collections.emptyList();
     }
     
     @Override
