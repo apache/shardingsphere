@@ -45,12 +45,6 @@ jobs:
         exclude:
           - adapter: jdbc
             database: PostgreSQL
-          - adapter: proxy
-            database: PostgreSQL
-            scenario: tbl
-          - adapter: proxy
-            database: PostgreSQL
-            scenario: empty_rules
     steps:
       - name: Cache Maven Repos
         uses: actions/cache@v2
@@ -86,12 +80,6 @@ jobs:
         exclude:
           - adapter: jdbc
             database: PostgreSQL
-          - adapter: proxy
-            database: PostgreSQL
-            scenario: tbl
-          - adapter: proxy
-            database: PostgreSQL
-            scenario: empty_rules
     steps:
       - name: Cache Maven Repos
         uses: actions/cache@v2
@@ -127,9 +115,6 @@ jobs:
         exclude:
           - adapter: jdbc
             database: PostgreSQL
-          - adapter: proxy
-            database: PostgreSQL
-            scenario: empty_rules
     steps:
       - name: Cache Maven Repos
         uses: actions/cache@v2
