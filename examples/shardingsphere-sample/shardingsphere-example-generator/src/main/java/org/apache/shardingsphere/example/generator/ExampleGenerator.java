@@ -39,7 +39,7 @@ public final class ExampleGenerator {
     
     private static final String DATA_MODEL_PATH = "/data-model/data-model.yaml";
     
-    private static final String OUTPUT_PATH = "./examples/shardingsphere-sample"
+    private static final String OUTPUT_PATH = "./examples/shardingsphere-sample/shardingsphere-example-generated"
             + "<#assign package=\"\">"
             + "<#if feature?split(\",\")?size gt 1>"
             + "<#assign package=\"mixed\">"
