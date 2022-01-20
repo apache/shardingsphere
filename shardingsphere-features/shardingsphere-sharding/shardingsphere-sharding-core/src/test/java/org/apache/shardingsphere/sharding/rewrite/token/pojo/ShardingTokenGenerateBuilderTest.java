@@ -48,7 +48,7 @@ public final class ShardingTokenGenerateBuilderTest {
     
     private RouteContext routeContext;
     
-    @Before()
+    @Before
     public void setup() {
         shardingRule = mock(ShardingRule.class);
         routeContext = mock(RouteContext.class);
