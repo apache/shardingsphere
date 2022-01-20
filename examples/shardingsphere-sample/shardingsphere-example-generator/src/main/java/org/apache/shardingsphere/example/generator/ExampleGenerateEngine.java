@@ -62,9 +62,7 @@ public final class ExampleGenerateEngine {
     
     private static final String RESOURCES_PATH = "resources";
     
-    private static Map<String, String> renameTemplateMap;
-    
-    private static Map<String, String> unRenameTemplateMap;
+    private static Map<String, String> javaClassTemplateMap;
     
     private static Map<String, String> resourceTemplateMap;
     
@@ -89,24 +87,20 @@ public final class ExampleGenerateEngine {
         try (InputStream input = ExampleGenerateEngine.class.getResourceAsStream(DATA_MODEL_PATH)) {
             Map<String, String> dataModel = new Yaml().loadAs(input, Map.class);
             fillTemplateMap(dataModel);
-            generateJavaCodes(dataModel);
+            generateJavaClasses(dataModel);
             generateResourcesFile(dataModel);
         }
     }
     
     private static void fillTemplateMap(final Map<String, String> dataModel) {
-        renameTemplateMap = ExampleTemplateFactory.getRenameTemplate(dataModel);
-        unRenameTemplateMap = ExampleTemplateFactory.getUnReNameTemplate(dataModel);
-        resourceTemplateMap = ExampleTemplateFactory.getResourceTemplate(dataModel);
+        javaClassTemplateMap = ExampleTemplateFactory.getJavaClassTemplateMap(dataModel);
+        resourceTemplateMap = ExampleTemplateFactory.getResourceTemplateMap(dataModel);
     }
     
-    private static void generateJavaCodes(final Map<String, String> dataModel) throws IOException, TemplateException {
+    private static void generateJavaClasses(final Map<String, String> dataModel) throws IOException, TemplateException {
         String outputPath = processString(dataModel, OUTPUT_PATH + JAVA_CLASS_PATH);
-        for (String each : renameTemplateMap.keySet()) {
-            processFile(dataModel, renameTemplateMap.get(each), outputPath + "/" + each + ".java");
-        }
-        for (String each : unRenameTemplateMap.keySet()) {
-            processFile(dataModel, each, outputPath + "/" + unRenameTemplateMap.get(each));
+        for (String each : javaClassTemplateMap.keySet()) {
+            processFile(dataModel, each, outputPath + "/" + javaClassTemplateMap.get(each));
         }
     }
     

@@ -30,37 +30,25 @@ public final class ExampleTemplateFactory {
     private static final String FEATURE_KEY = "feature";
     
     /**
-     * Get template resources that need to be renamed.
+     * Get java class template map.
      * 
      * @param dataModel data model
-     * @return rename template map
+     * @return java class template map
      */
-    public static Map<String, String> getRenameTemplate(final Map<String, String> dataModel) {
-        Map<String, String> result = new HashMap<>(3, 1);
-        result.put("Example", "java/Example.ftl");
-        result.put("ExampleService", "java/ExampleService.ftl");
-        if (FrameworkType.JDBC.getFramework().equals(dataModel.get(FRAMEWORK_KEY))) {
-            result.put("Configuration", "java/config/Configuration.ftl");
-        }
-        return result;
-    }
-    
-    /**
-     * Get template resources that do not need to be renamed.
-     * 
-     * @param dataModel data model
-     * @return not need rename template map
-     */
-    public static Map<String, String> getUnReNameTemplate(final Map<String, String> dataModel) {
-        Map<String, String> result = new HashMap<>(7, 1);
-        if (dataModel.getOrDefault(FEATURE_KEY, "").contains(FeatureType.ENCRYPT.getFeature())) {
-            result.put("java/TestQueryAssistedShardingEncryptAlgorithm.ftl", "TestQueryAssistedShardingEncryptAlgorithm.java");
-        }
+    public static Map<String, String> getJavaClassTemplateMap(final Map<String, String> dataModel) {
+        Map<String, String> result = new HashMap<>(10, 1);
+        result.put("java/Example.ftl", "Example.java");
+        result.put("java/ExampleService.ftl", "ExampleService.java");
         result.put("java/entity/Order.ftl", "entity/Order.java");
         result.put("java/entity/OrderItem.ftl", "entity/OrderItem.java");
         result.put("java/entity/Address.ftl", "entity/Address.java");
         switch (dataModel.get(FRAMEWORK_KEY)) {
             case "jdbc":
+                result.put("java/config/Configuration.ftl", "Configuration.java");
+                result.put("java/repository/jdbc/OrderItemRepository.ftl", "repository/OrderItemRepository.java");
+                result.put("java/repository/jdbc/OrderRepository.ftl", "repository/OrderRepository.java");
+                result.put("java/repository/jdbc/AddressRepository.ftl", "repository/AddressRepository.java");
+                break;
             case "springboot-starter-jdbc":
             case "spring-namespace-jdbc":
                 result.put("java/repository/jdbc/OrderItemRepository.ftl", "repository/OrderItemRepository.java");
@@ -84,20 +72,20 @@ public final class ExampleTemplateFactory {
             default:
                 break;
         }
+        if (dataModel.getOrDefault(FEATURE_KEY, "").contains(FeatureType.ENCRYPT.getFeature())) {
+            result.put("java/TestQueryAssistedShardingEncryptAlgorithm.ftl", "TestQueryAssistedShardingEncryptAlgorithm.java");
+        }
         return result;
     }
     
     /**
-     * Get template resources map.
+     * Get resource template map.
      * 
      * @param dataModel data model
-     * @return resource map
+     * @return resource template map
      */
-    public static Map<String, String> getResourceTemplate(final Map<String, String> dataModel) {
+    public static Map<String, String> getResourceTemplateMap(final Map<String, String> dataModel) {
         Map<String, String> result = new HashMap<>(6, 1);
-        if (dataModel.getOrDefault(FEATURE_KEY, "").contains(FeatureType.ENCRYPT.getFeature())) {
-            result.put("resources/spi/encryptAlgorithm.ftl", "META-INF/services/org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm");
-        }
         switch (dataModel.get(FRAMEWORK_KEY)) {
             case "springboot-starter-jdbc":
             case "springboot-starter-jpa":
@@ -121,6 +109,9 @@ public final class ExampleTemplateFactory {
                 break;
             default:
                 break;
+        }
+        if (dataModel.getOrDefault(FEATURE_KEY, "").contains(FeatureType.ENCRYPT.getFeature())) {
+            result.put("resources/spi/encryptAlgorithm.ftl", "META-INF/services/org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm");
         }
         result.put("resources/logback.ftl", "logback.xml");
         return result;
