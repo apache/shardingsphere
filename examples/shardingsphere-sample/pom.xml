@@ -33,26 +33,30 @@
         <module>shardingsphere-example-generator</module>
         
         <module>shardingsphere-jdbc-memory-local-example</module>
-        <module>shardingsphere-proxy-cluster-etcd-base-seata-example</module>
-        <module>shardingsphere-proxy-cluster-etcd-local-example</module>
-        <module>shardingsphere-proxy-cluster-etcd-xa-atomikos-example</module>
-        <module>shardingsphere-proxy-cluster-etcd-xa-bitronix-example</module>
-        <module>shardingsphere-proxy-cluster-etcd-xa-narayana-example</module>
-        <module>shardingsphere-proxy-cluster-zookeeper-base-seata-example</module>
-        <module>shardingsphere-proxy-cluster-zookeeper-local-example</module>
-        <module>shardingsphere-proxy-cluster-zookeeper-xa-atomikos-example</module>
-        <module>shardingsphere-proxy-cluster-zookeeper-xa-bitronix-example</module>
-        <module>shardingsphere-proxy-cluster-zookeeper-xa-narayana-example</module>
-        <module>shardingsphere-proxy-memory-base-seata-example</module>
+        
         <module>shardingsphere-proxy-memory-local-example</module>
         <module>shardingsphere-proxy-memory-xa-atomikos-example</module>
         <module>shardingsphere-proxy-memory-xa-bitronix-example</module>
         <module>shardingsphere-proxy-memory-xa-narayana-example</module>
-        <module>shardingsphere-proxy-standalone-file-base-seata-example</module>
+        <module>shardingsphere-proxy-memory-base-seata-example</module>
+        
         <module>shardingsphere-proxy-standalone-file-local-example</module>
         <module>shardingsphere-proxy-standalone-file-xa-atomikos-example</module>
         <module>shardingsphere-proxy-standalone-file-xa-bitronix-example</module>
         <module>shardingsphere-proxy-standalone-file-xa-narayana-example</module>
+        <module>shardingsphere-proxy-standalone-file-base-seata-example</module>
+        
+        <module>shardingsphere-proxy-cluster-zookeeper-local-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-xa-atomikos-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-xa-bitronix-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-xa-narayana-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-base-seata-example</module>
+        
+        <module>shardingsphere-proxy-cluster-etcd-local-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-xa-atomikos-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-xa-bitronix-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-xa-narayana-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-base-seata-example</module>
     </modules>
     
     <build>
