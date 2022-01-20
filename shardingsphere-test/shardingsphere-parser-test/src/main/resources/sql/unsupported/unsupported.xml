@@ -38,7 +38,6 @@
     <sql-case id="create_table_as_select" value="create table agg_data_2k as select g from generate_series(0, 1999) g;" db-types="PostgreSQL" />
     <sql-case id="create_foreign_data_wrapper" value="CREATE FOREIGN DATA WRAPPER alt_fdw1" db-types="PostgreSQL" />
     <sql-case id="create_server" value="CREATE SERVER alt_fserv1 FOREIGN DATA WRAPPER alt_fdw1;" db-types="PostgreSQL" />
-    <sql-case id="alter_foreign_data_wrapper" value="ALTER FOREIGN DATA WRAPPER alt_fdw1 RENAME TO alt_fdw2;" db-types="PostgreSQL" />
     <sql-case id="create_operator" value="CREATE OPERATOR @-@ ( leftarg = int4, rightarg = int4, procedure = int4mi )" db-types="PostgreSQL" />
     <sql-case id="alter_operator" value="ALTER OPERATOR @+@(int4, int4) OWNER TO regress_alter_generic_user2" db-types="PostgreSQL" />
     <sql-case id="create_statistics" value="CREATE STATISTICS alt_stat1 ON a, b FROM alt_regress_1" db-types="PostgreSQL" />
@@ -9095,33 +9094,6 @@
     <sql-case id="low_xa_by_mysql_source_test_case8" value="xa start 0x7465737462, 0x2030405060, 0xb" db-types="MySQL"/>
     <sql-case id="low_xa_by_mysql_source_test_case9" value="xa start 0xABCDEF1234567890, 0x01, 0x02" db-types="MySQL"/>
     <sql-case id="table_union" value="TABLE T1 UNION TABLE T2" db-types="MySQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case32" value="ALTER FOREIGN DATA WRAPPER alt_fdw1 RENAME TO alt_fdw2;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case33" value="ALTER FOREIGN DATA WRAPPER alt_fdw1 RENAME TO alt_fdw3;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case34" value="ALTER FOREIGN DATA WRAPPER foo HANDLER invalid_fdw_handler;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case35" value="ALTER FOREIGN DATA WRAPPER foo HANDLER test_fdw_handler HANDLER anything;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case36" value="ALTER FOREIGN DATA WRAPPER foo HANDLER test_fdw_handler;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case37" value="ALTER FOREIGN DATA WRAPPER foo NO VALIDATOR;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case38" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (ADD d &apos;5&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case39" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (ADD d &apos;5&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case40" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (ADD e &apos;6&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case41" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (ADD x &apos;1&apos;, DROP x);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case42" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (DROP a, SET b &apos;3&apos;, ADD c &apos;4&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case43" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (DROP c);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case44" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (SET c &apos;4&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case45" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (a &apos;1&apos;, b &apos;2&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case46" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (a &apos;2&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case47" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (b &apos;4&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case48" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (gotcha &apos;true&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case49" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (gotcha &apos;true&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case50" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (nonexistent &apos;fdw&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case51" value="ALTER FOREIGN DATA WRAPPER foo OWNER TO regress_test_role;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case52" value="ALTER FOREIGN DATA WRAPPER foo OWNER TO regress_test_role_super;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case53" value="ALTER FOREIGN DATA WRAPPER foo OWNER TO regress_unprivileged_role;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case54" value="ALTER FOREIGN DATA WRAPPER foo RENAME TO foo1;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case55" value="ALTER FOREIGN DATA WRAPPER foo VALIDATOR bar;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case56" value="ALTER FOREIGN DATA WRAPPER foo VALIDATOR postgresql_fdw_validator;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case57" value="ALTER FOREIGN DATA WRAPPER foo1 RENAME TO foo;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case58" value="ALTER FOREIGN DATA WRAPPER foo;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case59" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ADD COLUMN c10 integer OPTIONS (p1 &apos;v1&apos;);" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case60" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ADD COLUMN c4 integer;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case61" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ADD COLUMN c6 integer;" db-types="PostgreSQL"/>
