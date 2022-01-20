@@ -131,13 +131,13 @@ public final class SchemaRulesQueryResultSetTest {
         actual = resultSet.getRowData();
         rowData = actual.iterator();
         assertThat(rowData.next(), is("readwrite_splitting"));
-        assertThat(rowData.next(), is("datasource"));
+        assertThat(rowData.next(), is("data_source"));
         assertThat(rowData.next(), is(1));
         resultSet.next();
         actual = resultSet.getRowData();
         rowData = actual.iterator();
         assertThat(rowData.next(), is("db_discovery"));
-        assertThat(rowData.next(), is("datasource"));
+        assertThat(rowData.next(), is("data_source"));
         assertThat(rowData.next(), is(0));
         resultSet.next();
         actual = resultSet.getRowData();

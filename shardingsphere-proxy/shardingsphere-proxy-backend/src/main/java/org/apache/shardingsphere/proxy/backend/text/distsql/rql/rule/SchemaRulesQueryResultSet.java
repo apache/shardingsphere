@@ -65,7 +65,7 @@ public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
     
     private static final String BROADCAST_TABLE = "broadcast_table";
     
-    private static final String DATASOURCE = "datasource";
+    private static final String DATA_SOURCE = "data_source";
     
     private static final String TABLE = "table";
     
@@ -109,11 +109,11 @@ public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
     }
     
     private void addReadwriteSplittingData(final Map<String, Collection<Object>> dataMap, final RuleConfiguration ruleConfiguration) {
-        addData(dataMap, READWRITE_SPLITTING, DATASOURCE, ruleConfiguration, config -> ((ReadwriteSplittingRuleConfiguration) config).getDataSources().size());
+        addData(dataMap, READWRITE_SPLITTING, DATA_SOURCE, ruleConfiguration, config -> ((ReadwriteSplittingRuleConfiguration) config).getDataSources().size());
     }
     
     private void addDBDiscoveryData(final Map<String, Collection<Object>> dataMap, final RuleConfiguration ruleConfiguration) {
-        addData(dataMap, DB_DISCOVERY, DATASOURCE, ruleConfiguration, config -> ((DatabaseDiscoveryRuleConfiguration) config).getDataSources().size());
+        addData(dataMap, DB_DISCOVERY, DATA_SOURCE, ruleConfiguration, config -> ((DatabaseDiscoveryRuleConfiguration) config).getDataSources().size());
     }
     
     private void addEncryptData(final Map<String, Collection<Object>> dataMap, final RuleConfiguration ruleConfiguration) {
@@ -121,7 +121,7 @@ public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
     }
     
     private void addShadowData(final Map<String, Collection<Object>> dataMap, final RuleConfiguration ruleConfiguration) {
-        addData(dataMap, SHADOW, DATASOURCE, ruleConfiguration, config -> ((ShadowRuleConfiguration) config).getDataSources().size());
+        addData(dataMap, SHADOW, DATA_SOURCE, ruleConfiguration, config -> ((ShadowRuleConfiguration) config).getDataSources().size());
     }
     
     private void addData(final Map<String, Collection<Object>> dataMap, final String dataKey, final String feature, final String type,
