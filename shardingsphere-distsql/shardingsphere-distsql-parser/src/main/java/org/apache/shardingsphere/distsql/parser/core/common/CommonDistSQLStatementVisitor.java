@@ -142,7 +142,6 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
         return new ShowInstanceStatement();
     }
     
-    
     @Override
     public ASTNode visitShowInstanceMode(final ShowInstanceModeContext ctx) {
         return new ShowInstanceModeStatement();
