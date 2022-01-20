@@ -83,8 +83,10 @@ public final class ExampleGenerator {
     public void generate() throws IOException, TemplateException {
         try (InputStream input = ExampleGenerator.class.getResourceAsStream(DATA_MODEL_PATH)) {
             Map<String, String> dataModel = new Yaml().loadAs(input, Map.class);
-            generateFile(dataModel, new ExampleScenarioFactory(dataModel).getJavaClassTemplateMap(), JAVA_CLASS_PATH);
-            generateFile(dataModel, new ExampleScenarioFactory(dataModel).getResourceTemplateMap(), RESOURCES_PATH);
+            String feature = dataModel.get("feature");
+            String framework = dataModel.get("framework");
+            generateFile(dataModel, new ExampleScenarioFactory(feature, framework).getJavaClassTemplateMap(), JAVA_CLASS_PATH);
+            generateFile(dataModel, new ExampleScenarioFactory(feature, framework).getResourceTemplateMap(), RESOURCES_PATH);
         }
     }
     

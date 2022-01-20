@@ -15,4 +15,7 @@
 # limitations under the License.
 #
 
+org.apache.shardingsphere.example.generator.scenario.feature.type.ShardingExampleScenario
+org.apache.shardingsphere.example.generator.scenario.feature.type.ReadwriteSplittingExampleScenario
 org.apache.shardingsphere.example.generator.scenario.feature.type.EncryptExampleScenario
+org.apache.shardingsphere.example.generator.scenario.feature.type.ShadowExampleScenario

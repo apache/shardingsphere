@@ -33,9 +33,9 @@ public final class ExampleScenarioFactory {
     
     private final FrameworkExampleScenario frameworkScenario;
     
-    public ExampleScenarioFactory(final Map<String, String> dataModel) {
-        featureScenario = getFeatureScenario(dataModel.get("feature"));
-        frameworkScenario = getFrameworkScenario(dataModel.get("framework"));
+    public ExampleScenarioFactory(final String feature, final String framework) {
+        featureScenario = getFeatureScenario(feature);
+        frameworkScenario = getFrameworkScenario(framework);
     }
     
     private FeatureExampleScenario getFeatureScenario(final String feature) {
