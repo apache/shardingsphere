@@ -1,5 +1,3 @@
-# 
-
 # ShardingSphere-example
 
 Example for 1.x please see tags in `https://github.com/apache/shardingsphere/tree/${tag}/shardingsphere-jdbc-example`
