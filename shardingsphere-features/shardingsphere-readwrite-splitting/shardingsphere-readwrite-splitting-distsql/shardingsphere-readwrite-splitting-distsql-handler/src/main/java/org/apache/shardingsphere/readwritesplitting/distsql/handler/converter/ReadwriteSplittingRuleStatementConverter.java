@@ -63,11 +63,11 @@ public final class ReadwriteSplittingRuleStatementConverter {
     }
     
     private static ShardingSphereAlgorithmConfiguration createLoadBalancer(final ReadwriteSplittingRuleSegment ruleSegment) {
-        return new ShardingSphereAlgorithmConfiguration(ruleSegment.getLoadBalancer().toLowerCase(), ruleSegment.getProps());
+        return new ShardingSphereAlgorithmConfiguration(ruleSegment.getLoadBalancer(), ruleSegment.getProps());
     }
     
     private static String getLoadBalancerName(final String ruleName, final String type) {
-        return String.format("%s_%s", ruleName, type).toLowerCase();
+        return String.format("%s_%s", ruleName, type);
     }
     
     private static Properties createProperties(final ReadwriteSplittingRuleSegment segment) {
