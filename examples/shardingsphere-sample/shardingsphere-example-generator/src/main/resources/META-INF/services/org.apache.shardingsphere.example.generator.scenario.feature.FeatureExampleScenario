@@ -15,13 +15,7 @@
 # limitations under the License.
 #
 
-mode: memory
-transaction: local
-#feature: sharding,readwrite-splitting,encrypt
-feature: readwrite-splitting
-framework: jdbc
-
-host: localhost
-port: 3306
-username: root
-password: root
+org.apache.shardingsphere.example.generator.scenario.feature.type.ShardingExampleScenario
+org.apache.shardingsphere.example.generator.scenario.feature.type.ReadwriteSplittingExampleScenario
+org.apache.shardingsphere.example.generator.scenario.feature.type.EncryptExampleScenario
+org.apache.shardingsphere.example.generator.scenario.feature.type.ShadowExampleScenario
