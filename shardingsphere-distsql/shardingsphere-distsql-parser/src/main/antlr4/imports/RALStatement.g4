@@ -75,6 +75,10 @@ alterSQLParserRule
     : ALTER SQL_PARSER RULE sqlParserRuleDefinition
     ;
 
+showInstanceMode
+    : SHOW INSTANCE MODE
+    ;
+
 transactionRuleDefinition
     : LP DEFAULT EQ defaultType COMMA providerDefinition
     ;
