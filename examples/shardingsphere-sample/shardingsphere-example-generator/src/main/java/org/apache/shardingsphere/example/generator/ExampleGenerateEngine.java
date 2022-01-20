@@ -26,10 +26,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 /**
@@ -62,10 +62,6 @@ public final class ExampleGenerateEngine {
     
     private static final String RESOURCES_PATH = "resources";
     
-    private static Map<String, String> javaClassTemplateMap;
-    
-    private static Map<String, String> resourceTemplateMap;
-    
     static {
         try {
             TEMPLATE_CONFIG.setDirectoryForTemplateLoading(new File(Objects.requireNonNull(ExampleGenerateEngine.class.getClassLoader().getResource("template")).getFile()));
@@ -86,35 +82,21 @@ public final class ExampleGenerateEngine {
     public static void main(final String[] args) throws IOException, TemplateException {
         try (InputStream input = ExampleGenerateEngine.class.getResourceAsStream(DATA_MODEL_PATH)) {
             Map<String, String> dataModel = new Yaml().loadAs(input, Map.class);
-            fillTemplateMap(dataModel);
-            generateJavaClasses(dataModel);
-            generateResourcesFile(dataModel);
+            generateFile(dataModel, ExampleTemplateFactory.getJavaClassTemplateMap(dataModel), JAVA_CLASS_PATH);
+            generateFile(dataModel, ExampleTemplateFactory.getResourceTemplateMap(dataModel), RESOURCES_PATH);
         }
     }
     
-    private static void fillTemplateMap(final Map<String, String> dataModel) {
-        javaClassTemplateMap = ExampleTemplateFactory.getJavaClassTemplateMap(dataModel);
-        resourceTemplateMap = ExampleTemplateFactory.getResourceTemplateMap(dataModel);
-    }
-    
-    private static void generateJavaClasses(final Map<String, String> dataModel) throws IOException, TemplateException {
-        String outputPath = processString(dataModel, OUTPUT_PATH + JAVA_CLASS_PATH);
-        for (String each : javaClassTemplateMap.keySet()) {
-            processFile(dataModel, each, outputPath + "/" + javaClassTemplateMap.get(each));
+    private static void generateFile(final Map<String, String> dataModel, final Map<String, String> templateMap, final String outputRelativePath) throws IOException, TemplateException {
+        String outputPath = generatePath(dataModel, OUTPUT_PATH + outputRelativePath);
+        for (Entry<String, String> entry : templateMap.entrySet()) {
+            processFile(dataModel, entry.getKey(), outputPath + "/" + entry.getValue());
         }
     }
     
-    private static void generateResourcesFile(final Map<String, String> dataModel) throws IOException, TemplateException {
-        String outputPath = processString(dataModel, OUTPUT_PATH + RESOURCES_PATH);
-        for (String each : resourceTemplateMap.keySet()) {
-            processFile(dataModel, each, outputPath + "/" + resourceTemplateMap.get(each));
-        }
-    }
-    
-    private static String processString(final Object model, final String templateString) throws IOException, TemplateException {
-        try (StringWriter result = new StringWriter();
-             StringReader reader = new StringReader(templateString)) {
-            new Template("string", reader, TEMPLATE_CONFIG).process(model, result);
+    private static String generatePath(final Object model, final String relativePath) throws IOException, TemplateException {
+        try (StringWriter result = new StringWriter()) {
+            new Template("path", relativePath, TEMPLATE_CONFIG).process(model, result);
             return result.toString();
         }
     }
