@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.charset.CharsetNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.charset.CollateClauseSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 
 /**
  * Convert table definition segment.
@@ -38,5 +38,5 @@ public final class ConvertTableDefinitionSegment implements AlterDefinitionSegme
     
     private final CharsetNameSegment charsetName;
     
-    private CollateClauseSegment collateClause;
+    private SimpleExpressionSegment collateValue;
 }

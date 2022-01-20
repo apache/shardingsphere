@@ -83,4 +83,7 @@ public final class ExpectedExpression extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "aggregation-projection")
     private ExpectedAggregationProjection aggregationProjection;
+
+    @XmlElement(name = "collate-expression")
+    private ExpectedCollateExpression collateExpression;
 }

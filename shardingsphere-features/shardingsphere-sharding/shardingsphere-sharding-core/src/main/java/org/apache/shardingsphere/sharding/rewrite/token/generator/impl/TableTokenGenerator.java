@@ -21,6 +21,8 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.TableToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
@@ -34,13 +36,15 @@ import java.util.LinkedList;
  * Table token generator.
  */
 @Setter
-public final class TableTokenGenerator implements CollectionSQLTokenGenerator, ShardingRuleAware {
+public final class TableTokenGenerator implements CollectionSQLTokenGenerator, ShardingRuleAware, RouteContextAware {
     
     private ShardingRule shardingRule;
     
+    private RouteContext routeContext;
+    
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return true;
+        return routeContext.containsTableSharding();
     }
     
     @Override

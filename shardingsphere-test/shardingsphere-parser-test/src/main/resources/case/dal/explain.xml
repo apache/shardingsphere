@@ -52,15 +52,15 @@
             <values>
                 <value>
                     <assignment-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression parameter-index="0" />
                         <literal-expression value="1" start-index="64" stop-index="64" />
                     </assignment-value>
                     <assignment-value>
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression parameter-index="1" />
                         <literal-expression value="1" start-index="67" stop-index="67" />
                     </assignment-value>
                     <assignment-value>
-                        <parameter-marker-expression value="2" />
+                        <parameter-marker-expression parameter-index="2" />
                         <literal-expression value="insert" start-index="70" stop-index="77" />
                     </assignment-value>
                 </value>
@@ -80,7 +80,7 @@
                         <operator>=</operator>
                         <right>
                             <literal-expression value="init" start-index="41" stop-index="46" />
-                            <parameter-marker-expression value="0" start-index="41" stop-index="41" />
+                            <parameter-marker-expression parameter-index="0" start-index="41" stop-index="41" />
                         </right>
                     </binary-operation-expression>
                 </expr>

@@ -89,7 +89,7 @@ shardingsphere-example
   │   ├── shardingsphere-proxy-boot-mybatis-example
   │   └── shardingsphere-proxy-hint-example
   ├── shardingsphere-sample
-  │   ├── shardingsphere-example-engine
+  │   ├── shardingsphere-example-generator
   │   ├── shardingsphere-jdbc-sample
   │   │   └── shardingsphere-jdbc-memory-example
   │   │   │   └── shardingsphere-jdbc-memory-local-example
