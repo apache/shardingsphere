@@ -31,8 +31,7 @@
     
     <modules>
         <module>shardingsphere-example-generator</module>
-        <module>shardingsphere-proxy-sample</module>
-        <module>shardingsphere-jdbc-sample</module>
+        <module>shardingsphere-example-generated</module>
     </modules>
     
     <build>
