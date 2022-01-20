@@ -172,7 +172,7 @@ public final class ShardingTableRuleStatementChecker {
     private static void checkKeyGenerators(final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Set<String> notExistKeyGenerator = new LinkedHashSet<>(rules.size());
         Set<String> requiredKeyGenerators = new LinkedHashSet<>(rules.size());
-        rules.stream().map(AbstractTableRuleSegment::getKeyGenerateSegment).filter(Objects::nonNull)
+        rules.stream().map(AbstractTableRuleSegment::getKeyGenerateStrategySegment).filter(Objects::nonNull)
                 .peek(each -> each.getKeyGenerateAlgorithmName().filter(op -> null == currentRuleConfig || !currentRuleConfig.getKeyGenerators().containsKey(op)).ifPresent(notExistKeyGenerator::add))
                 .filter(each -> !each.getKeyGenerateAlgorithmName().isPresent()).forEach(each -> requiredKeyGenerators.add(each.getKeyGenerateAlgorithmSegment().getName()));
         DistSQLException.predictionThrow(notExistKeyGenerator.isEmpty(), new RequiredAlgorithmMissedException("key generator", notExistKeyGenerator));
