@@ -24,7 +24,7 @@ public final class InvalidDataSourcePropertiesException extends Exception {
     
     private static final long serialVersionUID = -7221138369057943935L;
     
-    public InvalidDataSourcePropertiesException(final String dataSourcePropertyName, final String errorMessage) {
-        super(String.format("Invalid data source property name `%s`, error message is: %s", dataSourcePropertyName, errorMessage));
+    public InvalidDataSourcePropertiesException(final String dataSourceName, final String errorMessage) {
+        super(String.format("Invalid data source `%s`, error message is: %s", dataSourceName, errorMessage));
     }
 }

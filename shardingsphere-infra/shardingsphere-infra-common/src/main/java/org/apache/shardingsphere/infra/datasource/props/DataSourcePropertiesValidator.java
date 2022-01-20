@@ -53,14 +53,14 @@ public final class DataSourcePropertiesValidator {
         }
     }
     
-    private void validate(final String name, final DataSourceProperties dataSourceProps) throws InvalidDataSourcePropertiesException {
+    private void validate(final String dataSourceName, final DataSourceProperties dataSourceProps) throws InvalidDataSourcePropertiesException {
         DataSource dataSource = null;
         try {
             dataSource = DataSourcePoolCreator.create(dataSourceProps);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            throw new InvalidDataSourcePropertiesException(name, ex.getMessage());
+            throw new InvalidDataSourcePropertiesException(dataSourceName, ex.getMessage());
         } finally {
             if (null != dataSource) {
                 try {
