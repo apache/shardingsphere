@@ -56,7 +56,7 @@ import java.util.List;
 <#if framework?contains("spring")>
 @Service
 </#if>
-public final class ${mode?cap_first}${transaction?cap_first}${featureName}${frameworkName}ExampleService {
+public final class ExampleService {
     
     private final OrderRepository orderRepository;
     
@@ -65,14 +65,14 @@ public final class ${mode?cap_first}${transaction?cap_first}${featureName}${fram
     private final AddressRepository addressRepository;
 <#if framework?contains("jdbc")>
     
-    public ${mode?cap_first}${transaction?cap_first}${featureName}${frameworkName}ExampleService(final DataSource dataSource) {
+    public ExampleService(final DataSource dataSource) {
         orderRepository = new OrderRepository(dataSource);
         orderItemRepository = new OrderItemRepository(dataSource);
         addressRepository = new AddressRepository(dataSource);
     }
 <#else>
     
-    public ${mode?cap_first}${transaction?cap_first}${featureName}${frameworkName}ExampleService(final OrderRepository orderRepository, final OrderItemRepository orderItemRepository, final AddressRepository addressRepository) {
+    public ExampleService(final OrderRepository orderRepository, final OrderItemRepository orderItemRepository, final AddressRepository addressRepository) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.addressRepository = addressRepository;

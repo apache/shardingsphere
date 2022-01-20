@@ -61,21 +61,21 @@ import java.sql.SQLException;
 <#if framework?contains("spring-boot")>
 @SpringBootApplication
 </#if>
-public class ${mode?cap_first}${transaction?cap_first}${featureName}${frameworkName}Example {
+public final class Example {
     
     public static void main(final String[] args) throws SQLException {
     <#if framework=="jdbc">
-        ${mode?cap_first}${transaction?cap_first}${featureName}${framework?cap_first}Configuration configuration = new ${mode?cap_first}${transaction?cap_first}${featureName}${framework?cap_first}Configuration();
+        Configuration configuration = new Configuration();
         DataSource dataSource = configuration.getDataSource();
-        ${mode?cap_first}${transaction?cap_first}${featureName}${framework?cap_first}ExampleService exampleService = new ${mode?cap_first}${transaction?cap_first}${featureName}${framework?cap_first}ExampleService(dataSource);
+        ExampleService exampleService = new ExampleService(dataSource);
         exampleService.run();
     <#else>
     <#if framework?contains("spring-namespace")>
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("application.xml")) {
     <#else>
-        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(${mode?cap_first}${transaction?cap_first}${featureName}${frameworkName}Example.class, args)) {
+        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(Example.class, args)) {
     </#if>
-            ${mode?cap_first}${transaction?cap_first}${featureName}${frameworkName}ExampleService exampleService = applicationContext.getBean(${mode?cap_first}${transaction?cap_first}${featureName}${frameworkName}ExampleService.class);
+            ExampleService exampleService = applicationContext.getBean(ExampleService.class);
             exampleService.run();
         }
     </#if>

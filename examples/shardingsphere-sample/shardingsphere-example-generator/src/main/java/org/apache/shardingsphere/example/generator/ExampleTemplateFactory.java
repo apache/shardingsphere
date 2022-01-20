@@ -40,7 +40,7 @@ public final class ExampleTemplateFactory {
         result.put("Example", "java/Example.ftl");
         result.put("ExampleService", "java/ExampleService.ftl");
         if (FrameworkType.JDBC.getFramework().equals(dataModel.get(FRAMEWORK_KEY))) {
-            result.put("Configuration", "java/config/configuration.ftl");
+            result.put("Configuration", "java/config/Configuration.ftl");
         }
         return result;
     }

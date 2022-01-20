@@ -82,7 +82,7 @@ import java.util.Properties;
         <#assign featureName=featureName + item?cap_first />
     </#list>
 </#if>
-public final class ${mode?cap_first}${transaction?cap_first}${featureName}${framework?cap_first}Configuration {
+public final class Configuration {
     
     private static final String HOST = "${host}";
     
