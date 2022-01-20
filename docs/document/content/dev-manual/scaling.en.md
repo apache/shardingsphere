@@ -33,7 +33,18 @@ chapter = true
 | ------------------------------------------- | ------------------------------------------- |
 | DataConsistencyCheckAlgorithm               | Data consistency check algorithm on source and target database cluster |
 
-| *Implementation Class*                      | *Description*                               |
-| ------------------------------------------- | ------------------------------------------- |
-| DataMatchDataConsistencyCheckAlgorithm      | Records content match implementation        |
-| CRC32MatchDataConsistencyCheckAlgorithm     | Records CRC32 match implementation          |
+| *Implementation Class*                      | *Description*                                                          |
+| ------------------------------------------- | ---------------------------------------------------------------------- |
+| DataMatchDataConsistencyCheckAlgorithm      | Records content match implementation. Type name: DATA_MATCH.           |
+| CRC32MatchDataConsistencyCheckAlgorithm     | Records CRC32 match implementation. Type name: CRC32_MATCH.            |
+
+## SingleTableDataCalculator
+
+| *SPI Name*                                  | *Description*                                                          |
+| ------------------------------------------- | ---------------------------------------------------------------------- |
+| SingleTableDataCalculator                   | Single table data calculator for data consistency check                |
+
+| *Implementation Class*                      | *Description*                                                          |
+| ------------------------------------------- | ---------------------------------------------------------------------- |
+| DataMatchSingleTableDataCalculator          | Single table data calculator for DATA_MATCH data consistency check     |
+| CRC32MatchMySQLSingleTableDataCalculator    | Single table data calculator for CRC32_MATCH data consistency check    |

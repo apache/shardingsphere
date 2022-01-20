@@ -218,3 +218,7 @@ CONCURRENCY_LEVEL
 TYPE
     : T Y P E
     ;
+
+COUNT
+    : C O U N T
+    ;

@@ -43,5 +43,6 @@ execute
     | showAuthorityRule
     | showTransactionRule
     | alterTransactionRule
+    | countSchemaRules
     ) SEMI?
     ;
