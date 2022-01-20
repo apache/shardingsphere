@@ -41,6 +41,8 @@ import static org.junit.Assert.assertThat;
 @RunWith(MockitoJUnitRunner.class)
 public final class CreateShardingScalingRuleStatementUpdaterTest {
     
+    private static final String QPS_TYPE = "qps";
+    
     @Mock
     private ShardingSphereMetaData shardingSphereMetaData;
     
@@ -101,7 +103,7 @@ public final class CreateShardingScalingRuleStatementUpdaterTest {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         CreateShardingScalingRuleStatement statement = new CreateShardingScalingRuleStatement("default_scaling");
         statement.setConfigurationSegment(createCompleteConfiguration());
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("default_scaling"), currentRuleConfig);
+        updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfig);
     }
     
     @Test
@@ -120,7 +122,7 @@ public final class CreateShardingScalingRuleStatementUpdaterTest {
         String key = result.getScaling().keySet().iterator().next();
         assertThat(key, is("default_scaling"));
         OnRuleAlteredActionConfiguration value = result.getScaling().get(key);
-        assertThat(value.getInput().getRateLimiter().getType(), is("QPS"));
+        assertThat(value.getInput().getRateLimiter().getType(), is(QPS_TYPE));
         assertThat(value.getOutput().getRateLimiter().getType(), is("TPS"));
         assertThat(value.getStreamChannel().getType(), is("MEMORY"));
         assertThat(value.getCompletionDetector().getType(), is("IDLE"));
@@ -139,11 +141,12 @@ public final class CreateShardingScalingRuleStatementUpdaterTest {
         String key = currentRuleConfig.getScaling().keySet().iterator().next();
         assertThat(key, is("default_scaling"));
         OnRuleAlteredActionConfiguration value = currentRuleConfig.getScaling().get(key);
-        assertThat(value.getInput().getRateLimiter().getType(), is("QPS"));
+        assertThat(value.getInput().getRateLimiter().getType(), is(QPS_TYPE));
         assertThat(value.getOutput().getRateLimiter().getType(), is("TPS"));
         assertThat(value.getStreamChannel().getType(), is("MEMORY"));
         assertThat(value.getCompletionDetector().getType(), is("IDLE"));
         assertThat(value.getDataConsistencyChecker().getType(), is("DATA_MATCH"));
+        assertThat(value.getDataConsistencyChecker().getProps().getProperty("chunk-size"), is("1000"));
     }
     
     private CreateShardingScalingRuleStatement createSQLStatement(final String scalingName) {
@@ -181,11 +184,13 @@ public final class CreateShardingScalingRuleStatementUpdaterTest {
     
     private ShardingScalingRuleConfigurationSegment createCompleteConfiguration() {
         ShardingScalingRuleConfigurationSegment result = new ShardingScalingRuleConfigurationSegment();
-        result.setInputSegment(createInputOrOutputSegment("QPS"));
+        result.setInputSegment(createInputOrOutputSegment(QPS_TYPE));
         result.setOutputSegment(createInputOrOutputSegment("TPS"));
         result.setStreamChannel(createAlgorithmSegment("MEMORY"));
         result.setCompletionDetector(createAlgorithmSegment("IDLE"));
-        result.setDataConsistencyChecker(createAlgorithmSegment("DATA_MATCH"));
+        AlgorithmSegment dataConsistencyChecker = createAlgorithmSegment("DATA_MATCH");
+        dataConsistencyChecker.getProps().setProperty("chunk-size", "1000");
+        result.setDataConsistencyChecker(dataConsistencyChecker);
         return result;
     }
     
