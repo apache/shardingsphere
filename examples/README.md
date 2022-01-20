@@ -1,3 +1,5 @@
+# 
+
 # ShardingSphere-example
 
 Example for 1.x please see tags in `https://github.com/apache/shardingsphere/tree/${tag}/shardingsphere-jdbc-example`
@@ -5,6 +7,8 @@ Example for 1.x please see tags in `https://github.com/apache/shardingsphere/tre
 Example for 2.x or 3.x or 4.x please see tags in `https://github.com/apache/shardingsphere-example/tree/${tag}`
 
 **Notices**
+
+- *The `shardingsphere-sample` module is a brand new sample experience module. It is in the process of development and improvement. At present, the correctness and stability of the sample cannot be guaranteed. Please ignore it for now.*
 
 - *Please execute [initial script](https://github.com/apache/shardingsphere/blob/master/examples/src/resources/manual_schema.sql) before you first run the example if using manual mode.*
 
