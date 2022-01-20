@@ -24,10 +24,10 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import java.util.Optional;
 
 /**
- * Key generate segment.
+ * Key generate strategy segment.
  */
 @Getter
-public final class KeyGenerateSegment implements ASTNode {
+public final class KeyGenerateStrategySegment implements ASTNode {
     
     private final String keyGenerateColumn;
     
@@ -35,12 +35,12 @@ public final class KeyGenerateSegment implements ASTNode {
     
     private AlgorithmSegment keyGenerateAlgorithmSegment;
     
-    public KeyGenerateSegment(final String keyGenerateColumn, final String keyGenerateAlgorithmName) {
+    public KeyGenerateStrategySegment(final String keyGenerateColumn, final String keyGenerateAlgorithmName) {
         this.keyGenerateColumn = keyGenerateColumn;
         this.keyGenerateAlgorithmName = Optional.ofNullable(keyGenerateAlgorithmName);
     }
     
-    public KeyGenerateSegment(final String keyGenerateColumn, final AlgorithmSegment keyGenerateAlgorithmSegment) {
+    public KeyGenerateStrategySegment(final String keyGenerateColumn, final AlgorithmSegment keyGenerateAlgorithmSegment) {
         this.keyGenerateColumn = keyGenerateColumn;
         this.keyGenerateAlgorithmName = Optional.empty();
         this.keyGenerateAlgorithmSegment = keyGenerateAlgorithmSegment;

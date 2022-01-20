@@ -152,7 +152,7 @@ autoCreativeAlgorithm
     ;
 
 keyGenerator
-    : GENERATED_KEY_ALGORITHM EQ shardingAlgorithmName
+    : KEY_GENERATOR EQ shardingAlgorithmName
     ;
 
 shardingStrategy
@@ -172,11 +172,11 @@ keyGenerateDeclaration
     ;
 
 keyGenerateDefinition
-    : GENERATED_KEY LP COLUMN EQ columnName COMMA algorithmDefinition RP
+    : KEY_GENERATE_STRATEGY LP COLUMN EQ columnName COMMA algorithmDefinition RP
     ;
 
 keyGenerateStrategy
-    : GENERATED_KEY LP COLUMN EQ columnName COMMA keyGenerator RP
+    : KEY_GENERATE_STRATEGY LP COLUMN EQ columnName COMMA keyGenerator RP
     ;
 
 algorithmDefinition
