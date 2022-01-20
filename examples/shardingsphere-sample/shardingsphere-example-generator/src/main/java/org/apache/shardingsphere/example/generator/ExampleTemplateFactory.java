@@ -52,15 +52,19 @@ public final class ExampleTemplateFactory {
      * @return not need rename template map
      */
     public static Map<String, String> getUnReNameTemplate(final Map<String, String> dataModel) {
-        Map<String, String> result = new HashMap<>(7, 1);
-        if (dataModel.getOrDefault(FEATURE_KEY, "").contains(FeatureType.ENCRYPT.getFeature())) {
-            result.put("java/TestQueryAssistedShardingEncryptAlgorithm.ftl", "TestQueryAssistedShardingEncryptAlgorithm.java");
-        }
+        Map<String, String> result = new HashMap<>(10, 1);
+        result.put("java/Example.ftl", "Example.java");
+        result.put("java/ExampleService.ftl", "ExampleService.java");
         result.put("java/entity/Order.ftl", "entity/Order.java");
         result.put("java/entity/OrderItem.ftl", "entity/OrderItem.java");
         result.put("java/entity/Address.ftl", "entity/Address.java");
         switch (dataModel.get(FRAMEWORK_KEY)) {
             case "jdbc":
+                result.put("java/config/Configuration.ftl", "Configuration.java");
+                result.put("java/repository/jdbc/OrderItemRepository.ftl", "repository/OrderItemRepository.java");
+                result.put("java/repository/jdbc/OrderRepository.ftl", "repository/OrderRepository.java");
+                result.put("java/repository/jdbc/AddressRepository.ftl", "repository/AddressRepository.java");
+                break;
             case "springboot-starter-jdbc":
             case "spring-namespace-jdbc":
                 result.put("java/repository/jdbc/OrderItemRepository.ftl", "repository/OrderItemRepository.java");
@@ -84,6 +88,9 @@ public final class ExampleTemplateFactory {
             default:
                 break;
         }
+        if (dataModel.getOrDefault(FEATURE_KEY, "").contains(FeatureType.ENCRYPT.getFeature())) {
+            result.put("java/TestQueryAssistedShardingEncryptAlgorithm.ftl", "TestQueryAssistedShardingEncryptAlgorithm.java");
+        }
         return result;
     }
     
@@ -95,9 +102,6 @@ public final class ExampleTemplateFactory {
      */
     public static Map<String, String> getResourceTemplate(final Map<String, String> dataModel) {
         Map<String, String> result = new HashMap<>(6, 1);
-        if (dataModel.getOrDefault(FEATURE_KEY, "").contains(FeatureType.ENCRYPT.getFeature())) {
-            result.put("resources/spi/encryptAlgorithm.ftl", "META-INF/services/org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm");
-        }
         switch (dataModel.get(FRAMEWORK_KEY)) {
             case "springboot-starter-jdbc":
             case "springboot-starter-jpa":
@@ -121,6 +125,9 @@ public final class ExampleTemplateFactory {
                 break;
             default:
                 break;
+        }
+        if (dataModel.getOrDefault(FEATURE_KEY, "").contains(FeatureType.ENCRYPT.getFeature())) {
+            result.put("resources/spi/encryptAlgorithm.ftl", "META-INF/services/org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm");
         }
         result.put("resources/logback.ftl", "logback.xml");
         return result;

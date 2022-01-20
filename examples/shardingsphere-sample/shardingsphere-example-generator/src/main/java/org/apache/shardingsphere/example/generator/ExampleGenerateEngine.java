@@ -62,8 +62,6 @@ public final class ExampleGenerateEngine {
     
     private static final String RESOURCES_PATH = "resources";
     
-    private static Map<String, String> renameTemplateMap;
-    
     private static Map<String, String> unRenameTemplateMap;
     
     private static Map<String, String> resourceTemplateMap;
@@ -95,16 +93,12 @@ public final class ExampleGenerateEngine {
     }
     
     private static void fillTemplateMap(final Map<String, String> dataModel) {
-        renameTemplateMap = ExampleTemplateFactory.getRenameTemplate(dataModel);
         unRenameTemplateMap = ExampleTemplateFactory.getUnReNameTemplate(dataModel);
         resourceTemplateMap = ExampleTemplateFactory.getResourceTemplate(dataModel);
     }
     
     private static void generateJavaFiles(final Map<String, String> dataModel) throws IOException, TemplateException {
         String outputPath = processString(dataModel, OUTPUT_PATH + JAVA_CLASS_PATH);
-        for (String each : renameTemplateMap.keySet()) {
-            processFile(dataModel, each, outputPath + "/" + renameTemplateMap.get(each));
-        }
         for (String each : unRenameTemplateMap.keySet()) {
             processFile(dataModel, each, outputPath + "/" + unRenameTemplateMap.get(each));
         }
