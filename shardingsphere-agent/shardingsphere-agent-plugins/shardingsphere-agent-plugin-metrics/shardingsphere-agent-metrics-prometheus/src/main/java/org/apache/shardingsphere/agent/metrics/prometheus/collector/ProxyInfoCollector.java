@@ -22,6 +22,7 @@ import io.prometheus.client.GaugeMetricFamily;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.api.util.MetricsUtil;
 import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.PrometheusWrapperFactory;
+import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
@@ -56,10 +57,12 @@ public final class ProxyInfoCollector extends Collector {
             return result;
         }
         Optional<GaugeMetricFamily> proxyInfo = FACTORY.createGaugeMetricFamily(MetricIds.PROXY_INFO);
-        StateType currentState = ProxyContext.getInstance().getStateContext().getCurrentState();
-        proxyInfo.ifPresent(m -> 
-                m.addMetric(Collections.singletonList(PROXY_STATE), PROXY_STATE_MAP.get(currentState)));
-        proxyInfo.ifPresent(result::add);
+        StateContext currentStateContext = ProxyContext.getInstance().getStateContext();
+        if (null != currentStateContext) {
+            proxyInfo.ifPresent(m ->
+                    m.addMetric(Collections.singletonList(PROXY_STATE), PROXY_STATE_MAP.get(currentStateContext.getCurrentState())));
+            proxyInfo.ifPresent(result::add);
+        }
         return result;
     }
 }

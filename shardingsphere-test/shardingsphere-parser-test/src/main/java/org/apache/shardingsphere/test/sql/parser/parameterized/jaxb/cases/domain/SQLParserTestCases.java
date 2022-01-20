@@ -239,6 +239,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingKeyGeneratorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingScalingRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingTableRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountSchemaRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowDataBaseDiscoveryRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowDefaultShardingStrategyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowEncryptRulesStatementTestCase;
@@ -1043,6 +1044,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-unused-sharding-algorithms")
     private final List<ShowUnusedShardingAlgorithmsStatementTestCase> showUnusedShardingAlgorithmsStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "count-schema-rules")
+    private final List<CountSchemaRulesStatementTestCase> countSchemaRulesStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "table")
     private final List<TableStatementTestCase> tableStatementTestCases = new LinkedList<>();
     
@@ -1312,6 +1316,7 @@ public final class SQLParserTestCases {
         putAll(renameTableStatementTestCases, result);
         putAll(showBinlogEventsStatementTestCases, result);
         putAll(createExtensionStatementTestCase, result);
+        putAll(countSchemaRulesStatementTestCases, result);
         putAll(alterExtensionStatementTestCase, result);
         putAll(dropExtensionStatementTestCase, result);
         return result;

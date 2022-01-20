@@ -41,7 +41,9 @@ mode:
   overwrite: false
 ```
 
-4. Modify `scalingName` and `scaling` configuration in `conf/config-sharding.yaml`. 
+4. Enable scaling
+
+Way 1. Modify `scalingName` and `scaling` configuration in `conf/config-sharding.yaml`. 
 
 Configuration Items Explanation:
 ```yaml
@@ -117,7 +119,30 @@ rules:
           chunk-size: 1000
 ```
 
-You could customize `rateLimiter`, `completionDetector`, `sourceWritingStopper`, `dataConsistencyChecker` and `checkoutLocker` algorithm by implementing SPI. Current implementation could be referenced, please refer to [Dev Manual#Scaling](/en/dev-manual/scaling/) for more details.
+You could customize `completionDetector`, `dataConsistencyChecker` algorithm by implementing SPI. Current implementation could be referenced, please refer to [Dev Manual#Scaling](/en/dev-manual/scaling/) for more details.
+
+Way 2: Configure scaling by DistSQL
+
+Create scaling configuration example:
+```sql
+CREATE SHARDING SCALING RULE default_scaling (
+INPUT(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000,
+  RATE_LIMITER(TYPE(NAME=QPS, PROPERTIES("qps"=50)))
+),
+OUTPUT(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000,
+  RATE_LIMITER(TYPE(NAME=TPS, PROPERTIES("tps"=2000)))
+),
+STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
+COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-minute-threshold"=3))),
+DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
+);
+```
+
+Please refer to [RDL#Sharding](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/) for more details.
 
 5. Start up ShardingSphere-Proxy:
 

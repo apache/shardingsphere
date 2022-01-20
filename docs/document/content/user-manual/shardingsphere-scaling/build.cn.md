@@ -42,7 +42,9 @@ mode:
   overwrite: false
 ```
 
-4. 修改配置文件 `conf/config-sharding.yaml` 的 `scalingName` 和 `scaling` 部分。
+4. 开启 scaling
+
+方法1：修改配置文件 `conf/config-sharding.yaml` 的 `scalingName` 和 `scaling` 部分。
 
 配置项说明：
 ```yaml
@@ -118,7 +120,30 @@ rules:
           chunk-size: 1000
 ```
 
-以上的 `rateLimiter`，`completionDetector`，`sourceWritingStopper`，`dataConsistencyChecker` 和 `checkoutLocker` 都可以通过实现SPI自定义。可以参考现有实现，详情请参见[开发者手册#弹性伸缩](/cn/dev-manual/scaling/)。
+以上的 `completionDetector`，`dataConsistencyChecker` 都可以通过实现 SPI 自定义。可以参考现有实现，详情请参见[开发者手册#弹性伸缩](/cn/dev-manual/scaling/)。
+
+方法2：通过 DistSQL 配置 scaling
+
+创建 scaling 配置示例：
+```sql
+CREATE SHARDING SCALING RULE default_scaling (
+INPUT(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000,
+  RATE_LIMITER(TYPE(NAME=QPS, PROPERTIES("qps"=50)))
+),
+OUTPUT(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000,
+  RATE_LIMITER(TYPE(NAME=TPS, PROPERTIES("tps"=2000)))
+),
+STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
+COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-minute-threshold"=3))),
+DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
+);
+```
+
+详情请参见[RDL#数据分片](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/)。
 
 5. 启动 ShardingSphere-Proxy：
 

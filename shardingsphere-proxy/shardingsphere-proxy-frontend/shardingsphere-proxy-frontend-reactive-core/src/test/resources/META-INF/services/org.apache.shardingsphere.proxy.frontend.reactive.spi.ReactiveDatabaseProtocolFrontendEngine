@@ -15,7 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.text.distsql.rql.resource.DataSourceQueryResultSet
-org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule.SingleTableQueryResultSet
-org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule.SingleTableRulesQueryResultSet
-org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule.SchemaRulesQueryResultSet
+org.apache.shardingsphere.proxy.frontend.reactive.protocol.fixture.DummyReactiveDatabaseProtocolFrontendEngine

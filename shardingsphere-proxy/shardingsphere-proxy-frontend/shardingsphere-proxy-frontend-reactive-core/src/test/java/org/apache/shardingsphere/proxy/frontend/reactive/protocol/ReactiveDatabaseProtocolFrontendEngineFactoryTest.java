@@ -15,34 +15,22 @@
  * limitations under the License.
  */
 
-grammar CommonDistSQLStatement;
+package org.apache.shardingsphere.proxy.frontend.reactive.protocol;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import org.apache.shardingsphere.proxy.frontend.reactive.protocol.fixture.DummyReactiveDatabaseProtocolFrontendEngine;
+import org.junit.Test;
 
-execute
-    : (addResource
-    | alterResource
-    | dropResource
-    | showResources
-    | setVariable
-    | showVariable
-    | showAllVariables
-    | clearHint
-    | enableInstance
-    | disableInstance
-    | showInstance
-    | showSingleTable
-    | showSingleTableRules
-    | createDefaultSingleTableRule
-    | alterDefaultSingleTableRule
-    | dropDefaultSingleTableRule
-    | refreshTableMetadata
-    | showTableMetadata
-    | showSQLParserRule
-    | alterSQLParserRule
-    | showAuthorityRule
-    | showTransactionRule
-    | alterTransactionRule
-    | countSchemaRules
-    ) SEMI?
-    ;
+import static org.junit.Assert.assertTrue;
+
+public final class ReactiveDatabaseProtocolFrontendEngineFactoryTest {
+    
+    @Test
+    public void assertNewInstanceWithExistType() {
+        assertTrue(ReactiveDatabaseProtocolFrontendEngineFactory.newInstance("Dummy") instanceof DummyReactiveDatabaseProtocolFrontendEngine);
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void assertNewInstanceWithUnknownType() {
+        ReactiveDatabaseProtocolFrontendEngineFactory.newInstance("Unknown");
+    }
+}

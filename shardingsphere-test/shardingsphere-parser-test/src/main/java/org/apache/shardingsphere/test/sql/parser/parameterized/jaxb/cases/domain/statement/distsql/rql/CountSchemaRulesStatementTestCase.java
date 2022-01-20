@@ -15,34 +15,22 @@
  * limitations under the License.
  */
 
-grammar CommonDistSQLStatement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-execute
-    : (addResource
-    | alterResource
-    | dropResource
-    | showResources
-    | setVariable
-    | showVariable
-    | showAllVariables
-    | clearHint
-    | enableInstance
-    | disableInstance
-    | showInstance
-    | showSingleTable
-    | showSingleTableRules
-    | createDefaultSingleTableRule
-    | alterDefaultSingleTableRule
-    | dropDefaultSingleTableRule
-    | refreshTableMetadata
-    | showTableMetadata
-    | showSQLParserRule
-    | alterSQLParserRule
-    | showAuthorityRule
-    | showTransactionRule
-    | alterTransactionRule
-    | countSchemaRules
-    ) SEMI?
-    ;
+import javax.xml.bind.annotation.XmlElement;
+
+/**
+ * Count schema rules statement test case.
+ */
+@Getter
+@Setter
+public final class CountSchemaRulesStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement
+    private ExpectedSchema schema;
+}
