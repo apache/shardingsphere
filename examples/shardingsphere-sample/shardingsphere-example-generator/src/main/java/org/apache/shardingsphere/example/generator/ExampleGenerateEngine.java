@@ -62,10 +62,6 @@ public final class ExampleGenerateEngine {
     
     private static final String RESOURCES_PATH = "resources";
     
-    private static Map<String, String> javaClassTemplateMap;
-    
-    private static Map<String, String> resourceTemplateMap;
-    
     static {
         try {
             TEMPLATE_CONFIG.setDirectoryForTemplateLoading(new File(Objects.requireNonNull(ExampleGenerateEngine.class.getClassLoader().getResource("template")).getFile()));
@@ -86,18 +82,13 @@ public final class ExampleGenerateEngine {
     public static void main(final String[] args) throws IOException, TemplateException {
         try (InputStream input = ExampleGenerateEngine.class.getResourceAsStream(DATA_MODEL_PATH)) {
             Map<String, String> dataModel = new Yaml().loadAs(input, Map.class);
-            fillTemplateMap(dataModel);
             generateJavaClasses(dataModel);
             generateResourcesFile(dataModel);
         }
     }
     
-    private static void fillTemplateMap(final Map<String, String> dataModel) {
-        javaClassTemplateMap = ExampleTemplateFactory.getJavaClassTemplateMap(dataModel);
-        resourceTemplateMap = ExampleTemplateFactory.getResourceTemplateMap(dataModel);
-    }
-    
     private static void generateJavaClasses(final Map<String, String> dataModel) throws IOException, TemplateException {
+        Map<String, String> javaClassTemplateMap = ExampleTemplateFactory.getJavaClassTemplateMap(dataModel);
         String outputPath = processString(dataModel, OUTPUT_PATH + JAVA_CLASS_PATH);
         for (String each : javaClassTemplateMap.keySet()) {
             processFile(dataModel, each, outputPath + "/" + javaClassTemplateMap.get(each));
@@ -105,6 +96,7 @@ public final class ExampleGenerateEngine {
     }
     
     private static void generateResourcesFile(final Map<String, String> dataModel) throws IOException, TemplateException {
+        Map<String, String> resourceTemplateMap = ExampleTemplateFactory.getResourceTemplateMap(dataModel);
         String outputPath = processString(dataModel, OUTPUT_PATH + RESOURCES_PATH);
         for (String each : resourceTemplateMap.keySet()) {
             processFile(dataModel, each, outputPath + "/" + resourceTemplateMap.get(each));
