@@ -21,7 +21,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
-import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import java.util.Collection;

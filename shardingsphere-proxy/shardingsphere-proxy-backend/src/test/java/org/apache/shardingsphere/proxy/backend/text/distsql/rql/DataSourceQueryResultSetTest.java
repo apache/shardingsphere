@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;

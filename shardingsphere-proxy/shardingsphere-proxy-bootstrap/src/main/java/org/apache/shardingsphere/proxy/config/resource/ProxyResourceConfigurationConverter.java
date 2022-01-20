@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.config.resource;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyResourceConfiguration;
 
 import java.util.LinkedHashMap;
