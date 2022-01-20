@@ -1149,7 +1149,11 @@
         <table name="t1" start-index="12" stop-index="13"/>
         <convert-table start-index="15" stop-index="65">
             <charset name="DEFAULT" start-index="40" stop-index="46" />
-            <collate name="cp1251_bin" start-index="56" stop-index="65" />
+            <collate-expression start-index="28" stop-index="45" literal-stop-index="64">
+                <collate-name>
+                    <literal-expression value="cp1251_bin" start-index="48" stop-index="65"/>
+                </collate-name>
+            </collate-expression>
         </convert-table>
     </alter-table>
     
