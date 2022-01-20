@@ -311,6 +311,7 @@ checkTableOption
 checksumTable
     : CHECKSUM tableOrTables tableList (QUICK | EXTENDED)?
     ;
+
 optimizeTable
     : OPTIMIZE (NO_WRITE_TO_BINLOG | LOCAL)? tableOrTables tableList
     ;
@@ -330,7 +331,7 @@ vcpuSpec
 
 createResourceGroup
     : CREATE RESOURCE GROUP groupName TYPE EQ_ (SYSTEM | USER) (VCPU EQ_? vcpuSpec (COMMA_ vcpuSpec)*)?
-    (THREAD_PRIORITY EQ_? NUMBER_)? (ENABLE | DISABLE )?
+    (THREAD_PRIORITY EQ_? NUMBER_)? (ENABLE | DISABLE)?
     ;
 
 dropResourceGroup
