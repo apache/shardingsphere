@@ -60,6 +60,7 @@ execute
     | alterDomain
     | alterDefaultPrivileges
     | alterForeignDataWrapper
+    | alterForeignTable
     | alterProcedure
     | alterServer
     | alterSequence

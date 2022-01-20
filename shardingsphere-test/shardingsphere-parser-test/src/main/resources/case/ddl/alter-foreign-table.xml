@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <alter-foreign-table sql-case-id="alter_foreign_table_add_column_options" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_add_column_not_null" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_add_column_integer" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_alter_column_set" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_alter_column_drop" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_alter_column_option_add" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_alter_column_option_set" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_alter_set_data" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_alter_column_char" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_drop_column_if_exists" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_drop_column" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_drop_constraint_if_exists" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_drop_constraint" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_options_drop_set" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_owner" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_rename" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_set_schema" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_add_constraint" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_set_not_null" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_disable_trigger" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_enable_trigger" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_rename_a_to_b" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_add_column_options_p1" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_add_column_default" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_add_constraint_no_valid" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_add_primary" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_alter_column_set_number" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_alter_column_set_statistics" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_alter_column_c4" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_alter_column_drop_default" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_alter_column_c6" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_alter_column_c7_drop_not_null" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_alter_column_c7_options_add_add" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_alter_c8_set_drop" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_alter_c8_set_data_type_integer" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_alter_c8_set_data_type_text" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_alter_c8_set_statistics" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_alter_c8_set_storage_plain" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_alter_c8_type_using" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_alter_c8_type_char" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_alter_column_options_add_v1" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_alter_constraint_deferrable" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_drop_if_exists" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_drop_column_c9" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_drop_constraint_no_const" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_drop_constraint_ft1" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_drop_constraint_no" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_options_drop_delimiter_set" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_owner_to_regress" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_set_schema_foreign" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_set_tablespace" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_add_constraint_check" />
+    <alter-foreign-table sql-case-id="alter_foreign_table_inherit" />
+</sql-parser-test-cases>

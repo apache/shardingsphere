@@ -58,6 +58,8 @@ public enum SQLVisitorRule {
     
     ALTER_FOREIGN_DATA_WRAPPER("AlterForeignDataWrapper", SQLStatementType.DDL),
     
+    ALTER_FOREIGN_TABLE("AlterForeignTable", SQLStatementType.DDL),
+    
     DROP_TABLE("DropTable", SQLStatementType.DDL),
     
     TRUNCATE_TABLE("TruncateTable", SQLStatementType.DDL),
