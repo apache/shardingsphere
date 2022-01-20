@@ -33,11 +33,9 @@ import java.util.Map.Entry;
 import java.util.Objects;
 
 /**
- * Example generate engine.
+ * Example generator.
  */
-public final class ExampleGenerateEngine {
-    
-    private static final Configuration TEMPLATE_CONFIG = new Configuration(Configuration.VERSION_2_3_31);
+public final class ExampleGenerator {
     
     private static final String DATA_MODEL_PATH = "/data-model/data-model.yaml";
     
@@ -62,48 +60,51 @@ public final class ExampleGenerateEngine {
     
     private static final String RESOURCES_PATH = "resources";
     
-    static {
-        try {
-            TEMPLATE_CONFIG.setDirectoryForTemplateLoading(new File(Objects.requireNonNull(ExampleGenerateEngine.class.getClassLoader().getResource("template")).getFile()));
-            TEMPLATE_CONFIG.setDefaultEncoding("UTF-8");
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
+    private final Configuration templateConfig;
+    
+    public ExampleGenerator() throws IOException {
+        templateConfig = createTemplateConfiguration();
+    }
+    
+    private Configuration createTemplateConfiguration() throws IOException {
+        Configuration result = new Configuration(Configuration.VERSION_2_3_31);
+        result.setDirectoryForTemplateLoading(new File(Objects.requireNonNull(ExampleGenerator.class.getClassLoader().getResource("template")).getFile()));
+        result.setDefaultEncoding("UTF-8");
+        return result;
     }
     
     /**
      * Generate file.
      * 
-     * @param args args
      * @throws IOException IO exception
      * @throws TemplateException template exception
      */
     @SuppressWarnings("unchecked")
-    public static void main(final String[] args) throws IOException, TemplateException {
-        try (InputStream input = ExampleGenerateEngine.class.getResourceAsStream(DATA_MODEL_PATH)) {
+    public void generate() throws IOException, TemplateException {
+        try (InputStream input = ExampleGenerator.class.getResourceAsStream(DATA_MODEL_PATH)) {
             Map<String, String> dataModel = new Yaml().loadAs(input, Map.class);
             generateFile(dataModel, ExampleTemplateFactory.getJavaClassTemplateMap(dataModel), JAVA_CLASS_PATH);
             generateFile(dataModel, ExampleTemplateFactory.getResourceTemplateMap(dataModel), RESOURCES_PATH);
         }
     }
     
-    private static void generateFile(final Map<String, String> dataModel, final Map<String, String> templateMap, final String outputRelativePath) throws IOException, TemplateException {
+    private void generateFile(final Map<String, String> dataModel, final Map<String, String> templateMap, final String outputRelativePath) throws IOException, TemplateException {
         String outputPath = generatePath(dataModel, OUTPUT_PATH + outputRelativePath);
         for (Entry<String, String> entry : templateMap.entrySet()) {
             processFile(dataModel, entry.getKey(), outputPath + "/" + entry.getValue());
         }
     }
     
-    private static String generatePath(final Object model, final String relativePath) throws IOException, TemplateException {
+    private String generatePath(final Object model, final String relativePath) throws IOException, TemplateException {
         try (StringWriter result = new StringWriter()) {
-            new Template("path", relativePath, TEMPLATE_CONFIG).process(model, result);
+            new Template("path", relativePath, templateConfig).process(model, result);
             return result.toString();
         }
     }
     
-    private static void processFile(final Object model, final String templateFile, final String outputFile) throws IOException, TemplateException {
+    private void processFile(final Object model, final String templateFile, final String outputFile) throws IOException, TemplateException {
         try (Writer writer = new FileWriter(outputFile)) {
-            TEMPLATE_CONFIG.getTemplate(templateFile).process(model, writer);
+            templateConfig.getTemplate(templateFile).process(model, writer);
         }
     }
 }
