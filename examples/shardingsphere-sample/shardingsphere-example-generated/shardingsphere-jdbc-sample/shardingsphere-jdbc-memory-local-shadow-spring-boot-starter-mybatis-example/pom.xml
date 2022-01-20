@@ -22,15 +22,20 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>shardingsphere-sample</artifactId>
+        <artifactId>shardingsphere-jdbc-sample</artifactId>
         <version>${revision}</version>
     </parent>
-    <artifactId>shardingsphere-example-generated</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-jdbc-memory-local-shadow-spring-boot-starter-mybatis-example</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>shardingsphere-jdbc-sample</module>
-        <module>shardingsphere-proxy-sample</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+        </dependency>
+    </dependencies>
 </project>
