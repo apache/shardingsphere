@@ -15,23 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.generator;
+package org.apache.shardingsphere.example.generator.scenario.framework;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.example.generator.scenario.ExampleScenario;
 
 /**
- * Feature type.
+ * Framework example scenario.
  */
-@RequiredArgsConstructor
-@Getter
-public enum FeatureType {
-    
-    SHARDING("sharding"),
-    ENCRYPT("encrypt"),
-    READWRITE_SPLITTING("readwrite-splitting"),
-    SHADOW("shadow"),
-    DB_DISCOVERY("db-discovery");
-    
-    private final String feature;
+public interface FrameworkExampleScenario extends ExampleScenario {
 }

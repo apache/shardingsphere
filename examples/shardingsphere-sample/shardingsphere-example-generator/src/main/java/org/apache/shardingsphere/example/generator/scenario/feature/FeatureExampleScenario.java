@@ -15,25 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.generator;
+package org.apache.shardingsphere.example.generator.scenario.feature;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.example.generator.scenario.ExampleScenario;
 
 /**
- * Framework type.
+ * Example feature scenario.
  */
-@RequiredArgsConstructor
-@Getter
-public enum FrameworkType {
-    
-    JDBC("jdbc"),
-    SPRING_BOOT_STARTER_JDBC("spring-boot-starter-jdbc"),
-    SPRING_BOOT_STARTER_JPA("spring-boot-starter-jpa"),
-    SPRING_BOOT_STARTER_MYBATIS("spring-boot-starter-mybatis"),
-    SPRING_BOOT_NAMESPACE_JDBC("spring-namespace-jdbc"),
-    SPRING_BOOT_NAMESPACE_JPA("spring-namespace-jpa"),
-    SPRING_BOOT_NAMESPACE_MYBATIS("spring-namespace-mybatis");
-    
-    private final String framework;
+public interface FeatureExampleScenario extends ExampleScenario {
 }

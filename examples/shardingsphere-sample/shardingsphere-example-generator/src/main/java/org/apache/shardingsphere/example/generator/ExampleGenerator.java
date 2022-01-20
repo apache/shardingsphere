@@ -20,6 +20,7 @@ package org.apache.shardingsphere.example.generator;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.apache.shardingsphere.example.generator.scenario.ExampleScenarioFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -82,8 +83,8 @@ public final class ExampleGenerator {
     public void generate() throws IOException, TemplateException {
         try (InputStream input = ExampleGenerator.class.getResourceAsStream(DATA_MODEL_PATH)) {
             Map<String, String> dataModel = new Yaml().loadAs(input, Map.class);
-            generateFile(dataModel, ExampleTemplateFactory.getJavaClassTemplateMap(dataModel), JAVA_CLASS_PATH);
-            generateFile(dataModel, ExampleTemplateFactory.getResourceTemplateMap(dataModel), RESOURCES_PATH);
+            generateFile(dataModel, new ExampleScenarioFactory(dataModel).getJavaClassTemplateMap(), JAVA_CLASS_PATH);
+            generateFile(dataModel, new ExampleScenarioFactory(dataModel).getResourceTemplateMap(), RESOURCES_PATH);
         }
     }
     
