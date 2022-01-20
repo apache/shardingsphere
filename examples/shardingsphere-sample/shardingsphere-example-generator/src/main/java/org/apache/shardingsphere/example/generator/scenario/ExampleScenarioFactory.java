@@ -20,7 +20,9 @@ package org.apache.shardingsphere.example.generator.scenario;
 import org.apache.shardingsphere.example.generator.scenario.feature.FeatureExampleScenario;
 import org.apache.shardingsphere.example.generator.scenario.framework.FrameworkExampleScenario;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.ServiceLoader;
 
@@ -29,22 +31,23 @@ import java.util.ServiceLoader;
  */
 public final class ExampleScenarioFactory {
     
-    private final FeatureExampleScenario featureScenario;
+    private final Collection<FeatureExampleScenario> featureScenarios;
     
     private final FrameworkExampleScenario frameworkScenario;
     
     public ExampleScenarioFactory(final String feature, final String framework) {
-        featureScenario = getFeatureScenario(feature);
+        featureScenarios = getFeatureScenarios(feature);
         frameworkScenario = getFrameworkScenario(framework);
     }
     
-    private FeatureExampleScenario getFeatureScenario(final String feature) {
+    private Collection<FeatureExampleScenario> getFeatureScenarios(final String feature) {
+        Collection<FeatureExampleScenario> result = new LinkedList<>();
         for (FeatureExampleScenario each : ServiceLoader.load(FeatureExampleScenario.class)) {
-            if (each.getType().equals(feature)) {
-                return each;
+            if (each.getType().contains(feature)) {
+                result.add(each);
             }
         }
-        throw new UnsupportedOperationException(String.format("Can not support example scenario with feature `%s`.", feature));
+        return result;
     }
     
     private FrameworkExampleScenario getFrameworkScenario(final String framework) {
@@ -68,7 +71,9 @@ public final class ExampleScenarioFactory {
         result.put("java/entity/Order.ftl", "entity/Order.java");
         result.put("java/entity/OrderItem.ftl", "entity/OrderItem.java");
         result.put("java/entity/Address.ftl", "entity/Address.java");
-        result.putAll(featureScenario.getJavaClassTemplateMap());
+        for (FeatureExampleScenario each : featureScenarios) {
+            result.putAll(each.getJavaClassTemplateMap());
+        }
         result.putAll(frameworkScenario.getJavaClassTemplateMap());
         return result;
     }
@@ -80,7 +85,9 @@ public final class ExampleScenarioFactory {
      */
     public Map<String, String> getResourceTemplateMap() {
         Map<String, String> result = new HashMap<>();
-        result.putAll(featureScenario.getResourceTemplateMap());
+        for (FeatureExampleScenario each : featureScenarios) {
+            result.putAll(each.getJavaClassTemplateMap());
+        }
         result.putAll(frameworkScenario.getResourceTemplateMap());
         result.put("resources/logback.ftl", "logback.xml");
         return result;
