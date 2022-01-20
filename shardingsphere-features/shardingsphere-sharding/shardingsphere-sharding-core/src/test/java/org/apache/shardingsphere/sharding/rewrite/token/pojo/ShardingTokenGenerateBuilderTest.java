@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -30,7 +31,9 @@ import java.util.Collection;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class ShardingTokenGenerateBuilderTest {
     
@@ -38,9 +41,12 @@ public final class ShardingTokenGenerateBuilderTest {
     public void assertGetSQLTokenGenerators() throws Exception {
         ShardingRule shardingRule = mock(ShardingRule.class);
         RouteContext routeContext = mock(RouteContext.class);
-        ShardingTokenGenerateBuilder shardingTokenGenerateBuilder = new ShardingTokenGenerateBuilder(shardingRule, routeContext);
+        when(routeContext.containsTableSharding()).thenReturn(true);
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getProjectionsContext().getAggregationProjections().isEmpty()).thenReturn(false);
+        ShardingTokenGenerateBuilder shardingTokenGenerateBuilder = new ShardingTokenGenerateBuilder(shardingRule, routeContext, sqlStatementContext);
         Collection<SQLTokenGenerator> sqlTokenGenerators = shardingTokenGenerateBuilder.getSQLTokenGenerators();
-        assertThat(sqlTokenGenerators.size(), is(15));
+        assertThat(sqlTokenGenerators.size(), is(4));
         for (SQLTokenGenerator sqlTokenGenerator : sqlTokenGenerators) {
             if (sqlTokenGenerator instanceof ShardingRuleAware) {
                 Field shardingRuleField = sqlTokenGenerator.getClass().getDeclaredField("shardingRule");
