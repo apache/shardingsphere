@@ -32,11 +32,9 @@ public final class ReadwriteSplittingRuleBeanDefinitionTag {
     
     public static final String READWRITE_SPLITTING_DATA_SOURCE_ID_ATTRIBUTE = "id";
     
-    public static final String AUTO_AWARE_DATA_SOURCE_NAME = "auto-aware-data-source-name";
+    public static final String READWRITE_SPLITTING_TYPE = "type";
     
-    public static final String WRITE_DATA_SOURCE_NAME_ATTRIBUTE = "write-data-source-name";
-    
-    public static final String READ_DATA_SOURCE_NAMES_ATTRIBUTE = "read-data-source-names";
+    public static final String READWRITE_SPLITTING_PROPS = "props";
     
     public static final String LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE = "load-balance-algorithm-ref";
 }

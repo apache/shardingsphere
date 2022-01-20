@@ -44,10 +44,10 @@ public final class AuthorityRule implements GlobalRule {
     
     private final Collection<ShardingSphereUser> users;
     
-    public AuthorityRule(final AuthorityRuleConfiguration config, final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
+    public AuthorityRule(final AuthorityRuleConfiguration config, final Map<String, ShardingSphereMetaData> metaDataMap) {
         provider = ShardingSphereAlgorithmFactory.createAlgorithm(config.getProvider(), AuthorityProvideAlgorithm.class);
-        provider.init(metaDataMap, users);
-        this.users = users;
+        provider.init(metaDataMap, config.getUsers());
+        users = config.getUsers();
     }
     
     /**

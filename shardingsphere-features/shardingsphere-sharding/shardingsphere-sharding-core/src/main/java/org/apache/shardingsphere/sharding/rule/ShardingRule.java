@@ -92,7 +92,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     
     private final Map<String, TableRule> tableRules = new LinkedHashMap<>();
     
-    private final Collection<BindingTableRule> bindingTableRules;
+    private final Map<String, BindingTableRule> bindingTableRules = new LinkedHashMap<>();
     
     private final Collection<String> broadcastTables;
     
@@ -110,8 +110,8 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         config.getKeyGenerators().forEach((key, value) -> keyGenerators.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, KeyGenerateAlgorithm.class)));
         tableRules.putAll(createTableRules(config.getTables(), config.getDefaultKeyGenerateStrategy()));
         tableRules.putAll(createAutoTableRules(config.getAutoTables(), config.getDefaultKeyGenerateStrategy()));
+        bindingTableRules.putAll(createBindingTableRules(config.getBindingTableGroups()));
         broadcastTables = createBroadcastTables(config.getBroadcastTables());
-        bindingTableRules = createBindingTableRules(config.getBindingTableGroups());
         defaultDatabaseShardingStrategyConfig = null == config.getDefaultDatabaseShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultDatabaseShardingStrategy();
         defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
@@ -125,8 +125,8 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         keyGenerators.putAll(config.getKeyGenerators());
         tableRules.putAll(createTableRules(config.getTables(), config.getDefaultKeyGenerateStrategy()));
         tableRules.putAll(createAutoTableRules(config.getAutoTables(), config.getDefaultKeyGenerateStrategy()));
+        bindingTableRules.putAll(createBindingTableRules(config.getBindingTableGroups()));
         broadcastTables = createBroadcastTables(config.getBroadcastTables());
-        bindingTableRules = createBindingTableRules(config.getBindingTableGroups());
         defaultDatabaseShardingStrategyConfig = null == config.getDefaultDatabaseShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultDatabaseShardingStrategy();
         defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
@@ -185,8 +185,15 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         return result;
     }
     
-    private Collection<BindingTableRule> createBindingTableRules(final Collection<String> bindingTableGroups) {
-        return bindingTableGroups.stream().map(this::createBindingTableRule).collect(Collectors.toList());
+    private Map<String, BindingTableRule> createBindingTableRules(final Collection<String> bindingTableGroups) {
+        Map<String, BindingTableRule> result = new LinkedHashMap<>();
+        for (String each : bindingTableGroups) {
+            BindingTableRule bindingTableRule = createBindingTableRule(each);
+            for (String logicTable : bindingTableRule.getAllLogicTables()) {
+                result.put(logicTable.toLowerCase(), bindingTableRule);
+            }
+        }
+        return result;
     }
     
     private BindingTableRule createBindingTableRule(final String bindingTableGroup) {
@@ -317,12 +324,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
      * @return binding table rule
      */
     public Optional<BindingTableRule> findBindingTableRule(final String logicTableName) {
-        for (BindingTableRule each : bindingTableRules) {
-            if (each.hasLogicTable(logicTableName)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
+        return Optional.ofNullable(bindingTableRules.get(logicTableName.toLowerCase()));
     }
     
     /**
@@ -520,9 +522,8 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
      */
     public Map<String, String> getLogicAndActualTablesFromBindingTable(final String dataSourceName,
                                                                        final String logicTable, final String actualTable, final Collection<String> availableLogicBindingTables) {
-        Map<String, String> result = new LinkedHashMap<>();
-        findBindingTableRule(logicTable).ifPresent(bindingTableRule -> result.putAll(bindingTableRule.getLogicAndActualTables(dataSourceName, logicTable, actualTable, availableLogicBindingTables)));
-        return result;
+        return findBindingTableRule(logicTable).map(optional 
+            -> optional.getLogicAndActualTables(dataSourceName, logicTable, actualTable, availableLogicBindingTables)).orElseGet(Collections::emptyMap);
     }
 
     /**

@@ -56,6 +56,15 @@ public final class ReadwriteSplittingDataSourceRule {
     }
     
     /**
+     * Get write data source name.
+     *
+     * @return write data source name
+     */
+    public String getWriteDataSource() {
+        return readwriteSplittingType.getWriteDataSource();
+    }
+    
+    /**
      * Get read data source names.
      *
      * @return available read data source names

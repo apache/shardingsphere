@@ -52,10 +52,10 @@ rules:
   - !READWRITE_SPLITTING # Configure readwrite-splitting rules.
     dataSources:
       ds: # The logical data source name 'ds' for readwrite-splitting is used in data sharding.
-        writeDataSourceName: write_ds # Use the real data source name 'write_ds'.
-        readDataSourceNames:
-          - read_ds_0 # Use the real data source name 'read_ds_0'.
-          - read_ds_1 # Use the real data source name 'read_ds_1'.
+        type: Static
+        props:
+          write-data-source-name: write_ds # Use the real data source name 'write_ds'.
+          read-data-source-names: read_ds_0, read_ds_1 # Use the real data source name 'read_ds_0', 'read_ds_1'.
         loadBalancerName: roundRobin
     loadBalancers:
       roundRobin:

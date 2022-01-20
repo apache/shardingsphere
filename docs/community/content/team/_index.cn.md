@@ -51,6 +51,8 @@ chapter = true
 | 钟红胜 | sandynz     |
 | 江龙滔 | RaigorJiang |
 | Thanoshan MV | ThanoshanMV |
+| 兰城翔 | lanchengx   |
+| 杨肖   | yx9o        |
 
 ## 贡献者
 

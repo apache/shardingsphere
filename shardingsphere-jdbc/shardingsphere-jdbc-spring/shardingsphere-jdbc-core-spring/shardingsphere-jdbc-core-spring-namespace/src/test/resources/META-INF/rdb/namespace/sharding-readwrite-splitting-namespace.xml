@@ -56,8 +56,18 @@
         </sharding:table-rules>
     </sharding:rule>
     <readwrite-splitting:rule id="readWriteSplittingShardingDataSourceByDefaultStrategy">
-        <readwrite-splitting:data-source-rule id="dbtbl_0" write-data-source-name="dbtbl_write_0" read-data-source-names="dbtbl_0_read_0,dbtbl_0_read_1"/>
-        <readwrite-splitting:data-source-rule id="dbtbl_1" write-data-source-name="dbtbl_write_1" read-data-source-names="dbtbl_1_read_0,dbtbl_1_read_1"/>
+        <readwrite-splitting:data-source-rule id="dbtbl_0" type="Static">
+            <props>
+                <prop key="write-data-source-name">dbtbl_write_0</prop>
+                <prop key="read-data-source-names">dbtbl_0_read_0, dbtbl_0_read_1</prop>
+            </props>
+        </readwrite-splitting:data-source-rule>
+        <readwrite-splitting:data-source-rule id="dbtbl_1" type="Static">
+            <props>
+                <prop key="write-data-source-name">dbtbl_write_1</prop>
+                <prop key="read-data-source-names">dbtbl_1_read_0, dbtbl_1_read_1</prop>
+            </props>
+        </readwrite-splitting:data-source-rule>
     </readwrite-splitting:rule>
     
     <sharding:rule id="readWriteSplittingShardingDataSourceByUserStrategyShardingRule" default-key-generate-strategy-ref="keyGenerateStrategy">
@@ -66,7 +76,17 @@
         </sharding:table-rules>
     </sharding:rule>
     <readwrite-splitting:rule id="readWriteSplittingShardingDataSourceByUserStrategy">
-        <readwrite-splitting:data-source-rule id="dbtbl_0" write-data-source-name="dbtbl_write_0" read-data-source-names="dbtbl_0_read_0,dbtbl_0_read_1" load-balance-algorithm-ref="randomLoadBalanceAlgorithm"/>
-        <readwrite-splitting:data-source-rule id="dbtbl_1" write-data-source-name="dbtbl_write_1" read-data-source-names="dbtbl_1_read_0,dbtbl_1_read_1" load-balance-algorithm-ref="randomLoadBalanceAlgorithm"/>
+        <readwrite-splitting:data-source-rule id="dbtbl_0" type="Static" load-balance-algorithm-ref="randomLoadBalanceAlgorithm">
+            <props>
+                <prop key="write-data-source-name">dbtbl_write_0</prop>
+                <prop key="read-data-source-names">dbtbl_0_read_0, dbtbl_0_read_1</prop>
+            </props>
+        </readwrite-splitting:data-source-rule>
+        <readwrite-splitting:data-source-rule id="dbtbl_1" type="Static" load-balance-algorithm-ref="randomLoadBalanceAlgorithm">
+            <props>
+                <prop key="write-data-source-name">dbtbl_write_1</prop>
+                <prop key="read-data-source-names">dbtbl_1_read_0, dbtbl_1_read_1</prop>
+            </props>
+        </readwrite-splitting:data-source-rule>
     </readwrite-splitting:rule>
 </beans>

@@ -222,3 +222,7 @@ TYPE
 MODE
     : M O D E
     ;
+
+COUNT
+    : C O U N T
+    ;

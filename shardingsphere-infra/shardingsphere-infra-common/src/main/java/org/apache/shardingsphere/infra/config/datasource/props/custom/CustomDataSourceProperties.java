@@ -33,9 +33,11 @@ public final class CustomDataSourceProperties {
     
     private final Map<String, Object> properties;
     
-    public CustomDataSourceProperties(final Map<String, Object> props, final Collection<String> standardPropertyKeys, final Map<String, String> propertySynonyms) {
+    public CustomDataSourceProperties(final Map<String, Object> props, 
+                                      final Collection<String> standardPropertyKeys, final Collection<String> transientFieldNames, final Map<String, String> propertySynonyms) {
         properties = new LinkedHashMap<>(props);
         standardPropertyKeys.forEach(properties::remove);
+        transientFieldNames.forEach(properties::remove);
         propertySynonyms.values().forEach(properties::remove);
     }
 }

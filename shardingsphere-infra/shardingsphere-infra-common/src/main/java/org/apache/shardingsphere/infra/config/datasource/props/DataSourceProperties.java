@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.config.datasource.props;
 
 import com.google.common.base.Objects;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.config.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
 import org.apache.shardingsphere.infra.config.datasource.props.custom.CustomDataSourceProperties;
 import org.apache.shardingsphere.infra.config.datasource.props.synonym.ConnectionPropertySynonyms;
@@ -45,11 +46,12 @@ public final class DataSourceProperties {
     private final CustomDataSourceProperties customDataSourceProperties;
     
     public DataSourceProperties(final String dataSourceClassName, final Map<String, Object> props) {
-        Map<String, String> propertySynonyms = DataSourcePoolMetaDataFactory.newInstance(dataSourceClassName).getPropertySynonyms();
         this.dataSourceClassName = dataSourceClassName;
+        DataSourcePoolMetaData poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceClassName);
+        Map<String, String> propertySynonyms = poolMetaData.getPropertySynonyms();
         connectionPropertySynonyms = new ConnectionPropertySynonyms(props, propertySynonyms);
         poolPropertySynonyms = new PoolPropertySynonyms(props, propertySynonyms);
-        customDataSourceProperties = new CustomDataSourceProperties(props, getStandardPropertyKeys(), propertySynonyms);
+        customDataSourceProperties = new CustomDataSourceProperties(props, getStandardPropertyKeys(), poolMetaData.getTransientFieldNames(), propertySynonyms);
     }
     
     private Collection<String> getStandardPropertyKeys() {

@@ -231,7 +231,7 @@ public final class ClusterContextManagerCoordinatorTest {
     
     private Collection<ShardingSphereRule> createAuthorityRule() {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.emptyList(), new ShardingSphereAlgorithmConfiguration("ALL_PRIVILEGES_PERMITTED", new Properties()));
-        AuthorityRule authorityRule = new AuthorityRule(ruleConfig, contextManager.getMetaDataContexts().getMetaDataMap(), Collections.emptyList());
+        AuthorityRule authorityRule = new AuthorityRule(ruleConfig, contextManager.getMetaDataContexts().getMetaDataMap());
         return Collections.singleton(authorityRule);
     }
     

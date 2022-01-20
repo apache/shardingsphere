@@ -48,7 +48,7 @@ public final class ShardingTablesConfigurationRange implements ExampleConfigurat
         result.getBroadcastTables().add("t_address");
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "standard_test_tbl"));
         result.getShardingAlgorithms() .put("standard_test_tbl", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
-        result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", getProperties()));
+        result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties()));
         return result;
     }
     
@@ -67,12 +67,6 @@ public final class ShardingTablesConfigurationRange implements ExampleConfigurat
     private static Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>();
         result.put("demo_ds", DataSourceUtil.createDataSource("demo_ds"));
-        return result;
-    }
-    
-    private static Properties getProperties() {
-        Properties result = new Properties();
-        result.setProperty("worker-id", "123");
         return result;
     }
 }

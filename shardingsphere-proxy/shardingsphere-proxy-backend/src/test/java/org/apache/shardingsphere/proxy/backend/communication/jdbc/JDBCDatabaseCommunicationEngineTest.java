@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -112,7 +113,8 @@ public final class JDBCDatabaseCommunicationEngineTest {
         assertNotNull(engine);
         assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));
         Field queryHeadersField = DatabaseCommunicationEngine.class.getDeclaredField("queryHeaders");
-        FieldSetter.setField(engine, queryHeadersField, Collections.singletonList(QueryHeaderBuilder.build(createQueryResultMetaData(), createMetaData(), 1)));
+        ShardingSphereMetaData metaData = createMetaData();
+        FieldSetter.setField(engine, queryHeadersField, Collections.singletonList(QueryHeaderBuilder.build(createQueryResultMetaData(), metaData, 1, getDataNodeContainedRule(metaData))));
         Field mergedResultField = DatabaseCommunicationEngine.class.getDeclaredField("mergedResult");
         FieldSetter.setField(engine, mergedResultField, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
             
@@ -159,6 +161,10 @@ public final class JDBCDatabaseCommunicationEngineTest {
         when(result.getDecimals(1)).thenReturn(1);
         when(result.isNotNull(1)).thenReturn(true);
         return result;
+    }
+    
+    private DataNodeContainedRule getDataNodeContainedRule(final ShardingSphereMetaData metaData) {
+        return (DataNodeContainedRule) metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().orElse(null);
     }
     
     @Test
