@@ -30,6 +30,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 /**
@@ -90,16 +91,16 @@ public final class ExampleGenerateEngine {
     private static void generateJavaClasses(final Map<String, String> dataModel) throws IOException, TemplateException {
         Map<String, String> javaClassTemplateMap = ExampleTemplateFactory.getJavaClassTemplateMap(dataModel);
         String outputPath = processString(dataModel, OUTPUT_PATH + JAVA_CLASS_PATH);
-        for (String each : javaClassTemplateMap.keySet()) {
-            processFile(dataModel, each, outputPath + "/" + javaClassTemplateMap.get(each));
+        for (Entry<String, String> entry : javaClassTemplateMap.entrySet()) {
+            processFile(dataModel, entry.getKey(), outputPath + "/" + entry.getValue());
         }
     }
     
     private static void generateResourcesFile(final Map<String, String> dataModel) throws IOException, TemplateException {
         Map<String, String> resourceTemplateMap = ExampleTemplateFactory.getResourceTemplateMap(dataModel);
         String outputPath = processString(dataModel, OUTPUT_PATH + RESOURCES_PATH);
-        for (String each : resourceTemplateMap.keySet()) {
-            processFile(dataModel, each, outputPath + "/" + resourceTemplateMap.get(each));
+        for (Entry<String, String> entry : resourceTemplateMap.entrySet()) {
+            processFile(dataModel, entry.getKey(), outputPath + "/" + entry.getValue());
         }
     }
     
