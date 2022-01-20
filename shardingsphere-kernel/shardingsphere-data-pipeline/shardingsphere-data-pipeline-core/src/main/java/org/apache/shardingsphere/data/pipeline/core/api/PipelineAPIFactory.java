@@ -42,7 +42,6 @@ import java.util.Properties;
  * Pipeline API factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-// TODO separate methods
 public final class PipelineAPIFactory {
     
     /**
