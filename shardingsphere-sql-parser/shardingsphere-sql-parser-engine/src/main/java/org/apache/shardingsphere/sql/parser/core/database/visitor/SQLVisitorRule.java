@@ -174,6 +174,10 @@ public enum SQLVisitorRule {
     
     CREATE_EXTENSION("CreateExtension", SQLStatementType.DDL),
     
+    ALTER_EXTENSION("AlterExtension", SQLStatementType.DDL),
+    
+    DROP_EXTENSION("DropExtension", SQLStatementType.DDL),
+    
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
     
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),

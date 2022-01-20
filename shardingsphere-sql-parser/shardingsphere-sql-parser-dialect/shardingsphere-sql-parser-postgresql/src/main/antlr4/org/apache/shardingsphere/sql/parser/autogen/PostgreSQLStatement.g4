@@ -106,5 +106,7 @@ execute
     | alterTextSearchTemplate
     | alterTextSearchParser
     | createExtension
+    | alterExtension
+    | dropExtension
     ) SEMI_?
     ;

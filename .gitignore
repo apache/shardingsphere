@@ -8,6 +8,7 @@ target/
 *.tar.gz
 dependency-reduced-pom.xml
 .flattened-pom.xml
+pom.xml.versionsBackup
 
 # maven plugin ignore
 release.properties

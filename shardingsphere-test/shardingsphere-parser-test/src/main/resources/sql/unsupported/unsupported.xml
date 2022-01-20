@@ -17,8 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="assert_select_into_SQL" value="SELECT * INTO t_order_new FROM t_order" db-types="MySQL,Oracle" />
-    <sql-case id="assert_select_with_collate_with_marker" value="NOT SUPPORT SELECT * FROM t_order WHERE order_id collate ?" db-types="MySQL"/>
+    <sql-case id="assert_select_into_SQL" value="SELECT * INTO t_order_new FROM t_order" db-types="Oracle" />
     <sql-case id="assert_select_with_json_extract_sign_with_parameter_marker" value="SELECT * FROM t_order WHERE order_id -&gt; ?" db-types="MySQL"/>
     <sql-case id="assert_select_with_json_unquote_extract_sign_with_parameter_marker" value="SELECT * FROM t_order WHERE order_id -&gt;&gt; ?" db-types="MySQL"/>
     <sql-case id="assert_insert_with_first" value="INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2" db-types="Oracle" />
@@ -10668,8 +10667,6 @@
     <sql-case id="drop_by_postgresql_source_test_case36" value="DROP EVENT TRIGGER sql_drop_command;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case37" value="DROP EVENT TRIGGER start_rls_command;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case38" value="DROP EVENT TRIGGER undroppable;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case39" value="DROP EXTENSION IF EXISTS test_extension_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case40" value="DROP EXTENSION test_extension_exists;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case41" value="DROP FOREIGN DATA WRAPPER IF EXISTS nonexistent;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case42" value="DROP FOREIGN DATA WRAPPER IF EXISTS test_fdw_exists;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case43" value="DROP FOREIGN DATA WRAPPER addr_fdw CASCADE;" db-types="PostgreSQL"/>

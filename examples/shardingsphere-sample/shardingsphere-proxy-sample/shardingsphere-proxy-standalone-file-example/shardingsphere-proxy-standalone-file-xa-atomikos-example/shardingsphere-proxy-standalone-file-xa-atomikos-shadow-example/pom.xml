@@ -28,5 +28,3 @@
     <artifactId>shardingsphere-proxy-standalone-file-xa-atomikos-shadow-example</artifactId>
     <name>${project.artifactId}</name>
 </project>
-
-

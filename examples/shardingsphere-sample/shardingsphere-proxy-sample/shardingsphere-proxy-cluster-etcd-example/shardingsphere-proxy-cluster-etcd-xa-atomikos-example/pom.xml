@@ -19,14 +19,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>shardingsphere-proxy-cluster-etcd-example</artifactId>
         <version>${revision}</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
     <artifactId>shardingsphere-proxy-cluster-etcd-xa-atomikos-example</artifactId>
+    <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
@@ -36,5 +36,4 @@
         <module>shardingsphere-proxy-cluster-etcd-xa-atomikos-readwrite-splitting-example</module>
         <module>shardingsphere-proxy-cluster-etcd-xa-atomikos-shadow-example</module>
     </modules>
-
 </project>

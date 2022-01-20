@@ -88,8 +88,9 @@ public final class MetaDataPersistService {
      * 
      * @param instanceId instance id
      * @param labels collection of label
+     * @param isOverwrite whether overwrite registry center's configuration if existed               
      */
-    public void persistInstanceConfigurations(final String instanceId, final Collection<String> labels) {
-        computeNodePersistService.persistInstanceLabels(instanceId, labels);
+    public void persistInstanceConfigurations(final String instanceId, final Collection<String> labels, final boolean isOverwrite) {
+        computeNodePersistService.persistInstanceLabels(instanceId, labels, isOverwrite);
     }
 }
