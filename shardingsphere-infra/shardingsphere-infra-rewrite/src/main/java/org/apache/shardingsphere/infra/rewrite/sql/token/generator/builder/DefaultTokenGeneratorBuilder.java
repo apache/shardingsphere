@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.generator.builder;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.generic.RemoveTokenGenerator;
 
@@ -26,12 +28,21 @@ import java.util.LinkedList;
 /**
  * Default SQL token generator builder.
  */
+@RequiredArgsConstructor
 public final class DefaultTokenGeneratorBuilder implements SQLTokenGeneratorBuilder {
+    
+    private final SQLStatementContext<?> sqlStatementContext;
     
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
         Collection<SQLTokenGenerator> result = new LinkedList<>();
-        result.add(new RemoveTokenGenerator());
+        addSQLTokenGenerator(result, new RemoveTokenGenerator());
         return result;
+    }
+    
+    private void addSQLTokenGenerator(final Collection<SQLTokenGenerator> sqlTokenGenerators, final SQLTokenGenerator toBeAddedSQLTokenGenerator) {
+        if (toBeAddedSQLTokenGenerator.isGenerateSQLToken(sqlStatementContext)) {
+            sqlTokenGenerators.add(toBeAddedSQLTokenGenerator);
+        }
     }
 }

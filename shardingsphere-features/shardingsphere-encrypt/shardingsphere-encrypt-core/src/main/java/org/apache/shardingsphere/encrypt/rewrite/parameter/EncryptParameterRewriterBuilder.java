@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.parameter;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.impl.EncryptAssignmentParameterRewriter;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.impl.EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter;
@@ -36,12 +35,16 @@ import java.util.LinkedList;
 /**
  * Parameter rewriter builder for encrypt.
  */
-@RequiredArgsConstructor
 public final class EncryptParameterRewriterBuilder implements ParameterRewriterBuilder {
     
     private final EncryptRule encryptRule;
     
     private final boolean queryWithCipherColumn;
+    
+    public EncryptParameterRewriterBuilder(final EncryptRule encryptRule) {
+        this.encryptRule = encryptRule;
+        this.queryWithCipherColumn = encryptRule.isQueryWithCipherColumn();
+    }
     
     @Override
     public Collection<ParameterRewriter> getParameterRewriters(final ShardingSphereSchema schema) {
