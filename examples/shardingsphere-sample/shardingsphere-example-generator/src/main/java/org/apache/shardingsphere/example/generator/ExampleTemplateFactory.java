@@ -30,28 +30,12 @@ public final class ExampleTemplateFactory {
     private static final String FEATURE_KEY = "feature";
     
     /**
-     * Get template resources that need to be renamed.
+     * Get java class template map.
      * 
      * @param dataModel data model
-     * @return rename template map
+     * @return java class template map
      */
-    public static Map<String, String> getRenameTemplate(final Map<String, String> dataModel) {
-        Map<String, String> result = new HashMap<>(3, 1);
-        result.put("java/Example.ftl", "Example.java");
-        result.put("java/ExampleService.ftl", "ExampleService.java");
-        if (FrameworkType.JDBC.getFramework().equals(dataModel.get(FRAMEWORK_KEY))) {
-            result.put("java/config/Configuration.ftl", "Configuration.java");
-        }
-        return result;
-    }
-    
-    /**
-     * Get template resources that do not need to be renamed.
-     * 
-     * @param dataModel data model
-     * @return not need rename template map
-     */
-    public static Map<String, String> getUnReNameTemplate(final Map<String, String> dataModel) {
+    public static Map<String, String> getJavaClassTemplateMap(final Map<String, String> dataModel) {
         Map<String, String> result = new HashMap<>(10, 1);
         result.put("java/Example.ftl", "Example.java");
         result.put("java/ExampleService.ftl", "ExampleService.java");
@@ -95,12 +79,12 @@ public final class ExampleTemplateFactory {
     }
     
     /**
-     * Get template resources map.
+     * Get resource template map.
      * 
      * @param dataModel data model
-     * @return resource map
+     * @return resource template map
      */
-    public static Map<String, String> getResourceTemplate(final Map<String, String> dataModel) {
+    public static Map<String, String> getResourceTemplateMap(final Map<String, String> dataModel) {
         Map<String, String> result = new HashMap<>(6, 1);
         switch (dataModel.get(FRAMEWORK_KEY)) {
             case "springboot-starter-jdbc":
