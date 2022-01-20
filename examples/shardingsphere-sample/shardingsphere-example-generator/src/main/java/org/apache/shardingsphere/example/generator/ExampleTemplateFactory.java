@@ -37,10 +37,10 @@ public final class ExampleTemplateFactory {
      */
     public static Map<String, String> getRenameTemplate(final Map<String, String> dataModel) {
         Map<String, String> result = new HashMap<>(3, 1);
-        result.put("Example", "java/Example.ftl");
-        result.put("ExampleService", "java/ExampleService.ftl");
+        result.put("java/Example.ftl", "Example.java");
+        result.put("java/ExampleService.ftl", "ExampleService.java");
         if (FrameworkType.JDBC.getFramework().equals(dataModel.get(FRAMEWORK_KEY))) {
-            result.put("Configuration", "java/config/Configuration.ftl");
+            result.put("java/config/Configuration.ftl", "Configuration.java");
         }
         return result;
     }

@@ -89,7 +89,7 @@ public final class ExampleGenerateEngine {
         try (InputStream input = ExampleGenerateEngine.class.getResourceAsStream(DATA_MODEL_PATH)) {
             Map<String, String> dataModel = new Yaml().loadAs(input, Map.class);
             fillTemplateMap(dataModel);
-            generateJavaCodes(dataModel);
+            generateJavaFiles(dataModel);
             generateResourcesFile(dataModel);
         }
     }
@@ -100,10 +100,10 @@ public final class ExampleGenerateEngine {
         resourceTemplateMap = ExampleTemplateFactory.getResourceTemplate(dataModel);
     }
     
-    private static void generateJavaCodes(final Map<String, String> dataModel) throws IOException, TemplateException {
+    private static void generateJavaFiles(final Map<String, String> dataModel) throws IOException, TemplateException {
         String outputPath = processString(dataModel, OUTPUT_PATH + JAVA_CLASS_PATH);
         for (String each : renameTemplateMap.keySet()) {
-            processFile(dataModel, renameTemplateMap.get(each), outputPath + "/" + each + ".java");
+            processFile(dataModel, each, outputPath + "/" + renameTemplateMap.get(each));
         }
         for (String each : unRenameTemplateMap.keySet()) {
             processFile(dataModel, each, outputPath + "/" + unRenameTemplateMap.get(each));
