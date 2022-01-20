@@ -41,19 +41,6 @@ public final class ExampleGenerateEngine {
     
     private static final String DATA_MODEL_PATH = "/data-model/data-model.yaml";
     
-    private static final String FILE_NAME_PREFIX = "${mode?cap_first}${transaction?cap_first}"
-            + "<#assign featureName=\"\">"
-            + "<#if feature?split(\",\")?size gt 1>"
-            + "<#assign featureName=\"Mixed\">"
-            + "<#else>"
-            + "<#list feature?split(\"-\") as item>"
-            + "<#assign featureName=featureName + item?cap_first>"
-            + "</#list></#if>${featureName}"
-            + "<#assign frameworkName=\"\">"
-            + "<#list framework?split(\"-\") as item>"
-            + "<#assign frameworkName=frameworkName + item?cap_first>"
-            + "</#list>${frameworkName}";
-    
     private static final String OUTPUT_PATH = "./examples/shardingsphere-sample/shardingsphere-jdbc-sample/shardingsphere-jdbc-${mode}-example"
             + "<#assign package=\"\">"
             + "<#if feature?split(\",\")?size gt 1>"
@@ -114,10 +101,9 @@ public final class ExampleGenerateEngine {
     }
     
     private static void generateJavaCodes(final Map<String, String> dataModel) throws IOException, TemplateException {
-        String fileName = processString(dataModel, FILE_NAME_PREFIX);
         String outputPath = processString(dataModel, OUTPUT_PATH + JAVA_CLASS_PATH);
         for (String each : renameTemplateMap.keySet()) {
-            processFile(dataModel, renameTemplateMap.get(each), outputPath + "/" + fileName + each + ".java");
+            processFile(dataModel, renameTemplateMap.get(each), outputPath + "/" + each + ".java");
         }
         for (String each : unRenameTemplateMap.keySet()) {
             processFile(dataModel, each, outputPath + "/" + unRenameTemplateMap.get(each));
