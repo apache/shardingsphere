@@ -70,6 +70,8 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 | parse SQL                                                                   | Parse SQL and output abstract syntax tree                                          | parse select * from t_order               |
 | refresh table metadata                                                      | Refresh the metadata of all tables                                                 | refresh table metadata                    |
 | refresh table metadata [tableName / tableName from resource resourceName]   | Refresh the metadata of a table                                                    | refresh table metadata t_order from resource ds_1                   |
+| show table metadata [tableName, tableName]                                  | query table metadata                                                               | show table metadata t_order               |
+| show instance mode                                                          | Query the mode configuration of the proxy                                          | show instance mode                        |
 
 ## Notice
 

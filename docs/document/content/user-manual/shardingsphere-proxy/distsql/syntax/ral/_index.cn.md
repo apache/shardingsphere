@@ -71,6 +71,8 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 | parse SQL                                                                   | 解析 SQL 并输出抽象语法树                                        parse select * from t_order                      |
 | refresh table metadata                                                      | 刷新所有表的元数据                                              | refresh table metadata                          |
 | refresh table metadata [tableName / tableName from resource resourceName]   | 刷新指定表的元数据                                              | refresh table metadata t_order from resource ds_1 |
+| show table metadata [tableName, tableName]                                  | 查询表的元数据                                                 | show table metadata t_order                                |
+| show instance mode                                                          | 查询当前 proxy 的 mode 配置                                    | show instance mode                                |
 
 ## 注意事项
 
