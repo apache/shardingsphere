@@ -108,7 +108,7 @@ public final class ReadwriteSplittingDataSourceRule {
     public Map<String, String> getDataSources() {
         return readwriteSplittingType.getDataSources().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey,
-                    each -> each.getKey().equals(ExportableConstants.REPLICA_DATA_SOURCE_NAMES) ? removeDisabledDataSources(each.getValue()) : each.getValue()));
+                    each -> ExportableConstants.REPLICA_DATA_SOURCE_NAMES.equals(each.getKey()) ? removeDisabledDataSources(each.getValue()) : each.getValue()));
     }
     
     private String removeDisabledDataSources(final String readDataSources) {
