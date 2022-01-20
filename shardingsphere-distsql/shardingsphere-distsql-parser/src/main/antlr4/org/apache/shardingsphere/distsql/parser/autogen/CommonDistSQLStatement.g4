@@ -31,6 +31,7 @@ execute
     | enableInstance
     | disableInstance
     | showInstance
+    | showInstanceMode
     | showSingleTable
     | showSingleTableRules
     | createDefaultSingleTableRule
@@ -43,6 +44,5 @@ execute
     | showAuthorityRule
     | showTransactionRule
     | alterTransactionRule
-    | showInstanceMode
     ) SEMI?
     ;

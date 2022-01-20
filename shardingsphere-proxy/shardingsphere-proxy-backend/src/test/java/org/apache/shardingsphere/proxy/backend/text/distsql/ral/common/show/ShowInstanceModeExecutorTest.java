@@ -58,8 +58,8 @@ public final class ShowInstanceModeExecutorTest {
         ArrayList<Object> data = new ArrayList<>(queryResponseRow.getData());
         assertThat(data.size(), is(4));
         assertThat(data.get(0), is("127.0.0.1@3309"));
-        assertThat(data.get(1), is("cluster"));
-        assertThat(data.get(2), is("zookeeper"));
+        assertThat(data.get(1), is("Cluster"));
+        assertThat(data.get(2), is("ZooKeeper"));
         assertThat(data.get(3), is("key=value"));
     }
     
