@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.datasource.pool.creator;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
