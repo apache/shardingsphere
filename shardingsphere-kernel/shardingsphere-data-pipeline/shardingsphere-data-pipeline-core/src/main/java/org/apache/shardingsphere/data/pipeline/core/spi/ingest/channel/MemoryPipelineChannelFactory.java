@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.spi.ingest.channel;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.distribution.MultiplexMemoryPipelineChannel;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MultiplexMemoryPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 
 import java.util.Properties;
