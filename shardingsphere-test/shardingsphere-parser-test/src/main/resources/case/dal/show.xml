@@ -82,7 +82,7 @@
                         <operator>=</operator>
                         <right>
                             <literal-expression value="order_id" start-index="42" stop-index="51" />
-                            <parameter-marker-expression value="0" start-index="42" stop-index="42" />
+                            <parameter-marker-expression parameter-index="0" start-index="42" stop-index="42" />
                         </right>
                     </binary-operation-expression>
                 </expr>
@@ -124,7 +124,7 @@
                         <operator>=</operator>
                         <right>
                             <literal-expression value="order_id" start-index="41" stop-index="50" />
-                            <parameter-marker-expression value="0" start-index="41" stop-index="41" />
+                            <parameter-marker-expression parameter-index="0" start-index="41" stop-index="41" />
                         </right>
                     </binary-operation-expression>
                 </expr>
@@ -169,7 +169,7 @@
                         <operator>=</operator>
                         <right>
                             <literal-expression value="sharding_db" start-index="34" stop-index="46" />
-                            <parameter-marker-expression value="0" start-index="34" stop-index="34" />
+                            <parameter-marker-expression parameter-index="0" start-index="34" stop-index="34" />
                         </right>
                     </binary-operation-expression>
                 </expr>
@@ -214,7 +214,7 @@
                         <operator>=</operator>
                         <right>
                             <literal-expression value="function1" start-index="34" stop-index="44" />
-                            <parameter-marker-expression value="0" start-index="34" stop-index="34" />
+                            <parameter-marker-expression parameter-index="0" start-index="34" stop-index="34" />
                         </right>
                     </binary-operation-expression>
                 </expr>
@@ -259,7 +259,7 @@
                         <operator>=</operator>
                         <right>
                             <literal-expression value="procedure1" start-index="35" stop-index="46" />
-                            <parameter-marker-expression value="0" start-index="35" stop-index="35" />
+                            <parameter-marker-expression parameter-index="0" start-index="35" stop-index="35" />
                         </right>
                     </binary-operation-expression>
                 </expr>
@@ -337,7 +337,7 @@
                         <operator>=</operator>
                         <right>
                             <literal-expression value="t_order" start-index="52" stop-index="60" />
-                            <parameter-marker-expression value="0" start-index="52" stop-index="52" />
+                            <parameter-marker-expression parameter-index="0" start-index="52" stop-index="52" />
                         </right>
                     </binary-operation-expression>
                 </expr>
@@ -409,7 +409,7 @@
                         <operator>=</operator>
                         <right>
                             <literal-expression value="t_order" start-index="49" stop-index="57" />
-                            <parameter-marker-expression value="0" start-index="49" stop-index="49" />
+                            <parameter-marker-expression parameter-index="0" start-index="49" stop-index="49" />
                         </right>
                     </binary-operation-expression>
                 </expr>
@@ -475,7 +475,7 @@
                         <operator>=</operator>
                         <right>
                             <literal-expression value="t_order" start-index="52" stop-index="60" />
-                            <parameter-marker-expression value="0" start-index="52" stop-index="52" />
+                            <parameter-marker-expression parameter-index="0" start-index="52" stop-index="52" />
                         </right>
                     </binary-operation-expression>
                 </expr>
@@ -526,7 +526,7 @@
                         <operator>=</operator>
                         <right>
                             <literal-expression value="open_tables" start-index="41" stop-index="53" />
-                            <parameter-marker-expression value="0" start-index="41" stop-index="41" />
+                            <parameter-marker-expression parameter-index="0" start-index="41" stop-index="41" />
                         </right>
                     </binary-operation-expression>
                 </expr>
@@ -595,7 +595,7 @@
                         <operator>=</operator>
                         <right>
                             <literal-expression value="sharding_db" start-index="42" stop-index="54" />
-                            <parameter-marker-expression value="0" start-index="42" stop-index="42" />
+                            <parameter-marker-expression parameter-index="0" start-index="42" stop-index="42" />
                         </right>
                     </binary-operation-expression>
                 </expr>
@@ -664,7 +664,7 @@
                         <operator>=</operator>
                         <right>
                             <literal-expression value="BASE TABLE" start-index="66" stop-index="77" />
-                            <parameter-marker-expression value="0" start-index="66" stop-index="66" />
+                            <parameter-marker-expression parameter-index="0" start-index="66" stop-index="66" />
                         </right>
                     </binary-operation-expression>
                 </expr>
@@ -712,7 +712,7 @@
                         <operator>=</operator>
                         <right>
                             <literal-expression value="latin1" start-index="37" stop-index="44" />
-                            <parameter-marker-expression value="0" start-index="37" stop-index="37" />
+                            <parameter-marker-expression parameter-index="0" start-index="37" stop-index="37" />
                         </right>
                     </binary-operation-expression>
                 </expr>
@@ -757,7 +757,7 @@
                         <operator>=</operator>
                         <right>
                             <literal-expression value="latin1" start-index="31" stop-index="38" />
-                            <parameter-marker-expression value="0" start-index="31" stop-index="31" />
+                            <parameter-marker-expression parameter-index="0" start-index="31" stop-index="31" />
                         </right>
                     </binary-operation-expression>
                 </expr>
@@ -806,7 +806,7 @@
                         <operator>=</operator>
                         <right>
                             <literal-expression value="max_join_size" start-index="44" stop-index="58" />
-                            <parameter-marker-expression value="0" start-index="44" stop-index="44" />
+                            <parameter-marker-expression parameter-index="0" start-index="44" stop-index="44" />
                         </right>
                     </binary-operation-expression>
                 </expr>
@@ -839,4 +839,29 @@
             <row-count value="2" literal-start-index="27" literal-stop-index="27" />
         </limit>
     </show-binlog-events>
+    <show sql-case-id="show_engine_status" />
+    <show sql-case-id="show_engine_mutex" />
+    <show sql-case-id="show_binary_logs" />
+    <show sql-case-id="show_master_logs" />
+    <show sql-case-id="show_engines" />
+    <show sql-case-id="show_storage_engines" />
+    <show sql-case-id="show_create_database" />
+    <show sql-case-id="show_create_database_if_not_exist" />
+    <show sql-case-id="show_create_schema" />
+    <show sql-case-id="show_create_schema_if_not_exist" />
+    <show sql-case-id="show_create_event" />
+    <show sql-case-id="show_create_function" />
+    <show sql-case-id="show_create_proc" />
+    <show sql-case-id="show_create_view" />
+    <show sql-case-id="show_function_code" />
+    <show sql-case-id="show_grants_for" />
+    <show sql-case-id="show_grants_for_using" />
+    <show sql-case-id="show_master_status" />
+    <show sql-case-id="show_plugins" />
+    <show sql-case-id="show_processlist" />
+    <show sql-case-id="show_profile" />
+    <show sql-case-id="show_profiles" />
+    <show sql-case-id="show_charset" />
+    <show sql-case-id="show_warnings_limit" />
+    <show sql-case-id="show_warnings_count" />
 </sql-parser-test-cases>

@@ -21,7 +21,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
-import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import java.util.Collection;
@@ -44,24 +44,20 @@ public final class ResourceSegmentsConverter {
     public static Map<String, DataSourceProperties> convert(final DatabaseType databaseType, final Collection<DataSourceSegment> resources) {
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(resources.size(), 1);
         for (DataSourceSegment each : resources) {
-            result.put(each.getName(), createDataSourceProperties(databaseType, each));
+            result.put(each.getName(), new DataSourceProperties(HikariDataSource.class.getCanonicalName(), createProperties(databaseType, each)));
         }
         return result;
     }
     
-    private static DataSourceProperties createDataSourceProperties(final DatabaseType databaseType, final DataSourceSegment segment) {
-        DataSourceProperties result = new DataSourceProperties(HikariDataSource.class.getCanonicalName(), createProperties(databaseType, segment));
-        if (null != segment.getProperties()) {
-            result.getCustomPoolProps().putAll(segment.getProperties());
-        }
-        return result;
-    }
-    
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private static Map<String, Object> createProperties(final DatabaseType databaseType, final DataSourceSegment segment) {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("jdbcUrl", getURL(databaseType, segment));
         result.put("username", segment.getUser());
         result.put("password", segment.getPassword());
+        if (null != segment.getProperties()) {
+            result.putAll((Map) segment.getProperties());
+        }
         return result;
     }
     

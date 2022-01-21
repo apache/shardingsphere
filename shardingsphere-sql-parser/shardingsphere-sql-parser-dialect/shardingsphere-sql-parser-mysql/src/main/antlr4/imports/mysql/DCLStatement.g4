@@ -135,9 +135,9 @@ accountLockPasswordExpireOption
     ;
 
 alterUser
-    : ALTER USER (IF EXISTS)? alterUserList requireClause? connectOptions? accountLockPasswordExpireOptions?
-    | ALTER USER (IF EXISTS)? USER LP_ RP_ userFuncAuthOption
-    | ALTER USER (IF EXISTS)? username DEFAULT ROLE (NONE | ALL | roleName (COMMA_ roleName)*)
+    : ALTER USER existClause? alterUserList requireClause? connectOptions? accountLockPasswordExpireOptions?
+    | ALTER USER existClause? USER LP_ RP_ userFuncAuthOption
+    | ALTER USER existClause? username DEFAULT ROLE (NONE | ALL | roleName (COMMA_ roleName)*)
     ;
 
 alterUserEntry
@@ -149,15 +149,15 @@ alterUserList
     ;
 
 dropUser
-    : DROP USER (IF EXISTS)? username (COMMA_ username)*
+    : DROP USER existClause? username (COMMA_ username)*
     ;
 
 createRole
-    : CREATE ROLE (IF NOT EXISTS)? roleName (COMMA_ roleName)*
+    : CREATE ROLE notExistClause? roleName (COMMA_ roleName)*
     ;
 
 dropRole
-    : DROP ROLE (IF EXISTS)? roleName (COMMA_ roleName)*
+    : DROP ROLE existClause? roleName (COMMA_ roleName)*
     ;
 
 renameUser

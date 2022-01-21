@@ -43,11 +43,13 @@ public final class QueryHeaderBuilder {
      * @param queryResultMetaData query result meta data
      * @param metaData ShardingSphere meta data
      * @param columnIndex column index 
+     * @param dataNodeContainedRule data node contained rule
      * @return query header
      * @throws SQLException SQL exception
      */
-    public static QueryHeader build(final QueryResultMetaData queryResultMetaData, final ShardingSphereMetaData metaData, final int columnIndex) throws SQLException {
-        return build(queryResultMetaData, metaData, queryResultMetaData.getColumnName(columnIndex), columnIndex);
+    public static QueryHeader build(final QueryResultMetaData queryResultMetaData, final ShardingSphereMetaData metaData, 
+                                    final int columnIndex, final DataNodeContainedRule dataNodeContainedRule) throws SQLException {
+        return build(queryResultMetaData, metaData, queryResultMetaData.getColumnName(columnIndex), columnIndex, dataNodeContainedRule);
     }
     
     /**
@@ -57,23 +59,23 @@ public final class QueryHeaderBuilder {
      * @param queryResultMetaData query result meta data
      * @param metaData ShardingSphere meta data
      * @param columnIndex column index
+     * @param dataNodeContainedRule data node contained rule
      * @return query header
      * @throws SQLException SQL exception
      */
-    public static QueryHeader build(final ProjectionsContext projectionsContext, 
-                                    final QueryResultMetaData queryResultMetaData, final ShardingSphereMetaData metaData, final int columnIndex) throws SQLException {
-        return build(queryResultMetaData, metaData, getColumnName(projectionsContext, queryResultMetaData, columnIndex), columnIndex);
+    public static QueryHeader build(final ProjectionsContext projectionsContext, final QueryResultMetaData queryResultMetaData,
+                                    final ShardingSphereMetaData metaData, final int columnIndex, final DataNodeContainedRule dataNodeContainedRule) throws SQLException {
+        return build(queryResultMetaData, metaData, getColumnName(projectionsContext, queryResultMetaData, columnIndex), columnIndex, dataNodeContainedRule);
     }
     
-    private static QueryHeader build(final QueryResultMetaData queryResultMetaData, final ShardingSphereMetaData metaData, final String columnName, final int columnIndex) throws SQLException {
+    private static QueryHeader build(final QueryResultMetaData queryResultMetaData, final ShardingSphereMetaData metaData,
+                                     final String columnName, final int columnIndex, final DataNodeContainedRule dataNodeContainedRule) throws SQLException {
         String schemaName = null == metaData ? "" : metaData.getName();
         String actualTableName = queryResultMetaData.getTableName(columnIndex);
-        Optional<DataNodeContainedRule> dataNodeContainedRule = null == metaData
-                ? Optional.empty() : metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(rule -> (DataNodeContainedRule) rule);
         String tableName;
         boolean primaryKey;
-        if (null != actualTableName && dataNodeContainedRule.isPresent()) {
-            tableName = dataNodeContainedRule.get().findLogicTableByActualTable(actualTableName).orElse("");
+        if (null != actualTableName && null != dataNodeContainedRule) {
+            tableName = dataNodeContainedRule.findLogicTableByActualTable(actualTableName).orElse("");
             TableMetaData tableMetaData = metaData.getSchema().get(tableName);
             primaryKey = null != tableMetaData && Optional.ofNullable(tableMetaData.getColumns().get(columnName.toLowerCase())).map(ColumnMetaData::isPrimaryKey).orElse(false);
         } else {

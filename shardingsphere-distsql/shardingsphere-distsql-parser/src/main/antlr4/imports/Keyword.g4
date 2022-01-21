@@ -218,3 +218,11 @@ CONCURRENCY_LEVEL
 TYPE
     : T Y P E
     ;
+    
+MODE
+    : M O D E
+    ;
+
+COUNT
+    : C O U N T
+    ;

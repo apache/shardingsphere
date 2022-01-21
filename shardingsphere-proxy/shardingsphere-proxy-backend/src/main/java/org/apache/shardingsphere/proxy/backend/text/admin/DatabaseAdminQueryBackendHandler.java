@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
@@ -61,8 +62,9 @@ public final class DatabaseAdminQueryBackendHandler implements TextProtocolBacke
     private List<QueryHeader> createResponseHeader() throws SQLException {
         List<QueryHeader> result = new ArrayList<>(queryResultMetaData.getColumnCount());
         ShardingSphereMetaData metaData = null == connectionSession.getSchemaName() ? null : ProxyContext.getInstance().getMetaData(connectionSession.getSchemaName());
+        DataNodeContainedRule dataNodeContainedRule = null == metaData ? null : metaData.getRuleMetaData().findSingleRule(DataNodeContainedRule.class).orElse(null);
         for (int columnIndex = 1; columnIndex <= queryResultMetaData.getColumnCount(); columnIndex++) {
-            result.add(QueryHeaderBuilder.build(queryResultMetaData, metaData, columnIndex));
+            result.add(QueryHeaderBuilder.build(queryResultMetaData, metaData, columnIndex, dataNodeContainedRule));
         }
         return result;
     }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
@@ -58,9 +58,9 @@ public final class YamlDataSourcePropertiesSwapperTest {
         yamlConfig.put("username", "root");
         DataSourceProperties actual = swapper.swapToDataSourceProperties(yamlConfig);
         assertThat(actual.getDataSourceClassName(), is(MockedDataSource.class.getCanonicalName()));
-        assertThat(actual.getLocalProperties().size(), is(2));
-        assertThat(actual.getLocalProperties().get("url").toString(), is("xx:xxx"));
-        assertThat(actual.getLocalProperties().get("username").toString(), is("root"));
+        assertThat(actual.getAllLocalProperties().size(), is(2));
+        assertThat(actual.getAllLocalProperties().get("url").toString(), is("xx:xxx"));
+        assertThat(actual.getAllLocalProperties().get("username").toString(), is("root"));
     }
     
     @Test

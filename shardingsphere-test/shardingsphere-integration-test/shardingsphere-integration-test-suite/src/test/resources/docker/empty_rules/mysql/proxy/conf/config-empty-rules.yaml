@@ -211,6 +211,15 @@ dataSources:
 rules:
 - !SHARDING
   autoTables:
+    t_user:
+      actualDataSources: encrypt_write_ds_${0..9}
+      shardingStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: mod
+      keyGenerateStrategy:
+        column: user_id
+        keyGeneratorName: constant
     t_user_item:
       actualDataSources: encrypt_write_ds_${0..9}
       shardingStrategy:
@@ -220,6 +229,7 @@ rules:
       keyGenerateStrategy:
         column: user_id
         keyGeneratorName: constant
+    
   shardingAlgorithms:
     mod:
       type: MOD
@@ -233,9 +243,10 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     pr_ds_0:
-      writeDataSourceName: encrypt_write_ds_0
-      readDataSourceNames:
-        - encrypt_read_ds_0
+      type: Static
+      props:
+        write-data-source-name: encrypt_write_ds_0
+        read-data-source-names: encrypt_read_ds_0
       loadBalancerName: roundRobin
 
   loadBalancers:

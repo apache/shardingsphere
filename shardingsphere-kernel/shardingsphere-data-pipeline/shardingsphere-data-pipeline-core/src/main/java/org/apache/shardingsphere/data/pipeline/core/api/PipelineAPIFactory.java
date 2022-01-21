@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.api;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -32,7 +31,6 @@ import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobStatisticsAPI;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -44,7 +42,6 @@ import java.util.Properties;
  * Pipeline API factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-// TODO separate methods
 public final class PipelineAPIFactory {
     
     /**
@@ -92,12 +89,6 @@ public final class PipelineAPIFactory {
         return RegistryCenterHolder.getInstance();
     }
     
-    private static void checkServerConfig() {
-        ModeConfiguration modeConfig = PipelineContext.getModeConfig();
-        Preconditions.checkNotNull(modeConfig, "Mode configuration is required.");
-        Preconditions.checkArgument("Cluster".equals(modeConfig.getType()), "Mode must be `Cluster`.");
-    }
-    
     private static final class GovernanceRepositoryAPIHolder {
         
         private static volatile GovernanceRepositoryAPI instance;
@@ -118,7 +109,6 @@ public final class PipelineAPIFactory {
         }
         
         private static GovernanceRepositoryAPI createGovernanceRepositoryAPI() {
-            checkServerConfig();
             ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) PipelineContext.getModeConfig().getRepository();
             ClusterPersistRepository repository = TypedSPIRegistry.getRegisteredService(ClusterPersistRepository.class, repositoryConfig.getType(), repositoryConfig.getProps());
             repository.init(repositoryConfig);
@@ -138,7 +128,6 @@ public final class PipelineAPIFactory {
         private final JobOperateAPI jobOperateAPI;
         
         private ElasticJobAPIHolder() {
-            checkServerConfig();
             ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) PipelineContext.getModeConfig().getRepository();
             String namespace = repositoryConfig.getNamespace() + DataPipelineConstants.DATA_PIPELINE_ROOT;
             jobStatisticsAPI = JobAPIFactory.createJobStatisticsAPI(repositoryConfig.getServerLists(), namespace, null);
@@ -180,7 +169,6 @@ public final class PipelineAPIFactory {
         }
         
         private static ZookeeperConfiguration getZookeeperConfig() {
-            checkServerConfig();
             ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) PipelineContext.getModeConfig().getRepository();
             ZookeeperConfiguration result = new ZookeeperConfiguration(repositoryConfig.getServerLists(), repositoryConfig.getNamespace() + DataPipelineConstants.DATA_PIPELINE_ROOT);
             Properties props = repositoryConfig.getProps();

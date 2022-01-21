@@ -19,27 +19,27 @@ grammar RDLStatement;
 
 import Keyword, Literals, Symbol, BaseRule;
 
-createShardingScaling
-    : CREATE SHARDING SCALING scalingName scalingDefinition?
+createShardingScalingRule
+    : CREATE SHARDING SCALING RULE scalingName scalingRuleDefinition?
     ;
 
-dropShardingScaling
-    : DROP SHARDING SCALING scalingName
+dropShardingScalingRule
+    : DROP SHARDING SCALING RULE scalingName
     ;
 
-enableShardingScaling
-    : ENABLE SHARDING SCALING scalingName
+enableShardingScalingRule
+    : ENABLE SHARDING SCALING RULE scalingName
     ;
 
-disableShardingScaling
-    : DISABLE SHARDING SCALING scalingName
+disableShardingScalingRule
+    : DISABLE SHARDING SCALING RULE scalingName
     ;
 
 scalingName
     : IDENTIFIER
     ;
 
-scalingDefinition
+scalingRuleDefinition
     : minimumAutoDefinition | completeAutoDefinition | manualDefinition
     ;
 

@@ -21,8 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 /**
@@ -32,13 +30,9 @@ import java.util.Properties;
 @Setter
 public final class YamlReadwriteSplittingDataSourceRuleConfiguration implements YamlConfiguration {
     
-    private String autoAwareDataSourceName;
+    private String type;
     
-    private String writeDataSourceName;
-    
-    private List<String> readDataSourceNames = new ArrayList<>();
+    private Properties props;
     
     private String loadBalancerName;
-    
-    private Properties props = new Properties();
 }

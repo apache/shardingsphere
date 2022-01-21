@@ -20,49 +20,53 @@ package org.apache.shardingsphere.scaling.distsql.parser.core;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.AlgorithmDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CheckScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ApplyScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CheckScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CompleteAutoDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CompletionDetectorContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CreateShardingScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CreateShardingScalingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DataConsistencyCheckerContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DisableShardingScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DisableShardingScalingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DropScalingContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DropShardingScalingContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.EnableShardingScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DropShardingScalingRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.EnableShardingScalingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.InputDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ManualDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.MinimumAutoDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.OutputDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.RateLimiterContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ResetScalingContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ScalingDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ScalingRuleDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingCheckAlgorithmsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingListContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingStatusContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowShardingScalingRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StartScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StopScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StopScalingSourceWritingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StreamChannelContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.scaling.distsql.statement.CheckScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ApplyScalingStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.CreateShardingScalingStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.DisableShardingScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.CheckScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.CreateShardingScalingRuleStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.DisableShardingScalingRuleStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.DropScalingStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.DropShardingScalingStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.EnableShardingScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.DropShardingScalingRuleStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.EnableShardingScalingRuleStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ResetScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingCheckAlgorithmsStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingListStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingStatusStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.ShowShardingScalingRulesStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.StartScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.StopScalingSourceWritingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.StopScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.segment.InputOrOutputSegment;
-import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScalingConfigurationSegment;
+import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScalingRuleConfigurationSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Properties;
@@ -127,30 +131,30 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     }
     
     @Override
-    public ASTNode visitCreateShardingScaling(final CreateShardingScalingContext ctx) {
-        CreateShardingScalingStatement result = new CreateShardingScalingStatement(new IdentifierValue(ctx.scalingName().getText()).getValue());
-        if (null != ctx.scalingDefinition()) {
-            result.setConfigurationSegment((ShardingScalingConfigurationSegment) visit(ctx.scalingDefinition()));
+    public ASTNode visitCreateShardingScalingRule(final CreateShardingScalingRuleContext ctx) {
+        CreateShardingScalingRuleStatement result = new CreateShardingScalingRuleStatement(new IdentifierValue(ctx.scalingName().getText()).getValue());
+        if (null != ctx.scalingRuleDefinition()) {
+            result.setConfigurationSegment((ShardingScalingRuleConfigurationSegment) visit(ctx.scalingRuleDefinition()));
         }
         return result;
     }
     
     @Override
-    public ASTNode visitScalingDefinition(final ScalingDefinitionContext ctx) {
-        ShardingScalingConfigurationSegment result = null;
+    public ASTNode visitScalingRuleDefinition(final ScalingRuleDefinitionContext ctx) {
+        ShardingScalingRuleConfigurationSegment result = null;
         if (null != ctx.minimumAutoDefinition()) {
-            result = (ShardingScalingConfigurationSegment) visit(ctx.minimumAutoDefinition());
+            result = (ShardingScalingRuleConfigurationSegment) visit(ctx.minimumAutoDefinition());
         } else if (null != ctx.completeAutoDefinition()) {
-            result = (ShardingScalingConfigurationSegment) visit(ctx.completeAutoDefinition());
+            result = (ShardingScalingRuleConfigurationSegment) visit(ctx.completeAutoDefinition());
         } else if (null != ctx.manualDefinition()) {
-            result = (ShardingScalingConfigurationSegment) visit(ctx.manualDefinition());
+            result = (ShardingScalingRuleConfigurationSegment) visit(ctx.manualDefinition());
         }
         return result;
     }
     
     @Override
     public ASTNode visitMinimumAutoDefinition(final MinimumAutoDefinitionContext ctx) {
-        ShardingScalingConfigurationSegment result = new ShardingScalingConfigurationSegment();
+        ShardingScalingRuleConfigurationSegment result = new ShardingScalingRuleConfigurationSegment();
         result.setCompletionDetector((AlgorithmSegment) visit(ctx.completionDetector()));
         result.setDataConsistencyChecker((AlgorithmSegment) visit(ctx.dataConsistencyChecker()));
         return result;
@@ -158,7 +162,7 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitCompleteAutoDefinition(final CompleteAutoDefinitionContext ctx) {
-        ShardingScalingConfigurationSegment result = new ShardingScalingConfigurationSegment();
+        ShardingScalingRuleConfigurationSegment result = new ShardingScalingRuleConfigurationSegment();
         result.setInputSegment((InputOrOutputSegment) visit(ctx.inputDefinition()));
         result.setOutputSegment((InputOrOutputSegment) visit(ctx.outputDefinition()));
         result.setStreamChannel((AlgorithmSegment) visit(ctx.streamChannel()));
@@ -169,7 +173,7 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitManualDefinition(final ManualDefinitionContext ctx) {
-        ShardingScalingConfigurationSegment result = new ShardingScalingConfigurationSegment();
+        ShardingScalingRuleConfigurationSegment result = new ShardingScalingRuleConfigurationSegment();
         result.setInputSegment((InputOrOutputSegment) visit(ctx.inputDefinition()));
         result.setOutputSegment((InputOrOutputSegment) visit(ctx.outputDefinition()));
         result.setStreamChannel((AlgorithmSegment) visit(ctx.streamChannel()));
@@ -213,18 +217,23 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     }
     
     @Override
-    public ASTNode visitDropShardingScaling(final DropShardingScalingContext ctx) {
-        return new DropShardingScalingStatement(new IdentifierValue(ctx.scalingName().getText()).getValue());
+    public ASTNode visitDropShardingScalingRule(final DropShardingScalingRuleContext ctx) {
+        return new DropShardingScalingRuleStatement(new IdentifierValue(ctx.scalingName().getText()).getValue());
     }
     
     @Override
-    public ASTNode visitEnableShardingScaling(final EnableShardingScalingContext ctx) {
-        return new EnableShardingScalingStatement(new IdentifierValue(ctx.scalingName().getText()).getValue());
+    public ASTNode visitEnableShardingScalingRule(final EnableShardingScalingRuleContext ctx) {
+        return new EnableShardingScalingRuleStatement(new IdentifierValue(ctx.scalingName().getText()).getValue());
     }
     
     @Override
-    public ASTNode visitDisableShardingScaling(final DisableShardingScalingContext ctx) {
-        return new DisableShardingScalingStatement(new IdentifierValue(ctx.scalingName().getText()).getValue());
+    public ASTNode visitDisableShardingScalingRule(final DisableShardingScalingRuleContext ctx) {
+        return new DisableShardingScalingRuleStatement(new IdentifierValue(ctx.scalingName().getText()).getValue());
+    }
+    
+    @Override
+    public ASTNode visitShowShardingScalingRules(final ShowShardingScalingRulesContext ctx) {
+        return new ShowShardingScalingRulesStatement(null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
     }
     
     @Override
@@ -241,5 +250,10 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
             result.setProperty(new IdentifierValue(each.key.getText()).getValue(), new IdentifierValue(each.value.getText()).getValue());
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitSchemaName(final SchemaNameContext ctx) {
+        return new SchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
     }
 }

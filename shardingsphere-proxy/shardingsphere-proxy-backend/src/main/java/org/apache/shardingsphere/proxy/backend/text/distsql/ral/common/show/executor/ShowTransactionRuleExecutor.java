@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor;
 
+import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -39,11 +40,14 @@ public final class ShowTransactionRuleExecutor extends AbstractShowExecutor {
     
     private static final String PROVIDER_TYPE = "provider_type";
     
+    private static final String PROPS = "props";
+    
     @Override
     protected List<QueryHeader> createQueryHeaders() {
         return Arrays.asList(
                 new QueryHeader("", "", DEFAULT_TYPE, DEFAULT_TYPE, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
-                new QueryHeader("", "", PROVIDER_TYPE, PROVIDER_TYPE, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false));
+                new QueryHeader("", "", PROVIDER_TYPE, PROVIDER_TYPE, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
+                new QueryHeader("", "", PROPS, PROPS, Types.VARCHAR, "VARCHAR", 128, 0, false, false, false, false));
     }
     
     @Override
@@ -57,6 +61,7 @@ public final class ShowTransactionRuleExecutor extends AbstractShowExecutor {
         List<Object> row = new LinkedList<>();
         row.add(transactionRuleConfiguration.getDefaultType());
         row.add(null == transactionRuleConfiguration.getProviderType() ? "" : transactionRuleConfiguration.getProviderType());
+        row.add(null == transactionRuleConfiguration.getProps() ? "" : new Gson().toJson(transactionRuleConfiguration.getProps()));
         Collection<List<Object>> rows = new LinkedList<>();
         rows.add(row);
         return new MultipleLocalDataMergedResult(rows);

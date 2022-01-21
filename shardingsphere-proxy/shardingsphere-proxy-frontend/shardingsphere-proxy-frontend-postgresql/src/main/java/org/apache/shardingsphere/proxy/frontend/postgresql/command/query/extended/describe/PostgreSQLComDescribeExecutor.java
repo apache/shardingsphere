@@ -114,7 +114,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     private void describeInsertStatementByShardingSphereMetaData(final PostgreSQLPreparedStatement preparedStatement) {
         if (!preparedStatement.describeRows().isPresent()) {
             // TODO Consider the SQL `insert into table (col) values ($1) returning id`
-            preparedStatement.setRowDescription(new PostgreSQLNoDataPacket());
+            preparedStatement.setRowDescription(PostgreSQLNoDataPacket.getInstance());
         }
         InsertStatement insertStatement = (InsertStatement) preparedStatement.getSqlStatement();
         if (0 == insertStatement.getParameterCount()) {
@@ -205,7 +205,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         }
         ResultSetMetaData resultSetMetaData = ps.getMetaData();
         if (null == resultSetMetaData) {
-            preparedStatement.setRowDescription(new PostgreSQLNoDataPacket());
+            preparedStatement.setRowDescription(PostgreSQLNoDataPacket.getInstance());
             return;
         }
         List<PostgreSQLColumnDescription> columnDescriptions = new ArrayList<>(resultSetMetaData.getColumnCount());

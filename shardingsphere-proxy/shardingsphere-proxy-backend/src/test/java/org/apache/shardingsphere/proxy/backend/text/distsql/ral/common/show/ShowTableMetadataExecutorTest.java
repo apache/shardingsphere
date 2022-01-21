@@ -51,7 +51,7 @@ import static org.mockito.Mockito.when;
 public final class ShowTableMetadataExecutorTest {
     
     @Test
-    public void assertSetVariableExecutor() throws SQLException {
+    public void assertExecutor() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getAllSchemaNames()).thenReturn(Collections.singletonList("schema_name"));
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);

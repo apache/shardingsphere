@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.charset.ExpectedCharsetName;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.charset.ExpectedCollate;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.ExpectedCollateExpression;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -35,6 +35,6 @@ public final class ExpectedConvertTableDefinition extends AbstractExpectedSQLSeg
     @XmlElement(name = "charset")
     private ExpectedCharsetName charsetName;
     
-    @XmlElement(name = "collate")
-    private ExpectedCollate collate;
+    @XmlElement(name = "collate-expression")
+    private ExpectedCollateExpression collateExpression;
 }

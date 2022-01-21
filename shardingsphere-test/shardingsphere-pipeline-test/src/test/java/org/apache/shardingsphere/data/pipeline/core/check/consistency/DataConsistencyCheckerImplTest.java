@@ -50,7 +50,7 @@ public final class DataConsistencyCheckerImplTest {
         initTableData(jobContext.getTaskConfigs().iterator().next().getDumperConfig().getDataSourceConfig());
         initTableData(jobContext.getTaskConfigs().iterator().next().getImporterConfig().getDataSourceConfig());
         PipelineContextUtil.mockContextManager();
-        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobContext);
+        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobContext.getJobConfig());
         Map<String, DataConsistencyCheckResult> resultMap = dataConsistencyChecker.checkRecordsCount();
         assertTrue(resultMap.get("t_order").isRecordsCountMatched());
         assertThat(resultMap.get("t_order").getSourceRecordsCount(), is(resultMap.get("t_order").getTargetRecordsCount()));
@@ -73,7 +73,7 @@ public final class DataConsistencyCheckerImplTest {
     @SneakyThrows(ReflectiveOperationException.class)
     public void assertCheckDatabaseTypeSupported() {
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(ResourceUtil.mockJobConfig());
-        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobContext);
+        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobContext.getJobConfig());
         Method method = dataConsistencyChecker.getClass().getDeclaredMethod("checkDatabaseTypeSupportedOrNot", Collection.class, String.class);
         method.setAccessible(true);
         method.invoke(dataConsistencyChecker, Arrays.asList("MySQL", "PostgreSQL"), "H2");

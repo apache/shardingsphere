@@ -67,7 +67,6 @@ shardingRuleConfiguration.getShardingAlgorithms().put("default_db_strategy_inlin
 
 // Key generate algorithm configuration
 Properties snowflakeProperties = new Properties();
-snowflakeProperties.setProperty("worker-id", "123");
 shardingRuleConfiguration.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", snowflakeProperties));
 
 /* Data encrypt rule configuration */
@@ -83,8 +82,14 @@ encryptAlgorithmConfigs.put("pwd_encryptor", new ShardingSphereAlgorithmConfigur
 EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs);
 
 /* Readwrite-splitting rule configuration */
-ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration1 = new ReadwriteSplittingDataSourceRuleConfiguration("ds_0", "write_ds0", Arrays.asList("write_ds0_read0", "write_ds0_read1"), "roundRobin");
-ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration2 = new ReadwriteSplittingDataSourceRuleConfiguration("ds_1", "write_ds0", Arrays.asList("write_ds1_read0", "write_ds1_read0"), "roundRobin");
+Properties readwriteProps1 = new Properties();
+readwriteProps1.setProperty("write-data-source-name", "write_ds0");
+readwriteProps1.setProperty("read-data-source-names", "write_ds0_read0, write_ds0_read1");
+ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration1 = new ReadwriteSplittingDataSourceRuleConfiguration("ds_0", "Static", readwriteProps1, "roundRobin");
+Properties readwriteProps2 = new Properties();
+readwriteProps2.setProperty("write-data-source-name", "write_ds0");
+readwriteProps2.setProperty("read-data-source-names", "write_ds1_read0, write_ds1_read1");
+ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration2 = new ReadwriteSplittingDataSourceRuleConfiguration("ds_1", "Static", readwriteProps2, "roundRobin");
 
 // Load balance algorithm configuration
 Map<String, ShardingSphereAlgorithmConfiguration> loadBalanceMaps = new HashMap<>(1);
