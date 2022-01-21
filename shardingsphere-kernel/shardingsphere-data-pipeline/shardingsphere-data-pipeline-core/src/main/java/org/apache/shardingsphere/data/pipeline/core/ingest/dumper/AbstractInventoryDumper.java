@@ -98,7 +98,6 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         String sql = getDumpSQL();
         IngestPosition<?> position = inventoryDumperConfig.getPosition();
         log.info("inventory dump, sql={}, position={}", sql, position);
-        // TODO [ksdfjaskjiowetr] handle FinishedPosition
         try (Connection conn = dataSourceManager.getDataSource(inventoryDumperConfig.getDataSourceConfig()).getConnection()) {
             int round = 1;
             Number startUniqueKeyValue = getPositionBeginValue(position) - 1;
