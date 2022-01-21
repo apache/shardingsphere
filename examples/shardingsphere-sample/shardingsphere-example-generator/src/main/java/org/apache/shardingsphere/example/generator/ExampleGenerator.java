@@ -101,7 +101,8 @@ public final class ExampleGenerator {
             processDir(outputPath);
         }
     }
-
+    
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void processDir(String path) {
         File file = new File(path);
         file.mkdirs();
