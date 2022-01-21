@@ -48,4 +48,4 @@ gen/
 /agent/
 
 # shardingsphere-example-generated ignore
-/shardingsphere-example-generated/
+/examples/shardingsphere-sample/shardingsphere-example-generated/
