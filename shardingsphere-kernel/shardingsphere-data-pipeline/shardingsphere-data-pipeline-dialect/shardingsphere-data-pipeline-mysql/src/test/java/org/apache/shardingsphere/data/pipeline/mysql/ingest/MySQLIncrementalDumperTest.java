@@ -26,7 +26,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderReco
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.distribution.MemoryPipelineChannel;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.distribution.MultiplexMemoryPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
@@ -54,13 +54,13 @@ public final class MySQLIncrementalDumperTest {
     
     private MySQLIncrementalDumper incrementalDumper;
     
-    private MemoryPipelineChannel channel;
+    private MultiplexMemoryPipelineChannel channel;
     
     @Before
     public void setUp() {
         DumperConfiguration dumperConfig = mockDumperConfiguration();
         initTableData(dumperConfig);
-        channel = new MemoryPipelineChannel(records -> { });
+        channel = new MultiplexMemoryPipelineChannel(records -> { });
         incrementalDumper = new MySQLIncrementalDumper(dumperConfig, new BinlogPosition("binlog-000001", 4L));
         incrementalDumper.setChannel(channel);
     }

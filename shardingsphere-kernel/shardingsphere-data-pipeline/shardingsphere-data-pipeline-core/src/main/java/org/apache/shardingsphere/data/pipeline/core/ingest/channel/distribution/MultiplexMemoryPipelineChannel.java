@@ -30,11 +30,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Memory pipeline channel.
+ * Multiplex memory pipeline channel.
  */
 @Slf4j
-// TODO rename
-public final class MemoryPipelineChannel implements PipelineChannel {
+public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
     
     private final int channelNumber;
     
@@ -44,20 +43,20 @@ public final class MemoryPipelineChannel implements PipelineChannel {
     
     private final AckCallback ackCallback;
     
-    public MemoryPipelineChannel(final AckCallback ackCallback) {
+    public MultiplexMemoryPipelineChannel(final AckCallback ackCallback) {
         this(10000, ackCallback);
     }
     
-    public MemoryPipelineChannel(final int blockQueueSize, final AckCallback ackCallback) {
+    public MultiplexMemoryPipelineChannel(final int blockQueueSize, final AckCallback ackCallback) {
         this(1, blockQueueSize, ackCallback);
     }
     
-    public MemoryPipelineChannel(final int channelNumber, final int blockQueueSize, final AckCallback ackCallback) {
+    public MultiplexMemoryPipelineChannel(final int channelNumber, final int blockQueueSize, final AckCallback ackCallback) {
         this.channelNumber = channelNumber;
         this.ackCallback = ackCallback;
         channels = new PipelineChannel[channelNumber];
         for (int i = 0; i < channelNumber; i++) {
-            channels[i] = new BlockingQueueChannel(blockQueueSize);
+            channels[i] = new SimpleMemoryPipelineChannel(blockQueueSize);
         }
     }
     

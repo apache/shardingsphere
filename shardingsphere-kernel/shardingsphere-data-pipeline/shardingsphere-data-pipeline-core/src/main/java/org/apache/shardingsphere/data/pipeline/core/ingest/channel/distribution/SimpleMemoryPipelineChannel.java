@@ -27,18 +27,17 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * Blocking queue pipeline channel.
+ * Simple memory pipeline channel.
  */
-// TODO rename
-public final class BlockingQueueChannel implements PipelineChannel {
+public final class SimpleMemoryPipelineChannel implements PipelineChannel {
     
     private final BlockingQueue<Record> queue;
     
-    public BlockingQueueChannel() {
+    public SimpleMemoryPipelineChannel() {
         this(10000);
     }
     
-    public BlockingQueueChannel(final int blockQueueSize) {
+    public SimpleMemoryPipelineChannel(final int blockQueueSize) {
         this.queue = new ArrayBlockingQueue<>(blockQueueSize);
     }
     
