@@ -25,42 +25,24 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 
-import java.util.BitSet;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Distribution channel.
+ * Memory pipeline channel.
  */
 @Slf4j
+// TODO rename
 public final class MemoryPipelineChannel implements PipelineChannel {
     
     private final int channelNumber;
     
-    private final BitSetChannel[] channels;
-    
-    // TODO remove autoAckChannel
-    private final BitSetChannel autoAckChannel = new AutoAcknowledgeChannel();
+    private final PipelineChannel[] channels;
     
     private final Map<String, Integer> channelAssignment = new HashMap<>();
     
     private final AckCallback ackCallback;
-    
-    private final AtomicLong indexAutoIncreaseGenerator = new AtomicLong();
-    
-    private final Queue<Integer> toBeAckBitSetIndexes = new ConcurrentLinkedQueue<>();
-    
-    private long lastAckIndex;
-    
-    private ScheduledExecutorService scheduleAckRecordsExecutor;
     
     public MemoryPipelineChannel(final AckCallback ackCallback) {
         this(10000, ackCallback);
@@ -73,23 +55,16 @@ public final class MemoryPipelineChannel implements PipelineChannel {
     public MemoryPipelineChannel(final int channelNumber, final int blockQueueSize, final AckCallback ackCallback) {
         this.channelNumber = channelNumber;
         this.ackCallback = ackCallback;
-        channels = new BitSetChannel[channelNumber];
+        channels = new PipelineChannel[channelNumber];
         for (int i = 0; i < channelNumber; i++) {
             channels[i] = new BlockingQueueChannel(blockQueueSize);
         }
-        scheduleAckRecords();
-    }
-    
-    // TODO remove scheduleAckRecords
-    private void scheduleAckRecords() {
-        scheduleAckRecordsExecutor = Executors.newSingleThreadScheduledExecutor();
-        scheduleAckRecordsExecutor.scheduleWithFixedDelay(this::ackRecords0, 5, 1, TimeUnit.SECONDS);
     }
     
     @Override
     public void pushRecord(final Record record) {
         if (FinishedRecord.class.equals(record.getClass())) {
-            for (int i = 0; i < channels.length; i++) {
+            for (int i = 0; i < channelNumber; i++) {
                 pushRecord(record, i);
             }
         } else if (DataRecord.class.equals(record.getClass())) {
@@ -101,9 +76,9 @@ public final class MemoryPipelineChannel implements PipelineChannel {
         }
     }
     
-    private void pushRecord(final Record record, final int index) {
-        toBeAckBitSetIndexes.add(index);
-        getBitSetChannel(index).pushRecord(record, indexAutoIncreaseGenerator.getAndIncrement());
+    private void pushRecord(final Record record, final int channelIndex) {
+        PipelineChannel channel = channels[channelIndex];
+        channel.pushRecord(record);
     }
     
     @Override
@@ -117,45 +92,7 @@ public final class MemoryPipelineChannel implements PipelineChannel {
         ackCallback.onAck(records);
     }
     
-    private synchronized void ackRecords0() {
-        try {
-            int count = shouldAckCount();
-            if (0 == count) {
-                return;
-            }
-            //ackCallback.onAck(fetchAckRecords(count));
-            lastAckIndex += count;
-            for (BitSetChannel channel : channels) {
-                channel.clear(lastAckIndex);
-            }
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            log.error("distribution channel auto ack failed.", ex);
-        }
-    }
-    
-    private int shouldAckCount() {
-        BitSet bitSet = autoAckChannel.getAckBitSet(lastAckIndex);
-        for (BitSetChannel channel : channels) {
-            bitSet.or(channel.getAckBitSet(lastAckIndex));
-        }
-        return bitSet.nextClearBit(0);
-    }
-    
-    private List<Record> fetchAckRecords(final int count) {
-        List<Record> result = new LinkedList<>();
-        for (int i = 0; i < count; i++) {
-            result.add(getBitSetChannel(toBeAckBitSetIndexes.remove()).removeAckRecord());
-        }
-        return result;
-    }
-    
-    private BitSetChannel getBitSetChannel(final Integer index) {
-        return index == -1 ? autoAckChannel : channels[index];
-    }
-    
-    private BitSetChannel findChannel() {
+    private PipelineChannel findChannel() {
         String threadId = Long.toString(Thread.currentThread().getId());
         checkAssignment(threadId);
         return channels[channelAssignment.get(threadId)];
@@ -182,12 +119,8 @@ public final class MemoryPipelineChannel implements PipelineChannel {
     
     @Override
     public void close() {
-        // TODO shutdownNow?
-        scheduleAckRecordsExecutor.shutdown();
-        ackRecords0();
-        for (BitSetChannel each : channels) {
+        for (PipelineChannel each : channels) {
             each.close();
         }
-        toBeAckBitSetIndexes.clear();
     }
 }
