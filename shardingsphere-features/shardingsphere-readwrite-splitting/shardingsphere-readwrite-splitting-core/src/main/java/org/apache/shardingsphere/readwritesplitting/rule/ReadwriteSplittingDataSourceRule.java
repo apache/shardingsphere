@@ -18,19 +18,23 @@
 package org.apache.shardingsphere.readwritesplitting.rule;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
+import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadwriteSplittingType;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -102,6 +106,17 @@ public final class ReadwriteSplittingDataSourceRule {
      * @return data sources
      */
     public Map<String, String> getDataSources() {
-        return readwriteSplittingType.getDataSources();
+        return readwriteSplittingType.getDataSources().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey,
+                    each -> ExportableConstants.REPLICA_DATA_SOURCE_NAMES.equals(each.getKey()) ? removeDisabledDataSources(each.getValue()) : each.getValue()));
+    }
+    
+    private String removeDisabledDataSources(final String readDataSources) {
+        if (disabledDataSourceNames.isEmpty()) {
+            return readDataSources;
+        }
+        Collection<String> dataSources = new LinkedList<>(Splitter.on(",").trimResults().splitToList(readDataSources));
+        dataSources.removeIf(disabledDataSourceNames::contains);
+        return String.join(",", dataSources);
     }
 }

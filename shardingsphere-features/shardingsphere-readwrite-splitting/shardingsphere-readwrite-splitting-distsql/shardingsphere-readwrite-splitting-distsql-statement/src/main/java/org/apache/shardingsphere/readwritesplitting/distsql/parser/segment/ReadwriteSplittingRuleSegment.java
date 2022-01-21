@@ -58,7 +58,7 @@ public final class ReadwriteSplittingRuleSegment implements ASTNode {
      * 
      * @return is auto ware or not
      */
-    public boolean hasAutoAware() {
+    public boolean isAutoAware() {
         return !Strings.isNullOrEmpty(autoAwareResource);
     }
 }

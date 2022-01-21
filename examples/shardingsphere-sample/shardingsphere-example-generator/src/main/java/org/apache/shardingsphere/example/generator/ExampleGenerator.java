@@ -20,6 +20,7 @@ package org.apache.shardingsphere.example.generator;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.apache.shardingsphere.example.generator.scenario.ExampleScenarioFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -46,7 +47,7 @@ public final class ExampleGenerator {
             + "<#else>"
             + "<#assign package=feature />"
             + "</#if>"
-            + "/shardingsphere-jdbc-${mode}-${transaction}-${package}-${framework}-example/src/main/";
+            + "/shardingsphere-jdbc-sample/shardingsphere-jdbc-${mode}-${transaction}-${package}-${framework}-example/src/main/";
     
     private static final String JAVA_CLASS_PATH = "java/org/apache/shardingsphere/example/"
             + "<#assign package=\"\">"
@@ -82,8 +83,10 @@ public final class ExampleGenerator {
     public void generate() throws IOException, TemplateException {
         try (InputStream input = ExampleGenerator.class.getResourceAsStream(DATA_MODEL_PATH)) {
             Map<String, String> dataModel = new Yaml().loadAs(input, Map.class);
-            generateFile(dataModel, ExampleTemplateFactory.getJavaClassTemplateMap(dataModel), JAVA_CLASS_PATH);
-            generateFile(dataModel, ExampleTemplateFactory.getResourceTemplateMap(dataModel), RESOURCES_PATH);
+            String feature = dataModel.get("feature");
+            String framework = dataModel.get("framework");
+            generateFile(dataModel, new ExampleScenarioFactory(feature, framework).getJavaClassTemplateMap(), JAVA_CLASS_PATH);
+            generateFile(dataModel, new ExampleScenarioFactory(feature, framework).getResourceTemplateMap(), RESOURCES_PATH);
         }
     }
     

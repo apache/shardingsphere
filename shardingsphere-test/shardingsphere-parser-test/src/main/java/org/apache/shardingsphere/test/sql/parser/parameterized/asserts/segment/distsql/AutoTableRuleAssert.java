@@ -52,11 +52,11 @@ public final class AutoTableRuleAssert {
                     actual.getDataSourceNodes(), is(expected.getDataSources()));
             assertThat(assertContext.getText(String.format("`%s`'s auto table rule segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getShardingColumn(), is(expected.getTableStrategyColumn()));
-            assertNotNull(assertContext.getText("key generate should exist."), actual.getKeyGenerateSegment());
+            assertNotNull(assertContext.getText("key generate should exist."), actual.getKeyGenerateStrategySegment());
             assertThat(assertContext.getText(String.format("`%s`'s auto table rule segment assertion error: ", actual.getClass().getSimpleName())),
-                    actual.getKeyGenerateSegment().getKeyGenerateColumn(), is(expected.getKeyGenerateStrategyColumn()));
+                    actual.getKeyGenerateStrategySegment().getKeyGenerateColumn(), is(expected.getKeyGenerateStrategyColumn()));
             AlgorithmAssert.assertIs(assertContext, actual.getShardingAlgorithmSegment(), expected.getTableStrategy());
-            AlgorithmAssert.assertIs(assertContext, actual.getKeyGenerateSegment().getKeyGenerateAlgorithmSegment(), expected.getKeyGenerateStrategy());
+            AlgorithmAssert.assertIs(assertContext, actual.getKeyGenerateStrategySegment().getKeyGenerateAlgorithmSegment(), expected.getKeyGenerateStrategy());
         }
     }
 }

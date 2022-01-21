@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql.resource;
 
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
-import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.config.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
