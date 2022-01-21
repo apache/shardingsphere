@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.channel.distribution;
 
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 
@@ -26,13 +27,12 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * Blocking queue BitSet channel.
+ * Blocking queue pipeline channel.
  */
-public final class BlockingQueueChannel extends AbstractBitSetChannel {
+// TODO rename
+public final class BlockingQueueChannel implements PipelineChannel {
     
     private final BlockingQueue<Record> queue;
-    
-    private long fetchedIndex;
     
     public BlockingQueueChannel() {
         this(10000);
@@ -43,12 +43,11 @@ public final class BlockingQueueChannel extends AbstractBitSetChannel {
     }
     
     @Override
-    public void pushRecord(final Record dataRecord, final long index) {
-        getManualBitSet().set(index);
+    public void pushRecord(final Record dataRecord) {
         try {
             queue.put(dataRecord);
         } catch (final InterruptedException ex) {
-            throw new RuntimeException("put " + dataRecord + " into queue at index " + index + " failed", ex);
+            throw new RuntimeException("put " + dataRecord + " into queue failed", ex);
         }
     }
     
@@ -64,20 +63,15 @@ public final class BlockingQueueChannel extends AbstractBitSetChannel {
             ThreadUtil.sleep(100L);
         }
         queue.drainTo(result, batchSize);
-        // TODO memory released after job completed?
-        getToBeAckRecords().addAll(result);
-        fetchedIndex = getManualBitSet().getEndIndex(fetchedIndex, result.size());
         return result;
     }
     
     @Override
     public void ack(final List<Record> records) {
-        setAcknowledgedIndex(fetchedIndex);
     }
     
     @Override
     public void close() {
         queue.clear();
-        super.close();
     }
 }

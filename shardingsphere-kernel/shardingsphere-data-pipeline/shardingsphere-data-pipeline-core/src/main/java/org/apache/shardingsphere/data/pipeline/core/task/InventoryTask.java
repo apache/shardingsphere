@@ -112,6 +112,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     
     private void instanceChannel(final Importer importer) {
         PipelineChannel channel = pipelineChannelFactory.createPipelineChannel(1, records -> {
+            // TODO find in reversed order
             Optional<Record> record = records.stream().filter(each -> !(each.getPosition() instanceof PlaceholderPosition)).reduce((a, b) -> b);
             record.ifPresent(value -> position = value.getPosition());
         });
