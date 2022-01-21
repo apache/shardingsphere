@@ -145,6 +145,11 @@ public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
         addData(dataMap, SHADOW, DATA_SOURCE, ruleConfiguration, config -> ((ShadowRuleConfiguration) config).getDataSources().size());
     }
     
+    private void addData(final Map<String, Collection<Object>> dataMap, final String feature, final String type,
+                         final RuleConfiguration ruleConfiguration, final Function<RuleConfiguration, Integer> apply) {
+        addData(dataMap, feature, feature, type, ruleConfiguration, apply);
+    }
+    
     private void addData(final Map<String, Collection<Object>> dataMap, final String dataKey, final String feature, final String type,
                          final RuleConfiguration ruleConfiguration, final Function<RuleConfiguration, Integer> apply) {
         if (null == ruleConfiguration) {
@@ -157,11 +162,6 @@ public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
             return;
         }
         dataMap.put(dataKey, buildRow(feature, type, apply.apply(ruleConfiguration)));
-    }
-    
-    private void addData(final Map<String, Collection<Object>> dataMap, final String feature, final String type,
-                         final RuleConfiguration ruleConfiguration, final Function<RuleConfiguration, Integer> apply) {
-        addData(dataMap, feature, feature, type, ruleConfiguration, apply);
     }
     
     private Collection<Object> buildRow(final String type, final String name, final Integer count) {
