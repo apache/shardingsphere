@@ -131,6 +131,7 @@ public final class InventoryTaskSplitter {
         JobProgress initProgress = jobContext.getInitProgress();
         if (null != initProgress && initProgress.getStatus() != JobStatus.PREPARING_FAILURE) {
             Collection<IngestPosition<?>> result = jobContext.getInitProgress().getInventoryPosition(dumperConfig.getTableName()).values();
+            // TODO [ksdfjaskjiowetr] seems findFirst() might cause issue when first one is not PrimaryKeyPosition
             result.stream().findFirst().ifPresent(position -> {
                 if (position instanceof PrimaryKeyPosition) {
                     String primaryKey = metaDataManager.getTableMetaData(dumperConfig.getTableName(), databaseType).getPrimaryKeyColumns().get(0);
