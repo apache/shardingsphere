@@ -146,4 +146,53 @@ public final class SchemaRulesQueryResultSetTest {
         assertThat(rowData.next(), is("table"));
         assertThat(rowData.next(), is(1));
     }
+    
+    @Test
+    public void assertGetRowDataWithoutConfiguration() {
+        DistSQLResultSet resultSet = new SchemaRulesQueryResultSet();
+        when(shardingSphereMetaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
+        resultSet.init(shardingSphereMetaData, mock(CountSchemaRulesStatement.class));
+        Collection<Object> actual = resultSet.getRowData();
+        assertThat(actual.size(), is(3));
+        Iterator<Object> rowData = actual.iterator();
+        assertThat(rowData.next(), is("single_table"));
+        assertThat(rowData.next(), is("table"));
+        assertThat(rowData.next(), is(2));
+        resultSet.next();
+        actual = resultSet.getRowData();
+        rowData = actual.iterator();
+        assertThat(rowData.next(), is("sharding"));
+        assertThat(rowData.next(), is("sharding_table"));
+        assertThat(rowData.next(), is(0));
+        resultSet.next();
+        actual = resultSet.getRowData();
+        rowData = actual.iterator();
+        assertThat(rowData.next(), is("sharding"));
+        assertThat(rowData.next(), is("binding_table"));
+        assertThat(rowData.next(), is(0));
+        resultSet.next();
+        actual = resultSet.getRowData();
+        rowData = actual.iterator();
+        assertThat(rowData.next(), is("sharding"));
+        assertThat(rowData.next(), is("broadcast_table"));
+        assertThat(rowData.next(), is(0));
+        resultSet.next();
+        actual = resultSet.getRowData();
+        rowData = actual.iterator();
+        assertThat(rowData.next(), is("readwrite_splitting"));
+        assertThat(rowData.next(), is("data_source"));
+        assertThat(rowData.next(), is(0));
+        resultSet.next();
+        actual = resultSet.getRowData();
+        rowData = actual.iterator();
+        assertThat(rowData.next(), is("db_discovery"));
+        assertThat(rowData.next(), is("data_source"));
+        assertThat(rowData.next(), is(0));
+        resultSet.next();
+        actual = resultSet.getRowData();
+        rowData = actual.iterator();
+        assertThat(rowData.next(), is("encrypt"));
+        assertThat(rowData.next(), is("table"));
+        assertThat(rowData.next(), is(0));
+    }
 }
