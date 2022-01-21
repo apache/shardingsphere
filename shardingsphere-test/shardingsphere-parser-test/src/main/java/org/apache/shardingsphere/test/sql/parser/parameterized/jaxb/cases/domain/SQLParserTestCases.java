@@ -97,6 +97,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDomainStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterForeignDataWrapperTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterExtensionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterForeignTableTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterLanguageStatementTestCase;
@@ -1019,6 +1020,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "alter-foreign-data-wrapper")
     private final List<AlterForeignDataWrapperTestCase> alterForeignDataWrapperTestCase = new LinkedList<>();
     
+    @XmlElement(name = "alter-foreign-table")
+    private final List<AlterForeignTableTestCase> alterForeignTableTestCase = new LinkedList<>();
+    
     @XmlElement(name = "create-text-search")
     private final List<CreateTextSearchStatementTestCase> createTextSearchStatementTestCases = new LinkedList<>();
     
@@ -1298,6 +1302,7 @@ public final class SQLParserTestCases {
         putAll(alterCollationStatementTestCase, result);
         putAll(alterDefaultPrivilegesTestCase, result);
         putAll(alterForeignDataWrapperTestCase, result);
+        putAll(alterForeignTableTestCase, result);
         putAll(createTextSearchStatementTestCases, result);
         putAll(alterTextSearchStatementTestCases, result);
         putAll(createLanguageStatementTestCases, result);
