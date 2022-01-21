@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mock;
 
 public final class EncryptSQLRewriteContextDecoratorTest {
     
-    EncryptSQLRewriteContextDecorator encryptSQLRewriteContextDecorator = new EncryptSQLRewriteContextDecorator();
+    private final EncryptSQLRewriteContextDecorator encryptSQLRewriteContextDecorator = new EncryptSQLRewriteContextDecorator();
     
     @Test
     public void assertDecorate() {
