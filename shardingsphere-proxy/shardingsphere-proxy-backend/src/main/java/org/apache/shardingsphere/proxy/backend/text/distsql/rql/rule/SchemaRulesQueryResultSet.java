@@ -85,13 +85,11 @@ public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         Map<String, Collection<Object>> dataMap = new LinkedHashMap<>();
         addSingleTableData(dataMap, metaData.getRuleMetaData().findRules(SingleTableRule.class));
-        metaData.getRuleMetaData().getConfigurations().forEach(each -> {
-            addShardingData(dataMap, each);
-            addReadwriteSplittingData(dataMap, each);
-            addDBDiscoveryData(dataMap, each);
-            addEncryptData(dataMap, each);
-            addShadowData(dataMap, each);
-        });
+        if (hasRuleConfiguration(metaData)) {
+            addConfigurationData(dataMap, metaData.getRuleMetaData().getConfigurations());
+        } else {
+            addDefaultData(dataMap);
+        }
         this.data = dataMap.values().iterator();
     }
     
@@ -99,6 +97,29 @@ public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
         Optional<Integer> count = rules.stream().map(each -> (Collection) each.export(ExportableConstants.EXPORTABLE_KEY_SINGLE_TABLES).orElse(Collections.emptyMap()))
                 .map(Collection::size).reduce(Integer::sum);
         dataMap.putIfAbsent(SINGLE_TABLE, buildRow(SINGLE_TABLE, TABLE, count.orElse(DEFAULT_COUNT)));
+    }
+    
+    private boolean hasRuleConfiguration(final ShardingSphereMetaData metaData) {
+        Collection<RuleConfiguration> configurations = metaData.getRuleMetaData().getConfigurations();
+        return null != configurations && !configurations.isEmpty();
+    }
+    
+    private void addDefaultData(final Map<String, Collection<Object>> dataMap) {
+        addShardingData(dataMap, null);
+        addReadwriteSplittingData(dataMap, null);
+        addDBDiscoveryData(dataMap, null);
+        addEncryptData(dataMap, null);
+        addShadowData(dataMap, null);
+    }
+    
+    private void addConfigurationData(final Map<String, Collection<Object>> dataMap, final Collection<RuleConfiguration> configurations) {
+        configurations.forEach(each -> {
+            addShardingData(dataMap, each);
+            addReadwriteSplittingData(dataMap, each);
+            addDBDiscoveryData(dataMap, each);
+            addEncryptData(dataMap, each);
+            addShadowData(dataMap, each);
+        });
     }
     
     private void addShardingData(final Map<String, Collection<Object>> dataMap, final RuleConfiguration ruleConfiguration) {
@@ -124,19 +145,23 @@ public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
         addData(dataMap, SHADOW, DATA_SOURCE, ruleConfiguration, config -> ((ShadowRuleConfiguration) config).getDataSources().size());
     }
     
+    private void addData(final Map<String, Collection<Object>> dataMap, final String feature, final String type,
+                         final RuleConfiguration ruleConfiguration, final Function<RuleConfiguration, Integer> apply) {
+        addData(dataMap, feature, feature, type, ruleConfiguration, apply);
+    }
+    
     private void addData(final Map<String, Collection<Object>> dataMap, final String dataKey, final String feature, final String type,
                          final RuleConfiguration ruleConfiguration, final Function<RuleConfiguration, Integer> apply) {
+        if (null == ruleConfiguration) {
+            dataMap.putIfAbsent(dataKey, buildRow(feature, type, DEFAULT_COUNT));
+            return;   
+        }
         Class<? extends RuleConfiguration> clz = FEATURE_MAP.get(feature);
         if (!(ruleConfiguration.getClass().getCanonicalName().equals(clz.getCanonicalName()))) {
             dataMap.putIfAbsent(dataKey, buildRow(feature, type, DEFAULT_COUNT));
             return;
         }
         dataMap.put(dataKey, buildRow(feature, type, apply.apply(ruleConfiguration)));
-    }
-    
-    private void addData(final Map<String, Collection<Object>> dataMap, final String feature, final String type,
-                         final RuleConfiguration ruleConfiguration, final Function<RuleConfiguration, Integer> apply) {
-        addData(dataMap, feature, feature, type, ruleConfiguration, apply);
     }
     
     private Collection<Object> buildRow(final String type, final String name, final Integer count) {
