@@ -22,9 +22,11 @@ import org.apache.shardingsphere.example.generator.scenario.framework.FrameworkE
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.Set;
 
 /**
  * Example scenario factory.
@@ -42,8 +44,11 @@ public final class ExampleScenarioFactory {
     
     private Collection<FeatureExampleScenario> getFeatureScenarios(final String feature) {
         Collection<FeatureExampleScenario> result = new LinkedList<>();
+        if (null == feature) {
+            return result;
+        }
         for (FeatureExampleScenario each : ServiceLoader.load(FeatureExampleScenario.class)) {
-            if (each.getType().contains(feature)) {
+            if (feature.contains(each.getType())) {
                 result.add(each);
             }
         }
@@ -86,10 +91,29 @@ public final class ExampleScenarioFactory {
     public Map<String, String> getResourceTemplateMap() {
         Map<String, String> result = new HashMap<>();
         for (FeatureExampleScenario each : featureScenarios) {
-            result.putAll(each.getJavaClassTemplateMap());
+            result.putAll(each.getResourceTemplateMap());
         }
         result.putAll(frameworkScenario.getResourceTemplateMap());
         result.put("resources/logback.ftl", "logback.xml");
+        return result;
+    }
+    
+    public Set<String> getJavaClassPathSet() {
+        Set<String> result = new HashSet<>();
+        for (FeatureExampleScenario each : featureScenarios) {
+            result.addAll(each.getJavaClassPathSet());
+        }
+        result.addAll(frameworkScenario.getJavaClassPathSet());
+        result.add("entity");
+        return result;
+    }
+    
+    public Set<String> getResourcePathSet() {
+        Set<String> result = new HashSet<>();
+        for (FeatureExampleScenario each : featureScenarios) {
+            result.addAll(each.getResourcePathSet());
+        }
+        result.addAll(frameworkScenario.getResourcePathSet());
         return result;
     }
 }

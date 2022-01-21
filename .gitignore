@@ -46,3 +46,6 @@ gen/
 
 # agent build ignore
 /agent/
+
+# shardingsphere-example-generated ignore
+/shardingsphere-example-generated/

@@ -19,8 +19,11 @@ package org.apache.shardingsphere.example.generator.scenario.framework.type;
 
 import org.apache.shardingsphere.example.generator.scenario.framework.FrameworkExampleScenario;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Spring namespace JDBC example scenario.
@@ -43,6 +46,18 @@ public final class SpringNamespaceJdbcExampleScenario implements FrameworkExampl
         return result;
     }
     
+    @Override
+    public Set<String> getJavaClassPathSet() {
+        Set<String> result = new HashSet<>();
+        result.add("repository");
+        return result;
+    }
+    
+    @Override
+    public Set<String> getResourcePathSet() {
+        return Collections.emptySet();
+    }
+
     @Override
     public String getType() {
         return "spring-namespace-jdbc";

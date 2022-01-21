@@ -19,8 +19,11 @@ package org.apache.shardingsphere.example.generator.scenario.feature.type;
 
 import org.apache.shardingsphere.example.generator.scenario.feature.FeatureExampleScenario;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Encrypt example scenario.
@@ -38,6 +41,18 @@ public final class EncryptExampleScenario implements FeatureExampleScenario {
     public Map<String, String> getResourceTemplateMap() {
         Map<String, String> result = new HashMap<>();
         result.put("resources/spi/encryptAlgorithm.ftl", "META-INF/services/org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm");
+        return result;
+    }
+    
+    @Override
+    public Set<String> getJavaClassPathSet() {
+        return Collections.emptySet();
+    }
+    
+    @Override
+    public Set<String> getResourcePathSet() {
+        Set<String> result = new HashSet<>();
+        result.add("META-INF/services");
         return result;
     }
     

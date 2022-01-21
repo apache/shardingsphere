@@ -21,7 +21,9 @@ import org.apache.shardingsphere.example.generator.scenario.framework.FrameworkE
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * JDBC example scenario.
@@ -41,6 +43,18 @@ public final class JDBCExampleScenario implements FrameworkExampleScenario {
     @Override
     public Map<String, String> getResourceTemplateMap() {
         return Collections.emptyMap();
+    }
+    
+    @Override
+    public Set<String> getJavaClassPathSet() {
+        Set<String> result = new HashSet<>();
+        result.add("repository");
+        return result;
+    }
+    
+    @Override
+    public Set<String> getResourcePathSet() {
+        return Collections.emptySet();
     }
     
     @Override
