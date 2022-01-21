@@ -85,7 +85,7 @@ public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         Map<String, Collection<Object>> dataMap = new LinkedHashMap<>();
         addSingleTableData(dataMap, metaData.getRuleMetaData().findRules(SingleTableRule.class));
-        if (hasAnyConfiguration(metaData)) {
+        if (hasRuleConfiguration(metaData)) {
             addConfigurationData(dataMap, metaData.getRuleMetaData().getConfigurations());
         } else {
             addDefaultData(dataMap);
@@ -99,7 +99,7 @@ public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
         dataMap.putIfAbsent(SINGLE_TABLE, buildRow(SINGLE_TABLE, TABLE, count.orElse(DEFAULT_COUNT)));
     }
     
-    private boolean hasAnyConfiguration(final ShardingSphereMetaData metaData) {
+    private boolean hasRuleConfiguration(final ShardingSphereMetaData metaData) {
         Collection<RuleConfiguration> configurations = metaData.getRuleMetaData().getConfigurations();
         return null != configurations && !configurations.isEmpty();
     }
