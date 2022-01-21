@@ -86,7 +86,8 @@ public final class PostgreSQLAggregatedBatchedInsertsCommandExecutorTest {
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         PostgreSQLPreparedStatementRegistry.getInstance().register(CONNECTION_ID);
-        PostgreSQLPreparedStatementRegistry.getInstance().register(CONNECTION_ID, STATEMENT_ID, SQL, SQL_PARSER_ENGINE.parse(SQL, false), Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
+        PostgreSQLPreparedStatementRegistry.getInstance().register(CONNECTION_ID, STATEMENT_ID, SQL, SQL_PARSER_ENGINE.parse(SQL, false),
+                Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
