@@ -73,7 +73,6 @@ public final class TransactionBackendHandlerFactory {
                     : new TransactionBackendHandler(tclStatement, TransactionOperationType.ROLLBACK, connectionSession); 
         }
         if (tclStatement instanceof SetTransactionStatement && Scope.GLOBAL != ((SetTransactionStatement) tclStatement).getScope()) {
-//            return new TransactionBackendHandler(tclStatement, TransactionOperationType.BEGIN, connectionSession);
             return new TransactionSetHandler((SetTransactionStatement) tclStatement, connectionSession);
         }
         if (tclStatement instanceof XAStatement) {

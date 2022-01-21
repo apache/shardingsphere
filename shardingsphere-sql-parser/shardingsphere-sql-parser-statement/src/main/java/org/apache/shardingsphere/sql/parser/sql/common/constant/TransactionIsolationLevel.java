@@ -27,7 +27,6 @@ public enum TransactionIsolationLevel {
     SERIALIZABLE("SERIALIZABLE"),
     READ_COMMITTED("READ COMMITTED");
 
-
     private final String isolationLevel;
 
     TransactionIsolationLevel(final String isolationLevel) {

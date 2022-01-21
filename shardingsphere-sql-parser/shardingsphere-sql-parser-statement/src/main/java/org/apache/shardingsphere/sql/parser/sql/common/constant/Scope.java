@@ -24,7 +24,6 @@ public enum Scope {
     GLOBAL("GLOBAL"),
     SESSION("SESSION");
 
-
     private final String scope;
 
     Scope(final String scope) {

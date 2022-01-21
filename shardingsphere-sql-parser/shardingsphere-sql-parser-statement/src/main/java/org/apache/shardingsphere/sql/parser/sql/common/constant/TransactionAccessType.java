@@ -24,7 +24,6 @@ public enum TransactionAccessType {
     READ_ONLY("READ_ONLY"),
     READ_WRITE("READ_WRITE");
 
-
     private final String accessType;
 
     TransactionAccessType(final String accessType) {
