@@ -30,6 +30,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDB
 import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionIsolationLevel;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -54,7 +55,13 @@ public final class ConnectionSession {
     
     @Getter(AccessLevel.NONE)
     private final AtomicBoolean autoCommit = new AtomicBoolean(true);
-    
+
+    private boolean readOnly;
+
+    private TransactionIsolationLevel defaultIsolationLevel;
+
+    private TransactionIsolationLevel isolationLevel;
+
     private final BackendConnection backendConnection;
     
     public ConnectionSession(final TransactionType initialTransactionType, final AttributeMap attributeMap) {
@@ -109,7 +116,16 @@ public final class ConnectionSession {
     public boolean isAutoCommit() {
         return autoCommit.get();
     }
-    
+
+    /**
+     * Is readonly.
+     *
+     * @return is readonly
+     */
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
     /**
      * Set autocommit.
      *

@@ -26,16 +26,17 @@ import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParamet
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.util.TransactionUtil;
 import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -111,6 +112,9 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     private List<Connection> createNewConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         Preconditions.checkNotNull(connectionSession.getSchemaName(), "Current schema is null.");
         List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(connectionSession.getSchemaName(), dataSourceName, connectionSize, connectionMode);
+        for (Connection each : result) {
+            replayTransactionOption(each);
+        }
         if (connectionSession.getTransactionStatus().isInTransaction()) {
             for (Connection each : result) {
                 replayMethodsInvocation(each);
@@ -122,6 +126,18 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     private void replayMethodsInvocation(final Connection target) {
         for (ConnectionPostProcessor<Connection> each : connectionPostProcessors) {
             each.process(target);
+        }
+    }
+
+    private void replayTransactionOption(final Connection connection) throws SQLException {
+        if (null == connection) {
+            return;
+        }
+        if (connectionSession.isReadOnly()) {
+            connection.setReadOnly(true);
+        }
+        if (null != connectionSession.getIsolationLevel()) {
+            connection.setTransactionIsolation(TransactionUtil.getTransactionIsolationLevel(connectionSession.getIsolationLevel()));
         }
     }
     
@@ -286,6 +302,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
                 if (forceRollback && connectionSession.getTransactionStatus().isInTransaction()) {
                     each.rollback();
                 }
+                resetConnection(each);
                 each.close();
             } catch (final SQLException ex) {
                 result.add(ex);
@@ -295,7 +312,19 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
         connectionPostProcessors.clear();
         return result;
     }
-    
+
+    private void resetConnection(final Connection connection) throws SQLException {
+        if (null == connection) {
+            return;
+        }
+        if (connectionSession.isReadOnly()) {
+            connection.setReadOnly(false);
+        }
+        if (null != connectionSession.getDefaultIsolationLevel()) {
+            connection.setTransactionIsolation(TransactionUtil.getTransactionIsolationLevel(connectionSession.getIsolationLevel()));
+        }
+    }
+
     /**
      * Close federation executor.
      * 

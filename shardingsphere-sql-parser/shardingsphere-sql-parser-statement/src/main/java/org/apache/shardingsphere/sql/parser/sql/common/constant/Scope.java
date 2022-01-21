@@ -15,27 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.Scope;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionAccessType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionIsolationLevel;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+package org.apache.shardingsphere.sql.parser.sql.common.constant;
 
 /**
- * Set transaction statement.
+ * Scope enum.
  */
-@Getter
-@Setter
-@ToString
-public abstract class SetTransactionStatement extends AbstractSQLStatement implements TCLStatement {
+public enum Scope {
+    GLOBAL("GLOBAL"),
+    SESSION("SESSION");
 
-    private TransactionIsolationLevel isolationLevel;
 
-    private Scope scope;
+    private final String scope;
 
-    private TransactionAccessType accessMode;
+    Scope(final String scope) {
+        this.scope = scope;
+    }
+
+    /**
+     * Get scope.
+     *
+     * @return scope
+     */
+    public String getScope() {
+        return scope;
+    }
 }

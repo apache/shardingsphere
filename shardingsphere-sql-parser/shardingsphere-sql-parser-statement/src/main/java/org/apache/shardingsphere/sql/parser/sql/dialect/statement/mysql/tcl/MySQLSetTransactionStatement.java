@@ -30,10 +30,4 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 @Setter
 @ToString
 public final class MySQLSetTransactionStatement extends SetTransactionStatement implements MySQLStatement {
-    
-    private String isolationLevel;
-    
-    private String scope;
-    
-    private String accessMode;
 }
