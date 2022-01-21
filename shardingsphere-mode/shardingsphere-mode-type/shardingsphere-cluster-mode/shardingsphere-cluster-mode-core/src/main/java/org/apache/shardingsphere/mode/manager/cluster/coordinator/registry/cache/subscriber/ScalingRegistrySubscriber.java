@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.RegistryCacheManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ClusterSwitchConfigurationEvent;
@@ -56,11 +57,16 @@ public final class ScalingRegistrySubscriber {
     
     private final RegistryCacheManager registryCacheManager;
     
+    private final LockRegistryService lockRegistryService;
+    
+    private boolean lockStatus;
+    
     public ScalingRegistrySubscriber(final ClusterPersistRepository repository) {
         this.repository = repository;
         this.persistService = new SchemaRulePersistService(repository);
         dataSourcePersistService = new DataSourcePersistService(repository);
         registryCacheManager = new RegistryCacheManager(repository);
+        lockRegistryService = new LockRegistryService(repository);
         ShardingSphereEventBus.getInstance().register(this);
     }
     
@@ -75,8 +81,12 @@ public final class ScalingRegistrySubscriber {
         String sourceRule = repository.get(SchemaMetaDataNode.getRulePath(event.getSchemaName()));
         String targetRule = registryCacheManager.loadCache(SchemaMetaDataNode.getRulePath(event.getSchemaName()), event.getCacheId());
         String ruleCacheId = event.getCacheId();
-        StartScalingEvent startScalingEvent = new StartScalingEvent(event.getSchemaName(), sourceDataSource, sourceRule, targetRule, ruleCacheId);
-        ShardingSphereEventBus.getInstance().post(startScalingEvent);
+        lockStatus = lockRegistryService.tryLock(event.getSchemaName(), 1000);
+        if (lockStatus) {
+            log.info("start scaling job, locked the schema name, event={}", event);
+            StartScalingEvent startScalingEvent = new StartScalingEvent(event.getSchemaName(), sourceDataSource, sourceRule, targetRule, ruleCacheId);
+            ShardingSphereEventBus.getInstance().post(startScalingEvent);
+        }
     }
     
     /**
@@ -97,6 +107,10 @@ public final class ScalingRegistrySubscriber {
         if (null != ruleCacheId) {
             log.info("start to delete cache, ruleCacheId={}", ruleCacheId);
             registryCacheManager.deleteCache(SchemaMetaDataNode.getRulePath(event.getTargetSchemaName()), ruleCacheId);
+        }
+        if (lockStatus) {
+            log.info("scaling job finished, release schema name lock, event = {}", event);
+            lockRegistryService.releaseLock(event.getTargetSchemaName());
         }
     }
     

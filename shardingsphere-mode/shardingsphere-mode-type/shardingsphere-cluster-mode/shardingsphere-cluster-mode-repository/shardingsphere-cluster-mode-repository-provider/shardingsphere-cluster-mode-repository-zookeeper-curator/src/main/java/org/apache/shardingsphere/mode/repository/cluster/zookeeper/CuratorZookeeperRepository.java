@@ -29,7 +29,7 @@ import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.locks.InterProcessLock;
-import org.apache.curator.framework.recipes.locks.InterProcessMutex;
+import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -323,7 +323,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
         if (availableLock(key)) {
             return locks.get(key);
         }
-        InterProcessLock lock = new InterProcessMutex(client, key);
+        InterProcessLock lock = new InterProcessSemaphoreMutex(client, key);
         locks.put(key, lock);
         return lock;
     }
