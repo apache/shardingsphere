@@ -61,6 +61,7 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 | 语句                                                                         | 说明                                                         | 示例                                            |
 |:--------------------------------------------------------------------------- |:----------------------------------------------------------- |:----------------------------------------------- |
 | show instance mode                                                          | 查询当前 proxy 的 mode 配置                                    | show instance mode                                |
+| count schema rules [from schema]                                            | 查询 schema 中的规则数量                                      | count schema rules                               |
 | set variable proxy_property_name = xx                                       | proxy_property_name 为 proxy 的[属性配置](/cn/user-manual/shardingsphere-proxy/yaml-config/props/) ，需使用下划线命名 | set variable sql_show = true            |
 | set variable transaction_type = xx                                          | 修改当前连接的事务类型, 支持 LOCAL，XA，BASE                     | set variable transaction_type = XA               |
 | set variable agent_plugins_enabled = [true / false]                         | 设置 agent 插件的启用状态，默认值 false                         | set variable agent_plugins_enabled = true        |
