@@ -22,21 +22,20 @@ import org.apache.shardingsphere.infra.datasource.pool.metadata.impl.DefaultData
 import org.apache.shardingsphere.infra.datasource.pool.metadata.impl.HikariDataSourcePoolMetaData;
 import org.junit.Test;
 
-import java.util.Objects;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class DataSourcePoolMetaDataFactoryTest {
     
     @Test
-    public void assertNewInstance() {
+    public void assertDefaultInstance() {
         DataSourcePoolMetaData defaultDataSourcePoolMetaData = DataSourcePoolMetaDataFactory.newInstance("");
-        assertTrue(Objects.nonNull(defaultDataSourcePoolMetaData));
         assertThat(defaultDataSourcePoolMetaData, instanceOf(DefaultDataSourcePoolMetaData.class));
+    }
+    
+    @Test
+    public void assertHikariInstance() {
         DataSourcePoolMetaData hikariDataSourcePoolMetaData = DataSourcePoolMetaDataFactory.newInstance(HikariDataSource.class.getCanonicalName());
-        assertTrue(Objects.nonNull(hikariDataSourcePoolMetaData));
         assertThat(hikariDataSourcePoolMetaData, instanceOf(HikariDataSourcePoolMetaData.class));
     }
 }
