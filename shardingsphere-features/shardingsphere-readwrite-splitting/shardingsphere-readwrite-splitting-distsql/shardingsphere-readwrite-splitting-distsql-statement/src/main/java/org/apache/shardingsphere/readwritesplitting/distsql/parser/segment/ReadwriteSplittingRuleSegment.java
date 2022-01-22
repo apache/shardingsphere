@@ -54,7 +54,7 @@ public final class ReadwriteSplittingRuleSegment implements ASTNode {
     }
     
     /**
-     * Is it an auto ware type.
+     * Is it an auto aware type.
      * 
      * @return is auto ware or not
      */

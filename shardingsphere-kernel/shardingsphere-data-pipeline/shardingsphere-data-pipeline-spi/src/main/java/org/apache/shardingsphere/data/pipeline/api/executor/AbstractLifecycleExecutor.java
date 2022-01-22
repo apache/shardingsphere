@@ -20,12 +20,14 @@ package org.apache.shardingsphere.data.pipeline.api.executor;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Abstract lifecycle executor.
  */
 @Getter
 @Setter
+@Slf4j
 public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
     
     @Setter(AccessLevel.PROTECTED)
@@ -39,6 +41,7 @@ public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
     
     @Override
     public void stop() {
+        log.info("stop lifecycle executor: {}", super.toString());
         running = false;
     }
     

@@ -10,7 +10,7 @@ ADD RESOURCE dataSource [, dataSource] ...
 
 ALTER RESOURCE dataSource [, dataSource] ...
 
-DROP RESOURCE [IF EXISTS] dataSourceName [, dataSourceName] ... [ignore single tables]
+DROP RESOURCE dataSourceName [, dataSourceName] ... [ignore single tables]
 
 dataSource:
     simpleSource | urlSource
@@ -76,5 +76,5 @@ ALTER RESOURCE resource_0 (
 );
 
 DROP RESOURCE resource_0, resource_1;
-DROP RESOURCE IF EXISTS resource_2, resource_3 ignore single tables;
+DROP RESOURCE resource_2, resource_3 ignore single tables;
 ```
