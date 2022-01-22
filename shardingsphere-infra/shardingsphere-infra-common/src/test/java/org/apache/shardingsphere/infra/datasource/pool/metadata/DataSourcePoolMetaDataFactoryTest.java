@@ -28,14 +28,12 @@ import static org.junit.Assert.assertThat;
 public final class DataSourcePoolMetaDataFactoryTest {
     
     @Test
-    public void assertDefaultInstance() {
-        DataSourcePoolMetaData defaultDataSourcePoolMetaData = DataSourcePoolMetaDataFactory.newInstance("");
-        assertThat(defaultDataSourcePoolMetaData, instanceOf(DefaultDataSourcePoolMetaData.class));
+    public void assertNewInstanceForDefault() {
+        assertThat(DataSourcePoolMetaDataFactory.newInstance(""), instanceOf(DefaultDataSourcePoolMetaData.class));
     }
     
     @Test
-    public void assertHikariInstance() {
-        DataSourcePoolMetaData hikariDataSourcePoolMetaData = DataSourcePoolMetaDataFactory.newInstance(HikariDataSource.class.getCanonicalName());
-        assertThat(hikariDataSourcePoolMetaData, instanceOf(HikariDataSourcePoolMetaData.class));
+    public void assertNewInstanceForHikari() {
+        assertThat(DataSourcePoolMetaDataFactory.newInstance(HikariDataSource.class.getCanonicalName()), instanceOf(HikariDataSourcePoolMetaData.class));
     }
 }
