@@ -19,10 +19,10 @@ package org.apache.shardingsphere.example.generator.scenario.framework.type;
 
 import org.apache.shardingsphere.example.generator.scenario.framework.FrameworkExampleScenario;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Spring namespace MyBatis example scenario.
@@ -49,15 +49,15 @@ public final class SpringNamespaceMyBatisExampleScenario implements FrameworkExa
     }
     
     @Override
-    public Set<String> getJavaClassPathSet() {
-        Set<String> result = new HashSet<>();
+    public Collection<String> getJavaClassPaths() {
+        Collection<String> result = new HashSet<>();
         result.add("repository");
         return result;
     }
     
     @Override
-    public Set<String> getResourcePathSet() {
-        Set<String> result = new HashSet<>();
+    public Collection<String> getResourcePaths() {
+        Collection<String> result = new HashSet<>();
         result.add("mappers");
         return result;
     }

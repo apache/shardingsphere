@@ -98,22 +98,32 @@ public final class ExampleScenarioFactory {
         return result;
     }
     
-    public Set<String> getJavaClassPathSet() {
+    /**
+     * Get java class path collection.
+     *
+     * @return java class path collection.
+     */
+    public Collection<String> getJavaClassPaths() {
         Set<String> result = new HashSet<>();
         for (FeatureExampleScenario each : featureScenarios) {
-            result.addAll(each.getJavaClassPathSet());
+            result.addAll(each.getJavaClassPaths());
         }
-        result.addAll(frameworkScenario.getJavaClassPathSet());
+        result.addAll(frameworkScenario.getJavaClassPaths());
         result.add("entity");
         return result;
     }
     
-    public Set<String> getResourcePathSet() {
+    /**
+     * Get resource path collection.
+     *
+     * @return resource path collection.
+     */
+    public Set<String> getResourcePaths() {
         Set<String> result = new HashSet<>();
         for (FeatureExampleScenario each : featureScenarios) {
-            result.addAll(each.getResourcePathSet());
+            result.addAll(each.getResourcePaths());
         }
-        result.addAll(frameworkScenario.getResourcePathSet());
+        result.addAll(frameworkScenario.getResourcePaths());
         return result;
     }
 }

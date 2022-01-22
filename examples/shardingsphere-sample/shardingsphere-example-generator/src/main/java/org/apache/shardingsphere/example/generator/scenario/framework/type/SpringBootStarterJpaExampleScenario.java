@@ -19,11 +19,11 @@ package org.apache.shardingsphere.example.generator.scenario.framework.type;
 
 import org.apache.shardingsphere.example.generator.scenario.framework.FrameworkExampleScenario;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Spring-Boot starter JPA example scenario.
@@ -47,14 +47,14 @@ public final class SpringBootStarterJpaExampleScenario implements FrameworkExamp
     }
     
     @Override
-    public Set<String> getJavaClassPathSet() {
-        Set<String> result = new HashSet<>();
+    public Collection<String> getJavaClassPaths() {
+        Collection<String> result = new HashSet<>();
         result.add("repository");
         return result;
     }
     
     @Override
-    public Set<String> getResourcePathSet() {
+    public Collection<String> getResourcePaths() {
         return Collections.emptySet();
     }
     

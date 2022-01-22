@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.example.generator.scenario;
 
+import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Example scenario.
@@ -44,14 +44,14 @@ public interface ExampleScenario {
      *
      * @return java class path set
      */
-    Set<String> getJavaClassPathSet();
+    Collection<String> getJavaClassPaths();
     
     /**
      * Get resource path set.
      *
      * @return resource path set
      */
-    Set<String> getResourcePathSet();
+    Collection<String> getResourcePaths();
     
     /**
      * Get scenario type.

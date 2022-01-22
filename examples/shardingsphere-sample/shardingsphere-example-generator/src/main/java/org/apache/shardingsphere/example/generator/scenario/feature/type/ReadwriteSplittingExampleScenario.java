@@ -19,9 +19,9 @@ package org.apache.shardingsphere.example.generator.scenario.feature.type;
 
 import org.apache.shardingsphere.example.generator.scenario.feature.FeatureExampleScenario;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Readwrite-splitting example scenario.
@@ -39,12 +39,12 @@ public final class ReadwriteSplittingExampleScenario implements FeatureExampleSc
     }
     
     @Override
-    public Set<String> getJavaClassPathSet() {
+    public Collection<String> getJavaClassPaths() {
         return Collections.emptySet();
     }
     
     @Override
-    public Set<String> getResourcePathSet() {
+    public Collection<String> getResourcePaths() {
         return Collections.emptySet();
     }
     

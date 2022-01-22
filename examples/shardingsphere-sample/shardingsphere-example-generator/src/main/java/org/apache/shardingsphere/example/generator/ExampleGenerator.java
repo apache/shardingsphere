@@ -29,10 +29,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Example generator.
@@ -86,8 +86,8 @@ public final class ExampleGenerator {
             Map<String, String> dataModel = new Yaml().loadAs(input, Map.class);
             String feature = dataModel.get("feature");
             String framework = dataModel.get("framework");
-            generateDir(dataModel, new ExampleScenarioFactory(feature, framework).getJavaClassPathSet(), JAVA_CLASS_PATH);
-            generateDir(dataModel, new ExampleScenarioFactory(feature, framework).getResourcePathSet(), RESOURCES_PATH);
+            generateDirs(dataModel, new ExampleScenarioFactory(feature, framework).getJavaClassPaths(), JAVA_CLASS_PATH);
+            generateDirs(dataModel, new ExampleScenarioFactory(feature, framework).getResourcePaths(), RESOURCES_PATH);
             generateFile(dataModel, new ExampleScenarioFactory(feature, framework).getJavaClassTemplateMap(), JAVA_CLASS_PATH);
             generateFile(dataModel, new ExampleScenarioFactory(feature, framework).getResourceTemplateMap(), RESOURCES_PATH);
             String outputPath = generatePath(dataModel, OUTPUT_PATH);
@@ -95,17 +95,13 @@ public final class ExampleGenerator {
         }
     }
     
-    private void generateDir(final Map<String, String> dataModel, final Set<String> javaPath, final String outputRelativePath) throws IOException, TemplateException {
-        for (String each : javaPath) {
-            String outputPath = generatePath(dataModel, OUTPUT_PATH + outputRelativePath + "/" + each);
-            processDir(outputPath);
-        }
-    }
-    
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void processDir(String path) {
-        File file = new File(path);
-        file.mkdirs();
+    private void generateDirs(final Map<String, String> dataModel, final Collection<String> paths, final String outputRelativePath) throws IOException, TemplateException {
+        for (String each : paths) {
+            String outputPath = generatePath(dataModel, OUTPUT_PATH + outputRelativePath + "/" + each);
+            File file = new File(outputPath);
+            file.mkdirs();
+        }
     }
     
     private void generateFile(final Map<String, String> dataModel, final Map<String, String> templateMap, final String outputRelativePath) throws IOException, TemplateException {
