@@ -25,6 +25,7 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentContext;
@@ -113,7 +114,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.String_
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SubstringFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableAliasRefListContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableFactorContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableIdentOptWildContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableListContext;
@@ -205,7 +205,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker.Par
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 
 import java.util.Collection;
@@ -695,6 +694,13 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (null != ctx.windowClause()) {
             result.setWindow((WindowSegment) visit(ctx.windowClause()));
         }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitTableStatement(final TableStatementContext ctx) {
+        MySQLSelectStatement result = new MySQLSelectStatement();
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
     
@@ -1586,15 +1592,6 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
     }
     
-    @Override
-    public ASTNode visitTable(final TableContext ctx) {
-        MySQLTableStatement result = new MySQLTableStatement();
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setColumn((ColumnSegment) visit(ctx.columnName()));
-        result.setLimit((LimitSegment) visit(ctx.limitClause()));
-        return result;
-    }
-
     @Override
     public ASTNode visitCollateClause(final CollateClauseContext ctx) {
         if (null != ctx.collationName()) {

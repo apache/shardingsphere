@@ -9084,15 +9084,6 @@
     <sql-case id="low_with_by_mysql_source_test_case1" value="with qn as (SELECT  MAX(a) FROM t1 WHERE (b) IN ( SELECT MIN(t2.b) FROM (SELECT b from t1) AS t2 GROUP BY t2.b WITH ROLLUP HAVING GROUPING (t2.b)=0)) SELECT * FROM qn" db-types="MySQL"/>
     <sql-case id="low_with_by_mysql_source_test_case2" value="with t1 as (select * from t1 where a=3) delete from t1" db-types="MySQL"/>
     <sql-case id="low_with_by_mysql_source_test_case3" value="with t1 as (select * from t1 where a=3) delete t1.* from t1, t1 as t2" db-types="MySQL"/>
-    <sql-case id="low_xa_by_mysql_source_test_case1" value="xa end 0x4142434445, 0x46, 0x02" db-types="MySQL"/>
-    <sql-case id="low_xa_by_mysql_source_test_case2" value="xa end 0xABCDEF1234567890, 0x01, 0x02" db-types="MySQL"/>
-    <sql-case id="low_xa_by_mysql_source_test_case3" value="xa prepare 0x4142434445, 0x46, 0x02" db-types="MySQL"/>
-    <sql-case id="low_xa_by_mysql_source_test_case4" value="xa prepare 0xABCDEF1234567890, 0x01, 0x02" db-types="MySQL"/>
-    <sql-case id="low_xa_by_mysql_source_test_case5" value="xa rollback 0x4142434445, 0x46, 0x02" db-types="MySQL"/>
-    <sql-case id="low_xa_by_mysql_source_test_case6" value="xa rollback 0xABCDEF1234567890, 0x01, 0x02" db-types="MySQL"/>
-    <sql-case id="low_xa_by_mysql_source_test_case7" value="xa start 0x4142434445, 0x46, 0x02" db-types="MySQL"/>
-    <sql-case id="low_xa_by_mysql_source_test_case8" value="xa start 0x7465737462, 0x2030405060, 0xb" db-types="MySQL"/>
-    <sql-case id="low_xa_by_mysql_source_test_case9" value="xa start 0xABCDEF1234567890, 0x01, 0x02" db-types="MySQL"/>
     <sql-case id="table_union" value="TABLE T1 UNION TABLE T2" db-types="MySQL"/>
     <sql-case id="alter_by_postgresql_source_test_case127" value="ALTER GROUP regress_priv_group1 ADD USER regress_priv_user4;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case128" value="ALTER GROUP regress_priv_group2 ADD USER regress_priv_user2;	-- duplicate ALTER GROUP regress_priv_group2 DROP USER regress_priv_user2;" db-types="PostgreSQL"/>

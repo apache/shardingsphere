@@ -413,7 +413,7 @@ explainType
     ;
     
 explainableStatement
-    : table | select | delete | insert | replace | update
+    : select | delete | insert | replace | update
     ;
 
 formatName
