@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.statement;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.spi.singleton.SingletonSPI;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
 
@@ -33,8 +32,7 @@ public interface StatementMemoryStrictlyFetchSizeSetter extends TypedSPI, Single
      * Set fetch size.
      * 
      * @param statement statement to be set
-     * @param props configuration properties
      * @throws SQLException SQL exception
      */
-    void setFetchSize(Statement statement, ConfigurationProperties props) throws SQLException;
+    void setFetchSize(Statement statement) throws SQLException;
 }

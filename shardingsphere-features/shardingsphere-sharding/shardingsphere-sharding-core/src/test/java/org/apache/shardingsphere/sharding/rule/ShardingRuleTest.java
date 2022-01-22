@@ -536,6 +536,19 @@ public final class ShardingRuleTest {
         assertTrue(createMaximumShardingRule().isAllBindingTables(schema, sqlStatementContext, Arrays.asList("logic_Table", "sub_Logic_Table")));
     }
     
+    @Test
+    public void assertIsAllTablesInSameDataSource() {
+        Collection<String> logicTableNames = new LinkedHashSet<>();
+        logicTableNames.add("logic_Table");
+        ShardingRuleConfiguration config = new ShardingRuleConfiguration();
+        Collection<String> dataSourceNames = new LinkedHashSet<>();
+        dataSourceNames.add("resource0");
+        ShardingTableRuleConfiguration shardingTableRuleConfiguration = new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds_${0}.table_${0..2}");
+        config.getTables().add(shardingTableRuleConfiguration);
+        ShardingRule shardingRule = new ShardingRule(config, dataSourceNames);
+        assertTrue(shardingRule.isAllTablesInSameDataSource(logicTableNames));
+    }
+    
     private BinaryOperationExpression createBinaryOperationExpression(final ExpressionSegment left, final ExpressionSegment right, final String operator) {
         BinaryOperationExpression result = mock(BinaryOperationExpression.class);
         when(result.getLeft()).thenReturn(left);
