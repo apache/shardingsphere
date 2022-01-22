@@ -26,7 +26,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.ServiceLoader;
-import java.util.Set;
 
 /**
  * Example scenario factory.
@@ -104,7 +103,7 @@ public final class ExampleScenarioFactory {
      * @return java class path collection.
      */
     public Collection<String> getJavaClassPaths() {
-        Set<String> result = new HashSet<>();
+        Collection<String> result = new HashSet<>();
         for (FeatureExampleScenario each : featureScenarios) {
             result.addAll(each.getJavaClassPaths());
         }
@@ -118,8 +117,8 @@ public final class ExampleScenarioFactory {
      *
      * @return resource path collection.
      */
-    public Set<String> getResourcePaths() {
-        Set<String> result = new HashSet<>();
+    public Collection<String> getResourcePaths() {
+        Collection<String> result = new HashSet<>();
         for (FeatureExampleScenario each : featureScenarios) {
             result.addAll(each.getResourcePaths());
         }
