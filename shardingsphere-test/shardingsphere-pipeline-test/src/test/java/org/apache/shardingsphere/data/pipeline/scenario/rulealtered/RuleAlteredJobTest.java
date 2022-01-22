@@ -35,7 +35,7 @@ import static org.junit.Assert.assertNotNull;
 public final class RuleAlteredJobTest {
     
     @BeforeClass
-    public static void beforeClass() throws Exception {
+    public static void beforeClass() {
         EmbedTestingServer.start();
         PipelineContextUtil.mockModeConfig();
     }
