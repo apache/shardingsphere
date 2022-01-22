@@ -46,6 +46,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -99,27 +100,39 @@ public final class DataSourceQueryResultSetTest {
         DistSQLResultSet resultSet = new DataSourceQueryResultSet();
         resultSet.init(shardingSphereMetaData, mock(ShowResourcesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
-        assertThat(actual.size(), is(6));
+        assertThat(actual.size(), is(12));
         Iterator<Object> rowData = actual.iterator();
         assertThat(rowData.next(), is("ds_0"));
         assertThat(rowData.next(), is("MySQL"));
         assertThat(rowData.next(), is("localhost"));
         assertThat(rowData.next(), is(3306));
         assertThat(rowData.next(), is("demo_ds"));
-        assertThat(rowData.next(), is("{\"maxPoolSize\":100,\"minPoolSize\":10}"));
+        assertThat(rowData.next(), is(""));
+        assertThat(rowData.next(), is(""));
+        assertThat(rowData.next(), is(""));
+        assertThat(rowData.next(), is("100"));
+        assertThat(rowData.next(), is("10"));
+        assertThat(rowData.next(), is(""));
+        assertThat(String.valueOf(rowData.next()), containsString("\"url\":\"jdbc:mysql://localhost/demo_ds\""));
         MetaDataPersistService persistService = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
         when(persistService.getDataSourceService().load(any())).thenReturn(createDataSourcePropertiesMap());
         when(manager.getMetaDataContexts().getMetaDataPersistService()).thenReturn(Optional.of(persistService));
         resultSet.init(shardingSphereMetaData, mock(ShowResourcesStatement.class));
         actual = resultSet.getRowData();
-        assertThat(actual.size(), is(6));
+        assertThat(actual.size(), is(12));
         rowData = actual.iterator();
         assertThat(rowData.next(), is("ds_0"));
         assertThat(rowData.next(), is("MySQL"));
         assertThat(rowData.next(), is("localhost"));
         assertThat(rowData.next(), is(3306));
         assertThat(rowData.next(), is("demo_ds"));
-        assertThat(rowData.next(), is("{\"readOnly\":true,\"test\":\"test\"}"));
+        assertThat(rowData.next(), is(""));
+        assertThat(rowData.next(), is(""));
+        assertThat(rowData.next(), is(""));
+        assertThat(rowData.next(), is("100"));
+        assertThat(rowData.next(), is("10"));
+        assertThat(rowData.next(), is(""));
+        assertThat(String.valueOf(rowData.next()), containsString("\"url\":\"jdbc:mysql://localhost/demo_ds\""));
     }
     
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap() {
