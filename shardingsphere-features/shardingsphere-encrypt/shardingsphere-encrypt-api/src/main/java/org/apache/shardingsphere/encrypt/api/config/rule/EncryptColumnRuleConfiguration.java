@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.encrypt.api.config.rule;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Encrypt column rule configuration.
  */
 @Getter
+@RequiredArgsConstructor
 public final class EncryptColumnRuleConfiguration {
     
     private final String logicColumn;
@@ -45,18 +47,5 @@ public final class EncryptColumnRuleConfiguration {
     
     public EncryptColumnRuleConfiguration(final String logicColumn, final String cipherColumn, final String assistedQueryColumn, final String plainColumn, final String encryptorName) {
         this(logicColumn, null, cipherColumn, null, assistedQueryColumn, null, plainColumn, null, encryptorName);
-    }
-    
-    public EncryptColumnRuleConfiguration(final String logicColumn, final String logicDataType, final String cipherColumn, final String cipherDataType, final String assistedQueryColumn, 
-                                          final String assistedQueryDataType, final String plainColumn, final String plainDataType, final String encryptorName) {
-        this.logicColumn = logicColumn;
-        this.logicDataType = logicDataType;
-        this.cipherColumn = cipherColumn;
-        this.cipherDataType = cipherDataType;
-        this.assistedQueryColumn = assistedQueryColumn;
-        this.assistedQueryDataType = assistedQueryDataType;
-        this.plainColumn = plainColumn;
-        this.plainDataType = plainDataType;
-        this.encryptorName = encryptorName;
     }
 }
