@@ -95,8 +95,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         metaDataPersistService = new MetaDataPersistService(repository);
         persistConfigurations(metaDataPersistService, parameter.getDataSourcesMap(), parameter.getSchemaRuleConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), parameter.isOverwrite());
         persistInstanceConfigurations(parameter.getLabels(), parameter.getInstanceDefinition(), parameter.isOverwrite());
-        Collection<String> schemaNames = parameter.getInstanceDefinition().getInstanceType() == InstanceType.JDBC ? parameter.getDataSourcesMap().keySet() : 
-                metaDataPersistService.getSchemaMetaDataService().loadAllNames();
+        Collection<String> schemaNames = parameter.getInstanceDefinition().getInstanceType() == InstanceType.JDBC ? parameter.getDataSourcesMap().keySet()
+                : metaDataPersistService.getSchemaMetaDataService().loadAllNames();
         Map<String, Map<String, DataSource>> clusterDataSources = loadDataSourcesMap(metaDataPersistService, parameter.getDataSourcesMap(), schemaNames);
         Map<String, Collection<RuleConfiguration>> clusterSchemaRuleConfigs = loadSchemaRules(metaDataPersistService, schemaNames);
         Properties clusterProps = metaDataPersistService.getPropsService().load();
