@@ -36,10 +36,10 @@ import java.util.stream.Collectors;
 public final class ProxyDataSourceConfigurationConverter {
     
     /**
-     * Get resource configuration map.
+     * Get data source configuration map.
      *
      * @param yamlResourceConfigMap yaml resource configuration map
-     * @return resource configuration map
+     * @return data source configuration map
      */
     public static Map<String, DataSourceConfiguration> getResourceConfigurationMap(final Map<String, YamlProxyResourceConfiguration> yamlResourceConfigMap) {
         return yamlResourceConfigMap.entrySet().stream()
