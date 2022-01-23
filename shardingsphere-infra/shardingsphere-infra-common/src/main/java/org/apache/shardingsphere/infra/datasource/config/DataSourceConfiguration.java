@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config.resource;
+package org.apache.shardingsphere.infra.datasource.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Resource configuration for ShardingSphere-Proxy.
+ * Data source configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ProxyResourceConfiguration {
+public final class DataSourceConfiguration {
     
     private final ConnectionConfiguration connection;
     
