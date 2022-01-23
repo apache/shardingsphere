@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Savepoi
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAutoCommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaContext;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.Scope;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.OperationScope;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionAccessType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionIsolationLevel;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.tcl.AutoCommitSegment;
@@ -58,11 +58,11 @@ public final class MySQLTCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
         MySQLSetTransactionStatement result = new MySQLSetTransactionStatement();
         if (null != ctx.optionType()) {
-            Scope scope = null;
+            OperationScope scope = null;
             if (null != ctx.optionType().SESSION()) {
-                scope = Scope.SESSION;
+                scope = OperationScope.SESSION;
             } else if (null != ctx.optionType().GLOBAL()) {
-                scope = Scope.GLOBAL;
+                scope = OperationScope.GLOBAL;
             }
             result.setScope(scope);
         }

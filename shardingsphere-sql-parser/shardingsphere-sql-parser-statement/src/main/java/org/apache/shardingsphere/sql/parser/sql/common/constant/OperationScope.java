@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Scope enum.
+ * OperationScope enum.
  */
 @RequiredArgsConstructor
 @Getter
