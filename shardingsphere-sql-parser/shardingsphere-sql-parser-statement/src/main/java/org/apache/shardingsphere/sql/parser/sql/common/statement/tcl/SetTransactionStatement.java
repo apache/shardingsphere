@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OperationScope;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionAccessType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionIsolationLevel;
@@ -26,12 +28,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Set transaction statement.
  */
-@RequiredArgsConstructor
+@Getter
+@Setter
 public abstract class SetTransactionStatement extends AbstractSQLStatement implements TCLStatement {
 
-    private final TransactionIsolationLevel isolationLevel;
+    private TransactionIsolationLevel isolationLevel;
 
-    private final OperationScope scope;
+    private OperationScope scope;
 
-    private final TransactionAccessType accessMode;
+    private TransactionAccessType accessMode;
 }
