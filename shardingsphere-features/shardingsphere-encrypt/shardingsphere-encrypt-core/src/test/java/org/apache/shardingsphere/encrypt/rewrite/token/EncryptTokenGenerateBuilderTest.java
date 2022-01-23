@@ -54,7 +54,7 @@ public final class EncryptTokenGenerateBuilderTest {
     }
     
     @Test
-    public void test1() throws Exception {
+    public void assertGetSQLTokenGenerators() throws IllegalAccessException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getAllTables().isEmpty()).thenReturn(false);
         when(selectStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("table"));
@@ -76,7 +76,7 @@ public final class EncryptTokenGenerateBuilderTest {
         assertSqlTokenGenerator(item3);
     }
     
-    private void assertSqlTokenGenerator(final SQLTokenGenerator sqlTokenGenerator) throws Exception {
+    private void assertSqlTokenGenerator(final SQLTokenGenerator sqlTokenGenerator) throws IllegalAccessException {
         if (sqlTokenGenerator instanceof EncryptRuleAware) {
             assertField(sqlTokenGenerator, encryptRule, "encryptRule");
         }
@@ -85,7 +85,7 @@ public final class EncryptTokenGenerateBuilderTest {
         }
     }
     
-    private void assertField(final SQLTokenGenerator sqlTokenGenerator, final Object filedInstance, final String fieldName) throws Exception {
+    private void assertField(final SQLTokenGenerator sqlTokenGenerator, final Object filedInstance, final String fieldName) throws IllegalAccessException {
         Field field = findField(sqlTokenGenerator.getClass(), fieldName, filedInstance.getClass());
         field.setAccessible(true);
         assertNotNull(field.get(sqlTokenGenerator));
@@ -95,9 +95,9 @@ public final class EncryptTokenGenerateBuilderTest {
     private Field findField(final Class<?> clazz, final String fieldName, final Class<?> fieldType) {
         Class<?> searchClass = clazz;
         while (null != searchClass && !Object.class.equals(searchClass)) {
-            for (final Field field : searchClass.getDeclaredFields()) {
-                if (fieldName.equals(field.getName()) && fieldType.equals(field.getType())) {
-                    return field;
+            for (final Field each : searchClass.getDeclaredFields()) {
+                if (fieldName.equals(each.getName()) && fieldType.equals(each.getType())) {
+                    return each;
                 }
             }
             searchClass = searchClass.getSuperclass();
