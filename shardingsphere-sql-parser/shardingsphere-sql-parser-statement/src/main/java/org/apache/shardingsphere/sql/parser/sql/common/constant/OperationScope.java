@@ -17,25 +17,18 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.constant;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * Scope enum.
  */
-public enum Scope {
+@RequiredArgsConstructor
+@Getter
+public enum OperationScope {
+
     GLOBAL("GLOBAL"),
     SESSION("SESSION");
 
     private final String scope;
-
-    Scope(final String scope) {
-        this.scope = scope;
-    }
-
-    /**
-     * Get scope.
-     *
-     * @return scope
-     */
-    public String getScope() {
-        return scope;
-    }
 }

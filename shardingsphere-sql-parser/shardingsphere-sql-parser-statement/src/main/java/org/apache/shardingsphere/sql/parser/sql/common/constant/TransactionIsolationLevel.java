@@ -21,11 +21,12 @@ package org.apache.shardingsphere.sql.parser.sql.common.constant;
  * Transaction isolation level enum.
  */
 public enum TransactionIsolationLevel {
+
     NONE("NONE"),
-    REPEATABLE_READ("REPEATABLE READ"),
-    READ_UNCOMMITTED("READ UNCOMMITTED"),
+    REPEATABLE_READ("REPEATABLE_READ"),
+    READ_UNCOMMITTED("READ_UNCOMMITTED"),
     SERIALIZABLE("SERIALIZABLE"),
-    READ_COMMITTED("READ COMMITTED");
+    READ_COMMITTED("READ_COMMITTED");
 
     private final String isolationLevel;
 

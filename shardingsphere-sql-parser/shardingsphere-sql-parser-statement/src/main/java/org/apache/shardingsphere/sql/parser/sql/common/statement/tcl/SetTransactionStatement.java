@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.Scope;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.OperationScope;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionAccessType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionIsolationLevel;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
@@ -35,7 +35,7 @@ public abstract class SetTransactionStatement extends AbstractSQLStatement imple
 
     private TransactionIsolationLevel isolationLevel;
 
-    private Scope scope;
+    private OperationScope scope;
 
     private TransactionAccessType accessMode;
 }

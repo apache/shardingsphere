@@ -17,25 +17,19 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.constant;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * Transaction access type enum.
  */
+@RequiredArgsConstructor
+@Getter
 public enum TransactionAccessType {
+
     READ_ONLY("READ_ONLY"),
     READ_WRITE("READ_WRITE");
 
     private final String accessType;
 
-    TransactionAccessType(final String accessType) {
-        this.accessType = accessType;
-    }
-
-    /**
-     * Get transaction access type.
-     *
-     * @return transaction access type
-     */
-    public String getAccessType() {
-        return accessType;
-    }
 }
