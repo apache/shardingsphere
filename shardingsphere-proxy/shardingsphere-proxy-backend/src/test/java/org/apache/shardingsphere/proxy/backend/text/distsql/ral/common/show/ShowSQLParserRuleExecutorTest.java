@@ -43,13 +43,12 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class ShowSQLParserRuleExecutorTest {
 
-    private final ShowSQLParserRuleExecutor executor = new ShowSQLParserRuleExecutor();
-
     @Test
     public void assertSQLParserRule() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData());
         ProxyContext.getInstance().init(contextManager);
+        ShowSQLParserRuleExecutor executor = new ShowSQLParserRuleExecutor();
         executor.execute();
         executor.next();
         QueryResponseRow queryResponseRow = executor.getQueryResponseRow();
