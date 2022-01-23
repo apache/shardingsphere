@@ -98,9 +98,7 @@ public final class ExampleGenerator {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void generateDirs(final Map<String, String> dataModel, final Collection<String> paths, final String outputRelativePath) throws IOException, TemplateException {
         for (String each : paths) {
-            String outputPath = generatePath(dataModel, OUTPUT_PATH + outputRelativePath + "/" + each);
-            File file = new File(outputPath);
-            file.mkdirs();
+            new File(generatePath(dataModel, OUTPUT_PATH + outputRelativePath + "/" + each)).mkdirs();
         }
     }
     

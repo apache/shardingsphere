@@ -40,16 +40,16 @@ public interface ExampleScenario {
     Map<String, String> getResourceTemplateMap();
 
     /**
-     * Get java class path set.
+     * Get java class paths.
      *
-     * @return java class path set
+     * @return java class paths
      */
     Collection<String> getJavaClassPaths();
     
     /**
-     * Get resource path set.
+     * Get resource paths.
      *
-     * @return resource path set
+     * @return resource paths
      */
     Collection<String> getResourcePaths();
     

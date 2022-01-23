@@ -98,9 +98,9 @@ public final class ExampleScenarioFactory {
     }
     
     /**
-     * Get java class path collection.
+     * Get java class paths.
      *
-     * @return java class path collection.
+     * @return java class paths
      */
     public Collection<String> getJavaClassPaths() {
         Collection<String> result = new HashSet<>();
@@ -113,9 +113,9 @@ public final class ExampleScenarioFactory {
     }
     
     /**
-     * Get resource path collection.
+     * Get resource paths.
      *
-     * @return resource path collection.
+     * @return resource paths
      */
     public Collection<String> getResourcePaths() {
         Collection<String> result = new HashSet<>();
