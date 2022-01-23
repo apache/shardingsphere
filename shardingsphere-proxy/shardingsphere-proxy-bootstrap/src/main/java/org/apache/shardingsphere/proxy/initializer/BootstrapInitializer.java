@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.initializer;
 
 import com.google.common.base.Strings;
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
@@ -26,8 +27,11 @@ import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
-import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -39,8 +43,6 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
-import org.apache.shardingsphere.proxy.config.ProxyDataSourceConfigurationConverter;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 
@@ -50,6 +52,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Bootstrap initializer.
@@ -92,9 +95,14 @@ public final class BootstrapInitializer {
     private Map<String, Map<String, DataSource>> getDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigMap) {
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourceConfigMap.size(), 1);
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigMap.entrySet()) {
-            result.put(entry.getKey(), DataSourcePoolCreator.create(ProxyDataSourceConfigurationConverter.getDataSourceConfigurationMap(entry.getValue())));
+            result.put(entry.getKey(), DataSourcePoolCreator.create(create(entry.getValue())));
         }
         return result;
+    }
+    
+    private Map<String, DataSourceProperties> create(final Map<String, DataSourceConfiguration> dataSourceConfigMap) {
+        return dataSourceConfigMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, 
+            entry -> DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private void initRuleAlteredJobWorker(final ModeConfiguration modeConfig, final ContextManager contextManager) {

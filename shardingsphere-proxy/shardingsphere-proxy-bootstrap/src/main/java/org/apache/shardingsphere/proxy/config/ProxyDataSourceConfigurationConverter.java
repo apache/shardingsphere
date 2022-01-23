@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.proxy.config;
 
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.PoolConfiguration;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyResourceConfiguration;
 
 import java.util.LinkedHashMap;
@@ -54,34 +52,5 @@ public final class ProxyDataSourceConfigurationConverter {
                 yamlConfig.getMaxLifetimeMilliseconds(), yamlConfig.getMaxPoolSize(), yamlConfig.getMinPoolSize(), yamlConfig.getReadOnly(), 
                 yamlConfig.getCustomPoolProps());
         return new DataSourceConfiguration(connectionConfig, poolConfig);
-    }
-    
-    /**
-     * Get data source configuration map.
-     *
-     * @param dataSourceConfigMap data source configuration map
-     * @return data source properties map
-     */
-    public static Map<String, DataSourceProperties> getDataSourceConfigurationMap(final Map<String, DataSourceConfiguration> dataSourceConfigMap) {
-        return dataSourceConfigMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, 
-            entry -> new DataSourceProperties(HikariDataSource.class.getName(), createProperties(entry.getValue())), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-    }
-    
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private static Map<String, Object> createProperties(final DataSourceConfiguration dataSourceConfig) {
-        Map<String, Object> result = new LinkedHashMap<>();
-        result.put("jdbcUrl", dataSourceConfig.getConnection().getUrl());
-        result.put("username", dataSourceConfig.getConnection().getUsername());
-        result.put("password", dataSourceConfig.getConnection().getPassword());
-        result.put("connectionTimeout", dataSourceConfig.getPool().getConnectionTimeoutMilliseconds());
-        result.put("idleTimeout", dataSourceConfig.getPool().getIdleTimeoutMilliseconds());
-        result.put("maxLifetime", dataSourceConfig.getPool().getMaxLifetimeMilliseconds());
-        result.put("maximumPoolSize", dataSourceConfig.getPool().getMaxPoolSize());
-        result.put("minimumIdle", dataSourceConfig.getPool().getMinPoolSize());
-        result.put("readOnly", dataSourceConfig.getPool().getReadOnly());
-        if (null != dataSourceConfig.getPool().getCustomProperties()) {
-            result.putAll((Map) dataSourceConfig.getPool().getCustomProperties());
-        }
-        return result;
     }
 }

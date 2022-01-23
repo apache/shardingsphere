@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.proxy.config;
 
-import org.apache.shardingsphere.infra.datasource.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.datasource.config.PoolConfiguration;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyResourceConfiguration;
 import org.junit.Test;
 
@@ -29,40 +26,9 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class ProxyDataSourceConfigurationConverterTest {
-    
-    @Test
-    public void assertGetDataSourceConfigurationMap() {
-        Map<String, DataSourceConfiguration> resourceConfigMap = new HashMap<>(2, 1);
-        resourceConfigMap.put("ds_0", createResourceConfiguration());
-        resourceConfigMap.put("ds_1", createResourceConfiguration());
-        Map<String, DataSourceProperties> actual = ProxyDataSourceConfigurationConverter.getDataSourceConfigurationMap(resourceConfigMap);
-        assertThat(actual.size(), is(2));
-        assertParameter(actual.get("ds_0"));
-        assertParameter(actual.get("ds_1"));
-    }
-    
-    private DataSourceConfiguration createResourceConfiguration() {
-        ConnectionConfiguration connectionConfig = new ConnectionConfiguration("jdbc:mysql://localhost:3306/demo_ds", "root", "root");
-        PoolConfiguration poolConfig = new PoolConfiguration(null, null, null, null, null, null, null);
-        return new DataSourceConfiguration(connectionConfig, poolConfig);
-    }
-    
-    private void assertParameter(final DataSourceProperties actual) {
-        Map<String, Object> props = actual.getAllLocalProperties();
-        assertThat(props.size(), is(9));
-        assertThat(props.get("jdbcUrl"), is("jdbc:mysql://localhost:3306/demo_ds"));
-        assertThat(props.get("username"), is("root"));
-        assertThat(props.get("password"), is("root"));
-        assertNull(props.get("maximumPoolSize"));
-        assertNull(props.get("minimumIdle"));
-        assertNull(props.get("connectionTimeout"));
-        assertNull(props.get("idleTimeout"));
-        assertNull(props.get("maxLifetime"));
-    }
     
     @Test
     public void assertGetResourceConfigurationMap() {
