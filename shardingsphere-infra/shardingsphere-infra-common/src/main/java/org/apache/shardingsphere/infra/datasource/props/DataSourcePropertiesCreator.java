@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.datasource.props;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourceReflection;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
@@ -27,7 +28,6 @@ import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * Data source properties creator.
@@ -38,11 +38,12 @@ public final class DataSourcePropertiesCreator {
     /**
      * Create data source properties.
      *
-     * @param dataSourceMap data source map
+     * @param dataSourcePoolClassName data source pool class name
+     * @param dataSourceConfig data source configuration
      * @return created data source properties
      */
-    public static Map<String, DataSourceProperties> create(final Map<String, DataSource> dataSourceMap) {
-        return dataSourceMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    public static DataSourceProperties create(final String dataSourcePoolClassName, final DataSourceConfiguration dataSourceConfig) {
+        return new DataSourceProperties(dataSourcePoolClassName, createProperties(dataSourceConfig));
     }
     
     /**
@@ -53,6 +54,24 @@ public final class DataSourcePropertiesCreator {
      */
     public static DataSourceProperties create(final DataSource dataSource) {
         return new DataSourceProperties(dataSource.getClass().getName(), createProperties(dataSource));
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static Map<String, Object> createProperties(final DataSourceConfiguration dataSourceConfig) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("url", dataSourceConfig.getConnection().getUrl());
+        result.put("username", dataSourceConfig.getConnection().getUsername());
+        result.put("password", dataSourceConfig.getConnection().getPassword());
+        result.put("connectionTimeoutMilliseconds", dataSourceConfig.getPool().getConnectionTimeoutMilliseconds());
+        result.put("idleTimeoutMilliseconds", dataSourceConfig.getPool().getIdleTimeoutMilliseconds());
+        result.put("maxLifetimeMilliseconds", dataSourceConfig.getPool().getMaxLifetimeMilliseconds());
+        result.put("maxPoolSize", dataSourceConfig.getPool().getMaxPoolSize());
+        result.put("minPoolSize", dataSourceConfig.getPool().getMinPoolSize());
+        result.put("readOnly", dataSourceConfig.getPool().getReadOnly());
+        if (null != dataSourceConfig.getPool().getCustomProperties()) {
+            result.putAll((Map) dataSourceConfig.getPool().getCustomProperties());
+        }
+        return result;
     }
     
     private static Map<String, Object> createProperties(final DataSource dataSource) {
