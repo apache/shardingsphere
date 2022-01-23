@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
@@ -51,7 +50,6 @@ import org.apache.shardingsphere.transaction.context.TransactionContextsBuilder;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -96,8 +94,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         metaDataPersistService = new MetaDataPersistService(repository);
         persistConfigurations(metaDataPersistService, parameter.getDataSourcesMap(), parameter.getSchemaRuleConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), parameter.isOverwrite());
         persistInstanceConfigurations(parameter.getLabels(), parameter.getInstanceDefinition(), parameter.isOverwrite());
-        Collection<String> schemaNames = Strings.isNullOrEmpty(parameter.getSchemaName()) ? metaDataPersistService.getSchemaMetaDataService()
-                .loadAllNames() : Collections.singletonList(parameter.getSchemaName());
+        Collection<String> schemaNames = null == parameter.getDataSourcesMap() || parameter.getDataSourcesMap().isEmpty() ? metaDataPersistService.getSchemaMetaDataService()
+                .loadAllNames() : parameter.getDataSourcesMap().keySet();
         Map<String, Map<String, DataSource>> clusterDataSources = loadDataSourcesMap(metaDataPersistService, parameter.getDataSourcesMap(), schemaNames);
         Map<String, Collection<RuleConfiguration>> clusterSchemaRuleConfigs = loadSchemaRules(metaDataPersistService, schemaNames);
         Properties clusterProps = metaDataPersistService.getPropsService().load();
