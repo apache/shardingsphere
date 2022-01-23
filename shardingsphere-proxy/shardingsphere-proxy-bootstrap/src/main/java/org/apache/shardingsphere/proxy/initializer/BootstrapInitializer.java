@@ -95,12 +95,12 @@ public final class BootstrapInitializer {
     private Map<String, Map<String, DataSource>> getDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigMap) {
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourceConfigMap.size(), 1);
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigMap.entrySet()) {
-            result.put(entry.getKey(), DataSourcePoolCreator.create(create(entry.getValue())));
+            result.put(entry.getKey(), DataSourcePoolCreator.create(createDataSourcePropertiesMap(entry.getValue())));
         }
         return result;
     }
     
-    private Map<String, DataSourceProperties> create(final Map<String, DataSourceConfiguration> dataSourceConfigMap) {
+    private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Map<String, DataSourceConfiguration> dataSourceConfigMap) {
         return dataSourceConfigMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, 
             entry -> DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
