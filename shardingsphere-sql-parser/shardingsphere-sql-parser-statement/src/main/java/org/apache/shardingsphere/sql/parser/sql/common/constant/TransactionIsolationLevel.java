@@ -17,9 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.constant;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * Transaction isolation level enum.
  */
+@RequiredArgsConstructor
+@Getter
 public enum TransactionIsolationLevel {
 
     NONE("NONE"),
@@ -29,17 +34,4 @@ public enum TransactionIsolationLevel {
     READ_COMMITTED("READ_COMMITTED");
 
     private final String isolationLevel;
-
-    TransactionIsolationLevel(final String isolationLevel) {
-        this.isolationLevel = isolationLevel;
-    }
-
-    /**
-     * Get transaction isolation level.
-     *
-     * @return transaction isolation level
-     */
-    public String getIsolationLevel() {
-        return isolationLevel;
-    }
 }

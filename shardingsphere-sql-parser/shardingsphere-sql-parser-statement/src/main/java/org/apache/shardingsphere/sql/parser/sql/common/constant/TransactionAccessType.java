@@ -31,5 +31,4 @@ public enum TransactionAccessType {
     READ_WRITE("READ_WRITE");
 
     private final String accessType;
-
 }
