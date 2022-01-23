@@ -30,15 +30,6 @@ import static org.junit.Assert.assertThat;
 public final class DataSourcePropertiesCreatorTest {
     
     @Test
-    public void assertCreateMap() {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
-        dataSourceMap.put("foo_ds", createDataSource());
-        Map<String, DataSourceProperties> actual = DataSourcePropertiesCreator.create(dataSourceMap);
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get("foo_ds"), is(new DataSourceProperties(MockedDataSource.class.getName(), createProperties())));
-    }
-    
-    @Test
     public void assertCreate() {
         assertThat(DataSourcePropertiesCreator.create(createDataSource()), is(new DataSourceProperties(MockedDataSource.class.getName(), createProperties())));
     }
