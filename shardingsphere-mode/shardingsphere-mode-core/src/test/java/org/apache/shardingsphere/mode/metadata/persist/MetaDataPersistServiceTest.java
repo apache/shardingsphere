@@ -19,9 +19,9 @@ package org.apache.shardingsphere.mode.metadata.persist;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.config.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.service.ComputeNodePersistService;
@@ -43,7 +43,6 @@ import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -110,8 +109,8 @@ public final class MetaDataPersistServiceTest {
     
     @Test
     public void assertPersistInstanceConfigurations() {
-        metaDataPersistService.persistInstanceConfigurations("127.0.0.1@3307", Arrays.asList("foo_label"), false);
-        verify(computeNodePersistService).persistInstanceLabels(eq("127.0.0.1@3307"), eq(Arrays.asList("foo_label")), eq(false));
+        metaDataPersistService.persistInstanceConfigurations("127.0.0.1@3307", Collections.singletonList("foo_label"), false);
+        verify(computeNodePersistService).persistInstanceLabels(eq("127.0.0.1@3307"), eq(Collections.singletonList("foo_label")), eq(false));
     }
     
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap() {

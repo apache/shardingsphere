@@ -6,6 +6,8 @@
 
 **注意事项**
 
+- *`shardingsphere-sample`模块是一个全新的示例体验模块，正在开发完善过程中，目前示例正确性以及稳定性不能够保证，请先忽略*
+
 - *如果采用手动模式，请在首次运行示例之前执行[初始化脚本](https://github.com/apache/shardingsphere/blob/master/examples/src/resources/manual_schema.sql)。*
 
 - *请确保 MySQL 上的主从数据同步正确运行。否则，读写分离示例查询从库数据为空。*

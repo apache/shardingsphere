@@ -38,7 +38,6 @@
     <sql-case id="create_table_as_select" value="create table agg_data_2k as select g from generate_series(0, 1999) g;" db-types="PostgreSQL" />
     <sql-case id="create_foreign_data_wrapper" value="CREATE FOREIGN DATA WRAPPER alt_fdw1" db-types="PostgreSQL" />
     <sql-case id="create_server" value="CREATE SERVER alt_fserv1 FOREIGN DATA WRAPPER alt_fdw1;" db-types="PostgreSQL" />
-    <sql-case id="alter_foreign_data_wrapper" value="ALTER FOREIGN DATA WRAPPER alt_fdw1 RENAME TO alt_fdw2;" db-types="PostgreSQL" />
     <sql-case id="create_operator" value="CREATE OPERATOR @-@ ( leftarg = int4, rightarg = int4, procedure = int4mi )" db-types="PostgreSQL" />
     <sql-case id="alter_operator" value="ALTER OPERATOR @+@(int4, int4) OWNER TO regress_alter_generic_user2" db-types="PostgreSQL" />
     <sql-case id="create_statistics" value="CREATE STATISTICS alt_stat1 ON a, b FROM alt_regress_1" db-types="PostgreSQL" />
@@ -9095,101 +9094,6 @@
     <sql-case id="low_xa_by_mysql_source_test_case8" value="xa start 0x7465737462, 0x2030405060, 0xb" db-types="MySQL"/>
     <sql-case id="low_xa_by_mysql_source_test_case9" value="xa start 0xABCDEF1234567890, 0x01, 0x02" db-types="MySQL"/>
     <sql-case id="table_union" value="TABLE T1 UNION TABLE T2" db-types="MySQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case32" value="ALTER FOREIGN DATA WRAPPER alt_fdw1 RENAME TO alt_fdw2;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case33" value="ALTER FOREIGN DATA WRAPPER alt_fdw1 RENAME TO alt_fdw3;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case34" value="ALTER FOREIGN DATA WRAPPER foo HANDLER invalid_fdw_handler;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case35" value="ALTER FOREIGN DATA WRAPPER foo HANDLER test_fdw_handler HANDLER anything;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case36" value="ALTER FOREIGN DATA WRAPPER foo HANDLER test_fdw_handler;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case37" value="ALTER FOREIGN DATA WRAPPER foo NO VALIDATOR;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case38" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (ADD d &apos;5&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case39" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (ADD d &apos;5&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case40" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (ADD e &apos;6&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case41" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (ADD x &apos;1&apos;, DROP x);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case42" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (DROP a, SET b &apos;3&apos;, ADD c &apos;4&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case43" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (DROP c);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case44" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (SET c &apos;4&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case45" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (a &apos;1&apos;, b &apos;2&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case46" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (a &apos;2&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case47" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (b &apos;4&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case48" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (gotcha &apos;true&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case49" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (gotcha &apos;true&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case50" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (nonexistent &apos;fdw&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case51" value="ALTER FOREIGN DATA WRAPPER foo OWNER TO regress_test_role;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case52" value="ALTER FOREIGN DATA WRAPPER foo OWNER TO regress_test_role_super;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case53" value="ALTER FOREIGN DATA WRAPPER foo OWNER TO regress_unprivileged_role;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case54" value="ALTER FOREIGN DATA WRAPPER foo RENAME TO foo1;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case55" value="ALTER FOREIGN DATA WRAPPER foo VALIDATOR bar;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case56" value="ALTER FOREIGN DATA WRAPPER foo VALIDATOR postgresql_fdw_validator;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case57" value="ALTER FOREIGN DATA WRAPPER foo1 RENAME TO foo;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case58" value="ALTER FOREIGN DATA WRAPPER foo;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case59" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ADD COLUMN c10 integer OPTIONS (p1 &apos;v1&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case60" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ADD COLUMN c4 integer;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case61" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ADD COLUMN c6 integer;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case62" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ADD COLUMN c7 integer NOT NULL;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case63" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ADD COLUMN c8 integer;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case64" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ADD COLUMN c9 integer;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case65" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ALTER COLUMN c6 SET NOT NULL;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case66" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ALTER COLUMN c7 DROP NOT NULL;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case67" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ALTER COLUMN c7 OPTIONS (ADD p1 &apos;v1&apos;, ADD p2 &apos;v2&apos;),                         ALTER COLUMN c8 OPTIONS (ADD p1 &apos;v1&apos;, ADD p2 &apos;v2&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case68" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ALTER COLUMN c8 OPTIONS (SET p2 &apos;V2&apos;, DROP p1);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case69" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ALTER COLUMN c8 SET DATA TYPE text;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case70" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ALTER COLUMN c8 TYPE char(10);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case71" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 DROP COLUMN IF EXISTS no_column;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case72" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 DROP COLUMN c9;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case73" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 DROP CONSTRAINT IF EXISTS no_const;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case74" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 DROP CONSTRAINT ft1_c1_check;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case75" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 OPTIONS (DROP delimiter, SET quote &apos;~&apos;, ADD escape &apos;@&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case76" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 OWNER TO regress_test_role;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case77" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 RENAME TO foreign_table_1;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case78" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 RENAME c1 TO foreign_column_1;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case79" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 SET SCHEMA foreign_schema;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case80" value="ALTER FOREIGN TABLE fd_pt2_1 ADD CONSTRAINT fd_pt2chk1 CHECK (c1 &gt; 0);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case81" value="ALTER FOREIGN TABLE fd_pt2_1 ALTER c2 SET NOT NULL;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case82" value="ALTER FOREIGN TABLE foreign_schema.foreign_table_1 	DISABLE TRIGGER trigtest_before_stmt;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case83" value="ALTER FOREIGN TABLE foreign_schema.foreign_table_1 	ENABLE TRIGGER trigtest_before_stmt;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case84" value="ALTER FOREIGN TABLE foreign_schema.ft1 RENAME TO foreign_table_1;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case85" value="ALTER FOREIGN TABLE foreign_schema.ft1 RENAME c1 TO foreign_column_1;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case86" value="ALTER FOREIGN TABLE ft1 ADD COLUMN c10 integer OPTIONS (p1 &apos;v1&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case87" value="ALTER FOREIGN TABLE ft1 ADD COLUMN c4 integer;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case88" value="ALTER FOREIGN TABLE ft1 ADD COLUMN c5 integer DEFAULT 0;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case89" value="ALTER FOREIGN TABLE ft1 ADD COLUMN c6 integer;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case90" value="ALTER FOREIGN TABLE ft1 ADD COLUMN c7 integer NOT NULL;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case91" value="ALTER FOREIGN TABLE ft1 ADD COLUMN c8 integer DEFAULT 0;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case92" value="ALTER FOREIGN TABLE ft1 ADD COLUMN c8 integer;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case93" value="ALTER FOREIGN TABLE ft1 ADD COLUMN c9 integer;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case94" value="ALTER FOREIGN TABLE ft1 ADD CONSTRAINT ft1_c9_check CHECK (c9 &lt; 0) NOT VALID;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case95" value="ALTER FOREIGN TABLE ft1 ADD PRIMARY KEY (c7);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case96" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c1 SET (n_distinct = 100);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case97" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c1 SET STATISTICS 10000;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case98" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c4 SET DEFAULT 0;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case99" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c5 DROP DEFAULT;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case100" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c6 SET NOT NULL;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case101" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c7 DROP NOT NULL;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case102" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c7 OPTIONS (ADD p1 &apos;v1&apos;, ADD p2 &apos;v2&apos;),                         ALTER COLUMN c8 OPTIONS (ADD p1 &apos;v1&apos;, ADD p2 &apos;v2&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case103" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c8 OPTIONS (SET p2 &apos;V2&apos;, DROP p1);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case104" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c8 SET DATA TYPE integer;	-- ERROR DROP TABLE use_ft1_column_type;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case105" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c8 SET DATA TYPE text;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case106" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c8 SET STATISTICS -1;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case107" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c8 SET STORAGE PLAIN;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case108" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c8 TYPE char(10) USING &apos;0&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case109" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c8 TYPE char(10);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case110" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c8 TYPE char(10);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case111" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN xmin OPTIONS (ADD p1 &apos;v1&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case112" value="ALTER FOREIGN TABLE ft1 ALTER CONSTRAINT ft1_c9_check DEFERRABLE;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case113" value="ALTER FOREIGN TABLE ft1 DROP COLUMN IF EXISTS no_column;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case114" value="ALTER FOREIGN TABLE ft1 DROP COLUMN c9;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case115" value="ALTER FOREIGN TABLE ft1 DROP COLUMN no_column;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case116" value="ALTER FOREIGN TABLE ft1 DROP CONSTRAINT IF EXISTS no_const;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case117" value="ALTER FOREIGN TABLE ft1 DROP CONSTRAINT ft1_c9_check;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case118" value="ALTER FOREIGN TABLE ft1 DROP CONSTRAINT no_const;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case119" value="ALTER FOREIGN TABLE ft1 OPTIONS (DROP delimiter, SET quote &apos;~&apos;, ADD escape &apos;@&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case120" value="ALTER FOREIGN TABLE ft1 OWNER TO regress_test_role;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case121" value="ALTER FOREIGN TABLE ft1 SET SCHEMA foreign_schema;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case122" value="ALTER FOREIGN TABLE ft1 SET TABLESPACE ts;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case123" value="ALTER FOREIGN TABLE ft2 ADD CONSTRAINT fd_pt1chk2 CHECK (c2 &lt;&gt; &apos;&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case124" value="ALTER FOREIGN TABLE ft2 INHERIT fd_pt1;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case125" value="ALTER FOREIGN TABLE ft2 INHERIT fd_pt1;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case126" value="ALTER FOREIGN TABLE ft2 INHERIT fd_pt1;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case127" value="ALTER GROUP regress_priv_group1 ADD USER regress_priv_user4;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case128" value="ALTER GROUP regress_priv_group2 ADD USER regress_priv_user2;	-- duplicate ALTER GROUP regress_priv_group2 DROP USER regress_priv_user2;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case129" value="ALTER MATERIALIZED VIEW compressmv ALTER COLUMN x SET COMPRESSION lz4;" db-types="PostgreSQL"/>
@@ -10525,7 +10429,6 @@
     <sql-case id="create_by_postgresql_source_test_case865" value="CREATE TRIGGER modified_any BEFORE UPDATE OF a ON main_table FOR EACH ROW WHEN (OLD.* IS DISTINCT FROM NEW.*) EXECUTE PROCEDURE trigger_func(&apos;modified_any&apos;);" db-types="PostgreSQL"/>
     <sql-case id="create_by_postgresql_source_test_case866" value="CREATE TYPE city_budget (    internallength = 16,    input = int44in,    output = int44out,    element = int4,    category = &apos;x&apos;    preferred = tr );" db-types="PostgreSQL"/>
     <sql-case id="create_by_postgresql_source_test_case867" value="CREATE TYPE hash_test_t2 AS (a money, b text);" db-types="PostgreSQL"/>
-    <sql-case id="create_by_postgresql_source_test_case868" value="CREATE TYPE myvarchar (     input = myvarcharin,     output = myvarcharout,     alignment = integer,     storage = main );" db-types="PostgreSQL"/>
     <sql-case id="create_by_postgresql_source_test_case869" value="CREATE TYPE tt_t0 AS (z inet, x int, y numeric(8,2));" db-types="PostgreSQL"/>
     <sql-case id="create_by_postgresql_source_test_case870" value="CREATE VIEW atest12sbv WITH (security_barrier=true) AS   SELECT * FROM atest12 WHERE b &lt;&lt;&lt; 5;" db-types="PostgreSQL"/>
     <sql-case id="create_by_postgresql_source_test_case871" value="CREATE VIEW atest12v AS   SELECT * FROM atest12 WHERE b &lt;&lt;&lt; 5;" db-types="PostgreSQL"/>
@@ -13990,7 +13893,6 @@
     <sql-case id="low_create_by_postgresql_source_test_case554" value="create type testtype4 as (a int, b point);" db-types="PostgreSQL"/>
     <sql-case id="low_create_by_postgresql_source_test_case555" value="create type testtype6 as (a int, b point);" db-types="PostgreSQL"/>
     <sql-case id="low_create_by_postgresql_source_test_case556" value="create type testtype6 as (a int, b point);" db-types="PostgreSQL"/>
-    <sql-case id="low_create_by_postgresql_source_test_case557" value="create unique index plain on insertconflicttest(key);" db-types="PostgreSQL"/>
     <sql-case id="low_create_by_postgresql_source_test_case558" value="create view insertconflictv as   select * from insertconflict with cascaded check option;" db-types="PostgreSQL"/>
     <sql-case id="low_create_by_postgresql_source_test_case559" value="create view tt201v as select   extract(day from now()) as extr,   (now(), &apos;1 day&apos;::interval) overlaps     (current_timestamp(2), &apos;1 day&apos;::interval) as o,   &apos;foo&apos; is normalized isn,   &apos;foo&apos; is nfkc normalized isnn,   normalize(&apos;foo&apos;) as n,   normalize(&apos;foo&apos;, nfkd) as nfkd,   overlay(&apos;foo&apos; placing &apos;bar&apos; from 2) as ovl,   overlay(&apos;foo&apos; placing &apos;bar&apos; from 2 for 3) as ovl2,   position(&apos;foo&apos; in &apos;foobar&apos;) as p,   substring(&apos;foo&apos; from 2 for 3) as s,   substring(&apos;foo&apos; similar &apos;f&apos; escape &apos;#&apos;) as ss,   substring(&apos;foo&apos; from &apos;oo&apos;) as ssf   trim(&apos; &apos; from &apos; foo &apos;) as bt,   trim(leading &apos; &apos; from &apos; foo &apos;) as lt,   trim(trailing &apos; foo &apos;) as rt,   trim(E&apos;\\000&apos;::bytea from E&apos;\\000Tom\\000&apos;::bytea) as btb,   trim(leading E&apos;\\000&apos;::bytea from E&apos;\\000Tom\\000&apos;::bytea) as ltb,   trim(trailing E&apos;\\000&apos;::bytea from E&apos;\\000Tom\\000&apos;::bytea) as rtb;" db-types="PostgreSQL"/>
     <sql-case id="low_create_by_postgresql_source_test_case560" value="create view tt26v as select x + y + z as c1,        (x * y) + z as c2,        x + (y * z) as c3,        (x + y) * z as c4,        x * (y + z) as c5,        x + (y + z) as c6,        x + (y # z) as c7,        (x &gt; y) AND (y &gt; z OR x &gt; z) as c8,        (x &gt; y) OR (y &gt; z AND NOT (x &gt; z)) as c9,        (x,y) &lt;&gt; ALL (values(1,2),(3,4)) as c10,        (x,y) &lt;= ANY (values(1,2),(3,4)) as c11 from (values(1,2,3)) v(x,y,z);" db-types="PostgreSQL"/>
@@ -14058,7 +13960,6 @@
     <sql-case id="low_drop_by_postgresql_source_test_case13" value="drop function ();" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case14" value="drop function 314159();" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case15" value="drop index 314159;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case16" value="drop index plain;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case17" value="drop index;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case18" value="drop instance rule nonesuch on noplace;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case19" value="drop materialized view mvtest_error;" db-types="PostgreSQL"/>

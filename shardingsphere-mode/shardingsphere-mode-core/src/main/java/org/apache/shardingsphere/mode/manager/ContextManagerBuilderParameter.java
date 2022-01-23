@@ -35,21 +35,21 @@ import java.util.Properties;
 @Getter
 public final class ContextManagerBuilderParameter {
     
-    private ModeConfiguration modeConfig; 
+    private final ModeConfiguration modeConfig;
     
-    private Map<String, Map<String, DataSource>> dataSourcesMap;
+    private final Map<String, Map<String, DataSource>> dataSourcesMap;
     
-    private Map<String, Collection<RuleConfiguration>> schemaRuleConfigs;
+    private final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs;
     
-    private Collection<RuleConfiguration> globalRuleConfigs;
+    private final Collection<RuleConfiguration> globalRuleConfigs;
     
-    private Properties props;
+    private final Properties props;
     
-    private boolean isOverwrite;
+    private final boolean isOverwrite;
     
-    private String schemaName;
+    private final String schemaName;
     
-    private Collection<String> labels;
+    private final Collection<String> labels;
     
-    private InstanceDefinition instanceDefinition;
+    private final InstanceDefinition instanceDefinition;
 }
