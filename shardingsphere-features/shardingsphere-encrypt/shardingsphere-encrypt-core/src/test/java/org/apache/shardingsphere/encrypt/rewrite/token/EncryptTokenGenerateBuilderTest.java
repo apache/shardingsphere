@@ -28,6 +28,10 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
@@ -43,13 +47,14 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class EncryptTokenGenerateBuilderTest {
     
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private EncryptRule encryptRule;
     
     @Before
     public void setup() {
-        encryptRule = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
         when(encryptRule.findEncryptTable(anyString()).isPresent()).thenReturn(true);
     }
     
