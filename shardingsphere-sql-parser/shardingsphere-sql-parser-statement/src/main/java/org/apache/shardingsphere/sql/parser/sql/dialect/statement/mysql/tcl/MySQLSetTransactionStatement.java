@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.constant.OperationScope;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionAccessType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionIsolationLevel;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
