@@ -15,8 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config.resource;
+package org.apache.shardingsphere.proxy.config;
 
+import org.apache.shardingsphere.infra.datasource.config.ConnectionConfiguration;
+import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.datasource.config.PoolConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyResourceConfiguration;
 import org.junit.Test;
@@ -29,23 +32,23 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-public final class ProxyProxyResourceConfigurationConverterTest {
+public final class ProxyDataSourceConfigurationConverterTest {
     
     @Test
     public void assertGetDataSourceConfigurationMap() {
-        Map<String, ProxyResourceConfiguration> resourceConfigMap = new HashMap<>(2, 1);
+        Map<String, DataSourceConfiguration> resourceConfigMap = new HashMap<>(2, 1);
         resourceConfigMap.put("ds_0", createResourceConfiguration());
         resourceConfigMap.put("ds_1", createResourceConfiguration());
-        Map<String, DataSourceProperties> actual = ProxyResourceConfigurationConverter.getDataSourceConfigurationMap(resourceConfigMap);
+        Map<String, DataSourceProperties> actual = ProxyDataSourceConfigurationConverter.getDataSourceConfigurationMap(resourceConfigMap);
         assertThat(actual.size(), is(2));
         assertParameter(actual.get("ds_0"));
         assertParameter(actual.get("ds_1"));
     }
     
-    private ProxyResourceConfiguration createResourceConfiguration() {
+    private DataSourceConfiguration createResourceConfiguration() {
         ConnectionConfiguration connectionConfig = new ConnectionConfiguration("jdbc:mysql://localhost:3306/demo_ds", "root", "root");
         PoolConfiguration poolConfig = new PoolConfiguration(null, null, null, null, null, null, null);
-        return new ProxyResourceConfiguration(connectionConfig, poolConfig);
+        return new DataSourceConfiguration(connectionConfig, poolConfig);
     }
     
     private void assertParameter(final DataSourceProperties actual) {
@@ -74,7 +77,7 @@ public final class ProxyProxyResourceConfigurationConverterTest {
         Map<String, YamlProxyResourceConfiguration> yamlResourceConfigs = new HashMap<>(2, 1);
         yamlResourceConfigs.put("ds_0", yamlResourceConfig0);
         yamlResourceConfigs.put("ds_1", yamlResourceConfig1);
-        Map<String, ProxyResourceConfiguration> actualResourceConfig = ProxyResourceConfigurationConverter.getResourceConfigurationMap(yamlResourceConfigs);
+        Map<String, DataSourceConfiguration> actualResourceConfig = ProxyDataSourceConfigurationConverter.getResourceConfigurationMap(yamlResourceConfigs);
         assertThat(actualResourceConfig.size(), is(2));
         assertThat(actualResourceConfig.get("ds_0").getConnection().getUrl(), is("jdbc:mysql://localhost:3306/ds_0"));
         assertThat(actualResourceConfig.get("ds_1").getConnection().getUrl(), is("jdbc:mysql://localhost:3306/ds_1"));
@@ -92,7 +95,7 @@ public final class ProxyProxyResourceConfigurationConverterTest {
         yamlResourceConfig.setMinPoolSize(1);
     }
     
-    private void assertResourceConfiguration(final ProxyResourceConfiguration resourceConfig) {
+    private void assertResourceConfiguration(final DataSourceConfiguration resourceConfig) {
         assertThat(resourceConfig.getConnection().getUsername(), is("root"));
         assertThat(resourceConfig.getConnection().getPassword(), is("root"));
         assertThat(resourceConfig.getPool().getConnectionTimeoutMilliseconds(), is(30 * 1000L));

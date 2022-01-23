@@ -39,8 +39,8 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.resource.ProxyResourceConfiguration;
-import org.apache.shardingsphere.proxy.config.resource.ProxyResourceConfigurationConverter;
+import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
+import org.apache.shardingsphere.proxy.config.ProxyDataSourceConfigurationConverter;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 
@@ -89,10 +89,10 @@ public final class BootstrapInitializer {
     }
     
     // TODO add ResourceConfiguration param to ContextManagerBuilder to avoid re-build data source
-    private Map<String, Map<String, DataSource>> getDataSourcesMap(final Map<String, Map<String, ProxyResourceConfiguration>> resourceConfigMap) {
-        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(resourceConfigMap.size(), 1);
-        for (Entry<String, Map<String, ProxyResourceConfiguration>> entry : resourceConfigMap.entrySet()) {
-            result.put(entry.getKey(), DataSourcePoolCreator.create(ProxyResourceConfigurationConverter.getDataSourceConfigurationMap(entry.getValue())));
+    private Map<String, Map<String, DataSource>> getDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigMap) {
+        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourceConfigMap.size(), 1);
+        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigMap.entrySet()) {
+            result.put(entry.getKey(), DataSourcePoolCreator.create(ProxyDataSourceConfigurationConverter.getDataSourceConfigurationMap(entry.getValue())));
         }
         return result;
     }
