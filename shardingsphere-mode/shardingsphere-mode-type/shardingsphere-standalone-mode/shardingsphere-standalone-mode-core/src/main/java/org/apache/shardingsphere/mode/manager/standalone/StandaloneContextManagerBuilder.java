@@ -111,9 +111,14 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     private Map<String, Map<String, DataSourceProperties>> getDataSourcePropertiesMaps(final Map<String, Map<String, DataSource>> dataSourcesMap) {
         Map<String, Map<String, DataSourceProperties>> result = new LinkedHashMap<>(dataSourcesMap.size(), 1);
         for (Entry<String, Map<String, DataSource>> entry : dataSourcesMap.entrySet()) {
-            result.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
+            result.put(entry.getKey(), createDataSourcePropertiesMap(entry.getValue()));
         }
         return result;
+    }
+    
+    private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Map<String, DataSource> dataSourceMap) {
+        return dataSourceMap.entrySet().stream().collect(
+                Collectors.toMap(Entry::getKey, entry -> DataSourcePropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private Map<String, Map<String, DataSource>> loadDataSourcesMap(final MetaDataPersistService metaDataPersistService, final Map<String, Map<String, DataSource>> dataSourcesMap,
