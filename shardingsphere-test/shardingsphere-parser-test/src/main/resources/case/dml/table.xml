@@ -36,4 +36,19 @@
             </select>
         </union>
     </select>
+    
+    <select sql-case-id="select_from_with_table">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <subquery-table alias="dt">
+                <subquery>
+                    <select>
+                        <simple-table name="t0" start-index="21" stop-index="22" />
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

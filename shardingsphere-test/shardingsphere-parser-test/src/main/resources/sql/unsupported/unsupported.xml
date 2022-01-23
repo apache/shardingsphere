@@ -1515,7 +1515,6 @@
     <sql-case id="select_by_mysql_source_test_case33" value="SELECT * FROM ( SELECT a, JSON_ARRAYAGG(a) OVER () AS b FROM t1 ) AS d1 WHERE (a,b) IN ( SELECT a, JSON_ARRAYAGG(a) OVER () AS b FROM t1 )" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case34" value="SELECT * FROM (SELECT 1, 10 UNION VALUES ROW(2, 20), ROW(3, &quot;30&quot;)) AS dt" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case35" value="SELECT * FROM (SELECT i, j, SUM(k) FROM t1 GROUP BY i, j WITH ROLLUP ORDER BY GROUPING(i),i, GROUPING(j),j) as tmp" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case36" value="SELECT * FROM (TABLE t0) AS dt" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case37" value="SELECT * FROM (VALUES ROW(1), ROW(2)) AS dt0 NATURAL JOIN (VALUES ROW(1, 10), ROW(1, 20)) AS dt1" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case38" value="SELECT * FROM (VALUES ROW(1), ROW(2)) AS dt0 NATURAL JOIN (VALUES ROW(1, 10), ROW(2, 20)) AS dt1" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case39" value="SELECT * FROM (VALUES ROW(1),ROW(1)) AS dt(a) WHERE EXISTS( WITH RECURSIVE qn AS (SELECT a*0 AS b UNION ALL SELECT b+1 FROM qn WHERE b=0) SELECT * FROM qn WHERE b=a )" db-types="MySQL"/>
@@ -5812,8 +5811,6 @@
     <sql-case id="signal_by_mysql_source_test_case13" value="SIGNAL foo" db-types="MySQL"/>
     <sql-case id="stop_by_mysql_source_test_case1" value="STOP SLAVE" db-types="MySQL"/>
     <sql-case id="stop_by_mysql_source_test_case2" value="STOP SLAVE" db-types="MySQL"/>
-    <sql-case id="table_by_mysql_source_test_case1" value="TABLE t0" db-types="MySQL"/>
-    <sql-case id="table_by_mysql_source_test_case2" value="TABLE t1 LIMIT 5 OFFSET 5" db-types="MySQL"/>
     <sql-case id="unlock_by_mysql_source_test_case1" value="UNLOCK INSTANCE" db-types="MySQL"/>
     <sql-case id="unlock_by_mysql_source_test_case2" value="UNLOCK INSTANCE" db-types="MySQL"/>
     <sql-case id="unlock_by_mysql_source_test_case3" value="UNLOCK INSTANCE" db-types="MySQL"/>
@@ -9084,7 +9081,6 @@
     <sql-case id="low_with_by_mysql_source_test_case1" value="with qn as (SELECT  MAX(a) FROM t1 WHERE (b) IN ( SELECT MIN(t2.b) FROM (SELECT b from t1) AS t2 GROUP BY t2.b WITH ROLLUP HAVING GROUPING (t2.b)=0)) SELECT * FROM qn" db-types="MySQL"/>
     <sql-case id="low_with_by_mysql_source_test_case2" value="with t1 as (select * from t1 where a=3) delete from t1" db-types="MySQL"/>
     <sql-case id="low_with_by_mysql_source_test_case3" value="with t1 as (select * from t1 where a=3) delete t1.* from t1, t1 as t2" db-types="MySQL"/>
-    <sql-case id="table_union" value="TABLE T1 UNION TABLE T2" db-types="MySQL"/>
     <sql-case id="alter_by_postgresql_source_test_case127" value="ALTER GROUP regress_priv_group1 ADD USER regress_priv_user4;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case128" value="ALTER GROUP regress_priv_group2 ADD USER regress_priv_user2;	-- duplicate ALTER GROUP regress_priv_group2 DROP USER regress_priv_user2;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case129" value="ALTER MATERIALIZED VIEW compressmv ALTER COLUMN x SET COMPRESSION lz4;" db-types="PostgreSQL"/>
