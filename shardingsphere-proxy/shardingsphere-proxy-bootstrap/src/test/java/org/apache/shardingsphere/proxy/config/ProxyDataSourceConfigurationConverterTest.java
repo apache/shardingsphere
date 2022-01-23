@@ -43,7 +43,7 @@ public final class ProxyDataSourceConfigurationConverterTest {
         Map<String, YamlProxyResourceConfiguration> yamlResourceConfigs = new HashMap<>(2, 1);
         yamlResourceConfigs.put("ds_0", yamlResourceConfig0);
         yamlResourceConfigs.put("ds_1", yamlResourceConfig1);
-        Map<String, DataSourceConfiguration> actualResourceConfig = ProxyDataSourceConfigurationConverter.getResourceConfigurationMap(yamlResourceConfigs);
+        Map<String, DataSourceConfiguration> actualResourceConfig = ProxyDataSourceConfigurationConverter.getDataSourceConfigurationMap(yamlResourceConfigs);
         assertThat(actualResourceConfig.size(), is(2));
         assertThat(actualResourceConfig.get("ds_0").getConnection().getUrl(), is("jdbc:mysql://localhost:3306/ds_0"));
         assertThat(actualResourceConfig.get("ds_1").getConnection().getUrl(), is("jdbc:mysql://localhost:3306/ds_1"));

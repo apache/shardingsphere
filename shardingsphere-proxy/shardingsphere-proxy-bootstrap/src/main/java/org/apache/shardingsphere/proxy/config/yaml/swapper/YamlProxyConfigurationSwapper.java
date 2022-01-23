@@ -59,7 +59,7 @@ public final class YamlProxyConfigurationSwapper {
     
     private Map<String, Map<String, DataSourceConfiguration>> getDataSourceConfigurationMap(final Map<String, YamlProxySchemaConfiguration> yamlSchemaConfigs) {
         return yamlSchemaConfigs.entrySet().stream().collect(
-                Collectors.toMap(Entry::getKey, entry -> ProxyDataSourceConfigurationConverter.getResourceConfigurationMap(entry.getValue().getDataSources()),
+                Collectors.toMap(Entry::getKey, entry -> ProxyDataSourceConfigurationConverter.getDataSourceConfigurationMap(entry.getValue().getDataSources()),
                     (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
 }

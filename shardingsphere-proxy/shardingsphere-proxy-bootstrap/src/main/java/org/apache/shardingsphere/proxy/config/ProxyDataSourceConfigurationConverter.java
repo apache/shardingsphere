@@ -41,7 +41,7 @@ public final class ProxyDataSourceConfigurationConverter {
      * @param yamlResourceConfigMap yaml resource configuration map
      * @return data source configuration map
      */
-    public static Map<String, DataSourceConfiguration> getResourceConfigurationMap(final Map<String, YamlProxyResourceConfiguration> yamlResourceConfigMap) {
+    public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, YamlProxyResourceConfiguration> yamlResourceConfigMap) {
         return yamlResourceConfigMap.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
