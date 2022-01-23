@@ -71,9 +71,9 @@ public final class MySQLSelectStatement extends SelectStatement implements MySQL
     }
 
     /**
-     * Get window segment.
+     * Get simple table segment.
      *
-     * @return window segment
+     * @return simple table segment
      */
     public Optional<SimpleTableSegment> getTable() {
         return Optional.ofNullable(table);
