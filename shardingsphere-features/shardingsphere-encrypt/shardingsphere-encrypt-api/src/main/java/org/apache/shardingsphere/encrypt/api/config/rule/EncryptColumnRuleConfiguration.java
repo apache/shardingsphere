@@ -23,8 +23,8 @@ import lombok.RequiredArgsConstructor;
 /**
  * Encrypt column rule configuration.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class EncryptColumnRuleConfiguration {
     
     private final String logicColumn;
