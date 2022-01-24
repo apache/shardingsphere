@@ -19,7 +19,9 @@ package org.apache.shardingsphere.example.generator.scenario.framework.type;
 
 import org.apache.shardingsphere.example.generator.scenario.framework.FrameworkExampleScenario;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -43,6 +45,20 @@ public final class SpringNamespaceMyBatisExampleScenario implements FrameworkExa
         result.put("resources/mappers/OrderItemMapper.ftl", "mappers/OrderItemMapper.xml");
         result.put("resources/mappers/OrderMapper.ftl", "mappers/OrderMapper.xml");
         result.put("resources/mappers/AddressMapper.ftl", "mappers/AddressMapper.xml");
+        return result;
+    }
+    
+    @Override
+    public Collection<String> getJavaClassPaths() {
+        Collection<String> result = new HashSet<>();
+        result.add("repository");
+        return result;
+    }
+    
+    @Override
+    public Collection<String> getResourcePaths() {
+        Collection<String> result = new HashSet<>();
+        result.add("mappers");
         return result;
     }
     

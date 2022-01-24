@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.metadata;
 
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
+import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
@@ -71,7 +72,7 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
         for (ColumnMetaData each : originalColumnMetaDataList) {
             String columnName = each.getName();
             if (encryptTable.isCipherColumn(columnName)) {
-                result.add(createColumnMetaData(encryptTable.getLogicColumn(columnName), each));
+                result.add(createColumnMetaData(encryptTable.getLogicColumn(columnName), each, encryptTable));
                 continue;
             }
             if (!plainColumns.contains(columnName) && !assistedQueryColumns.contains(columnName)) {
@@ -81,7 +82,12 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
         return result;
     }
     
-    private ColumnMetaData createColumnMetaData(final String columnName, final ColumnMetaData columnMetaData) {
+    private ColumnMetaData createColumnMetaData(final String columnName, final ColumnMetaData columnMetaData, final EncryptTable encryptTable) {
+        Optional<EncryptColumn> encryptColumn = encryptTable.findEncryptColumn(columnName);
+        if (encryptColumn.isPresent() && null != encryptColumn.get().getLogicDataType() && !encryptColumn.get().getLogicDataType().isEmpty()) {
+            // TODO get config data type.
+            return new ColumnMetaData(columnName, 0, columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(), columnMetaData.isCaseSensitive());
+        }
         return new ColumnMetaData(columnName, columnMetaData.getDataType(), columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(), columnMetaData.isCaseSensitive());
     }
     

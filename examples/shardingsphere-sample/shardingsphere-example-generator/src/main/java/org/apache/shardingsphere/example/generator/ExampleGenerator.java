@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -47,9 +48,9 @@ public final class ExampleGenerator {
             + "<#else>"
             + "<#assign package=feature />"
             + "</#if>"
-            + "/shardingsphere-jdbc-sample/shardingsphere-jdbc-${mode}-${transaction}-${package}-${framework}-example/src/main/";
+            + "/shardingsphere-jdbc-sample/shardingsphere-jdbc-${mode}-${transaction}-${package}-${framework}-example/";
     
-    private static final String JAVA_CLASS_PATH = "java/org/apache/shardingsphere/example/"
+    private static final String JAVA_CLASS_PATH = "src/main/java/org/apache/shardingsphere/example/"
             + "<#assign package=\"\">"
             + "<#if feature?split(\",\")?size gt 1>"
             + "<#assign package=\"mixed\">"
@@ -58,7 +59,7 @@ public final class ExampleGenerator {
             + "</#if>"
             + "${package}/${framework?replace('-', '/')}";
     
-    private static final String RESOURCES_PATH = "resources";
+    private static final String RESOURCES_PATH = "src/main/resources";
     
     private final Configuration templateConfig;
     
@@ -85,8 +86,19 @@ public final class ExampleGenerator {
             Map<String, String> dataModel = new Yaml().loadAs(input, Map.class);
             String feature = dataModel.get("feature");
             String framework = dataModel.get("framework");
+            generateDirs(dataModel, new ExampleScenarioFactory(feature, framework).getJavaClassPaths(), JAVA_CLASS_PATH);
+            generateDirs(dataModel, new ExampleScenarioFactory(feature, framework).getResourcePaths(), RESOURCES_PATH);
             generateFile(dataModel, new ExampleScenarioFactory(feature, framework).getJavaClassTemplateMap(), JAVA_CLASS_PATH);
             generateFile(dataModel, new ExampleScenarioFactory(feature, framework).getResourceTemplateMap(), RESOURCES_PATH);
+            String outputPath = generatePath(dataModel, OUTPUT_PATH);
+            processFile(dataModel, "pom.ftl", outputPath + "pom.xml");
+        }
+    }
+    
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void generateDirs(final Map<String, String> dataModel, final Collection<String> paths, final String outputRelativePath) throws IOException, TemplateException {
+        for (String each : paths) {
+            new File(generatePath(dataModel, OUTPUT_PATH + outputRelativePath + "/" + each)).mkdirs();
         }
     }
     
