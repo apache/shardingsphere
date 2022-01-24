@@ -24,24 +24,15 @@ import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Properties;
 
 /**
- * Proxy configuration.
+ * Proxy schema configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ProxyConfiguration {
+public final class ProxySchemaConfiguration {
     
-    private final Map<String, Map<String, DataSourceConfiguration>> schemaResources;
+    private final Map<String, DataSourceConfiguration> dataSources;
     
-    private final Map<String, Collection<RuleConfiguration>> schemaRules;
-    
-    private final Map<String, ProxySchemaConfiguration> schemaConfigurations;
-    
-    private final Collection<RuleConfiguration> globalRules;
-    
-    private final Properties props;
-    
-    private final Collection<String> labels;
+    private final Collection<RuleConfiguration> rules;
 }

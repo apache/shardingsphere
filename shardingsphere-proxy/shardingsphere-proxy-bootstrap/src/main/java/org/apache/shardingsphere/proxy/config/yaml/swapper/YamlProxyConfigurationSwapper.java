@@ -21,8 +21,9 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyDataSourceConfigurationConverter;
+import org.apache.shardingsphere.proxy.config.ProxySchemaConfiguration;
+import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxySchemaConfiguration;
 
 import java.util.Collection;
@@ -46,9 +47,13 @@ public final class YamlProxyConfigurationSwapper {
     public ProxyConfiguration swap(final YamlProxyConfiguration yamlConfig) {
         Map<String, Map<String, DataSourceConfiguration>> schemaDataSourceConfigs = getDataSourceConfigurationMap(yamlConfig.getSchemaConfigurations());
         Map<String, Collection<RuleConfiguration>> schemaConfigs = getSchemaConfigurations(yamlConfig.getSchemaConfigurations());
+        Map<String, ProxySchemaConfiguration> schemaConfigurations = new LinkedHashMap<>(schemaDataSourceConfigs.size(), 1);
+        for (Entry<String, Map<String, DataSourceConfiguration>> entry : schemaDataSourceConfigs.entrySet()) {
+            schemaConfigurations.put(entry.getKey(), new ProxySchemaConfiguration(entry.getValue(), schemaConfigs.get(entry.getKey())));
+        }
         Collection<RuleConfiguration> globalRules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules());
         Properties props = yamlConfig.getServerConfiguration().getProps();
-        return new ProxyConfiguration(schemaDataSourceConfigs, schemaConfigs, globalRules, props, yamlConfig.getServerConfiguration().getLabels());
+        return new ProxyConfiguration(schemaDataSourceConfigs, schemaConfigs, schemaConfigurations, globalRules, props, yamlConfig.getServerConfiguration().getLabels());
     }
     
     private Map<String, Collection<RuleConfiguration>> getSchemaConfigurations(final Map<String, YamlProxySchemaConfiguration> yamlSchemaConfigs) {
