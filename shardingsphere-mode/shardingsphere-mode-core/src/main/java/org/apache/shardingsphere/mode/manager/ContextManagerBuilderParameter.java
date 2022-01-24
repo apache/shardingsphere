@@ -47,8 +47,6 @@ public final class ContextManagerBuilderParameter {
     
     private final boolean isOverwrite;
     
-    private final String schemaName;
-    
     private final Collection<String> labels;
     
     private final InstanceDefinition instanceDefinition;

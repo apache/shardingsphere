@@ -15,34 +15,63 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.statement.impl;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.impl;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLStatementMemoryStrictlyFetchSizeSetterTest {
+    
+    private static ContextManager originContextManager;
+    
+    @BeforeClass
+    public static void setup() {
+        originContextManager = swapContextManager(mock(ContextManager.class, RETURNS_DEEP_STUBS));
+    }
     
     @Test
     public void assertSetFetchSize() throws SQLException {
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE)).thenReturn(-1);
         Statement statement = mock(Statement.class);
-        ConfigurationProperties props = mock(ConfigurationProperties.class);
-        when(props.getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE)).thenReturn(-1);
-        new PostgreSQLStatementMemoryStrictlyFetchSizeSetter().setFetchSize(statement, props);
+        new PostgreSQLStatementMemoryStrictlyFetchSizeSetter().setFetchSize(statement);
         verify(statement).setFetchSize(1);
     }
     
     @Test
     public void assertGetType() {
         assertThat(new PostgreSQLStatementMemoryStrictlyFetchSizeSetter().getType(), is("PostgreSQL"));
+    }
+    
+    @AfterClass
+    public static void tearDown() {
+        swapContextManager(originContextManager);
+    }
+    
+    @SneakyThrows
+    private static ContextManager swapContextManager(final ContextManager newContextManager) {
+        Field contextManagerField = ProxyContext.class.getDeclaredField("contextManager");
+        contextManagerField.setAccessible(true);
+        ContextManager result = (ContextManager) contextManagerField.get(ProxyContext.getInstance());
+        contextManagerField.set(ProxyContext.getInstance(), newContextManager);
+        return result;
     }
 }

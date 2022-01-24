@@ -375,8 +375,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private boolean isModifiedDataSource(final Map<String, DataSource> originalDataSources, final String dataSourceName, final DataSourceProperties dataSourceProps) {
-        DataSourceProperties originalDataSourceProps = DataSourcePropertiesCreator.create(originalDataSources).get(dataSourceName);
-        return null != originalDataSourceProps && !dataSourceProps.equals(originalDataSourceProps);
+        return originalDataSources.containsKey(dataSourceName) && !dataSourceProps.equals(DataSourcePropertiesCreator.create(originalDataSources.get(dataSourceName)));
     }
     
     private MetaDataContexts rebuildMetaDataContexts(final Map<String, ShardingSphereMetaData> schemaMetaData) {
