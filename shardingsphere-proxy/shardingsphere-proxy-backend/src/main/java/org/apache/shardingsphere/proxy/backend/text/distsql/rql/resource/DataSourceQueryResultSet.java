@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Result set for show data source.
@@ -62,7 +63,7 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         resource = metaData.getResource();
         dataSourcePropsMap = new LinkedHashMap<>(metaData.getResource().getDataSources().size(), 1);
-        for (Map.Entry<String, DataSource> entry : metaData.getResource().getDataSources().entrySet()) {
+        for (Entry<String, DataSource> entry : metaData.getResource().getDataSources().entrySet()) {
             dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
         }
         dataSourceNames = dataSourcePropsMap.keySet().iterator();
