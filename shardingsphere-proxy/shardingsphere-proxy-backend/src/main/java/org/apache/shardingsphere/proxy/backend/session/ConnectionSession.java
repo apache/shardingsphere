@@ -141,7 +141,7 @@ public final class ConnectionSession {
      *
      * @param readOnly readonly
      */
-    public void SetReadOnly(final boolean readOnly) {
+    public void setReadOnly(final boolean readOnly) {
         this.readOnly.set(readOnly);
     }
 }
