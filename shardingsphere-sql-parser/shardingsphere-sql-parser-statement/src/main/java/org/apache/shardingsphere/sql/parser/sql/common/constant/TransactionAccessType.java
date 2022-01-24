@@ -15,25 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
+package org.apache.shardingsphere.sql.parser.sql.common.constant;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.OperationScope;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionAccessType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionIsolationLevel;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Set transaction statement.
+ * Transaction access type enum.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public abstract class SetTransactionStatement extends AbstractSQLStatement implements TCLStatement {
+public enum TransactionAccessType {
 
-    private TransactionIsolationLevel isolationLevel;
+    READ_ONLY("READ_ONLY"),
+    READ_WRITE("READ_WRITE");
 
-    private OperationScope scope;
-
-    private TransactionAccessType accessMode;
+    private final String accessType;
 }

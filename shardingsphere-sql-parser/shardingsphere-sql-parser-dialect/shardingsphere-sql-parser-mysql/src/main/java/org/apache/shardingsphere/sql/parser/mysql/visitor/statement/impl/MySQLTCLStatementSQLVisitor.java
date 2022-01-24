@@ -29,6 +29,9 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Savepoi
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAutoCommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaContext;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.OperationScope;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionAccessType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionIsolationLevel;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.tcl.AutoCommitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLBeginTransactionStatement;
@@ -55,15 +58,37 @@ public final class MySQLTCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
         MySQLSetTransactionStatement result = new MySQLSetTransactionStatement();
         if (null != ctx.optionType()) {
-            result.setScope(ctx.optionType().getText());
+            OperationScope scope = null;
+            if (null != ctx.optionType().SESSION()) {
+                scope = OperationScope.SESSION;
+            } else if (null != ctx.optionType().GLOBAL()) {
+                scope = OperationScope.GLOBAL;
+            }
+            result.setScope(scope);
         }
         if (null != ctx.transactionCharacteristics().isolationLevel()) {
-            result.setIsolationLevel(ctx.transactionCharacteristics().isolationLevel().isolationTypes().getText());
+            TransactionIsolationLevel isolationLevel = null;
+            if (null != ctx.transactionCharacteristics().isolationLevel().isolationTypes().SERIALIZABLE()) {
+                isolationLevel = TransactionIsolationLevel.SERIALIZABLE;
+            } else if (null != ctx.transactionCharacteristics().isolationLevel().isolationTypes().COMMITTED()) {
+                isolationLevel = TransactionIsolationLevel.READ_COMMITTED;
+            } else if (null != ctx.transactionCharacteristics().isolationLevel().isolationTypes().UNCOMMITTED()) {
+                isolationLevel = TransactionIsolationLevel.READ_UNCOMMITTED;
+            } else if (null != ctx.transactionCharacteristics().isolationLevel().isolationTypes().REPEATABLE()) {
+                isolationLevel = TransactionIsolationLevel.REPEATABLE_READ;
+            }
+            result.setIsolationLevel(isolationLevel);
         }
         if (null != ctx.transactionCharacteristics().transactionAccessMode()) {
-            result.setAccessMode(ctx.transactionCharacteristics().transactionAccessMode().getText());
+            TransactionAccessType accessType = null;
+            if (null != ctx.transactionCharacteristics().transactionAccessMode().ONLY()) {
+                accessType = TransactionAccessType.READ_ONLY;
+            } else if (null != ctx.transactionCharacteristics().transactionAccessMode().WRITE()) {
+                accessType = TransactionAccessType.READ_WRITE;
+            }
+            result.setAccessMode(accessType);
         }
-        return new MySQLSetTransactionStatement();
+        return result;
     }
     
     @Override
