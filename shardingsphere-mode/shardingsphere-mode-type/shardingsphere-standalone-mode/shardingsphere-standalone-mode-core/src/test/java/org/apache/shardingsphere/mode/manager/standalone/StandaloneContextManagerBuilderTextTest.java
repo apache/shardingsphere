@@ -61,7 +61,7 @@ public final class StandaloneContextManagerBuilderTextTest {
         StandaloneContextManagerBuilder standaloneContextManagerBuilder = new StandaloneContextManagerBuilder();
         ContextManager actual = standaloneContextManagerBuilder.build(ContextManagerBuilderParameter.builder().modeConfig(modeConfiguration)
             .dataSourcesMap(dataSourceMap).schemaRuleConfigs(schemaRuleConfigs).globalRuleConfigs(globalRuleConfigurationCollection).props(props)
-            .isOverwrite(false).instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307)).build());
+            .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307)).build());
         MetaDataContexts metaDataContexts = actual.getMetaDataContexts();
         assertNotNull(metaDataContexts.getMetaDataMap().get(TEST_DATA_SOURCE_INNER_MAP));
         assertNotNull(metaDataContexts.getExecutorEngine());

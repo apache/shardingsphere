@@ -32,7 +32,6 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecuti
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
-import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterListener;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.Dumper;
 import org.apache.shardingsphere.scaling.core.job.dumper.DumperFactory;
@@ -112,13 +111,11 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
                 progress.setPosition(lastHandledRecord.getPosition());
                 progress.getIncrementalTaskDelay().setLastEventTimestamps(lastHandledRecord.getCommitTime());
             }
+            progress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
         });
         dumper.setChannel(channel);
-        // TODO merge logic into AckCallback after PipelineChannel.ack refactoring, and then remove ImporterListener
-        ImporterListener importerListener = records -> progress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
         for (Importer each : importers) {
             each.setChannel(channel);
-            each.setImporterListener(importerListener);
         }
     }
     

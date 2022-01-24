@@ -166,6 +166,6 @@ public final class InventoryTaskSplitterTest {
     
     private void initJobContext() {
         jobContext = new RuleAlteredJobContext(ResourceUtil.mockJobConfig());
-        taskConfig = jobContext.getTaskConfigs().iterator().next();
+        taskConfig = jobContext.getTaskConfig();
     }
 }

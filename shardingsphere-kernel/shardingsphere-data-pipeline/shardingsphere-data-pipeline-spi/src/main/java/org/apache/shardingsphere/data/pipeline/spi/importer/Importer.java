@@ -36,12 +36,4 @@ public interface Importer extends LifecycleExecutor {
      * Write data to channel.
      */
     void write();
-    
-    /**
-     * Set importer listener.
-     *
-     * @param importerListener importer listener
-     */
-    default void setImporterListener(ImporterListener importerListener) {
-    }
 }
