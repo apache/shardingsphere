@@ -112,7 +112,7 @@ public final class ClusterContextManagerCoordinatorTest {
         ModeConfiguration configuration = new ModeConfiguration("Cluster", persistRepositoryConfiguration, false);
         ClusterContextManagerBuilder builder = new ClusterContextManagerBuilder();
         contextManager = builder.build(ContextManagerBuilderParameter.builder().modeConfig(configuration).dataSourcesMap(new HashMap<>()).schemaRuleConfigs(new HashMap<>())
-                .globalRuleConfigs(new LinkedList<>()).props(new Properties()).isOverwrite(false).instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307)).build());
+                .globalRuleConfigs(new LinkedList<>()).props(new Properties()).instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307)).build());
         assertTrue(contextManager.getMetaDataContexts().getMetaDataPersistService().isPresent());
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getMetaDataPersistService().get(), createMetaDataMap(), globalRuleMetaData, 
                 mock(ExecutorEngine.class),
