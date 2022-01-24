@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.channel.distribution;
+package org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;

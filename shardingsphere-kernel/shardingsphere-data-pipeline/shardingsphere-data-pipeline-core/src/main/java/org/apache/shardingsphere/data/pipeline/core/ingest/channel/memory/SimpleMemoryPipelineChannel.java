@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.channel.distribution;
+package org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory;
 
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
@@ -27,19 +28,17 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * Blocking queue pipeline channel.
+ * Simple memory pipeline channel.
  */
-// TODO rename
-public final class BlockingQueueChannel implements PipelineChannel {
+public final class SimpleMemoryPipelineChannel implements PipelineChannel {
     
     private final BlockingQueue<Record> queue;
     
-    public BlockingQueueChannel() {
-        this(10000);
-    }
+    private final AckCallback ackCallback;
     
-    public BlockingQueueChannel(final int blockQueueSize) {
+    public SimpleMemoryPipelineChannel(final int blockQueueSize, final AckCallback ackCallback) {
         this.queue = new ArrayBlockingQueue<>(blockQueueSize);
+        this.ackCallback = ackCallback;
     }
     
     @Override
@@ -68,6 +67,7 @@ public final class BlockingQueueChannel implements PipelineChannel {
     
     @Override
     public void ack(final List<Record> records) {
+        ackCallback.onAck(records);
     }
     
     @Override

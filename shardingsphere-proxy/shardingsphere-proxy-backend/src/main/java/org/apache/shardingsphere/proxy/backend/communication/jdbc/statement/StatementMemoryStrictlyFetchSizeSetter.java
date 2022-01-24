@@ -15,31 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config.resource;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.spi.singleton.SingletonSPI;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
 
-import java.util.Properties;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
- * Pool configuration.
+ * Statement memory strictly fetch size setter.
  */
-@RequiredArgsConstructor
-@Getter
-public final class PoolConfiguration {
+public interface StatementMemoryStrictlyFetchSizeSetter extends TypedSPI, SingletonSPI {
     
-    private final Long connectionTimeoutMilliseconds;
-    
-    private final Long idleTimeoutMilliseconds;
-    
-    private final Long maxLifetimeMilliseconds;
-    
-    private final Integer maxPoolSize;
-    
-    private final Integer minPoolSize;
-    
-    private final Boolean readOnly;
-    
-    private final Properties customProperties;
+    /**
+     * Set fetch size.
+     * 
+     * @param statement statement to be set
+     * @throws SQLException SQL exception
+     */
+    void setFetchSize(Statement statement) throws SQLException;
 }

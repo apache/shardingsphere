@@ -117,7 +117,7 @@ public final class GovernanceRepositoryAPIImplTest {
     
     private RuleAlteredJobContext mockJobContext() {
         RuleAlteredJobContext result = new RuleAlteredJobContext(ResourceUtil.mockJobConfig());
-        TaskConfiguration taskConfig = result.getTaskConfigs().iterator().next();
+        TaskConfiguration taskConfig = result.getTaskConfig();
         result.getInventoryTasks().add(mockInventoryTask(taskConfig));
         result.getIncrementalTasks().add(mockIncrementalTask(taskConfig));
         return result;

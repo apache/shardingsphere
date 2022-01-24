@@ -15,21 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.importer;
+package org.apache.shardingsphere.infra.datasource.config;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.List;
+import java.util.Properties;
 
 /**
- * Importer listener.
+ * Pool configuration.
  */
-public interface ImporterListener {
+@RequiredArgsConstructor
+@Getter
+public final class PoolConfiguration {
     
-    /**
-     * Called back on records imported.
-     *
-     * @param records records
-     */
-    void recordsImported(List<Record> records);
+    private final Long connectionTimeoutMilliseconds;
+    
+    private final Long idleTimeoutMilliseconds;
+    
+    private final Long maxLifetimeMilliseconds;
+    
+    private final Integer maxPoolSize;
+    
+    private final Integer minPoolSize;
+    
+    private final Boolean readOnly;
+    
+    private final Properties customProperties;
 }

@@ -45,7 +45,7 @@ public final class RuleAlteredJobContext {
     
     private JobProgress initProgress;
     
-    private final Collection<TaskConfiguration> taskConfigs;
+    private final TaskConfiguration taskConfig;
     
     private final Collection<InventoryTask> inventoryTasks = new LinkedList<>();
     
@@ -63,6 +63,6 @@ public final class RuleAlteredJobContext {
         jobConfig.buildHandleConfig();
         jobId = jobConfig.getHandleConfig().getJobId();
         shardingItem = jobConfig.getHandleConfig().getJobShardingItem();
-        taskConfigs = jobConfig.buildTaskConfigs();
+        taskConfig = jobConfig.buildTaskConfig();
     }
 }

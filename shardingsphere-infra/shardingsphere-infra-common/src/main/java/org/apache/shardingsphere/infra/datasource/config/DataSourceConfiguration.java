@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.statement;
+package org.apache.shardingsphere.infra.datasource.config;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.spi.singleton.SingletonSPI;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
-
-import java.sql.SQLException;
-import java.sql.Statement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Statement memory strictly fetch size setter.
+ * Data source configuration.
  */
-public interface StatementMemoryStrictlyFetchSizeSetter extends TypedSPI, SingletonSPI {
+@RequiredArgsConstructor
+@Getter
+public final class DataSourceConfiguration {
     
-    /**
-     * Set fetch size.
-     * 
-     * @param statement statement to be set
-     * @param props configuration properties
-     * @throws SQLException SQL exception
-     */
-    void setFetchSize(Statement statement, ConfigurationProperties props) throws SQLException;
+    private final ConnectionConfiguration connection;
+    
+    private final PoolConfiguration pool;
 }

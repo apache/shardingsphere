@@ -34,7 +34,6 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
-import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterListener;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 
 import javax.sql.DataSource;
@@ -62,9 +61,6 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
     
     @Setter
     private PipelineChannel channel;
-    
-    @Setter
-    private ImporterListener importerListener;
     
     protected AbstractImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
         this.importerConfig = importerConfig;
@@ -98,9 +94,6 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
                 round++;
                 rowCount += records.size();
                 flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
-                if (null != importerListener) {
-                    importerListener.recordsImported(records);
-                }
                 channel.ack(records);
                 if (log.isDebugEnabled()) {
                     log.debug("importer write, round={}, rowCount={}", round, rowCount);

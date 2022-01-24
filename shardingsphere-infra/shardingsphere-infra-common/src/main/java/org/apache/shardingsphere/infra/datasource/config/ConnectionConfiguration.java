@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config.resource;
+package org.apache.shardingsphere.infra.datasource.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
