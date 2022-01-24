@@ -41,8 +41,6 @@ public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
     
     private final Map<String, Integer> channelAssignment = new HashMap<>();
     
-    private final AckCallback ackCallback;
-    
     public MultiplexMemoryPipelineChannel(final AckCallback ackCallback) {
         this(10000, ackCallback);
     }
@@ -53,10 +51,9 @@ public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
     
     public MultiplexMemoryPipelineChannel(final int channelNumber, final int blockQueueSize, final AckCallback ackCallback) {
         this.channelNumber = channelNumber;
-        this.ackCallback = ackCallback;
         channels = new PipelineChannel[channelNumber];
         for (int i = 0; i < channelNumber; i++) {
-            channels[i] = new SimpleMemoryPipelineChannel(blockQueueSize);
+            channels[i] = new SimpleMemoryPipelineChannel(blockQueueSize, ackCallback);
         }
     }
     
@@ -88,7 +85,6 @@ public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
     @Override
     public void ack(final List<Record> records) {
         findChannel().ack(records);
-        ackCallback.onAck(records);
     }
     
     private PipelineChannel findChannel() {
