@@ -123,12 +123,13 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
             
             @Override
             public void onSuccess() {
+                log.info("importer onSuccess, taskId={}", taskId);
             }
             
             @Override
             public void onFailure(final Throwable throwable) {
-                log.error("get an error when migrating the increment data", throwable);
-                dumper.stop();
+                log.error("importer onFailure, taskId={}", taskId, throwable);
+                stop();
             }
         };
     }
@@ -145,5 +146,10 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     @Override
     public void stop() {
         dumper.stop();
+        for (Importer each : importers) {
+            each.stop();
+        }
+        channel.close();
+        dataSourceManager.close();
     }
 }

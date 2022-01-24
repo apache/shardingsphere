@@ -91,13 +91,13 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
             
             @Override
             public void onSuccess() {
-                log.info("importer onSuccess");
+                log.info("importer onSuccess, taskId={}", taskId);
             }
             
             @Override
             public void onFailure(final Throwable throwable) {
-                log.error("get an error when migrating the inventory data", throwable);
-                dumper.stop();
+                log.error("importer onFailure, taskId={}", taskId, throwable);
+                stop();
             }
         });
         dumper.start();
@@ -131,6 +131,9 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     @Override
     public void stop() {
         dumper.stop();
+        importer.stop();
+        channel.close();
+        dataSourceManager.close();
     }
     
     @Override
@@ -140,8 +143,6 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     
     @Override
     public void close() {
-        if (null != dataSourceManager) {
-            dataSourceManager.close();
-        }
+        dataSourceManager.close();
     }
 }
