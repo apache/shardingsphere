@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.generator.builder;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowColumnsStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dal.ShowTableStatusStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.generic.RemoveTokenGenerator;
@@ -36,17 +38,32 @@ import static org.mockito.Mockito.when;
 public final class DefaultTokenGeneratorBuilderTest {
 
     @Test
-    public void assertGetSQLTokenGenerators() {
-        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(selectStatementContext.getTablesContext().getSchemaName().isPresent()).thenReturn(false);
-        DefaultTokenGeneratorBuilder selectBuilder = new DefaultTokenGeneratorBuilder(selectStatementContext);
-        Collection<SQLTokenGenerator> selectSqlTokenGenerators = selectBuilder.getSQLTokenGenerators();
-        assertThat(selectSqlTokenGenerators.size(), is(0));
-        ShowColumnsStatementContext showColumnsStatementContext = mock(ShowColumnsStatementContext.class, RETURNS_DEEP_STUBS);
-        DefaultTokenGeneratorBuilder showColumnsBuilder = new DefaultTokenGeneratorBuilder(showColumnsStatementContext);
-        Collection<SQLTokenGenerator> showColumnsSqlTokenGenerators = showColumnsBuilder.getSQLTokenGenerators();
-        assertThat(showColumnsSqlTokenGenerators.size(), is(1));
-        Iterator<SQLTokenGenerator> iterator = showColumnsSqlTokenGenerators.iterator();
+    public void assertGetSQLTokenGeneratorsWithShowTableStatus() {
+        ShowTableStatusStatementContext sqlStatementContext = mock(ShowTableStatusStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getRemoveSegments().isEmpty()).thenReturn(false);
+        assertGetSQLTokenGenerators(sqlStatementContext);
+    }
+
+    @Test
+    public void assertGetSQLTokenGeneratorsWithSelect() {
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getSchemaName().isPresent()).thenReturn(true);
+        assertGetSQLTokenGenerators(sqlStatementContext);
+    }
+
+    @Test
+    public void assertGetSQLTokenGeneratorsWithShowColumns() {
+        ShowColumnsStatementContext sqlStatementContext = mock(ShowColumnsStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getRemoveSegments().isEmpty()).thenReturn(false);
+        when(sqlStatementContext.getTablesContext().getSchemaName().isPresent()).thenReturn(true);
+        assertGetSQLTokenGenerators(sqlStatementContext);
+    }
+
+    private void assertGetSQLTokenGenerators(final SQLStatementContext sqlStatementContext) {
+        DefaultTokenGeneratorBuilder defaultTokenGeneratorBuilder = new DefaultTokenGeneratorBuilder(sqlStatementContext);
+        Collection<SQLTokenGenerator> sqlTokenGenerators = defaultTokenGeneratorBuilder.getSQLTokenGenerators();
+        assertThat(sqlTokenGenerators.size(), is(1));
+        Iterator<SQLTokenGenerator> iterator = sqlTokenGenerators.iterator();
         SQLTokenGenerator removeTokenGenerator = iterator.next();
         assertThat(removeTokenGenerator, instanceOf(RemoveTokenGenerator.class));
     }
