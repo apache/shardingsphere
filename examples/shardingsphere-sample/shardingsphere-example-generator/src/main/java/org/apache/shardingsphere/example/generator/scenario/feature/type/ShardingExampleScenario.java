@@ -19,6 +19,7 @@ package org.apache.shardingsphere.example.generator.scenario.feature.type;
 
 import org.apache.shardingsphere.example.generator.scenario.feature.FeatureExampleScenario;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -35,6 +36,16 @@ public final class ShardingExampleScenario implements FeatureExampleScenario {
     @Override
     public Map<String, String> getResourceTemplateMap() {
         return Collections.emptyMap();
+    }
+    
+    @Override
+    public Collection<String> getJavaClassPaths() {
+        return Collections.emptySet();
+    }
+    
+    @Override
+    public Collection<String> getResourcePaths() {
+        return Collections.emptySet();
     }
     
     @Override
