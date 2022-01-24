@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.preprocess.RuleDefinitionAlterPreprocessor;
@@ -68,7 +67,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         ShardingSphereMetaData shardingSphereMetaData = ProxyContext.getInstance().getMetaData(schemaName);
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(shardingSphereMetaData, ruleConfigClass).orElse(null);
         checkSQLStatement(ruleDefinitionUpdater, shardingSphereMetaData, sqlStatement, currentRuleConfig);
-        Optional<RuleDefinitionAlterPreprocessor> preprocessor = TypedSPIRegistry.findRegisteredService(RuleDefinitionAlterPreprocessor.class, sqlStatement.getClass().getCanonicalName(), 
+        Optional<RuleDefinitionAlterPreprocessor> preprocessor = TypedSPIRegistry.findRegisteredService(RuleDefinitionAlterPreprocessor.class, sqlStatement.getClass().getCanonicalName(),
                 new Properties());
         if (RuleAlteredJobWorker.isOnRuleAlteredActionEnabled(currentRuleConfig) && preprocessor.isPresent()) {
             processCache(shardingSphereMetaData, sqlStatement, (RuleDefinitionAlterUpdater) ruleDefinitionUpdater, currentRuleConfig, preprocessor.get());
@@ -90,9 +89,6 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     private void checkSQLStatement(final RuleDefinitionUpdater ruleDefinitionUpdater, final ShardingSphereMetaData shardingSphereMetaData,
                                    final T sqlStatement, final RuleConfiguration currentRuleConfig) throws DistSQLException {
-        if (isSkipDropConfiguration(sqlStatement, currentRuleConfig)) {
-            return;
-        }
         ruleDefinitionUpdater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentRuleConfig);
     }
     
@@ -107,7 +103,9 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         } else {
             throw new UnsupportedOperationException(String.format("Cannot support RDL updater type `%s`", updater.getClass().getCanonicalName()));
         }
-        ProxyContext.getInstance().getContextManager().alterRuleConfiguration(shardingSphereMetaData.getName(), shardingSphereMetaData.getRuleMetaData().getConfigurations());
+        if (isSkipRefresh(sqlStatement, currentRuleConfig, updater)) {
+            ProxyContext.getInstance().getContextManager().alterRuleConfiguration(shardingSphereMetaData.getName(), shardingSphereMetaData.getRuleMetaData().getConfigurations());
+        }
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -128,7 +126,8 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void processDrop(final ShardingSphereMetaData shardingSphereMetaData, final T sqlStatement, final RuleDefinitionDropUpdater updater, final RuleConfiguration currentRuleConfig) {
-        if (isSkipDropConfiguration(sqlStatement, currentRuleConfig)) {
+        Collection<String> existingConfiguration = ((RuleDefinitionDropUpdater<SQLStatement, RuleConfiguration>) updater).getExistingConfiguration(sqlStatement, currentRuleConfig);
+        if (existingConfiguration.isEmpty()) {
             return;
         }
         if (updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig)) {
@@ -157,9 +156,9 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
                 schemaName, ruleConfigurations));
     }
     
-    private boolean isSkipDropConfiguration(final SQLStatement sqlStatement, final RuleConfiguration ruleConfiguration) {
-        if (sqlStatement instanceof DropRuleStatement) {
-            return ((DropRuleStatement) sqlStatement).isContainsExistClause() && null == ruleConfiguration;
+    private boolean isSkipRefresh(final SQLStatement sqlStatement, final RuleConfiguration currentRuleConfig, final RuleDefinitionUpdater updater) {
+        if (updater instanceof RuleDefinitionDropUpdater) {
+            return !((RuleDefinitionDropUpdater<SQLStatement, RuleConfiguration>) updater).getExistingConfiguration(sqlStatement, currentRuleConfig).isEmpty();
         }
         return false;
     }

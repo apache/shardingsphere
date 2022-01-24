@@ -26,6 +26,7 @@ import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatem
 import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowRuleStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Drop shadow rule statement updater.
@@ -51,6 +52,14 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
         }
         Collection<String> currentRuleNames = currentRuleConfig.getDataSources().keySet();
         ShadowRuleStatementChecker.checkRulesExist(currentRuleNames, sqlStatement.getRuleNames(), different -> new RequiredRuleMissedException(SHADOW, schemaName, different));
+    }
+    
+    @Override
+    public Collection<String> getExistingConfiguration(final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+        if (currentRuleConfig == null) {
+            return Collections.emptyList();
+        }
+        return getIdenticalData(currentRuleConfig.getDataSources().keySet(), sqlStatement.getRuleNames());
     }
     
     @Override

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -68,6 +69,14 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
                 .flatMap(Collection::stream).collect(Collectors.toSet());
         Collection<String> invalid = sqlStatement.getRuleNames().stream().filter(each -> rulesInUse.contains(each)).collect(Collectors.toList());
         DistSQLException.predictionThrow(invalid.isEmpty(), new RuleInUsedException(RULE_TYPE, schemaName, invalid));
+    }
+    
+    @Override
+    public Collection<String> getExistingConfiguration(final DropDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+        if (currentRuleConfig == null) {
+            return Collections.emptyList();
+        }
+        return getIdenticalData(currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName).collect(Collectors.toSet()), sqlStatement.getRuleNames());
     }
     
     @Override

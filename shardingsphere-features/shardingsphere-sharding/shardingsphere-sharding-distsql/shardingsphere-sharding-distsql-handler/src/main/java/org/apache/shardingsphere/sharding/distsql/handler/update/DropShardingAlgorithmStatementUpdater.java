@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingAlgorithmStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -96,6 +97,14 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
     
     private Collection<String> getCurrentShardingAlgorithms(final ShardingRuleConfiguration shardingRuleConfig) {
         return shardingRuleConfig.getShardingAlgorithms().keySet();
+    }
+    
+    @Override
+    public Collection<String> getExistingConfiguration(final DropShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        if (currentRuleConfig == null) {
+            return Collections.emptyList();
+        }
+        return getIdenticalData(currentRuleConfig.getShardingAlgorithms().keySet(), sqlStatement.getAlgorithmNames());
     }
     
     @Override

@@ -20,6 +20,9 @@ package org.apache.shardingsphere.infra.distsql.update;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
+
 /**
  * Drop rule definition updater.
  * 
@@ -29,6 +32,15 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 public interface RuleDefinitionDropUpdater<T extends SQLStatement, R extends RuleConfiguration> extends RuleDefinitionUpdater<T, R> {
     
     /**
+     * Get the configuration that exists in the configuration that will be dropped.
+     *
+     * @param sqlStatement SQL statement
+     * @param currentRuleConfig current rule configuration to be updated
+     * @return Existing configuration
+     */
+    Collection<String> getExistingConfiguration(T sqlStatement, R currentRuleConfig);
+    
+    /**
      * Update current rule configuration.
      *
      * @param sqlStatement SQL statement
@@ -36,4 +48,16 @@ public interface RuleDefinitionDropUpdater<T extends SQLStatement, R extends Rul
      * @return current rule configuration is empty or not 
      */
     boolean updateCurrentRuleConfiguration(T sqlStatement, R currentRuleConfig);
+    
+    /**
+     * Get identical data.
+     *
+     * @param col1 collection
+     * @param col2 collection
+     * @return identical data
+     */
+    default Collection<String> getIdenticalData(Collection<String> col1, Collection<String> col2) {
+        col1.removeIf(col2::contains);
+        return new LinkedHashSet<>(col1);
+    }
 }

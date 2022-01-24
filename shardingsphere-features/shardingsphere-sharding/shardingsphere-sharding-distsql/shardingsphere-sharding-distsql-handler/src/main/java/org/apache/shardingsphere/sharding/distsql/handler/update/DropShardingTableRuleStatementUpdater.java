@@ -18,17 +18,18 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
+import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingTableRuleStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
@@ -39,16 +40,17 @@ import java.util.stream.Collectors;
 public final class DropShardingTableRuleStatementUpdater implements RuleDefinitionDropUpdater<DropShardingTableRuleStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingTableRuleStatement sqlStatement, 
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingTableRuleStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
         String schemaName = shardingSphereMetaData.getName();
-        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
+        checkCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
         checkToBeDroppedShardingTableNames(schemaName, sqlStatement, currentRuleConfig);
         checkBindingTables(schemaName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
-        if (null == currentRuleConfig) {
+    private void checkCurrentRuleConfiguration(final String schemaName, final DropShardingTableRuleStatement sqlStatement,
+                                               final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
+        if (!sqlStatement.isContainsExistClause() && null == currentRuleConfig) {
             throw new RequiredRuleMissedException("Sharding", schemaName);
         }
     }
@@ -57,7 +59,7 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
         return sqlStatement.getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
     }
     
-    private void checkToBeDroppedShardingTableNames(final String schemaName, final DropShardingTableRuleStatement sqlStatement, 
+    private void checkToBeDroppedShardingTableNames(final String schemaName, final DropShardingTableRuleStatement sqlStatement,
                                                     final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         if (sqlStatement.isContainsExistClause()) {
             return;
@@ -86,8 +88,20 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
     
     private Collection<String> getBindingTables(final ShardingRuleConfiguration shardingRuleConfig) {
         Collection<String> result = new LinkedHashSet<>();
+        if (shardingRuleConfig == null) {
+            return result;
+        }
         shardingRuleConfig.getBindingTableGroups().forEach(each -> result.addAll(Splitter.on(",").splitToList(each)));
         return result;
+    }
+    
+    @Override
+    public Collection<String> getExistingConfiguration(final DropShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        if (currentRuleConfig == null) {
+            return Collections.emptyList();
+        }
+        return getIdenticalData(currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()),
+                sqlStatement.getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toSet()));
     }
     
     @Override

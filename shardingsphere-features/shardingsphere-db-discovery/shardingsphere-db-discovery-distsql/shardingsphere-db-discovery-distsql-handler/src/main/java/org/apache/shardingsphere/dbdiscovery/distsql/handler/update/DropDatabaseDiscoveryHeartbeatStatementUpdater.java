@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -37,7 +38,7 @@ public final class DropDatabaseDiscoveryHeartbeatStatementUpdater implements Rul
     private static final String RULE_TYPE = "database discovery";
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropDatabaseDiscoveryHeartbeatStatement sqlStatement, 
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropDatabaseDiscoveryHeartbeatStatement sqlStatement,
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         String schemaName = shardingSphereMetaData.getName();
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
@@ -61,9 +62,20 @@ public final class DropDatabaseDiscoveryHeartbeatStatementUpdater implements Rul
     
     private void checkIsInUse(final String schemaName, final DropDatabaseDiscoveryHeartbeatStatement sqlStatement,
                               final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+        if (null == currentRuleConfig && sqlStatement.isContainsExistClause()) {
+            return;
+        }
         Collection<String> heartbeatInUse = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getDiscoveryHeartbeatName).collect(Collectors.toSet());
         Collection<String> invalid = sqlStatement.getHeartbeatNames().stream().filter(heartbeatInUse::contains).collect(Collectors.toList());
         DistSQLException.predictionThrow(invalid.isEmpty(), new RuleInUsedException(RULE_TYPE, schemaName, invalid));
+    }
+    
+    @Override
+    public Collection<String> getExistingConfiguration(final DropDatabaseDiscoveryHeartbeatStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+        if (currentRuleConfig == null) {
+            return Collections.emptyList();
+        }
+        return getIdenticalData(currentRuleConfig.getDiscoveryHeartbeats().keySet(), sqlStatement.getHeartbeatNames());
     }
     
     @Override

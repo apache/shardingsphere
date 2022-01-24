@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBindingTableRulesStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
@@ -53,6 +54,14 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
         Collection<String> bindingTableGroups = currentRuleConfig.getBindingTableGroups();
         Collection<String> notExistBindingGroup = sqlStatement.getBindingGroups().stream().filter(each -> !bindingTableGroups.contains(each)).collect(Collectors.toCollection(LinkedList::new));
         DistSQLException.predictionThrow(notExistBindingGroup.isEmpty(), new RequiredRuleMissedException("Binding", schemaName, notExistBindingGroup));
+    }
+    
+    @Override
+    public Collection<String> getExistingConfiguration(final DropShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        if (currentRuleConfig == null) {
+            return Collections.emptyList();
+        }
+        return getIdenticalData(currentRuleConfig.getBindingTableGroups(), sqlStatement.getBindingGroups());
     }
     
     @Override

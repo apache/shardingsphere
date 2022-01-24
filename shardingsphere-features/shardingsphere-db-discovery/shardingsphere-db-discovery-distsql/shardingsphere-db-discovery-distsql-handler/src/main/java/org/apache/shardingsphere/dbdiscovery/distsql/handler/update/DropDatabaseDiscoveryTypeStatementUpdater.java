@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -64,6 +65,14 @@ public final class DropDatabaseDiscoveryTypeStatementUpdater implements RuleDefi
         Collection<String> heartbeatInUse = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getDiscoveryTypeName).collect(Collectors.toSet());
         Collection<String> invalid = sqlStatement.getTypes().stream().filter(heartbeatInUse::contains).collect(Collectors.toList());
         DistSQLException.predictionThrow(invalid.isEmpty(), new RuleInUsedException(RULE_TYPE, schemaName, invalid));
+    }
+    
+    @Override
+    public Collection<String> getExistingConfiguration(final DropDatabaseDiscoveryTypeStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+        if (currentRuleConfig == null) {
+            return Collections.emptyList();
+        }
+        return getIdenticalData(currentRuleConfig.getDiscoveryTypes().keySet(), sqlStatement.getTypes());
     }
     
     @Override

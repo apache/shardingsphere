@@ -26,6 +26,7 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -59,6 +60,14 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
         if (!notExistedRuleNames.isEmpty()) {
             throw new RequiredRuleMissedException("Readwrite splitting", schemaName, sqlStatement.getRuleNames());
         }
+    }
+    
+    @Override
+    public Collection<String> getExistingConfiguration(final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+        if (currentRuleConfig == null) {
+            return Collections.emptyList();
+        }
+        return getIdenticalData(currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet()), sqlStatement.getRuleNames());
     }
     
     @Override
