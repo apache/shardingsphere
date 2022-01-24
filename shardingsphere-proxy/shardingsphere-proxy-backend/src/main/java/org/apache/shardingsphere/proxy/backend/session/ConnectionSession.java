@@ -57,7 +57,7 @@ public final class ConnectionSession {
     private final AtomicBoolean autoCommit = new AtomicBoolean(true);
 
     @Getter(AccessLevel.NONE)
-    private AtomicBoolean readOnly;
+    private AtomicBoolean readOnly = new AtomicBoolean(true);
 
     private TransactionIsolationLevel defaultIsolationLevel;
 
