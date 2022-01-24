@@ -35,7 +35,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Show instance executor.
@@ -54,6 +53,8 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     
     private static final String DISABLE = "disable";
     
+    private static final String LABELS = "labels";
+    
     private static final String ENABLE = "enable";
     
     @Override
@@ -62,7 +63,8 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
                 new QueryHeader("", "", ID, ID, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
                 new QueryHeader("", "", HOST, HOST, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
                 new QueryHeader("", "", PORT, PORT, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
-                new QueryHeader("", "", STATUS, STATUS, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false)
+                new QueryHeader("", "", STATUS, STATUS, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
+                new QueryHeader("", "", LABELS, LABELS, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false)
         );
     }
     
@@ -78,24 +80,26 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     private Collection<List<Object>> buildInstanceRows() {
         List<List<Object>> rows = new LinkedList<>();
         InstanceId instanceId = ProxyContext.getInstance().getContextManager().getInstanceContext().getInstance().getInstanceDefinition().getInstanceId();
-        rows.add(buildRow(instanceId.getId(), ENABLE));
+        rows.add(buildRow(instanceId.getId(), ENABLE, Collections.emptyList()));
         return rows;
     }
     
     private Collection<List<Object>> buildInstanceRows(final MetaDataPersistService persistService) {
         Collection<ComputeNodeInstance> instances = persistService.getComputeNodePersistService().loadAllComputeNodeInstances();
         if (!instances.isEmpty()) {
-            return instances.stream().filter(Objects::nonNull).map(each -> buildRow(each.getInstanceDefinition().getInstanceId().getId(), getStatus(each.getStatus())))
+            return instances.stream().filter(Objects::nonNull)
+                    .map(each -> buildRow(each.getInstanceDefinition().getInstanceId().getId(), getStatus(each.getStatus()), each.getLabels()))
                     .collect(Collectors.toCollection(LinkedList::new));
         }
         return Collections.emptyList();
     }
     
-    private List<Object> buildRow(final String instanceId, final String status) {
+    private List<Object> buildRow(final String instanceId, final String status, final Collection<String> labelCollection) {
         String[] splitInstanceId = instanceId.split(DELIMITER);
         String host = splitInstanceId[0];
         String port = splitInstanceId.length < 2 ? "" : splitInstanceId[1];
-        return Stream.of(instanceId, host, port, status).map(each -> (Object) each).collect(Collectors.toCollection(LinkedList::new));
+        String labels = null == labelCollection ? "" : String.join(",", labelCollection);
+        return new LinkedList<>(Arrays.asList(instanceId, host, port, status, labels));
     }
     
     private String getStatus(final Collection<String> computeNodeStatus) {
