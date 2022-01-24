@@ -71,8 +71,6 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     }
     
     private void buildTransientFieldNames() {
-        transientFieldNames.add("username");
-        transientFieldNames.add("password");
         transientFieldNames.add("running");
         transientFieldNames.add("poolName");
         transientFieldNames.add("registerMbeans");
