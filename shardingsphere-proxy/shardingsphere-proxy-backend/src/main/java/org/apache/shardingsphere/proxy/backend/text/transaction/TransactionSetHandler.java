@@ -43,7 +43,7 @@ public final class TransactionSetHandler implements TextProtocolBackendHandler {
     @Override
     public ResponseHeader execute() throws SQLException {
         if (null == sqlStatement.getScope() && connectionSession.getTransactionStatus().isInTransaction()) {
-            throw new SQLException("");
+            throw new SQLException("when in transaction, not support set transaction");
         }
         if (TransactionAccessType.READ_ONLY == sqlStatement.getAccessMode()) {
             connectionSession.setReadOnly(true);
