@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory;
 
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
@@ -33,12 +34,11 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
     
     private final BlockingQueue<Record> queue;
     
-    public SimpleMemoryPipelineChannel() {
-        this(10000);
-    }
+    private final AckCallback ackCallback;
     
-    public SimpleMemoryPipelineChannel(final int blockQueueSize) {
+    public SimpleMemoryPipelineChannel(final int blockQueueSize, final AckCallback ackCallback) {
         this.queue = new ArrayBlockingQueue<>(blockQueueSize);
+        this.ackCallback = ackCallback;
     }
     
     @Override
@@ -67,6 +67,7 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
     
     @Override
     public void ack(final List<Record> records) {
+        ackCallback.onAck(records);
     }
     
     @Override

@@ -45,8 +45,6 @@ public final class ContextManagerBuilderParameter {
     
     private final Properties props;
     
-    private final boolean isOverwrite;
-    
     private final Collection<String> labels;
     
     private final InstanceDefinition instanceDefinition;

@@ -45,7 +45,7 @@ public final class InventoryTaskTest {
     @BeforeClass
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfig();
-        taskConfig = new RuleAlteredJobContext(ResourceUtil.mockJobConfig()).getTaskConfigs().iterator().next();
+        taskConfig = new RuleAlteredJobContext(ResourceUtil.mockJobConfig()).getTaskConfig();
     }
     
     @Test(expected = IngestException.class)
