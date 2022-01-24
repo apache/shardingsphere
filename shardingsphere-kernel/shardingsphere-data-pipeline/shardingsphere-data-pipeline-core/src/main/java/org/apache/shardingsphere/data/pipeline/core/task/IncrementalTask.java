@@ -53,15 +53,13 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     @Getter
     private final String taskId;
     
-    private final PipelineChannelFactory pipelineChannelFactory;
-    
     private final ExecuteEngine incrementalDumperExecuteEngine;
     
     private final PipelineDataSourceManager dataSourceManager;
     
-    private final Dumper dumper;
-    
     private final PipelineChannel channel;
+    
+    private final Dumper dumper;
     
     private final Collection<Importer> importers;
     
@@ -70,16 +68,16 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     
     public IncrementalTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig,
             final PipelineChannelFactory pipelineChannelFactory, final ExecuteEngine incrementalDumperExecuteEngine) {
-        this.pipelineChannelFactory = pipelineChannelFactory;
         this.incrementalDumperExecuteEngine = incrementalDumperExecuteEngine;
-        dataSourceManager = new PipelineDataSourceManager();
+        PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
+        this.dataSourceManager = dataSourceManager;
         taskId = dumperConfig.getDataSourceName();
         progress = new IncrementalTaskProgress();
         IngestPosition<?> position = dumperConfig.getPosition();
         progress.setPosition(position);
-        channel = createChannel();
+        channel = createChannel(concurrency, pipelineChannelFactory, progress);
         dumper = DumperFactory.newInstanceLogDumper(dumperConfig, position);
-        importers = createImporters(concurrency, importerConfig);
+        importers = createImporters(concurrency, importerConfig, dataSourceManager);
         setupChannel();
     }
     
@@ -92,7 +90,7 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
         dataSourceManager.close();
     }
     
-    private Collection<Importer> createImporters(final int concurrency, final ImporterConfiguration importerConfig) {
+    private Collection<Importer> createImporters(final int concurrency, final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
         Collection<Importer> result = new ArrayList<>(concurrency);
         for (int i = 0; i < concurrency; i++) {
             result.add(ImporterFactory.newInstance(importerConfig, dataSourceManager));
@@ -100,8 +98,8 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
         return result;
     }
     
-    private PipelineChannel createChannel() {
-        return pipelineChannelFactory.createPipelineChannel(importers.size(), records -> {
+    private PipelineChannel createChannel(final int concurrency, final PipelineChannelFactory pipelineChannelFactory, final IncrementalTaskProgress progress) {
+        return pipelineChannelFactory.createPipelineChannel(concurrency, records -> {
             Record lastHandledRecord = records.get(records.size() - 1);
             if (!(lastHandledRecord.getPosition() instanceof PlaceholderPosition)) {
                 progress.setPosition(lastHandledRecord.getPosition());

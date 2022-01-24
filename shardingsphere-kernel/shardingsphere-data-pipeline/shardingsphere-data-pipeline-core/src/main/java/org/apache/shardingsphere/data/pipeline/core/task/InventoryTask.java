@@ -52,15 +52,13 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     @Getter
     private final String taskId;
     
-    private final PipelineChannelFactory pipelineChannelFactory;
-    
     private final ExecuteEngine importerExecuteEngine;
     
     private final PipelineDataSourceManager dataSourceManager;
     
-    private final Dumper dumper;
-    
     private final PipelineChannel channel;
+    
+    private final Dumper dumper;
     
     private final Importer importer;
     
@@ -68,12 +66,11 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     
     public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig,
                          final PipelineChannelFactory pipelineChannelFactory, final ExecuteEngine importerExecuteEngine) {
-        this.pipelineChannelFactory = pipelineChannelFactory;
         this.importerExecuteEngine = importerExecuteEngine;
         PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
         this.dataSourceManager = dataSourceManager;
         taskId = generateTaskId(inventoryDumperConfig);
-        channel = createChannel();
+        channel = createChannel(pipelineChannelFactory);
         dumper = DumperFactory.newInstanceJdbcDumper(inventoryDumperConfig, dataSourceManager);
         importer = ImporterFactory.newInstance(importerConfig, dataSourceManager);
         setupChannel();
@@ -106,7 +103,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
         dataSourceManager.close();
     }
     
-    private PipelineChannel createChannel() {
+    private PipelineChannel createChannel(final PipelineChannelFactory pipelineChannelFactory) {
         return pipelineChannelFactory.createPipelineChannel(1, records -> {
             // TODO find in reversed order
             Optional<Record> record = records.stream().filter(each -> !(each.getPosition() instanceof PlaceholderPosition)).reduce((a, b) -> b);
