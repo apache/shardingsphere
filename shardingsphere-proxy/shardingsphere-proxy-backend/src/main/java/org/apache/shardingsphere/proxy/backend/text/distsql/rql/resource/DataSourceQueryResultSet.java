@@ -27,9 +27,11 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -59,7 +61,10 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         resource = metaData.getResource();
-        dataSourcePropsMap = DataSourcePropertiesCreator.create(metaData.getResource().getDataSources());
+        dataSourcePropsMap = new LinkedHashMap<>(metaData.getResource().getDataSources().size(), 1);
+        for (Map.Entry<String, DataSource> entry : metaData.getResource().getDataSources().entrySet()) {
+            dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
+        }
         dataSourceNames = dataSourcePropsMap.keySet().iterator();
     }
     
