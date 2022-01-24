@@ -24,11 +24,11 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 import java.util.Properties;
 
 /**
- *  YAML resource configuration for ShardingSphere-Proxy.
+ * YAML data source configuration for ShardingSphere-Proxy.
  */
 @Getter
 @Setter
-public final class YamlProxyResourceConfiguration implements YamlConfiguration {
+public final class YamlProxyDataSourceConfiguration implements YamlConfiguration {
     
     private String url;
     

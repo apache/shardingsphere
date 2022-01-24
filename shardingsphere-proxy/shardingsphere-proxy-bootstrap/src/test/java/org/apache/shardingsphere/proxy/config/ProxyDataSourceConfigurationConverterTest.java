@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.config;
 
 import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.YamlProxyResourceConfiguration;
+import org.apache.shardingsphere.proxy.config.yaml.YamlProxyDataSourceConfiguration;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -32,15 +32,15 @@ public final class ProxyDataSourceConfigurationConverterTest {
     
     @Test
     public void assertGetResourceConfigurationMap() {
-        YamlProxyResourceConfiguration yamlResourceConfig0 = new YamlProxyResourceConfiguration();
+        YamlProxyDataSourceConfiguration yamlResourceConfig0 = new YamlProxyDataSourceConfiguration();
         yamlResourceConfig0.setUrl("jdbc:mysql://localhost:3306/ds_0");
         yamlResourceConfig0.setCustomPoolProps(getCustomPoolProperties());
         setYamlResourceConfigurationPropertyWithoutUrl(yamlResourceConfig0);
-        YamlProxyResourceConfiguration yamlResourceConfig1 = new YamlProxyResourceConfiguration();
+        YamlProxyDataSourceConfiguration yamlResourceConfig1 = new YamlProxyDataSourceConfiguration();
         yamlResourceConfig1.setUrl("jdbc:mysql://localhost:3306/ds_1");
         yamlResourceConfig1.setCustomPoolProps(getCustomPoolProperties());
         setYamlResourceConfigurationPropertyWithoutUrl(yamlResourceConfig1);
-        Map<String, YamlProxyResourceConfiguration> yamlResourceConfigs = new HashMap<>(2, 1);
+        Map<String, YamlProxyDataSourceConfiguration> yamlResourceConfigs = new HashMap<>(2, 1);
         yamlResourceConfigs.put("ds_0", yamlResourceConfig0);
         yamlResourceConfigs.put("ds_1", yamlResourceConfig1);
         Map<String, DataSourceConfiguration> actualResourceConfig = ProxyDataSourceConfigurationConverter.getDataSourceConfigurationMap(yamlResourceConfigs);
@@ -51,7 +51,7 @@ public final class ProxyDataSourceConfigurationConverterTest {
         assertResourceConfiguration(actualResourceConfig.get("ds_1"));
     }
     
-    private void setYamlResourceConfigurationPropertyWithoutUrl(final YamlProxyResourceConfiguration yamlResourceConfig) {
+    private void setYamlResourceConfigurationPropertyWithoutUrl(final YamlProxyDataSourceConfiguration yamlResourceConfig) {
         yamlResourceConfig.setUsername("root");
         yamlResourceConfig.setPassword("root");
         yamlResourceConfig.setConnectionTimeoutMilliseconds(30 * 1000L);

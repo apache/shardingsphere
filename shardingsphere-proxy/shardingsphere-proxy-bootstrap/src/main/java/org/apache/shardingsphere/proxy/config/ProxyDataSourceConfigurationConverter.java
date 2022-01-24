@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.PoolConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.YamlProxyResourceConfiguration;
+import org.apache.shardingsphere.proxy.config.yaml.YamlProxyDataSourceConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -41,12 +41,12 @@ public final class ProxyDataSourceConfigurationConverter {
      * @param yamlResourceConfigMap yaml resource configuration map
      * @return data source configuration map
      */
-    public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, YamlProxyResourceConfiguration> yamlResourceConfigMap) {
+    public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, YamlProxyDataSourceConfiguration> yamlResourceConfigMap) {
         return yamlResourceConfigMap.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private static DataSourceConfiguration createDataSourceConfiguration(final YamlProxyResourceConfiguration yamlConfig) {
+    private static DataSourceConfiguration createDataSourceConfiguration(final YamlProxyDataSourceConfiguration yamlConfig) {
         ConnectionConfiguration connectionConfig = new ConnectionConfiguration(yamlConfig.getUrl(), yamlConfig.getUsername(), yamlConfig.getPassword());
         PoolConfiguration poolConfig = new PoolConfiguration(yamlConfig.getConnectionTimeoutMilliseconds(), yamlConfig.getIdleTimeoutMilliseconds(), 
                 yamlConfig.getMaxLifetimeMilliseconds(), yamlConfig.getMaxPoolSize(), yamlConfig.getMinPoolSize(), yamlConfig.getReadOnly(), 
