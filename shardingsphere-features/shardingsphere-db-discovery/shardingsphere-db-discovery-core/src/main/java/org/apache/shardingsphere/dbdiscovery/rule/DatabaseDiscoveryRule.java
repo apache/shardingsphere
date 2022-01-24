@@ -81,7 +81,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     
     private DatabaseDiscoveryRule(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfigs,
                                   final Map<String, DatabaseDiscoveryHeartBeatConfiguration> heartBeatConfig, final Map<String, DatabaseDiscoveryType> discoveryTypes) {
-        Preconditions.checkState(!dataSourceMap.isEmpty(), "Data source can not be is empty.");
+        Preconditions.checkState(!dataSourceMap.isEmpty(), "Data source can not be empty.");
         this.discoveryTypes = discoveryTypes;
         dataSourceRules = getDataSourceRules(dataSourceRuleConfigs, heartBeatConfig);
         findMasterSlaveRelation(schemaName, dataSourceMap);
