@@ -19,7 +19,10 @@ package org.apache.shardingsphere.test.integration.cases.value;
 
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -53,9 +56,15 @@ public final class SQLValue {
                 return Double.parseDouble(value);
             case "numeric":
                 return value.contains("//.") ? Double.parseDouble(value) : Long.parseLong(value);
+            case "decimal":
+                return new BigDecimal(value);
             case "Date":
             case "datetime":
                 return new Date(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(value).getTime());
+            case "time":
+                return new Time(new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).parse(value).getTime());
+            case "timestamp":
+                return new Timestamp(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(value).getTime());
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support type: `%s`", type));
         }
