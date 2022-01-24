@@ -32,8 +32,8 @@ public final class TransactionUtil {
     /**
      * Get the value of type int according to TransactionIsolationLevel.
      *
-     * @param isolationLevel TransactionIsolationLevel type
-     * @return isolationLevel
+     * @param isolationLevel value of type TransactionIsolationLevel
+     * @return isolation level
      */
     public static int getTransactionIsolationLevel(final TransactionIsolationLevel isolationLevel) {
         switch (isolationLevel) {
@@ -53,8 +53,8 @@ public final class TransactionUtil {
     /**
      * Get the value of type TransactionIsolationLevel according to int.
      *
-     * @param isolationLevel int type
-     * @return isolationLevel
+     * @param isolationLevel value of type int
+     * @return isolation level
      */
     public static TransactionIsolationLevel getTransactionIsolationLevel(final int isolationLevel) {
         switch (isolationLevel) {

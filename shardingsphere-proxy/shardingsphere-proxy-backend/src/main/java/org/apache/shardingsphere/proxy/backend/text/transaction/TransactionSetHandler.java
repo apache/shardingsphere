@@ -46,7 +46,9 @@ public final class TransactionSetHandler implements TextProtocolBackendHandler {
             throw new SQLException("when in transaction, not support set transaction");
         }
         if (TransactionAccessType.READ_ONLY == sqlStatement.getAccessMode()) {
-            connectionSession.setReadOnly(true);
+            connectionSession.SetReadOnly(true);
+        } else if (TransactionAccessType.READ_WRITE == sqlStatement.getAccessMode()) {
+            connectionSession.SetReadOnly(false);
         }
         if (null != sqlStatement.getIsolationLevel()) {
             if (sqlStatement instanceof MySQLStatement) {
