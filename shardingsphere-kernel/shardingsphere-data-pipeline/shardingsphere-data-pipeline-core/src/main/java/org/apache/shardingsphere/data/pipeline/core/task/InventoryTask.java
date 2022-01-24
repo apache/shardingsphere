@@ -52,28 +52,28 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     @Getter
     private final String taskId;
     
-    private final InventoryDumperConfiguration inventoryDumperConfig;
-    
-    private final ImporterConfiguration importerConfig;
-    
-    private final PipelineChannelFactory pipelineChannelFactory;
-    
     private final ExecuteEngine importerExecuteEngine;
     
     private final PipelineDataSourceManager dataSourceManager;
     
-    private Dumper dumper;
+    private final PipelineChannel channel;
+    
+    private final Dumper dumper;
+    
+    private final Importer importer;
     
     private volatile IngestPosition<?> position;
     
     public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig,
                          final PipelineChannelFactory pipelineChannelFactory, final ExecuteEngine importerExecuteEngine) {
-        this.inventoryDumperConfig = inventoryDumperConfig;
-        this.importerConfig = importerConfig;
-        this.pipelineChannelFactory = pipelineChannelFactory;
         this.importerExecuteEngine = importerExecuteEngine;
-        this.dataSourceManager = new PipelineDataSourceManager();
+        PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
+        this.dataSourceManager = dataSourceManager;
         taskId = generateTaskId(inventoryDumperConfig);
+        channel = createChannel(pipelineChannelFactory);
+        dumper = DumperFactory.newInstanceJdbcDumper(inventoryDumperConfig, dataSourceManager);
+        importer = ImporterFactory.newInstance(importerConfig, dataSourceManager);
+        setupChannel();
         position = inventoryDumperConfig.getPosition();
     }
     
@@ -84,20 +84,17 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     
     @Override
     public void start() {
-        instanceDumper();
-        Importer importer = ImporterFactory.newInstance(importerConfig, dataSourceManager);
-        instanceChannel(importer);
         Future<?> future = importerExecuteEngine.submit(importer, new ExecuteCallback() {
             
             @Override
             public void onSuccess() {
-                log.info("importer onSuccess");
+                log.info("importer onSuccess, taskId={}", taskId);
             }
             
             @Override
             public void onFailure(final Throwable throwable) {
-                log.error("get an error when migrating the inventory data", throwable);
-                dumper.stop();
+                log.error("importer onFailure, taskId={}", taskId, throwable);
+                stop();
             }
         });
         dumper.start();
@@ -106,19 +103,13 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
         dataSourceManager.close();
     }
     
-    private void instanceDumper() {
-        dumper = DumperFactory.newInstanceJdbcDumper(inventoryDumperConfig, dataSourceManager);
-    }
-    
-    private void instanceChannel(final Importer importer) {
-        PipelineChannel channel = pipelineChannelFactory.createPipelineChannel(1, records -> {
+    private PipelineChannel createChannel(final PipelineChannelFactory pipelineChannelFactory) {
+        return pipelineChannelFactory.createPipelineChannel(1, records -> {
             Record lastNormalRecord = getLastNormalRecord(records);
             if (null != lastNormalRecord) {
                 position = lastNormalRecord.getPosition();
             }
         });
-        dumper.setChannel(channel);
-        importer.setChannel(channel);
     }
     
     private Record getLastNormalRecord(final List<Record> records) {
@@ -132,6 +123,11 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
         return null;
     }
     
+    private void setupChannel() {
+        dumper.setChannel(channel);
+        importer.setChannel(channel);
+    }
+    
     private void waitForResult(final Future<?> future) {
         try {
             future.get();
@@ -143,10 +139,10 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     
     @Override
     public void stop() {
-        if (null != dumper) {
-            dumper.stop();
-            dumper = null;
-        }
+        dumper.stop();
+        importer.stop();
+        channel.close();
+        dataSourceManager.close();
     }
     
     @Override
@@ -156,8 +152,6 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     
     @Override
     public void close() {
-        if (null != dataSourceManager) {
-            dataSourceManager.close();
-        }
+        dataSourceManager.close();
     }
 }

@@ -108,9 +108,6 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
             log.info("inventory dump done, round={}, maxUniqueKeyValue={}", round, maxUniqueKeyValue);
         } catch (final SQLException ex) {
             log.error("inventory dump, ex caught, msg={}", ex.getMessage());
-            stop();
-            // TODO channel.close() when job success too, e.g. InventoryTask/IncrementalTask?
-            channel.close();
             throw new IngestException(ex);
         } finally {
             log.info("inventory dump, before put FinishedRecord");
