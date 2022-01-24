@@ -38,7 +38,7 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.Dumper;
 import org.apache.shardingsphere.scaling.core.job.dumper.DumperFactory;
 import org.apache.shardingsphere.scaling.core.job.importer.ImporterFactory;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -105,10 +105,22 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     
     private PipelineChannel createChannel(final PipelineChannelFactory pipelineChannelFactory) {
         return pipelineChannelFactory.createPipelineChannel(1, records -> {
-            // TODO find in reversed order
-            Optional<Record> record = records.stream().filter(each -> !(each.getPosition() instanceof PlaceholderPosition)).reduce((a, b) -> b);
-            record.ifPresent(value -> position = value.getPosition());
+            Record lastNormalRecord = getLastNormalRecord(records);
+            if (null != lastNormalRecord) {
+                position = lastNormalRecord.getPosition();
+            }
         });
+    }
+    
+    private Record getLastNormalRecord(final List<Record> records) {
+        for (int index = records.size() - 1; index >= 0; index--) {
+            Record record = records.get(index);
+            if (record.getPosition() instanceof PlaceholderPosition) {
+                continue;
+            }
+            return record;
+        }
+        return null;
     }
     
     private void setupChannel() {
