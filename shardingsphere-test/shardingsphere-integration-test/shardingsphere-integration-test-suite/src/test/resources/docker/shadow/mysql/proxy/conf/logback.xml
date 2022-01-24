@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -14,8 +15,19 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<integration-test-cases>
-    <test-case sql="SHOW DATABASES" db-types="MySQL" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="show_databases.xml" />
-    </test-case>
-</integration-test-cases>
+
+<configuration>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="org.apache.shardingsphere" level="info" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+    
+    <root>
+        <level value="info" />
+        <appender-ref ref="console" />
+    </root>
+</configuration> 
