@@ -79,10 +79,9 @@ public final class BootstrapInitializer {
     
     private ContextManager createContextManager(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig, final int port) throws SQLException {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
-        boolean isOverwrite = null == modeConfig || modeConfig.isOverwrite();
         Map<String, Map<String, DataSource>> dataSourcesMap = getDataSourcesMap(proxyConfig.getSchemaResources());
         ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder().modeConfig(modeConfig).dataSourcesMap(dataSourcesMap).schemaRuleConfigs(proxyConfig.getSchemaRules())
-                .globalRuleConfigs(proxyConfig.getGlobalRules()).props(proxyConfig.getProps()).isOverwrite(isOverwrite).labels(proxyConfig.getLabels())
+                .globalRuleConfigs(proxyConfig.getGlobalRules()).props(proxyConfig.getProps()).labels(proxyConfig.getLabels())
                 .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, port)).build();
         return ContextManagerBuilderFactory.newInstance(modeConfig).build(parameter);
     }
