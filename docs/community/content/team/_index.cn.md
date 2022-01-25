@@ -53,6 +53,7 @@ chapter = true
 | Thanoshan MV | ThanoshanMV |
 | 兰城翔 | lanchengx   |
 | 杨肖   | yx9o        |
+| 唐国城 | totalo |
 
 ## 贡献者
 
