@@ -327,7 +327,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     public ASTNode visitShowTrafficRule(final ShowTrafficRuleContext ctx) {
         ShowTrafficRuleStatement result = new ShowTrafficRuleStatement();
         if (null != ctx.ruleName()) {
-            result.setTableName(getIdentifierValue(ctx.ruleName()));
+            result.setRuleName(getIdentifierValue(ctx.ruleName()));
         }
         return result;
     }

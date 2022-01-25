@@ -47,7 +47,7 @@ public class ShowTrafficRuleExecutorTest {
     @Test
     public void assertExecutor() throws SQLException {
         ShowTrafficRuleStatement showTrafficRuleStatement = new ShowTrafficRuleStatement();
-        showTrafficRuleStatement.setTableName("rule_name_1");
+        showTrafficRuleStatement.setRuleName("rule_name_1");
         ShowTrafficRuleExecutor executor = new ShowTrafficRuleExecutor(showTrafficRuleStatement);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(createTrafficRule());

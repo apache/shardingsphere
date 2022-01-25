@@ -69,7 +69,7 @@ public final class ShowTrafficRuleExecutor extends AbstractShowExecutor {
         Optional<TrafficRuleConfiguration> configuration = ProxyContext.getInstance().getContextManager().getMetaDataContexts()
                 .getGlobalRuleMetaData().findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
         Collection<List<Object>> rows = new LinkedList<>();
-        Optional<String> tableName = Optional.ofNullable(sqlStatement.getTableName());
+        Optional<String> tableName = Optional.ofNullable(sqlStatement.getRuleName());
         configuration.ifPresent(op -> {
             Map<String, ShardingSphereAlgorithmConfiguration> trafficAlgorithms = op.getTrafficAlgorithms();
             Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = op.getLoadBalancers();

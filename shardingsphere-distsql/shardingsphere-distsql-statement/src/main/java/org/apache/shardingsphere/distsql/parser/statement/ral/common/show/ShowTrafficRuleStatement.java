@@ -28,5 +28,5 @@ public final class ShowTrafficRuleStatement extends ShowDistSQLStatement {
     
     @Getter
     @Setter
-    private String tableName;
+    private String ruleName;
 }
