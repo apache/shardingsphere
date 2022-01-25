@@ -18,5 +18,5 @@
 
 <sql-cases>
     <sql-case id="unlock_table" value="unlock table" db-types="MySQL" />
-    <sql-case id="unlock_tables" value="unlock tables" db-types="SQLServer,PostgreSQL,openGauss" />
+    <sql-case id="unlock_tables" value="unlock tables" db-types="MySQL" />
 </sql-cases>
