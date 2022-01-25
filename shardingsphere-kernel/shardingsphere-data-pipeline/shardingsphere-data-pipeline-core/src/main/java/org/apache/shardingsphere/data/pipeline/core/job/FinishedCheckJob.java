@@ -30,7 +30,9 @@ import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLockAlgorithm
 import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLockAlgorithm;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingJobReleaseSchemaNameLockEvent;
 
 import java.util.List;
 import java.util.Map;
@@ -84,6 +86,8 @@ public final class FinishedCheckJob implements SimpleJob {
                     }
                 }
                 log.info("job {} finished", jobId);
+                ScalingJobReleaseSchemaNameLockEvent releaseSchemaNameLockEvent = new ScalingJobReleaseSchemaNameLockEvent(schemaName);
+                ShardingSphereEventBus.getInstance().post(releaseSchemaNameLockEvent);
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON

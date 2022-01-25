@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ClusterSwitchConfigurationEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationCachedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingJobReleaseSchemaNameLockEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.SchemaRulePersistService;
@@ -111,10 +112,6 @@ public final class ScalingRegistrySubscriber {
             log.info("start to delete cache, ruleCacheId={}", ruleCacheId);
             registryCacheManager.deleteCache(SchemaMetaDataNode.getRulePath(event.getTargetSchemaName()), ruleCacheId);
         }
-        if (schemaNameLockedMap.getOrDefault(decorateLockName(event.getTargetSchemaName()), false)) {
-            log.info("scaling job finished, release schema name lock, event = {}", event);
-            lockRegistryService.releaseLock(event.getTargetSchemaName());
-        }
     }
     
     /**
@@ -128,6 +125,20 @@ public final class ScalingRegistrySubscriber {
         log.info("clusterSwitchConfiguration, schemaName={}", schemaName);
         dataSourcePersistService.persist(schemaName, event.getTargetDataSourcePropertiesMap());
         persistService.persist(schemaName, event.getTargetRuleConfigs());
+    }
+    
+    /**
+     * scaling release lock.
+     *
+     * @param event Scaling Job Release Schema Name Lock Event
+     */
+    @Subscribe
+    public void scalingJobReleaseLockEvent(final ScalingJobReleaseSchemaNameLockEvent event) {
+        if (schemaNameLockedMap.getOrDefault(event.getSchemaName(), false)) {
+            log.info("scaling job finished, release schema name lock, event = {}", event);
+            lockRegistryService.releaseLock(decorateLockName(event.getSchemaName()));
+            schemaNameLockedMap.remove(event.getSchemaName());
+        }
     }
     
     private String decorateLockName(final String schemaName) {
