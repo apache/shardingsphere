@@ -36,7 +36,7 @@ public final class MGRDatabaseDiscoveryTypeFixture implements DatabaseDiscoveryT
     }
     
     @Override
-    public void checkDatabaseDiscoveryConfiguration(final String schemaName, final DataSource dataSource) {
+    public void checkDatabaseDiscoveryConfiguration(final String schemaName, final Map<String, DataSource> dataSourceMap) {
         
     }
     
