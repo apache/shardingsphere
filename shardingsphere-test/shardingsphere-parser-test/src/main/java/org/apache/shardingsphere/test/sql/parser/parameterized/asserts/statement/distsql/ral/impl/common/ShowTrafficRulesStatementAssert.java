@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTrafficRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowTrafficRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowTrafficRulesStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
  * Show traffic rule statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShowTrafficRuleStatementAssert {
+public final class ShowTrafficRulesStatementAssert {
     
     /**
      * Assert show traffic rule statement is correct with expected parser result.
@@ -41,7 +41,7 @@ public final class ShowTrafficRuleStatementAssert {
      * @param actual actual show traffic rule statement
      * @param expected expected show traffic rule statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTrafficRuleStatement actual, final ShowTrafficRuleStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTrafficRulesStatement actual, final ShowTrafficRulesStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
