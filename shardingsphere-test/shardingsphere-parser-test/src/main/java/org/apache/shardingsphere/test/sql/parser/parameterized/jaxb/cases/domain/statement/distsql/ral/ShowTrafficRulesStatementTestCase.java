@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Show traffic rule statement test case.
+ * Show traffic rules statement test case.
  */
 @Getter
 @Setter
