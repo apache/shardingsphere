@@ -171,9 +171,9 @@ public final class TableExtractor {
     }
     
     private SimpleTableSegment createSimpleTableSegment(final OwnerSegment ownerSegment) {
-        SimpleTableSegment simpleTable = new SimpleTableSegment(new TableNameSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier()));
-        ownerSegment.getOwner().ifPresent(simpleTable::setOwner);
-        return simpleTable;
+        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier()));
+        ownerSegment.getOwner().ifPresent(result::setOwner);
+        return result;
     }
     
     private void extractTablesFromOrderByItems(final Collection<OrderByItemSegment> orderByItems) {
