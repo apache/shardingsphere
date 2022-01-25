@@ -22,6 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfigura
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.SimpleMemoryPipelineChannel;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,7 +55,7 @@ public final class MySQLJdbcDumperTest {
     @Before
     public void setUp() {
         dataSourceManager = new PipelineDataSourceManager();
-        mysqlJdbcDumper = new MySQLInventoryDumper(mockInventoryDumperConfiguration(), dataSourceManager);
+        mysqlJdbcDumper = new MySQLInventoryDumper(mockInventoryDumperConfiguration(), dataSourceManager, new SimpleMemoryPipelineChannel(100));
     }
     
     private InventoryDumperConfiguration mockInventoryDumperConfiguration() {

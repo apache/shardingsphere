@@ -625,4 +625,11 @@
     <test-case sql="SELECT order_id_sharding AS order_id, user_id, status FROM t_order_federate_sharding WHERE order_id_sharding = ? UNION ALL SELECT order_id, user_id, status FROM t_order_item_federate_sharding WHERE user_id = ?" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,tbl">
         <assertion parameters="1010:int, 10:int" expected-data-file="select_multi_sharding_table_with_union_all.xml"/>
     </test-case>
+
+    <!--  TODO add value case for shadow -->
+    <test-case sql="SELECT order_id, user_id, order_name, type_decimal, type_cher, type_date, type_time, type_timestamp FROM t_order WHERE user_id = ?" db-types="MySQL,PostgreSQL" scenario-types="shadow">
+        <assertion parameters="1:int" expected-data-file="pro_select_order_by_user_id.xml"/>
+        <assertion parameters="0:int" expected-data-file="shadow_select_order_by_user_id.xml"/>
+    </test-case>
+
 </integration-test-cases>

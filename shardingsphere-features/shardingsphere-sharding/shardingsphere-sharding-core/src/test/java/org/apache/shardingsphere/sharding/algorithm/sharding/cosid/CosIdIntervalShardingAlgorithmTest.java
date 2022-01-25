@@ -74,10 +74,10 @@ public final class CosIdIntervalShardingAlgorithmTest {
         properties.setProperty(CosIdIntervalShardingAlgorithm.SHARDING_SUFFIX_FORMAT_KEY, SUFFIX_FORMATTER_STRING);
         properties.setProperty(CosIdIntervalShardingAlgorithm.INTERVAL_UNIT_KEY, "MONTHS");
         properties.setProperty(CosIdIntervalShardingAlgorithm.INTERVAL_AMOUNT_KEY, "1");
-        CosIdIntervalShardingAlgorithm shardingAlgorithm = new CosIdIntervalShardingAlgorithm();
-        shardingAlgorithm.setProps(properties);
-        shardingAlgorithm.init();
-        return shardingAlgorithm;
+        CosIdIntervalShardingAlgorithm result = new CosIdIntervalShardingAlgorithm();
+        result.setProps(properties);
+        result.init();
+        return result;
     }
     
     static Iterable<Object[]> preciseArgsProvider(final Function<LocalDateTime, ? extends Comparable<?>> datetimeConvert) {
@@ -158,7 +158,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
     static Iterable<Object[]> rangeArgsProviderAsTimestamp() {
         return rangeArgsProvider(ldt -> ldt.toInstant(ZONE_OFFSET_SHANGHAI).toEpochMilli());
     }
-
+    
     @RunWith(Parameterized.class)
     public static class LocalDateTimePreciseValueDoShardingTest {
         
@@ -190,7 +190,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
             assertThat(actual, is(expected));
         }
     }
-
+    
     @RunWith(Parameterized.class)
     public static class LocalDateTimeRangeValueDoShardingTest {
         
@@ -222,7 +222,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
             assertThat(actual, is(expected));
         }
     }
-
+    
     @RunWith(Parameterized.class)
     public static class StringPreciseValueDoShardingTest {
         
@@ -254,7 +254,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
             assertThat(actual, is(expected));
         }
     }
-
+    
     @RunWith(Parameterized.class)
     public static class StringRangeValueDoShardingTest {
         
@@ -286,7 +286,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
             assertThat(actual, is(expected));
         }
     }
-
+    
     @RunWith(Parameterized.class)
     public static class DatePreciseValueDoShardingTest {
         
@@ -318,7 +318,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
             assertThat(actual, is(expected));
         }
     }
-
+    
     @RunWith(Parameterized.class)
     public static class DateRangeValueDoShardingTest {
         
@@ -350,7 +350,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
             assertThat(actual, is(expected));
         }
     }
-
+    
     @RunWith(Parameterized.class)
     public static class TimestampPreciseValueDoShardingTest {
         
@@ -382,7 +382,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
             assertThat(actual, is(expected));
         }
     }
-
+    
     @RunWith(Parameterized.class)
     public static class TimestampRangeValueDoShardingTest {
         

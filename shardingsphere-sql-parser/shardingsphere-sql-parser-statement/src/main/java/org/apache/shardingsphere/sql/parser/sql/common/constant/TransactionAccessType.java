@@ -15,38 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config.yaml;
+package org.apache.shardingsphere.sql.parser.sql.common.constant;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
-
-import java.util.Properties;
+import lombok.RequiredArgsConstructor;
 
 /**
- *  YAML resource configuration for ShardingSphere-Proxy.
+ * Transaction access type enum.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlProxyResourceConfiguration implements YamlConfiguration {
-    
-    private String url;
-    
-    private String username;
-    
-    private String password;
-    
-    private Long connectionTimeoutMilliseconds;
-    
-    private Long idleTimeoutMilliseconds;
-    
-    private Long maxLifetimeMilliseconds;
-    
-    private Integer maxPoolSize;
-    
-    private Integer minPoolSize;
-    
-    private Boolean readOnly;
-    
-    private Properties customPoolProps;
+public enum TransactionAccessType {
+
+    READ_ONLY("READ_ONLY"),
+    READ_WRITE("READ_WRITE");
+
+    private final String accessType;
 }
