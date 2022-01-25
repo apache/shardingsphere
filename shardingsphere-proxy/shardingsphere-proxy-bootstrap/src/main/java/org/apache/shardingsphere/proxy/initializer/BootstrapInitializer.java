@@ -43,7 +43,7 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.ProxySchemaConfiguration;
+import org.apache.shardingsphere.infra.config.SchemaConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
@@ -90,17 +90,17 @@ public final class BootstrapInitializer {
     }
     
     // TODO add DataSourceConfiguration param to ContextManagerBuilder to avoid re-build data source
-    private Map<String, Map<String, DataSource>> getDataSourcesMap(final Map<String, ProxySchemaConfiguration> schemaConfigMap) {
+    private Map<String, Map<String, DataSource>> getDataSourcesMap(final Map<String, SchemaConfiguration> schemaConfigMap) {
         Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(schemaConfigMap.size(), 1);
-        for (Entry<String, ProxySchemaConfiguration> entry : schemaConfigMap.entrySet()) {
+        for (Entry<String, SchemaConfiguration> entry : schemaConfigMap.entrySet()) {
             result.put(entry.getKey(), DataSourcePoolCreator.create(createDataSourcePropertiesMap(entry.getValue().getDataSources())));
         }
         return result;
     }
     
-    private Map<String, Collection<RuleConfiguration>> getSchemaRuleConfigurations(final Map<String, ProxySchemaConfiguration> schemaConfigMap) {
+    private Map<String, Collection<RuleConfiguration>> getSchemaRuleConfigurations(final Map<String, SchemaConfiguration> schemaConfigMap) {
         Map<String, Collection<RuleConfiguration>> result = new LinkedHashMap<>(schemaConfigMap.size(), 1);
-        for (Entry<String, ProxySchemaConfiguration> entry : schemaConfigMap.entrySet()) {
+        for (Entry<String, SchemaConfiguration> entry : schemaConfigMap.entrySet()) {
             result.put(entry.getKey(), entry.getValue().getRules());
         }
         return result;
