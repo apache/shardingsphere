@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfigura
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
@@ -32,7 +33,6 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecuti
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
-import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterListener;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.Dumper;
 import org.apache.shardingsphere.scaling.core.job.dumper.DumperFactory;
@@ -40,7 +40,6 @@ import org.apache.shardingsphere.scaling.core.job.importer.ImporterFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -54,71 +53,66 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     @Getter
     private final String taskId;
     
-    // TODO put in `output` config and ImporterConfiguration. Why is it just needed for incremental task but not inventory task.
-    private final int concurrency;
-    
-    private final DumperConfiguration dumperConfig;
-    
-    private final ImporterConfiguration importerConfig;
-    
-    private final PipelineChannelFactory pipelineChannelFactory;
-    
     private final ExecuteEngine incrementalDumperExecuteEngine;
     
     private final PipelineDataSourceManager dataSourceManager;
     
-    private Dumper dumper;
+    private final PipelineChannel channel;
+    
+    private final Dumper dumper;
+    
+    private final Collection<Importer> importers;
     
     @Getter
     private final IncrementalTaskProgress progress;
     
     public IncrementalTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig,
             final PipelineChannelFactory pipelineChannelFactory, final ExecuteEngine incrementalDumperExecuteEngine) {
-        this.concurrency = concurrency;
-        this.dumperConfig = dumperConfig;
-        this.importerConfig = importerConfig;
-        this.pipelineChannelFactory = pipelineChannelFactory;
         this.incrementalDumperExecuteEngine = incrementalDumperExecuteEngine;
-        dataSourceManager = new PipelineDataSourceManager();
+        PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
+        this.dataSourceManager = dataSourceManager;
         taskId = dumperConfig.getDataSourceName();
         progress = new IncrementalTaskProgress();
-        progress.setPosition(dumperConfig.getPosition());
+        IngestPosition<?> position = dumperConfig.getPosition();
+        progress.setPosition(position);
+        channel = createChannel(concurrency, pipelineChannelFactory, progress);
+        dumper = DumperFactory.newInstanceLogDumper(dumperConfig, position);
+        importers = createImporters(concurrency, importerConfig, dataSourceManager);
+        setupChannel();
     }
     
     @Override
     public void start() {
         progress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
-        dumper = DumperFactory.newInstanceLogDumper(dumperConfig, progress.getPosition());
-        Collection<Importer> importers = instanceImporters();
-        instanceChannel(importers);
         Future<?> future = incrementalDumperExecuteEngine.submitAll(importers, getExecuteCallback());
         dumper.start();
         waitForResult(future);
         dataSourceManager.close();
     }
     
-    private List<Importer> instanceImporters() {
-        List<Importer> result = new ArrayList<>(concurrency);
+    private Collection<Importer> createImporters(final int concurrency, final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
+        Collection<Importer> result = new ArrayList<>(concurrency);
         for (int i = 0; i < concurrency; i++) {
             result.add(ImporterFactory.newInstance(importerConfig, dataSourceManager));
         }
         return result;
     }
     
-    private void instanceChannel(final Collection<Importer> importers) {
-        PipelineChannel channel = pipelineChannelFactory.createPipelineChannel(importers.size(), records -> {
+    private PipelineChannel createChannel(final int concurrency, final PipelineChannelFactory pipelineChannelFactory, final IncrementalTaskProgress progress) {
+        return pipelineChannelFactory.createPipelineChannel(concurrency, records -> {
             Record lastHandledRecord = records.get(records.size() - 1);
             if (!(lastHandledRecord.getPosition() instanceof PlaceholderPosition)) {
                 progress.setPosition(lastHandledRecord.getPosition());
                 progress.getIncrementalTaskDelay().setLastEventTimestamps(lastHandledRecord.getCommitTime());
             }
+            progress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
         });
+    }
+    
+    private void setupChannel() {
         dumper.setChannel(channel);
-        // TODO merge logic into AckCallback after PipelineChannel.ack refactoring, and then remove ImporterListener
-        ImporterListener importerListener = records -> progress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
         for (Importer each : importers) {
             each.setChannel(channel);
-            each.setImporterListener(importerListener);
         }
     }
     
@@ -127,12 +121,13 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
             
             @Override
             public void onSuccess() {
+                log.info("importer onSuccess, taskId={}", taskId);
             }
             
             @Override
             public void onFailure(final Throwable throwable) {
-                log.error("get an error when migrating the increment data", throwable);
-                dumper.stop();
+                log.error("importer onFailure, taskId={}", taskId, throwable);
+                stop();
             }
         };
     }
@@ -148,9 +143,11 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     
     @Override
     public void stop() {
-        if (null != dumper) {
-            dumper.stop();
-            dumper = null;
+        dumper.stop();
+        for (Importer each : importers) {
+            each.stop();
         }
+        channel.close();
+        dataSourceManager.close();
     }
 }

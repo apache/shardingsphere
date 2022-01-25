@@ -22,6 +22,7 @@ import org.apache.shardingsphere.example.generator.scenario.framework.FrameworkE
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -42,8 +43,11 @@ public final class ExampleScenarioFactory {
     
     private Collection<FeatureExampleScenario> getFeatureScenarios(final String feature) {
         Collection<FeatureExampleScenario> result = new LinkedList<>();
+        if (null == feature) {
+            return result;
+        }
         for (FeatureExampleScenario each : ServiceLoader.load(FeatureExampleScenario.class)) {
-            if (each.getType().contains(feature)) {
+            if (feature.contains(each.getType())) {
                 result.add(each);
             }
         }
@@ -86,10 +90,39 @@ public final class ExampleScenarioFactory {
     public Map<String, String> getResourceTemplateMap() {
         Map<String, String> result = new HashMap<>();
         for (FeatureExampleScenario each : featureScenarios) {
-            result.putAll(each.getJavaClassTemplateMap());
+            result.putAll(each.getResourceTemplateMap());
         }
         result.putAll(frameworkScenario.getResourceTemplateMap());
         result.put("resources/logback.ftl", "logback.xml");
+        return result;
+    }
+    
+    /**
+     * Get java class paths.
+     *
+     * @return java class paths
+     */
+    public Collection<String> getJavaClassPaths() {
+        Collection<String> result = new HashSet<>();
+        for (FeatureExampleScenario each : featureScenarios) {
+            result.addAll(each.getJavaClassPaths());
+        }
+        result.addAll(frameworkScenario.getJavaClassPaths());
+        result.add("entity");
+        return result;
+    }
+    
+    /**
+     * Get resource paths.
+     *
+     * @return resource paths
+     */
+    public Collection<String> getResourcePaths() {
+        Collection<String> result = new HashSet<>();
+        for (FeatureExampleScenario each : featureScenarios) {
+            result.addAll(each.getResourcePaths());
+        }
+        result.addAll(frameworkScenario.getResourcePaths());
         return result;
     }
 }

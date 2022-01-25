@@ -46,10 +46,10 @@ public final class CosIdModShardingAlgorithmTest {
         Properties properties = new Properties();
         properties.setProperty(CosIdAlgorithm.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX);
         properties.setProperty(CosIdModShardingAlgorithm.MODULO_KEY, String.valueOf(DIVISOR));
-        CosIdModShardingAlgorithm<Long> shardingAlgorithm = new CosIdModShardingAlgorithm<>();
-        shardingAlgorithm.setProps(properties);
-        shardingAlgorithm.init();
-        return shardingAlgorithm;
+        CosIdModShardingAlgorithm<Long> result = new CosIdModShardingAlgorithm<>();
+        result.setProps(properties);
+        result.init();
+        return result;
     }
     
     @RunWith(Parameterized.class)

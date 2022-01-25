@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.infra.datasource.props;
 
+import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.infra.datasource.config.ConnectionConfiguration;
+import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.datasource.config.PoolConfiguration;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
@@ -25,21 +29,37 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class DataSourcePropertiesCreatorTest {
     
     @Test
-    public void assertCreateMap() {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
-        dataSourceMap.put("foo_ds", createDataSource());
-        Map<String, DataSourceProperties> actual = DataSourcePropertiesCreator.create(dataSourceMap);
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get("foo_ds"), is(new DataSourceProperties(MockedDataSource.class.getName(), createProperties())));
+    public void assertCreateWithDataSourceConfiguration() {
+        assertParameter(DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), createResourceConfiguration()));
+    }
+    
+    private DataSourceConfiguration createResourceConfiguration() {
+        ConnectionConfiguration connectionConfig = new ConnectionConfiguration("jdbc:mysql://localhost:3306/demo_ds", "root", "root");
+        PoolConfiguration poolConfig = new PoolConfiguration(null, null, null, null, null, null, null);
+        return new DataSourceConfiguration(connectionConfig, poolConfig);
+    }
+    
+    private void assertParameter(final DataSourceProperties actual) {
+        Map<String, Object> props = actual.getAllLocalProperties();
+        assertThat(props.size(), is(9));
+        assertThat(props.get("jdbcUrl"), is("jdbc:mysql://localhost:3306/demo_ds"));
+        assertThat(props.get("username"), is("root"));
+        assertThat(props.get("password"), is("root"));
+        assertNull(props.get("maximumPoolSize"));
+        assertNull(props.get("minimumIdle"));
+        assertNull(props.get("connectionTimeout"));
+        assertNull(props.get("idleTimeout"));
+        assertNull(props.get("maxLifetime"));
     }
     
     @Test
-    public void assertCreate() {
+    public void assertCreateWithDataSource() {
         assertThat(DataSourcePropertiesCreator.create(createDataSource()), is(new DataSourceProperties(MockedDataSource.class.getName(), createProperties())));
     }
     

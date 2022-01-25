@@ -268,14 +268,17 @@
         <simple-table name="tableName" start-index="5" stop-index="13" />
         <column-wild name="u%" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="18" />
     </describe>
+    
     <describe sql-case-id="explain_table">
-        <table>
+        <select>
             <simple-table name="t_order" start-index="14" stop-index="20" />
-            <column name="order_id" start-index="31" stop-index="38"/>
-            <limit literal-start-index="40" literal-stop-index="55">
+            <order-by>
+                <column-item name="order_id" start-index="31" stop-index="38" />
+            </order-by>
+            <limit start-index="40" stop-index="55">
                 <offset value="2" literal-start-index="55" literal-stop-index="55" />
-                <row-count value="1" literal-start-index="46" literal-stop-index="46" />
+                <row-count value="1" start-index="46" stop-index="46"/>
             </limit>
-        </table>
+        </select>
     </describe>
 </sql-parser-test-cases>

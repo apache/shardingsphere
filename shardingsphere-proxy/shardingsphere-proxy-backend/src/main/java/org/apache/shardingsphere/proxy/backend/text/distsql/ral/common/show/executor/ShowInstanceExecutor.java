@@ -78,10 +78,10 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     }
     
     private Collection<List<Object>> buildInstanceRows() {
-        List<List<Object>> rows = new LinkedList<>();
+        List<List<Object>> result = new LinkedList<>();
         InstanceId instanceId = ProxyContext.getInstance().getContextManager().getInstanceContext().getInstance().getInstanceDefinition().getInstanceId();
-        rows.add(buildRow(instanceId.getId(), ENABLE, Collections.emptyList()));
-        return rows;
+        result.add(buildRow(instanceId.getId(), ENABLE, Collections.emptyList()));
+        return result;
     }
     
     private Collection<List<Object>> buildInstanceRows(final MetaDataPersistService persistService) {

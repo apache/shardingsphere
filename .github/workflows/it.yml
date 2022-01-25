@@ -73,7 +73,7 @@ jobs:
         env: [ docker ]
         adapter: [ proxy, jdbc ]
         database: [ MySQL, PostgreSQL ]
-        scenario: [ db, tbl, encrypt, readwrite_splitting ]
+        scenario: [ db, tbl, encrypt, readwrite_splitting, shadow ]
     steps:
       - name: Cache Maven Repos
         uses: actions/cache@v2

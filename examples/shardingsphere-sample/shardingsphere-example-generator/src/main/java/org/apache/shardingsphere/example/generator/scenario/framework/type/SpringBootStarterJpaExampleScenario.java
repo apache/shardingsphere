@@ -19,7 +19,10 @@ package org.apache.shardingsphere.example.generator.scenario.framework.type;
 
 import org.apache.shardingsphere.example.generator.scenario.framework.FrameworkExampleScenario;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -41,6 +44,18 @@ public final class SpringBootStarterJpaExampleScenario implements FrameworkExamp
         Map<String, String> result = new HashMap<>(1, 1);
         result.put("resources/properties/application.ftl", "application.properties");
         return result;
+    }
+    
+    @Override
+    public Collection<String> getJavaClassPaths() {
+        Collection<String> result = new HashSet<>();
+        result.add("repository");
+        return result;
+    }
+    
+    @Override
+    public Collection<String> getResourcePaths() {
+        return Collections.emptySet();
     }
     
     @Override
