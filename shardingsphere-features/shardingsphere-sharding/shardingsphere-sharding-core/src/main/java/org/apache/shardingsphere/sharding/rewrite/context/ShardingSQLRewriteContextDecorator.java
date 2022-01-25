@@ -43,7 +43,8 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
             return;
         }
         if (!sqlRewriteContext.getParameters().isEmpty()) {
-            Collection<ParameterRewriter> parameterRewriters = new ShardingParameterRewriterBuilder(shardingRule, routeContext).getParameterRewriters(sqlRewriteContext.getSchema());
+            Collection<ParameterRewriter> parameterRewriters = new ShardingParameterRewriterBuilder(shardingRule, 
+                    routeContext, sqlRewriteContext.getSchema(), sqlRewriteContext.getSqlStatementContext()).getParameterRewriters();
             rewriteParameters(sqlRewriteContext, parameterRewriters);
         }
         sqlRewriteContext.addSQLTokenGenerators(new ShardingTokenGenerateBuilder(shardingRule, routeContext, sqlRewriteContext.getSqlStatementContext()).getSQLTokenGenerators());
@@ -52,9 +53,7 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void rewriteParameters(final SQLRewriteContext sqlRewriteContext, final Collection<ParameterRewriter> parameterRewriters) {
         for (ParameterRewriter each : parameterRewriters) {
-            if (each.isNeedRewrite(sqlRewriteContext.getSqlStatementContext())) {
-                each.rewrite(sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters());
-            }
+            each.rewrite(sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters());
         }
     }
     

@@ -38,7 +38,8 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
     @Override
     public void decorate(final EncryptRule encryptRule, final ConfigurationProperties props, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
         if (!sqlRewriteContext.getParameters().isEmpty()) {
-            Collection<ParameterRewriter> parameterRewriters = new EncryptParameterRewriterBuilder(encryptRule).getParameterRewriters(sqlRewriteContext.getSchema());
+            Collection<ParameterRewriter> parameterRewriters = new EncryptParameterRewriterBuilder(encryptRule, 
+                    sqlRewriteContext.getSchema(), sqlRewriteContext.getSqlStatementContext()).getParameterRewriters();
             rewriteParameters(sqlRewriteContext, parameterRewriters);
         }
         encryptRule.setUpEncryptorSchema(sqlRewriteContext.getSchema());
@@ -48,9 +49,7 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void rewriteParameters(final SQLRewriteContext sqlRewriteContext, final Collection<ParameterRewriter> parameterRewriters) {
         for (ParameterRewriter each : parameterRewriters) {
-            if (each.isNeedRewrite(sqlRewriteContext.getSqlStatementContext())) {
-                each.rewrite(sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters());
-            }
+            each.rewrite(sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters());
         }
     }
     
