@@ -19,4 +19,5 @@
 <sql-parser-test-cases>
     <unlock sql-case-id="unlock_table" />
     <unlock sql-case-id="unlock_tables" />
+    <unlock sql-case-id="unlock_instance" />
 </sql-parser-test-cases>
