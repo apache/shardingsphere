@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.importer;
+package org.apache.shardingsphere.data.pipeline.core.ingest.channel;
 
-import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+
+import java.util.List;
 
 /**
- * Importer.
+ * Empty implementation of record acknowledged callback.
  */
-public interface Importer extends LifecycleExecutor {
+public final class EmptyAckCallback implements AckCallback {
     
-    /**
-     * Write data to channel.
-     */
-    void write();
+    @Override
+    public void onAck(final List<Record> records) {
+    }
 }

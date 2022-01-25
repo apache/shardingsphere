@@ -20,13 +20,14 @@ package org.apache.shardingsphere.proxy.config.yaml.swapper;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
+import org.apache.shardingsphere.infra.config.SchemaConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxySchemaConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
@@ -43,7 +44,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -62,11 +62,10 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void assertSchemaDataSources(final ProxyConfiguration proxyConfig) {
-        Map<String, Map<String, DataSourceConfiguration>> schemaDataSourceConfigs = proxyConfig.getSchemaResources();
-        assertNotNull(schemaDataSourceConfigs);
-        assertThat(schemaDataSourceConfigs.size(), is(1));
-        assertTrue(schemaDataSourceConfigs.containsKey("yamlProxyRule1"));
-        DataSourceConfiguration dataSourceConfig = schemaDataSourceConfigs.get("yamlProxyRule1").get("ds1");
+        Map<String, SchemaConfiguration> schemaConfigs = proxyConfig.getSchemaConfigurations();
+        assertThat(schemaConfigs.size(), is(1));
+        assertTrue(schemaConfigs.containsKey("yamlProxyRule1"));
+        DataSourceConfiguration dataSourceConfig = schemaConfigs.get("yamlProxyRule1").getDataSources().get("ds1");
         assertThat(dataSourceConfig.getConnection().getUrl(), is("url1"));
         assertThat(dataSourceConfig.getConnection().getUsername(), is("username1"));
         assertThat(dataSourceConfig.getConnection().getPassword(), is("password1"));
@@ -79,20 +78,15 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void assertSchemaRules(final ProxyConfiguration proxyConfig) {
-        Map<String, Collection<RuleConfiguration>> schemaRules = proxyConfig.getSchemaRules();
-        assertNotNull(schemaRules);
-        assertThat(schemaRules.size(), is(1));
-        Collection<RuleConfiguration> ruleConfigs = schemaRules.get("yamlProxyRule1");
-        assertNotNull(ruleConfigs);
+        Map<String, SchemaConfiguration> schemaConfigs = proxyConfig.getSchemaConfigurations();
+        assertThat(schemaConfigs.size(), is(1));
+        Collection<RuleConfiguration> ruleConfigs = schemaConfigs.get("yamlProxyRule1").getRules();
         assertThat(ruleConfigs.size(), is(1));
-        RuleConfiguration ruleConfig = ruleConfigs.iterator().next();
-        assertNotNull(ruleConfig);
-        assertThat(ruleConfig, instanceOf(ReadwriteSplittingRuleConfiguration.class));
+        assertThat(ruleConfigs.iterator().next(), instanceOf(ReadwriteSplittingRuleConfiguration.class));
     }
     
     private void assertProxyConfigurationProps(final ProxyConfiguration proxyConfig) {
         Properties proxyConfigurationProps = proxyConfig.getProps();
-        assertNotNull(proxyConfigurationProps);
         assertThat(proxyConfigurationProps.size(), is(1));
         assertThat(proxyConfigurationProps.getProperty("key4"), is("value4"));
     }

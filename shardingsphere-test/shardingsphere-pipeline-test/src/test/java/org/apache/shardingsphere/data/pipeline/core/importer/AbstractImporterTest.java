@@ -88,14 +88,13 @@ public final class AbstractImporterTest {
     
     @Before
     public void setUp() throws SQLException {
-        jdbcImporter = new AbstractImporter(mockImporterConfiguration(), dataSourceManager) {
+        jdbcImporter = new AbstractImporter(mockImporterConfiguration(), dataSourceManager, channel) {
             
             @Override
             protected PipelineSQLBuilder createSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
                 return pipelineSqlBuilder;
             }
         };
-        jdbcImporter.setChannel(channel);
         when(dataSourceManager.getDataSource(dataSourceConfig)).thenReturn(dataSource);
         when(dataSource.getConnection()).thenReturn(connection);
     }

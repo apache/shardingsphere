@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest;
 
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
@@ -62,15 +61,15 @@ public final class OpenGaussWalDumper extends AbstractLifecycleExecutor implemen
     
     private String slotName = OpenGaussLogicalReplication.SLOT_NAME_PREFIX;
     
-    @Setter
-    private PipelineChannel channel;
+    private final PipelineChannel channel;
     
-    public OpenGaussWalDumper(final DumperConfiguration dumperConfig, final IngestPosition<WalPosition> position) {
+    public OpenGaussWalDumper(final DumperConfiguration dumperConfig, final IngestPosition<WalPosition> position, final PipelineChannel channel) {
         walPosition = (WalPosition) position;
         if (!StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass())) {
             throw new UnsupportedOperationException("PostgreSQLWalDumper only support PipelineDataSourceConfiguration");
         }
         this.dumperConfig = dumperConfig;
+        this.channel = channel;
         walEventConverter = new WalEventConverter(dumperConfig);
     }
     

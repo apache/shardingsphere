@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.fixture;
+package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractIncrementalDumper;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
 
-public final class FixtureIncrementalDumper extends AbstractIncrementalDumper<FinishedPosition> {
+/**
+ * Abstract incremental dumper.
+ *
+ * @param <P> generic type of {@linkplain IngestPosition}
+ */
+public abstract class AbstractIncrementalDumper<P> extends AbstractLifecycleExecutor implements IncrementalDumper {
     
-    public FixtureIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<FinishedPosition> position, final PipelineChannel channel) {
-        super(dumperConfig, position, channel);
-    }
-    
-    @Override
-    public void start() {
-    }
-    
-    @Override
-    public void stop() {
+    public AbstractIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<P> position, final PipelineChannel channel) {
     }
 }

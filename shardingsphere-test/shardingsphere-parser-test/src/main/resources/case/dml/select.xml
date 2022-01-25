@@ -3948,4 +3948,92 @@
             <expression-projection text="position('a' in binary 'hello')" start-index="40" stop-index="70" />
         </projections>
     </select>
+
+    <select sql-case-id="select_with_schema_name_in_shorthand_projection" parameters="1, 1">
+        <from>
+            <simple-table name="t_order" start-index="34" stop-index="40" />
+        </from>
+        <projections start-index="7" stop-index="27">
+            <shorthand-projection start-index="7" stop-index="27">
+                <owner name="t_order" start-index="19" stop-index="25">
+                    <owner name="sharding_db" start-index="7" stop-index="17" />
+                </owner>
+            </shorthand-projection>
+        </projections>
+        <where start-index="42" stop-index="75">
+            <expr>
+                <binary-operation-expression start-index="48" stop-index="75">
+                    <left>
+                        <binary-operation-expression start-index="48" stop-index="58">
+                            <left>
+                                <column name="user_id" start-index="48" stop-index="54" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="58" stop-index="58" />
+                                <parameter-marker-expression parameter-index="0" start-index="58" stop-index="58" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="64" stop-index="75">
+                            <left>
+                                <column name="order_id" start-index="64" stop-index="71" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="75" stop-index="75" />
+                                <parameter-marker-expression parameter-index="1" start-index="75" stop-index="75" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_schema_name_in_column_projection" parameters="1, 1">
+        <from>
+            <simple-table name="t_order" start-index="41" stop-index="47" />
+        </from>
+        <projections start-index="7" stop-index="34">
+            <column-projection name="order_id" start-index="7" stop-index="34">
+                <owner name="t_order" start-index="19" stop-index="25">
+                    <owner name="sharding_db" start-index="7" stop-index="17" />
+                </owner>
+            </column-projection>
+        </projections>
+        <where start-index="49" stop-index="82">
+            <expr>
+                <binary-operation-expression start-index="55" stop-index="82">
+                    <left>
+                        <binary-operation-expression start-index="55" stop-index="65">
+                            <left>
+                                <column name="user_id" start-index="55" stop-index="61" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="65" stop-index="65" />
+                                <parameter-marker-expression parameter-index="0" start-index="65" stop-index="65" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="71" stop-index="82">
+                            <left>
+                                <column name="order_id" start-index="71" stop-index="78" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="82" stop-index="82" />
+                                <parameter-marker-expression parameter-index="1" start-index="82" stop-index="82" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

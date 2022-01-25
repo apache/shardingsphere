@@ -15,17 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.importer;
+package org.apache.shardingsphere.infra.config;
 
-import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
- * Importer.
+ * Schema configuration.
  */
-public interface Importer extends LifecycleExecutor {
+@RequiredArgsConstructor
+@Getter
+public final class SchemaConfiguration {
     
-    /**
-     * Write data to channel.
-     */
-    void write();
+    private final Map<String, DataSourceConfiguration> dataSources;
+    
+    private final Collection<RuleConfiguration> rules;
 }

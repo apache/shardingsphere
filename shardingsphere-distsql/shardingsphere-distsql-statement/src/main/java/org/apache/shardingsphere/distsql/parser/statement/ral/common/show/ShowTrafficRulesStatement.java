@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.importer;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.show;
 
-import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
 
 /**
- * Importer.
+ * Show traffic rules statement.
  */
-public interface Importer extends LifecycleExecutor {
+public final class ShowTrafficRulesStatement extends ShowDistSQLStatement {
     
-    /**
-     * Write data to channel.
-     */
-    void write();
+    @Getter
+    @Setter
+    private String ruleName;
 }

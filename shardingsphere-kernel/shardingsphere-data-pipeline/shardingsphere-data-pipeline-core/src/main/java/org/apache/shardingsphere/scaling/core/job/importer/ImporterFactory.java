@@ -21,10 +21,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
+
+import java.lang.reflect.Constructor;
 
 /**
  * Importer factory.
@@ -33,27 +36,18 @@ import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 public final class ImporterFactory {
     
     /**
-     * New instance of importer.
+     * Create importer.
      *
-     * @param importerConfig rdbms configuration
-     * @param dataSourceManager data source factory
-     * @return importer
-     */
-    public static Importer newInstance(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
-        return newInstance(importerConfig.getDataSourceConfig().getDatabaseType().getName(), importerConfig, dataSourceManager);
-    }
-    
-    /**
-     * New instance of importer.
-     *
-     * @param databaseType database type
-     * @param importerConfig rdbms configuration
-     * @param dataSourceManager data source factory
+     * @param importerConfig importer configuration
+     * @param dataSourceManager data source manager
+     * @param channel channel
      * @return importer
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static Importer newInstance(final String databaseType, final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
+    public static Importer createImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
+        String databaseType = importerConfig.getDataSourceConfig().getDatabaseType().getName();
         ScalingEntry scalingEntry = ScalingEntryLoader.getInstance(databaseType);
-        return scalingEntry.getImporterClass().getConstructor(ImporterConfiguration.class, PipelineDataSourceManager.class).newInstance(importerConfig, dataSourceManager);
+        Constructor<? extends Importer> constructor = scalingEntry.getImporterClass().getConstructor(ImporterConfiguration.class, PipelineDataSourceManager.class, PipelineChannel.class);
+        return constructor.newInstance(importerConfig, dataSourceManager, channel);
     }
 }

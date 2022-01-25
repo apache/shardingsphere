@@ -76,9 +76,8 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
         IngestPosition<?> position = dumperConfig.getPosition();
         progress.setPosition(position);
         channel = createChannel(concurrency, pipelineChannelFactory, progress);
-        dumper = DumperFactory.newInstanceLogDumper(dumperConfig, position);
-        importers = createImporters(concurrency, importerConfig, dataSourceManager);
-        setupChannel();
+        dumper = DumperFactory.createIncrementalDumper(dumperConfig, position, channel);
+        importers = createImporters(concurrency, importerConfig, dataSourceManager, channel);
     }
     
     @Override
@@ -90,10 +89,10 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
         dataSourceManager.close();
     }
     
-    private Collection<Importer> createImporters(final int concurrency, final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
+    private Collection<Importer> createImporters(final int concurrency, final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
         Collection<Importer> result = new ArrayList<>(concurrency);
         for (int i = 0; i < concurrency; i++) {
-            result.add(ImporterFactory.newInstance(importerConfig, dataSourceManager));
+            result.add(ImporterFactory.createImporter(importerConfig, dataSourceManager, channel));
         }
         return result;
     }
@@ -107,13 +106,6 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
             }
             progress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
         });
-    }
-    
-    private void setupChannel() {
-        dumper.setChannel(channel);
-        for (Importer each : importers) {
-            each.setChannel(channel);
-        }
     }
     
     private ExecuteCallback getExecuteCallback() {

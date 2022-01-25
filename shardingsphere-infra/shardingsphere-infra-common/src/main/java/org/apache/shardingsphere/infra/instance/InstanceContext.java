@@ -69,6 +69,15 @@ public final class InstanceContext {
     }
     
     /**
+     * Update instance label.
+     * 
+     * @param labels collection of label
+     */
+    public void updateLabel(final Collection<String> labels) {
+        instance.setLabels(labels);
+    }
+    
+    /**
      * Get worker id.
      *
      * @return worker id

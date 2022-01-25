@@ -799,7 +799,6 @@
     <sql-case id="create_by_mysql_source_test_case751" value="CREATE TRIGGER tr3_bi BEFORE INSERT ON t1 FOR EACH ROW FOLLOWS tr2_bi SET @a:=3" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case752" value="CREATE TRIGGER tr3_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=3" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case753" value="CREATE TRIGGER tr3_bi BEFORE INSERT ON t1 FOR EACH ROW SET @a:=3" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case754" value="CREATE TRIGGER trg1 AFTER INSERT ON table1 FOR EACH ROW INSERT INTO table2 SELECT t.notable.*" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case755" value="CREATE TRIGGER trg1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN DECLARE a CHAR; SELECT &apos;ab&apos; INTO a; SELECT &apos;ab&apos; INTO a; SELECT &apos;a&apos; INTO a; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case756" value="CREATE TRIGGER trg1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN DECLARE trg1 CHAR; SELECT &apos;ab&apos; INTO trg1; END" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case757" value="CREATE TRIGGER trg1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN DECLARE var INT DEFAULT row_count(); GET DIAGNOSTICS @var1 = ROW_COUNT; SET @var2 = var; END" db-types="MySQL"/>
@@ -2367,10 +2366,6 @@
     <sql-case id="select_by_mysql_source_test_case887" value="select @test_int,@test_double,@test_string,@test_string2,@select" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case888" value="select AES_ENCRYPT(@ENCSTR, @KEYS, @IV)=AES_ENCRYPT(@ENCSTR, @KEYS, @IV1)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case889" value="select HEX(0x19c9bbcce9e0a88f5212572b0c5b9e6d0 | _binary 0x13c19e5cfdf03b19518cbe3d65faf10d2), HEX(0x19c9bbcce9e0a88f5212572b0c5b9e6d0 ^ _binary 0x13c19e5cfdf03b19518cbe3d65faf10d2), HEX(0x19c9bbcce9e0a88f5212572b0c5b9e6d0 &amp; _binary 0x13c19e5cfdf03b19518cbe3d65faf10d2), HEX(~ _binary 0x19c9bbcce9e0a88f5212572b0c5b9e6d0), HEX(~ _binary 0x13c19e5cfdf03b19518cbe3d65faf10d2)" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case890" value="select MYSQLTEST.T1.* from MYSQLTEST.T1" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case891" value="select MYSQLTEST.T1.* from T1" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case892" value="select MYSQLTEST.t1.* from MYSQLTEST.t1" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case893" value="select MYSQLTEST.t1.* from MYSQLTEST.t1" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case894" value="select NOT NOT TRUE, NOT NOT NOT FALSE" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case895" value="select POSITION(_latin1&apos;B&apos; COLLATE latin1_bin IN _latin1&apos;abcd&apos;)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case896" value="select POSITION(_latin1&apos;B&apos; COLLATE latin1_general_ci IN _latin1&apos;abcd&apos; COLLATE latin1_bin)" db-types="MySQL"/>
@@ -2550,7 +2545,6 @@
     <sql-case id="select_by_mysql_source_test_case1070" value="select myfunc_double(3 AS three)" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case1071" value="select myfunc_double(abs(3 AS wrong))" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case1072" value="select myfunc_double(abs(3) AS named_param)" db-types="MySQL"/>
-    <sql-case id="select_by_mysql_source_test_case1073" value="select mysqltest.t1.* from MYSQLTEST.t1" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case1074" value="select mysqltest1.bug18444(i) from t3" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case1075" value="select mysqltest_db.f1()" db-types="MySQL"/>
     <sql-case id="select_by_mysql_source_test_case1076" value="select mysqltest_db.f_does_not_exist()" db-types="MySQL"/>

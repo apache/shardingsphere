@@ -71,9 +71,8 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
         this.dataSourceManager = dataSourceManager;
         taskId = generateTaskId(inventoryDumperConfig);
         channel = createChannel(pipelineChannelFactory);
-        dumper = DumperFactory.newInstanceJdbcDumper(inventoryDumperConfig, dataSourceManager);
-        importer = ImporterFactory.newInstance(importerConfig, dataSourceManager);
-        setupChannel();
+        dumper = DumperFactory.createInventoryDumper(inventoryDumperConfig, dataSourceManager, channel);
+        importer = ImporterFactory.createImporter(importerConfig, dataSourceManager, channel);
         position = inventoryDumperConfig.getPosition();
     }
     
@@ -121,11 +120,6 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
             return record;
         }
         return null;
-    }
-    
-    private void setupChannel() {
-        dumper.setChannel(channel);
-        importer.setChannel(channel);
     }
     
     private void waitForResult(final Future<?> future) {

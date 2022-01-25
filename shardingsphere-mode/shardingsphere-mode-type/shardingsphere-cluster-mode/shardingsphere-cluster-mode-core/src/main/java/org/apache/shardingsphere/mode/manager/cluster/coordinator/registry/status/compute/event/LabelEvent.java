@@ -15,17 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.importer;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
 
-import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+
+import java.util.Collection;
 
 /**
- * Importer.
+ * Label changed event.
  */
-public interface Importer extends LifecycleExecutor {
+@RequiredArgsConstructor
+@Getter
+public class LabelEvent implements GovernanceEvent {
     
-    /**
-     * Write data to channel.
-     */
-    void write();
+    private final String instanceId;
+    
+    private final Collection<String> labels;
 }
