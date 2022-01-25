@@ -42,7 +42,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ShowTrafficRuleExecutorTest {
+public class ShowTrafficRulesExecutorTest {
     
     @Test
     public void assertExecutor() throws SQLException {
