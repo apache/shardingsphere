@@ -127,7 +127,7 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
         }
     }
     
-    private void checkDataSourceExistGroupMember(String datasourceName, DataSource dataSource, final Collection<String> memberDataSourceURLs) throws SQLException {
+    private void checkDataSourceExistGroupMember(final String datasourceName, final DataSource dataSource, final Collection<String> memberDataSourceURLs) throws SQLException {
         boolean exist = false;
         for (String each : memberDataSourceURLs) {
             if (dataSource.getConnection().getMetaData().getURL().contains(each)) {
