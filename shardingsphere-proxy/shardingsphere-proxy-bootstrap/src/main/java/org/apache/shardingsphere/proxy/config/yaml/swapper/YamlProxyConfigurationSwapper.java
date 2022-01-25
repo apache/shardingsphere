@@ -53,7 +53,7 @@ public final class YamlProxyConfigurationSwapper {
         }
         Collection<RuleConfiguration> globalRules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules());
         Properties props = yamlConfig.getServerConfiguration().getProps();
-        return new ProxyConfiguration(schemaDataSourceConfigs, schemaConfigs, schemaConfigurations, globalRules, props, yamlConfig.getServerConfiguration().getLabels());
+        return new ProxyConfiguration(schemaConfigurations, globalRules, props, yamlConfig.getServerConfiguration().getLabels());
     }
     
     private Map<String, Collection<RuleConfiguration>> getSchemaConfigurations(final Map<String, YamlProxySchemaConfiguration> yamlSchemaConfigs) {
