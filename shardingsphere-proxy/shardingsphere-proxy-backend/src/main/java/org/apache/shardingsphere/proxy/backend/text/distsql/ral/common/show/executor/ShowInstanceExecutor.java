@@ -94,11 +94,11 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
         return Collections.emptyList();
     }
     
-    private List<Object> buildRow(final String instanceId, final String status, final Collection<String> labelCollection) {
+    private List<Object> buildRow(final String instanceId, final String status, final Collection<String> instanceLabels) {
         String[] splitInstanceId = instanceId.split(DELIMITER);
         String host = splitInstanceId[0];
         String port = splitInstanceId.length < 2 ? "" : splitInstanceId[1];
-        String labels = null == labelCollection ? "" : String.join(",", labelCollection);
+        String labels = null == instanceLabels ? "" : String.join(",", instanceLabels);
         return new LinkedList<>(Arrays.asList(instanceId, host, port, status, labels));
     }
     
