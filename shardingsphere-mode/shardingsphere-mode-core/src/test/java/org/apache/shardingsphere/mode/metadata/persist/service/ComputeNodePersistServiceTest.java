@@ -38,7 +38,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ComputeNodePersistServiceTest {
+public final class ComputeNodePersistServiceTest {
 
     @Mock
     private PersistRepository repository;
@@ -105,5 +105,4 @@ public class ComputeNodePersistServiceTest {
         ComputeNodeInstance actual = new ComputeNodePersistService(repository).loadComputeNodeInstance(instanceDefinition);
         assertThat(actual.getInstanceDefinition(), is(instanceDefinition));
     }
-
 }
