@@ -22,6 +22,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoaderEngine;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
@@ -29,12 +30,14 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.util.TableMetaDat
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -59,20 +62,38 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
     }
     
     @Override
-    public TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final EncryptRule encryptRule) {
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        return encryptTable.map(optional ->
-                new TableMetaData(tableName, getEncryptColumnMetaDataList(optional, tableMetaData.getColumns().values()), tableMetaData.getIndexes().values())).orElse(tableMetaData);
+    public Map<String, TableMetaData> decorate(final Map<String, TableMetaData> tableMetaDataMap, final EncryptRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+        Map<String, TableMetaData> result = new LinkedHashMap<>();
+        for (Entry<String, TableMetaData> entry : tableMetaDataMap.entrySet()) {
+            result.put(entry.getKey(), decorate(entry.getKey(), entry.getValue(), rule, getDataTypeMap(materials)));
+        }
+        return result;
     }
     
-    private Collection<ColumnMetaData> getEncryptColumnMetaDataList(final EncryptTable encryptTable, final Collection<ColumnMetaData> originalColumnMetaDataList) {
+    private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final EncryptRule encryptRule, final Map<String, Integer> dataTypeMap) {
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        return encryptTable.map(optional ->
+                new TableMetaData(tableName, getEncryptColumnMetaDataList(optional, tableMetaData.getColumns().values(), dataTypeMap), tableMetaData.getIndexes().values())).orElse(tableMetaData);
+    }
+    
+    private Map<String, Integer> getDataTypeMap(final SchemaBuilderMaterials materials) throws SQLException {
+        Map<String, Integer> result = new LinkedHashMap<>();
+        Optional<DataSource> dataSource = materials.getDataSourceMap().values().stream().findAny();
+        if (dataSource.isPresent()) {
+            result.putAll(DataTypeLoader.load(dataSource.get().getConnection().getMetaData()));
+        }
+        return result;
+    }
+    
+    private Collection<ColumnMetaData> getEncryptColumnMetaDataList(final EncryptTable encryptTable, final Collection<ColumnMetaData> originalColumnMetaDataList, 
+                                                                    final Map<String, Integer> dataTypeMap) {
         Collection<ColumnMetaData> result = new LinkedList<>();
         Collection<String> plainColumns = encryptTable.getPlainColumns();
         Collection<String> assistedQueryColumns = encryptTable.getAssistedQueryColumns();
         for (ColumnMetaData each : originalColumnMetaDataList) {
             String columnName = each.getName();
             if (encryptTable.isCipherColumn(columnName)) {
-                result.add(createColumnMetaData(encryptTable.getLogicColumn(columnName), each, encryptTable));
+                result.add(createColumnMetaData(encryptTable.getLogicColumn(columnName), each, encryptTable, dataTypeMap));
                 continue;
             }
             if (!plainColumns.contains(columnName) && !assistedQueryColumns.contains(columnName)) {
@@ -82,11 +103,11 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
         return result;
     }
     
-    private ColumnMetaData createColumnMetaData(final String columnName, final ColumnMetaData columnMetaData, final EncryptTable encryptTable) {
+    private ColumnMetaData createColumnMetaData(final String columnName, final ColumnMetaData columnMetaData, final EncryptTable encryptTable, final Map<String, Integer> dataTypeMap) {
         Optional<EncryptColumn> encryptColumn = encryptTable.findEncryptColumn(columnName);
         if (encryptColumn.isPresent() && null != encryptColumn.get().getLogicDataType() && !encryptColumn.get().getLogicDataType().isEmpty()) {
-            // TODO get config data type.
-            return new ColumnMetaData(columnName, 0, columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(), columnMetaData.isCaseSensitive());
+            return new ColumnMetaData(columnName, dataTypeMap.getOrDefault(encryptColumn.get().getDataTypeName(), columnMetaData.getDataType()), 
+                    columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(), columnMetaData.isCaseSensitive());
         }
         return new ColumnMetaData(columnName, columnMetaData.getDataType(), columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(), columnMetaData.isCaseSensitive());
     }

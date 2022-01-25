@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -57,7 +58,15 @@ public final class SingleTableMetaDataBuilder implements RuleBasedTableMetaDataB
     }
     
     @Override
-    public TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final SingleTableRule rule) {
+    public Map<String, TableMetaData> decorate(final Map<String, TableMetaData> tableMetaDataMap, final SingleTableRule rule, final SchemaBuilderMaterials materials) {
+        Map<String, TableMetaData> result = new LinkedHashMap<>();
+        for (Entry<String, TableMetaData> entry : tableMetaDataMap.entrySet()) {
+            result.put(entry.getKey(), decorate(entry.getKey(), entry.getValue(), rule));
+        }
+        return result;
+    }
+    
+    private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final SingleTableRule rule) {
         return rule.getTables().contains(tableName) ? new TableMetaData(tableName, tableMetaData.getColumns().values(), getIndex(tableMetaData)) : tableMetaData;
     }
     

@@ -20,6 +20,8 @@ package org.apache.shardingsphere.encrypt.rule;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class EncryptColumnTest {
     
@@ -31,5 +33,12 @@ public final class EncryptColumnTest {
     @Test
     public void assertGetPlainColumn() {
         assertTrue(new EncryptColumn(null, "cipherColumn", null, "assistedQueryColumn", null, "plainColumn", null, "encryptorName").getPlainColumn().isPresent());
+    }
+    
+    @Test
+    public void assertGetDataTypeName() {
+        assertThat(new EncryptColumn("BIT(5)", null, null, null, null, null, null, null).getDataTypeName(), is("bit"));
+        assertThat(new EncryptColumn("TINYINT(5) UNSIGNED ZEROFILL", null, null, null, null, null, null, null).getDataTypeName(), is("tinyint"));
+        assertThat(new EncryptColumn("DATE", null, null, null, null, null, null, null).getDataTypeName(), is("date"));
     }
 }
