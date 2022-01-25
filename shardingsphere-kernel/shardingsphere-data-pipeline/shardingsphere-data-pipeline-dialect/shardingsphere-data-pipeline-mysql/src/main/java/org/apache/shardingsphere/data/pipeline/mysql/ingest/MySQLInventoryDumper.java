@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.mysql.ingest;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractInventoryDumper;
 
@@ -35,8 +36,8 @@ public final class MySQLInventoryDumper extends AbstractInventoryDumper {
     
     private static final String YEAR_DATA_TYPE = "YEAR";
     
-    public MySQLInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineDataSourceManager dataSourceManager) {
-        super(inventoryDumperConfig, dataSourceManager);
+    public MySQLInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
+        super(inventoryDumperConfig, dataSourceManager, channel);
         Properties queryProps = new Properties();
         queryProps.setProperty("yearIsDateType", Boolean.FALSE.toString());
         inventoryDumperConfig.getDataSourceConfig().appendJDBCQueryProperties(queryProps);

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
@@ -67,10 +66,9 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     
     private final TableMetaData tableMetaData;
     
-    @Setter
-    private PipelineChannel channel;
+    private final PipelineChannel channel;
     
-    protected AbstractInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineDataSourceManager dataSourceManager) {
+    protected AbstractInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
         if (!StandardPipelineDataSourceConfiguration.class.equals(inventoryDumperConfig.getDataSourceConfig().getClass())) {
             throw new UnsupportedOperationException("AbstractInventoryDumper only support StandardPipelineDataSourceConfiguration");
         }
@@ -78,6 +76,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         this.batchSize = inventoryDumperConfig.getBatchSize();
         this.rateLimitAlgorithm = inventoryDumperConfig.getRateLimitAlgorithm();
         this.dataSourceManager = dataSourceManager;
+        this.channel = channel;
         tableMetaData = createTableMetaData();
     }
     

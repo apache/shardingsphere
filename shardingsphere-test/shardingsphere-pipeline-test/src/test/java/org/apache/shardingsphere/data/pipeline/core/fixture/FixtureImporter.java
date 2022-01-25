@@ -24,11 +24,7 @@ import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 
 public final class FixtureImporter implements Importer {
     
-    public FixtureImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
-    }
-    
-    @Override
-    public void setChannel(final PipelineChannel channel) {
+    public FixtureImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
     }
     
     @Override

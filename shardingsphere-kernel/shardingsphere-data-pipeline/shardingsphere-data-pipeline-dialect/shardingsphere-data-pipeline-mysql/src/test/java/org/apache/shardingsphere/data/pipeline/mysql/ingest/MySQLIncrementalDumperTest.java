@@ -60,9 +60,8 @@ public final class MySQLIncrementalDumperTest {
     public void setUp() {
         DumperConfiguration dumperConfig = mockDumperConfiguration();
         initTableData(dumperConfig);
-        channel = new MultiplexMemoryPipelineChannel(records -> { });
-        incrementalDumper = new MySQLIncrementalDumper(dumperConfig, new BinlogPosition("binlog-000001", 4L));
-        incrementalDumper.setChannel(channel);
+        channel = new MultiplexMemoryPipelineChannel();
+        incrementalDumper = new MySQLIncrementalDumper(dumperConfig, new BinlogPosition("binlog-000001", 4L), channel);
     }
     
     private DumperConfiguration mockDumperConfiguration() {

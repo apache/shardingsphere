@@ -69,10 +69,8 @@ public final class PostgreSQLWalDumperTest {
     @Before
     public void setUp() {
         position = new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)));
-        walDumper = new PostgreSQLWalDumper(mockDumperConfiguration(), position);
-        channel = new MultiplexMemoryPipelineChannel(records -> {
-        });
-        walDumper.setChannel(channel);
+        channel = new MultiplexMemoryPipelineChannel();
+        walDumper = new PostgreSQLWalDumper(mockDumperConfiguration(), position, channel);
     }
     
     private DumperConfiguration mockDumperConfiguration() {
