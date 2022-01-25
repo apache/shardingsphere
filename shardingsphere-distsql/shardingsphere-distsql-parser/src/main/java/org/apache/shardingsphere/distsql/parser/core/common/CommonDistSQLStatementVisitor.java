@@ -51,7 +51,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowSingleTableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowSingleTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowTableMetadataContext;
-import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowTrafficRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowTrafficRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowTransactionRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowVariableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.SqlParserRuleDefinitionContext;
@@ -71,7 +71,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowIn
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTableMetadataStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTrafficRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
@@ -324,8 +324,8 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     }
     
     @Override
-    public ASTNode visitShowTrafficRule(final ShowTrafficRuleContext ctx) {
-        ShowTrafficRuleStatement result = new ShowTrafficRuleStatement();
+    public ASTNode visitShowTrafficRules(final ShowTrafficRulesContext ctx) {
+        ShowTrafficRulesStatement result = new ShowTrafficRulesStatement();
         if (null != ctx.ruleName()) {
             result.setRuleName(getIdentifierValue(ctx.ruleName()));
         }

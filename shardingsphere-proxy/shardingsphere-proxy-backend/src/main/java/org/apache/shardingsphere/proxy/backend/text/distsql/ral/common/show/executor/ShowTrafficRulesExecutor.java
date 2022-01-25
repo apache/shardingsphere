@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTrafficRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
@@ -51,7 +51,7 @@ public final class ShowTrafficRulesExecutor extends AbstractShowExecutor {
     
     private static final String LOAD_BALANCER_PROPS = "load_balancer_props";
     
-    private final ShowTrafficRuleStatement sqlStatement;
+    private final ShowTrafficRulesStatement sqlStatement;
     
     @Override
     protected List<QueryHeader> createQueryHeaders() {

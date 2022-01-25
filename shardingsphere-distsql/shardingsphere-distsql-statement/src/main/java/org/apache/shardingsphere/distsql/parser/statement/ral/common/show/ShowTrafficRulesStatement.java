@@ -24,7 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQL
 /**
  * Show traffic rule statement.
  */
-public final class ShowTrafficRuleStatement extends ShowDistSQLStatement {
+public final class ShowTrafficRulesStatement extends ShowDistSQLStatement {
     
     @Getter
     @Setter

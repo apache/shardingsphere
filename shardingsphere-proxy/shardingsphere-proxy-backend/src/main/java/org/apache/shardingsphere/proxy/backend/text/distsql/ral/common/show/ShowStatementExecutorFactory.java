@@ -24,7 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowIn
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTableMetadataStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTrafficRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -83,8 +83,8 @@ public final class ShowStatementExecutorFactory {
         if (sqlStatement instanceof ShowInstanceModeStatement) {
             return new ShowInstanceModeExecutor();
         }
-        if (sqlStatement instanceof ShowTrafficRuleStatement) {
-            return new ShowTrafficRulesExecutor((ShowTrafficRuleStatement) sqlStatement);
+        if (sqlStatement instanceof ShowTrafficRulesStatement) {
+            return new ShowTrafficRulesExecutor((ShowTrafficRulesStatement) sqlStatement);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }

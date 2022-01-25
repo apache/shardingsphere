@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTrafficRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -46,7 +46,7 @@ public class ShowTrafficRuleExecutorTest {
     
     @Test
     public void assertExecutor() throws SQLException {
-        ShowTrafficRuleStatement showTrafficRuleStatement = new ShowTrafficRuleStatement();
+        ShowTrafficRulesStatement showTrafficRuleStatement = new ShowTrafficRulesStatement();
         showTrafficRuleStatement.setRuleName("rule_name_1");
         ShowTrafficRulesExecutor executor = new ShowTrafficRulesExecutor(showTrafficRuleStatement);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);

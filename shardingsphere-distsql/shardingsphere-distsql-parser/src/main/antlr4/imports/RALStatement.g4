@@ -79,7 +79,7 @@ showInstanceMode
     : SHOW INSTANCE MODE
     ;
 
-showTrafficRule
+showTrafficRules
     : SHOW TRAFFIC (RULES | RULE ruleName)
     ;
 

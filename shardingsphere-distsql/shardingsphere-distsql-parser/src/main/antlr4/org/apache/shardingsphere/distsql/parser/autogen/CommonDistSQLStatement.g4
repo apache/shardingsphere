@@ -45,6 +45,6 @@ execute
     | showAuthorityRule
     | showTransactionRule
     | alterTransactionRule
-    | showTrafficRule
+    | showTrafficRules
     ) SEMI?
     ;
