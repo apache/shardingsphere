@@ -19,18 +19,21 @@ package org.apache.shardingsphere.proxy.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.SchemaConfiguration;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
-import java.util.Map;
+import java.util.Collection;
+import java.util.Properties;
 
 /**
- * Proxy configuration.
+ * Proxy global configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ProxyConfiguration {
+public final class ProxyGlobalConfiguration {
     
-    private final Map<String, SchemaConfiguration> schemaConfigurations;
+    private final Collection<RuleConfiguration> rules;
     
-    private final ProxyGlobalConfiguration globalConfiguration;
+    private final Properties properties;
+    
+    private final Collection<String> labels;
 }

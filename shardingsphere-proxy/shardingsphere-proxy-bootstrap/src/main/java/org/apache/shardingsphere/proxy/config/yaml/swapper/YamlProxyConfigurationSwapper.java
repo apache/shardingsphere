@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.datasource.config.PoolConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.infra.config.SchemaConfiguration;
+import org.apache.shardingsphere.proxy.config.ProxyGlobalConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxySchemaConfiguration;
@@ -55,7 +56,7 @@ public final class YamlProxyConfigurationSwapper {
         }
         Collection<RuleConfiguration> globalRules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules());
         Properties props = yamlConfig.getServerConfiguration().getProps();
-        return new ProxyConfiguration(schemaConfigurations, globalRules, props, yamlConfig.getServerConfiguration().getLabels());
+        return new ProxyConfiguration(schemaConfigurations, new ProxyGlobalConfiguration(globalRules, props, yamlConfig.getServerConfiguration().getLabels()));
     }
     
     private Map<String, Map<String, DataSourceConfiguration>> getDataSourceConfigurationMap(final Map<String, YamlProxySchemaConfiguration> yamlSchemaConfigs) {

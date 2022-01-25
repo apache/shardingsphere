@@ -86,13 +86,13 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void assertProxyConfigurationProps(final ProxyConfiguration proxyConfig) {
-        Properties proxyConfigurationProps = proxyConfig.getProps();
+        Properties proxyConfigurationProps = proxyConfig.getGlobalConfiguration().getProperties();
         assertThat(proxyConfigurationProps.size(), is(1));
         assertThat(proxyConfigurationProps.getProperty("key4"), is("value4"));
     }
     
     private void assertAuthority(final ProxyConfiguration proxyConfig) {
-        Optional<ShardingSphereUser> user = new ShardingSphereUsers(getUsersFromAuthorityRule(proxyConfig.getGlobalRules())).findUser(new Grantee("user1", ""));
+        Optional<ShardingSphereUser> user = new ShardingSphereUsers(getUsersFromAuthorityRule(proxyConfig.getGlobalConfiguration().getRules())).findUser(new Grantee("user1", ""));
         assertTrue(user.isPresent());
         assertThat(user.get().getPassword(), is("pass"));
     }
