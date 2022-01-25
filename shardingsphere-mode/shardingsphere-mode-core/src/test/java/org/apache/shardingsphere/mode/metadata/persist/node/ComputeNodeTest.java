@@ -49,8 +49,7 @@ public final class ComputeNodeTest {
     
     @Test
     public void assertGetInstanceWorkerIdNodePath() {
-        assertThat(ComputeNode.getInstanceWorkerIdNodePath("127.0.0.1@3307"), 
-                is("/nodes/compute_nodes/attributes/127.0.0.1@3307/worker_id"));
+        assertThat(ComputeNode.getInstanceWorkerIdNodePath("127.0.0.1@3307"), is("/nodes/compute_nodes/attributes/127.0.0.1@3307/worker_id"));
     }
     
     @Test
