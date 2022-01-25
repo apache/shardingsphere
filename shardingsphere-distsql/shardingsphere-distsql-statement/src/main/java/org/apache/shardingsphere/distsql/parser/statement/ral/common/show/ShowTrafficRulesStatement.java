@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
 
 /**
- * Show traffic rule statement.
+ * Show traffic rules statement.
  */
 public final class ShowTrafficRulesStatement extends ShowDistSQLStatement {
     

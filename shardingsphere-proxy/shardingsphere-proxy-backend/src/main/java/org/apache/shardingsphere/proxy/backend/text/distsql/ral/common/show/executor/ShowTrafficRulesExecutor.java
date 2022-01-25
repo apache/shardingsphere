@@ -36,6 +36,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Show traffic rules executor.
+ */
 @RequiredArgsConstructor
 public final class ShowTrafficRulesExecutor extends AbstractShowExecutor {
     
