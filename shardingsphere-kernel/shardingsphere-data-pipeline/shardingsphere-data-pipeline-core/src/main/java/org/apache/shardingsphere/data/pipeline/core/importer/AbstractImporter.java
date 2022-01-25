@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.importer;
 
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
@@ -59,12 +58,12 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
     
     private final PipelineSQLBuilder pipelineSqlBuilder;
     
-    @Setter
-    private PipelineChannel channel;
+    private final PipelineChannel channel;
     
-    protected AbstractImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
+    protected AbstractImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
         this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
+        this.channel = channel;
         pipelineSqlBuilder = createSQLBuilder(importerConfig.getShardingColumnsMap());
     }
     
