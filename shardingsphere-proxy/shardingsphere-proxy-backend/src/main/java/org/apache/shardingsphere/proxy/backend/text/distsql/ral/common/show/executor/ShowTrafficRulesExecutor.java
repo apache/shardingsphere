@@ -42,7 +42,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class ShowTrafficRulesExecutor extends AbstractShowExecutor {
     
-    private static final String RULE_NAME = "rule_name";
+    private static final String RULE_NAME = "name";
     
     private static final String LABELS = "labels";
     
