@@ -116,27 +116,27 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
     }
     
     private void checkDataSourceInReplicationGroup(final Statement statement, final Map<String, DataSource> dataSourceMap) throws SQLException {
-        List<String> memberDataSourceURLs = new LinkedList<>();
+        Collection<String> memberDataSourceURLs = new LinkedList<>();
         try (ResultSet resultSet = statement.executeQuery(MEMBER_LIST)) {
             while (resultSet.next()) {
                 memberDataSourceURLs.add(String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")));
             }
         }
-        checkDataSourcesExistGroupMember(dataSourceMap, memberDataSourceURLs);
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            checkDataSourceExistGroupMember(entry.getKey(), entry.getValue(), memberDataSourceURLs);
+        }
     }
     
-    private void checkDataSourcesExistGroupMember(final Map<String, DataSource> dataSourceMap, final List<String> memberDataSourceURLs) throws SQLException {
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            boolean exist = false;
-            for (String each : memberDataSourceURLs) {
-                if (entry.getValue().getConnection().getMetaData().getURL().contains(each)) {
-                    exist = true;
-                    break;
-                }
+    private void checkDataSourceExistGroupMember(String datasourceName, DataSource dataSource, final Collection<String> memberDataSourceURLs) throws SQLException {
+        boolean exist = false;
+        for (String each : memberDataSourceURLs) {
+            if (dataSource.getConnection().getMetaData().getURL().contains(each)) {
+                exist = true;
+                break;
             }
-            if (!exist) {
-                throw new ShardingSphereConfigurationException("%s is not MGR replication group member", entry.getKey());
-            }
+        }
+        if (!exist) {
+            throw new ShardingSphereConfigurationException("%s is not MGR replication group member", datasourceName);
         }
     }
     
