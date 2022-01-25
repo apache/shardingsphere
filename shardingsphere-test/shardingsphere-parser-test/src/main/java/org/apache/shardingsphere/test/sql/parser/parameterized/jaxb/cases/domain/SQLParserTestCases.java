@@ -180,6 +180,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowScalingListStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowShardingHintStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowTableMetadataStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowTrafficRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowTransactionRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowVariableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ApplyScalingStatementTestCase;
@@ -989,6 +990,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-transaction-rule")
     private final List<ShowTransactionRuleStatementTestCase> showTransactionRuleStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "show-traffic-rule")
+    private final List<ShowTrafficRuleStatementTestCase> showTrafficRuleStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "alter-sql-parser-rule")
     private final List<AlterSQLParserRuleStatementTestCase> alterSQLParserRuleStatementTestCases = new LinkedList<>();
     
@@ -1288,6 +1292,7 @@ public final class SQLParserTestCases {
         putAll(createRuleStatementTestCases, result);
         putAll(showAuthorityRuleStatementTestCases, result);
         putAll(showTransactionRuleStatementTestCases, result);
+        putAll(showTrafficRuleStatementTestCases, result);
         putAll(alterSQLParserRuleStatementTestCases, result);
         putAll(createTypeStatementTestCases, result);
         putAll(createConversionStatementTestCase, result);

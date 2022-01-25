@@ -47,4 +47,5 @@
             <sql-statement-cache initial-capacity="11" maximum-size="11" concurrency-level="100"  />
         </sql-parser>
     </alter-sql-parser-rule>
+    <show-traffic-rule sql-case-id="show-traffic-rule" rule-name="rule_name"/>
 </sql-parser-test-cases>
