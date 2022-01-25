@@ -15,34 +15,28 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common;
 
-import Keyword, Literals, Symbol;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
 
-showResources
-    : SHOW SCHEMA RESOURCES (FROM schemaName)?
-    ;
+import java.util.Optional;
 
-showSingleTableRules
-    : SHOW SINGLE TABLE RULES (FROM schemaName)?
-    ;
-
-showSingleTable
-    : SHOW SINGLE (table | TABLES)  (FROM schemaName)?
-    ;
-
-countSchemaRules
-    : COUNT SCHEMA RULES (FROM schemaName)?
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
-
-table
-    : TABLE tableName
-    ;
-
-tableName
-    : IDENTIFIER
-    ;
+/**
+ * Export schema statement.
+ */
+@RequiredArgsConstructor
+public final class ExportSchemaStatement extends ShowDistSQLStatement implements FromSchemaAvailable {
+    
+    private final SchemaSegment schema;
+    
+    @Getter
+    private final Optional<String> filePath;
+    
+    @Override
+    public Optional<SchemaSegment> getSchema() {
+        return Optional.ofNullable(schema);
+    }
+}

@@ -15,34 +15,22 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
 
-import Keyword, Literals, Symbol;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-showResources
-    : SHOW SCHEMA RESOURCES (FROM schemaName)?
-    ;
+import javax.xml.bind.annotation.XmlElement;
 
-showSingleTableRules
-    : SHOW SINGLE TABLE RULES (FROM schemaName)?
-    ;
+/**
+ * Export schema statement test case.
+ */
+@Getter
+@Setter
+public final class ExportSchemaStatementTestCase extends SQLParserTestCase {
 
-showSingleTable
-    : SHOW SINGLE (table | TABLES)  (FROM schemaName)?
-    ;
-
-countSchemaRules
-    : COUNT SCHEMA RULES (FROM schemaName)?
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
-
-table
-    : TABLE tableName
-    ;
-
-tableName
-    : IDENTIFIER
-    ;
+    @XmlElement(name = "schema")
+    private ExpectedSchema schema;
+}

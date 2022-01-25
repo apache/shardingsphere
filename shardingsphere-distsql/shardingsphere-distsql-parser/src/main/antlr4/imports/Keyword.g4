@@ -218,7 +218,7 @@ CONCURRENCY_LEVEL
 TYPE
     : T Y P E
     ;
-    
+
 MODE
     : M O D E
     ;
@@ -229,4 +229,20 @@ COUNT
 
 TRAFFIC
     : T R A F F I C
+    ;
+
+EXPORT
+    : E X P O R T
+    ;
+
+CONFIGURATION
+    : C O N F I G U R A T I O N
+    ;
+
+CONFIG
+    : C O N F I G
+    ;
+
+FILE
+    : F I L E
     ;
