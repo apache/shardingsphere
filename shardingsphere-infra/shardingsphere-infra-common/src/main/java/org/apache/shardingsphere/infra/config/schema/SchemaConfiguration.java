@@ -15,21 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table;
+package org.apache.shardingsphere.infra.config.schema;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.Map;
 
 /**
- * Expected owner.
+ * Schema configuration.
  */
-@Getter
-@Setter
-public final class ExpectedOwner extends AbstractExpectedIdentifierSQLSegment {
+public interface SchemaConfiguration {
     
-    @XmlElement
-    private ExpectedOwner owner;
+    /**
+     * Get data sources.
+     * 
+     * @return data sources
+     */
+    Map<String, DataSource> getDataSources();
+    
+    /**
+     * Get rule configurations.
+     * 
+     * @return rule configurations
+     */
+    Collection<RuleConfiguration> getRuleConfigurations();
 }

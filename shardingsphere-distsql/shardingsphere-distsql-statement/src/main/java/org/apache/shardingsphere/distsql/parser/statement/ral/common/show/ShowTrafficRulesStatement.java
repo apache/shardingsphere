@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.show;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
-
-import javax.xml.bind.annotation.XmlElement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
 
 /**
- * Expected owner.
+ * Show traffic rules statement.
  */
-@Getter
-@Setter
-public final class ExpectedOwner extends AbstractExpectedIdentifierSQLSegment {
+public final class ShowTrafficRulesStatement extends ShowDistSQLStatement {
     
-    @XmlElement
-    private ExpectedOwner owner;
+    @Getter
+    @Setter
+    private String ruleName;
 }

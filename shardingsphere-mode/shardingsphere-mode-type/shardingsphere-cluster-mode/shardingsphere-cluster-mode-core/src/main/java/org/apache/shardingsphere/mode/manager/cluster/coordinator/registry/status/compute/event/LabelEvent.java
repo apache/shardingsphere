@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
-import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
 
 /**
- * Expected owner.
+ * Label changed event.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ExpectedOwner extends AbstractExpectedIdentifierSQLSegment {
+public class LabelEvent implements GovernanceEvent {
     
-    @XmlElement
-    private ExpectedOwner owner;
+    private final String instanceId;
+    
+    private final Collection<String> labels;
 }

@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.proxy.config.yaml.swapper;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.schema.impl.DataSourceGeneratedSchemaConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
-import org.apache.shardingsphere.infra.config.SchemaConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxySchemaConfiguration;
@@ -62,37 +62,37 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void assertSchemaDataSources(final ProxyConfiguration proxyConfig) {
-        Map<String, SchemaConfiguration> schemaConfigs = proxyConfig.getSchemaConfigurations();
+        Map<String, DataSourceGeneratedSchemaConfiguration> schemaConfigs = proxyConfig.getSchemaConfigurations();
         assertThat(schemaConfigs.size(), is(1));
         assertTrue(schemaConfigs.containsKey("yamlProxyRule1"));
-        DataSourceConfiguration dataSourceConfig = schemaConfigs.get("yamlProxyRule1").getDataSources().get("ds1");
-        assertThat(dataSourceConfig.getConnection().getUrl(), is("url1"));
-        assertThat(dataSourceConfig.getConnection().getUsername(), is("username1"));
-        assertThat(dataSourceConfig.getConnection().getPassword(), is("password1"));
-        assertThat(dataSourceConfig.getPool().getConnectionTimeoutMilliseconds(), is(1L));
-        assertThat(dataSourceConfig.getPool().getIdleTimeoutMilliseconds(), is(2L));
-        assertThat(dataSourceConfig.getPool().getMaxLifetimeMilliseconds(), is(3L));
-        assertThat(dataSourceConfig.getPool().getMaxPoolSize(), is(4));
-        assertThat(dataSourceConfig.getPool().getMinPoolSize(), is(5));
-        assertTrue(dataSourceConfig.getPool().getReadOnly());
+        HikariDataSource dataSource = (HikariDataSource) schemaConfigs.get("yamlProxyRule1").getDataSources().get("foo_db");
+        assertThat(dataSource.getJdbcUrl(), is("jdbc:h2:mem:foo_db;DB_CLOSE_DELAY=-1"));
+        assertThat(dataSource.getUsername(), is("sa"));
+        assertThat(dataSource.getPassword(), is(""));
+        assertThat(dataSource.getConnectionTimeout(), is(250L));
+        assertThat(dataSource.getIdleTimeout(), is(2L));
+        assertThat(dataSource.getMaxLifetime(), is(3L));
+        assertThat(dataSource.getMaximumPoolSize(), is(4));
+        assertThat(dataSource.getMinimumIdle(), is(5));
+        assertTrue(dataSource.isReadOnly());
     }
     
     private void assertSchemaRules(final ProxyConfiguration proxyConfig) {
-        Map<String, SchemaConfiguration> schemaConfigs = proxyConfig.getSchemaConfigurations();
+        Map<String, DataSourceGeneratedSchemaConfiguration> schemaConfigs = proxyConfig.getSchemaConfigurations();
         assertThat(schemaConfigs.size(), is(1));
-        Collection<RuleConfiguration> ruleConfigs = schemaConfigs.get("yamlProxyRule1").getRules();
+        Collection<RuleConfiguration> ruleConfigs = schemaConfigs.get("yamlProxyRule1").getRuleConfigurations();
         assertThat(ruleConfigs.size(), is(1));
         assertThat(ruleConfigs.iterator().next(), instanceOf(ReadwriteSplittingRuleConfiguration.class));
     }
     
     private void assertProxyConfigurationProps(final ProxyConfiguration proxyConfig) {
-        Properties proxyConfigurationProps = proxyConfig.getProps();
+        Properties proxyConfigurationProps = proxyConfig.getGlobalConfiguration().getProperties();
         assertThat(proxyConfigurationProps.size(), is(1));
         assertThat(proxyConfigurationProps.getProperty("key4"), is("value4"));
     }
     
     private void assertAuthority(final ProxyConfiguration proxyConfig) {
-        Optional<ShardingSphereUser> user = new ShardingSphereUsers(getUsersFromAuthorityRule(proxyConfig.getGlobalRules())).findUser(new Grantee("user1", ""));
+        Optional<ShardingSphereUser> user = new ShardingSphereUsers(getUsersFromAuthorityRule(proxyConfig.getGlobalConfiguration().getRules())).findUser(new Grantee("user1", ""));
         assertTrue(user.isPresent());
         assertThat(user.get().getPassword(), is("pass"));
     }
@@ -113,7 +113,7 @@ public final class YamlProxyConfigurationSwapperTest {
         mockAuthentication(yamlProxyServerConfig);
         mockProps(yamlProxyServerConfig);
         YamlProxySchemaConfiguration yamlProxySchemaConfig = mockSchemaConfigurations(result);
-        mockResources(yamlProxySchemaConfig);
+        mockDataSourceConfiguration(yamlProxySchemaConfig);
         when(yamlProxySchemaConfig.getRules()).thenReturn(Collections.singletonList(new YamlReadwriteSplittingRuleConfiguration()));
         return result;
     }
@@ -132,20 +132,20 @@ public final class YamlProxyConfigurationSwapperTest {
         return result;
     }
     
-    private void mockResources(final YamlProxySchemaConfiguration yamlProxySchemaConfig) {
-        YamlProxyDataSourceConfiguration yamlResourceConfig = new YamlProxyDataSourceConfiguration();
-        yamlResourceConfig.setUrl("url1");
-        yamlResourceConfig.setUsername("username1");
-        yamlResourceConfig.setPassword("password1");
-        yamlResourceConfig.setConnectionTimeoutMilliseconds(1L);
-        yamlResourceConfig.setIdleTimeoutMilliseconds(2L);
-        yamlResourceConfig.setMaxLifetimeMilliseconds(3L);
-        yamlResourceConfig.setMaxPoolSize(4);
-        yamlResourceConfig.setMinPoolSize(5);
-        yamlResourceConfig.setReadOnly(true);
-        Map<String, YamlProxyDataSourceConfiguration> yamlResources = new HashMap<>(1, 1);
-        yamlResources.put("ds1", yamlResourceConfig);
-        when(yamlProxySchemaConfig.getDataSources()).thenReturn(yamlResources);
+    private void mockDataSourceConfiguration(final YamlProxySchemaConfiguration yamlProxySchemaConfig) {
+        YamlProxyDataSourceConfiguration yamlDataSourceConfig = new YamlProxyDataSourceConfiguration();
+        yamlDataSourceConfig.setUrl("jdbc:h2:mem:foo_db;DB_CLOSE_DELAY=-1");
+        yamlDataSourceConfig.setUsername("sa");
+        yamlDataSourceConfig.setPassword("");
+        yamlDataSourceConfig.setConnectionTimeoutMilliseconds(250L);
+        yamlDataSourceConfig.setIdleTimeoutMilliseconds(2L);
+        yamlDataSourceConfig.setMaxLifetimeMilliseconds(3L);
+        yamlDataSourceConfig.setMaxPoolSize(4);
+        yamlDataSourceConfig.setMinPoolSize(5);
+        yamlDataSourceConfig.setReadOnly(true);
+        Map<String, YamlProxyDataSourceConfiguration> yamlDataSources = new HashMap<>(1, 1);
+        yamlDataSources.put("foo_db", yamlDataSourceConfig);
+        when(yamlProxySchemaConfig.getDataSources()).thenReturn(yamlDataSources);
     }
     
     private void mockAuthentication(final YamlProxyServerConfiguration yamlProxyServerConfig) {
