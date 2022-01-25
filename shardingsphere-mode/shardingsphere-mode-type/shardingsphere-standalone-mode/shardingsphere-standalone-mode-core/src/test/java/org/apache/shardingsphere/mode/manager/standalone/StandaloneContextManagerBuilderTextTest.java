@@ -46,34 +46,34 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class StandaloneContextManagerBuilderTextTest {
-
+    
     public static final String TEST_DATA_SOURCE_INNER_MAP = "TEST_DATA_SOURCE_INNER_MAP";
-
+    
     public static final String TEST_CONNECTION_URL = "jdbc:mysql://testhost:3306/testdatabase";
-
+    
     @Test
     public void assertBuild() throws SQLException {
         Map<String, Map<String, DataSource>> dataSourceMap = getDataSourceMap();
-        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = getSchemaRuleConfigs();
-        Collection<RuleConfiguration> globalRuleConfigurationCollection = getGlobalRuleConfigurationCollection();
+        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = getSchemaRuleConfigurations();
+        Collection<RuleConfiguration> globalRuleConfigs = getGlobalRuleConfigurations();
         Properties props = new Properties();
-        ModeConfiguration modeConfiguration = new ModeConfiguration("Standalone", null, false);
+        ModeConfiguration modeConfig = new ModeConfiguration("Standalone", null, false);
         StandaloneContextManagerBuilder standaloneContextManagerBuilder = new StandaloneContextManagerBuilder();
-        ContextManager actual = standaloneContextManagerBuilder.build(ContextManagerBuilderParameter.builder().modeConfig(modeConfiguration)
-            .dataSourcesMap(dataSourceMap).schemaRuleConfigs(schemaRuleConfigs).globalRuleConfigs(globalRuleConfigurationCollection).props(props)
+        ContextManager actual = standaloneContextManagerBuilder.build(ContextManagerBuilderParameter.builder().modeConfig(modeConfig)
+            .dataSourcesMap(dataSourceMap).schemaRuleConfigs(schemaRuleConfigs).globalRuleConfigs(globalRuleConfigs).props(props)
             .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307)).build());
         MetaDataContexts metaDataContexts = actual.getMetaDataContexts();
         assertNotNull(metaDataContexts.getMetaDataMap().get(TEST_DATA_SOURCE_INNER_MAP));
         assertNotNull(metaDataContexts.getExecutorEngine());
-        PersistRepository resultRepository = metaDataContexts.getMetaDataPersistService().get().getRepository();
-        assertNotNull(resultRepository.get(GlobalNode.getGlobalRuleNode()));
-        assertNotNull(resultRepository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(TEST_DATA_SOURCE_INNER_MAP)));
-        assertNotNull(resultRepository.get(SchemaMetaDataNode.getRulePath(TEST_DATA_SOURCE_INNER_MAP)));
+        PersistRepository repository = metaDataContexts.getMetaDataPersistService().get().getRepository();
+        assertNotNull(repository.get(GlobalNode.getGlobalRuleNode()));
+        assertNotNull(repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(TEST_DATA_SOURCE_INNER_MAP)));
+        assertNotNull(repository.get(SchemaMetaDataNode.getRulePath(TEST_DATA_SOURCE_INNER_MAP)));
         TransactionContexts transactionContexts = actual.getTransactionContexts();
         assertNotNull(transactionContexts.getEngines());
         assertNotNull(transactionContexts.getEngines().get(TEST_DATA_SOURCE_INNER_MAP));
     }
-
+    
     private Map<String, Map<String, DataSource>> getDataSourceMap() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn(TEST_CONNECTION_URL);
@@ -85,20 +85,18 @@ public final class StandaloneContextManagerBuilderTextTest {
         result.put(TEST_DATA_SOURCE_INNER_MAP, dataSourceInnerMap);
         return result;
     }
-
-    private Map<String, Collection<RuleConfiguration>> getSchemaRuleConfigs() {
-        RuleConfiguration ruleConfiguration = mock(RuleConfiguration.class);
-        Collection<RuleConfiguration> ruleConfigurationCollection = new LinkedList<>();
-        ruleConfigurationCollection.add(ruleConfiguration);
-        Map<String, Collection<RuleConfiguration>> result = new HashMap<>();
-        result.put(TEST_DATA_SOURCE_INNER_MAP, ruleConfigurationCollection);
+    
+    private Map<String, Collection<RuleConfiguration>> getSchemaRuleConfigurations() {
+        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>();
+        ruleConfigs.add(mock(RuleConfiguration.class));
+        Map<String, Collection<RuleConfiguration>> result = new HashMap<>(1, 1);
+        result.put(TEST_DATA_SOURCE_INNER_MAP, ruleConfigs);
         return result;
     }
-
-    private Collection<RuleConfiguration> getGlobalRuleConfigurationCollection() {
-        RuleConfiguration globalRuleConfiguration = mock(RuleConfiguration.class);
+    
+    private Collection<RuleConfiguration> getGlobalRuleConfigurations() {
         Collection<RuleConfiguration> result = new HashSet<>();
-        result.add(globalRuleConfiguration);
+        result.add(mock(RuleConfiguration.class));
         return result;
     }
 }
