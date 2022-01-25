@@ -53,6 +53,7 @@ chapter = true
 | Thanoshan MV    | ThanoshanMV             |
 | Chengxiang Lan  | lanchengx               |
 | Xiao Yang       | yx9o                    |
+| Guocheng Tang   | totalo                  |
 
 ## Contributors
 

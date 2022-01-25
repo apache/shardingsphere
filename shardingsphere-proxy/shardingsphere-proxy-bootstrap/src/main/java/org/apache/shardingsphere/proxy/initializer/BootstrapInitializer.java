@@ -27,6 +27,7 @@ import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
@@ -42,12 +43,14 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
+import org.apache.shardingsphere.proxy.config.ProxySchemaConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -69,32 +72,36 @@ public final class BootstrapInitializer {
      * @throws SQLException SQL exception
      */
     public void init(final YamlProxyConfiguration yamlConfig, final int port) throws SQLException {
-        ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode()
-                ? null : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
+        ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode() ? null : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
         ContextManager contextManager = createContextManager(yamlConfig, modeConfig, port);
-        initContext(contextManager);
+        ProxyContext.getInstance().init(contextManager);
         initRuleAlteredJobWorker(modeConfig, contextManager);
         setDatabaseServerInfo();
     }
     
     private ContextManager createContextManager(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig, final int port) throws SQLException {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
-        Map<String, Map<String, DataSource>> dataSourcesMap = getDataSourcesMap(proxyConfig.getSchemaResources());
-        ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder().modeConfig(modeConfig).dataSourcesMap(dataSourcesMap).schemaRuleConfigs(proxyConfig.getSchemaRules())
+        Map<String, Map<String, DataSource>> dataSourcesMap = getDataSourcesMap(proxyConfig.getSchemaConfigurations());
+        ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder().modeConfig(modeConfig).dataSourcesMap(dataSourcesMap)
+                .schemaRuleConfigs(getSchemaRuleConfigurations(proxyConfig.getSchemaConfigurations()))
                 .globalRuleConfigs(proxyConfig.getGlobalRules()).props(proxyConfig.getProps()).labels(proxyConfig.getLabels())
                 .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, port)).build();
         return ContextManagerBuilderFactory.newInstance(modeConfig).build(parameter);
     }
     
-    private void initContext(final ContextManager contextManager) {
-        ProxyContext.getInstance().init(contextManager);
+    // TODO add DataSourceConfiguration param to ContextManagerBuilder to avoid re-build data source
+    private Map<String, Map<String, DataSource>> getDataSourcesMap(final Map<String, ProxySchemaConfiguration> schemaConfigMap) {
+        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(schemaConfigMap.size(), 1);
+        for (Entry<String, ProxySchemaConfiguration> entry : schemaConfigMap.entrySet()) {
+            result.put(entry.getKey(), DataSourcePoolCreator.create(createDataSourcePropertiesMap(entry.getValue().getDataSources())));
+        }
+        return result;
     }
     
-    // TODO add ResourceConfiguration param to ContextManagerBuilder to avoid re-build data source
-    private Map<String, Map<String, DataSource>> getDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigMap) {
-        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourceConfigMap.size(), 1);
-        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigMap.entrySet()) {
-            result.put(entry.getKey(), DataSourcePoolCreator.create(createDataSourcePropertiesMap(entry.getValue())));
+    private Map<String, Collection<RuleConfiguration>> getSchemaRuleConfigurations(final Map<String, ProxySchemaConfiguration> schemaConfigMap) {
+        Map<String, Collection<RuleConfiguration>> result = new LinkedHashMap<>(schemaConfigMap.size(), 1);
+        for (Entry<String, ProxySchemaConfiguration> entry : schemaConfigMap.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().getRules());
         }
         return result;
     }

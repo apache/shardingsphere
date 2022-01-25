@@ -23,7 +23,9 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.BroadcastDatabaseBackendHandler;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.OperationScope;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.StartTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSavepointStatement;
@@ -69,6 +71,9 @@ public final class TransactionBackendHandlerFactory {
             return ((RollbackStatement) tclStatement).getSavepointName().isPresent() 
                     ? new TransactionBackendHandler(tclStatement, TransactionOperationType.ROLLBACK_TO_SAVEPOINT, connectionSession)
                     : new TransactionBackendHandler(tclStatement, TransactionOperationType.ROLLBACK, connectionSession); 
+        }
+        if (tclStatement instanceof SetTransactionStatement && OperationScope.GLOBAL != ((SetTransactionStatement) tclStatement).getScope()) {
+            return new TransactionSetHandler((SetTransactionStatement) tclStatement, connectionSession);
         }
         if (tclStatement instanceof XAStatement) {
             return new TransactionXAHandler(sqlStatementContext, sql, connectionSession);
