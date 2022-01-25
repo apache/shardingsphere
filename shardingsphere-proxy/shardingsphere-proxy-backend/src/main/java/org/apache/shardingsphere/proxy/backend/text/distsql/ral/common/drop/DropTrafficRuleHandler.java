@@ -34,7 +34,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Drop Traffic rule statement handler.
+ * Drop traffic rule statement handler.
  */
 @RequiredArgsConstructor
 public final class DropTrafficRuleHandler implements TextProtocolBackendHandler {
@@ -56,10 +56,10 @@ public final class DropTrafficRuleHandler implements TextProtocolBackendHandler 
     
     private void check(final DropTrafficRuleStatement sqlStatement, final Optional<TrafficRuleConfiguration> configuration) throws DistSQLException {
         if (!sqlStatement.isContainsIfExistClause()) {
-            DistSQLException.predictionThrow(configuration.isPresent(), new RequiredRuleMissedException("Traffic rule"));
+            DistSQLException.predictionThrow(configuration.isPresent(), new RequiredRuleMissedException("Traffic"));
             Set<String> currentTrafficStrategyNames = configuration.get().getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
             Set<String> notExistRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !currentTrafficStrategyNames.contains(each)).collect(Collectors.toSet());
-            DistSQLException.predictionThrow(notExistRuleNames.isEmpty(), new RequiredRuleMissedException("Traffic rule"));
+            DistSQLException.predictionThrow(notExistRuleNames.isEmpty(), new RequiredRuleMissedException("Traffic"));
         }
     }
     
