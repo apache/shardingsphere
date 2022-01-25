@@ -79,10 +79,10 @@ public final class StandaloneContextManagerBuilderTextTest {
         when(connection.getMetaData().getURL()).thenReturn(TEST_CONNECTION_URL);
         DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
         when(dataSource.getConnection()).thenReturn(connection);
-        Map<String, DataSource> dataSourceInnerMap = new HashMap<>();
-        dataSourceInnerMap.put("testDataSource", dataSource);
+        Map<String, DataSource> dataSources = new HashMap<>(1, 1);
+        dataSources.put("testDataSource", dataSource);
         Map<String, Map<String, DataSource>> result = new HashMap<>();
-        result.put(TEST_DATA_SOURCE_INNER_MAP, dataSourceInnerMap);
+        result.put(TEST_DATA_SOURCE_INNER_MAP, dataSources);
         return result;
     }
     
