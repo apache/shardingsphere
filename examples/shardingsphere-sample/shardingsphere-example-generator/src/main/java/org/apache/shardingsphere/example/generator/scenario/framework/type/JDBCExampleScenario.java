@@ -19,8 +19,10 @@ package org.apache.shardingsphere.example.generator.scenario.framework.type;
 
 import org.apache.shardingsphere.example.generator.scenario.framework.FrameworkExampleScenario;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -41,6 +43,18 @@ public final class JDBCExampleScenario implements FrameworkExampleScenario {
     @Override
     public Map<String, String> getResourceTemplateMap() {
         return Collections.emptyMap();
+    }
+    
+    @Override
+    public Collection<String> getJavaClassPaths() {
+        Collection<String> result = new HashSet<>();
+        result.add("repository");
+        return result;
+    }
+    
+    @Override
+    public Collection<String> getResourcePaths() {
+        return Collections.emptySet();
     }
     
     @Override

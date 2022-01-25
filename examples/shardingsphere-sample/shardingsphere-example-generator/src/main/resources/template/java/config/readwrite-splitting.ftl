@@ -17,8 +17,8 @@
     
     private ReadwriteSplittingRuleConfiguration createReadwriteSplittingRuleConfiguration() {
         Properties props = new Properties();
-        props.setProperties("write-data-source-name", "ds_0");
-        props.setProperties("read-data-source-names", "ds_1, ds_2");
+        props.setProperty("write-data-source-name", "ds_0");
+        props.setProperty("read-data-source-names", "ds_1, ds_2");
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceRuleConfiguration(
                 "ds_0", "Static", props, null);
         return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap());

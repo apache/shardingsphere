@@ -62,13 +62,14 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
     private Properties props = new Properties();
     
     @Override
-    public void checkDatabaseDiscoveryConfiguration(final String schemaName, final DataSource dataSource) throws SQLException {
-        try (Connection connection = dataSource.getConnection();
+    public void checkDatabaseDiscoveryConfiguration(final String schemaName, final Map<String, DataSource> dataSourceMap) throws SQLException {
+        try (Connection connection = dataSourceMap.values().stream().findFirst().get().getConnection();
              Statement statement = connection.createStatement()) {
             checkPluginIsActive(statement);
             checkMemberCount(statement);
             checkServerGroupName(statement);
             checkIsSinglePrimaryMode(statement);
+            checkDataSourceInReplicationGroup(statement, dataSourceMap);
         }
     }
     
@@ -111,6 +112,31 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
                     throw new ShardingSphereConfigurationException("MGR is not in single primary mode");
                 }
             }
+        }
+    }
+    
+    private void checkDataSourceInReplicationGroup(final Statement statement, final Map<String, DataSource> dataSourceMap) throws SQLException {
+        Collection<String> memberDataSourceURLs = new LinkedList<>();
+        try (ResultSet resultSet = statement.executeQuery(MEMBER_LIST)) {
+            while (resultSet.next()) {
+                memberDataSourceURLs.add(String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")));
+            }
+        }
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            checkDataSourceExistedWithGroupMember(entry.getKey(), entry.getValue(), memberDataSourceURLs);
+        }
+    }
+    
+    private void checkDataSourceExistedWithGroupMember(final String datasourceName, final DataSource dataSource, final Collection<String> memberDataSourceURLs) throws SQLException {
+        boolean isExisted = false;
+        for (String each : memberDataSourceURLs) {
+            if (dataSource.getConnection().getMetaData().getURL().contains(each)) {
+                isExisted = true;
+                break;
+            }
+        }
+        if (!isExisted) {
+            throw new ShardingSphereConfigurationException("%s is not MGR replication group member", datasourceName);
         }
     }
     

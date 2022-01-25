@@ -22,6 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfigura
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.SimpleMemoryPipelineChannel;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,7 +44,7 @@ public final class PostgreSQLJdbcDumperTest {
     @Before
     public void setUp() {
         dataSourceManager = new PipelineDataSourceManager();
-        jdbcDumper = new PostgreSQLInventoryDumper(mockInventoryDumperConfiguration(), dataSourceManager);
+        jdbcDumper = new PostgreSQLInventoryDumper(mockInventoryDumperConfiguration(), dataSourceManager, new SimpleMemoryPipelineChannel(100));
     }
     
     private InventoryDumperConfiguration mockInventoryDumperConfiguration() {

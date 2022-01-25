@@ -226,3 +226,7 @@ MODE
 COUNT
     : C O U N T
     ;
+
+TRAFFIC
+    : T R A F F I C
+    ;
