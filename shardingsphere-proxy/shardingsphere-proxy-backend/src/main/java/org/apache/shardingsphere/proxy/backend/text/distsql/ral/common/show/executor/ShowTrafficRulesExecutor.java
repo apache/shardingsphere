@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public final class ShowTrafficRuleExecutor extends AbstractShowExecutor {
+public final class ShowTrafficRulesExecutor extends AbstractShowExecutor {
     
     private static final String RULE_NAME = "rule_name";
     

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowTrafficRuleExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowTrafficRulesExecutor;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
 import org.junit.Test;
@@ -48,7 +48,7 @@ public class ShowTrafficRuleExecutorTest {
     public void assertExecutor() throws SQLException {
         ShowTrafficRuleStatement showTrafficRuleStatement = new ShowTrafficRuleStatement();
         showTrafficRuleStatement.setRuleName("rule_name_1");
-        ShowTrafficRuleExecutor executor = new ShowTrafficRuleExecutor(showTrafficRuleStatement);
+        ShowTrafficRulesExecutor executor = new ShowTrafficRulesExecutor(showTrafficRuleStatement);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(createTrafficRule());
         ProxyContext.getInstance().init(contextManager);
