@@ -123,19 +123,19 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
             }
         }
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            checkDataSourceExistGroupMember(entry.getKey(), entry.getValue(), memberDataSourceURLs);
+            checkDataSourceExistedWithGroupMember(entry.getKey(), entry.getValue(), memberDataSourceURLs);
         }
     }
     
-    private void checkDataSourceExistGroupMember(final String datasourceName, final DataSource dataSource, final Collection<String> memberDataSourceURLs) throws SQLException {
-        boolean exist = false;
+    private void checkDataSourceExistedWithGroupMember(final String datasourceName, final DataSource dataSource, final Collection<String> memberDataSourceURLs) throws SQLException {
+        boolean isExisted = false;
         for (String each : memberDataSourceURLs) {
             if (dataSource.getConnection().getMetaData().getURL().contains(each)) {
-                exist = true;
+                isExisted = true;
                 break;
             }
         }
-        if (!exist) {
+        if (!isExisted) {
             throw new ShardingSphereConfigurationException("%s is not MGR replication group member", datasourceName);
         }
     }
