@@ -29,24 +29,24 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Show traffic rule statement assert.
+ * Show traffic rules statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowTrafficRulesStatementAssert {
     
     /**
-     * Assert show traffic rule statement is correct with expected parser result.
+     * Assert show traffic rules statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show traffic rule statement
-     * @param expected expected show traffic rule statement test case
+     * @param actual actual show traffic rules statement
+     * @param expected expected show traffic rules statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTrafficRulesStatement actual, final ShowTrafficRulesStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertThat(assertContext.getText("Table name id assertion error"), actual.getRuleName(), is(expected.getRuleName()));
+            assertThat(assertContext.getText("Rule name id assertion error"), actual.getRuleName(), is(expected.getRuleName()));
         }
     }
 }
