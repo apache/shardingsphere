@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.standalone;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -34,6 +35,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -53,14 +55,13 @@ public final class StandaloneContextManagerBuilderTextTest {
     
     @Test
     public void assertBuild() throws SQLException {
-        Map<String, Map<String, DataSource>> dataSourceMap = getDataSourceMap();
-        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = getSchemaRuleConfigurations();
         Collection<RuleConfiguration> globalRuleConfigs = getGlobalRuleConfigurations();
         Properties props = new Properties();
         ModeConfiguration modeConfig = new ModeConfiguration("Standalone", null, false);
         StandaloneContextManagerBuilder standaloneContextManagerBuilder = new StandaloneContextManagerBuilder();
         ContextManager actual = standaloneContextManagerBuilder.build(ContextManagerBuilderParameter.builder().modeConfig(modeConfig)
-            .dataSourcesMap(dataSourceMap).schemaRuleConfigs(schemaRuleConfigs).globalRuleConfigs(globalRuleConfigs).props(props)
+            .schemaConfigs(Collections.singletonMap(TEST_DATA_SOURCE_INNER_MAP, new DataSourceProvidedSchemaConfiguration(getDataSourceMap(), getSchemaRuleConfigurations())))
+            .globalRuleConfigs(globalRuleConfigs).props(props)
             .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307)).build());
         MetaDataContexts metaDataContexts = actual.getMetaDataContexts();
         assertNotNull(metaDataContexts.getMetaDataMap().get(TEST_DATA_SOURCE_INNER_MAP));
@@ -74,24 +75,20 @@ public final class StandaloneContextManagerBuilderTextTest {
         assertNotNull(transactionContexts.getEngines().get(TEST_DATA_SOURCE_INNER_MAP));
     }
     
-    private Map<String, Map<String, DataSource>> getDataSourceMap() throws SQLException {
+    private Map<String, DataSource> getDataSourceMap() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn(TEST_CONNECTION_URL);
         DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
         when(dataSource.getConnection()).thenReturn(connection);
-        Map<String, DataSource> dataSources = new HashMap<>(1, 1);
-        dataSources.put("testDataSource", dataSource);
-        Map<String, Map<String, DataSource>> result = new HashMap<>();
-        result.put(TEST_DATA_SOURCE_INNER_MAP, dataSources);
+        Map<String, DataSource> result = new HashMap<>(1, 1);
+        result.put("testDataSource", dataSource);
         return result;
     }
     
-    private Map<String, Collection<RuleConfiguration>> getSchemaRuleConfigurations() {
+    private Collection<RuleConfiguration> getSchemaRuleConfigurations() {
         Collection<RuleConfiguration> ruleConfigs = new LinkedList<>();
         ruleConfigs.add(mock(RuleConfiguration.class));
-        Map<String, Collection<RuleConfiguration>> result = new HashMap<>(1, 1);
-        result.put(TEST_DATA_SOURCE_INNER_MAP, ruleConfigs);
-        return result;
+        return ruleConfigs;
     }
     
     private Collection<RuleConfiguration> getGlobalRuleConfigurations() {
