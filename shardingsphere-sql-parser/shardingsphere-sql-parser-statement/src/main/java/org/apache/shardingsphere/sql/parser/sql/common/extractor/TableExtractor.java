@@ -164,7 +164,9 @@ public final class TableExtractor {
             } else if (each instanceof ColumnProjectionSegment) {
                 if (((ColumnProjectionSegment) each).getColumn().getOwner().isPresent() && needRewrite(((ColumnProjectionSegment) each).getColumn().getOwner().get())) {
                     OwnerSegment ownerSegment = ((ColumnProjectionSegment) each).getColumn().getOwner().get();
-                    rewriteTables.add(new SimpleTableSegment(new TableNameSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier())));
+                    SimpleTableSegment simpleTable = new SimpleTableSegment(new TableNameSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier()));
+                    ownerSegment.getOwner().ifPresent(simpleTable::setOwner);
+                    rewriteTables.add(simpleTable);
                 }
             }
         }
