@@ -30,30 +30,30 @@ chapter = true
 
 ### Committers
 
-| Name            | GitHub ID    |
-|:----------------|:-------------|
-| Xiaoman Wang    | wgy8283335   |
-| Haisheng Sun    | sunbufu      |
-| Qi Wang         | wqzwh        |
-| Ya Li           | betterjava   |
-| Yanan Zhao      | nancyzrh     |
-| Zhiyi Yan       | yanyzy       |
-| YangWen Ou      | avalon566    |
-| Zonglei Dong    | dongzl       |
-| Xiaofeng Jiang  | SteNicholas  |
-| Ling Yue        | yue530tom    |
-| Xiao Yu         | yu199195     |
-| Jingshang Lu    | jingshanglu  |
-| Zhengqiang Duan | strongduanmu |
-| Jiwei Guo       | Technoboy-   |
-| Weijie Wu       | TeslaCN      |
-| Lu Qiu          | Lucas-307    |
-| Hongsheng Zhong | sandynz      |
-| Longtao Jiang   | RaigorJiang  |
-| Thanoshan MV    | ThanoshanMV  |
-| Chengxiang Lan  | lanchengx    |
-| Xiao Yang       | yx9o         |
-| Guocheng Tang   | totalo       |
+| Name            | GitHub ID               |
+| :-------------- | :---------------------- |
+| Xiaoman Wang    | wgy8283335              |
+| Haisheng Sun    | sunbufu                 |
+| Qi Wang         | wqzwh                   |
+| Ya Li           | betterjava              |
+| Yanan Zhao      | nancyzrh                |
+| Zhiyi Yan       | yanyzy                  |
+| YangWen Ou      | avalon566               |
+| Zonglei Dong    | dongzl                  |
+| Xiaofeng Jiang  | SteNicholas             |
+| Ling Yue        | yue530tom               |
+| Xiao Yu         | yu199195                |
+| Jingshang Lu    | jingshanglu             |
+| Zhengqiang Duan | strongduanmu            |
+| Jiwei Guo       | Technoboy-              |
+| Weijie Wu       | TeslaCN                 |
+| Lu Qiu          | Lucas-307               |
+| Hongsheng Zhong | sandynz                 |
+| Longtao Jiang   | RaigorJiang             |
+| Thanoshan MV    | ThanoshanMV             |
+| Chengxiang Lan  | lanchengx               |
+| Xiao Yang       | yx9o                    |
+| Guocheng Tang   | totalo                  |
 
 ## Contributors
 

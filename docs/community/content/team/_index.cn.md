@@ -30,30 +30,30 @@ chapter = true
 
 ### 提交者
 
-| 名字           | GitHub ID    |
-|:-------------|:-------------|
-| 王小满          | wgy8283335   |
-| 孙海生          | sunbufu      |
-| 王奇           | wqzwh        |
-| 李亚           | betterjava   |
-| 赵亚楠          | nancyzrh     |
-| 颜志一          | yanyzy       |
-| 欧阳文          | avalon566    |
-| 董宗磊          | dongzl       |
-| 蒋晓峰          | SteNicholas  |
-| 岳令           | yue530tom    |
-| 肖宇           | yu199195     |
-| 陆敬尚          | jingshanglu  |
-| 端正强          | strongduanmu |
-| 郭吉伟          | Technoboy-   |
-| 吴伟杰          | TeslaCN      |
-| 邱鹿           | Lucas-307    |
-| 钟红胜          | sandynz      |
-| 江龙滔          | RaigorJiang  |
-| Thanoshan MV | ThanoshanMV  |
-| 兰城翔          | lanchengx    |
-| 杨肖           | yx9o         |
-| 唐国城          | totalo       |
+| 名字   | GitHub ID   |
+| :---- | :---------- |
+| 王小满 | wgy8283335  |
+| 孙海生 | sunbufu     |
+| 王奇   | wqzwh       |
+| 李亚   | betterjava  |
+| 赵亚楠 | nancyzrh    |
+| 颜志一 | yanyzy      |
+| 欧阳文 | avalon566   |
+| 董宗磊 | dongzl      |
+| 蒋晓峰 | SteNicholas |
+| 岳令   | yue530tom   |
+| 肖宇   | yu199195    |
+| 陆敬尚 | jingshanglu |
+| 端正强 | strongduanmu|
+| 郭吉伟 | Technoboy-  |
+| 吴伟杰 | TeslaCN     |
+| 邱鹿   | Lucas-307   |
+| 钟红胜 | sandynz     |
+| 江龙滔 | RaigorJiang |
+| Thanoshan MV | ThanoshanMV |
+| 兰城翔 | lanchengx   |
+| 杨肖   | yx9o        |
+| 唐国城 | totalo |
 
 ## 贡献者
 
