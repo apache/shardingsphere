@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config;
+package org.apache.shardingsphere.infra.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 
 import java.util.Collection;
 import java.util.Map;
 
 /**
- * Proxy schema configuration.
+ * Schema configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ProxySchemaConfiguration {
+public final class SchemaConfiguration {
     
     private final Map<String, DataSourceConfiguration> dataSources;
     

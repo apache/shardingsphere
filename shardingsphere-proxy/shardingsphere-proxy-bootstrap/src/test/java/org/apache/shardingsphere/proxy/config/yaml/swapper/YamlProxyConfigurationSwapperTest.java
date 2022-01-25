@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.ProxySchemaConfiguration;
+import org.apache.shardingsphere.infra.config.SchemaConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxySchemaConfiguration;
@@ -62,7 +62,7 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void assertSchemaDataSources(final ProxyConfiguration proxyConfig) {
-        Map<String, ProxySchemaConfiguration> schemaConfigs = proxyConfig.getSchemaConfigurations();
+        Map<String, SchemaConfiguration> schemaConfigs = proxyConfig.getSchemaConfigurations();
         assertThat(schemaConfigs.size(), is(1));
         assertTrue(schemaConfigs.containsKey("yamlProxyRule1"));
         DataSourceConfiguration dataSourceConfig = schemaConfigs.get("yamlProxyRule1").getDataSources().get("ds1");
@@ -78,7 +78,7 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void assertSchemaRules(final ProxyConfiguration proxyConfig) {
-        Map<String, ProxySchemaConfiguration> schemaConfigs = proxyConfig.getSchemaConfigurations();
+        Map<String, SchemaConfiguration> schemaConfigs = proxyConfig.getSchemaConfigurations();
         assertThat(schemaConfigs.size(), is(1));
         Collection<RuleConfiguration> ruleConfigs = schemaConfigs.get("yamlProxyRule1").getRules();
         assertThat(ruleConfigs.size(), is(1));
