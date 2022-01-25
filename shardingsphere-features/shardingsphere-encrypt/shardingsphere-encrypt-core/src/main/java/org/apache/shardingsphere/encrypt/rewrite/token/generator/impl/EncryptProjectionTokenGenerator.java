@@ -114,8 +114,9 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
                 projections.add(new ColumnProjection(each.getOwner(), each.getName(), each.getAlias().orElse(null)));
             }
         }
-        previousSQLTokens.removeIf(each -> each.getStartIndex() == segment.getStartIndex());
-        return new SubstitutableColumnNameToken(segment.getStartIndex(), segment.getStopIndex(), projections, databaseType.getQuoteCharacter());
+        int startIndex = segment.getOwner().isPresent() ? segment.getOwner().get().getStartIndex() : segment.getStartIndex();
+        previousSQLTokens.removeIf(each -> each.getStartIndex() == startIndex);
+        return new SubstitutableColumnNameToken(startIndex, segment.getStopIndex(), projections, databaseType.getQuoteCharacter());
     }
 
     private ColumnProjection buildColumnProjection(final ColumnProjectionSegment segment) {
