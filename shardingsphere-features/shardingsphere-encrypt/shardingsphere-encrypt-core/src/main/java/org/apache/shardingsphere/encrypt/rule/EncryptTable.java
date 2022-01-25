@@ -189,4 +189,18 @@ public final class EncryptTable {
     public Optional<EncryptColumn> findEncryptColumn(final String logicColumn) {
         return Optional.ofNullable(columns.get(logicColumn));
     }
+    
+    /**
+     * Judge whether column config logic data type or not.
+     * 
+     * @return boolean whether column config logic data type or not
+     */
+    public boolean isColumnConfigLogicDataType() {
+        for (EncryptColumn each : columns.values()) {
+            if (null != each.getLogicDataType() && !each.getLogicDataType().isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
