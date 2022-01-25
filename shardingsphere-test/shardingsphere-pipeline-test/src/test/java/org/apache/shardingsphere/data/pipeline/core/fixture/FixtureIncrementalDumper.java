@@ -25,7 +25,6 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractIncrem
 
 public final class FixtureIncrementalDumper extends AbstractIncrementalDumper<FinishedPosition> {
     
-    
     public FixtureIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<FinishedPosition> position, final PipelineChannel channel) {
         super(dumperConfig, position, channel);
     }

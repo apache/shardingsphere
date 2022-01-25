@@ -39,16 +39,19 @@ import java.lang.reflect.Constructor;
 public final class DumperFactory {
     
     /**
-     * New instance of inventory dumper.
+     * Create inventory dumper.
      *
      * @param inventoryDumperConfig inventory dumper configuration
      * @param dataSourceManager data source factory
-     * @return JDBC dumper
+     * @param channel channel
+     * @return inventory dumper
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static InventoryDumper newInstanceJdbcDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineDataSourceManager dataSourceManager) {
+    public static InventoryDumper createInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getInstance(inventoryDumperConfig.getDataSourceConfig().getDatabaseType().getName());
-        return scalingEntry.getInventoryDumperClass().getConstructor(InventoryDumperConfiguration.class, PipelineDataSourceManager.class).newInstance(inventoryDumperConfig, dataSourceManager);
+        Constructor<? extends InventoryDumper> constructor = scalingEntry.getInventoryDumperClass()
+                .getConstructor(InventoryDumperConfiguration.class, PipelineDataSourceManager.class, PipelineChannel.class);
+        return constructor.newInstance(inventoryDumperConfig, dataSourceManager, channel);
     }
     
     /**
