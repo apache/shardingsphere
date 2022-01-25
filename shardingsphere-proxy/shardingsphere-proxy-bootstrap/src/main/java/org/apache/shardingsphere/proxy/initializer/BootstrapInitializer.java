@@ -84,7 +84,8 @@ public final class BootstrapInitializer {
         Map<String, Map<String, DataSource>> dataSourcesMap = getDataSourcesMap(proxyConfig.getSchemaConfigurations());
         ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder().modeConfig(modeConfig).dataSourcesMap(dataSourcesMap)
                 .schemaRuleConfigs(getSchemaRuleConfigurations(proxyConfig.getSchemaConfigurations()))
-                .globalRuleConfigs(proxyConfig.getGlobalRules()).props(proxyConfig.getProps()).labels(proxyConfig.getLabels())
+                .globalRuleConfigs(proxyConfig.getGlobalConfiguration().getRules())
+                .props(proxyConfig.getGlobalConfiguration().getProperties()).labels(proxyConfig.getGlobalConfiguration().getLabels())
                 .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, port)).build();
         return ContextManagerBuilderFactory.newInstance(modeConfig).build(parameter);
     }
