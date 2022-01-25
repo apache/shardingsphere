@@ -51,6 +51,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowSingleTableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowSingleTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowTableMetadataContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowTrafficRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowTransactionRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowVariableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.SqlParserRuleDefinitionContext;
@@ -70,6 +71,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowIn
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTableMetadataStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTrafficRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
@@ -145,6 +147,11 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     @Override
     public ASTNode visitShowInstanceMode(final ShowInstanceModeContext ctx) {
         return new ShowInstanceModeStatement();
+    }
+    
+    @Override
+    public ASTNode visitCountSchemaRules(final CountSchemaRulesContext ctx) {
+        return new CountSchemaRulesStatement(null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
     }
     
     @Override
@@ -280,14 +287,14 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
         TransactionProviderSegment provider = (TransactionProviderSegment) visit(ctx.providerDefinition());
         return new AlterTransactionRuleStatement(defaultType, provider);
     }
-
+    
     @Override
     public ASTNode visitProviderDefinition(final ProviderDefinitionContext ctx) {
         String providerType = getIdentifierValue(ctx.providerName());
         Properties props = getProperties(ctx.propertiesDefinition());
         return new TransactionProviderSegment(providerType, props);
     }
-
+    
     @Override
     public ASTNode visitShowSQLParserRule(final ShowSQLParserRuleContext ctx) {
         return new ShowSQLParserRuleStatement();
@@ -317,7 +324,11 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     }
     
     @Override
-    public ASTNode visitCountSchemaRules(final CountSchemaRulesContext ctx) {
-        return new CountSchemaRulesStatement(null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
+    public ASTNode visitShowTrafficRule(final ShowTrafficRuleContext ctx) {
+        ShowTrafficRuleStatement result = new ShowTrafficRuleStatement();
+        if (null != ctx.ruleName()) {
+            result.setTableName(getIdentifierValue(ctx.ruleName()));
+        }
+        return result;
     }
 }

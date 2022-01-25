@@ -79,6 +79,10 @@ showInstanceMode
     : SHOW INSTANCE MODE
     ;
 
+showTrafficRule
+    : SHOW TRAFFIC (RULES | RULE ruleName)
+    ;
+
 transactionRuleDefinition
     : LP DEFAULT EQ defaultType COMMA providerDefinition
     ;
@@ -164,5 +168,9 @@ concurrencyLevel
     ;
 
 schemaName
+    : IDENTIFIER
+    ;
+    
+ruleName
     : IDENTIFIER
     ;

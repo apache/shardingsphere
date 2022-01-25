@@ -24,6 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowIn
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTableMetadataStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTrafficRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.exec
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowReadwriteSplittingReadResourcesExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowSQLParserRuleExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowTableMetadataExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowTrafficRuleExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowTransactionRuleExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowVariableExecutor;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingReadResourcesStatement;
@@ -80,6 +82,9 @@ public final class ShowStatementExecutorFactory {
         }
         if (sqlStatement instanceof ShowInstanceModeStatement) {
             return new ShowInstanceModeExecutor();
+        }
+        if (sqlStatement instanceof ShowTrafficRuleStatement) {
+            return new ShowTrafficRuleExecutor((ShowTrafficRuleStatement) sqlStatement);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }
