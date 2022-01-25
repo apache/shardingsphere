@@ -17,22 +17,30 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.close;
 
-import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
  * Close complete packet for PostgreSQL.
  */
-public final class PostgreSQLCloseCompletePacket implements PostgreSQLIdentifierPacket {
+public final class PostgreSQLCloseCompletePacket implements PostgreSQLPacket {
     
-    @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    private static final byte[] VALUE = new byte[]{(byte) PostgreSQLMessagePacketType.CLOSE_COMPLETE.getValue(), 0, 0, 0, 4};
+    
+    private static final PostgreSQLCloseCompletePacket INSTANCE = new PostgreSQLCloseCompletePacket();
+    
+    /**
+     * Get instance of {@link PostgreSQLCloseCompletePacket}.
+     *
+     * @return instance of {@link PostgreSQLCloseCompletePacket}
+     */
+    public static PostgreSQLCloseCompletePacket getInstance() {
+        return INSTANCE;
     }
     
     @Override
-    public PostgreSQLIdentifierTag getIdentifier() {
-        return PostgreSQLMessagePacketType.CLOSE_COMPLETE;
+    public void write(final PostgreSQLPacketPayload payload) {
+        payload.getByteBuf().writeBytes(VALUE);
     }
 }
