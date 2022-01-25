@@ -170,7 +170,7 @@ concurrencyLevel
 schemaName
     : IDENTIFIER
     ;
-    
+
 ruleName
     : IDENTIFIER
     ;
