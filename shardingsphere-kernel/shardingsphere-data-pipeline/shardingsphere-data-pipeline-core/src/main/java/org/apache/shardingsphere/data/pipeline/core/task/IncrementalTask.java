@@ -76,7 +76,7 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
         IngestPosition<?> position = dumperConfig.getPosition();
         progress.setPosition(position);
         channel = createChannel(concurrency, pipelineChannelFactory, progress);
-        dumper = DumperFactory.newInstanceLogDumper(dumperConfig, position);
+        dumper = DumperFactory.createIncrementalDumper(dumperConfig, position, channel);
         importers = createImporters(concurrency, importerConfig, dataSourceManager);
         setupChannel();
     }
@@ -110,7 +110,6 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     }
     
     private void setupChannel() {
-        dumper.setChannel(channel);
         for (Importer each : importers) {
             each.setChannel(channel);
         }

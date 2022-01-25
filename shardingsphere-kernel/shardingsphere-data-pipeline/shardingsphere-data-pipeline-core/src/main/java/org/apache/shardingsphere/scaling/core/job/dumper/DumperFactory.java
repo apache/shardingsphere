@@ -22,12 +22,15 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
+
+import java.lang.reflect.Constructor;
 
 /**
  * Dumper factory.
@@ -49,27 +52,18 @@ public final class DumperFactory {
     }
     
     /**
-     * New instance of incremental dumper.
+     * Create incremental dumper.
      *
      * @param dumperConfig dumper configuration
      * @param position position
-     * @return log dumper
-     */
-    public static IncrementalDumper newInstanceLogDumper(final DumperConfiguration dumperConfig, final IngestPosition<?> position) {
-        return newInstanceLogDumper(dumperConfig.getDataSourceConfig().getDatabaseType().getName(), dumperConfig, position);
-    }
-    
-    /**
-     * New instance of incremental dumper.
-     *
-     * @param databaseType database type
-     * @param dumperConfig dumper configuration
-     * @param position position
-     * @return log dumper
+     * @param channel channel
+     * @return incremental dumper
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static IncrementalDumper newInstanceLogDumper(final String databaseType, final DumperConfiguration dumperConfig, final IngestPosition<?> position) {
+    public static IncrementalDumper createIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<?> position, final PipelineChannel channel) {
+        String databaseType = dumperConfig.getDataSourceConfig().getDatabaseType().getName();
         ScalingEntry scalingEntry = ScalingEntryLoader.getInstance(databaseType);
-        return scalingEntry.getIncrementalDumperClass().getConstructor(DumperConfiguration.class, IngestPosition.class).newInstance(dumperConfig, position);
+        Constructor<? extends IncrementalDumper> constructor = scalingEntry.getIncrementalDumperClass().getConstructor(DumperConfiguration.class, IngestPosition.class, PipelineChannel.class);
+        return constructor.newInstance(dumperConfig, position, channel);
     }
 }

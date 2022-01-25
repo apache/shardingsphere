@@ -124,7 +124,6 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     }
     
     private void setupChannel() {
-        dumper.setChannel(channel);
         importer.setChannel(channel);
     }
     
