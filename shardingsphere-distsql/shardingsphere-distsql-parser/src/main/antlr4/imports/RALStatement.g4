@@ -83,6 +83,10 @@ showTrafficRules
     : SHOW TRAFFIC (RULES | RULE ruleName)
     ;
 
+dropTrafficRule
+    : DROP TRAFFIC RULE ifExists? ruleName (COMMA ruleName)*
+    ;
+
 transactionRuleDefinition
     : LP DEFAULT EQ defaultType COMMA providerDefinition
     ;
@@ -173,4 +177,8 @@ schemaName
 
 ruleName
     : IDENTIFIER
+    ;
+
+ifExists
+    : IF EXISTS
     ;
