@@ -54,6 +54,12 @@ public enum SQLVisitorRule {
     
     ALTER_COLLATION("AlterCollation", SQLStatementType.DDL),
     
+    ALTER_DEFAULT_PRIVILEGES("AlterDefaultPrivileges", SQLStatementType.DDL),
+    
+    ALTER_FOREIGN_DATA_WRAPPER("AlterForeignDataWrapper", SQLStatementType.DDL),
+    
+    ALTER_FOREIGN_TABLE("AlterForeignTable", SQLStatementType.DDL),
+    
     DROP_TABLE("DropTable", SQLStatementType.DDL),
     
     TRUNCATE_TABLE("TruncateTable", SQLStatementType.DDL),
@@ -167,6 +173,12 @@ public enum SQLVisitorRule {
     PURGE("Purge", SQLStatementType.DDL),
 
     RENAME("Rename", SQLStatementType.DDL),
+    
+    CREATE_EXTENSION("CreateExtension", SQLStatementType.DDL),
+    
+    ALTER_EXTENSION("AlterExtension", SQLStatementType.DDL),
+    
+    DROP_EXTENSION("DropExtension", SQLStatementType.DDL),
     
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
     
@@ -391,6 +403,8 @@ public enum SQLVisitorRule {
     CREATE_TYPE("CreateType", SQLStatementType.DDL),
     
     DROP_CONVERSION("DropConversion", SQLStatementType.DDL),
+    
+    ALTER_DOMAIN("AlterDomain", SQLStatementType.DDL),
     
     ALTER_CONVERSION("AlterConversion", SQLStatementType.DDL),
     

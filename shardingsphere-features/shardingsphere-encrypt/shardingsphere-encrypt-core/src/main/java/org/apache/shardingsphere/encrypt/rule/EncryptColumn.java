@@ -30,11 +30,19 @@ import java.util.Optional;
 @Getter
 public final class EncryptColumn {
     
+    private final String logicDataType;
+    
     private final String cipherColumn;
+    
+    private final String cipherDataType;
     
     private final String assistedQueryColumn;
     
+    private final String assistedQueryDataType;
+    
     private final String plainColumn;
+    
+    private final String plainDataType;
     
     private final String encryptorName;
     

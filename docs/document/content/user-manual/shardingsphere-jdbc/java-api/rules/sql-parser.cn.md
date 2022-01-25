@@ -15,7 +15,7 @@ weight = 6
 | parseTreeCache (?)          | CacheOption       | 解析语法树本地缓存配置  |
 | sqlStatementCache (?)       | CacheOption       | sql语句本地缓存配置    |
 
-## 主从数据源配置
+## 本地缓存配置
 
 类名称：org.apache.shardingsphere.sql.parser.api.CacheOption
 

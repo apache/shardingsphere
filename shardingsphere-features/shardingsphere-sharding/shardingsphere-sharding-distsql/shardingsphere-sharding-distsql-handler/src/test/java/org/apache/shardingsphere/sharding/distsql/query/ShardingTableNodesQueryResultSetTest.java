@@ -84,20 +84,20 @@ public final class ShardingTableNodesQueryResultSetTest {
     }
     
     private ShardingAutoTableRuleConfiguration createProductAutoTableConfiguration() {
-        ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfiguration = new ShardingAutoTableRuleConfiguration("t_product", "ds_2,ds_3");
-        shardingAutoTableRuleConfiguration.setShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "t_product_algorithm"));
-        return shardingAutoTableRuleConfiguration;
+        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("t_product", "ds_2,ds_3");
+        result.setShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "t_product_algorithm"));
+        return result;
     }
     
     private ShardingAutoTableRuleConfiguration createUserAutoTableConfiguration() {
-        ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfiguration = new ShardingAutoTableRuleConfiguration("t_user", "ds_2,ds_3");
-        shardingAutoTableRuleConfiguration.setShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "t_user_algorithm"));
-        return shardingAutoTableRuleConfiguration;
+        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("t_user", "ds_2,ds_3");
+        result.setShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "t_user_algorithm"));
+        return result;
     }
     
     private Properties newProperties(final String key, final Object value) {
-        Properties properties = new Properties();
-        properties.put(key, value);
-        return properties;
+        Properties result = new Properties();
+        result.put(key, value);
+        return result;
     }
 }

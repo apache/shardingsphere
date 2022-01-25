@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
@@ -68,17 +69,17 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     @Override
     protected MergedResult createMergedResult() {
         MetaDataPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService().orElse(null);
-        if (null == persistService || null == persistService.getRepository()) {
+        if (null == persistService || null == persistService.getRepository() || persistService.getRepository() instanceof StandalonePersistRepository) {
             return new MultipleLocalDataMergedResult(buildInstanceRows());
         }
         return new MultipleLocalDataMergedResult(buildInstanceRows(persistService));
     }
     
     private Collection<List<Object>> buildInstanceRows() {
-        List<List<Object>> rows = new LinkedList<>();
-        InstanceId instanceId = new InstanceId();
-        rows.add(buildRow(instanceId.getId(), ENABLE));
-        return rows;
+        List<List<Object>> result = new LinkedList<>();
+        InstanceId instanceId = ProxyContext.getInstance().getContextManager().getInstanceContext().getInstance().getInstanceDefinition().getInstanceId();
+        result.add(buildRow(instanceId.getId(), ENABLE));
+        return result;
     }
     
     private Collection<List<Object>> buildInstanceRows(final MetaDataPersistService persistService) {

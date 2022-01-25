@@ -30,6 +30,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDB
 import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionIsolationLevel;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -54,7 +55,14 @@ public final class ConnectionSession {
     
     @Getter(AccessLevel.NONE)
     private final AtomicBoolean autoCommit = new AtomicBoolean(true);
-    
+
+    @Getter(AccessLevel.NONE)
+    private AtomicBoolean readOnly = new AtomicBoolean(false);
+
+    private TransactionIsolationLevel defaultIsolationLevel;
+
+    private TransactionIsolationLevel isolationLevel;
+
     private final BackendConnection backendConnection;
     
     public ConnectionSession(final TransactionType initialTransactionType, final AttributeMap attributeMap) {
@@ -109,7 +117,7 @@ public final class ConnectionSession {
     public boolean isAutoCommit() {
         return autoCommit.get();
     }
-    
+
     /**
      * Set autocommit.
      *
@@ -117,5 +125,23 @@ public final class ConnectionSession {
      */
     public void setAutoCommit(final boolean autoCommit) {
         this.autoCommit.set(autoCommit);
+    }
+
+    /**
+     * Is readonly.
+     *
+     * @return is readonly
+     */
+    public boolean isReadOnly() {
+        return readOnly.get();
+    }
+
+    /**
+     * Set readonly.
+     *
+     * @param readOnly readonly
+     */
+    public void setReadOnly(final boolean readOnly) {
+        this.readOnly.set(readOnly);
     }
 }

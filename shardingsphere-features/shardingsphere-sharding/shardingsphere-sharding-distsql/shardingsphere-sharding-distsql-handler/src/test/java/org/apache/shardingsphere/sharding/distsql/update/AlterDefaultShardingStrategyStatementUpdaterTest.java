@@ -94,7 +94,7 @@ public final class AlterDefaultShardingStrategyStatementUpdaterTest {
         assertThat(defaultTableShardingStrategy.getShardingAlgorithmName(), is("order_id_algorithm"));
         assertThat(defaultTableShardingStrategy.getShardingColumn(), is("order_id"));
     }
-
+    
     @Test
     public void assertAlterDefaultDatabaseShardingStrategy() throws DistSQLException {
         AlgorithmSegment databaseAlgorithmSegment = getAutoCreativeAlgorithmSegment("inline", newProperties("algorithm-expression", "ds_${user_id% 2}"));
@@ -108,14 +108,14 @@ public final class AlterDefaultShardingStrategyStatementUpdaterTest {
         assertThat(defaultDatabaseShardingStrategy.getShardingAlgorithmName(), is("default_database_inline"));
         assertThat(defaultDatabaseShardingStrategy.getShardingColumn(), is("user_id"));
     }
-
-    private AlgorithmSegment getAutoCreativeAlgorithmSegment(final String name, final Properties properties) {
-        return new AlgorithmSegment(name, properties);
+    
+    private AlgorithmSegment getAutoCreativeAlgorithmSegment(final String name, final Properties props) {
+        return new AlgorithmSegment(name, props);
     }
-
+    
     private static Properties newProperties(final String key, final String value) {
-        Properties properties = new Properties();
-        properties.put(key, value);
-        return properties;
+        Properties result = new Properties();
+        result.put(key, value);
+        return result;
     }
 }

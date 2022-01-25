@@ -25,14 +25,11 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
@@ -41,7 +38,6 @@ import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -83,20 +79,11 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
     
     private final Random random = new SecureRandom();
     
-    private final Map<String, StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetters;
-    
-    private final DatabaseType databaseType;
-    
-    private final ConfigurationProperties props;
-    
     public ConnectionManager(final String schema, final ContextManager contextManager) {
         dataSourceMap.putAll(contextManager.getDataSourceMap(schema));
         dataSourceMap.putAll(getTrafficDataSourceMap(schema, contextManager));
         physicalDataSourceMap.putAll(contextManager.getDataSourceMap(schema));
         connectionTransaction = createConnectionTransaction(schema, contextManager);
-        fetchSizeSetters = SingletonSPIRegistry.getTypedSingletonInstancesMap(StatementMemoryStrictlyFetchSizeSetter.class);
-        databaseType = contextManager.getMetaDataContexts().getMetaData(schema).getResource().getDatabaseType();
-        props = contextManager.getMetaDataContexts().getProps();
     }
     
     private Map<String, DataSource> getTrafficDataSourceMap(final String schema, final ContextManager contextManager) {
@@ -124,7 +111,7 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
     
     private DataSourceProperties createDataSourceProperties(final ComputeNodeInstance instance, final Collection<ShardingSphereUser> users,
                                                             final DataSourceProperties dataSourcePropsSample, final String schema) {
-        Map<String, Object> props = dataSourcePropsSample.getLocalProperties();
+        Map<String, Object> props = dataSourcePropsSample.getAllLocalProperties();
         props.put("jdbcUrl", createJdbcUrl(instance, schema, props));
         ShardingSphereUser user = users.iterator().next();
         props.put("username", user.getGrantee().getUsername());
@@ -325,29 +312,15 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
     @SuppressWarnings("MagicConstant")
     @Override
     public Statement createStorageResource(final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
-        Statement result = connection.createStatement(option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
-        if (ConnectionMode.MEMORY_STRICTLY == connectionMode) {
-            setFetchSize(result);
-        }
-        return result;
+        return connection.createStatement(option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
     }
     
     @SuppressWarnings("MagicConstant")
     @Override
     public PreparedStatement createStorageResource(final String sql, final List<Object> parameters,
                                                    final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
-        PreparedStatement result = option.isReturnGeneratedKeys() ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) 
+        return option.isReturnGeneratedKeys() ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
                 : connection.prepareStatement(sql, option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
-        if (ConnectionMode.MEMORY_STRICTLY == connectionMode) {
-            setFetchSize(result);
-        }
-        return result;
-    }
-    
-    private void setFetchSize(final Statement statement) throws SQLException {
-        if (fetchSizeSetters.containsKey(databaseType.getName())) {
-            fetchSizeSetters.get(databaseType.getName()).setFetchSize(statement, props);
-        }
     }
     
     @Override

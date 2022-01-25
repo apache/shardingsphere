@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.metadata.persist;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.mode.metadata.persist.service.ComputeNodePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
@@ -88,8 +88,9 @@ public final class MetaDataPersistService {
      * 
      * @param instanceId instance id
      * @param labels collection of label
+     * @param isOverwrite whether overwrite registry center's configuration if existed               
      */
-    public void persistInstanceConfigurations(final String instanceId, final Collection<String> labels) {
-        computeNodePersistService.persistInstanceLabels(instanceId, labels);
+    public void persistInstanceConfigurations(final String instanceId, final Collection<String> labels, final boolean isOverwrite) {
+        computeNodePersistService.persistInstanceLabels(instanceId, labels, isOverwrite);
     }
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.builder.SQLTokenGeneratorBuilder;
@@ -54,6 +55,8 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
     
     private final RouteContext routeContext;
     
+    private final SQLStatementContext<?> sqlStatementContext;
+    
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
         Collection<SQLTokenGenerator> result = new LinkedList<>();
@@ -85,6 +88,8 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
         if (toBeAddedSQLTokenGenerator instanceof RouteContextAware) {
             ((RouteContextAware) toBeAddedSQLTokenGenerator).setRouteContext(routeContext);
         }
-        sqlTokenGenerators.add(toBeAddedSQLTokenGenerator);
+        if (toBeAddedSQLTokenGenerator.isGenerateSQLToken(sqlStatementContext)) {
+            sqlTokenGenerators.add(toBeAddedSQLTokenGenerator);
+        }
     }
 }

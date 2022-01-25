@@ -27,9 +27,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -55,11 +53,9 @@ public final class ShardingAlgorithmQueryResultSetTest {
     
     private RuleConfiguration createRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        Properties properties1 = new Properties();
-        properties1.put("algorithm-expression", "ds_${user_id % 2}");
-        Map<String, ShardingSphereAlgorithmConfiguration> map = new LinkedHashMap<>(1);
-        map.put("database_inline", new ShardingSphereAlgorithmConfiguration("INLINE", properties1));
-        result.setShardingAlgorithms(map);
+        Properties props = new Properties();
+        props.put("algorithm-expression", "ds_${user_id % 2}");
+        result.getShardingAlgorithms().put("database_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props));
         return result;
     }
 }
