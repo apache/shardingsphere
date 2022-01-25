@@ -19,10 +19,9 @@ package org.apache.shardingsphere.encrypt.algorithm;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
-import java.security.GeneralSecurityException;
 import java.util.Properties;
 
 /**
@@ -38,15 +37,13 @@ public final class EmptyEncryptAlgorithm implements EncryptAlgorithm<Object, Str
     public void init() {
     }
     
-    @SneakyThrows(GeneralSecurityException.class)
     @Override
-    public String encrypt(final Object plainValue) {
+    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return String.valueOf(plainValue);
     }
     
-    @SneakyThrows(GeneralSecurityException.class)
     @Override
-    public Object decrypt(final String cipherValue) {
+    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
         return cipherValue;
     }
     
