@@ -36,7 +36,7 @@ public final class YamlProxySchemaConfiguration implements YamlConfiguration {
     
     private String schemaName;
     
-    private Map<String, YamlProxyResourceConfiguration> dataSources = new HashMap<>();
+    private Map<String, YamlProxyDataSourceConfiguration> dataSources = new HashMap<>();
     
     private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
 }
