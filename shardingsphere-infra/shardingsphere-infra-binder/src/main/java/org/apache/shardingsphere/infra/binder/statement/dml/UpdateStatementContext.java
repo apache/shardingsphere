@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 
 import java.util.Collection;
-import java.util.Optional;
+import java.util.LinkedList;
 
 /**
  * Update SQL statement context.
@@ -41,10 +41,13 @@ public final class UpdateStatementContext extends CommonSQLStatementContext<Upda
     
     private final String schemaName;
     
+    private final Collection<WhereSegment> whereSegments = new LinkedList<>();
+    
     public UpdateStatementContext(final UpdateStatement sqlStatement, final String schemaName) {
         super(sqlStatement);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         this.schemaName = schemaName;
+        getSqlStatement().getWhere().ifPresent(whereSegments::add);
     }
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
@@ -59,7 +62,7 @@ public final class UpdateStatementContext extends CommonSQLStatementContext<Upda
     }
     
     @Override
-    public Optional<WhereSegment> getWhere() {
-        return getSqlStatement().getWhere();
+    public Collection<WhereSegment> getWhereSegments() {
+        return whereSegments;
     }
 }

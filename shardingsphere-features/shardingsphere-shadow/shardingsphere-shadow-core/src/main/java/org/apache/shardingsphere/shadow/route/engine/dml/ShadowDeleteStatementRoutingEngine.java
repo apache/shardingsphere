@@ -23,6 +23,8 @@ import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.engine.util.ShadowExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 
@@ -66,7 +68,11 @@ public final class ShadowDeleteStatementRoutingEngine extends AbstractShadowDMLS
     
     private Collection<ExpressionSegment> parseWhereSegment() {
         Collection<ExpressionSegment> result = new LinkedList<>();
-        deleteStatementContext.getWhere().ifPresent(whereSegment -> ExpressionExtractUtil.getAndPredicates(whereSegment.getExpr()).forEach(each -> result.addAll(each.getPredicates())));
+        for (WhereSegment each : deleteStatementContext.getWhereSegments()) {
+            for (AndPredicate predicate : ExpressionExtractUtil.getAndPredicates(each.getExpr())) {
+                result.addAll(predicate.getPredicates());
+            }
+        }
         return result;
     }
     
