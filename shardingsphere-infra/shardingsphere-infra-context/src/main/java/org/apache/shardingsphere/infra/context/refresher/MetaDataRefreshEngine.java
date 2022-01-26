@@ -47,7 +47,7 @@ public final class MetaDataRefreshEngine {
         ShardingSphereServiceLoader.register(MetaDataRefresher.class);
     }
     
-    private static final Set<Class<? extends SQLStatement>> IGNORABLE_SQL_STATEMENT_CLASS = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private static final Set<Class<? extends SQLStatement>> IGNORABLE_SQL_STATEMENT_CLASSES = Collections.newSetFromMap(new ConcurrentHashMap<>());
     
     private final ShardingSphereMetaData schemaMetaData;
     
@@ -67,7 +67,7 @@ public final class MetaDataRefreshEngine {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void refresh(final SQLStatement sqlStatement, final Collection<String> logicDataSourceNames) throws SQLException {
         Class<? extends SQLStatement> sqlStatementClass = sqlStatement.getClass();
-        if (IGNORABLE_SQL_STATEMENT_CLASS.contains(sqlStatementClass)) {
+        if (IGNORABLE_SQL_STATEMENT_CLASSES.contains(sqlStatementClass)) {
             return;
         }
         Optional<MetaDataRefresher> schemaRefresher = TypedSPIRegistry.findRegisteredService(MetaDataRefresher.class, sqlStatementClass.getSuperclass().getName(), null);
@@ -80,7 +80,7 @@ public final class MetaDataRefreshEngine {
             // TODO Subscribe and handle DCLStatementEvent
         }
         if (!schemaRefresher.isPresent() && !sqlStatementEventMapper.isPresent()) {
-            IGNORABLE_SQL_STATEMENT_CLASS.add(sqlStatementClass);
+            IGNORABLE_SQL_STATEMENT_CLASSES.add(sqlStatementClass);
         }
     }
 }
