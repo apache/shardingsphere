@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rewrite.parameter.rewriter;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.drop;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
 
 import java.util.Collection;
 
 /**
- * Parameter rewriter builder.
+ * Drop traffic rule statement.
  */
-public interface ParameterRewriterBuilder {
+@Setter
+@Getter
+public final class DropTrafficRuleStatement extends CommonDistSQLStatement {
     
-    /**
-     * Get parameter rewriters.
-     * 
-     * @return parameter rewriters
-     */
-    Collection<ParameterRewriter> getParameterRewriters();
+    private boolean containsIfExistClause;
+    
+    private Collection<String> ruleNames;
 }

@@ -15,8 +15,8 @@
   ~ limitations under the License.
   -->
 
-<dataset>
-    <metadata data-nodes="db.t_order,shadow_db.t_order">
+<dataset update-count="3">
+    <metadata data-nodes="db.t_order">
         <column name="order_id" type="long" />
         <column name="user_id" type="int" />
         <column name="order_name" type="varchar" />
@@ -26,14 +26,9 @@
         <column name="type_time" type="time" />
         <column name="type_timestamp" type="timestamp"/>
     </metadata>
-    <row data-node="db.t_order" values="1, 1, pro_order, 10.00, S, 2017-08-08, 18:30:30, 2017-08-08 18:30:30" />
-    <row data-node="db.t_order" values="2, 1, pro_order, 10.00, S, 2017-08-08, 18:30:30, 2017-08-08 18:30:30" />
-    <row data-node="db.t_order" values="3, 1, pro_order, 10.00, S, 2017-08-08, 18:30:30, 2017-08-08 18:30:30" />
-    <row data-node="db.t_order" values="4, 1, pro_order, 10.00, S, 2017-08-08, 18:30:30, 2017-08-08 18:30:30" />
-    <row data-node="db.t_order" values="5, 1, pro_order, 10.00, S, 2017-08-08, 18:30:30, 2017-08-08 18:30:30" />
-    <row data-node="shadow_db.t_order" values="1, 0, shadow_order, 10.00, S, 2017-08-08, 18:30:30, 2017-08-08 18:30:30" />
-    <row data-node="shadow_db.t_order" values="2, 0, shadow_order, 10.00, S, 2017-08-08, 18:30:30, 2017-08-08 18:30:30" />
-    <row data-node="shadow_db.t_order" values="3, 0, shadow_order, 10.00, S, 2017-08-08, 18:30:30, 2017-08-08 18:30:30" />
-    <row data-node="shadow_db.t_order" values="4, 0, shadow_order, 10.00, S, 2017-08-08, 18:30:30, 2017-08-08 18:30:30" />
-    <row data-node="shadow_db.t_order" values="5, 0, shadow_order, 10.00, S, 2017-08-08, 18:30:30, 2017-08-08 18:30:30" />
+    <row data-node="db.t_order" values="1, 1, shadow_order, 10.00, S, 2017-08-08, 18:30:30, 2017-08-08 18:30:30" />
+    <row data-node="db.t_order" values="2, 1, shadow_order, 10.00, S, 2017-08-08, 18:30:30, 2017-08-08 18:30:30" />
+    <row data-node="db.t_order" values="3, 1, shadow_order, 10.00, S, 2017-08-08, 18:30:30, 2017-08-08 18:30:30" />
+    <row data-node="db.t_order" values="4, 1, shadow_order, 10.00, S, 2017-08-08, 18:30:30, 2017-08-08 18:30:30" />
+    <row data-node="db.t_order" values="5, 1, shadow_order, 10.00, S, 2017-08-08, 18:30:30, 2017-08-08 18:30:30" />
 </dataset>

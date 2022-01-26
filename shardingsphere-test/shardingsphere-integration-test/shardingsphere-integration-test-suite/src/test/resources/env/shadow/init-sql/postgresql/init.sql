@@ -25,12 +25,12 @@ GRANT ALL PRIVILEGES ON DATABASE shadow_db TO root;
 
 DROP TABLE IF EXISTS t_order;
 
-CREATE TABLE t_order (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name VARCHAR(32) NOT NULL, type_decimal DECIMAL(18,2) NOT NULL, type_cher char(1) NOT NULL, type_date DATE NOT NULL,
+CREATE TABLE t_order (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name VARCHAR(32) NOT NULL, type_decimal DECIMAL(18,2) NOT NULL, type_char char(1) NOT NULL, type_date DATE NOT NULL,
                       type_time time(0) NOT NULL, type_timestamp timestamp(0) without time zone, PRIMARY KEY (order_id));
 
 \c shadow_db
 
 DROP TABLE IF EXISTS t_order;
 
-CREATE TABLE t_order (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name VARCHAR(32) NOT NULL, type_decimal DECIMAL(18,2) NOT NULL, type_cher char(1) NOT NULL, type_date DATE NOT NULL,
+CREATE TABLE t_order (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name VARCHAR(32) NOT NULL, type_decimal DECIMAL(18,2) NOT NULL, type_char char(1) NOT NULL, type_date DATE NOT NULL,
                       type_time time(0) NOT NULL, type_timestamp timestamp(0) without time zone, PRIMARY KEY (order_id));
