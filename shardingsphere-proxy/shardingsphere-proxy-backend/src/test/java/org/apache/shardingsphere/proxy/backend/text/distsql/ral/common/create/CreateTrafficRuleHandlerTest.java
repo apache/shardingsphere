@@ -87,7 +87,7 @@ public class CreateTrafficRuleHandlerTest {
         return Collections.singletonList(trafficRuleConfiguration);
     }
     
-    private CreateTrafficRuleStatement getSQLStatement(final TrafficRuleSegment... segments) {
+    private CreateTrafficRuleStatement getSQLStatement(final TrafficRuleSegment...segments) {
         return new CreateTrafficRuleStatement(Arrays.asList(segments));
     }
 }
