@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.infra.config.datasource.pool.destroyer.impl;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
@@ -36,14 +33,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 public final class DefaultDataSourcePoolDestroyerTest {
 
     @Test
-    public void assertDestroy() {
-        try {
-            HikariDataSource dataSource = new HikariDataSource();
-            new DefaultDataSourcePoolDestroyer().destroy(dataSource);
-            assertThat(dataSource.isClosed(), is(true));
-        } catch (SQLException ex) {
-            fail();
-        }
+    public void assertDestroy() throws SQLException {
+        HikariDataSource dataSource = new HikariDataSource();
+        new DefaultDataSourcePoolDestroyer().destroy(dataSource);
+        assertTrue(dataSource.isClosed());
     }
 
     @Test(expected = SQLException.class)
@@ -51,15 +44,5 @@ public final class DefaultDataSourcePoolDestroyerTest {
         HikariDataSource dataSource = mock(HikariDataSource.class);
         doThrow(new RuntimeException()).when(dataSource).close();
         new DefaultDataSourcePoolDestroyer().destroy(dataSource);
-    }
-    
-    @Test
-    public void assertGetType() {
-        assertThat(new DefaultDataSourcePoolDestroyer().getType(), is("Default"));
-    }
-
-    @Test
-    public void assertIsDefault() {
-        assertTrue(new DefaultDataSourcePoolDestroyer().isDefault());
     }
 }

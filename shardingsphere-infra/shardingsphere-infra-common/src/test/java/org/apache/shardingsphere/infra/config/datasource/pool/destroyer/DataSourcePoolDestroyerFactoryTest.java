@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.infra.config.datasource.pool.destroyer;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.SQLException;
 
@@ -30,28 +28,19 @@ import org.junit.Test;
 
 public final class DataSourcePoolDestroyerFactoryTest {
     
-    @Test(timeout = 60000)
-    public void assertDestroyForHikari() throws InterruptedException {
-        try {
-            HikariDataSource dataSource = new HikariDataSource();
-            DataSourcePoolDestroyerFactory.destroy(dataSource);
-            while (!dataSource.isClosed()) {
-                // Test will fail by timeout if dataSource is not closed.
-                Thread.sleep(10L);
-            }
-        } catch (SQLException ex) {
-            fail();
+    @Test(timeout = 60000L)
+    public void assertDestroyForHikari() throws InterruptedException, SQLException {
+        HikariDataSource dataSource = new HikariDataSource();
+        DataSourcePoolDestroyerFactory.destroy(dataSource);
+        while (!dataSource.isClosed()) {
+            Thread.sleep(10L);
         }
     }
 
     @Test
-    public void assertDestroyForDefault() throws InterruptedException {
-        try {
-            BasicDataSource dataSource = new BasicDataSource();
-            DataSourcePoolDestroyerFactory.destroy(dataSource);
-            assertThat(dataSource.isClosed(), is(true));
-        } catch (SQLException ex) {
-            fail();
-        }
+    public void assertDestroyForDefault() throws InterruptedException, SQLException {
+        BasicDataSource dataSource = new BasicDataSource();
+        DataSourcePoolDestroyerFactory.destroy(dataSource);
+        assertTrue(dataSource.isClosed());
     }
 }

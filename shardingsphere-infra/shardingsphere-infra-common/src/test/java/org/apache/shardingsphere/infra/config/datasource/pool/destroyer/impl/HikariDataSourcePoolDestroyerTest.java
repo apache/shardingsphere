@@ -17,33 +17,18 @@
 
 package org.apache.shardingsphere.infra.config.datasource.pool.destroyer.impl;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-
 import com.zaxxer.hikari.HikariDataSource;
 
 import org.junit.Test;
 
 public final class HikariDataSourcePoolDestroyerTest {
 
-    @Test(timeout = 60000)
+    @Test(timeout = 60000L)
     public void assertDestroy() throws InterruptedException {
         HikariDataSource dataSource = new HikariDataSource();
         new HikariDataSourcePoolDestroyer().destroy(dataSource);
         while (!dataSource.isClosed()) {
-            // Test will fail by timeout if dataSource is not closed.
             Thread.sleep(10L);
         }
-    }
-
-    @Test
-    public void assertGetType() {
-        assertThat(new HikariDataSourcePoolDestroyer().getType(), is(HikariDataSource.class.getCanonicalName()));
-    }
-
-    @Test
-    public void assertIsDefault() {
-        assertFalse(new HikariDataSourcePoolDestroyer().isDefault());
     }
 }
