@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mode.manager.standalone;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
+import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyerFactory;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
@@ -70,16 +72,19 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
                 : parameter.getModeConfig().getRepository();
         StandalonePersistRepository repository = TypedSPIRegistry.getRegisteredService(StandalonePersistRepository.class, repositoryConfig.getType(), repositoryConfig.getProps());
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
-        persistConfigurations(metaDataPersistService, parameter.getDataSourcesMap(), parameter.getSchemaRuleConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), 
-                parameter.getModeConfig().isOverwrite());
-        Collection<String> schemaNames = parameter.getInstanceDefinition().getInstanceType() == InstanceType.JDBC ? parameter.getDataSourcesMap().keySet()
+        persistConfigurations(metaDataPersistService, parameter.getSchemaConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), parameter.getModeConfig().isOverwrite());
+        Collection<String> schemaNames = parameter.getInstanceDefinition().getInstanceType() == InstanceType.JDBC ? parameter.getSchemaConfigs().keySet()
                 : metaDataPersistService.getSchemaMetaDataService().loadAllNames();
-        Map<String, Map<String, DataSource>> standaloneDataSources = loadDataSourcesMap(metaDataPersistService, parameter.getDataSourcesMap(), schemaNames);
+        Map<String, Map<String, DataSource>> standaloneDataSources = loadDataSourcesMap(metaDataPersistService, parameter.getSchemaConfigs(), schemaNames);
         Map<String, Collection<RuleConfiguration>> standaloneSchemaRules = loadSchemaRules(metaDataPersistService, schemaNames);
+        Map<String, DataSourceProvidedSchemaConfiguration> schemaConfigs = new LinkedHashMap<>(standaloneDataSources.size(), 1);
+        for (String each : standaloneDataSources.keySet()) {
+            schemaConfigs.put(each, new DataSourceProvidedSchemaConfiguration(standaloneDataSources.get(each), standaloneSchemaRules.get(each)));
+        }
         Properties standaloneProps = metaDataPersistService.getPropsService().load();
-        Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(standaloneDataSources, standaloneSchemaRules, standaloneProps);
-        Map<String, ShardingSphereSchema> schemas = new SchemaLoader(standaloneDataSources, standaloneSchemaRules, rules, standaloneProps).load();
-        MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(standaloneDataSources, standaloneSchemaRules, metaDataPersistService.getGlobalRuleService().load(), schemas,
+        Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(schemaConfigs, standaloneProps);
+        Map<String, ShardingSphereSchema> schemas = new SchemaLoader(schemaConfigs, rules, standaloneProps).load();
+        MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(schemaConfigs, metaDataPersistService.getGlobalRuleService().load(), schemas,
                 rules, standaloneProps).build(metaDataPersistService);
         TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
         ContextManager result = new ContextManager();
@@ -89,45 +94,40 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         return result;
     }
     
-    private void persistConfigurations(final MetaDataPersistService metaDataPersistService, final Map<String, Map<String, DataSource>> dataSourcesMap,
-                                       final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs,
+    private void persistConfigurations(final MetaDataPersistService metaDataPersistService, final Map<String, ? extends SchemaConfiguration> schemaConfig, 
+                                       final Collection<RuleConfiguration> globalRuleConfigs,
                                        final Properties props, final boolean overwrite) {
-        if (!isEmptyLocalConfiguration(dataSourcesMap, schemaRuleConfigs, globalRuleConfigs, props)) {
-            metaDataPersistService.persistConfigurations(getDataSourcePropertiesMaps(dataSourcesMap), schemaRuleConfigs, globalRuleConfigs, props, overwrite);
+        if (!isEmptyLocalConfiguration(schemaConfig, globalRuleConfigs, props)) {
+            metaDataPersistService.persistConfigurations(schemaConfig, globalRuleConfigs, props, overwrite);
         }
     }
     
-    private boolean isEmptyLocalConfiguration(final Map<String, Map<String, DataSource>> dataSourcesMap,
-                                              final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
-        return isEmptyLocalDataSourcesMap(dataSourcesMap) && isEmptyLocalSchemaRuleConfigurations(schemaRuleConfigs) && globalRuleConfigs.isEmpty() && props.isEmpty();
+    private boolean isEmptyLocalConfiguration(final Map<String, ? extends SchemaConfiguration> schemaConfigs, final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
+        return isEmptyLocalDataSourcesMap(schemaConfigs) && isEmptyLocalSchemaRuleConfigurations(schemaConfigs) && globalRuleConfigs.isEmpty() && props.isEmpty();
     }
     
-    private boolean isEmptyLocalDataSourcesMap(final Map<String, Map<String, DataSource>> dataSourcesMap) {
-        return dataSourcesMap.entrySet().stream().allMatch(entry -> entry.getValue().isEmpty());
+    private boolean isEmptyLocalDataSourcesMap(final Map<String, ? extends SchemaConfiguration> schemaConfigs) {
+        return schemaConfigs.entrySet().stream().allMatch(entry -> entry.getValue().getDataSources().isEmpty());
     }
     
-    private boolean isEmptyLocalSchemaRuleConfigurations(final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs) {
-        return schemaRuleConfigs.entrySet().stream().allMatch(entry -> entry.getValue().isEmpty());
+    private boolean isEmptyLocalSchemaRuleConfigurations(final Map<String, ? extends SchemaConfiguration> schemaConfigs) {
+        return schemaConfigs.entrySet().stream().allMatch(entry -> entry.getValue().getRuleConfigurations().isEmpty());
     }
     
-    private Map<String, Map<String, DataSourceProperties>> getDataSourcePropertiesMaps(final Map<String, Map<String, DataSource>> dataSourcesMap) {
-        Map<String, Map<String, DataSourceProperties>> result = new LinkedHashMap<>(dataSourcesMap.size(), 1);
-        for (Entry<String, Map<String, DataSource>> entry : dataSourcesMap.entrySet()) {
-            result.put(entry.getKey(), createDataSourcePropertiesMap(entry.getValue()));
-        }
+    private Map<String, Map<String, DataSource>> loadDataSourcesMap(final MetaDataPersistService metaDataPersistService, 
+                                                                    final Map<String, ? extends SchemaConfiguration> schemaConfig, final Collection<String> schemaNames) {
+        Map<String, Map<String, DataSourceProperties>> loadedDataSourcePropsMaps = loadedDataSourcePropertiesMaps(metaDataPersistService, schemaNames);
+        Map<String, Map<String, DataSource>> dataSourcesMap = getDataSourcesMap(schemaConfig);
+        Map<String, Map<String, DataSource>> result = getLoadDataSources(loadedDataSourcePropsMaps, dataSourcesMap);
+        closeLocalDataSources(dataSourcesMap, result);
         return result;
     }
     
-    private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Map<String, DataSource> dataSourceMap) {
-        return dataSourceMap.entrySet().stream().collect(
-                Collectors.toMap(Entry::getKey, entry -> DataSourcePropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-    }
-    
-    private Map<String, Map<String, DataSource>> loadDataSourcesMap(final MetaDataPersistService metaDataPersistService, final Map<String, Map<String, DataSource>> dataSourcesMap,
-                                                                    final Collection<String> schemaNames) {
-        Map<String, Map<String, DataSourceProperties>> loadedDataSourcePropsMaps = loadedDataSourcePropertiesMaps(metaDataPersistService, schemaNames);
-        Map<String, Map<String, DataSource>> result = getLoadDataSources(loadedDataSourcePropsMaps, dataSourcesMap);
-        closeLocalDataSources(dataSourcesMap, result);
+    private Map<String, Map<String, DataSource>> getDataSourcesMap(final Map<String, ? extends SchemaConfiguration> schemaConfig) {
+        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(schemaConfig.size(), 1);
+        for (Entry<String, ? extends SchemaConfiguration> entry : schemaConfig.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().getDataSources());
+        }
         return result;
     }
     

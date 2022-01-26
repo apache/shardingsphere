@@ -15,35 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager;
+package org.apache.shardingsphere.infra.config.schema.impl;
 
-import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Properties;
 
 /**
- * Context manager builder parameter.
+ * Data source provided schema configuration.
  */
-@Builder
+@RequiredArgsConstructor
 @Getter
-public final class ContextManagerBuilderParameter {
+public final class DataSourceProvidedSchemaConfiguration implements SchemaConfiguration {
     
-    private final ModeConfiguration modeConfig;
+    private final Map<String, DataSource> dataSources;
     
-    private final Map<String, ? extends SchemaConfiguration> schemaConfigs;
-    
-    private final Collection<RuleConfiguration> globalRuleConfigs;
-    
-    private final Properties props;
-    
-    private final Collection<String> labels;
-    
-    private final InstanceDefinition instanceDefinition;
+    private final Collection<RuleConfiguration> ruleConfigurations;
 }
