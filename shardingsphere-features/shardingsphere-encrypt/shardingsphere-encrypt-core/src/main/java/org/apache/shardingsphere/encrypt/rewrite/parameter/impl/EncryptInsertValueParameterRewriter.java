@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.encrypt.rewrite.parameter.impl;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
+import lombok.Setter;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -26,6 +28,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementConte
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
+import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
@@ -40,14 +43,17 @@ import java.util.Optional;
 /**
  * Insert value parameter rewriter for encrypt.
  */
-public final class EncryptInsertValueParameterRewriter extends EncryptParameterRewriter<InsertStatementContext> {
-
+@Setter
+public final class EncryptInsertValueParameterRewriter implements ParameterRewriter<InsertStatementContext>, EncryptRuleAware {
+    
+    private EncryptRule encryptRule;
+    
     @Override
-    protected boolean isNeedRewriteForEncrypt(final SQLStatementContext sqlStatementContext) {
+    public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof InsertStatementContext && !InsertStatementHandler.getSetAssignmentSegment(((InsertStatementContext) sqlStatementContext).getSqlStatement()).isPresent()
                 && (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext());
     }
-
+    
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final List<Object> parameters) {
         String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
@@ -55,11 +61,11 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
         String schemaName = insertStatementContext.getSchemaName();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
-            getEncryptRule().findEncryptor(schemaName, tableName, columnName).ifPresent(
+            encryptRule.findEncryptor(schemaName, tableName, columnName).ifPresent(
                 encryptAlgorithm -> encryptInsertValues((GroupedParameterBuilder) parameterBuilder, insertStatementContext, encryptAlgorithm, tableName, columnName));
         }
     }
-
+    
     private void encryptInsertValues(final GroupedParameterBuilder parameterBuilder,
                                      final InsertStatementContext insertStatementContext, final EncryptAlgorithm encryptAlgorithm, final String tableName, final String encryptLogicColumnName) {
         int columnIndex = getColumnIndex(parameterBuilder, insertStatementContext, encryptLogicColumnName);
@@ -78,7 +84,7 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
             count++;
         }
     }
-
+    
     private int getColumnIndex(final GroupedParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final String encryptLogicColumnName) {
         List<String> columnNames;
         if (parameterBuilder.getDerivedColumnName().isPresent()) {
@@ -96,11 +102,11 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
         parameterBuilder.addReplacedParameters(parameterIndex, encryptAlgorithm.encrypt(originalValue));
         Collection<Object> addedParameters = new LinkedList<>();
         if (encryptAlgorithm instanceof QueryAssistedEncryptAlgorithm) {
-            Optional<String> assistedColumnName = getEncryptRule().findAssistedQueryColumn(tableName, encryptLogicColumnName);
+            Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, encryptLogicColumnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
             addedParameters.add(((QueryAssistedEncryptAlgorithm) encryptAlgorithm).queryAssistedEncrypt(originalValue));
         }
-        if (getEncryptRule().findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
+        if (encryptRule.findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
             addedParameters.add(originalValue);
         }
         if (!addedParameters.isEmpty()) {

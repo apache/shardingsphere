@@ -18,15 +18,18 @@
 package org.apache.shardingsphere.encrypt.rewrite.parameter.impl;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
-import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
-import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
-import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
+import lombok.Setter;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.util.DMLStatementContextHelper;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
+import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
+import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
+import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
+import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -44,10 +47,13 @@ import java.util.Optional;
 /**
  * Assignment parameter rewriter for encrypt.
  */
-public final class EncryptAssignmentParameterRewriter extends EncryptParameterRewriter<SQLStatementContext> {
+@Setter
+public final class EncryptAssignmentParameterRewriter implements ParameterRewriter<SQLStatementContext>, EncryptRuleAware {
+    
+    private EncryptRule encryptRule;
     
     @Override
-    protected boolean isNeedRewriteForEncrypt(final SQLStatementContext sqlStatementContext) {
+    public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof UpdateStatementContext) {
             return true;
         }
@@ -62,7 +68,7 @@ public final class EncryptAssignmentParameterRewriter extends EncryptParameterRe
         String tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
         String schemaName = DMLStatementContextHelper.getSchemaName(sqlStatementContext);
         for (AssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
-            if (each.getValue() instanceof ParameterMarkerExpressionSegment && getEncryptRule().findEncryptor(schemaName, tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent()) {
+            if (each.getValue() instanceof ParameterMarkerExpressionSegment && encryptRule.findEncryptor(schemaName, tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent()) {
                 StandardParameterBuilder standardParameterBuilder = parameterBuilder instanceof StandardParameterBuilder
                         ? (StandardParameterBuilder) parameterBuilder : ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(0);
                 encryptParameters(standardParameterBuilder, schemaName, tableName, each, parameters);
@@ -84,14 +90,14 @@ public final class EncryptAssignmentParameterRewriter extends EncryptParameterRe
         String columnName = assignmentSegment.getColumns().get(0).getIdentifier().getValue();
         int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) assignmentSegment.getValue()).getParameterMarkerIndex();
         Object originalValue = parameters.get(parameterMarkerIndex);
-        Object cipherValue = getEncryptRule().getEncryptValues(schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
+        Object cipherValue = encryptRule.getEncryptValues(schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
         parameterBuilder.addReplacedParameters(parameterMarkerIndex, cipherValue);
         Collection<Object> addedParameters = new LinkedList<>();
-        if (getEncryptRule().findAssistedQueryColumn(tableName, columnName).isPresent()) {
-            Object assistedQueryValue = getEncryptRule().getEncryptAssistedQueryValues(schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
+        if (encryptRule.findAssistedQueryColumn(tableName, columnName).isPresent()) {
+            Object assistedQueryValue = encryptRule.getEncryptAssistedQueryValues(schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
             addedParameters.add(assistedQueryValue);
         }
-        if (getEncryptRule().findPlainColumn(tableName, columnName).isPresent()) {
+        if (encryptRule.findPlainColumn(tableName, columnName).isPresent()) {
             addedParameters.add(originalValue);
         }
         if (!addedParameters.isEmpty()) {
