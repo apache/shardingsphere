@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -47,18 +46,17 @@ public final class YamlProxyConfigurationSwapperTest {
     @Test
     public void assertSwap() throws IOException {
         YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/swap");
-        ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlProxyConfig);
-        assertAuthority(proxyConfig);
-        assertProxyConfigurationProps(proxyConfig);
-        assertSchemaDataSources(proxyConfig);
-        assertSchemaRules(proxyConfig);
+        ProxyConfiguration actual = new YamlProxyConfigurationSwapper().swap(yamlProxyConfig);
+        assertSchemaDataSources(actual);
+        assertSchemaRules(actual);
+        assertAuthority(actual);
+        assertProxyConfigurationProps(actual);
     }
     
     private void assertSchemaDataSources(final ProxyConfiguration proxyConfig) {
-        Map<String, DataSourceGeneratedSchemaConfiguration> schemaConfigs = proxyConfig.getSchemaConfigurations();
-        assertThat(schemaConfigs.size(), is(1));
-        assertTrue(schemaConfigs.containsKey("yamlProxyRule1"));
-        HikariDataSource dataSource = (HikariDataSource) schemaConfigs.get("yamlProxyRule1").getDataSources().get("foo_db");
+        Map<String, DataSourceGeneratedSchemaConfiguration> actual = proxyConfig.getSchemaConfigurations();
+        assertThat(actual.size(), is(1));
+        HikariDataSource dataSource = (HikariDataSource) actual.get("swapper_test").getDataSources().get("foo_db");
         assertThat(dataSource.getJdbcUrl(), is("jdbc:h2:mem:foo_db;DB_CLOSE_DELAY=-1"));
         assertThat(dataSource.getUsername(), is("sa"));
         assertThat(dataSource.getPassword(), is(""));
@@ -71,32 +69,31 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void assertSchemaRules(final ProxyConfiguration proxyConfig) {
-        Map<String, DataSourceGeneratedSchemaConfiguration> schemaConfigs = proxyConfig.getSchemaConfigurations();
-        assertThat(schemaConfigs.size(), is(1));
-        Collection<RuleConfiguration> ruleConfigs = schemaConfigs.get("yamlProxyRule1").getRuleConfigurations();
+        Map<String, DataSourceGeneratedSchemaConfiguration> actual = proxyConfig.getSchemaConfigurations();
+        assertThat(actual.size(), is(1));
+        Collection<RuleConfiguration> ruleConfigs = actual.get("swapper_test").getRuleConfigurations();
         assertThat(ruleConfigs.size(), is(1));
-        assertThat(ruleConfigs.iterator().next(), instanceOf(ReadwriteSplittingRuleConfiguration.class));
+        assertReadwriteSplittingRuleConfiguration((ReadwriteSplittingRuleConfiguration) ruleConfigs.iterator().next());
     }
     
-    private void assertProxyConfigurationProps(final ProxyConfiguration proxyConfig) {
-        Properties proxyConfigurationProps = proxyConfig.getGlobalConfiguration().getProperties();
-        assertThat(proxyConfigurationProps.size(), is(1));
-        assertThat(proxyConfigurationProps.getProperty("key4"), is("value4"));
+    private void assertReadwriteSplittingRuleConfiguration(final ReadwriteSplittingRuleConfiguration actual) {
+        // TODO complete assert 
     }
     
     private void assertAuthority(final ProxyConfiguration proxyConfig) {
-        Optional<ShardingSphereUser> user = new ShardingSphereUsers(getUsersFromAuthorityRule(proxyConfig.getGlobalConfiguration().getRules())).findUser(new Grantee("user1", ""));
-        assertTrue(user.isPresent());
-        assertThat(user.get().getPassword(), is("pass"));
+        Optional<ShardingSphereUser> actual = new ShardingSphereUsers(findUsers(proxyConfig.getGlobalConfiguration().getRules())).findUser(new Grantee("root", ""));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getPassword(), is("123"));
     }
     
-    private Collection<ShardingSphereUser> getUsersFromAuthorityRule(final Collection<RuleConfiguration> globalRuleConfigs) {
-        for (RuleConfiguration ruleConfig : globalRuleConfigs) {
-            if (ruleConfig instanceof AuthorityRuleConfiguration) {
-                AuthorityRuleConfiguration authorityRuleConfiguration = (AuthorityRuleConfiguration) ruleConfig;
-                return authorityRuleConfiguration.getUsers();
-            }
-        }
-        return Collections.emptyList();
+    private Collection<ShardingSphereUser> findUsers(final Collection<RuleConfiguration> globalRuleConfigs) {
+        return globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration).findFirst()
+                .map(each -> ((AuthorityRuleConfiguration) each).getUsers()).orElse(Collections.emptyList());
+    }
+    
+    private void assertProxyConfigurationProps(final ProxyConfiguration proxyConfig) {
+        Properties actual = proxyConfig.getGlobalConfiguration().getProperties();
+        assertThat(actual.size(), is(1));
+        assertThat(actual.getProperty("bar"), is("bar_value"));
     }
 }

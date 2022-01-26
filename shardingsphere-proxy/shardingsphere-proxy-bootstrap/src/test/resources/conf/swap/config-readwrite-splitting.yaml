@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-schemaName: yamlProxyRule1
+schemaName: swapper_test
 
 dataSources:
   foo_db:
@@ -32,15 +32,14 @@ dataSources:
 rules:
 - !READWRITE_SPLITTING
   dataSources:
-    pr_ds:
+    readwrite_ds:
       type: Static
       props:
         write-data-source-name: foo_db
         read-data-source-names: foo_db
-        
-  loadBalancers: 
+
+  loadBalancers:
     round_robin:
       type: ROUND_ROBIN
       props:
-        key1: value1
-    
+        foo: foo_value
