@@ -15,38 +15,26 @@
  * limitations under the License.
  */
 
-grammar CommonDistSQLStatement;
+package org.apache.shardingsphere.proxy.backend.text.distsql.fixture;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
 
-execute
-    : (addResource
-    | alterResource
-    | dropResource
-    | showResources
-    | setVariable
-    | showVariable
-    | showAllVariables
-    | clearHint
-    | enableInstance
-    | disableInstance
-    | showInstance
-    | showInstanceMode
-    | countSchemaRules
-    | showSingleTable
-    | showSingleTableRules
-    | createDefaultSingleTableRule
-    | alterDefaultSingleTableRule
-    | dropDefaultSingleTableRule
-    | refreshTableMetadata
-    | showTableMetadata
-    | showSQLParserRule
-    | alterSQLParserRule
-    | showAuthorityRule
-    | showTransactionRule
-    | alterTransactionRule
-    | showTrafficRules
-    | dropTrafficRule
-    | createTrafficRule
-    ) SEMI?
-    ;
+import java.util.Properties;
+
+@Getter
+@Setter
+public final class TestTrafficAlgorithm implements TrafficAlgorithm {
+    
+    private Properties props = new Properties();
+    
+    @Override
+    public String getType() {
+        return "TEST";
+    }
+    
+    @Override
+    public void init() {
+    }
+}

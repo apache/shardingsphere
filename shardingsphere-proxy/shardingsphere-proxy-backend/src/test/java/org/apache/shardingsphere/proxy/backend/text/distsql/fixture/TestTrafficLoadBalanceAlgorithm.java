@@ -15,38 +15,28 @@
  * limitations under the License.
  */
 
-grammar CommonDistSQLStatement;
+package org.apache.shardingsphere.proxy.backend.text.distsql.fixture;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
-execute
-    : (addResource
-    | alterResource
-    | dropResource
-    | showResources
-    | setVariable
-    | showVariable
-    | showAllVariables
-    | clearHint
-    | enableInstance
-    | disableInstance
-    | showInstance
-    | showInstanceMode
-    | countSchemaRules
-    | showSingleTable
-    | showSingleTableRules
-    | createDefaultSingleTableRule
-    | alterDefaultSingleTableRule
-    | dropDefaultSingleTableRule
-    | refreshTableMetadata
-    | showTableMetadata
-    | showSQLParserRule
-    | alterSQLParserRule
-    | showAuthorityRule
-    | showTransactionRule
-    | alterTransactionRule
-    | showTrafficRules
-    | dropTrafficRule
-    | createTrafficRule
-    ) SEMI?
-    ;
+import java.util.List;
+import java.util.Properties;
+
+@Getter
+@Setter
+public final class TestTrafficLoadBalanceAlgorithm implements TrafficLoadBalanceAlgorithm {
+    
+    private Properties props = new Properties();
+    
+    @Override
+    public String getType() {
+        return "TEST";
+    }
+    
+    @Override
+    public String getInstanceId(final String name, final List<String> instanceIds) {
+        return null;
+    }
+}
