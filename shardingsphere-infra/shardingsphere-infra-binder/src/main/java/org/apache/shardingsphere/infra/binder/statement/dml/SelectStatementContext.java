@@ -114,14 +114,6 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         schemaName = defaultSchemaName;
     }
     
-    private Collection<WhereSegment> getWhereSegments(final SelectStatement selectStatement) {
-        Collection<WhereSegment> result = new LinkedList<>();
-        selectStatement.getWhere().ifPresent(result::add);
-        result.addAll(WhereExtractUtil.getSubqueryWhereSegments(selectStatement));
-        result.addAll(WhereExtractUtil.getJoinWhereSegments(selectStatement));
-        return result;
-    }
-    
     private Map<Integer, SelectStatementContext> createSubqueryContexts(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, final String defaultSchemaName) {
         Collection<SubquerySegment> subquerySegments = SubqueryExtractUtil.getSubquerySegments(getSqlStatement());
         Map<Integer, SelectStatementContext> result = new HashMap<>(subquerySegments.size(), 1);
@@ -308,6 +300,14 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     @Override
     public Collection<WhereSegment> getWhereSegments() {
         return whereSegments;
+    }
+    
+    private Collection<WhereSegment> getWhereSegments(final SelectStatement selectStatement) {
+        Collection<WhereSegment> result = new LinkedList<>();
+        selectStatement.getWhere().ifPresent(result::add);
+        result.addAll(WhereExtractUtil.getSubqueryWhereSegments(selectStatement));
+        result.addAll(WhereExtractUtil.getJoinWhereSegments(selectStatement));
+        return result;
     }
     
     private Collection<TableSegment> getAllTableSegments() {
