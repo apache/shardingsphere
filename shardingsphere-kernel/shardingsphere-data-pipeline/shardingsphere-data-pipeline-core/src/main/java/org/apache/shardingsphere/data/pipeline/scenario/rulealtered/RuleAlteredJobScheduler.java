@@ -66,7 +66,6 @@ public final class RuleAlteredJobScheduler implements Runnable {
             log.info("stop incremental task {} - {}", jobContext.getJobId(), each.getTaskId());
             each.stop();
         }
-        jobContext.close();
     }
     
     @Override

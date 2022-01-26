@@ -99,6 +99,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
         dumper.start();
         waitForResult(future);
         log.info("importer future done");
+        dataSourceManager.close();
     }
     
     private PipelineChannel createChannel(final PipelineChannelFactory pipelineChannelFactory) {
@@ -135,6 +136,8 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
         dumper.stop();
         importer.stop();
         channel.close();
+        // TODO close in where it's initialized
+        dataSourceManager.close();
     }
     
     @Override

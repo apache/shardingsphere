@@ -86,6 +86,7 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
         Future<?> future = incrementalDumperExecuteEngine.submitAll(importers, getExecuteCallback());
         dumper.start();
         waitForResult(future);
+        dataSourceManager.close();
     }
     
     private Collection<Importer> createImporters(final int concurrency, final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
@@ -139,5 +140,6 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
             each.stop();
         }
         channel.close();
+        dataSourceManager.close();
     }
 }
