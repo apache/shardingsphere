@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.sql.Timestamp;
@@ -30,7 +30,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
+@RequiredArgsConstructor
 public final class PostgreSQLTextTimestampUtilsTest {
+    
+    private final String input;
+    
+    private final Timestamp expected;
     
     @Parameters(name = "{0}")
     public static Iterable<Object[]> textValues() {
@@ -56,12 +61,6 @@ public final class PostgreSQLTextTimestampUtilsTest {
                 new Object[]{"2021-3-3 23:23:23.123456", Timestamp.valueOf("2021-03-03 23:23:23.123456")}
         );
     }
-    
-    @Parameter
-    public String input;
-    
-    @Parameter(1)
-    public Timestamp expected;
     
     @Test
     public void assertGetLocalDateTimeNoExceptionOccurs() {
