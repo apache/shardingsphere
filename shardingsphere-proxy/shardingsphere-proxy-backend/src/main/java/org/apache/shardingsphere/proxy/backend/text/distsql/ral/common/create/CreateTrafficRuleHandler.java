@@ -58,8 +58,8 @@ public final class CreateTrafficRuleHandler implements TextProtocolBackendHandle
         Optional<TrafficRuleConfiguration> trafficRuleConfiguration = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData()
                 .findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
         check(sqlStatement, trafficRuleConfiguration);
-        TrafficRuleConfiguration newTrafficRuleConfiguration = createTrafficRuleConfiguration(sqlStatement);
-        updateToRepository(newTrafficRuleConfiguration, trafficRuleConfiguration);
+        TrafficRuleConfiguration toBeCreatedConfiguration = createTrafficRuleConfiguration(sqlStatement);
+        updateToRepository(toBeCreatedConfiguration, trafficRuleConfiguration);
         return new UpdateResponseHeader(sqlStatement);
     }
     
@@ -111,15 +111,15 @@ public final class CreateTrafficRuleHandler implements TextProtocolBackendHandle
         return new TrafficStrategyConfiguration(trafficRuleSegment.getName(), trafficRuleSegment.getLabels(), trafficAlgorithmName, loadBalancerName);
     }
     
-    private void updateToRepository(final TrafficRuleConfiguration newTrafficRuleConfiguration, final Optional<TrafficRuleConfiguration> trafficRuleConfiguration) {
+    private void updateToRepository(final TrafficRuleConfiguration toBeCreatedRuleConfiguration, final Optional<TrafficRuleConfiguration> currentRuleConfiguration) {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         Collection<RuleConfiguration> globalRuleConfigurations = metaDataContexts.getGlobalRuleMetaData().getConfigurations();
-        if (trafficRuleConfiguration.isPresent()) {
-            trafficRuleConfiguration.get().getTrafficStrategies().addAll(newTrafficRuleConfiguration.getTrafficStrategies());
-            trafficRuleConfiguration.get().getTrafficAlgorithms().putAll(newTrafficRuleConfiguration.getTrafficAlgorithms());
-            trafficRuleConfiguration.get().getLoadBalancers().putAll(newTrafficRuleConfiguration.getLoadBalancers());
+        if (currentRuleConfiguration.isPresent()) {
+            currentRuleConfiguration.get().getTrafficStrategies().addAll(toBeCreatedRuleConfiguration.getTrafficStrategies());
+            currentRuleConfiguration.get().getTrafficAlgorithms().putAll(toBeCreatedRuleConfiguration.getTrafficAlgorithms());
+            currentRuleConfiguration.get().getLoadBalancers().putAll(toBeCreatedRuleConfiguration.getLoadBalancers());
         } else {
-            globalRuleConfigurations.add(newTrafficRuleConfiguration);
+            globalRuleConfigurations.add(toBeCreatedRuleConfiguration);
         }
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
         metaDataPersistService.ifPresent(op -> op.getGlobalRuleService().persist(globalRuleConfigurations, true));

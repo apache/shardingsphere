@@ -27,8 +27,11 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
+import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
+import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -43,6 +46,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class CreateTrafficRuleHandlerTest {
+    
+    static {
+        ShardingSphereServiceLoader.register(TrafficAlgorithm.class);
+        ShardingSphereServiceLoader.register(TrafficLoadBalanceAlgorithm.class);
+    }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckWithEmptyRuleAndInvalidAlgorithmType() throws DistSQLException {
@@ -70,6 +78,16 @@ public class CreateTrafficRuleHandlerTest {
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(createTrafficRule());
         ProxyContext.getInstance().init(contextManager);
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("rule_name_1", Arrays.asList("olap", "order_by"), 
+                new AlgorithmSegment("TEST", new Properties()), new AlgorithmSegment("TEST", new Properties()));
+        new CreateTrafficRuleHandler(getSQLStatement(trafficRuleSegment)).execute();
+    }
+    
+    @Test
+    public void assertCheckSuccess() throws DistSQLException {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(createTrafficRule());
+        ProxyContext.getInstance().init(contextManager);
+        TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("rule_name_3", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("TEST", new Properties()), new AlgorithmSegment("TEST", new Properties()));
         new CreateTrafficRuleHandler(getSQLStatement(trafficRuleSegment)).execute();
     }
