@@ -17,27 +17,27 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.common;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.ExportSchemaStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.ExportSchemaConfigurationStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ExportSchemaStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ExportSchemaConfigurationStatementTestCase;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
- * Export schema statement assert.
+ * Export schema configuration statement assert.
  */
-public final class ExportSchemaStatementAssert {
+public final class ExportSchemaConfigurationStatementAssert {
 
     /**
-     * Assert export schema statement is correct with expected parser result.
+     * Assert export schema configuration statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual export schema statement statement
-     * @param expected expected export schema statement statement test case
+     * @param actual actual export schema configuration statement statement
+     * @param expected expected export configuration schema statement statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ExportSchemaStatement actual,
-                                final ExportSchemaStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ExportSchemaConfigurationStatement actual,
+                                final ExportSchemaConfigurationStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

@@ -87,12 +87,12 @@ dropTrafficRule
     : DROP TRAFFIC RULE ifExists? ruleName (COMMA ruleName)*
     ;
 
-exportSchema
-    : EXPORT SCHEMA (CONFIGURATION | CONFIG) (FROM schemaName)? (COMMA FILE EQ filePath)?
+exportSchemaConfiguration
+    : EXPORT SCHEMA (CONFIGURATION | CONFIG) (FROM schemaName)? (COMMA? FILE EQ filePath)?
     ;
 
 filePath
-    : IDENTIFIER
+    : STRING
     ;
 
 transactionRuleDefinition

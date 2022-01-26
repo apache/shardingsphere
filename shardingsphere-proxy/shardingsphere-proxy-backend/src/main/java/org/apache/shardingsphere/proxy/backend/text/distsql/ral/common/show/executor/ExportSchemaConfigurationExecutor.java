@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.exe
 import com.google.common.base.Strings;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.ExportSchemaStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.ExportSchemaConfigurationStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
@@ -54,10 +54,10 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Export schema executor.
+ * Export schema configuration executor.
  */
 @RequiredArgsConstructor
-public final class ExportSchemaExecutor extends AbstractShowExecutor {
+public final class ExportSchemaConfigurationExecutor extends AbstractShowExecutor {
     
     private static final String CONFIG = "config";
     
@@ -73,7 +73,7 @@ public final class ExportSchemaExecutor extends AbstractShowExecutor {
     
     private static final String INDENT = SPACE + SPACE;
     
-    private final ExportSchemaStatement sqlStatement;
+    private final ExportSchemaConfigurationStatement sqlStatement;
     
     private final ConnectionSession connectionSession;
     

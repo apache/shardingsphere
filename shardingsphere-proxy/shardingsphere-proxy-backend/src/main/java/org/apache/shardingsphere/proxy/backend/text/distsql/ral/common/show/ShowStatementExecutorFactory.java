@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.ExportSchemaStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.ExportSchemaConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAllVariablesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAuthorityRuleStatement;
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTr
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ExportSchemaExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ExportSchemaConfigurationExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowAllVariablesExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowAuthorityRuleExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowInstanceExecutor;
@@ -88,8 +88,8 @@ public final class ShowStatementExecutorFactory {
         if (sqlStatement instanceof ShowTrafficRulesStatement) {
             return new ShowTrafficRulesExecutor((ShowTrafficRulesStatement) sqlStatement);
         }
-        if (sqlStatement instanceof ExportSchemaStatement) {
-            return new ExportSchemaExecutor((ExportSchemaStatement) sqlStatement, connectionSession);
+        if (sqlStatement instanceof ExportSchemaConfigurationStatement) {
+            return new ExportSchemaConfigurationExecutor((ExportSchemaConfigurationStatement) sqlStatement, connectionSession);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.ExportSchemaStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.ExportSchemaConfigurationStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ExportSchemaExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ExportSchemaConfigurationExecutor;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -57,7 +57,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ExportSchemaExecutorTest {
+public final class ExportSchemaConfigurationExecutorTest {
 
     @Before
     public void init() {
@@ -73,7 +73,7 @@ public final class ExportSchemaExecutorTest {
 
     @Test
     public void assertExportSchemaExecutor() throws SQLException {
-        ExportSchemaExecutor executor = new ExportSchemaExecutor(createSqlStatement(), mockConnectionSession());
+        ExportSchemaConfigurationExecutor executor = new ExportSchemaConfigurationExecutor(createSqlStatement(), mockConnectionSession());
         executor.execute();
         executor.next();
         QueryResponseRow queryResponseRow = executor.getQueryResponseRow();
@@ -130,8 +130,8 @@ public final class ExportSchemaExecutorTest {
         return result;
     }
 
-    private ExportSchemaStatement createSqlStatement() {
-        return new ExportSchemaStatement(new SchemaSegment(0, 0, new IdentifierValue("sharding_db")), Optional.empty());
+    private ExportSchemaConfigurationStatement createSqlStatement() {
+        return new ExportSchemaConfigurationStatement(new SchemaSegment(0, 0, new IdentifierValue("sharding_db")), Optional.empty());
     }
 
     private ConnectionSession mockConnectionSession() {

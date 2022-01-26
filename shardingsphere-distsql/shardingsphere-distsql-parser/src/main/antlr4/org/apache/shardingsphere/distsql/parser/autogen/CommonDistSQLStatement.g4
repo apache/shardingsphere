@@ -47,6 +47,6 @@ execute
     | alterTransactionRule
     | showTrafficRules
     | dropTrafficRule
-    | exportSchema
+    | exportSchemaConfiguration
     ) SEMI?
     ;

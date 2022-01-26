@@ -51,7 +51,7 @@
     <drop-traffic-rule sql-case-id="drop-traffic-rule" >
         <rule-name>rule_name</rule-name>
     </drop-traffic-rule>
-    <export-schema sql-case-id="export-schema">
+    <export-schema-config sql-case-id="export-schema-config">
         <schema name="schema_name" start-index="26" stop-index="36" />
-    </export-schema>
+    </export-schema-config>
 </sql-parser-test-cases>

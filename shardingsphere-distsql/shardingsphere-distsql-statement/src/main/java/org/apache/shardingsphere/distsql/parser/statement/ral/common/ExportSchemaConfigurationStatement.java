@@ -15,22 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
 
-import javax.xml.bind.annotation.XmlElement;
+import java.util.Optional;
 
 /**
- * Export schema statement test case.
+ * Export schema configuration statement.
  */
-@Getter
-@Setter
-public final class ExportSchemaStatementTestCase extends SQLParserTestCase {
-
-    @XmlElement(name = "schema")
-    private ExpectedSchema schema;
+@RequiredArgsConstructor
+public final class ExportSchemaConfigurationStatement extends ShowDistSQLStatement implements FromSchemaAvailable {
+    
+    private final SchemaSegment schema;
+    
+    @Getter
+    private final Optional<String> filePath;
+    
+    @Override
+    public Optional<SchemaSegment> getSchema() {
+        return Optional.ofNullable(schema);
+    }
 }
