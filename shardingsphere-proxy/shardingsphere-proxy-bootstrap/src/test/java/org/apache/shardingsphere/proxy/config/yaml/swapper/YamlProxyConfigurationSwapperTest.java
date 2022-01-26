@@ -19,25 +19,20 @@ package org.apache.shardingsphere.proxy.config.yaml.swapper;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.schema.impl.DataSourceGeneratedSchemaConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
+import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.YamlProxyDataSourceConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.YamlProxySchemaConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -46,14 +41,12 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class YamlProxyConfigurationSwapperTest {
     
     @Test
-    public void assertSwap() {
-        YamlProxyConfiguration yamlProxyConfig = mockYamlProxyConfiguration();
+    public void assertSwap() throws IOException {
+        YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/swap");
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlProxyConfig);
         assertAuthority(proxyConfig);
         assertProxyConfigurationProps(proxyConfig);
@@ -105,65 +98,5 @@ public final class YamlProxyConfigurationSwapperTest {
             }
         }
         return Collections.emptyList();
-    }
-    
-    private YamlProxyConfiguration mockYamlProxyConfiguration() {
-        YamlProxyConfiguration result = mock(YamlProxyConfiguration.class);
-        YamlProxyServerConfiguration yamlProxyServerConfig = getYamlProxyServerConfiguration(result);
-        mockAuthentication(yamlProxyServerConfig);
-        mockProps(yamlProxyServerConfig);
-        YamlProxySchemaConfiguration yamlProxySchemaConfig = mockSchemaConfigurations(result);
-        mockDataSourceConfiguration(yamlProxySchemaConfig);
-        when(yamlProxySchemaConfig.getRules()).thenReturn(Collections.singletonList(new YamlReadwriteSplittingRuleConfiguration()));
-        return result;
-    }
-    
-    private void mockProps(final YamlProxyServerConfiguration yamlProxyServerConfig) {
-        Properties props = new Properties();
-        props.setProperty("key4", "value4");
-        when(yamlProxyServerConfig.getProps()).thenReturn(props);
-    }
-    
-    private YamlProxySchemaConfiguration mockSchemaConfigurations(final YamlProxyConfiguration yamlProxyConfig) {
-        Map<String, YamlProxySchemaConfiguration> yamlSchemaConfigs = new HashMap<>(1, 1);
-        when(yamlProxyConfig.getSchemaConfigurations()).thenReturn(yamlSchemaConfigs);
-        YamlProxySchemaConfiguration result = mock(YamlProxySchemaConfiguration.class);
-        yamlSchemaConfigs.put("yamlProxyRule1", result);
-        return result;
-    }
-    
-    private void mockDataSourceConfiguration(final YamlProxySchemaConfiguration yamlProxySchemaConfig) {
-        YamlProxyDataSourceConfiguration yamlDataSourceConfig = new YamlProxyDataSourceConfiguration();
-        yamlDataSourceConfig.setUrl("jdbc:h2:mem:foo_db;DB_CLOSE_DELAY=-1");
-        yamlDataSourceConfig.setUsername("sa");
-        yamlDataSourceConfig.setPassword("");
-        yamlDataSourceConfig.setConnectionTimeoutMilliseconds(250L);
-        yamlDataSourceConfig.setIdleTimeoutMilliseconds(2L);
-        yamlDataSourceConfig.setMaxLifetimeMilliseconds(3L);
-        yamlDataSourceConfig.setMaxPoolSize(4);
-        yamlDataSourceConfig.setMinPoolSize(5);
-        yamlDataSourceConfig.setReadOnly(true);
-        Map<String, YamlProxyDataSourceConfiguration> yamlDataSources = new HashMap<>(1, 1);
-        yamlDataSources.put("foo_db", yamlDataSourceConfig);
-        when(yamlProxySchemaConfig.getDataSources()).thenReturn(yamlDataSources);
-    }
-    
-    private void mockAuthentication(final YamlProxyServerConfiguration yamlProxyServerConfig) {
-        YamlAuthorityRuleConfiguration yamlAuthorityRuleConfig = new YamlAuthorityRuleConfiguration();
-        yamlAuthorityRuleConfig.setUsers(getUsers());
-        YamlShardingSphereAlgorithmConfiguration provider = new YamlShardingSphereAlgorithmConfiguration();
-        provider.setType("test");
-        yamlAuthorityRuleConfig.setProvider(provider);
-        when(yamlProxyServerConfig.getRules()).thenReturn(Collections.singletonList(yamlAuthorityRuleConfig));
-    }
-    
-    private Collection<String> getUsers() {
-        return Collections.singleton("user1@:pass");
-    }
-    
-    private YamlProxyServerConfiguration getYamlProxyServerConfiguration(final YamlProxyConfiguration yamlProxyConfig) {
-        YamlProxyServerConfiguration result = mock(YamlProxyServerConfiguration.class);
-        when(yamlProxyConfig.getServerConfiguration()).thenReturn(result);
-        return result;
     }
 }
