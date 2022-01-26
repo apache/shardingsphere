@@ -105,20 +105,14 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         for (String each : clusterDataSources.keySet()) {
             schemaConfigs.put(each, new DataSourceProvidedSchemaConfiguration(clusterDataSources.get(each), clusterSchemaRuleConfigs.get(each)));
         }
-        Properties clusterProps = metaDataPersistService.getPropsService().load();
-        Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(schemaConfigs, clusterProps);
-        Map<String, ShardingSphereSchema> schemas = new SchemaLoader(schemaConfigs, rules, clusterProps).load();
+        Properties loadedProps = metaDataPersistService.getPropsService().load();
+        Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(schemaConfigs, loadedProps);
+        Map<String, ShardingSphereSchema> schemas = getShardingSphereSchemas(schemaConfigs, rules, loadedProps);
         persistMetaData(schemas);
-        metaDataContexts = new MetaDataContextsBuilder(schemaConfigs, metaDataPersistService.getGlobalRuleService().load(), schemas, rules, clusterProps)
-                .build(metaDataPersistService);
+        metaDataContexts = new MetaDataContextsBuilder(schemaConfigs, metaDataPersistService.getGlobalRuleService().load(), schemas, rules, loadedProps).build(metaDataPersistService);
         transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
-        instanceContext = new InstanceContext(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(parameter.getInstanceDefinition()), 
-                new ClusterWorkerIdGenerator(repository, metaDataPersistService, parameter.getInstanceDefinition()));
-    }
-    
-    private void afterBuildContextManager(final ContextManagerBuilderParameter parameter) {
-        new ClusterContextManagerCoordinator(metaDataPersistService, contextManager, registryCenter);
-        registryCenter.onlineInstance(parameter.getInstanceDefinition());
+        instanceContext = new InstanceContext(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(
+                parameter.getInstanceDefinition()), new ClusterWorkerIdGenerator(repository, metaDataPersistService, parameter.getInstanceDefinition()));
     }
     
     private ClusterPersistRepository createClusterPersistRepository(final ClusterPersistRepositoryConfiguration config) {
@@ -222,8 +216,22 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
             each -> each, each -> metaDataPersistService.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
+    private Map<String, ShardingSphereSchema> getShardingSphereSchemas(final Map<String, ? extends SchemaConfiguration> schemaConfigs, final Map<String, Collection<ShardingSphereRule>> rules, 
+                                                                       final Properties props) throws SQLException {
+        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(schemaConfigs.size(), 1);
+        for (String each : schemaConfigs.keySet()) {
+            result.put(each, SchemaLoader.load(schemaConfigs.get(each).getDataSources(), rules.get(each), props));
+        }
+        return result;
+    }
+    
     private void persistMetaData(final Map<String, ShardingSphereSchema> schemas) {
         schemas.forEach((key, value) -> metaDataPersistService.getSchemaMetaDataService().persist(key, value));
+    }
+    
+    private void afterBuildContextManager(final ContextManagerBuilderParameter parameter) {
+        new ClusterContextManagerCoordinator(metaDataPersistService, contextManager, registryCenter);
+        registryCenter.onlineInstance(parameter.getInstanceDefinition());
     }
     
     @Override
