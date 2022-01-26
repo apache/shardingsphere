@@ -33,6 +33,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
+import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
@@ -124,7 +125,8 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
     }
     
     @Override
-    public TaskConfiguration createTaskConfiguration(final PipelineConfiguration pipelineConfig, final HandleConfiguration handleConfig) {
+    public TaskConfiguration createTaskConfiguration(final PipelineConfiguration pipelineConfig, final HandleConfiguration handleConfig,
+                                                     final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
         ShardingSpherePipelineDataSourceConfiguration sourceConfig = getSourceConfiguration(pipelineConfig);
         ShardingRuleConfiguration sourceRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(sourceConfig.getRootConfig().getRules());
         Map<String, DataSourceProperties> dataSourcePropsMap = new YamlDataSourceConfigurationSwapper().getDataSourcePropertiesMap(sourceConfig.getRootConfig());
@@ -139,7 +141,7 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
             }
         }
         DumperConfiguration dumperConfig = createDumperConfig(dataSourceName, dataSourcePropsMap.get(dataSourceName).getAllLocalProperties(), tableMap);
-        ImporterConfiguration importerConfig = createImporterConfig(pipelineConfig, handleConfig, shardingColumnsMap);
+        ImporterConfiguration importerConfig = createImporterConfig(pipelineConfig, handleConfig, onRuleAlteredActionConfig, shardingColumnsMap);
         TaskConfiguration result = new TaskConfiguration(handleConfig, dumperConfig, importerConfig);
         log.info("createTaskConfiguration, dataSourceName={}, result={}", dataSourceName, result);
         return result;
@@ -195,10 +197,12 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
         return result;
     }
     
-    private static ImporterConfiguration createImporterConfig(final PipelineConfiguration pipelineConfig, final HandleConfiguration handleConfig, final Map<String, Set<String>> shardingColumnsMap) {
+    private static ImporterConfiguration createImporterConfig(final PipelineConfiguration pipelineConfig, final HandleConfiguration handleConfig,
+                                                              final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig, final Map<String, Set<String>> shardingColumnsMap) {
         ImporterConfiguration result = new ImporterConfiguration();
         result.setDataSourceConfig(PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter()));
         result.setShardingColumnsMap(shardingColumnsMap);
+        result.setBatchSize(onRuleAlteredActionConfig.getOutput().getBatchSize());
         result.setRetryTimes(handleConfig.getRetryTimes());
         return result;
     }

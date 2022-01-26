@@ -37,5 +37,7 @@ public final class ImporterConfiguration {
     
     private Map<String, Set<String>> shardingColumnsMap;
     
+    private int batchSize = 1000;
+    
     private int retryTimes;
 }
