@@ -43,6 +43,6 @@ public final class FixturePipelineSQLBuilder extends AbstractPipelineSQLBuilder 
     
     @Override
     public String getType() {
-        return "FIXTURE";
+        return "H2";
     }
 }
