@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.subscriber;
 
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.RegistryCacheManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ClusterSwitchConfigurationEvent;
@@ -56,11 +58,16 @@ public final class ScalingRegistrySubscriber {
     
     private final RegistryCacheManager registryCacheManager;
     
+    private final LockRegistryService lockRegistryService;
+    
+    private final Map<String, Boolean> schemaNameLockedMap = Maps.newConcurrentMap();
+    
     public ScalingRegistrySubscriber(final ClusterPersistRepository repository) {
         this.repository = repository;
         this.persistService = new SchemaRulePersistService(repository);
         dataSourcePersistService = new DataSourcePersistService(repository);
         registryCacheManager = new RegistryCacheManager(repository);
+        lockRegistryService = new LockRegistryService(repository);
         ShardingSphereEventBus.getInstance().register(this);
     }
     
@@ -71,10 +78,16 @@ public final class ScalingRegistrySubscriber {
      */
     @Subscribe
     public void ruleConfigurationCached(final RuleConfigurationCachedEvent event) {
+        boolean locked = lockRegistryService.tryLock(decorateLockName(event.getSchemaName()), 1000);
+        if (!locked) {
+            return;
+        }
+        schemaNameLockedMap.put(event.getSchemaName(), true);
         String sourceDataSource = repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(event.getSchemaName()));
         String sourceRule = repository.get(SchemaMetaDataNode.getRulePath(event.getSchemaName()));
         String targetRule = registryCacheManager.loadCache(SchemaMetaDataNode.getRulePath(event.getSchemaName()), event.getCacheId());
         String ruleCacheId = event.getCacheId();
+        log.info("start scaling job, locked the schema name, event={}", event);
         StartScalingEvent startScalingEvent = new StartScalingEvent(event.getSchemaName(), sourceDataSource, sourceRule, targetRule, ruleCacheId);
         ShardingSphereEventBus.getInstance().post(startScalingEvent);
     }
@@ -98,6 +111,11 @@ public final class ScalingRegistrySubscriber {
             log.info("start to delete cache, ruleCacheId={}", ruleCacheId);
             registryCacheManager.deleteCache(SchemaMetaDataNode.getRulePath(event.getTargetSchemaName()), ruleCacheId);
         }
+        if (schemaNameLockedMap.getOrDefault(event.getTargetSchemaName(), false)) {
+            log.info("scaling job finished, release schema name lock, event = {}", event);
+            schemaNameLockedMap.remove(event.getTargetSchemaName());
+            lockRegistryService.releaseLock(decorateLockName(event.getTargetSchemaName()));
+        }
     }
     
     /**
@@ -111,5 +129,9 @@ public final class ScalingRegistrySubscriber {
         log.info("clusterSwitchConfiguration, schemaName={}", schemaName);
         dataSourcePersistService.persist(schemaName, event.getTargetDataSourcePropertiesMap());
         persistService.persist(schemaName, event.getTargetRuleConfigs());
+    }
+    
+    private String decorateLockName(final String schemaName) {
+        return "Scaling-" + schemaName;
     }
 }
