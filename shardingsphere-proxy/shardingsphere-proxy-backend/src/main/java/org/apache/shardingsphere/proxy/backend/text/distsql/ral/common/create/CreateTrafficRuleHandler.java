@@ -66,8 +66,8 @@ public final class CreateTrafficRuleHandler implements TextProtocolBackendHandle
     private void check(final CreateTrafficRuleStatement sqlStatement, final Optional<TrafficRuleConfiguration> trafficRuleConfiguration) throws DistSQLException {
         if (trafficRuleConfiguration.isPresent()) {
             Collection<String> currentRuleNames = trafficRuleConfiguration.get().getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
-            Set<String> duplicatedRules = sqlStatement.getSegments().stream().map(TrafficRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toSet());
-            DistSQLException.predictionThrow(duplicatedRules.isEmpty(), new DuplicateRuleException("traffic", duplicatedRules));
+            Set<String> duplicatedRuleNames = sqlStatement.getSegments().stream().map(TrafficRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toSet());
+            DistSQLException.predictionThrow(duplicatedRuleNames.isEmpty(), new DuplicateRuleException("traffic", duplicatedRuleNames));
         }
         Collection<String> invalidAlgorithmNames = getInvalidAlgorithmNames(sqlStatement.getSegments());
         DistSQLException.predictionThrow(invalidAlgorithmNames.isEmpty(), new InvalidAlgorithmConfigurationException("traffic", invalidAlgorithmNames));
