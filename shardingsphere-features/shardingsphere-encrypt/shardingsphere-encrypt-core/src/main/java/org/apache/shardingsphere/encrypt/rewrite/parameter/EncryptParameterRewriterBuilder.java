@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.parameter;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.impl.EncryptAssignmentParameterRewriter;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.impl.EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter;
@@ -24,6 +25,7 @@ import org.apache.shardingsphere.encrypt.rewrite.parameter.impl.EncryptInsertVal
 import org.apache.shardingsphere.encrypt.rewrite.parameter.impl.EncryptPredicateParameterRewriter;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriterBuilder;
@@ -35,44 +37,39 @@ import java.util.LinkedList;
 /**
  * Parameter rewriter builder for encrypt.
  */
+@RequiredArgsConstructor
 public final class EncryptParameterRewriterBuilder implements ParameterRewriterBuilder {
     
     private final EncryptRule encryptRule;
     
-    private final boolean queryWithCipherColumn;
+    private final ShardingSphereSchema schema;
     
-    public EncryptParameterRewriterBuilder(final EncryptRule encryptRule) {
-        this.encryptRule = encryptRule;
-        this.queryWithCipherColumn = encryptRule.isQueryWithCipherColumn();
-    }
+    private final SQLStatementContext<?> sqlStatementContext;
     
+    @SuppressWarnings("rawtypes")
     @Override
-    public Collection<ParameterRewriter> getParameterRewriters(final ShardingSphereSchema schema) {
-        Collection<ParameterRewriter> result = getParameterRewriters();
-        for (ParameterRewriter each : result) {
-            setUpParameterRewriters(each, schema);
-        }
-        return result;
-    }
-    
-    private Collection<ParameterRewriter> getParameterRewriters() {
+    public Collection<ParameterRewriter> getParameterRewriters() {
         Collection<ParameterRewriter> result = new LinkedList<>();
-        result.add(new EncryptAssignmentParameterRewriter());
-        result.add(new EncryptPredicateParameterRewriter());
-        result.add(new EncryptInsertValueParameterRewriter());
-        result.add(new EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter());
+        addParameterRewriter(result, new EncryptAssignmentParameterRewriter());
+        addParameterRewriter(result, new EncryptPredicateParameterRewriter());
+        addParameterRewriter(result, new EncryptInsertValueParameterRewriter());
+        addParameterRewriter(result, new EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter());
         return result;
     }
     
-    private void setUpParameterRewriters(final ParameterRewriter parameterRewriter, final ShardingSphereSchema schema) {
-        if (parameterRewriter instanceof SchemaMetaDataAware) {
-            ((SchemaMetaDataAware) parameterRewriter).setSchema(schema);
+    @SuppressWarnings("rawtypes")
+    private void addParameterRewriter(final Collection<ParameterRewriter> parameterRewriters, final ParameterRewriter toBeAddedParameterRewriter) {
+        if (toBeAddedParameterRewriter instanceof SchemaMetaDataAware) {
+            ((SchemaMetaDataAware) toBeAddedParameterRewriter).setSchema(schema);
         }
-        if (parameterRewriter instanceof EncryptRuleAware) {
-            ((EncryptRuleAware) parameterRewriter).setEncryptRule(encryptRule);
+        if (toBeAddedParameterRewriter instanceof EncryptRuleAware) {
+            ((EncryptRuleAware) toBeAddedParameterRewriter).setEncryptRule(encryptRule);
         }
-        if (parameterRewriter instanceof QueryWithCipherColumnAware) {
-            ((QueryWithCipherColumnAware) parameterRewriter).setQueryWithCipherColumn(queryWithCipherColumn);
+        if (toBeAddedParameterRewriter instanceof QueryWithCipherColumnAware) {
+            ((QueryWithCipherColumnAware) toBeAddedParameterRewriter).setQueryWithCipherColumn(encryptRule.isQueryWithCipherColumn());
+        }
+        if (toBeAddedParameterRewriter.isNeedRewrite(sqlStatementContext)) {
+            parameterRewriters.add(toBeAddedParameterRewriter);
         }
     }
 }
