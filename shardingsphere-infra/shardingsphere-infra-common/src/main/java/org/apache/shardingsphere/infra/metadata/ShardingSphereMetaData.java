@@ -19,9 +19,26 @@ package org.apache.shardingsphere.infra.metadata;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
+import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * ShardingSphere meta data.
@@ -37,6 +54,51 @@ public final class ShardingSphereMetaData {
     private final ShardingSphereRuleMetaData ruleMetaData;
     
     private final ShardingSphereSchema schema;
+    
+    /**
+     * Create ShardingSphere meta data.
+     * 
+     * @param schemaName schema name
+     * @param schema schema
+     * @param schemaConfig schema configuration
+     * @param rules rules
+     * @return ShardingSphere meta data
+     * @throws SQLException SQL exception
+     */
+    public static ShardingSphereMetaData create(final String schemaName, final ShardingSphereSchema schema, final SchemaConfiguration schemaConfig,
+                                                final Collection<ShardingSphereRule> rules) throws SQLException {
+        ShardingSphereResource resource = createResource(schemaConfig.getDataSources());
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(schemaConfig.getRuleConfigurations(), rules);
+        return new ShardingSphereMetaData(schemaName, resource, ruleMetaData, schema);
+    }
+    
+    private static ShardingSphereResource createResource(final Map<String, DataSource> dataSourceMap) throws SQLException {
+        DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
+        DataSourcesMetaData dataSourceMetas = new DataSourcesMetaData(databaseType, createDatabaseAccessConfigurationMap(dataSourceMap));
+        CachedDatabaseMetaData cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap).orElse(null);
+        return new ShardingSphereResource(dataSourceMap, dataSourceMetas, cachedDatabaseMetaData, databaseType);
+    }
+    
+    private static Map<String, DatabaseAccessConfiguration> createDatabaseAccessConfigurationMap(final Map<String, DataSource> dataSourceMap) throws SQLException {
+        Map<String, DatabaseAccessConfiguration> result = new LinkedHashMap<>(dataSourceMap.size(), 1);
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            DataSource dataSource = entry.getValue();
+            try (Connection connection = dataSource.getConnection()) {
+                DatabaseMetaData metaData = connection.getMetaData();
+                result.put(entry.getKey(), new DatabaseAccessConfiguration(metaData.getURL(), metaData.getUserName()));
+            }
+        }
+        return result;
+    }
+    
+    private static Optional<CachedDatabaseMetaData> createCachedDatabaseMetaData(final Map<String, DataSource> dataSources) throws SQLException {
+        if (dataSources.isEmpty()) {
+            return Optional.empty();
+        }
+        try (Connection connection = dataSources.values().iterator().next().getConnection()) {
+            return Optional.of(new CachedDatabaseMetaData(connection.getMetaData()));
+        }
+    }
     
     /**
      * Judge whether is completed.
