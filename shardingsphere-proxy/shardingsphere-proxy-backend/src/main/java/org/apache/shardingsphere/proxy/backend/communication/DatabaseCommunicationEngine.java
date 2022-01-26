@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.communication;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -64,7 +63,6 @@ import java.util.stream.Collectors;
  *
  * @param <T> type of execute result
  */
-@RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 @Setter(AccessLevel.PROTECTED)
 public abstract class DatabaseCommunicationEngine<T> {
@@ -83,8 +81,6 @@ public abstract class DatabaseCommunicationEngine<T> {
     
     private final KernelProcessor kernelProcessor = new KernelProcessor();
     
-    private final MetaDataRefreshEngine metadataRefreshEngine;
-    
     private List<QueryHeader> queryHeaders;
     
     private MergedResult mergedResult;
@@ -96,11 +92,6 @@ public abstract class DatabaseCommunicationEngine<T> {
         this.metaData = metaData;
         this.logicSQL = logicSQL;
         this.backendConnection = backendConnection;
-        String schemaName = backendConnection.getConnectionSession().getSchemaName();
-        metadataRefreshEngine = new MetaDataRefreshEngine(metaData,
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName),
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getPlannerContexts(),
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
     }
     
     /**
@@ -121,6 +112,11 @@ public abstract class DatabaseCommunicationEngine<T> {
         if (!needToRefreshMetaData) {
             return;
         }
+        String schemaName = backendConnection.getConnectionSession().getSchemaName();
+        MetaDataRefreshEngine metadataRefreshEngine = new MetaDataRefreshEngine(metaData,
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName),
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getPlannerContexts(),
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
         metadataRefreshEngine.refresh(sqlStatement, executionContext.getRouteContext().getRouteUnits().stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList()));
     }
     
