@@ -19,7 +19,6 @@ package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,30 +31,22 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @Getter
 @Setter
-public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
+public final class WeightReplicaLoadBalanceAlgorithm extends AbstractReplicaLoadBalance {
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
     
     private static final ConcurrentHashMap<String, double[]> WEIGHT_MAP = new ConcurrentHashMap<>();
     
     private Properties props = new Properties();
-
+    
     @Override
-    public String getType() {
-        return "WEIGHT";
-    }
-
-    @Override
-    public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
+    protected String getDataSourceName(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
         double[] weight = WEIGHT_MAP.containsKey(name) ? WEIGHT_MAP.get(name) : initWeight(readDataSourceNames);
         WEIGHT_MAP.putIfAbsent(name, weight);
         return getDataSourceName(readDataSourceNames, weight);
     }
-
+    
     private String getDataSourceName(final List<String> readDataSourceNames, final double[] weight) {
-        if (1 == readDataSourceNames.size()) {
-            return readDataSourceNames.get(0);
-        }
         double randomWeight = ThreadLocalRandom.current().nextDouble(0, 1);
         int index = Arrays.binarySearch(weight, randomWeight);
         if (index < 0) {
@@ -120,5 +111,10 @@ public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalan
             weight = 1.0D;
         }
         return weight;
+    }
+    
+    @Override
+    public String getType() {
+        return "WEIGHT";
     }
 }
