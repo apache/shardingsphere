@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
+package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
@@ -49,15 +50,17 @@ import java.util.Optional;
  * Projection token generator for encrypt.
  */
 @Setter
-public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, PreviousSQLTokensAware, SchemaMetaDataAware {
+public final class EncryptProjectionTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, PreviousSQLTokensAware, SchemaMetaDataAware, EncryptRuleAware {
     
     private List<SQLToken> previousSQLTokens;
     
     private ShardingSphereSchema schema;
     
+    private EncryptRule encryptRule;
+    
     @Override
-    protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getAllTables().isEmpty();    
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getAllTables().isEmpty();
     }
     
     @Override
@@ -81,7 +84,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
             ColumnProjectionSegment columnSegment = (ColumnProjectionSegment) projection;
             ColumnProjection columnProjection = buildColumnProjection(columnSegment);
             String tableName = columnTableNames.get(columnProjection.getExpression());
-            if (null != tableName && getEncryptRule().findEncryptor(tableName, columnProjection.getName()).isPresent()) {
+            if (null != tableName && encryptRule.findEncryptor(tableName, columnProjection.getName()).isPresent()) {
                 result.add(generateSQLTokens(tableName, columnSegment, columnProjection, subqueryType));
             }
         }
@@ -108,7 +111,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         List<ColumnProjection> projections = new LinkedList<>();
         for (ColumnProjection each : actualColumns) {
             String tableName = columnTableNames.get(each.getExpression());
-            if (null != tableName && getEncryptRule().findEncryptor(tableName, each.getName()).isPresent()) {
+            if (null != tableName && encryptRule.findEncryptor(tableName, each.getName()).isPresent()) {
                 projections.addAll(generateProjections(tableName, each, subqueryType, true, segment));
             } else {
                 projections.add(new ColumnProjection(each.getOwner(), each.getName(), each.getAlias().orElse(null)));
@@ -167,34 +170,34 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     }
     
     private ColumnProjection generatePredicateSubqueryProjection(final String tableName, final ColumnProjection column) {
-        boolean queryWithCipherColumn = getEncryptRule().isQueryWithCipherColumn(tableName);
+        boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(tableName);
         if (!queryWithCipherColumn) {
-            Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, column.getName());
+            Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, column.getName());
             if (plainColumn.isPresent()) {
                 return new ColumnProjection(column.getOwner(), plainColumn.get(), null);
             }
         }
-        Optional<String> assistedQueryColumn = getEncryptRule().findAssistedQueryColumn(tableName, column.getName());
+        Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, column.getName());
         if (assistedQueryColumn.isPresent()) {
             return new ColumnProjection(column.getOwner(), assistedQueryColumn.get(), null);
         }
-        String cipherColumn = getEncryptRule().getCipherColumn(tableName, column.getName());
+        String cipherColumn = encryptRule.getCipherColumn(tableName, column.getName());
         return new ColumnProjection(column.getOwner(), cipherColumn, null);
     }
     
     private Collection<ColumnProjection> generateTableSubqueryProjections(final String tableName, final ColumnProjection column, final boolean shorthand) {
         Collection<ColumnProjection> result = new LinkedList<>();
-        result.add(distinctOwner(new ColumnProjection(column.getOwner(), getEncryptRule().getCipherColumn(tableName, column.getName()), null), shorthand));
-        Optional<String> assistedQueryColumn = getEncryptRule().findAssistedQueryColumn(tableName, column.getName());
+        result.add(distinctOwner(new ColumnProjection(column.getOwner(), encryptRule.getCipherColumn(tableName, column.getName()), null), shorthand));
+        Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, column.getName());
         assistedQueryColumn.ifPresent(optional -> result.add(new ColumnProjection(column.getOwner(), optional, null)));
-        Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, column.getName());
+        Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, column.getName());
         plainColumn.ifPresent(optional -> result.add(new ColumnProjection(column.getOwner(), optional, null)));
         return result;
     }
     
     private Collection<ColumnProjection> generateExistsSubqueryProjections(final String tableName, final ColumnProjection column, final boolean shorthand) {
         Collection<ColumnProjection> result = new LinkedList<>();
-        result.add(distinctOwner(new ColumnProjection(column.getOwner(), getEncryptRule().getCipherColumn(tableName, column.getName()), null), shorthand));
+        result.add(distinctOwner(new ColumnProjection(column.getOwner(), encryptRule.getCipherColumn(tableName, column.getName()), null), shorthand));
         return result;
     }
     
@@ -205,12 +208,12 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     }
     
     private String getEncryptColumnName(final String tableName, final String logicEncryptColumnName) {
-        Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, logicEncryptColumnName);
-        boolean queryWithCipherColumn = getEncryptRule().isQueryWithCipherColumn(tableName);
+        Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, logicEncryptColumnName);
+        boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(tableName);
         if (!queryWithCipherColumn) {
-            return plainColumn.orElseGet(() -> getEncryptRule().getCipherColumn(tableName, logicEncryptColumnName));
+            return plainColumn.orElseGet(() -> encryptRule.getCipherColumn(tableName, logicEncryptColumnName));
         }
-        return getEncryptRule().getCipherColumn(tableName, logicEncryptColumnName);
+        return encryptRule.getCipherColumn(tableName, logicEncryptColumnName);
     }
     
     private ShorthandProjection getShorthandProjection(final ShorthandProjectionSegment segment, final ProjectionsContext projectionsContext) {
