@@ -139,7 +139,7 @@ public final class SingleTableMetaDataBuilderTest {
         assertThat(actual.get("tbl").getColumnMetaData(0), is(new ColumnMetaData("id", 4, true, false, false)));
         assertThat(actual.get("tbl").getColumnMetaData(1), is(new ColumnMetaData("name", 12, false, false, false)));
         assertThat(actual.get("tbl").getColumnMetaData(2), is(new ColumnMetaData("doc", -1, false, false, false)));
-        TableMetaData tableMetaData = builder.decorate("tbl", actual.get("tbl"), singleTableRule);
+        TableMetaData tableMetaData = builder.decorate(actual, singleTableRule, mock(SchemaBuilderMaterials.class)).get("tbl");
         assertThat(tableMetaData.getColumnMetaData(0), is(new ColumnMetaData("id", 4, true, false, false)));
         assertThat(tableMetaData.getColumnMetaData(1), is(new ColumnMetaData("name", 12, false, false, false)));
         assertThat(tableMetaData.getColumnMetaData(2), is(new ColumnMetaData("doc", -1, false, false, false)));

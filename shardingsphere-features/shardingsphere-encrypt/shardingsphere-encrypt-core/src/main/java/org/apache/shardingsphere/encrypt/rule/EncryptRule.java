@@ -58,12 +58,18 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     private final Map<String, EncryptTable> tables = new LinkedHashMap<>();
     
     @Getter
+    private boolean containsConfigDataTypeColumn;
+    
+    @Getter
     private final boolean queryWithCipherColumn;
     
     public EncryptRule(final EncryptRuleConfiguration config) {
         Preconditions.checkArgument(isValidRuleConfiguration(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
         config.getEncryptors().forEach((key, value) -> encryptors.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, EncryptAlgorithm.class)));
-        config.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
+        config.getTables().forEach(each -> {
+            tables.put(each.getName(), new EncryptTable(each));
+            containsConfigDataTypeColumn = containsConfigDataTypeColumn(each);
+        });
         queryWithCipherColumn = config.isQueryWithCipherColumn();
     }
     
@@ -115,6 +121,15 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     private boolean isValidColumnConfigurationWithAlgorithmProvided(final AlgorithmProvidedEncryptRuleConfiguration encryptRuleConfig, final EncryptColumnRuleConfiguration column) {
         return !Strings.isNullOrEmpty(column.getEncryptorName()) && !Strings.isNullOrEmpty(column.getCipherColumn())
                 && encryptRuleConfig.getEncryptors().containsKey(column.getEncryptorName());
+    }
+    
+    private boolean containsConfigDataTypeColumn(final EncryptTableRuleConfiguration tableRuleConfiguration) {
+        for (EncryptColumnRuleConfiguration each : tableRuleConfiguration.getColumns()) {
+            if (null != each.getLogicDataType() && !each.getLogicDataType().isEmpty()) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**

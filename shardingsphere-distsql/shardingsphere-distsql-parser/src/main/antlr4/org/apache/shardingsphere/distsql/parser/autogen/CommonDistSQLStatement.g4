@@ -46,5 +46,6 @@ execute
     | showTransactionRule
     | alterTransactionRule
     | showTrafficRules
+    | dropTrafficRule
     ) SEMI?
     ;
