@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.ReactiveProxySQLExecutor;
@@ -31,7 +30,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 
 import java.sql.SQLException;
-import java.util.stream.Collectors;
+import java.util.List;
 
 /**
  * Vert.x database communication engine.
@@ -50,6 +49,7 @@ public final class VertxDatabaseCommunicationEngine extends DatabaseCommunicatio
      *
      * @return Future of response
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public Future<ResponseHeader> execute() {
         try {
@@ -67,8 +67,8 @@ public final class VertxDatabaseCommunicationEngine extends DatabaseCommunicatio
                     refreshMetaData(executionContext);
                     ExecuteResult executeResultSample = result.iterator().next();
                     return Future.succeededFuture(executeResultSample instanceof QueryResult
-                            ? processExecuteQuery(executionContext, result.stream().map(each -> (QueryResult) each).collect(Collectors.toList()), (QueryResult) executeResultSample)
-                            : processExecuteUpdate(executionContext, result.stream().map(each -> (UpdateResult) each).collect(Collectors.toList())));
+                            ? processExecuteQuery(executionContext, (List) result, (QueryResult) executeResultSample)
+                            : processExecuteUpdate(executionContext, (List) result));
                 } catch (final SQLException ex) {
                     return Future.failedFuture(ex);
                 }

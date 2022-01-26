@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+product: jdbc
 mode: memory
 transaction: local
 feature: sharding,readwrite-splitting,encrypt

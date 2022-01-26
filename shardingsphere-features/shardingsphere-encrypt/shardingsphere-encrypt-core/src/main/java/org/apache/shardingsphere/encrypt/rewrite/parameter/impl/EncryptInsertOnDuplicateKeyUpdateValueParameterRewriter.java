@@ -19,7 +19,8 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter.impl;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.OnDuplicateUpdateContext;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
+import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 
@@ -39,11 +41,13 @@ import java.util.Optional;
  * Insert on duplicate key update parameter rewriter for encrypt.
  */
 @Setter
-public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter extends EncryptParameterRewriter<InsertStatementContext> {
+public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter implements ParameterRewriter<InsertStatementContext>, EncryptRuleAware {
+    
+    private EncryptRule encryptRule;
     
     @Override
-    protected boolean isNeedRewriteForEncrypt(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertStatementContext 
+    public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext instanceof InsertStatementContext
                 && InsertStatementHandler.getOnDuplicateKeyColumnsSegment(((InsertStatementContext) sqlStatementContext).getSqlStatement()).isPresent();
     }
     
@@ -57,7 +61,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter exten
         for (int index = 0; index < onDuplicateKeyUpdateValueContext.getValueExpressions().size(); index++) {
             int columnIndex = index;
             String encryptLogicColumnName = onDuplicateKeyUpdateValueContext.getColumn(columnIndex).getIdentifier().getValue();
-            Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(schemaName, tableName, encryptLogicColumnName);
+            Optional<EncryptAlgorithm> encryptor = encryptRule.findEncryptor(schemaName, tableName, encryptLogicColumnName);
             encryptor.ifPresent(optional -> {
                 Object plainColumnValue = onDuplicateKeyUpdateValueContext.getValue(columnIndex);
                 if (plainColumnValue instanceof FunctionSegment && "VALUES".equalsIgnoreCase(((FunctionSegment) plainColumnValue).getFunctionName())) {
@@ -67,11 +71,11 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter exten
                 groupedParameterBuilder.getGenericParameterBuilder().addReplacedParameters(columnIndex, cipherColumnValue);
                 Collection<Object> addedParameters = new LinkedList<>();
                 if (optional instanceof QueryAssistedEncryptAlgorithm) {
-                    Optional<String> assistedColumnName = getEncryptRule().findAssistedQueryColumn(tableName, encryptLogicColumnName);
+                    Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, encryptLogicColumnName);
                     Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
                     addedParameters.add(((QueryAssistedEncryptAlgorithm) optional).queryAssistedEncrypt(plainColumnValue));
                 }
-                if (getEncryptRule().findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
+                if (encryptRule.findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
                     addedParameters.add(plainColumnValue);
                 }
                 if (!addedParameters.isEmpty()) {

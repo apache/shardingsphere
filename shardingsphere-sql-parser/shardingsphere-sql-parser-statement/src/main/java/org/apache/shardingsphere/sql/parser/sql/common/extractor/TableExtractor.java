@@ -159,15 +159,21 @@ public final class TableExtractor {
             } else if (each instanceof OwnerAvailable) {
                 if (((OwnerAvailable) each).getOwner().isPresent() && needRewrite(((OwnerAvailable) each).getOwner().get())) {
                     OwnerSegment ownerSegment = ((OwnerAvailable) each).getOwner().get();
-                    rewriteTables.add(new SimpleTableSegment(new TableNameSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier())));
+                    rewriteTables.add(createSimpleTableSegment(ownerSegment));
                 }
             } else if (each instanceof ColumnProjectionSegment) {
                 if (((ColumnProjectionSegment) each).getColumn().getOwner().isPresent() && needRewrite(((ColumnProjectionSegment) each).getColumn().getOwner().get())) {
                     OwnerSegment ownerSegment = ((ColumnProjectionSegment) each).getColumn().getOwner().get();
-                    rewriteTables.add(new SimpleTableSegment(new TableNameSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier())));
+                    rewriteTables.add(createSimpleTableSegment(ownerSegment));
                 }
             }
         }
+    }
+    
+    private SimpleTableSegment createSimpleTableSegment(final OwnerSegment ownerSegment) {
+        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier()));
+        ownerSegment.getOwner().ifPresent(result::setOwner);
+        return result;
     }
     
     private void extractTablesFromOrderByItems(final Collection<OrderByItemSegment> orderByItems) {

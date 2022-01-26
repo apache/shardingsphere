@@ -65,15 +65,14 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     private volatile IngestPosition<?> position;
     
     public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig,
-                         final PipelineChannelFactory pipelineChannelFactory, final ExecuteEngine importerExecuteEngine) {
+                         final PipelineChannelFactory pipelineChannelFactory, final PipelineDataSourceManager dataSourceManager,
+                         final ExecuteEngine importerExecuteEngine) {
         this.importerExecuteEngine = importerExecuteEngine;
-        PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
         this.dataSourceManager = dataSourceManager;
         taskId = generateTaskId(inventoryDumperConfig);
         channel = createChannel(pipelineChannelFactory);
-        dumper = DumperFactory.newInstanceJdbcDumper(inventoryDumperConfig, dataSourceManager);
-        importer = ImporterFactory.newInstance(importerConfig, dataSourceManager);
-        setupChannel();
+        dumper = DumperFactory.createInventoryDumper(inventoryDumperConfig, dataSourceManager, channel);
+        importer = ImporterFactory.createImporter(importerConfig, dataSourceManager, channel);
         position = inventoryDumperConfig.getPosition();
     }
     
@@ -100,7 +99,6 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
         dumper.start();
         waitForResult(future);
         log.info("importer future done");
-        dataSourceManager.close();
     }
     
     private PipelineChannel createChannel(final PipelineChannelFactory pipelineChannelFactory) {
@@ -123,11 +121,6 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
         return null;
     }
     
-    private void setupChannel() {
-        dumper.setChannel(channel);
-        importer.setChannel(channel);
-    }
-    
     private void waitForResult(final Future<?> future) {
         try {
             future.get();
@@ -142,7 +135,6 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
         dumper.stop();
         importer.stop();
         channel.close();
-        dataSourceManager.close();
     }
     
     @Override

@@ -34,7 +34,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.sql.SQLException;
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Proxy JDBC executor.
@@ -61,14 +61,14 @@ public final class ProxyJDBCExecutor {
      * @return execute results
      * @throws SQLException SQL exception
      */
-    public Collection<ExecuteResult> execute(final LogicSQL logicSQL, final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
-                                             final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
+    public List<ExecuteResult> execute(final LogicSQL logicSQL, final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
+                                       final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
         try {
             MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
             DatabaseType databaseType = metaDataContexts.getMetaData(connectionSession.getSchemaName()).getResource().getDatabaseType();
             ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getProps());
             SQLStatementContext<?> context = logicSQL.getSqlStatementContext();
-            Collection<ExecuteResult> result = jdbcExecutor.execute(executionGroupContext,
+            List<ExecuteResult> result = jdbcExecutor.execute(executionGroupContext,
                     ProxyJDBCExecutorCallbackFactory.newInstance(type, databaseType, context.getSqlStatement(), databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown, true),
                     ProxyJDBCExecutorCallbackFactory.newInstance(type, databaseType, context.getSqlStatement(), databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown, false));
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());

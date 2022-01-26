@@ -17,43 +17,50 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.parameter;
 
-import org.apache.shardingsphere.encrypt.rewrite.parameter.impl.EncryptAssignmentParameterRewriter;
-import org.apache.shardingsphere.encrypt.rewrite.parameter.impl.EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter;
-import org.apache.shardingsphere.encrypt.rewrite.parameter.impl.EncryptInsertValueParameterRewriter;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.impl.EncryptPredicateParameterRewriter;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class EncryptParameterRewriterBuilderTest {
-
+    
+    @SuppressWarnings("rawtypes")
     @Test
-    public void assertGetParameterRewriters() {
-        EncryptRule encryptRule = mock(EncryptRule.class);
+    public void assertGetParameterRewritersWhenPredicateIsNeedRewrite() {
+        EncryptRule encryptRule = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
+        when(encryptRule.isQueryWithCipherColumn()).thenReturn(true);
+        when(encryptRule.findEncryptTable("t_order").isPresent()).thenReturn(true);
+        ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
+        SQLStatementContext<?> sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
+        Collection<ParameterRewriter> actual = new EncryptParameterRewriterBuilder(encryptRule, shardingSphereSchema, sqlStatementContext).getParameterRewriters();
+        assertThat(actual.size(), is(1));
+        ParameterRewriter parameterRewriter = actual.iterator().next();
+        assertThat(parameterRewriter, instanceOf(EncryptPredicateParameterRewriter.class));
+    }
+    
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void assertGetParameterRewritersWhenPredicateIsNotNeedRewrite() {
+        EncryptRule encryptRule = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
         when(encryptRule.isQueryWithCipherColumn()).thenReturn(true);
         ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
-        EncryptParameterRewriterBuilder encryptParameterRewriterBuilder = new EncryptParameterRewriterBuilder(encryptRule);
-        Collection<ParameterRewriter> parameterRewriters = encryptParameterRewriterBuilder.getParameterRewriters(shardingSphereSchema);
-        assertThat(parameterRewriters.size(), is(4));
-        Object[] parameterRewriterArray = parameterRewriters.toArray();
-        assertThat(parameterRewriterArray[0], instanceOf(EncryptAssignmentParameterRewriter.class));
-        assertThat(parameterRewriterArray[1], instanceOf(EncryptPredicateParameterRewriter.class));
-        assertThat(parameterRewriterArray[2], instanceOf(EncryptInsertValueParameterRewriter.class));
-        assertThat(parameterRewriterArray[3], instanceOf(EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter.class));
-        assertThat(parameterRewriterArray[0], instanceOf(EncryptRuleAware.class));
-        assertThat(parameterRewriterArray[1], instanceOf(SchemaMetaDataAware.class));
-        assertThat(parameterRewriterArray[2], instanceOf(EncryptRuleAware.class));
-        assertThat(parameterRewriterArray[3], instanceOf(EncryptRuleAware.class));
+        SQLStatementContext<?> sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
+        Collection<ParameterRewriter> actual = new EncryptParameterRewriterBuilder(encryptRule, shardingSphereSchema, sqlStatementContext).getParameterRewriters();
+        assertThat(actual.size(), is(0));
     }
 }

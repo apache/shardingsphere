@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.drop;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
- * Proxy schema configuration.
+ * Drop traffic rule statement.
  */
-@RequiredArgsConstructor
+@Setter
 @Getter
-public final class ProxySchemaConfiguration {
+public final class DropTrafficRuleStatement extends CommonDistSQLStatement {
     
-    private final Map<String, DataSourceConfiguration> dataSources;
+    private boolean containsIfExistClause;
     
-    private final Collection<RuleConfiguration> rules;
+    private Collection<String> ruleNames;
 }
