@@ -32,10 +32,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -58,14 +56,16 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
         boolean containsJoinQuery = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsJoinQuery();
         boolean containsSubquery = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsSubquery();
-        return containsJoinQuery || containsSubquery || (sqlStatementContext instanceof WhereAvailable && ((WhereAvailable) sqlStatementContext).getWhere().isPresent());
+        return containsJoinQuery || containsSubquery || (sqlStatementContext instanceof WhereAvailable && !((WhereAvailable) sqlStatementContext).getWhereSegments().isEmpty());
     }
     
     @SuppressWarnings("rawtypes")
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
-        for (WhereSegment each : getWhereSegments(sqlStatementContext)) {
+        Collection<WhereSegment> whereSegments = sqlStatementContext instanceof WhereAvailable 
+                ? ((WhereAvailable) sqlStatementContext).getWhereSegments() : Collections.emptyList();
+        for (WhereSegment each : whereSegments) {
             Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(each.getExpr());
             Map<String, String> columnTableNames = getColumnTableNames(sqlStatementContext, andPredicates);
             for (AndPredicate predicate : andPredicates) {
@@ -100,18 +100,6 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
                         -> new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(encryptTable.get().getCipherColumn(column.getIdentifier().getValue()))));
                 result.add(encryptColumnNameToken);
             }
-        }
-        return result;
-    }
-    
-    private Collection<WhereSegment> getWhereSegments(final SQLStatementContext<?> sqlStatementContext) {
-        Collection<WhereSegment> result = new LinkedList<>();
-        if (sqlStatementContext instanceof SelectStatementContext) {
-            result.addAll(WhereExtractUtil.getSubqueryWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()));
-            result.addAll(WhereExtractUtil.getJoinWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()));
-        }
-        if (sqlStatementContext instanceof WhereAvailable) {
-            ((WhereAvailable) sqlStatementContext).getWhere().ifPresent(result::add);
         }
         return result;
     }

@@ -23,8 +23,6 @@ import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInConditi
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.util.DMLStatementContextHelper;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -38,13 +36,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.S
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -80,7 +77,9 @@ public final class EncryptConditionEngine {
      */
     public Collection<EncryptCondition> createEncryptConditions(final SQLStatementContext<?> sqlStatementContext) {
         Collection<EncryptCondition> result = new LinkedList<>();
-        for (WhereSegment each : getWhereSegments(sqlStatementContext)) {
+        Collection<WhereSegment> whereSegments = sqlStatementContext instanceof WhereAvailable 
+                ? ((WhereAvailable) sqlStatementContext).getWhereSegments() : Collections.emptyList();
+        for (WhereSegment each : whereSegments) {
             Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(each.getExpr());
             Map<String, String> columnTableNames = getColumnTableNames(sqlStatementContext, andPredicates);
             String schemaName = DMLStatementContextHelper.getSchemaName(sqlStatementContext);
@@ -136,21 +135,6 @@ public final class EncryptConditionEngine {
             throw new ShardingSphereException("The SQL clause '%s' is unsupported in encrypt rule.", operator);
         }
         return Optional.empty();
-    }
-    
-    private Collection<WhereSegment> getWhereSegments(final SQLStatementContext<?> sqlStatementContext) {
-        Collection<WhereSegment> result = new LinkedList<>();
-        if (sqlStatementContext instanceof WhereAvailable) {
-            ((WhereAvailable) sqlStatementContext).getWhere().ifPresent(result::add);
-        }
-        if (sqlStatementContext instanceof SelectStatementContext) {
-            result.addAll(WhereExtractUtil.getSubqueryWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()));
-            result.addAll(WhereExtractUtil.getJoinWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()));
-        }
-        if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
-            result.addAll(getWhereSegments(((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext()));
-        }
-        return result;
     }
     
     private Map<String, String> getColumnTableNames(final SQLStatementContext<?> sqlStatementContext, final Collection<AndPredicate> andPredicates) {
