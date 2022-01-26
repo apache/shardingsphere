@@ -87,8 +87,9 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
         int round = 1;
         int rowCount = 0;
         boolean finishedByBreak = false;
+        int batchSize = importerConfig.getBatchSize() * 2;
         while (isRunning()) {
-            List<Record> records = channel.fetchRecords(1024, 3);
+            List<Record> records = channel.fetchRecords(batchSize, 3);
             if (null != records && !records.isEmpty()) {
                 round++;
                 rowCount += records.size();
