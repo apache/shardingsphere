@@ -42,14 +42,14 @@ import java.util.stream.Collectors;
  */
 public final class SchemaLoader {
     
-    private final Map<String, ? extends SchemaConfiguration> schemaConfig;
+    private final Map<String, ? extends SchemaConfiguration> schemaConfigs;
     
     private final Map<String, Collection<ShardingSphereRule>> rules;
     
     private final ConfigurationProperties props;
     
-    public SchemaLoader(final Map<String, ? extends SchemaConfiguration> schemaConfig, final Map<String, Collection<ShardingSphereRule>> rules, final Properties props) {
-        this.schemaConfig = schemaConfig;
+    public SchemaLoader(final Map<String, ? extends SchemaConfiguration> schemaConfigs, final Map<String, Collection<ShardingSphereRule>> rules, final Properties props) {
+        this.schemaConfigs = schemaConfigs;
         this.rules = rules;
         this.props = new ConfigurationProperties(null == props ? new Properties() : props);
     }
@@ -61,8 +61,8 @@ public final class SchemaLoader {
      * @throws SQLException SQL exception
      */
     public Map<String, ShardingSphereSchema> load() throws SQLException {
-        Map<String, ShardingSphereSchema> result = new HashMap<>(schemaConfig.size(), 1);
-        for (Entry<String, ? extends SchemaConfiguration> entry : schemaConfig.entrySet()) {
+        Map<String, ShardingSphereSchema> result = new HashMap<>(schemaConfigs.size(), 1);
+        for (Entry<String, ? extends SchemaConfiguration> entry : schemaConfigs.entrySet()) {
             String schemaName = entry.getKey();
             Map<String, DataSource> dataSourceMap = entry.getValue().getDataSources();
             DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
