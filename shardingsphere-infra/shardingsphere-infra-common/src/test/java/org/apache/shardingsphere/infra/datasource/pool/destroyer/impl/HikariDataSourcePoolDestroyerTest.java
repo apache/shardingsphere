@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.pool.destroyer.impl;
+package org.apache.shardingsphere.infra.datasource.pool.destroyer.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
 

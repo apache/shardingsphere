@@ -15,34 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.pool.destroyer.impl;
+package org.apache.shardingsphere.infra.datasource.pool.destroyer;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 
 import java.sql.SQLException;
 
 import com.zaxxer.hikari.HikariDataSource;
 
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class DefaultDataSourcePoolDestroyerTest {
-
-    @Test
-    public void assertDestroy() throws SQLException {
+public final class DataSourcePoolDestroyerFactoryTest {
+    
+    @Test(timeout = 60000L)
+    public void assertDestroyForHikari() throws InterruptedException, SQLException {
         HikariDataSource dataSource = new HikariDataSource();
-        new DefaultDataSourcePoolDestroyer().destroy(dataSource);
-        assertTrue(dataSource.isClosed());
+        DataSourcePoolDestroyerFactory.destroy(dataSource);
+        while (!dataSource.isClosed()) {
+            Thread.sleep(10L);
+        }
     }
 
-    @Test(expected = SQLException.class)
-    public void assertDestroyWithException() throws SQLException {
-        HikariDataSource dataSource = mock(HikariDataSource.class);
-        doThrow(new RuntimeException()).when(dataSource).close();
-        new DefaultDataSourcePoolDestroyer().destroy(dataSource);
+    @Test
+    public void assertDestroyForDefault() throws InterruptedException, SQLException {
+        BasicDataSource dataSource = new BasicDataSource();
+        DataSourcePoolDestroyerFactory.destroy(dataSource);
+        assertTrue(dataSource.isClosed());
     }
 }
