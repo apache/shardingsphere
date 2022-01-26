@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import java.util.Properties;
 
 /**
- * CosId-Snowflake key generate algorithm.
+ * CosId snowflake key generate algorithm.
  */
 public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm, ShardingSphereInstanceRequiredAlgorithm {
 
@@ -65,7 +65,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
         String asStringStr = getProps().getProperty(AS_STRING_KEY, Boolean.FALSE.toString());
         asString = Boolean.parseBoolean(asStringStr);
         long workerId = 0;
-        if (instanceContext != null) {
+        if (null != instanceContext) {
             workerId = instanceContext.getWorkerId();
         }
         long epoch = DEFAULT_EPOCH;

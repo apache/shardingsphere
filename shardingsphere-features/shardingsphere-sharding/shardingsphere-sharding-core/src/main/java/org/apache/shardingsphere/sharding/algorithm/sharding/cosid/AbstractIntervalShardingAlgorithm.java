@@ -108,23 +108,20 @@ public abstract class AbstractIntervalShardingAlgorithm<T extends Comparable<?>>
      */
     protected abstract LocalDateTime convertShardingValue(T shardingValue);
 
+    @SuppressWarnings("unchecked")
     private Range<LocalDateTime> convertRangeShardingValue(final Range<T> shardingValue) {
         if (Range.all().equals(shardingValue)) {
             return Range.all();
         }
         Object endpointValue = shardingValue.hasLowerBound() ? shardingValue.lowerEndpoint() : shardingValue.upperEndpoint();
         if (endpointValue instanceof LocalDateTime) {
-            @SuppressWarnings("unchecked")
-            Range<LocalDateTime> targetRange = (Range<LocalDateTime>) shardingValue;
-            return targetRange;
+            return (Range<LocalDateTime>) shardingValue;
         }
-
         if (shardingValue.hasLowerBound() && shardingValue.hasUpperBound()) {
             LocalDateTime lower = convertShardingValue(shardingValue.lowerEndpoint());
             LocalDateTime upper = convertShardingValue(shardingValue.upperEndpoint());
             return Range.range(lower, shardingValue.lowerBoundType(), upper, shardingValue.upperBoundType());
         }
-
         if (shardingValue.hasLowerBound()) {
             LocalDateTime lower = convertShardingValue(shardingValue.lowerEndpoint());
             if (BoundType.OPEN.equals(shardingValue.lowerBoundType())) {
@@ -132,12 +129,10 @@ public abstract class AbstractIntervalShardingAlgorithm<T extends Comparable<?>>
             }
             return Range.atLeast(lower);
         }
-
         LocalDateTime upper = convertShardingValue(shardingValue.upperEndpoint());
         if (BoundType.OPEN.equals(shardingValue.upperBoundType())) {
             return Range.lessThan(upper);
         }
         return Range.atMost(upper);
     }
-
 }
