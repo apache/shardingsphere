@@ -107,9 +107,7 @@ public final class RuleAlteredJobPreparer {
     }
     
     private void initInventoryTasks(final RuleAlteredJobContext jobContext, final PipelineDataSourceManager dataSourceManager) {
-        PipelineChannelFactory pipelineChannelFactory = jobContext.getRuleAlteredContext().getPipelineChannelFactory();
-        ExecuteEngine importerExecuteEngine = jobContext.getRuleAlteredContext().getImporterExecuteEngine();
-        List<InventoryTask> allInventoryTasks = inventoryTaskSplitter.splitInventoryData(jobContext, jobContext.getTaskConfig(), dataSourceManager, pipelineChannelFactory, importerExecuteEngine);
+        List<InventoryTask> allInventoryTasks = inventoryTaskSplitter.splitInventoryData(jobContext, dataSourceManager);
         jobContext.getInventoryTasks().addAll(allInventoryTasks);
     }
     
