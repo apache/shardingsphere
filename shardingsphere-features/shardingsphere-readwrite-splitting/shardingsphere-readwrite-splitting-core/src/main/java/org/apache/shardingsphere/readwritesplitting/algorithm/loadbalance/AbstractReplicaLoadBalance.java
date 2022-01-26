@@ -17,29 +17,19 @@
 
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 
 import java.util.List;
-import java.util.Properties;
-import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * Random replica load-balance algorithm.
- */
-@Getter
-@Setter
-public final class RandomReplicaLoadBalanceAlgorithm extends AbstractReplicaLoadBalance {
-    
-    private Properties props = new Properties();
+public abstract class AbstractReplicaLoadBalance implements ReplicaLoadBalanceAlgorithm {
     
     @Override
-    protected String getDataSourceName(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        return readDataSourceNames.get(ThreadLocalRandom.current().nextInt(readDataSourceNames.size()));
+    public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
+        if (1 == readDataSourceNames.size()) {
+            return readDataSourceNames.get(0);
+        }
+        return getDataSourceName(name, writeDataSourceName, readDataSourceNames);
     }
     
-    @Override
-    public String getType() {
-        return "RANDOM";
-    }
+    protected abstract String getDataSourceName(String name, String writeDataSourceName, List<String> readDataSourceNames);
 }
