@@ -65,9 +65,9 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     private volatile IngestPosition<?> position;
     
     public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig,
-                         final PipelineChannelFactory pipelineChannelFactory, final ExecuteEngine importerExecuteEngine) {
+                         final PipelineChannelFactory pipelineChannelFactory, final PipelineDataSourceManager dataSourceManager,
+                         final ExecuteEngine importerExecuteEngine) {
         this.importerExecuteEngine = importerExecuteEngine;
-        PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
         this.dataSourceManager = dataSourceManager;
         taskId = generateTaskId(inventoryDumperConfig);
         channel = createChannel(pipelineChannelFactory);
@@ -136,6 +136,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
         dumper.stop();
         importer.stop();
         channel.close();
+        // TODO close in where it's initialized
         dataSourceManager.close();
     }
     
