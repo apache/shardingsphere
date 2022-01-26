@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 /**
  * Meta data refresh engine.
@@ -61,18 +62,18 @@ public final class MetaDataRefreshEngine {
      * Refresh.
      *
      * @param sqlStatement SQL statement
-     * @param logicDataSourceNames logic data source names
+     * @param logicDataSourceNamesSupplier logic data source names supplier
      * @throws SQLException SQL exception
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public void refresh(final SQLStatement sqlStatement, final Collection<String> logicDataSourceNames) throws SQLException {
+    public void refresh(final SQLStatement sqlStatement, final Supplier<Collection<String>> logicDataSourceNamesSupplier) throws SQLException {
         Class<? extends SQLStatement> sqlStatementClass = sqlStatement.getClass();
         if (IGNORABLE_SQL_STATEMENT_CLASSES.contains(sqlStatementClass)) {
             return;
         }
         Optional<MetaDataRefresher> schemaRefresher = TypedSPIRegistry.findRegisteredService(MetaDataRefresher.class, sqlStatementClass.getSuperclass().getName(), null);
         if (schemaRefresher.isPresent()) {
-            schemaRefresher.get().refresh(schemaMetaData, federationMetaData, optimizerPlanners, logicDataSourceNames, sqlStatement, props);
+            schemaRefresher.get().refresh(schemaMetaData, federationMetaData, optimizerPlanners, logicDataSourceNamesSupplier.get(), sqlStatement, props);
         }
         Optional<SQLStatementEventMapper> sqlStatementEventMapper = SQLStatementEventMapperFactory.newInstance(sqlStatement);
         if (sqlStatementEventMapper.isPresent()) {

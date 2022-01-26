@@ -47,7 +47,7 @@ public final class MetaDataRefreshEngineTest {
         final int dropTimes = 10;
         DropDatabaseStatement dropDatabaseStatement = mock(DropDatabaseStatement.class);
         for (int i = 0; i < dropTimes; i++) {
-            metaDataRefreshEngine.refresh(dropDatabaseStatement, Collections.emptyList());
+            metaDataRefreshEngine.refresh(dropDatabaseStatement, Collections::emptyList);
         }
         verify(dropDatabaseStatement, times(dropTimes)).getDatabaseName();
     }
@@ -55,7 +55,7 @@ public final class MetaDataRefreshEngineTest {
     @Test
     public void assertRefreshIgnorableSQLStatement() throws SQLException {
         SelectStatement selectStatement = mock(SelectStatement.class);
-        metaDataRefreshEngine.refresh(selectStatement, Collections.emptyList());
+        metaDataRefreshEngine.refresh(selectStatement, Collections::emptyList);
         assertTrue(getIgnorableSQLStatementClasses().contains(selectStatement.getClass()));
     }
     
