@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
 
-import io.netty.buffer.ByteBuf;
-import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
 
-public final class PostgreSQLNoDataPacketTest {
+/**
+ * Drop traffic rule statement test case.
+ */
+@Getter
+@Setter
+public final class DropTrafficRuleStatementTestCase extends SQLParserTestCase {
     
-    @Test
-    public void assertGetInstanceAndWrite() {
-        PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class);
-        ByteBuf byteBuf = mock(ByteBuf.class);
-        when(payload.getByteBuf()).thenReturn(byteBuf);
-        PostgreSQLNoDataPacket packet = PostgreSQLNoDataPacket.getInstance();
-        packet.write(payload);
-        verify(byteBuf).writeBytes(new byte[]{'n', 0, 0, 0, 4});
-    }
+    @XmlElement(name = "rule-name")
+    private Collection<String> ruleNames;
 }

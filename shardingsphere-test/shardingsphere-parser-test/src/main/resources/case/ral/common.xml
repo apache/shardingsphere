@@ -48,6 +48,9 @@
         </sql-parser>
     </alter-sql-parser-rule>
     <show-traffic-rules sql-case-id="show-traffic-rules" rule-name="rule_name"/>
+    <drop-traffic-rule sql-case-id="drop-traffic-rule" >
+        <rule-name>rule_name</rule-name>
+    </drop-traffic-rule>
     <export-schema sql-case-id="export-schema">
         <schema name="schema_name" start-index="26" stop-index="36" />
     </export-schema>

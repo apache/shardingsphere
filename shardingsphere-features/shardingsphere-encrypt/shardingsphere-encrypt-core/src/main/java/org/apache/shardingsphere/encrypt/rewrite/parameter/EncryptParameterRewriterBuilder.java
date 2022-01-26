@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewri
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -49,12 +50,25 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
     @SuppressWarnings("rawtypes")
     @Override
     public Collection<ParameterRewriter> getParameterRewriters() {
+        if (!containsEncryptTable(sqlStatementContext)) {
+            return Collections.emptyList();
+        }
         Collection<ParameterRewriter> result = new LinkedList<>();
         addParameterRewriter(result, new EncryptAssignmentParameterRewriter());
         addParameterRewriter(result, new EncryptPredicateParameterRewriter());
         addParameterRewriter(result, new EncryptInsertValueParameterRewriter());
         addParameterRewriter(result, new EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter());
         return result;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private boolean containsEncryptTable(final SQLStatementContext sqlStatementContext) {
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
+            if (encryptRule.findEncryptTable(each).isPresent()) {
+                return true;
+            }
+        }
+        return false;
     }
     
     @SuppressWarnings("rawtypes")

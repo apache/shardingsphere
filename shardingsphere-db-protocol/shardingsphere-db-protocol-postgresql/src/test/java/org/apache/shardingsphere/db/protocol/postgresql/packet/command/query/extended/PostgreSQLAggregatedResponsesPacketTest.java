@@ -15,25 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended;
 
 import io.netty.buffer.ByteBuf;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
+
+import java.util.Arrays;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class PostgreSQLParseCompletePacketTest {
+public final class PostgreSQLAggregatedResponsesPacketTest {
     
     @Test
-    public void assertGetInstanceAndWrite() {
+    public void assertWrite() {
+        PostgreSQLIdentifierPacket identifierPacket = mock(PostgreSQLIdentifierPacket.class);
+        when(identifierPacket.getIdentifier()).thenReturn(PostgreSQLMessagePacketType.READY_FOR_QUERY);
+        PostgreSQLPacket nonIdentifierPacket = mock(PostgreSQLPacket.class);
+        PostgreSQLAggregatedResponsesPacket packet = new PostgreSQLAggregatedResponsesPacket(Arrays.asList(nonIdentifierPacket, identifierPacket));
         PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class);
         ByteBuf byteBuf = mock(ByteBuf.class);
+        when(byteBuf.writerIndex()).thenReturn(1, 10);
         when(payload.getByteBuf()).thenReturn(byteBuf);
-        PostgreSQLParseCompletePacket packet = PostgreSQLParseCompletePacket.getInstance();
         packet.write(payload);
-        verify(byteBuf).writeBytes(new byte[]{'1', 0, 0, 0, 4});
+        verify(nonIdentifierPacket).write(payload);
+        verify(byteBuf).writeByte(PostgreSQLMessagePacketType.READY_FOR_QUERY.getValue());
+        verify(byteBuf).writeInt(0);
+        verify(identifierPacket).write(payload);
+        verify(byteBuf).setInt(1, 10 - 1);
     }
 }

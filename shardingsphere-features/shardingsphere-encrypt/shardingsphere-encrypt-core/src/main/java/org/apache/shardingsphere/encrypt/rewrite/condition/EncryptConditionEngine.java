@@ -52,7 +52,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 /**
  * Encrypt condition engine.
@@ -155,9 +154,21 @@ public final class EncryptConditionEngine {
     }
     
     private Map<String, String> getColumnTableNames(final SQLStatementContext<?> sqlStatementContext, final Collection<AndPredicate> andPredicates) {
-        Collection<ColumnProjection> columns = andPredicates.stream().flatMap(each -> each.getPredicates().stream())
-                .flatMap(each -> ColumnExtractor.extract(each).stream()).map(this::buildColumnProjection).collect(Collectors.toList());
+        Collection<ColumnProjection> columns = new LinkedList<>();
+        for (AndPredicate each : andPredicates) {
+            columns.addAll(getColumnProjections(each));
+        }
         return sqlStatementContext.getTablesContext().findTableName(columns, schema);
+    }
+    
+    private Collection<ColumnProjection> getColumnProjections(final AndPredicate predicate) {
+        Collection<ColumnProjection> result = new LinkedList<>();
+        for (ExpressionSegment each : predicate.getPredicates()) {
+            for (ColumnSegment column : ColumnExtractor.extract(each)) {
+                result.add(buildColumnProjection(column));
+            }
+        }
+        return result;
     }
     
     private ColumnProjection buildColumnProjection(final ColumnSegment segment) {

@@ -26,14 +26,12 @@ import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValue
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLBinaryProtocolValue;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLTextTimestampUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Time;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,15 +41,6 @@ import java.util.List;
 @Getter
 @ToString
 public final class OpenGaussComBatchBindPacket extends OpenGaussCommandPacket {
-    
-    private static final DateTimeFormatter LOCAL_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(
-            "[yyyy-MM-dd][yyyy_MM_dd][MM/dd/yy][yyyyMMdd][yyMMdd]"
-                    + "['T'][ ]"
-                    + "[HH:mm:ss][HHmmss][HH:mm][HHmm]"
-                    + "[.SSSSSS][.SSSSS][.SSSS][.SSS][.SS][.S]"
-                    + "[ ]"
-                    + "[XXXXX][XXXX][XXX][XX][X]"
-    );
     
     private final PostgreSQLPacketPayload payload;
     
@@ -153,11 +142,7 @@ public final class OpenGaussComBatchBindPacket extends OpenGaussCommandPacket {
                 return Time.valueOf(textValue);
             case POSTGRESQL_TYPE_TIMESTAMP:
             case POSTGRESQL_TYPE_TIMESTAMPTZ:
-                try {
-                    return Timestamp.valueOf(textValue);
-                } catch (final IllegalArgumentException ignored) {
-                    return Timestamp.valueOf(LocalDateTime.from(LOCAL_DATE_TIME_FORMATTER.parse(textValue)));
-                }
+                return PostgreSQLTextTimestampUtils.parse(textValue);
             default:
                 return textValue;
         }
