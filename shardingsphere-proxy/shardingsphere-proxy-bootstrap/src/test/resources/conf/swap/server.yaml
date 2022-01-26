@@ -31,10 +31,9 @@ mode:
 rules:
   - !AUTHORITY
     users:
-      - user1@:pass
+      - root@:123
     provider:
       type: test
 
 props:
-  key4: value4
- 
+  bar: bar_value
