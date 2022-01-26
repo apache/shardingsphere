@@ -39,7 +39,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -64,7 +63,7 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
     
     @Override
     public Map<String, TableMetaData> decorate(final Map<String, TableMetaData> tableMetaDataMap, final EncryptRule rule, final SchemaBuilderMaterials materials) throws SQLException {
-        Map<String, Integer> dataTypes = isNeedDataTypes(tableMetaDataMap.keySet(), rule) ? getDataTypeMap(materials) : Collections.emptyMap();
+        Map<String, Integer> dataTypes = rule.isContainsConfigDataTypeColumn() ? getDataTypeMap(materials) : Collections.emptyMap();
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         for (Entry<String, TableMetaData> entry : tableMetaDataMap.entrySet()) {
             result.put(entry.getKey(), decorate(entry.getKey(), entry.getValue(), rule, dataTypes));
@@ -76,15 +75,6 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
         return encryptTable.map(optional ->
                 new TableMetaData(tableName, getEncryptColumnMetaDataList(optional, tableMetaData.getColumns().values(), dataTypeMap), tableMetaData.getIndexes().values())).orElse(tableMetaData);
-    }
-    
-    private boolean isNeedDataTypes(final Set<String> tableNames, final EncryptRule rule) {
-        for (String each : tableNames) {
-            if (rule.findEncryptTable(each).filter(EncryptTable::isColumnConfigLogicDataType).isPresent()) {
-                return true;
-            }
-        }
-        return false;
     }
     
     private Map<String, Integer> getDataTypeMap(final SchemaBuilderMaterials materials) throws SQLException {

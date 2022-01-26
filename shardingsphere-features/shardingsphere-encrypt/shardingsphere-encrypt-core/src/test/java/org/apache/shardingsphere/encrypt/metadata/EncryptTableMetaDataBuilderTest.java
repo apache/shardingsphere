@@ -348,7 +348,7 @@ public final class EncryptTableMetaDataBuilderTest {
         when(encryptColumn.getLogicDataType()).thenReturn("VARCHAR(20)");
         when(encryptColumn.getDataTypeName()).thenReturn("VARCHAR");
         when(encryptTable.findEncryptColumn("pwd")).thenReturn(Optional.of(encryptColumn));
-        when(encryptTable.isColumnConfigLogicDataType()).thenReturn(true);
+        when(result.isContainsConfigDataTypeColumn()).thenReturn(true);
         return result;
     }
     
