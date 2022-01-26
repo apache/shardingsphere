@@ -42,7 +42,7 @@ public final class CRC32MatchMySQLSingleTableDataCalculator extends AbstractSing
     
     private static final Collection<String> DATABASE_TYPES = Collections.singletonList(new MySQLDatabaseType().getName());
     
-    private static final MySQLPipelineSQLBuilder SQL_BUILDER = (MySQLPipelineSQLBuilder) PipelineSQLBuilderFactory.newInstance("MySQL");
+    private static final MySQLPipelineSQLBuilder SQL_BUILDER = (MySQLPipelineSQLBuilder) PipelineSQLBuilderFactory.getSQLBuilder("MySQL");
     
     @Override
     public String getAlgorithmType() {

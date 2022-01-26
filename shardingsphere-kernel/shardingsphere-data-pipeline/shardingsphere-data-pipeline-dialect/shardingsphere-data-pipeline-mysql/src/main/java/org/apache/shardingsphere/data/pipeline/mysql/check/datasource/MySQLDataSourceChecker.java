@@ -115,6 +115,6 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     
     @Override
     protected PipelineSQLBuilder getSQLBuilder() {
-        return PipelineSQLBuilderFactory.newInstance("MySQL");
+        return PipelineSQLBuilderFactory.getSQLBuilder("MySQL");
     }
 }

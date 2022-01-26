@@ -67,6 +67,6 @@ public final class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker
     
     @Override
     protected PipelineSQLBuilder getSQLBuilder() {
-        return PipelineSQLBuilderFactory.newInstance("PostgreSQL");
+        return PipelineSQLBuilderFactory.getSQLBuilder("PostgreSQL");
     }
 }

@@ -32,7 +32,7 @@ public final class PostgreSQLPipelineSQLBuilderTest {
     
     @Test
     public void assertBuildInsertSQL() {
-        String actual = PipelineSQLBuilderFactory.newInstance("PostgreSQL").buildInsertSQL(mockDataRecord());
+        String actual = PipelineSQLBuilderFactory.getSQLBuilder("PostgreSQL").buildInsertSQL(mockDataRecord());
         assertThat(actual, is("INSERT INTO \"t_order\"(\"id\",\"name\") VALUES(?,?) ON CONFLICT (id) DO NOTHING"));
     }
     

@@ -32,12 +32,12 @@ public final class PipelineSQLBuilderFactory {
     private static final TypedSingletonSPIHolder<PipelineSQLBuilder> SQL_BUILDER_SPI_HOLDER = new TypedSingletonSPIHolder<>(PipelineSQLBuilder.class, false);
     
     /**
-     * New instance of SQL builder.
+     * Get SQL builder instance.
      *
      * @param databaseType database type
      * @return SQL builder
      */
-    public static PipelineSQLBuilder newInstance(final String databaseType) {
+    public static PipelineSQLBuilder getSQLBuilder(final String databaseType) {
         return SQL_BUILDER_SPI_HOLDER.get(databaseType).orElseThrow(() -> new ServiceProviderNotFoundException(PipelineSQLBuilder.class, databaseType));
     }
 }
