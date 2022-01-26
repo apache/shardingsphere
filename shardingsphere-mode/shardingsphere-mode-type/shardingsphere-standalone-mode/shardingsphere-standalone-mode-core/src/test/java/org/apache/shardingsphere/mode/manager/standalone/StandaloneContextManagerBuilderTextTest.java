@@ -24,76 +24,36 @@ import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class StandaloneContextManagerBuilderTextTest {
     
-    public static final String TEST_DATA_SOURCE_INNER_MAP = "TEST_DATA_SOURCE_INNER_MAP";
-    
-    public static final String TEST_CONNECTION_URL = "jdbc:mysql://testhost:3306/testdatabase";
-    
     @Test
     public void assertBuild() throws SQLException {
-        Collection<RuleConfiguration> globalRuleConfigs = getGlobalRuleConfigurations();
-        Properties props = new Properties();
-        ModeConfiguration modeConfig = new ModeConfiguration("Standalone", null, false);
-        StandaloneContextManagerBuilder standaloneContextManagerBuilder = new StandaloneContextManagerBuilder();
-        ContextManager actual = standaloneContextManagerBuilder.build(ContextManagerBuilderParameter.builder().modeConfig(modeConfig)
-            .schemaConfigs(Collections.singletonMap(TEST_DATA_SOURCE_INNER_MAP, new DataSourceProvidedSchemaConfiguration(getDataSourceMap(), getSchemaRuleConfigurations())))
-            .globalRuleConfigs(globalRuleConfigs).props(props)
+        ContextManager actual = new StandaloneContextManagerBuilder().build(ContextManagerBuilderParameter.builder().modeConfig(new ModeConfiguration("Standalone", null, false))
+            .schemaConfigs(Collections.singletonMap("foo_schema", 
+                    new DataSourceProvidedSchemaConfiguration(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singleton(mock(RuleConfiguration.class)))))
+            .globalRuleConfigs(Collections.singleton(mock(RuleConfiguration.class))).props(new Properties())
             .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307)).build());
-        MetaDataContexts metaDataContexts = actual.getMetaDataContexts();
-        assertNotNull(metaDataContexts.getMetaDataMap().get(TEST_DATA_SOURCE_INNER_MAP));
-        assertNotNull(metaDataContexts.getExecutorEngine());
-        PersistRepository repository = metaDataContexts.getMetaDataPersistService().get().getRepository();
+        assertNotNull(actual.getMetaDataContexts().getMetaDataMap().get("foo_schema"));
+        assertNotNull(actual.getMetaDataContexts().getExecutorEngine());
+        assertTrue(actual.getMetaDataContexts().getMetaDataPersistService().isPresent());
+        PersistRepository repository = actual.getMetaDataContexts().getMetaDataPersistService().get().getRepository();
         assertNotNull(repository.get(GlobalNode.getGlobalRuleNode()));
-        assertNotNull(repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(TEST_DATA_SOURCE_INNER_MAP)));
-        assertNotNull(repository.get(SchemaMetaDataNode.getRulePath(TEST_DATA_SOURCE_INNER_MAP)));
-        TransactionContexts transactionContexts = actual.getTransactionContexts();
-        assertNotNull(transactionContexts.getEngines());
-        assertNotNull(transactionContexts.getEngines().get(TEST_DATA_SOURCE_INNER_MAP));
-    }
-    
-    private Map<String, DataSource> getDataSourceMap() throws SQLException {
-        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(connection.getMetaData().getURL()).thenReturn(TEST_CONNECTION_URL);
-        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
-        when(dataSource.getConnection()).thenReturn(connection);
-        Map<String, DataSource> result = new HashMap<>(1, 1);
-        result.put("testDataSource", dataSource);
-        return result;
-    }
-    
-    private Collection<RuleConfiguration> getSchemaRuleConfigurations() {
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>();
-        ruleConfigs.add(mock(RuleConfiguration.class));
-        return ruleConfigs;
-    }
-    
-    private Collection<RuleConfiguration> getGlobalRuleConfigurations() {
-        Collection<RuleConfiguration> result = new HashSet<>();
-        result.add(mock(RuleConfiguration.class));
-        return result;
+        assertNotNull(repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath("foo_schema")));
+        assertNotNull(repository.get(SchemaMetaDataNode.getRulePath("foo_schema")));
+        assertNotNull(actual.getTransactionContexts().getEngines().get("foo_schema"));
     }
 }
