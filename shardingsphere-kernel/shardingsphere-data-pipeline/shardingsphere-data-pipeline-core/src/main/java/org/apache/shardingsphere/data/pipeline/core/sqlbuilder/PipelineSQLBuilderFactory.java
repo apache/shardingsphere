@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.sqlbuilder;
+package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -28,10 +28,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Scaling SQL builder factory.
+ * Pipeline SQL builder factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ScalingSQLBuilderFactory {
+public final class PipelineSQLBuilderFactory {
     
     /**
      * New instance of SQL builder.
