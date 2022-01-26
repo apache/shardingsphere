@@ -42,11 +42,13 @@ import java.util.Optional;
  */
 public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultSet {
     
-    private static final String NAME = "group_name";
+    private static final String GROUP_NAME = "group_name";
     
     private static final String DATA_SOURCE_NAMES = "data_source_names";
     
     private static final String PRIMARY_DATA_SOURCE_NAME = "primary_data_source_name";
+    
+    private static final String NAME = "name";
     
     private static final String DISCOVER_TYPE = "discovery_type";
     
@@ -68,13 +70,16 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
         discoveryTypes = ruleConfig.map(DatabaseDiscoveryRuleConfiguration::getDiscoveryTypes).orElse(Collections.emptyMap());
         discoveryHeartbeats = ruleConfig.map(DatabaseDiscoveryRuleConfiguration::getDiscoveryHeartbeats).orElse(Collections.emptyMap());
         Optional<ExportableRule> exportableRule = metaData.getRuleMetaData().getRules()
-                .stream().filter(each -> each instanceof ExportableRule).map(each -> (ExportableRule) each).findAny();
-        primaryDataSources = (Map<String, String>) exportableRule.map(optional -> optional.export().get(ExportableConstants.PRIMARY_DATA_SOURCE_KEY)).orElse(Collections.emptyMap());
+                .stream().filter(each -> each instanceof ExportableRule)
+                .filter(each -> ((ExportableRule) each).containExportableKey(Collections.singleton(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE)))
+                .map(each -> (ExportableRule) each).findAny();
+        primaryDataSources = (Map<String, String>) (exportableRule.map(optional -> optional.export(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE).orElse(Collections.emptyMap()))
+                .orElseGet(Collections::emptyMap));
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList(NAME, DATA_SOURCE_NAMES, PRIMARY_DATA_SOURCE_NAME, DISCOVER_TYPE, HEARTBEAT);
+        return Arrays.asList(GROUP_NAME, DATA_SOURCE_NAMES, PRIMARY_DATA_SOURCE_NAME, DISCOVER_TYPE, HEARTBEAT);
     }
     
     @Override

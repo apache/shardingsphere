@@ -33,10 +33,10 @@ public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
      * Check database discovery configuration.
      *
      * @param schemaName schema name
-     * @param dataSource data source
+     * @param dataSourceMap data source map
      * @throws SQLException SQL exception
      */
-    void checkDatabaseDiscoveryConfiguration(String schemaName, DataSource dataSource) throws SQLException;
+    void checkDatabaseDiscoveryConfiguration(String schemaName, Map<String, DataSource> dataSourceMap) throws SQLException;
     
     /**
      * Update primary data source.

@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.watcher;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.state.StateEvent;
-import org.apache.shardingsphere.infra.state.StateType;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
@@ -36,7 +37,7 @@ import java.util.Optional;
 /**
  * Compute node state changed watcher.
  */
-public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<StateEvent> {
+public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
     @Override
     public Collection<String> getWatchingKeys() {
@@ -49,11 +50,17 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<S
     }
     
     @Override
-    public Optional<StateEvent> createGovernanceEvent(final DataChangedEvent event) {
-        String instanceId = ComputeNode.getInstanceIdByStatus(event.getKey());
+    public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+        String instanceId = ComputeNode.getInstanceIdByAttributes(event.getKey());
         if (!Strings.isNullOrEmpty(instanceId)) {
-            Collection<String> status = Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class);
-            return Optional.of(new StateEvent(StateType.CIRCUIT_BREAK, status.contains(ComputeNodeStatus.CIRCUIT_BREAKER.name())));
+            if (event.getKey().equals(ComputeNode.getInstanceStatusNodePath(instanceId))) {
+                Collection<String> status = Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class);
+                return Optional.of(new StateEvent(instanceId, status));
+            } else if (event.getKey().equals(ComputeNode.getInstanceWorkerIdNodePath(instanceId))) {
+                return Optional.of(new WorkerIdEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? null : Long.valueOf(event.getValue())));
+            } else if (event.getKey().equals(ComputeNode.getInstanceLabelNodePath(instanceId))) {
+                return Optional.of(new LabelEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class)));
+            }
         }
         return Optional.empty();
     }

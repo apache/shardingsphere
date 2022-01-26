@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.Channel;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractIncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.LogicalReplication;
@@ -36,7 +35,6 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.Post
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.TestDecodingPlugin;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWalEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.PGReplicationStream;
 
@@ -48,7 +46,7 @@ import java.sql.SQLException;
  * PostgreSQL WAL dumper.
  */
 @Slf4j
-public final class PostgreSQLWalDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
+public final class PostgreSQLWalDumper extends AbstractIncrementalDumper<WalPosition> {
     
     private final WalPosition walPosition;
     
@@ -58,15 +56,16 @@ public final class PostgreSQLWalDumper extends AbstractLifecycleExecutor impleme
     
     private final WalEventConverter walEventConverter;
     
-    @Setter
-    private Channel channel;
+    private final PipelineChannel channel;
     
-    public PostgreSQLWalDumper(final DumperConfiguration dumperConfig, final IngestPosition<WalPosition> position) {
+    public PostgreSQLWalDumper(final DumperConfiguration dumperConfig, final IngestPosition<WalPosition> position, final PipelineChannel channel) {
+        super(dumperConfig, position, channel);
         walPosition = (WalPosition) position;
         if (!StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass())) {
             throw new UnsupportedOperationException("PostgreSQLWalDumper only support PipelineDataSourceConfiguration");
         }
         this.dumperConfig = dumperConfig;
+        this.channel = channel;
         walEventConverter = new WalEventConverter(dumperConfig);
     }
     
@@ -100,10 +99,7 @@ public final class PostgreSQLWalDumper extends AbstractLifecycleExecutor impleme
     }
     
     private void pushRecord(final Record record) {
-        try {
-            channel.pushRecord(record);
-        } catch (final InterruptedException ignored) {
-        }
+        channel.pushRecord(record);
     }
 }
 

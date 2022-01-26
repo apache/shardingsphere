@@ -42,7 +42,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -58,7 +58,7 @@ public final class XAShardingSphereTransactionManagerTest {
     @Before
     public void setUp() {
         Collection<ResourceDataSource> resourceDataSources = createResourceDataSources(DatabaseTypeRegistry.getActualDatabaseType("H2"));
-        TransactionRule transactionRule = new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos"));
+        TransactionRule transactionRule = new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos", new Properties()));
         xaTransactionManager.init(DatabaseTypeRegistry.getActualDatabaseType("H2"), resourceDataSources, transactionRule);
     }
     
@@ -100,7 +100,7 @@ public final class XAShardingSphereTransactionManagerTest {
     
     @Test
     public void assertGetConnectionOfNestedTransaction() throws SQLException {
-        ThreadLocal<Set<Transaction>> transactions = getEnlistedTransactions(getCachedDataSources().get("ds1"));
+        ThreadLocal<Map<Transaction, Connection>> transactions = getEnlistedTransactions(getCachedDataSources().get("ds1"));
         xaTransactionManager.begin();
         assertTrue(transactions.get().isEmpty());
         xaTransactionManager.getConnection("ds1");
@@ -111,7 +111,7 @@ public final class XAShardingSphereTransactionManagerTest {
         assertTrue(transactions.get().isEmpty());
     }
     
-    private void executeNestedTransaction(final ThreadLocal<Set<Transaction>> transactions) throws SQLException {
+    private void executeNestedTransaction(final ThreadLocal<Map<Transaction, Connection>> transactions) throws SQLException {
         xaTransactionManager.begin();
         xaTransactionManager.getConnection("ds1");
         assertThat(transactions.get().size(), is(2));
@@ -152,10 +152,10 @@ public final class XAShardingSphereTransactionManagerTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
-    private ThreadLocal<Set<Transaction>> getEnlistedTransactions(final XATransactionDataSource transactionDataSource) {
+    private ThreadLocal<Map<Transaction, Connection>> getEnlistedTransactions(final XATransactionDataSource transactionDataSource) {
         Field field = transactionDataSource.getClass().getDeclaredField("enlistedTransactions");
         field.setAccessible(true);
-        return (ThreadLocal<Set<Transaction>>) field.get(transactionDataSource);
+        return (ThreadLocal<Map<Transaction, Connection>>) field.get(transactionDataSource);
     }
     
     private Collection<ResourceDataSource> createResourceDataSources(final DatabaseType databaseType) {

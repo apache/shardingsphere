@@ -19,12 +19,10 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest;
 
 import com.google.common.base.Preconditions;
 import com.zaxxer.hikari.HikariConfig;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.Channel;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
@@ -34,6 +32,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderReco
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractIncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractRowsEvent;
@@ -46,10 +45,9 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.MySQLClient;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.metadata.MySQLColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.metadata.MySQLColumnMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.ValueHandler;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
-import org.apache.shardingsphere.infra.config.datasource.url.JdbcUrl;
-import org.apache.shardingsphere.infra.config.datasource.url.JdbcUrlParser;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
@@ -57,13 +55,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 /**
  * MySQL incremental dumper.
  */
 @Slf4j
-public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
+public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<BinlogPosition> {
     
     private static final Map<String, ValueHandler> VALUE_HANDLER_MAP;
     
@@ -75,19 +72,18 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     
     private final Random random = new SecureRandom();
     
-    @Setter
-    private Channel channel;
+    private final PipelineChannel channel;
     
     static {
-        ShardingSphereServiceLoader.register(ValueHandler.class);
-        VALUE_HANDLER_MAP = ShardingSphereServiceLoader.getSingletonServiceInstances(ValueHandler.class)
-                .stream().collect(Collectors.toMap(ValueHandler::getTypeName, v -> v));
+        VALUE_HANDLER_MAP = SingletonSPIRegistry.getSingletonInstancesMap(ValueHandler.class, ValueHandler::getTypeName);
     }
     
-    public MySQLIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<BinlogPosition> binlogPosition) {
+    public MySQLIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<BinlogPosition> binlogPosition, final PipelineChannel channel) {
+        super(dumperConfig, binlogPosition, channel);
         this.binlogPosition = (BinlogPosition) binlogPosition;
         this.dumperConfig = dumperConfig;
         Preconditions.checkArgument(dumperConfig.getDataSourceConfig() instanceof StandardPipelineDataSourceConfiguration, "MySQLBinlogDumper only support StandardPipelineDataSourceConfiguration");
+        this.channel = channel;
         columnMetaDataLoader = new MySQLColumnMetaDataLoader(new PipelineDataSourceFactory().newInstance(dumperConfig.getDataSourceConfig()));
     }
     
@@ -100,15 +96,15 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     private void dump() {
         HikariConfig hikariConfig = ((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getHikariConfig();
         log.info("incremental dump, jdbcUrl={}", hikariConfig.getJdbcUrl());
-        JdbcUrl jdbcUrl = new JdbcUrlParser().parse(hikariConfig.getJdbcUrl());
-        MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), jdbcUrl.getHostname(), jdbcUrl.getPort(), hikariConfig.getUsername(), hikariConfig.getPassword()));
+        DataSourceMetaData metaData = DatabaseTypeRegistry.getActualDatabaseType("MySQL").getDataSourceMetaData(hikariConfig.getJdbcUrl(), null);
+        MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), metaData.getHostname(), metaData.getPort(), hikariConfig.getUsername(), hikariConfig.getPassword()));
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
         int eventCount = 0;
         while (isRunning()) {
             AbstractBinlogEvent event = client.poll();
             if (null != event) {
-                handleEvent(jdbcUrl, event);
+                handleEvent(metaData.getCatalog(), event);
                 eventCount++;
             }
         }
@@ -116,8 +112,8 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
         pushRecord(new FinishedRecord(new PlaceholderPosition()));
     }
     
-    private void handleEvent(final JdbcUrl jdbcUrl, final AbstractBinlogEvent event) {
-        if (event instanceof PlaceholderEvent || filter(jdbcUrl.getDatabase(), (AbstractRowsEvent) event)) {
+    private void handleEvent(final String catalog, final AbstractBinlogEvent event) {
+        if (event instanceof PlaceholderEvent || filter(catalog, (AbstractRowsEvent) event)) {
             createPlaceholderRecord(event);
             return;
         }
@@ -199,9 +195,6 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     }
     
     private void pushRecord(final Record record) {
-        try {
-            channel.pushRecord(record);
-        } catch (final InterruptedException ignored) {
-        }
+        channel.pushRecord(record);
     }
 }

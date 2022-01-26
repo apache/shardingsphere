@@ -38,6 +38,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -78,12 +79,13 @@ public final class ConditionValueInOperatorGeneratorTest {
         assertThat(conditionValue.getValues(), is(Collections.singletonList(1)));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertGenerateConditionValueWithoutParameter() {
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         ListExpression right = new ListExpression(0, 0);
         right.getItems().add(new ParameterMarkerExpressionSegment(0, 0, 0));
         InExpression predicate = new InExpression(0, 0, left, right, false);
-        generator.generate(predicate, column, new LinkedList<>());
+        Optional<ShardingConditionValue> actual = generator.generate(predicate, column, new LinkedList<>());
+        assertFalse(actual.isPresent());
     }
 }

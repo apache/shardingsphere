@@ -67,16 +67,17 @@ public final class CosIdIntervalShardingAlgorithmTest {
     
     static CosIdIntervalShardingAlgorithm createShardingAlg() {
         Properties properties = new Properties();
+        properties.setProperty(CosIdIntervalShardingAlgorithm.ZONE_ID_KEY, "Asia/Shanghai");
         properties.setProperty(CosIdAlgorithm.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX);
         properties.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_LOWER_KEY, LOWER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
         properties.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_UPPER_KEY, UPPER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
         properties.setProperty(CosIdIntervalShardingAlgorithm.SHARDING_SUFFIX_FORMAT_KEY, SUFFIX_FORMATTER_STRING);
         properties.setProperty(CosIdIntervalShardingAlgorithm.INTERVAL_UNIT_KEY, "MONTHS");
         properties.setProperty(CosIdIntervalShardingAlgorithm.INTERVAL_AMOUNT_KEY, "1");
-        CosIdIntervalShardingAlgorithm shardingAlgorithm = new CosIdIntervalShardingAlgorithm();
-        shardingAlgorithm.setProps(properties);
-        shardingAlgorithm.init();
-        return shardingAlgorithm;
+        CosIdIntervalShardingAlgorithm result = new CosIdIntervalShardingAlgorithm();
+        result.setProps(properties);
+        result.init();
+        return result;
     }
     
     static Iterable<Object[]> preciseArgsProvider(final Function<LocalDateTime, ? extends Comparable<?>> datetimeConvert) {

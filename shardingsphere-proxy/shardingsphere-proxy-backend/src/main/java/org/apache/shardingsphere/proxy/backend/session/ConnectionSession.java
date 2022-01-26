@@ -21,11 +21,16 @@ import io.netty.util.AttributeMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxBackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionIsolationLevel;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -50,12 +55,25 @@ public final class ConnectionSession {
     
     @Getter(AccessLevel.NONE)
     private final AtomicBoolean autoCommit = new AtomicBoolean(true);
-    
-    private volatile BackendConnection backendConnection;
+
+    @Getter(AccessLevel.NONE)
+    private AtomicBoolean readOnly = new AtomicBoolean(false);
+
+    private TransactionIsolationLevel defaultIsolationLevel;
+
+    private TransactionIsolationLevel isolationLevel;
+
+    private final BackendConnection backendConnection;
     
     public ConnectionSession(final TransactionType initialTransactionType, final AttributeMap attributeMap) {
         transactionStatus = new TransactionStatus(initialTransactionType);
         this.attributeMap = attributeMap;
+        backendConnection = determineBackendConnection();
+    }
+    
+    private BackendConnection determineBackendConnection() {
+        String proxyBackendDriverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
+        return "ExperimentalVertx".equals(proxyBackendDriverType) ? new VertxBackendConnection(this) : new JDBCBackendConnection(this);
     }
     
     /**
@@ -99,7 +117,7 @@ public final class ConnectionSession {
     public boolean isAutoCommit() {
         return autoCommit.get();
     }
-    
+
     /**
      * Set autocommit.
      *
@@ -107,5 +125,23 @@ public final class ConnectionSession {
      */
     public void setAutoCommit(final boolean autoCommit) {
         this.autoCommit.set(autoCommit);
+    }
+
+    /**
+     * Is readonly.
+     *
+     * @return is readonly
+     */
+    public boolean isReadOnly() {
+        return readOnly.get();
+    }
+
+    /**
+     * Set readonly.
+     *
+     * @param readOnly readonly
+     */
+    public void setReadOnly(final boolean readOnly) {
+        this.readOnly.set(readOnly);
     }
 }

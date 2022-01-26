@@ -18,17 +18,15 @@
 package org.apache.shardingsphere.data.pipeline.core.fixture;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.Channel;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractIncrementalDumper;
 
-public final class FixtureIncrementalDumper implements IncrementalDumper {
+public final class FixtureIncrementalDumper extends AbstractIncrementalDumper<FinishedPosition> {
     
-    public FixtureIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<?> position) {
-    }
-    
-    @Override
-    public void setChannel(final Channel channel) {
+    public FixtureIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<FinishedPosition> position, final PipelineChannel channel) {
+        super(dumperConfig, position, channel);
     }
     
     @Override
@@ -37,9 +35,5 @@ public final class FixtureIncrementalDumper implements IncrementalDumper {
     
     @Override
     public void stop() {
-    }
-    
-    @Override
-    public void run() {
     }
 }

@@ -62,11 +62,11 @@
                                         <list-expression start-index="57" stop-index="62">
                                             <items>
                                                 <literal-expression value="3" start-index="58" stop-index="58" />
-                                                <parameter-marker-expression value="0" start-index="58" stop-index="58" />
+                                                <parameter-marker-expression parameter-index="0" start-index="58" stop-index="58" />
                                             </items>
                                             <items>
                                                 <literal-expression value="4" start-index="61" stop-index="61" />
-                                                <parameter-marker-expression value="1" start-index="61" stop-index="61" />
+                                                <parameter-marker-expression parameter-index="1" start-index="61" stop-index="61" />
                                             </items>
                                         </list-expression>
                                     </right>
@@ -215,7 +215,7 @@
                     </between-expr>
                     <and-expr>
                         <literal-expression value="12" start-index="103" stop-index="104" />
-                        <parameter-marker-expression value="0" start-index="103" stop-index="103" />
+                        <parameter-marker-expression parameter-index="0" start-index="103" stop-index="103" />
                     </and-expr>
                 </between-expression>
             </expr>

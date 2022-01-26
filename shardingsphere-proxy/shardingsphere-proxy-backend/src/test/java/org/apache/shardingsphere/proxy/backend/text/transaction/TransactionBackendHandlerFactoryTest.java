@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
@@ -105,9 +105,9 @@ public final class TransactionBackendHandlerFactoryTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private BackendTransactionManager getBackendTransactionManager(final TransactionBackendHandler transactionBackendHandler) {
+    private JDBCBackendTransactionManager getBackendTransactionManager(final TransactionBackendHandler transactionBackendHandler) {
         Field field = transactionBackendHandler.getClass().getDeclaredField("backendTransactionManager");
         field.setAccessible(true);
-        return (BackendTransactionManager) field.get(transactionBackendHandler);
+        return (JDBCBackendTransactionManager) field.get(transactionBackendHandler);
     }
 }

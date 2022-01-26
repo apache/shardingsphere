@@ -44,6 +44,7 @@ shadowRule:
 | shadow_algorithm_name | 影子算法名称   |
 | type                  | 算法类型      |
 | props                 | 算法参数      |
+| is_default            | 是否默认      |
 
 ### Shadow Rule status
 
@@ -93,11 +94,11 @@ mysql> show shadow table rules;
 
 ```sql
 mysql> show shadow algorithms;
-+-------------------------+--------------------+-------------------------------------------+
-| shadow_algorithm_name   | type               | props                                     |
-+-------------------------+--------------------+-------------------------------------------+
-| user_id_match_algorithm | COLUMN_REGEX_MATCH | operation=insert,column=user_id,regex=[1] |
-| simple_note_algorithm_1 | SIMPLE_NOTE        | shadow=true,foo=bar                       |
-+-------------------------+--------------------+-------------------------------------------+
++-------------------------+--------------------+-------------------------------------------+----------------+
+| shadow_algorithm_name   | type               | props                                     | is_default     |
++-------------------------+--------------------+-------------------------------------------+----------------+
+| user_id_match_algorithm | COLUMN_REGEX_MATCH | operation=insert,column=user_id,regex=[1] | false          |
+| simple_note_algorithm_1 | SIMPLE_NOTE        | shadow=true,foo=bar                       | false          |
++-------------------------+--------------------+-------------------------------------------+----------------+
 2 rows in set (0.01 sec)
 ```

@@ -28,8 +28,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public final class RandomTrafficLoadBalanceAlgorithm implements TrafficLoadBalanceAlgorithm {
     
     @Override
-    public String getDataSourceName(final List<String> dataSourceNames) {
-        return dataSourceNames.get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
+    public String getInstanceId(final String name, final List<String> instanceIds) {
+        return instanceIds.get(ThreadLocalRandom.current().nextInt(instanceIds.size()));
     }
     
     @Override

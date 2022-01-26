@@ -17,22 +17,49 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLParameterDescriptionPacket;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Prepared statement for PostgreSQL.
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 public final class PostgreSQLPreparedStatement {
     
     private final String sql;
     
     private final SQLStatement sqlStatement;
     
-    private final List<PostgreSQLColumnType> columnTypes;
+    private final List<PostgreSQLColumnType> parameterTypes;
+    
+    @Getter(AccessLevel.NONE)
+    private PostgreSQLPacket rowDescription;
+    
+    /**
+     * Describe parameters of the prepared statement.
+     *
+     * @return packet of parameter descriptions
+     */
+    public PostgreSQLParameterDescriptionPacket describeParameters() {
+        return new PostgreSQLParameterDescriptionPacket(parameterTypes);
+    }
+    
+    /**
+     * Describe rows of the prepared statement.
+     * 
+     * @return packet of row description
+     */
+    public Optional<PostgreSQLPacket> describeRows() {
+        return Optional.ofNullable(rowDescription);
+    }
 }

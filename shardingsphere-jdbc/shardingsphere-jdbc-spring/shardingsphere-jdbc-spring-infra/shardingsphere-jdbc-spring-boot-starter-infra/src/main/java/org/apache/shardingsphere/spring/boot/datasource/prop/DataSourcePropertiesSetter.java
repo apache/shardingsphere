@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.spring.boot.datasource.prop;
 
+import org.apache.shardingsphere.spi.singleton.SingletonSPI;
 import org.springframework.core.env.Environment;
 
 import javax.sql.DataSource;
@@ -24,7 +25,7 @@ import javax.sql.DataSource;
 /**
  * Different datasource properties setter.
  */
-public interface DataSourcePropertiesSetter {
+public interface DataSourcePropertiesSetter extends SingletonSPI {
     
     /**
      * Set datasource custom properties.

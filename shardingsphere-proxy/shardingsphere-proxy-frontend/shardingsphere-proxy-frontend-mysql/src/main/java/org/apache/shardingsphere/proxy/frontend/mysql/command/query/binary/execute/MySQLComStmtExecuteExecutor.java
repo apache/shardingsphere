@@ -35,10 +35,9 @@ import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
@@ -68,7 +67,7 @@ import java.util.Optional;
  */
 public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     
-    private final DatabaseCommunicationEngine databaseCommunicationEngine;
+    private final JDBCDatabaseCommunicationEngine databaseCommunicationEngine;
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
@@ -102,8 +101,8 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
             return;
         }
         textProtocolBackendHandler = null;
-        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, packet.getSql(), packet.getParameters(), 
-                (JDBCBackendConnection) connectionSession.getBackendConnection());
+        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, packet.getSql(), packet.getParameters(),
+                connectionSession.getBackendConnection());
     }
     
     private static Collection<ShardingSphereRule> getRules(final String schemaName) {

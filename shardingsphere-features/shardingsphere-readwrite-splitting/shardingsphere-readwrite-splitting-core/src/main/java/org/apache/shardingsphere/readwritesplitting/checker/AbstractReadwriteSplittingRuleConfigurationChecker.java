@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.readwritesplitting.checker;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -39,9 +38,8 @@ public abstract class AbstractReadwriteSplittingRuleConfigurationChecker<T exten
     
     private void checkDataSources(final String schemaName, final Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources) {
         dataSources.forEach(each -> {
-            if (Strings.isNullOrEmpty(each.getAutoAwareDataSourceName())) {
-                Preconditions.checkState(!each.getWriteDataSourceName().isEmpty(), "No available readwrite-splitting rule configuration in schema `%s`", schemaName);
-            }
+            Preconditions.checkState(!each.getType().isEmpty(), "No available readwrite-splitting rule configuration in schema `%s`.", schemaName);
+            Preconditions.checkState(!each.getProps().isEmpty(), "No available readwrite-splitting rule configuration in schema `%s`.", schemaName);
         });
     }
     

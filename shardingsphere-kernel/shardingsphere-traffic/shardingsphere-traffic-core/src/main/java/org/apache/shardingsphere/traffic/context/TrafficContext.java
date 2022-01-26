@@ -19,8 +19,11 @@ package org.apache.shardingsphere.traffic.context;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 
-import java.util.Optional;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Traffic context.
@@ -29,14 +32,16 @@ import java.util.Optional;
 @Setter
 public final class TrafficContext {
     
-    private String dataSourceName;
+    private RouteContext routeContext = new RouteContext();
+
+    private Collection<ExecutionUnit> executionUnits = new LinkedList<>();
     
     /**
-     * Get data source name.
+     * Judge whether statement is match traffic or not.
      * 
-     * @return data source config
+     * @return whether statement is match traffic or not
      */
-    public Optional<String> getDataSourceName() {
-        return Optional.ofNullable(dataSourceName);
+    public boolean isMatchTraffic() {
+        return executionUnits.size() > 0;
     }
 }

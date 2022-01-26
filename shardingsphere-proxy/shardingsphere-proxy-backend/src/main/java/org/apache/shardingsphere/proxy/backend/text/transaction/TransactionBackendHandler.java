@@ -17,8 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.text.transaction;
 
+import io.vertx.core.Future;
+import org.apache.shardingsphere.proxy.backend.communication.TransactionManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.vertx.transaction.VertxLocalTransactionManager;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -42,7 +46,7 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
     
     private final TransactionOperationType operationType;
     
-    private final BackendTransactionManager backendTransactionManager;
+    private final TransactionManager backendTransactionManager;
 
     private final ConnectionSession connectionSession;
     
@@ -50,7 +54,40 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
         this.tclStatement = tclStatement;
         this.operationType = operationType;
         this.connectionSession = connectionSession;
-        backendTransactionManager = new BackendTransactionManager((JDBCBackendConnection) connectionSession.getBackendConnection());
+        if (connectionSession.getBackendConnection() instanceof JDBCBackendConnection) {
+            backendTransactionManager = new JDBCBackendTransactionManager((JDBCBackendConnection) connectionSession.getBackendConnection());
+        } else {
+            backendTransactionManager = new VertxLocalTransactionManager((VertxBackendConnection) connectionSession.getBackendConnection());
+        }
+    }
+    
+    @Override
+    public Future<ResponseHeader> executeFuture() {
+        VertxLocalTransactionManager transactionManager = (VertxLocalTransactionManager) backendTransactionManager;
+        Future<Void> future = determineFuture(transactionManager);
+        return future.compose(unused -> Future.succeededFuture(new UpdateResponseHeader(tclStatement)));
+    }
+    
+    private Future<Void> determineFuture(final VertxLocalTransactionManager transactionManager) {
+        switch (operationType) {
+            case BEGIN:
+                if (tclStatement instanceof MySQLBeginTransactionStatement && connectionSession.getTransactionStatus().isInTransaction()) {
+                    return transactionManager.commit().compose(unused -> transactionManager.begin());
+                }
+                return transactionManager.begin();
+            case SAVEPOINT:
+                return transactionManager.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
+            case ROLLBACK_TO_SAVEPOINT:
+                return transactionManager.rollbackTo(((RollbackStatement) tclStatement).getSavepointName().get());
+            case RELEASE_SAVEPOINT:
+                return transactionManager.releaseSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());
+            case COMMIT:
+                return transactionManager.commit();
+            case ROLLBACK:
+                return transactionManager.rollback();
+            default:
+                return Future.failedFuture(new UnsupportedOperationException());
+        }
     }
     
     @Override

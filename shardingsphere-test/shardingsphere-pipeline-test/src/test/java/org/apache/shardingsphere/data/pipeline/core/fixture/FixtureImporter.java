@@ -18,17 +18,13 @@
 package org.apache.shardingsphere.data.pipeline.core.fixture;
 
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.Channel;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 
 public final class FixtureImporter implements Importer {
     
-    public FixtureImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
-    }
-    
-    @Override
-    public void setChannel(final Channel channel) {
+    public FixtureImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
     }
     
     @Override

@@ -19,10 +19,9 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
 import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
@@ -62,7 +61,6 @@ public final class ShowVariableBackendHandlerTest {
     @Test
     public void assertShowCachedConnections() throws SQLException {
         connectionSession.setCurrentSchema("schema");
-        connectionSession.setBackendConnection(mock(JDBCBackendConnection.class));
         ShowDistSQLBackendHandler backendHandler = new ShowDistSQLBackendHandler(new ShowVariableStatement("cached_connections"), connectionSession);
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));

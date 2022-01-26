@@ -100,7 +100,10 @@ public final class ProxyContext {
      * @return state context
      */
     public StateContext getStateContext() {
-        return contextManager.getStateContext();
+        if (null == contextManager.getInstanceContext()) {
+            return null;
+        }
+        return contextManager.getInstanceContext().getState();
     }
     
     /**

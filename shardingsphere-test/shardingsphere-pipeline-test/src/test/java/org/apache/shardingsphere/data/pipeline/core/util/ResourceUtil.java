@@ -76,9 +76,18 @@ public final class ResourceUtil {
         return result;
     }
     
+    /**
+     * Read file to string.
+     *
+     * @param fileName file name
+     * @return file content
+     */
     @SneakyThrows(IOException.class)
-    private static String readFileToString(final String fileName) {
+    public static String readFileToString(final String fileName) {
         try (InputStream in = ResourceUtil.class.getResourceAsStream(fileName)) {
+            if (null == in) {
+                throw new NullPointerException("get " + fileName + " as stream return null");
+            }
             return IOUtils.toString(in, StandardCharsets.UTF_8);
         }
     }

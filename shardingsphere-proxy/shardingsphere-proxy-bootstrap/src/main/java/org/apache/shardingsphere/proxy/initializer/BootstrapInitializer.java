@@ -20,16 +20,17 @@ package org.apache.shardingsphere.proxy.initializer;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.instance.InstanceType;
+import org.apache.shardingsphere.infra.config.schema.impl.DataSourceGeneratedSchemaConfiguration;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -39,12 +40,12 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -65,34 +66,42 @@ public final class BootstrapInitializer {
      * @throws SQLException SQL exception
      */
     public void init(final YamlProxyConfiguration yamlConfig, final int port) throws SQLException {
-        ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode()
-                ? null : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
-        initContext(yamlConfig, modeConfig, port);
-        initRuleAlteredJobWorker(modeConfig);
+        ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode() ? null : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
+        ContextManager contextManager = createContextManager(yamlConfig, modeConfig, port);
+        ProxyContext.getInstance().init(contextManager);
+        initRuleAlteredJobWorker(modeConfig, contextManager);
         setDatabaseServerInfo();
     }
     
-    private void initContext(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig, final int port) throws SQLException {
+    private ContextManager createContextManager(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig, final int port) throws SQLException {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
-        boolean isOverwrite = null == modeConfig || modeConfig.isOverwrite();
-        Map<String, Map<String, DataSource>> dataSourcesMap = getDataSourcesMap(proxyConfig.getSchemaDataSources());
-        ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder().modeConfig(modeConfig).dataSourcesMap(dataSourcesMap).schemaRuleConfigs(proxyConfig.getSchemaRules())
-                .globalRuleConfigs(proxyConfig.getGlobalRules()).props(proxyConfig.getProps()).isOverwrite(isOverwrite).port(port).labels(proxyConfig.getLabels())
-                .instanceType(InstanceType.PROXY).build();
-        ContextManager contextManager = ContextManagerBuilderFactory.newInstance(modeConfig).build(parameter);
-        ProxyContext.getInstance().init(contextManager);
+        Map<String, Map<String, DataSource>> dataSourcesMap = getDataSourcesMap(proxyConfig.getSchemaConfigurations());
+        ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder().modeConfig(modeConfig).dataSourcesMap(dataSourcesMap)
+                .schemaRuleConfigs(getSchemaRuleConfigurations(proxyConfig.getSchemaConfigurations()))
+                .globalRuleConfigs(proxyConfig.getGlobalConfiguration().getRules())
+                .props(proxyConfig.getGlobalConfiguration().getProperties()).labels(proxyConfig.getGlobalConfiguration().getLabels())
+                .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, port)).build();
+        return ContextManagerBuilderFactory.newInstance(modeConfig).build(parameter);
     }
     
-    // TODO add DataSourceParameter param to ContextManagerBuilder to avoid re-build data source
-    private Map<String, Map<String, DataSource>> getDataSourcesMap(final Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap) {
-        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourceParametersMap.size(), 1);
-        for (Entry<String, Map<String, DataSourceParameter>> entry : dataSourceParametersMap.entrySet()) {
-            result.put(entry.getKey(), DataSourcePoolCreatorUtil.getDataSourceMap(DataSourceParameterConverter.getDataSourceConfigurationMap(entry.getValue())));
+    // TODO add DataSourceConfiguration param to ContextManagerBuilder to avoid re-build data source
+    private Map<String, Map<String, DataSource>> getDataSourcesMap(final Map<String, DataSourceGeneratedSchemaConfiguration> schemaConfigMap) {
+        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(schemaConfigMap.size(), 1);
+        for (Entry<String, DataSourceGeneratedSchemaConfiguration> entry : schemaConfigMap.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().getDataSources());
         }
         return result;
     }
     
-    private void initRuleAlteredJobWorker(final ModeConfiguration modeConfig) {
+    private Map<String, Collection<RuleConfiguration>> getSchemaRuleConfigurations(final Map<String, DataSourceGeneratedSchemaConfiguration> schemaConfigMap) {
+        Map<String, Collection<RuleConfiguration>> result = new LinkedHashMap<>(schemaConfigMap.size(), 1);
+        for (Entry<String, DataSourceGeneratedSchemaConfiguration> entry : schemaConfigMap.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().getRuleConfigurations());
+        }
+        return result;
+    }
+    
+    private void initRuleAlteredJobWorker(final ModeConfiguration modeConfig, final ContextManager contextManager) {
         if (null == modeConfig) {
             return;
         }
@@ -101,7 +110,8 @@ public final class BootstrapInitializer {
             log.info("mode type is not Cluster, ignore initRuleAlteredJobWorker");
             return;
         }
-        RuleAlteredContext.initModeConfig(modeConfig);
+        PipelineContext.initModeConfig(modeConfig);
+        PipelineContext.initContextManager(contextManager);
         // TODO init worker only if necessary, e.g. 1) rule altered action configured, 2) enabled job exists, 3) stopped job restarted
         RuleAlteredJobWorker.initWorkerIfNecessary();
     }

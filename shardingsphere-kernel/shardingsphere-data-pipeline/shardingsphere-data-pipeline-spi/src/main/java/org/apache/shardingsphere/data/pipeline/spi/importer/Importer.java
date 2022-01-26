@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.spi.importer;
 
 import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.Channel;
 
 /**
  * Importer.
@@ -26,22 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.channel.Channel;
 public interface Importer extends LifecycleExecutor {
     
     /**
-     * Set channel.
-     *
-     * @param channel channel
-     */
-    void setChannel(Channel channel);
-    
-    /**
      * Write data to channel.
      */
     void write();
-    
-    /**
-     * Set importer listener.
-     *
-     * @param importerListener importer listener
-     */
-    default void setImporterListener(ImporterListener importerListener) {
-    }
 }

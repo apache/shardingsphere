@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
@@ -25,7 +27,19 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 /**
  * Bind complete packet for PostgreSQL.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLBindCompletePacket implements PostgreSQLIdentifierPacket {
+    
+    private static final PostgreSQLBindCompletePacket INSTANCE = new PostgreSQLBindCompletePacket();
+    
+    /**
+     * Get instance of {@link PostgreSQLBindCompletePacket}.
+     *
+     * @return instance of {@link PostgreSQLBindCompletePacket}
+     */
+    public static PostgreSQLBindCompletePacket getInstance() {
+        return INSTANCE;
+    }
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {

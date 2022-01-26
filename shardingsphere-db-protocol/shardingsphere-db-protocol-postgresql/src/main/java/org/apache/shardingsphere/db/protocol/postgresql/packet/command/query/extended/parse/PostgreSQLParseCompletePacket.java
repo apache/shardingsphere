@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
@@ -25,7 +27,19 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 /**
  * Parse complete packet for PostgreSQL.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLParseCompletePacket implements PostgreSQLIdentifierPacket {
+    
+    private static final PostgreSQLParseCompletePacket INSTANCE = new PostgreSQLParseCompletePacket();
+    
+    /**
+     * Get instance of {@link PostgreSQLParseCompletePacket}.
+     *
+     * @return instance of {@link PostgreSQLParseCompletePacket}
+     */
+    public static PostgreSQLParseCompletePacket getInstance() {
+        return INSTANCE;
+    }
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {

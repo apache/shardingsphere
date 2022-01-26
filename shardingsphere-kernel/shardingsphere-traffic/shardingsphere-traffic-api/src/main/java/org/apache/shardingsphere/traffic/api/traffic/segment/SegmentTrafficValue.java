@@ -30,4 +30,6 @@ import org.apache.shardingsphere.traffic.api.traffic.TrafficValue;
 public final class SegmentTrafficValue implements TrafficValue {
     
     private final SQLStatement statement;
+    
+    private final String sql;
 }

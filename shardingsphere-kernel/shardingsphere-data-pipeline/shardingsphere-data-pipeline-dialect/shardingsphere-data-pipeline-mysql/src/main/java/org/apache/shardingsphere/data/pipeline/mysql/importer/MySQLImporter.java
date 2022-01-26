@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.importer;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.importer.AbstractImporter;
 import org.apache.shardingsphere.data.pipeline.mysql.sqlbuilder.MySQLPipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -32,9 +33,11 @@ import java.util.Set;
  */
 public final class MySQLImporter extends AbstractImporter {
     
-    public MySQLImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
-        super(importerConfig, dataSourceManager);
-        importerConfig.getDataSourceConfig().appendJDBCQueryProperties(ImmutableMap.<String, String>builder().put("rewriteBatchedStatements", "true").build());
+    public MySQLImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
+        super(importerConfig, dataSourceManager, channel);
+        Properties queryProps = new Properties();
+        queryProps.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
+        importerConfig.getDataSourceConfig().appendJDBCQueryProperties(queryProps);
     }
     
     @Override

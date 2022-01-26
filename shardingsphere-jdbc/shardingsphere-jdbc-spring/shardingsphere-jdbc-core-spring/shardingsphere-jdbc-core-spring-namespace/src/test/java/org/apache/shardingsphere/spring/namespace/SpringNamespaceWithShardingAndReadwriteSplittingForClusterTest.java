@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.spring.namespace;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.spring.namespace.util.EmbedTestingServer;
 import org.apache.shardingsphere.spring.namespace.util.FieldValueUtil;
@@ -34,8 +34,8 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/cluster-application-context-sharding-readwrite-splitting.xml")
 public final class SpringNamespaceWithShardingAndReadwriteSplittingForClusterTest extends AbstractJUnit4SpringContextTests {

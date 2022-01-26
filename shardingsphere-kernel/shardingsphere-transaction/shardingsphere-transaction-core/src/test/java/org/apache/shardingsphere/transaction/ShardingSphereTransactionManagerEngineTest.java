@@ -25,6 +25,7 @@ import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -45,7 +46,7 @@ public final class ShardingSphereTransactionManagerEngineTest {
         Runnable caller = mock(Runnable.class);
         ShardingSphereTransactionManagerFixture transactionManager = (ShardingSphereTransactionManagerFixture) transactionManagerEngine.getTransactionManager(TransactionType.XA);
         transactionManager.setCaller(caller);
-        TransactionRule transactionRule = new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos"));
+        TransactionRule transactionRule = new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos", new Properties()));
         transactionManagerEngine.init(DatabaseTypeRegistry.getActualDatabaseType("H2"), Collections.emptyMap(), transactionRule);
         verify(caller).run();
     }

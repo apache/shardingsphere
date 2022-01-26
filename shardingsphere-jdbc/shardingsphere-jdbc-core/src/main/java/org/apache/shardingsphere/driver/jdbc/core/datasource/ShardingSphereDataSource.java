@@ -25,7 +25,8 @@ import org.apache.shardingsphere.infra.config.checker.RuleConfigurationCheckerFa
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
-import org.apache.shardingsphere.infra.instance.InstanceType;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
@@ -53,14 +54,14 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     
     public ShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig) throws SQLException {
         this.schemaName = schemaName;
-        contextManager = createContextManager(schemaName, modeConfig, new HashMap<>(), new LinkedList<>(), new Properties(), false);
+        contextManager = createContextManager(schemaName, modeConfig, new HashMap<>(), new LinkedList<>(), new Properties());
     }
     
     public ShardingSphereDataSource(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
                                     final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         checkRuleConfiguration(schemaName, ruleConfigs);
         this.schemaName = schemaName;
-        contextManager = createContextManager(schemaName, modeConfig, dataSourceMap, ruleConfigs, props, null == modeConfig || modeConfig.isOverwrite());
+        contextManager = createContextManager(schemaName, modeConfig, dataSourceMap, ruleConfigs, props);
     }
     
     @SuppressWarnings("unchecked")
@@ -69,13 +70,13 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     }
     
     private ContextManager createContextManager(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
-                                                final Collection<RuleConfiguration> ruleConfigs, final Properties props, final boolean isOverwrite) throws SQLException {
+                                                final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(schemaName, dataSourceMap);
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap(
                 schemaName, ruleConfigs.stream().filter(each -> each instanceof SchemaRuleConfiguration).collect(Collectors.toList()));
         Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
         ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder().modeConfig(modeConfig).dataSourcesMap(dataSourcesMap).schemaRuleConfigs(schemaRuleConfigs)
-                .globalRuleConfigs(globalRuleConfigs).props(props).isOverwrite(isOverwrite).schemaName(schemaName).instanceType(InstanceType.JDBC).build();
+                .globalRuleConfigs(globalRuleConfigs).props(props).instanceDefinition(new InstanceDefinition(InstanceType.JDBC)).build();
         return ContextManagerBuilderFactory.newInstance(modeConfig).build(parameter);
     }
     

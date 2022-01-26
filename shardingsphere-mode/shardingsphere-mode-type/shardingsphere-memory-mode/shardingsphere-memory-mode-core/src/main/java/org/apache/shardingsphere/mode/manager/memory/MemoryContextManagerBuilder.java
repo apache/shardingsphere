@@ -17,16 +17,19 @@
 
 package org.apache.shardingsphere.mode.manager.memory;
 
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
+import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
+import org.apache.shardingsphere.mode.manager.memory.workerid.generator.MemoryWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
-import org.apache.shardingsphere.schedule.core.api.ModeScheduleContext;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.TransactionContextsBuilder;
 
@@ -47,8 +50,22 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
                 schemas, rules, parameter.getProps()).build(null);
         TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
         ContextManager result = new ContextManager();
-        result.init(metaDataContexts, transactionContexts, new ModeScheduleContext(parameter.getModeConfig()));
+        result.init(metaDataContexts, transactionContexts, buildInstanceContext(parameter));
+        buildSpecialRules(result);
         return result;
+    }
+    
+    private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter parameter) {
+        ComputeNodeInstance instance = new ComputeNodeInstance();
+        instance.setInstanceDefinition(parameter.getInstanceDefinition());
+        instance.setLabels(parameter.getLabels());
+        return new InstanceContext(instance, new MemoryWorkerIdGenerator());
+    }
+    
+    private void buildSpecialRules(final ContextManager contextManager) {
+        contextManager.getMetaDataContexts().getMetaDataMap().forEach((key, value)
+            -> value.getRuleMetaData().getRules().stream().filter(each -> each instanceof InstanceAwareRule)
+            .forEach(each -> ((InstanceAwareRule) each).setInstanceContext(contextManager.getInstanceContext())));
     }
     
     @Override

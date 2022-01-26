@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -33,8 +32,8 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreatio
 import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExecutor;
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
-import org.apache.shardingsphere.infra.config.datasource.url.JdbcUrlParser;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
+import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -45,7 +44,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfiguration
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,6 +53,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
@@ -65,19 +65,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class RuleAlteredJobWorker {
     
-    static {
-        ShardingSphereServiceLoader.register(RuleAlteredDetector.class);
-    }
-    
     private static final RuleAlteredJobWorker INSTANCE = new RuleAlteredJobWorker();
     
-    // TODO refactor
-    private static final Map<String, RuleAlteredDetector> RULE_CLASS_NAME_DETECTOR_MAP = ShardingSphereServiceLoader.getSingletonServiceInstances(RuleAlteredDetector.class).stream()
-            .collect(Collectors.toMap(RuleAlteredDetector::getRuleConfigClassName, Function.identity()));
+    private static final Map<String, RuleAlteredDetector> RULE_CLASS_NAME_DETECTOR_MAP = SingletonSPIRegistry.getSingletonInstancesMap(
+            RuleAlteredDetector.class, RuleAlteredDetector::getRuleConfigClassName);
     
-    private static final Map<String, RuleAlteredDetector> YAML_RULE_CLASS_NAME_DETECTOR_MAP = ShardingSphereServiceLoader.getSingletonServiceInstances(RuleAlteredDetector.class).stream()
-            .collect(Collectors.toMap(RuleAlteredDetector::getYamlRuleConfigClassName, Function.identity()));
-    
+    private static final Map<String, RuleAlteredDetector> YAML_RULE_CLASS_NAME_DETECTOR_MAP = SingletonSPIRegistry.getSingletonInstancesMap(
+            RuleAlteredDetector.class, RuleAlteredDetector::getYamlRuleConfigClassName);
+        
     private static final YamlRuleConfigurationSwapperEngine SWAPPER_ENGINE = new YamlRuleConfigurationSwapperEngine();
     
     private static final AtomicBoolean WORKER_INITIALIZED = new AtomicBoolean(false);
@@ -170,7 +165,7 @@ public final class RuleAlteredJobWorker {
     public void start(final StartScalingEvent event) {
         log.info("Start scaling job by {}", event);
         Optional<JobConfiguration> jobConfigOptional = createJobConfig(event);
-        Optional<String> jobId = jobConfigOptional.isPresent() ? PipelineJobAPIFactory.getPipelineJobAPI().start(jobConfigOptional.get()) : Optional.empty();
+        Optional<String> jobId = jobConfigOptional.isPresent() ? PipelineJobAPIFactory.getRuleAlteredJobAPI().start(jobConfigOptional.get()) : Optional.empty();
         if (!jobId.isPresent()) {
             log.info("Switch rule configuration immediately.");
             YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getTargetDataSource(), event.getTargetRule());
@@ -253,14 +248,21 @@ public final class RuleAlteredJobWorker {
     }
     
     private void disableSSLForMySQL(final Map<String, Map<String, Object>> yamlDataSources) {
-        String jdbcUrl = (String) yamlDataSources.entrySet().iterator().next().getValue().get("jdbcUrl");
+        Map<String, Object> firstDataSourceProps = yamlDataSources.entrySet().iterator().next().getValue();
+        String jdbcUrlKey = firstDataSourceProps.containsKey("url") ? "url" : "jdbcUrl";
+        String jdbcUrl = (String) firstDataSourceProps.get(jdbcUrlKey);
+        if (null == jdbcUrl) {
+            log.warn("disableSSLForMySQL, could not get jdbcUrl, jdbcUrlKey={}", jdbcUrlKey);
+            return;
+        }
         DatabaseType databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl);
         if (!(databaseType instanceof MySQLDatabaseType)) {
             return;
         }
-        Map<String, String> queryProps = ImmutableMap.of("useSSL", "false");
+        Properties queryProps = new Properties();
+        queryProps.setProperty("useSSL", Boolean.FALSE.toString());
         for (Entry<String, Map<String, Object>> entry : yamlDataSources.entrySet()) {
-            entry.getValue().put("jdbcUrl", new JdbcUrlParser().appendQueryProperties((String) entry.getValue().get("jdbcUrl"), queryProps));
+            entry.getValue().put(jdbcUrlKey, new JdbcUrlAppender().appendQueryProperties((String) entry.getValue().get(jdbcUrlKey), queryProps));
         }
     }
 }

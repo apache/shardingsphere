@@ -20,8 +20,11 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
+import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
+import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 
 /**
@@ -80,7 +83,10 @@ public final class RuleAlteredJobScheduler implements Runnable {
         log.info("-------------- Start inventory task --------------");
         jobContext.setStatus(JobStatus.EXECUTE_INVENTORY_TASK);
         ExecuteCallback inventoryTaskCallback = createInventoryTaskCallback();
-        for (PipelineTask each : jobContext.getInventoryTasks()) {
+        for (InventoryTask each : jobContext.getInventoryTasks()) {
+            if (each.getProgress().getPosition() instanceof FinishedPosition) {
+                continue;
+            }
             jobContext.getRuleAlteredContext().getInventoryDumperExecuteEngine().submit(each, inventoryTaskCallback);
         }
         return false;
@@ -92,7 +98,7 @@ public final class RuleAlteredJobScheduler implements Runnable {
             @Override
             public void onSuccess() {
                 if (RuleAlteredJobProgressDetector.allInventoryTasksFinished(jobContext.getInventoryTasks())) {
-                    log.info("All inventory tasks finished.");
+                    log.info("onSuccess, all inventory tasks finished.");
                     executeIncrementalTask();
                 }
             }
@@ -114,7 +120,10 @@ public final class RuleAlteredJobScheduler implements Runnable {
         log.info("-------------- Start incremental task --------------");
         jobContext.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK);
         ExecuteCallback incrementalTaskCallback = createIncrementalTaskCallback();
-        for (PipelineTask each : jobContext.getIncrementalTasks()) {
+        for (IncrementalTask each : jobContext.getIncrementalTasks()) {
+            if (each.getProgress().getPosition() instanceof FinishedPosition) {
+                continue;
+            }
             jobContext.getRuleAlteredContext().getIncrementalDumperExecuteEngine().submit(each, incrementalTaskCallback);
         }
     }

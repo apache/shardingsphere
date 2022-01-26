@@ -19,13 +19,12 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.Channel;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
@@ -34,6 +33,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineMetaDataManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
@@ -58,7 +58,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     @Getter(AccessLevel.PROTECTED)
     private final InventoryDumperConfiguration inventoryDumperConfig;
     
-    private final int readBatchSize;
+    private final int batchSize;
     
     private final JobRateLimitAlgorithm rateLimitAlgorithm;
     
@@ -66,17 +66,17 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     
     private final TableMetaData tableMetaData;
     
-    @Setter
-    private Channel channel;
+    private final PipelineChannel channel;
     
-    protected AbstractInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineDataSourceManager dataSourceManager) {
+    protected AbstractInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
         if (!StandardPipelineDataSourceConfiguration.class.equals(inventoryDumperConfig.getDataSourceConfig().getClass())) {
             throw new UnsupportedOperationException("AbstractInventoryDumper only support StandardPipelineDataSourceConfiguration");
         }
         this.inventoryDumperConfig = inventoryDumperConfig;
-        this.readBatchSize = inventoryDumperConfig.getReadBatchSize();
+        this.batchSize = inventoryDumperConfig.getBatchSize();
         this.rateLimitAlgorithm = inventoryDumperConfig.getRateLimitAlgorithm();
         this.dataSourceManager = dataSourceManager;
+        this.channel = channel;
         tableMetaData = createTableMetaData();
     }
     
@@ -98,17 +98,19 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         IngestPosition<?> position = inventoryDumperConfig.getPosition();
         log.info("inventory dump, sql={}, position={}", sql, position);
         try (Connection conn = dataSourceManager.getDataSource(inventoryDumperConfig.getDataSourceConfig()).getConnection()) {
+            int round = 1;
             Number startUniqueKeyValue = getPositionBeginValue(position) - 1;
             Optional<Number> maxUniqueKeyValue;
-            while ((maxUniqueKeyValue = dump0(conn, sql, startUniqueKeyValue)).isPresent()) {
+            while ((maxUniqueKeyValue = dump0(conn, sql, startUniqueKeyValue, round++)).isPresent()) {
                 startUniqueKeyValue = maxUniqueKeyValue.get();
             }
+            log.info("inventory dump done, round={}, maxUniqueKeyValue={}", round, maxUniqueKeyValue);
         } catch (final SQLException ex) {
-            stop();
-            channel.close();
+            log.error("inventory dump, ex caught, msg={}", ex.getMessage());
             throw new IngestException(ex);
         } finally {
-            pushRecord(new FinishedRecord(new PlaceholderPosition()));
+            log.info("inventory dump, before put FinishedRecord");
+            pushRecord(new FinishedRecord(new FinishedPosition()));
         }
     }
     
@@ -118,14 +120,14 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         return "SELECT * FROM " + tableName + " WHERE " + primaryKey + " > ? AND " + primaryKey + " <= ? ORDER BY " + primaryKey + " ASC LIMIT ?";
     }
     
-    private Optional<Number> dump0(final Connection conn, final String sql, final Number startUniqueKeyValue) throws SQLException {
+    private Optional<Number> dump0(final Connection conn, final String sql, final Number startUniqueKeyValue, final int round) throws SQLException {
         if (null != rateLimitAlgorithm) {
-            rateLimitAlgorithm.onQuery();
+            rateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
         }
         try (PreparedStatement preparedStatement = createPreparedStatement(conn, sql)) {
             preparedStatement.setObject(1, startUniqueKeyValue);
             preparedStatement.setObject(2, getPositionEndValue(inventoryDumperConfig.getPosition()));
-            preparedStatement.setInt(3, readBatchSize);
+            preparedStatement.setInt(3, batchSize);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 ResultSetMetaData metaData = resultSet.getMetaData();
                 int rowCount = 0;
@@ -145,8 +147,11 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                     pushRecord(record);
                     rowCount++;
                 }
-                log.info("dump, rowCount={}, maxUniqueKeyValue={}", rowCount, maxUniqueKeyValue);
-                pushRecord(new FinishedRecord(new FinishedPosition()));
+                if (log.isDebugEnabled()) {
+                    log.debug("dump, round={}, rowCount={}, maxUniqueKeyValue={}", round, rowCount, maxUniqueKeyValue);
+                } else if (0 == round % 50) {
+                    log.info("dump, round={}, rowCount={}, maxUniqueKeyValue={}", round, rowCount, maxUniqueKeyValue);
+                }
                 return Optional.ofNullable(maxUniqueKeyValue);
             }
         }
@@ -186,9 +191,6 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     }
     
     private void pushRecord(final Record record) {
-        try {
-            channel.pushRecord(record);
-        } catch (final InterruptedException ignored) {
-        }
+        channel.pushRecord(record);
     }
 }

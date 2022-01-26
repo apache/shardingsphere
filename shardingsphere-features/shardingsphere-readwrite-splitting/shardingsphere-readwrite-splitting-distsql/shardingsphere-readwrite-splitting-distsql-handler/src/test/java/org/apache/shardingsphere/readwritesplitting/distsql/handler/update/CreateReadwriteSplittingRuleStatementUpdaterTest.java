@@ -30,6 +30,7 @@ import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.Cre
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -45,7 +46,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData shardingSphereMetaData;
     
     @Mock
@@ -71,6 +72,7 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckSQLStatementWithoutToBeCreatedLoadBalancers() throws DistSQLException {
+        when(shardingSphereMetaData.getRuleMetaData().findRules(any())).thenReturn(Collections.emptyList());
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("INVALID_TYPE"), null);
     }
     
@@ -80,8 +82,11 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
     }
     
     private ReadwriteSplittingRuleConfiguration getCurrentRuleConfig() {
+        Properties props = new Properties();
+        props.setProperty("write-data-source-name", "ds_write");
+        props.setProperty("read-data-source-names", "read_ds_0,read_ds_1");
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig
-                = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", "", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), "TEST");
+                = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", "Static", props, "TEST");
         return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), Collections.emptyMap());
     }
 }

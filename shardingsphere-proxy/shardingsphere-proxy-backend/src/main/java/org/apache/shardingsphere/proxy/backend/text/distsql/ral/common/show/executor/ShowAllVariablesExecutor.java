@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -54,7 +54,7 @@ public final class ShowAllVariablesExecutor extends AbstractShowExecutor {
     protected MergedResult createMergedResult() {
         List<List<Object>> rows = new LinkedList<>();
         ConfigurationProperties configurationProperties = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps();
-        ConfigurationPropertyKey.getKeyNames().stream().forEach(each -> {
+        ConfigurationPropertyKey.getKeyNames().forEach(each -> {
             String propertyValue = configurationProperties.getValue(ConfigurationPropertyKey.valueOf(each)).toString();
             rows.add(Arrays.asList(each.toLowerCase(), propertyValue));
         });

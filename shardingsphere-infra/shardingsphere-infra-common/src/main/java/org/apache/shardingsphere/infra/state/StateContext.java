@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.state;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 
 import java.util.Collections;
 import java.util.Deque;
@@ -32,21 +31,18 @@ public final class StateContext {
     
     private final Deque<StateType> currentState = new ConcurrentLinkedDeque<>(Collections.singleton(StateType.OK));
     
-    public StateContext() {
-        ShardingSphereEventBus.getInstance().register(this);
-    }
-    
     /**
      * Switch state.
      *
-     * @param event state event
+     * @param type state type
+     * @param on true if state type is valid, false if not            
      */
     @Subscribe
-    public void switchState(final StateEvent event) {
-        if (event.isOn()) {
-            currentState.push(event.getType());
+    public void switchState(final StateType type, final boolean on) {
+        if (on) {
+            currentState.push(type);
         } else {
-            if (getCurrentState().equals(event.getType())) {
+            if (getCurrentState().equals(type)) {
                 recoverState();
             }
         }

@@ -105,6 +105,7 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
     /**
      * Get the schema names as a condition for SQL execution.
      *
+     * @param connectionSession connection session
      * @return schema names
      */
     protected abstract List<String> getSchemaNames(ConnectionSession connectionSession);

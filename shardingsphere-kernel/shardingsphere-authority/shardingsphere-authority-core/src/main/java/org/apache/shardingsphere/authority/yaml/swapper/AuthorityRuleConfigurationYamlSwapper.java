@@ -19,7 +19,9 @@ package org.apache.shardingsphere.authority.yaml.swapper;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.constant.AuthorityOrder;
+import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
@@ -45,7 +47,11 @@ public final class AuthorityRuleConfigurationYamlSwapper implements YamlRuleConf
     @Override
     public AuthorityRuleConfiguration swapToObject(final YamlAuthorityRuleConfiguration yamlConfig) {
         Collection<ShardingSphereUser> users = YamlUsersConfigurationConverter.convertShardingSphereUser(yamlConfig.getUsers());
-        return new AuthorityRuleConfiguration(users, algorithmSwapper.swapToObject(yamlConfig.getProvider()));
+        ShardingSphereAlgorithmConfiguration provider = algorithmSwapper.swapToObject(yamlConfig.getProvider());
+        if (null == provider) {
+            provider = new DefaultAuthorityRuleConfigurationBuilder().build().getProvider();
+        }
+        return new AuthorityRuleConfiguration(users, provider);
     }
     
     @Override

@@ -99,8 +99,9 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     pr_ds:
-      writeDataSourceName: write_ds
-      readDataSourceNames:
-        - read_ds
+      type: Static
+      props:
+        write-data-source-name: write_ds
+        read-data-source-names: read_ds
 props:
   sql-show: false

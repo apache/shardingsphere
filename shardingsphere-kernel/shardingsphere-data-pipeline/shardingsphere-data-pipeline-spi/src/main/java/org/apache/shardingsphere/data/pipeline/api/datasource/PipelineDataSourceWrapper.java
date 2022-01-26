@@ -36,6 +36,7 @@ import java.util.logging.Logger;
 @Slf4j
 public final class PipelineDataSourceWrapper implements DataSource, AutoCloseable {
     
+    @Getter
     private final DataSource dataSource;
     
     @Getter
