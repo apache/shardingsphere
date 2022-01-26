@@ -199,11 +199,10 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
     
     private static ImporterConfiguration createImporterConfig(final PipelineConfiguration pipelineConfig, final HandleConfiguration handleConfig,
                                                               final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig, final Map<String, Set<String>> shardingColumnsMap) {
-        ImporterConfiguration result = new ImporterConfiguration();
-        result.setDataSourceConfig(PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter()));
-        result.setShardingColumnsMap(shardingColumnsMap);
-        result.setBatchSize(onRuleAlteredActionConfig.getOutput().getBatchSize());
-        result.setRetryTimes(handleConfig.getRetryTimes());
-        return result;
+        PipelineDataSourceConfiguration dataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter());
+        // TODO output may be null
+        int batchSize = onRuleAlteredActionConfig.getOutput().getBatchSize();
+        int retryTimes = handleConfig.getRetryTimes();
+        return new ImporterConfiguration(dataSourceConfig, shardingColumnsMap, batchSize, retryTimes);
     }
 }
