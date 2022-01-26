@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.context.refresher;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
@@ -30,17 +31,23 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Meta data refresh engine.
  */
+@RequiredArgsConstructor
 public final class MetaDataRefreshEngine {
     
     static {
         ShardingSphereServiceLoader.register(MetaDataRefresher.class);
     }
+    
+    private static final Set<Class<? extends SQLStatement>> IGNORABLE_SQL_STATEMENT_CLASS = Collections.newSetFromMap(new ConcurrentHashMap<>());
     
     private final ShardingSphereMetaData schemaMetaData;
     
@@ -50,14 +57,6 @@ public final class MetaDataRefreshEngine {
     
     private final ConfigurationProperties props;
     
-    public MetaDataRefreshEngine(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData federationMetaData,
-                                 final Map<String, OptimizerPlannerContext> optimizerPlanners, final ConfigurationProperties props) {
-        this.schemaMetaData = schemaMetaData;
-        this.federationMetaData = federationMetaData;
-        this.optimizerPlanners = optimizerPlanners;
-        this.props = props;
-    }
-    
     /**
      * Refresh.
      *
@@ -65,8 +64,13 @@ public final class MetaDataRefreshEngine {
      * @param logicDataSourceNames logic data source names
      * @throws SQLException SQL exception
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public void refresh(final SQLStatement sqlStatement, final Collection<String> logicDataSourceNames) throws SQLException {
-        Optional<MetaDataRefresher> schemaRefresher = TypedSPIRegistry.findRegisteredService(MetaDataRefresher.class, sqlStatement.getClass().getSuperclass().getName(), null);
+        Class<? extends SQLStatement> sqlStatementClass = sqlStatement.getClass();
+        if (IGNORABLE_SQL_STATEMENT_CLASS.contains(sqlStatementClass)) {
+            return;
+        }
+        Optional<MetaDataRefresher> schemaRefresher = TypedSPIRegistry.findRegisteredService(MetaDataRefresher.class, sqlStatementClass.getSuperclass().getName(), null);
         if (schemaRefresher.isPresent()) {
             schemaRefresher.get().refresh(schemaMetaData, federationMetaData, optimizerPlanners, logicDataSourceNames, sqlStatement, props);
         }
@@ -74,6 +78,9 @@ public final class MetaDataRefreshEngine {
         if (sqlStatementEventMapper.isPresent()) {
             ShardingSphereEventBus.getInstance().post(sqlStatementEventMapper.get().map(sqlStatement));
             // TODO Subscribe and handle DCLStatementEvent
+        }
+        if (!schemaRefresher.isPresent() && !sqlStatementEventMapper.isPresent()) {
+            IGNORABLE_SQL_STATEMENT_CLASS.add(sqlStatementClass);
         }
     }
 }
