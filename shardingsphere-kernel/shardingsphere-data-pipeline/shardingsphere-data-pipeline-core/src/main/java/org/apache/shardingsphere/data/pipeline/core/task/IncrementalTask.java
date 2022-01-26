@@ -67,9 +67,9 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     private final IncrementalTaskProgress progress;
     
     public IncrementalTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig,
-            final PipelineChannelFactory pipelineChannelFactory, final ExecuteEngine incrementalDumperExecuteEngine) {
+                           final PipelineChannelFactory pipelineChannelFactory, final PipelineDataSourceManager dataSourceManager,
+                           final ExecuteEngine incrementalDumperExecuteEngine) {
         this.incrementalDumperExecuteEngine = incrementalDumperExecuteEngine;
-        PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
         this.dataSourceManager = dataSourceManager;
         taskId = dumperConfig.getDataSourceName();
         progress = new IncrementalTaskProgress();
@@ -86,7 +86,6 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
         Future<?> future = incrementalDumperExecuteEngine.submitAll(importers, getExecuteCallback());
         dumper.start();
         waitForResult(future);
-        dataSourceManager.close();
     }
     
     private Collection<Importer> createImporters(final int concurrency, final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
@@ -140,6 +139,5 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
             each.stop();
         }
         channel.close();
-        dataSourceManager.close();
     }
 }
