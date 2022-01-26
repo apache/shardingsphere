@@ -63,4 +63,21 @@ public final class EncryptColumn {
     public Optional<String> getPlainColumn() {
         return Strings.isNullOrEmpty(plainColumn) ? Optional.empty() : Optional.of(plainColumn);
     }
+    
+    /**
+     * Get data type without length.
+     *
+     * @return data type without length define.
+     */
+    public String getDataTypeName() {
+        String dataType = logicDataType.trim().toLowerCase();
+        if (dataType.contains("(")) {
+            return dataType.substring(0, dataType.indexOf("("));
+        } else if (dataType.contains(" ")) {
+            return dataType.substring(0, dataType.indexOf(" "));
+        } else {
+            return dataType;
+        }
+        // TODO refactor as dialect config extractor
+    } 
 }
