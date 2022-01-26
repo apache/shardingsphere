@@ -626,8 +626,8 @@
         <assertion parameters="1010:int, 10:int" expected-data-file="select_multi_sharding_table_with_union_all.xml"/>
     </test-case>
 
-    <!--  TODO add value case for shadow -->
-    <test-case sql="SELECT order_id, user_id, order_name, type_decimal, type_cher, type_date, type_time, type_timestamp FROM t_order WHERE user_id = ?" db-types="MySQL,PostgreSQL" scenario-types="shadow">
+    <!-- TODO complete test type -->
+    <test-case sql="SELECT order_id, user_id, order_name, type_decimal, type_char, type_date, type_time, type_timestamp FROM t_order WHERE user_id = ?" db-types="MySQL,PostgreSQL" scenario-types="shadow">
         <assertion parameters="1:int" expected-data-file="pro_select_order_by_user_id.xml"/>
         <assertion parameters="0:int" expected-data-file="shadow_select_order_by_user_id.xml"/>
     </test-case>
