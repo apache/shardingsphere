@@ -67,9 +67,9 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     private final IncrementalTaskProgress progress;
     
     public IncrementalTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig,
-            final PipelineChannelFactory pipelineChannelFactory, final ExecuteEngine incrementalDumperExecuteEngine) {
+                           final PipelineChannelFactory pipelineChannelFactory, final PipelineDataSourceManager dataSourceManager,
+                           final ExecuteEngine incrementalDumperExecuteEngine) {
         this.incrementalDumperExecuteEngine = incrementalDumperExecuteEngine;
-        PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
         this.dataSourceManager = dataSourceManager;
         taskId = dumperConfig.getDataSourceName();
         progress = new IncrementalTaskProgress();
