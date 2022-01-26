@@ -58,8 +58,7 @@ public final class InventoryTaskTest {
         }
         inventoryDumperConfig.setPosition(position);
         try (InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(),
-                PipelineContextUtil.getPipelineChannelFactory(),
-                new PipelineDataSourceManager(), PipelineContextUtil.getExecuteEngine())) {
+                PipelineContextUtil.getPipelineChannelFactory(), PipelineContextUtil.getExecuteEngine())) {
             inventoryTask.start();
         }
     }
@@ -75,8 +74,7 @@ public final class InventoryTaskTest {
         }
         inventoryDumperConfig.setPosition(position);
         try (InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(),
-                PipelineContextUtil.getPipelineChannelFactory(),
-                new PipelineDataSourceManager(), PipelineContextUtil.getExecuteEngine())) {
+                PipelineContextUtil.getPipelineChannelFactory(), PipelineContextUtil.getExecuteEngine())) {
             inventoryTask.start();
             assertFalse(inventoryTask.getProgress().getPosition() instanceof FinishedPosition);
         }

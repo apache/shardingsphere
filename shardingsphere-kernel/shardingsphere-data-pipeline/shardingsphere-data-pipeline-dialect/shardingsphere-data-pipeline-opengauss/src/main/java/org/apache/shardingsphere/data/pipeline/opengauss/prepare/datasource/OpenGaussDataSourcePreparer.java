@@ -77,7 +77,6 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
         Collection<ActualTableDefinition> result = new ArrayList<>();
         ShardingSpherePipelineDataSourceConfiguration sourceDataSourceConfig = (ShardingSpherePipelineDataSourceConfiguration) PipelineDataSourceConfigurationFactory.newInstance(
                 parameter.getPipelineConfiguration().getSource().getType(), parameter.getPipelineConfiguration().getSource().getParameter());
-        // TODO reuse PipelineDataSourceManager
         try (PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager()) {
             for (JobDataNodeEntry each : parameter.getTablesFirstDataNodes().getEntries()) {
                 DataNode dataNode = each.getDataNodes().get(0);

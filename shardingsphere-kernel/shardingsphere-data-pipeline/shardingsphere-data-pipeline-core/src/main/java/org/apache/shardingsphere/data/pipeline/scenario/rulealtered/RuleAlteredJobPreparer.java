@@ -56,9 +56,8 @@ public final class RuleAlteredJobPreparer {
      * @param jobContext job context
      */
     public void prepare(final RuleAlteredJobContext jobContext) {
-        PipelineDataSourceManager dataSourceManager = jobContext.getDataSourceManager();
         prepareTarget(jobContext.getJobConfig());
-        try {
+        try (PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager()) {
             initDataSourceManager(dataSourceManager, jobContext.getTaskConfig());
             checkDataSource(jobContext, dataSourceManager);
             initIncrementalTasks(jobContext, dataSourceManager);
@@ -117,9 +116,8 @@ public final class RuleAlteredJobPreparer {
         ExecuteEngine incrementalDumperExecuteEngine = jobContext.getRuleAlteredContext().getIncrementalDumperExecuteEngine();
         TaskConfiguration taskConfig = jobContext.getTaskConfig();
         taskConfig.getDumperConfig().setPosition(getIncrementalPosition(jobContext, taskConfig, dataSourceManager));
-        IncrementalTask incrementalTask = new IncrementalTask(taskConfig.getHandleConfig().getConcurrency(), taskConfig.getDumperConfig(), taskConfig.getImporterConfig(),
-            pipelineChannelFactory, dataSourceManager, incrementalDumperExecuteEngine);
-        jobContext.getIncrementalTasks().add(incrementalTask);
+        jobContext.getIncrementalTasks().add(new IncrementalTask(taskConfig.getHandleConfig().getConcurrency(),
+                taskConfig.getDumperConfig(), taskConfig.getImporterConfig(), pipelineChannelFactory, incrementalDumperExecuteEngine));
     }
     
     private IngestPosition<?> getIncrementalPosition(
@@ -139,8 +137,7 @@ public final class RuleAlteredJobPreparer {
      * @param jobContext job context
      */
     public void cleanup(final RuleAlteredJobContext jobContext) {
-        PipelineDataSourceManager dataSourceManager = jobContext.getDataSourceManager();
-        try {
+        try (PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager()) {
             TaskConfiguration taskConfig = jobContext.getTaskConfig();
             initDataSourceManager(dataSourceManager, taskConfig);
             PositionInitializer positionInitializer = PositionInitializerFactory.newInstance(taskConfig.getHandleConfig().getSourceDatabaseType());
