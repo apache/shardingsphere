@@ -22,6 +22,7 @@ import org.antlr.v4.runtime.Token;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnlockContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RollbackContext;
@@ -40,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLUnlockStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLXAStatement;
 
 import java.util.Properties;
@@ -137,5 +139,10 @@ public final class MySQLTCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
             result.setXid(ctx.xid().getText());
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitUnlock(final UnlockContext ctx) {
+        return new MySQLUnlockStatement();
     }
 }
