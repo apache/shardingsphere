@@ -219,8 +219,6 @@ algorithmProperty
     : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | IDENTIFIER | STRING)
     ;
 
-
-
 ifExists
     : IF EXISTS
     ;
