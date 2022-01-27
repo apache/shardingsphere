@@ -131,7 +131,8 @@ public final class AutoIntervalShardingAlgorithmTest {
         for (int i = 0; i < 32; i++) {
             availableTargetNames.add("t_order_" + i);
         }
-        Collection<String> actualWithoutMilliseconds = shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "create_time", Range.closed("2020-01-01 00:00:11", "2020-01-01 00:00:21")));
+        Collection<String> actualWithoutMilliseconds = shardingAlgorithm.doSharding(availableTargetNames,
+                new RangeShardingValue<>("t_order", "create_time", Range.closed("2020-01-01 00:00:11", "2020-01-01 00:00:21")));
         assertThat(actualWithoutMilliseconds.size(), is(11));
         Collection<String> actualWithOneMillisecond = shardingAlgorithm.doSharding(availableTargetNames,
                 new RangeShardingValue<>("t_order", "create_time", Range.closed("2020-01-01 00:00:11.1", "2020-01-01 00:00:21.1")));
