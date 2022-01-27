@@ -53,7 +53,7 @@ public final class EncryptAlgorithmMetaData {
     public Optional<EncryptAlgorithm> findEncryptor(final int columnIndex) {
         Optional<ColumnProjection> columnProjection = findColumnProjection(columnIndex);
         if (!columnProjection.isPresent()) {
-            return Optional.empty();       
+            return Optional.empty();
         }
         Map<String, String> columnTableNames = selectStatementContext.getTablesContext().findTableName(Collections.singletonList(columnProjection.get()), schema);
         Optional<String> tableName = Optional.ofNullable(columnTableNames.get(columnProjection.get().getExpression()));
