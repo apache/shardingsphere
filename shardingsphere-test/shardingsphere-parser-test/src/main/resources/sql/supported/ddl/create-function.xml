@@ -54,4 +54,5 @@
             WHERE C.StoreID = @storeid
             GROUP BY P.ProductID, P.Name
         );" db-types="SQLServer" />
+    <sql-case id="create_function_declare_without_at" value="CREATE FUNCTION bug13575 ( p1 integer ) returns varchar(3) BEGIN DECLARE v1 VARCHAR(10) DEFAULT null; SELECT f2 INTO v1 FROM t3 WHERE f1 = p1; RETURN v1; END" db-types="MySQL"/>"
 </sql-cases>
