@@ -60,8 +60,7 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
             throw new PipelineJobPrepareFailedException("get table definitions failed.", ex);
         }
         Map<String, Collection<String>> createLogicTableSQLs = getCreateLogicTableSQLs(actualTableDefinitions);
-        try (PipelineDataSourceWrapper targetDataSource = getTargetDataSource(parameter.getPipelineConfiguration());
-             Connection targetConnection = targetDataSource.getConnection()) {
+        try (Connection targetConnection = getTargetCachedDataSource(parameter.getPipelineConfiguration(), parameter.getDataSourceManager()).getConnection()) {
             for (Entry<String, Collection<String>> entry : createLogicTableSQLs.entrySet()) {
                 for (String each : entry.getValue()) {
                     executeTargetTableSQL(targetConnection, each);
