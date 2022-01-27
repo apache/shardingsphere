@@ -23,9 +23,4 @@ import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
  * Importer.
  */
 public interface Importer extends LifecycleExecutor {
-    
-    /**
-     * Write data to channel.
-     */
-    void write();
 }

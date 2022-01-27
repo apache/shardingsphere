@@ -88,8 +88,7 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     }
     
     @Override
-    public void start() {
-        super.start();
+    protected void doStart() {
         dump();
     }
     
@@ -196,5 +195,9 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     
     private void pushRecord(final Record record) {
         channel.pushRecord(record);
+    }
+    
+    @Override
+    protected void doStop() {
     }
 }

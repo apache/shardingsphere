@@ -30,10 +30,10 @@ public final class FixtureIncrementalDumper extends AbstractIncrementalDumper<Fi
     }
     
     @Override
-    public void start() {
+    protected void doStart() {
     }
     
     @Override
-    public void stop() {
+    protected void doStop() {
     }
 }

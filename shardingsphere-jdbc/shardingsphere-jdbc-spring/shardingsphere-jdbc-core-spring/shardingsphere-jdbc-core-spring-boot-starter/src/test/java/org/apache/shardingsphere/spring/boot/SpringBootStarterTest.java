@@ -122,16 +122,16 @@ public class SpringBootStarterTest {
     }
     
     private void assertReadwriteSplittingRule(final ReadwriteSplittingRule rule) {
-        assertThat(rule.getDataSourceMapper(), is(Collections.singletonMap("pr_ds", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"))));
+        assertThat(rule.getDataSourceMapper(), is(Collections.singletonMap("readwrite_ds", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"))));
         ReadwriteSplittingDataSourceRule dataSourceRule = rule.getSingleDataSourceRule();
         assertNotNull(dataSourceRule);
-        assertThat(dataSourceRule.getName(), is("pr_ds"));
+        assertThat(dataSourceRule.getName(), is("readwrite_ds"));
         assertThat(dataSourceRule.getReadwriteSplittingType(), instanceOf(StaticReadwriteSplittingType.class));
         StaticReadwriteSplittingType staticReadwriteSplitting = (StaticReadwriteSplittingType) dataSourceRule.getReadwriteSplittingType();
         assertThat(staticReadwriteSplitting.getWriteDataSource(), is("write_ds"));
         assertThat(staticReadwriteSplitting.getReadDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
         assertThat(dataSourceRule.getLoadBalancer(), instanceOf(RandomReplicaLoadBalanceAlgorithm.class));
-        assertThat(dataSourceRule.getDataSourceMapper(), is(Collections.singletonMap("pr_ds", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"))));
+        assertThat(dataSourceRule.getDataSourceMapper(), is(Collections.singletonMap("readwrite_ds", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"))));
     }
     
     private void assertEncryptRule(final EncryptRule rule) {
