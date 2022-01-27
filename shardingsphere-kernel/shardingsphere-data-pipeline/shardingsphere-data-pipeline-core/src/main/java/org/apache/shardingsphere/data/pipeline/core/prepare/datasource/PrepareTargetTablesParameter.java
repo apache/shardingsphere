@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.prepare.datasource;
+package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
 import lombok.Getter;
 import lombok.NonNull;
