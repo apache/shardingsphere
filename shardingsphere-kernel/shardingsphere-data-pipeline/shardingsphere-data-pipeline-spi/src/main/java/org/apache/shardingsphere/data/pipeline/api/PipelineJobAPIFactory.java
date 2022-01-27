@@ -32,7 +32,6 @@ public final class PipelineJobAPIFactory {
      * @return pipeline job API
      */
     public static RuleAlteredJobAPI getRuleAlteredJobAPI() {
-        // TODO checkServerConfig()
         return RULE_ALTERED_JOB_API;
     }
 }

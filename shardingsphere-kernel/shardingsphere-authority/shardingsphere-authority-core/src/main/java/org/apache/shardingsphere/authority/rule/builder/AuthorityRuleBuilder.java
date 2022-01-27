@@ -32,7 +32,7 @@ public final class AuthorityRuleBuilder implements GlobalRuleBuilder<AuthorityRu
     
     @Override
     public AuthorityRule build(final AuthorityRuleConfiguration ruleConfig, final Map<String, ShardingSphereMetaData> metaDataMap) {
-        return new AuthorityRule(ruleConfig, metaDataMap, ruleConfig.getUsers());
+        return new AuthorityRule(ruleConfig, metaDataMap);
     }
     
     @Override

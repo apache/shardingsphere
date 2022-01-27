@@ -20,8 +20,11 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
+import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
+import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseSchemaNameLockEvent;
@@ -50,6 +53,13 @@ public final class RuleAlteredJobScheduler implements Runnable {
     public void stop() {
         log.info("stop job {}", jobContext.getJobId());
         final boolean almostFinished = jobContext.getStatus() == JobStatus.ALMOST_FINISHED;
+        if (almostFinished) {
+            log.info("almost finished, preparer cleanup, job {}", jobContext.getJobId());
+            RuleAlteredJobPreparer jobPreparer = jobContext.getJobPreparer();
+            if (null != jobPreparer) {
+                jobPreparer.cleanup(jobContext);
+            }
+        }
         for (PipelineTask each : jobContext.getInventoryTasks()) {
             log.info("stop inventory task {} - {}", jobContext.getJobId(), each.getTaskId());
             each.stop();
@@ -58,13 +68,7 @@ public final class RuleAlteredJobScheduler implements Runnable {
             log.info("stop incremental task {} - {}", jobContext.getJobId(), each.getTaskId());
             each.stop();
         }
-        if (almostFinished) {
-            log.info("almost finished, preparer cleanup, job {}", jobContext.getJobId());
-            RuleAlteredJobPreparer jobPreparer = jobContext.getJobPreparer();
-            if (null != jobPreparer) {
-                jobPreparer.cleanup(jobContext);
-            }
-        }
+        jobContext.close();
     }
     
     @Override
@@ -82,7 +86,10 @@ public final class RuleAlteredJobScheduler implements Runnable {
         log.info("-------------- Start inventory task --------------");
         jobContext.setStatus(JobStatus.EXECUTE_INVENTORY_TASK);
         ExecuteCallback inventoryTaskCallback = createInventoryTaskCallback();
-        for (PipelineTask each : jobContext.getInventoryTasks()) {
+        for (InventoryTask each : jobContext.getInventoryTasks()) {
+            if (each.getProgress().getPosition() instanceof FinishedPosition) {
+                continue;
+            }
             jobContext.getRuleAlteredContext().getInventoryDumperExecuteEngine().submit(each, inventoryTaskCallback);
         }
         return false;
@@ -118,7 +125,10 @@ public final class RuleAlteredJobScheduler implements Runnable {
         log.info("-------------- Start incremental task --------------");
         jobContext.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK);
         ExecuteCallback incrementalTaskCallback = createIncrementalTaskCallback();
-        for (PipelineTask each : jobContext.getIncrementalTasks()) {
+        for (IncrementalTask each : jobContext.getIncrementalTasks()) {
+            if (each.getProgress().getPosition() instanceof FinishedPosition) {
+                continue;
+            }
             jobContext.getRuleAlteredContext().getIncrementalDumperExecuteEngine().submit(each, incrementalTaskCallback);
         }
     }

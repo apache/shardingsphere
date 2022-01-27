@@ -26,11 +26,13 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.AlterTransactionRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.CacheOptionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ClearHintContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.CountSchemaRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.CreateDefaultSingleTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DataSourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DisableInstanceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DropDefaultSingleTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DropResourceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DropTrafficRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.EnableInstanceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.InstanceDefinationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.InstanceIdContext;
@@ -44,11 +46,13 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowAllVariablesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowAuthorityRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowInstanceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowInstanceModeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowResourcesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowSQLParserRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowSingleTableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowSingleTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowTableMetadataContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowTrafficRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowTransactionRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowVariableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.SqlParserRuleDefinitionContext;
@@ -59,14 +63,17 @@ import org.apache.shardingsphere.distsql.parser.segment.TransactionProviderSegme
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.RefreshTableMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterTransactionRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.drop.DropTrafficRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.hint.ClearHintStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetInstanceStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAllVariablesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAuthorityRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceModeStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTableMetadataStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
@@ -75,6 +82,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AlterDefaul
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSchemaRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableStatement;
@@ -136,6 +144,16 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     @Override
     public ASTNode visitShowInstance(final ShowInstanceContext ctx) {
         return new ShowInstanceStatement();
+    }
+    
+    @Override
+    public ASTNode visitShowInstanceMode(final ShowInstanceModeContext ctx) {
+        return new ShowInstanceModeStatement();
+    }
+    
+    @Override
+    public ASTNode visitCountSchemaRules(final CountSchemaRulesContext ctx) {
+        return new CountSchemaRulesStatement(null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
     }
     
     @Override
@@ -266,19 +284,29 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     }
     
     @Override
+    public ASTNode visitDropTrafficRule(final DropTrafficRuleContext ctx) {
+        DropTrafficRuleStatement result = new DropTrafficRuleStatement();
+        if (null != ctx.ruleName()) {
+            result.setRuleNames(ctx.ruleName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toSet()));
+        }
+        result.setContainsIfExistClause(null != ctx.ifExists());
+        return result;
+    }
+    
+    @Override
     public ASTNode visitTransactionRuleDefinition(final TransactionRuleDefinitionContext ctx) {
         String defaultType = getIdentifierValue(ctx.defaultType());
         TransactionProviderSegment provider = (TransactionProviderSegment) visit(ctx.providerDefinition());
         return new AlterTransactionRuleStatement(defaultType, provider);
     }
-
+    
     @Override
     public ASTNode visitProviderDefinition(final ProviderDefinitionContext ctx) {
         String providerType = getIdentifierValue(ctx.providerName());
         Properties props = getProperties(ctx.propertiesDefinition());
         return new TransactionProviderSegment(providerType, props);
     }
-
+    
     @Override
     public ASTNode visitShowSQLParserRule(final ShowSQLParserRuleContext ctx) {
         return new ShowSQLParserRuleStatement();
@@ -305,5 +333,14 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
                 null == ctx.maximumSize() ? null : Long.parseLong(getIdentifierValue(ctx.maximumSize())),
                 null == ctx.concurrencyLevel() ? null : Integer.parseInt(getIdentifierValue(ctx.concurrencyLevel()))
         );
+    }
+    
+    @Override
+    public ASTNode visitShowTrafficRules(final ShowTrafficRulesContext ctx) {
+        ShowTrafficRulesStatement result = new ShowTrafficRulesStatement();
+        if (null != ctx.ruleName()) {
+            result.setRuleName(getIdentifierValue(ctx.ruleName()));
+        }
+        return result;
     }
 }

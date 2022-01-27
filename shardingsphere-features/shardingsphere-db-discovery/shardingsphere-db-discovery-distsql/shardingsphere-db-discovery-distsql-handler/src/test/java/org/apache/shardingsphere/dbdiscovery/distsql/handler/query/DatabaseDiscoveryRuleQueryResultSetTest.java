@@ -38,6 +38,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -49,7 +50,7 @@ public final class DatabaseDiscoveryRuleQueryResultSetTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
         ExportableRule exportableRule = mock(ExportableRule.class);
-        when(exportableRule.export()).thenReturn(Collections.emptyMap());
+        when(exportableRule.export(anyCollection())).thenReturn(Collections.emptyMap());
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.singleton(exportableRule));
         DistSQLResultSet resultSet = new DatabaseDiscoveryRuleQueryResultSet();
         resultSet.init(metaData, mock(ShowDatabaseDiscoveryRulesStatement.class));

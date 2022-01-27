@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
@@ -30,7 +31,9 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
@@ -40,7 +43,6 @@ import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFact
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.scaling.core.job.sqlbuilder.ScalingSQLBuilderFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -60,36 +62,46 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Data consistency checker implementation.
  */
-@RequiredArgsConstructor
 @Getter
 @Slf4j
 public final class DataConsistencyCheckerImpl implements DataConsistencyChecker {
     
     private final PipelineDataSourceFactory dataSourceFactory = new PipelineDataSourceFactory();
     
-    // TODO replace to JobConfiguration
-    private final RuleAlteredJobContext jobContext;
+    private final JobConfiguration jobConfig;
+    
+    private final RuleAlteredContext ruleAlteredContext;
+    
+    private final String jobId;
+    
+    private final Collection<String> logicTableNames;
+    
+    public DataConsistencyCheckerImpl(final JobConfiguration jobConfig) {
+        this.jobConfig = jobConfig;
+        ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+        jobId = jobConfig.getHandleConfig().getJobId();
+        logicTableNames = Splitter.on(',').splitToList(jobConfig.getHandleConfig().getLogicTables());
+    }
     
     @Override
     public Map<String, DataConsistencyCheckResult> checkRecordsCount() {
-        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + getJobIdPrefix(jobContext.getJobId()) + "-countCheck-%d");
+        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + getJobIdPrefix(jobId) + "-countCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
-            jobContext.getJobConfig().getPipelineConfig().getSource().getType(), jobContext.getJobConfig().getPipelineConfig().getSource().getParameter());
+            jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter());
         PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
-            jobContext.getJobConfig().getPipelineConfig().getTarget().getType(), jobContext.getJobConfig().getPipelineConfig().getTarget().getParameter());
+            jobConfig.getPipelineConfig().getTarget().getType(), jobConfig.getPipelineConfig().getTarget().getParameter());
         try (PipelineDataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceDataSourceConfig);
              PipelineDataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetDataSourceConfig)) {
-            return jobContext.getTaskConfigs()
-                .stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).collect(Collectors.toSet())
-                .stream().collect(Collectors.toMap(Function.identity(), table -> countCheck(table, sourceDataSource, targetDataSource, executor),
-                    (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+            Map<String, DataConsistencyCheckResult> result = new LinkedHashMap<>();
+            for (String each : logicTableNames) {
+                result.put(each, countCheck(each, sourceDataSource, targetDataSource, executor));
+            }
+            return result;
         } catch (final SQLException ex) {
             throw new PipelineDataConsistencyCheckFailedException("count check failed", ex);
         } finally {
@@ -120,7 +132,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     
     private long count(final DataSource dataSource, final String table, final DatabaseType databaseType) {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(ScalingSQLBuilderFactory.newInstance(databaseType.getName()).buildCountSQL(table));
+             PreparedStatement preparedStatement = connection.prepareStatement(PipelineSQLBuilderFactory.getSQLBuilder(databaseType.getName()).buildCountSQL(table));
              ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
             return resultSet.getLong(1);
@@ -133,24 +145,23 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
     public Map<String, Boolean> checkRecordsContent(final DataConsistencyCheckAlgorithm checkAlgorithm) {
         Collection<String> supportedDatabaseTypes = checkAlgorithm.getSupportedDatabaseTypes();
         PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
-                jobContext.getJobConfig().getPipelineConfig().getSource().getType(), jobContext.getJobConfig().getPipelineConfig().getSource().getParameter());
+                jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter());
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, sourceDataSourceConfig.getDatabaseType().getName());
         PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
-                jobContext.getJobConfig().getPipelineConfig().getTarget().getType(), jobContext.getJobConfig().getPipelineConfig().getTarget().getParameter());
+                jobConfig.getPipelineConfig().getTarget().getType(), jobConfig.getPipelineConfig().getTarget().getParameter());
         checkDatabaseTypeSupportedOrNot(supportedDatabaseTypes, targetDataSourceConfig.getDatabaseType().getName());
         addDataSourceConfigToMySQL(sourceDataSourceConfig, targetDataSourceConfig);
-        Collection<String> logicTableNames = jobContext.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).distinct().collect(Collectors.toList());
         String sourceDatabaseType = sourceDataSourceConfig.getDatabaseType().getName();
         String targetDatabaseType = targetDataSourceConfig.getDatabaseType().getName();
         SingleTableDataCalculator sourceCalculator = checkAlgorithm.getSingleTableDataCalculator(sourceDatabaseType);
         SingleTableDataCalculator targetCalculator = checkAlgorithm.getSingleTableDataCalculator(targetDatabaseType);
         Map<String, Boolean> result = new HashMap<>();
-        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + getJobIdPrefix(jobContext.getJobId()) + "-dataCheck-%d");
+        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job" + getJobIdPrefix(jobId) + "-dataCheck-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
-        JobRateLimitAlgorithm inputRateLimitAlgorithm = jobContext.getRuleAlteredContext().getInputRateLimitAlgorithm();
+        JobRateLimitAlgorithm inputRateLimitAlgorithm = ruleAlteredContext.getInputRateLimitAlgorithm();
         try (PipelineDataSourceWrapper sourceDataSource = dataSourceFactory.newInstance(sourceDataSourceConfig);
              PipelineDataSourceWrapper targetDataSource = dataSourceFactory.newInstance(targetDataSourceConfig)) {
-            Map<String, TableMetaData> tableMetaDataMap = getTableMetaDataMap(jobContext.getJobConfig().getWorkflowConfig().getSchemaName());
+            Map<String, TableMetaData> tableMetaDataMap = getTableMetaDataMap(jobConfig.getWorkflowConfig().getSchemaName());
             logicTableNames.forEach(each -> {
                 //TODO put to preparer
                 if (!tableMetaDataMap.containsKey(each)) {

@@ -54,6 +54,8 @@ public final class MGRDatabaseDiscoveryTypeTest {
     
     private static final String SINGLE_PRIMARY = "SELECT * FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_single_primary_mode'";
     
+    private static final String GROUP_MEMBER = "SELECT MEMBER_HOST, MEMBER_PORT, MEMBER_STATE FROM performance_schema.replication_group_members";
+    
     private final MGRDatabaseDiscoveryType mgrHaType = new MGRDatabaseDiscoveryType();
     
     @Test
@@ -62,18 +64,27 @@ public final class MGRDatabaseDiscoveryTypeTest {
         Connection connection = mock(Connection.class);
         Statement statement = mock(Statement.class);
         ResultSet resultSet = mock(ResultSet.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.createStatement()).thenReturn(statement);
         when(statement.executeQuery(PLUGIN_STATUS)).thenReturn(resultSet);
         when(statement.executeQuery(MEMBER_COUNT)).thenReturn(resultSet);
         when(statement.executeQuery(GROUP_NAME)).thenReturn(resultSet);
         when(statement.executeQuery(SINGLE_PRIMARY)).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, false, true, false, true, false, true, false);
+        when(statement.executeQuery(GROUP_MEMBER)).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true, false, true, false, true, false, true, false, true, false);
         when(resultSet.getString("PLUGIN_STATUS")).thenReturn("ACTIVE");
         when(resultSet.getInt(1)).thenReturn(3);
         when(resultSet.getString("VARIABLE_VALUE")).thenReturn("group_name", "ON");
+        when(resultSet.getString("MEMBER_HOST")).thenReturn("127.0.0.1");
+        when(resultSet.getString("MEMBER_PORT")).thenReturn(Integer.toString(3306));
+        when(resultSet.getString("MEMBER_STATE")).thenReturn("ONLINE");
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false");
         mgrHaType.getProps().setProperty("group-name", "group_name");
-        mgrHaType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSource);
+        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
+        dataSourceMap.put("ds_0", dataSource);
+        mgrHaType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSourceMap);
     }
     
     @Test

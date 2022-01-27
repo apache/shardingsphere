@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.JobProgressYamlSwapper;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
@@ -117,7 +118,7 @@ public final class GovernanceRepositoryAPIImplTest {
     
     private RuleAlteredJobContext mockJobContext() {
         RuleAlteredJobContext result = new RuleAlteredJobContext(ResourceUtil.mockJobConfig());
-        TaskConfiguration taskConfig = result.getTaskConfigs().iterator().next();
+        TaskConfiguration taskConfig = result.getTaskConfig();
         result.getInventoryTasks().add(mockInventoryTask(taskConfig));
         result.getIncrementalTasks().add(mockIncrementalTask(taskConfig));
         return result;
@@ -129,12 +130,14 @@ public final class GovernanceRepositoryAPIImplTest {
         dumperConfig.setTableName("t_order");
         dumperConfig.setPrimaryKey("order_id");
         dumperConfig.setShardingItem(0);
-        return new InventoryTask(dumperConfig, taskConfig.getImporterConfig(), PipelineContextUtil.getPipelineChannelFactory(), PipelineContextUtil.getExecuteEngine());
+        return new InventoryTask(dumperConfig, taskConfig.getImporterConfig(), PipelineContextUtil.getPipelineChannelFactory(),
+                new PipelineDataSourceManager(), PipelineContextUtil.getExecuteEngine());
     }
     
     private IncrementalTask mockIncrementalTask(final TaskConfiguration taskConfig) {
         DumperConfiguration dumperConfig = taskConfig.getDumperConfig();
         dumperConfig.setPosition(new PlaceholderPosition());
-        return new IncrementalTask(3, dumperConfig, taskConfig.getImporterConfig(), PipelineContextUtil.getPipelineChannelFactory(), PipelineContextUtil.getExecuteEngine());
+        return new IncrementalTask(3, dumperConfig, taskConfig.getImporterConfig(), PipelineContextUtil.getPipelineChannelFactory(),
+                new PipelineDataSourceManager(), PipelineContextUtil.getExecuteEngine());
     }
 }

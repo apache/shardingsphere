@@ -98,7 +98,7 @@ public final class ComputeNode {
      * @return instance id
      */
     public static String getInstanceIdByAttributes(final String attributesPath) {
-        Pattern pattern = Pattern.compile(getAttributesNodePath() + "/([\\S]+)" + "(/status|/worker_id)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getAttributesNodePath() + "/([\\S]+)" + "(/status|/worker_id|/label)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(attributesPath);
         return matcher.find() ? matcher.group(1) : "";
     }

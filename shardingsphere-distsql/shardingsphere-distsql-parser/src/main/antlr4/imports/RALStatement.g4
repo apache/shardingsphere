@@ -75,6 +75,18 @@ alterSQLParserRule
     : ALTER SQL_PARSER RULE sqlParserRuleDefinition
     ;
 
+showInstanceMode
+    : SHOW INSTANCE MODE
+    ;
+
+showTrafficRules
+    : SHOW TRAFFIC (RULES | RULE ruleName)
+    ;
+
+dropTrafficRule
+    : DROP TRAFFIC RULE ifExists? ruleName (COMMA ruleName)*
+    ;
+
 transactionRuleDefinition
     : LP DEFAULT EQ defaultType COMMA providerDefinition
     ;
@@ -161,4 +173,12 @@ concurrencyLevel
 
 schemaName
     : IDENTIFIER
+    ;
+
+ruleName
+    : IDENTIFIER
+    ;
+
+ifExists
+    : IF EXISTS
     ;

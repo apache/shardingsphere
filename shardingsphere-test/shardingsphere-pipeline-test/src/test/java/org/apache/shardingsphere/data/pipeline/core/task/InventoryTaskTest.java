@@ -45,7 +45,7 @@ public final class InventoryTaskTest {
     @BeforeClass
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfig();
-        taskConfig = new RuleAlteredJobContext(ResourceUtil.mockJobConfig()).getTaskConfigs().iterator().next();
+        taskConfig = new RuleAlteredJobContext(ResourceUtil.mockJobConfig()).getTaskConfig();
     }
     
     @Test(expected = IngestException.class)
@@ -58,7 +58,8 @@ public final class InventoryTaskTest {
         }
         inventoryDumperConfig.setPosition(position);
         try (InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(),
-                PipelineContextUtil.getPipelineChannelFactory(), PipelineContextUtil.getExecuteEngine())) {
+                PipelineContextUtil.getPipelineChannelFactory(),
+                new PipelineDataSourceManager(), PipelineContextUtil.getExecuteEngine())) {
             inventoryTask.start();
         }
     }
@@ -74,7 +75,8 @@ public final class InventoryTaskTest {
         }
         inventoryDumperConfig.setPosition(position);
         try (InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(),
-                PipelineContextUtil.getPipelineChannelFactory(), PipelineContextUtil.getExecuteEngine())) {
+                PipelineContextUtil.getPipelineChannelFactory(),
+                new PipelineDataSourceManager(), PipelineContextUtil.getExecuteEngine())) {
             inventoryTask.start();
             assertFalse(inventoryTask.getProgress().getPosition() instanceof FinishedPosition);
         }

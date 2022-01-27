@@ -565,6 +565,7 @@ variable
     
 userVariable
     : AT_ textOrIdentifier
+    | textOrIdentifier
     ;
     
 systemVariable
@@ -864,7 +865,7 @@ simpleExpr
     | parameterMarker
     | literals
     | columnRef
-    | simpleExpr COLLATE textOrIdentifier
+    | simpleExpr collateClause
     | variable
     | simpleExpr OR_ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | notOperator | BINARY) simpleExpr
@@ -890,7 +891,7 @@ functionCall
     ;
     
 aggregationFunction
-    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ overClause?
+    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? collateClause? RP_ overClause?
     ;
     
 aggregationFunctionName
@@ -1240,7 +1241,7 @@ characterSet
     ;
     
 collateClause
-    : COLLATE collationName
+    : COLLATE (collationName | parameterMarker)
     ;
     
 fieldOrVarSpec

@@ -25,17 +25,16 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.metadata.JDBCQueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
-import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.infra.federation.executor.FederationContext;
+import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutorFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.ProxySQLExecutor;
@@ -59,8 +58,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 /**
  * JDBC database communication engine.
@@ -110,6 +109,7 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
      *
      * @return backend response
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @SneakyThrows(SQLException.class)
     public ResponseHeader execute() {
         ExecutionContext executionContext = getKernelProcessor()
@@ -124,12 +124,12 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
             return new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement());
         }
         proxySQLExecutor.checkExecutePrerequisites(executionContext);
-        Collection<ExecuteResult> result = proxySQLExecutor.execute(executionContext);
+        List result = proxySQLExecutor.execute(executionContext);
         refreshMetaData(executionContext);
-        ExecuteResult executeResultSample = result.iterator().next();
+        Object executeResultSample = result.iterator().next();
         return executeResultSample instanceof QueryResult
-                ? processExecuteQuery(executionContext, result.stream().map(each -> (QueryResult) each).collect(Collectors.toList()), (QueryResult) executeResultSample)
-                : processExecuteUpdate(executionContext, result.stream().map(each -> (UpdateResult) each).collect(Collectors.toList()));
+                ? processExecuteQuery(executionContext, result, (QueryResult) executeResultSample)
+                : processExecuteUpdate(executionContext, result);
     }
     
     private ResultSet doExecuteFederation(final LogicSQL logicSQL, final MetaDataContexts metaDataContexts) throws SQLException {
@@ -152,9 +152,10 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
     private ResponseHeader processExecuteFederation(final ResultSet resultSet, final MetaDataContexts metaDataContexts) throws SQLException {
         int columnCount = resultSet.getMetaData().getColumnCount();
         setQueryHeaders(new ArrayList<>(columnCount));
+        ShardingSphereMetaData metaData = metaDataContexts.getMetaData(backendConnection.getConnectionSession().getSchemaName());
+        DataNodeContainedRule dataNodeContainedRule = null == metaData ? null : metaData.getRuleMetaData().findSingleRule(DataNodeContainedRule.class).orElse(null);
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            ShardingSphereMetaData metaData = metaDataContexts.getMetaData(backendConnection.getConnectionSession().getSchemaName());
-            getQueryHeaders().add(QueryHeaderBuilder.build(new JDBCQueryResultMetaData(resultSet.getMetaData()), metaData, columnIndex));
+            getQueryHeaders().add(QueryHeaderBuilder.build(new JDBCQueryResultMetaData(resultSet.getMetaData()), metaData, columnIndex, dataNodeContainedRule));
         }
         setMergedResult(new IteratorStreamMergedResult(Collections.singletonList(new JDBCStreamQueryResult(resultSet))));
         return new QueryResponseHeader(getQueryHeaders());

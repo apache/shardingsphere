@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.task;
 
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
@@ -42,10 +43,11 @@ public final class IncrementalTaskTest {
     
     @Before
     public void setUp() {
-        TaskConfiguration taskConfig = new RuleAlteredJobContext(ResourceUtil.mockJobConfig()).getTaskConfigs().iterator().next();
+        TaskConfiguration taskConfig = new RuleAlteredJobContext(ResourceUtil.mockJobConfig()).getTaskConfig();
         taskConfig.getDumperConfig().setPosition(new PlaceholderPosition());
         incrementalTask = new IncrementalTask(3, taskConfig.getDumperConfig(), taskConfig.getImporterConfig(),
-                PipelineContextUtil.getPipelineChannelFactory(), PipelineContextUtil.getExecuteEngine());
+                PipelineContextUtil.getPipelineChannelFactory(),
+                new PipelineDataSourceManager(), PipelineContextUtil.getExecuteEngine());
     }
     
     @Test

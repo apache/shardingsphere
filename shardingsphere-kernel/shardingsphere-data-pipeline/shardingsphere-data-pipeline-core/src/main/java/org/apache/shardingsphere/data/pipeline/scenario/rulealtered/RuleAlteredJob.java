@@ -36,6 +36,7 @@ public final class RuleAlteredJob implements SimpleJob {
     
     private final GovernanceRepositoryAPI governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
     
+    // Shared by all sharding items
     private final RuleAlteredJobPreparer jobPreparer = new RuleAlteredJobPreparer();
     
     @Override
@@ -52,6 +53,7 @@ public final class RuleAlteredJob implements SimpleJob {
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             log.error("job prepare failed, {}-{}", shardingContext.getJobName(), shardingContext.getShardingItem());
+            jobContext.close();
             jobContext.setStatus(JobStatus.PREPARING_FAILURE);
             governanceRepositoryAPI.persistJobProgress(jobContext);
             ScalingReleaseSchemaNameLockEvent event = new ScalingReleaseSchemaNameLockEvent(jobConfig.getWorkflowConfig().getSchemaName());

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
@@ -67,10 +66,9 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     
     private final TableMetaData tableMetaData;
     
-    @Setter
-    private PipelineChannel channel;
+    private final PipelineChannel channel;
     
-    protected AbstractInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineDataSourceManager dataSourceManager) {
+    protected AbstractInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
         if (!StandardPipelineDataSourceConfiguration.class.equals(inventoryDumperConfig.getDataSourceConfig().getClass())) {
             throw new UnsupportedOperationException("AbstractInventoryDumper only support StandardPipelineDataSourceConfiguration");
         }
@@ -78,6 +76,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         this.batchSize = inventoryDumperConfig.getBatchSize();
         this.rateLimitAlgorithm = inventoryDumperConfig.getRateLimitAlgorithm();
         this.dataSourceManager = dataSourceManager;
+        this.channel = channel;
         tableMetaData = createTableMetaData();
     }
     
@@ -99,17 +98,18 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         IngestPosition<?> position = inventoryDumperConfig.getPosition();
         log.info("inventory dump, sql={}, position={}", sql, position);
         try (Connection conn = dataSourceManager.getDataSource(inventoryDumperConfig.getDataSourceConfig()).getConnection()) {
+            int round = 1;
             Number startUniqueKeyValue = getPositionBeginValue(position) - 1;
             Optional<Number> maxUniqueKeyValue;
-            while ((maxUniqueKeyValue = dump0(conn, sql, startUniqueKeyValue)).isPresent()) {
+            while ((maxUniqueKeyValue = dump0(conn, sql, startUniqueKeyValue, round++)).isPresent()) {
                 startUniqueKeyValue = maxUniqueKeyValue.get();
             }
+            log.info("inventory dump done, round={}, maxUniqueKeyValue={}", round, maxUniqueKeyValue);
         } catch (final SQLException ex) {
-            stop();
-            // TODO channel.close() when job success too, e.g. InventoryTask/IncrementalTask?
-            channel.close();
+            log.error("inventory dump, ex caught, msg={}", ex.getMessage());
             throw new IngestException(ex);
         } finally {
+            log.info("inventory dump, before put FinishedRecord");
             pushRecord(new FinishedRecord(new FinishedPosition()));
         }
     }
@@ -120,7 +120,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         return "SELECT * FROM " + tableName + " WHERE " + primaryKey + " > ? AND " + primaryKey + " <= ? ORDER BY " + primaryKey + " ASC LIMIT ?";
     }
     
-    private Optional<Number> dump0(final Connection conn, final String sql, final Number startUniqueKeyValue) throws SQLException {
+    private Optional<Number> dump0(final Connection conn, final String sql, final Number startUniqueKeyValue, final int round) throws SQLException {
         if (null != rateLimitAlgorithm) {
             rateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
         }
@@ -147,7 +147,11 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                     pushRecord(record);
                     rowCount++;
                 }
-                log.info("dump, rowCount={}, maxUniqueKeyValue={}", rowCount, maxUniqueKeyValue);
+                if (log.isDebugEnabled()) {
+                    log.debug("dump, round={}, rowCount={}, maxUniqueKeyValue={}", round, rowCount, maxUniqueKeyValue);
+                } else if (0 == round % 50) {
+                    log.info("dump, round={}, rowCount={}, maxUniqueKeyValue={}", round, rowCount, maxUniqueKeyValue);
+                }
                 return Optional.ofNullable(maxUniqueKeyValue);
             }
         }

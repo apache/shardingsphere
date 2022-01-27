@@ -51,10 +51,10 @@ rules:
   - !READWRITE_SPLITTING # 配置读写分离规则
     dataSources:
       ds: # 读写分离的逻辑数据源名称 `ds` 用于在数据分片中使用
-        writeDataSourceName: write_ds # 使用真实存在的数据源名称 `write_ds`
-        readDataSourceNames:
-          - read_ds_0 # 使用真实存在的数据源名称 `read_ds_0`
-          - read_ds_1 # 使用真实存在的数据源名称 `read_ds_1`
+        type: Static
+        props:
+          write-data-source-name: write_ds  # 使用真实存在的数据源名称 `write_ds`
+          read-data-source-names: read_ds_0, read_ds_1 # 使用真实存在的数据源名称 `read_ds_0` `read_ds_1`
         loadBalancerName: roundRobin
     loadBalancers:
       roundRobin:

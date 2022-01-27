@@ -19,4 +19,5 @@
 <sql-parser-test-cases>
     <create-procedure sql-case-id="create_procedure" />
     <create-procedure sql-case-id="create_procedure_with_parameters" />
+    <create-procedure sql-case-id="create_procedure_declare_without_at" />
 </sql-parser-test-cases>

@@ -50,7 +50,7 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
     private Properties props = new Properties();
     
     @Override
-    public void checkDatabaseDiscoveryConfiguration(final String schemaName, final DataSource dataSource) {
+    public void checkDatabaseDiscoveryConfiguration(final String schemaName, final Map<String, DataSource> dataSourceMap) {
     }
     
     @Override

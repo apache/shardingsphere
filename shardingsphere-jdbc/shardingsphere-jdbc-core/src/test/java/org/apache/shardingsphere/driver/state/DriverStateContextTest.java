@@ -57,7 +57,6 @@ public final class DriverStateContextTest {
         when(contextManager.getMetaDataContexts()).thenReturn(new MetaDataContexts(mock(MetaDataPersistService.class), metaDataMap, 
                 mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(ConfigurationProperties.class), mock(OptimizerContext.class)));
         when(contextManager.getInstanceContext().getState()).thenReturn(new StateContext());
-        when(contextManager.getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
     }
     
     private Map<String, ShardingSphereMetaData> mockMetaDataMap() {

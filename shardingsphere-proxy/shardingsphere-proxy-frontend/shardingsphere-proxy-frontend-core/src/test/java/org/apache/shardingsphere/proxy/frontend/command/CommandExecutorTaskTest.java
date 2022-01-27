@@ -24,7 +24,6 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStatus;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -69,9 +68,6 @@ public final class CommandExecutorTaskTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ChannelHandlerContext handlerContext;
-    
-    @Mock
-    private ConnectionStatus connectionStatus;
     
     @Mock
     private ByteBuf message;

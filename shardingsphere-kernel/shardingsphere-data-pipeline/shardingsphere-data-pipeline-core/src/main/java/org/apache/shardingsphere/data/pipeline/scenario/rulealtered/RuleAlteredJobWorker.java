@@ -248,7 +248,13 @@ public final class RuleAlteredJobWorker {
     }
     
     private void disableSSLForMySQL(final Map<String, Map<String, Object>> yamlDataSources) {
-        String jdbcUrl = (String) yamlDataSources.entrySet().iterator().next().getValue().get("jdbcUrl");
+        Map<String, Object> firstDataSourceProps = yamlDataSources.entrySet().iterator().next().getValue();
+        String jdbcUrlKey = firstDataSourceProps.containsKey("url") ? "url" : "jdbcUrl";
+        String jdbcUrl = (String) firstDataSourceProps.get(jdbcUrlKey);
+        if (null == jdbcUrl) {
+            log.warn("disableSSLForMySQL, could not get jdbcUrl, jdbcUrlKey={}", jdbcUrlKey);
+            return;
+        }
         DatabaseType databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl);
         if (!(databaseType instanceof MySQLDatabaseType)) {
             return;
@@ -256,7 +262,7 @@ public final class RuleAlteredJobWorker {
         Properties queryProps = new Properties();
         queryProps.setProperty("useSSL", Boolean.FALSE.toString());
         for (Entry<String, Map<String, Object>> entry : yamlDataSources.entrySet()) {
-            entry.getValue().put("jdbcUrl", new JdbcUrlAppender().appendQueryProperties((String) entry.getValue().get("jdbcUrl"), queryProps));
+            entry.getValue().put(jdbcUrlKey, new JdbcUrlAppender().appendQueryProperties((String) entry.getValue().get(jdbcUrlKey), queryProps));
         }
     }
 }
