@@ -35,6 +35,7 @@ import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExec
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -87,7 +88,7 @@ public final class RuleAlteredJobWorker {
      * @param ruleConfig rule configuration
      * @return enabled or not
      */
-    public static boolean isOnRuleAlteredActionEnabled(final org.apache.shardingsphere.infra.config.RuleConfiguration ruleConfig) {
+    public static boolean isOnRuleAlteredActionEnabled(final RuleConfiguration ruleConfig) {
         if (null == ruleConfig) {
             return false;
         }
@@ -133,7 +134,7 @@ public final class RuleAlteredJobWorker {
         if (null == yamlRuleConfig) {
             throw new PipelineJobCreationException("could not find altered rule");
         }
-        org.apache.shardingsphere.infra.config.RuleConfiguration ruleConfig = SWAPPER_ENGINE.swapToRuleConfiguration(yamlRuleConfig);
+        RuleConfiguration ruleConfig = SWAPPER_ENGINE.swapToRuleConfiguration(yamlRuleConfig);
         RuleAlteredDetector detector = RULE_CLASS_NAME_DETECTOR_MAP.get(ruleConfig.getClass().getName());
         Optional<OnRuleAlteredActionConfiguration> onRuleAlteredActionConfigOptional = detector.getOnRuleAlteredActionConfig(ruleConfig);
         if (!onRuleAlteredActionConfigOptional.isPresent()) {
