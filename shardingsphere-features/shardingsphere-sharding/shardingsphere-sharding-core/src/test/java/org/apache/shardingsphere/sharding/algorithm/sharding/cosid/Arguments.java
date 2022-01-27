@@ -17,16 +17,13 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
 
 import java.util.Arrays;
 
-/**
- * Parametric test tool.
- */
 public final class Arguments {
-
+    
     @SafeVarargs
     static <T> T[] of(final T... arguments) {
         return arguments;
     }
-
+    
     @SafeVarargs
     static <T> Iterable<T[]> ofArrayElement(final T[]... arguments) {
         return Arrays.asList(arguments);

@@ -26,18 +26,19 @@ import java.util.Date;
  * Interval-based time range sharding algorithm.
  */
 public final class CosIdIntervalShardingAlgorithm extends AbstractIntervalShardingAlgorithm<Comparable<?>> {
+    
     public static final String TYPE = CosIdAlgorithm.TYPE_PREFIX + "INTERVAL";
-
+    
     public static final String DATE_TIME_PATTERN_KEY = "datetime-pattern";
-
+    
     public static final String TIMESTAMP_SECOND_UNIT = "SECOND";
-
+    
     public static final String TIMESTAMP_UNIT_KEY = "ts-unit";
-
+    
     private volatile boolean isSecondTs;
-
+    
     private volatile DateTimeFormatter dateTimeFormatter;
-
+    
     @Override
     public void init() {
         super.init();
@@ -48,30 +49,27 @@ public final class CosIdIntervalShardingAlgorithm extends AbstractIntervalShardi
         final String dateTimePattern = getProps().getProperty(DATE_TIME_PATTERN_KEY, DEFAULT_DATE_TIME_PATTERN);
         dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimePattern);
     }
-
+    
     @Override
     protected LocalDateTime convertShardingValue(final Comparable<?> shardingValue) {
         if (shardingValue instanceof LocalDateTime) {
             return (LocalDateTime) shardingValue;
         }
-
         if (shardingValue instanceof Date) {
             return LocalDateTimeConvert.fromDate((Date) shardingValue, getZoneId());
         }
-
         if (shardingValue instanceof Long) {
             if (isSecondTs) {
                 return LocalDateTimeConvert.fromTimestampSecond((Long) shardingValue, getZoneId());
             }
             return LocalDateTimeConvert.fromTimestamp((Long) shardingValue, getZoneId());
         }
-
         if (shardingValue instanceof String) {
             return LocalDateTimeConvert.fromString((String) shardingValue, dateTimeFormatter);
         }
         throw new IllegalArgumentException(Strings.lenientFormat("The current shard type:[%s] is not supported!", shardingValue.getClass()));
     }
-
+    
     @Override
     public String getType() {
         return TYPE;

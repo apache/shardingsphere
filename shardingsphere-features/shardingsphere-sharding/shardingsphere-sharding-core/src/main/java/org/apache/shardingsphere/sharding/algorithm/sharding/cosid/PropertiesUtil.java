@@ -23,7 +23,7 @@ import java.util.Properties;
  * Properties tool class.
  */
 public final class PropertiesUtil {
-
+    
     /**
      * Get the value according to the key and verify whether the value exists. If it does not exist, an {@link IllegalArgumentException} will be thrown.
      *
