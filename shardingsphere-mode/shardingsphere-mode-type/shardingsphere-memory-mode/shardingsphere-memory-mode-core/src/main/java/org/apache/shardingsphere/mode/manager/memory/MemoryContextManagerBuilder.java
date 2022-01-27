@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.memory;
 
+import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -35,7 +36,9 @@ import org.apache.shardingsphere.transaction.context.TransactionContextsBuilder;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Memory context manager builder.
@@ -44,14 +47,22 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
     
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
-        Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(parameter.getDataSourcesMap(), parameter.getSchemaRuleConfigs(), parameter.getProps());
-        Map<String, ShardingSphereSchema> schemas = new SchemaLoader(parameter.getDataSourcesMap(), parameter.getSchemaRuleConfigs(), rules, parameter.getProps()).load();
-        MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(parameter.getDataSourcesMap(), parameter.getSchemaRuleConfigs(), parameter.getGlobalRuleConfigs(), 
-                schemas, rules, parameter.getProps()).build(null);
-        TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules(), null).build();
+        Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(parameter.getSchemaConfigs(), parameter.getProps());
+        Map<String, ShardingSphereSchema> schemas = getShardingSphereSchemas(parameter.getSchemaConfigs(), rules, parameter.getProps());
+        MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(parameter.getSchemaConfigs(), parameter.getGlobalRuleConfigs(), schemas, rules, parameter.getProps()).build(null);
+        TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules(), parameter.getInstanceDefinition().getInstanceId().getId()).build();
         ContextManager result = new ContextManager();
         result.init(metaDataContexts, transactionContexts, buildInstanceContext(parameter));
         buildSpecialRules(result);
+        return result;
+    }
+    
+    private Map<String, ShardingSphereSchema> getShardingSphereSchemas(final Map<String, ? extends SchemaConfiguration> schemaConfigs, final Map<String, Collection<ShardingSphereRule>> rules,
+                                                                       final Properties props) throws SQLException {
+        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(schemaConfigs.size(), 1);
+        for (String each : schemaConfigs.keySet()) {
+            result.put(each, SchemaLoader.load(schemaConfigs.get(each).getDataSources(), rules.get(each), props));
+        }
         return result;
     }
     

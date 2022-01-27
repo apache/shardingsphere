@@ -65,18 +65,17 @@ public final class TableMetaDataBuilder {
                 }
             }
         }
-        return decorate(tableMetaDataMap, materials.getRules());
+        return decorate(tableMetaDataMap, materials);
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static Map<String, TableMetaData> decorate(final Map<String, TableMetaData> tableMetaDataMap, final Collection<ShardingSphereRule> rules) {
-        for (Entry<String, TableMetaData> entry : tableMetaDataMap.entrySet()) {
-            for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> builderEntry : OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).entrySet()) {
-                if (builderEntry.getKey() instanceof TableContainedRule) {
-                    entry.setValue(builderEntry.getValue().decorate(entry.getKey(), entry.getValue(), (TableContainedRule) builderEntry.getKey()));
-                }
+    private static Map<String, TableMetaData> decorate(final Map<String, TableMetaData> tableMetaDataMap, final SchemaBuilderMaterials materials) throws SQLException {
+        Map<String, TableMetaData> result = new LinkedHashMap<>(tableMetaDataMap);
+        for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, materials.getRules()).entrySet()) {
+            if (entry.getKey() instanceof TableContainedRule) {
+                result.putAll(entry.getValue().decorate(result, (TableContainedRule) entry.getKey(), materials));
             }
         }
-        return tableMetaDataMap;
+        return result;
     }
 }

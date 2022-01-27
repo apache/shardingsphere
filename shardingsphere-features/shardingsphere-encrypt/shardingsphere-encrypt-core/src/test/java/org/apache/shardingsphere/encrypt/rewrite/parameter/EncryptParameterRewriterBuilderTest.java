@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.parameter;
 
-import org.apache.shardingsphere.encrypt.rewrite.parameter.impl.EncryptPredicateParameterRewriter;
+import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptPredicateParameterRewriter;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -46,7 +46,7 @@ public final class EncryptParameterRewriterBuilderTest {
         ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
         SQLStatementContext<?> sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
-        Collection<ParameterRewriter> actual = new EncryptParameterRewriterBuilder(encryptRule, shardingSphereSchema, sqlStatementContext).getParameterRewriters();
+        Collection<ParameterRewriter> actual = new EncryptParameterRewriterBuilder(encryptRule, shardingSphereSchema, sqlStatementContext, Collections.emptyList(), true).getParameterRewriters();
         assertThat(actual.size(), is(1));
         ParameterRewriter parameterRewriter = actual.iterator().next();
         assertThat(parameterRewriter, instanceOf(EncryptPredicateParameterRewriter.class));
@@ -58,9 +58,10 @@ public final class EncryptParameterRewriterBuilderTest {
         EncryptRule encryptRule = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
         when(encryptRule.isQueryWithCipherColumn()).thenReturn(true);
         ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
-        SQLStatementContext<?> sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
-        Collection<ParameterRewriter> actual = new EncryptParameterRewriterBuilder(encryptRule, shardingSphereSchema, sqlStatementContext).getParameterRewriters();
+        when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.emptyList());
+        Collection<ParameterRewriter> actual = new EncryptParameterRewriterBuilder(encryptRule, shardingSphereSchema, sqlStatementContext, Collections.emptyList(), true).getParameterRewriters();
         assertThat(actual.size(), is(0));
     }
 }

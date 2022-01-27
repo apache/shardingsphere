@@ -48,7 +48,7 @@ public final class ExampleGenerator {
             + "<#else>"
             + "<#assign package=feature />"
             + "</#if>"
-            + "/shardingsphere-jdbc-sample/shardingsphere-jdbc-${mode}-${transaction}-${package}-${framework}-example/";
+            + "/shardingsphere-${product}-sample/${package}--${framework}--${mode}--${transaction}/";
     
     private static final String JAVA_CLASS_PATH = "src/main/java/org/apache/shardingsphere/example/"
             + "<#assign package=\"\">"

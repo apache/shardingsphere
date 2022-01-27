@@ -28,10 +28,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>shardingsphere-jdbc-sample</artifactId>
+        <artifactId>shardingsphere-${product}-sample</artifactId>
         <version>${r'${revision}'}</version>
     </parent>
-    <artifactId>shardingsphere-jdbc-${mode}-${transaction}-${package}-${framework}-example</artifactId>
+    <artifactId>${package}--${framework}--${mode}--${transaction}</artifactId>
     <name>${r'${project.artifactId}'}</name>
     
     <dependencies>
