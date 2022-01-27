@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule;
 
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
@@ -33,11 +34,17 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterDefaultShardingStrategyStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingAlgorithmStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBroadcastTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -54,6 +61,9 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         ShardingSphereServiceLoader.register(RuleDefinitionAlterPreprocessor.class);
     }
     
+    private static final List<String> RULE_ALTERED_ACTION_LIST = Lists.newArrayList(AlterShardingTableRuleStatement.class.getName(), AlterShardingAlgorithmStatement.class.getName(),
+            AlterDefaultShardingStrategyStatement.class.getName(), AlterShardingBindingTableRulesStatement.class.getName(), AlterShardingBroadcastTableRulesStatement.class.getName());
+    
     public RuleDefinitionBackendHandler(final T sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
     }
@@ -68,6 +78,11 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         ruleDefinitionUpdater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentRuleConfig);
         Optional<RuleDefinitionAlterPreprocessor> preprocessor = TypedSPIRegistry.findRegisteredService(RuleDefinitionAlterPreprocessor.class, sqlStatement.getClass().getCanonicalName(), 
                 new Properties());
+        if (!RuleAlteredJobWorker.isOnRuleAlteredActionEnabled(currentRuleConfig)) {
+            if (RULE_ALTERED_ACTION_LIST.contains(sqlStatement.getClass().getCanonicalName())) {
+                throw new RuntimeException("scaling is not enabled");
+            }
+        }
         if (RuleAlteredJobWorker.isOnRuleAlteredActionEnabled(currentRuleConfig) && preprocessor.isPresent()) {
             processCache(shardingSphereMetaData, sqlStatement, (RuleDefinitionAlterUpdater) ruleDefinitionUpdater, currentRuleConfig, preprocessor.get());
             return new UpdateResponseHeader(sqlStatement);
