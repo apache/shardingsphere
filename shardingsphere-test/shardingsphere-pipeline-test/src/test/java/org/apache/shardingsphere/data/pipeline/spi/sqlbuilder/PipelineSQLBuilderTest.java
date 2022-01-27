@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 
 public final class PipelineSQLBuilderTest {
     
-    private final PipelineSQLBuilder pipelineSQLBuilder = new FixturePipelineSQLBuilder(Collections.emptyMap());
+    private final PipelineSQLBuilder pipelineSQLBuilder = new FixturePipelineSQLBuilder();
     
     @Test
     public void assertBuildInsertSQL() {

@@ -15,33 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.sqlbuilder;
+package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
-import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.spi.singleton.TypedSingletonSPIHolder;
 
 /**
- * Scaling SQL builder factory.
+ * Pipeline SQL builder factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ScalingSQLBuilderFactory {
+public final class PipelineSQLBuilderFactory {
+    
+    private static final TypedSingletonSPIHolder<PipelineSQLBuilder> SQL_BUILDER_SPI_HOLDER = new TypedSingletonSPIHolder<>(PipelineSQLBuilder.class, false);
     
     /**
-     * New instance of SQL builder.
+     * Get SQL builder instance.
      *
      * @param databaseType database type
      * @return SQL builder
      */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static PipelineSQLBuilder newInstance(final String databaseType) {
-        ScalingEntry scalingEntry = ScalingEntryLoader.getInstance(databaseType);
-        return scalingEntry.getSQLBuilderClass().getConstructor(Map.class).newInstance(new HashMap<>());
+    public static PipelineSQLBuilder getSQLBuilder(final String databaseType) {
+        return SQL_BUILDER_SPI_HOLDER.get(databaseType).orElseThrow(() -> new ServiceProviderNotFoundException(PipelineSQLBuilder.class, databaseType));
     }
 }

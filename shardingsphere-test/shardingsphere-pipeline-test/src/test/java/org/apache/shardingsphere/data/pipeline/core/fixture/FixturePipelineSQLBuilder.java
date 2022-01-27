@@ -24,6 +24,9 @@ import java.util.Set;
 
 public final class FixturePipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
+    public FixturePipelineSQLBuilder() {
+    }
+    
     public FixturePipelineSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
         super(shardingColumnsMap);
     }
@@ -36,5 +39,10 @@ public final class FixturePipelineSQLBuilder extends AbstractPipelineSQLBuilder 
     @Override
     protected String getRightIdentifierQuoteString() {
         return "`";
+    }
+    
+    @Override
+    public String getType() {
+        return "H2";
     }
 }
