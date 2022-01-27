@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
+import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.impl.AssistQueryAndPlainInsertColumnsTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.impl.EncryptAlterTableTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.impl.EncryptAssignmentTokenGenerator;
@@ -42,19 +45,14 @@ import java.util.LinkedList;
 /**
  * SQL token generator builder for encrypt.
  */
+@RequiredArgsConstructor
 public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuilder {
     
     private final EncryptRule encryptRule;
     
-    private final boolean queryWithCipherColumn;
-    
     private final SQLStatementContext<?> sqlStatementContext;
     
-    public EncryptTokenGenerateBuilder(final EncryptRule encryptRule, final SQLStatementContext<?> sqlStatementContext) {
-        this.encryptRule = encryptRule;
-        this.queryWithCipherColumn = encryptRule.isQueryWithCipherColumn();
-        this.sqlStatementContext = sqlStatementContext;
-    }
+    private final Collection<EncryptCondition> encryptConditions;
     
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
@@ -79,7 +77,10 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
             ((EncryptRuleAware) toBeAddedSQLTokenGenerator).setEncryptRule(encryptRule);
         }
         if (toBeAddedSQLTokenGenerator instanceof QueryWithCipherColumnAware) {
-            ((QueryWithCipherColumnAware) toBeAddedSQLTokenGenerator).setQueryWithCipherColumn(queryWithCipherColumn);
+            ((QueryWithCipherColumnAware) toBeAddedSQLTokenGenerator).setQueryWithCipherColumn(encryptRule.isQueryWithCipherColumn());
+        }
+        if (toBeAddedSQLTokenGenerator instanceof EncryptConditionsAware) {
+            ((EncryptConditionsAware) toBeAddedSQLTokenGenerator).setEncryptConditions(encryptConditions);
         }
         if (toBeAddedSQLTokenGenerator.isGenerateSQLToken(sqlStatementContext)) {
             sqlTokenGenerators.add(toBeAddedSQLTokenGenerator);

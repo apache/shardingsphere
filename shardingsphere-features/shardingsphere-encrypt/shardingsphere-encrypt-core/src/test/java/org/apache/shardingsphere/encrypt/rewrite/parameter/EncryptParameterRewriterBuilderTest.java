@@ -46,7 +46,7 @@ public final class EncryptParameterRewriterBuilderTest {
         ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
         SQLStatementContext<?> sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
-        Collection<ParameterRewriter> actual = new EncryptParameterRewriterBuilder(encryptRule, shardingSphereSchema, sqlStatementContext).getParameterRewriters();
+        Collection<ParameterRewriter> actual = new EncryptParameterRewriterBuilder(encryptRule, shardingSphereSchema, sqlStatementContext, Collections.emptyList()).getParameterRewriters();
         assertThat(actual.size(), is(1));
         ParameterRewriter parameterRewriter = actual.iterator().next();
         assertThat(parameterRewriter, instanceOf(EncryptPredicateParameterRewriter.class));
@@ -60,7 +60,7 @@ public final class EncryptParameterRewriterBuilderTest {
         ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
         SQLStatementContext<?> sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
-        Collection<ParameterRewriter> actual = new EncryptParameterRewriterBuilder(encryptRule, shardingSphereSchema, sqlStatementContext).getParameterRewriters();
+        Collection<ParameterRewriter> actual = new EncryptParameterRewriterBuilder(encryptRule, shardingSphereSchema, sqlStatementContext, Collections.emptyList()).getParameterRewriters();
         assertThat(actual.size(), is(0));
     }
 }
