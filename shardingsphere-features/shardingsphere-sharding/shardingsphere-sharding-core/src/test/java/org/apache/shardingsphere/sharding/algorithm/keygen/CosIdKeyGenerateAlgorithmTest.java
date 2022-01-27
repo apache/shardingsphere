@@ -15,8 +15,8 @@
 
 package org.apache.shardingsphere.sharding.algorithm.keygen;
 
-import me.ahoo.cosid.CosIdException;
 import me.ahoo.cosid.provider.DefaultIdGeneratorProvider;
+import me.ahoo.cosid.provider.NotFoundIdGeneratorException;
 import me.ahoo.cosid.segment.DefaultSegmentId;
 import me.ahoo.cosid.segment.IdSegmentDistributor;
 import me.ahoo.cosid.util.MockIdGenerator;
@@ -58,7 +58,7 @@ public final class CosIdKeyGenerateAlgorithmTest {
         assertThat(keyGenerateAlgorithm.generateKey(), is(2L));
     }
 
-    @Test(expected = CosIdException.class)
+    @Test(expected = NotFoundIdGeneratorException.class)
     public void assertGenerateKeyWhenIdProviderIsEmpty() {
         DefaultIdGeneratorProvider.INSTANCE.clear();
         CosIdKeyGenerateAlgorithm keyGenerateAlgorithm = new CosIdKeyGenerateAlgorithm();

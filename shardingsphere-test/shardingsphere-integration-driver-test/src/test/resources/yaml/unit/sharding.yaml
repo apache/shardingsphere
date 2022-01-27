@@ -42,7 +42,7 @@ rules:
 - !SHARDING
   tables:
     t_order:
-      actualDataNodes: pr_ds.t_order_${0..1}
+      actualDataNodes: readwrite_ds.t_order_${0..1}
       databaseStrategy:
         standard:
           shardingColumn: user_id
@@ -55,7 +55,7 @@ rules:
         column: order_id
         keyGeneratorName: snowflake
     t_order_item:
-      actualDataNodes: pr_ds.t_order_item_${0..1}
+      actualDataNodes: readwrite_ds.t_order_item_${0..1}
       tableStrategy:
         standard:
           shardingColumn: order_id
@@ -76,7 +76,7 @@ rules:
     default_database_inline:
       type: INLINE
       props:
-        algorithm-expression: pr_ds_${user_id % 2}
+        algorithm-expression: readwrite_ds_${user_id % 2}
     t_order_database_inline:
       type: INLINE
       props:
@@ -98,7 +98,7 @@ rules:
 
 - !READWRITE_SPLITTING
   dataSources:
-    pr_ds:
+    readwrite_ds:
       type: Static
       props:
         write-data-source-name: write_ds

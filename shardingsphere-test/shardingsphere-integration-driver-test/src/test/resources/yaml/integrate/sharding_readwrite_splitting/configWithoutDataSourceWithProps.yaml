@@ -19,9 +19,9 @@ rules:
 - !SHARDING
   tables:
     config:
-      actualDataNodes: pr_ds_${0..1}.t_config
+      actualDataNodes: readwrite_ds_${0..1}.t_config
     t_order: 
-      actualDataNodes: pr_ds_${0..1}.t_order_${0..1}
+      actualDataNodes: readwrite_ds_${0..1}.t_order_${0..1}
       databaseStrategy: 
         standard:
           shardingColumn: user_id
@@ -34,7 +34,7 @@ rules:
         column: order_id
         keyGeneratorName: increment
     t_order_item:
-      actualDataNodes: pr_ds_${0..1}.t_order_item_${0..1}
+      actualDataNodes: readwrite_ds_${0..1}.t_order_item_${0..1}
       databaseStrategy: 
         standard:
           shardingColumn: user_id
@@ -72,13 +72,13 @@ rules:
 
 - !READWRITE_SPLITTING
   dataSources:
-    pr_ds_0:
+    readwrite_ds_0:
       type: Static
       props:
         write-data-source-name: write_ds_0
         read-data-source-names: read_ds_0
       loadBalancerName: roundRobin
-    pr_ds_1:
+    readwrite_ds_1:
       type: Static
       props:
         write-data-source-name: write_ds_1

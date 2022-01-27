@@ -145,7 +145,7 @@ dataSources:
 rules:
 - !READWRITE_SPLITTING
   dataSources:
-    pr_ds:
+    readwrite_ds:
       type: Static
       props:
         write-data-source-name: primary_ds
@@ -226,7 +226,7 @@ rules:
 - !SHARDING
   tables:
     tbl:
-      actualDataNodes: pr_ds_${0..3}.tbl${0..1023}
+      actualDataNodes: readwrite_ds_${0..3}.tbl${0..1023}
       databaseStrategy:
         standard:
           shardingColumn: id
@@ -247,7 +247,7 @@ rules:
     tbl_database_inline:
       type: INLINE
       props:
-        algorithm-expression: pr_ds_${id % 4}
+        algorithm-expression: readwrite_ds_${id % 4}
     tbl_table_inline:
       type: INLINE
       props:
@@ -257,24 +257,24 @@ rules:
       type: SNOWFLAKE
 - !READWRITE_SPLITTING
   dataSources:
-    pr_ds_0:
+    readwrite_ds_0:
       type: Static
       props:
         write-data-source-name: primary_ds_0
         read-data-source-names: replica_ds_0
-    pr_ds_1:
+    readwrite_ds_1:
       type: Static
       props:
         write-data-source-name: primary_ds_1
         read-data-source-names: replica_ds_1
       loadBalancerName: round_robin
-    pr_ds_2:
+    readwrite_ds_2:
       type: Static
       props:
         write-data-source-name: primary_ds_2
         read-data-source-names: replica_ds_2
       loadBalancerName: round_robin
-    pr_ds_3:
+    readwrite_ds_3:
       type: Static
       props:
         write-data-source-name: primary_ds_3
