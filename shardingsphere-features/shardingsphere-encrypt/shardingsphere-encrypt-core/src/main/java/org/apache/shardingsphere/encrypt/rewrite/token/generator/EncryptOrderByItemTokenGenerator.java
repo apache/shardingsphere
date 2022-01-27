@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
+package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -44,13 +45,15 @@ import java.util.stream.Collectors;
  * Order by item token generator for encrypt.
  */
 @Setter
-public final class EncryptOrderByItemTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator, SchemaMetaDataAware {
+public final class EncryptOrderByItemTokenGenerator implements CollectionSQLTokenGenerator, SchemaMetaDataAware, EncryptRuleAware {
     
     private ShardingSphereSchema schema;
     
+    private EncryptRule encryptRule;
+    
     @SuppressWarnings("rawtypes")
     @Override
-    protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext && getColumnSegments(sqlStatementContext).size() > 0;
     }
     
@@ -72,13 +75,13 @@ public final class EncryptOrderByItemTokenGenerator extends BaseEncryptSQLTokenG
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (ColumnSegment column : columnSegments) {
             Optional<String> tableName = findTableName(columnTableNames, buildColumnProjection(column));
-            Optional<EncryptTable> encryptTable = tableName.flatMap(optional -> getEncryptRule().findEncryptTable(optional));
+            Optional<EncryptTable> encryptTable = tableName.flatMap(optional -> encryptRule.findEncryptTable(optional));
             if (!encryptTable.isPresent() || !encryptTable.get().findEncryptorName(column.getIdentifier().getValue()).isPresent()) {
                 continue;
             }
             int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
             int stopIndex = column.getStopIndex();
-            boolean queryWithCipherColumn = getEncryptRule().isQueryWithCipherColumn(tableName.orElse(""));
+            boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(tableName.orElse(""));
             if (!queryWithCipherColumn) {
                 Optional<String> plainColumn = encryptTable.get().findPlainColumn(column.getIdentifier().getValue());
                 if (plainColumn.isPresent()) {

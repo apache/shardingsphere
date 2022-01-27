@@ -107,6 +107,6 @@ public final class AlterDatabaseDiscoveryTypeStatementUpdater implements RuleDef
     
     @Override
     public String getType() {
-        return AlterDatabaseDiscoveryTypeStatement.class.getCanonicalName();
+        return AlterDatabaseDiscoveryTypeStatement.class.getName();
     }
 }

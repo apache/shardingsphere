@@ -71,9 +71,9 @@ set VERSION_OPTS=
 if %int_version% == 8 (
     set VERSION_OPTS=-XX:+UseFastAccessorMethods -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70
 ) else if %int_version% == 11 (
-    set VERSION_OPTS=-XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70
+    set VERSION_OPTS=-XX:+AggressiveHeap -XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler
 ) else if %int_version% == 17 (
-    set VERSION_OPTS=
+    set VERSION_OPTS=-XX:+AggressiveHeap
 ) else (
     echo unadapted java version, please notice...
 )

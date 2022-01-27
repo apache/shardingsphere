@@ -92,6 +92,6 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
     
     @Override
     public String getType() {
-        return DropDatabaseDiscoveryRuleStatement.class.getCanonicalName();
+        return DropDatabaseDiscoveryRuleStatement.class.getName();
     }
 }

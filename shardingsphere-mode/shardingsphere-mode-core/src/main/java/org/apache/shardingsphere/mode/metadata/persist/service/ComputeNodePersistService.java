@@ -50,12 +50,12 @@ public final class ComputeNodePersistService {
      */
     public void persistInstanceLabels(final String instanceId, final Collection<String> labels, final boolean isOverwrite) {
         if (null != labels && !labels.isEmpty() && (isOverwrite || !isExisted(instanceId))) {
-            repository.persist(ComputeNode.getInstanceLabelNodePath(instanceId), YamlEngine.marshal(labels));
+            repository.persist(ComputeNode.getInstanceLabelsNodePath(instanceId), YamlEngine.marshal(labels));
         }
     }
     
     private boolean isExisted(final String instanceId) {
-        return !Strings.isNullOrEmpty(repository.get(ComputeNode.getInstanceLabelNodePath(instanceId)));
+        return !Strings.isNullOrEmpty(repository.get(ComputeNode.getInstanceLabelsNodePath(instanceId)));
     }
     
     /**
@@ -75,7 +75,7 @@ public final class ComputeNodePersistService {
      * @return collection of label
      */
     public Collection<String> loadInstanceLabels(final String instanceId) {
-        String yamlContent = repository.get(ComputeNode.getInstanceLabelNodePath(instanceId));
+        String yamlContent = repository.get(ComputeNode.getInstanceLabelsNodePath(instanceId));
         return Strings.isNullOrEmpty(yamlContent) ? new ArrayList<>() : YamlEngine.unmarshal(yamlContent, Collection.class);
     }
     

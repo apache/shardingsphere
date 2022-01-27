@@ -40,13 +40,13 @@ import java.util.stream.Collectors;
  */
 public final class DropShardingKeyGeneratorStatementUpdater implements RuleDefinitionDropUpdater<DropShardingKeyGeneratorStatement, ShardingRuleConfiguration> {
     
-    private static final String TYPE = DropShardingKeyGeneratorStatement.class.getCanonicalName();
+    private static final String TYPE = DropShardingKeyGeneratorStatement.class.getName();
     
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingKeyGeneratorStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         String schemaName = shardingSphereMetaData.getName();
-        Collection<String> keyGeneratorNames = sqlStatement.getKeyGeneratorNames().stream().collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> keyGeneratorNames = new LinkedList<>(sqlStatement.getKeyGeneratorNames());
         checkDuplicate(schemaName, keyGeneratorNames);
         checkExist(schemaName, keyGeneratorNames, currentRuleConfig);
         checkInUsed(schemaName, keyGeneratorNames, currentRuleConfig);
@@ -65,7 +65,7 @@ public final class DropShardingKeyGeneratorStatementUpdater implements RuleDefin
     
     private void checkInUsed(final String schemaName, final Collection<String> keyGeneratorNames, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> usedKeyGenerators = getUsedKeyGenerators(currentRuleConfig);
-        Collection<String> inUsedNames = keyGeneratorNames.stream().filter(each -> usedKeyGenerators.contains(each)).collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> inUsedNames = keyGeneratorNames.stream().filter(usedKeyGenerators::contains).collect(Collectors.toCollection(LinkedList::new));
         DistSQLException.predictionThrow(inUsedNames.isEmpty(), new KeyGeneratorInUsedException("Sharding", schemaName, inUsedNames));
     }
     

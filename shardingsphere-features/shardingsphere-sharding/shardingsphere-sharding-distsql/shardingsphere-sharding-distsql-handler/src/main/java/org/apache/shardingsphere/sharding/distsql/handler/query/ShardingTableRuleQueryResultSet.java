@@ -204,6 +204,6 @@ public final class ShardingTableRuleQueryResultSet implements DistSQLResultSet {
     
     @Override
     public String getType() {
-        return ShowShardingTableRulesStatement.class.getCanonicalName();
+        return ShowShardingTableRulesStatement.class.getName();
     }
 }

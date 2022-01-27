@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
+package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateEqualRightValueToken;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateInRightValueToken;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.util.DMLStatementContextHelper;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
@@ -42,14 +43,16 @@ import java.util.Optional;
  * Predicate right value token generator for encrypt.
  */
 @Setter
-public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator, ParametersAware, EncryptConditionsAware {
+public final class EncryptPredicateRightValueTokenGenerator implements CollectionSQLTokenGenerator, ParametersAware, EncryptConditionsAware, EncryptRuleAware {
     
     private List<Object> parameters;
     
     private Collection<EncryptCondition> encryptConditions;
     
+    private EncryptRule encryptRule;
+    
     @Override
-    protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof WhereAvailable && !((WhereAvailable) sqlStatementContext).getWhereSegments().isEmpty();
     }
     
@@ -66,7 +69,7 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
     private SQLToken generateSQLToken(final String schemaName, final EncryptCondition encryptCondition) {
         List<Object> originalValues = encryptCondition.getValues(parameters);
         int startIndex = encryptCondition.getStartIndex();
-        boolean queryWithCipherColumn = getEncryptRule().isQueryWithCipherColumn(encryptCondition.getTableName());
+        boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(encryptCondition.getTableName());
         return queryWithCipherColumn ? generateSQLTokenForQueryWithCipherColumn(schemaName, encryptCondition, originalValues, startIndex)
                 : generateSQLTokenForQueryWithoutCipherColumn(encryptCondition, originalValues, startIndex);
     }
@@ -81,10 +84,10 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
     }
     
     private List<Object> getEncryptedValues(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues) {
-        Optional<String> assistedQueryColumn = getEncryptRule().findAssistedQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
+        Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
         return assistedQueryColumn.isPresent() 
-                ? getEncryptRule().getEncryptAssistedQueryValues(schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues) 
-                : getEncryptRule().getEncryptValues(schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
+                ? encryptRule.getEncryptAssistedQueryValues(schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues) 
+                : encryptRule.getEncryptValues(schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
     }
     
     private SQLToken generateSQLTokenForQueryWithoutCipherColumn(final EncryptCondition encryptCondition, final List<Object> originalValues, final int startIndex) {

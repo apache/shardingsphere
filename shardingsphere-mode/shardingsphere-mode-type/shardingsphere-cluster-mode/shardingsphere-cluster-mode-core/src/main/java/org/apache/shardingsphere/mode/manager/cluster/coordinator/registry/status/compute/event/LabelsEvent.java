@@ -24,11 +24,11 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.Gover
 import java.util.Collection;
 
 /**
- * Label changed event.
+ * Labels changed event.
  */
 @RequiredArgsConstructor
 @Getter
-public class LabelEvent implements GovernanceEvent {
+public class LabelsEvent implements GovernanceEvent {
     
     private final String instanceId;
     

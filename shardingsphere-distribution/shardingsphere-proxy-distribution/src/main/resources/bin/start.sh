@@ -42,18 +42,18 @@ echo "we find java version: java${int_version}, full_version=${total_version}"
 
 VERSION_OPTS=""
 if [ $int_version = '8' ] ; then
-    VERSION_OPTS=" -XX:+UseFastAccessorMethods -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70"
+    VERSION_OPTS="-XX:+UseFastAccessorMethods -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70"
 elif [ $int_version = '11' ] ; then
-    VERSION_OPTS=" -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70"
+    VERSION_OPTS="-XX:+AggressiveHeap -XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler"
 elif [ $int_version = '17' ] ; then
-    VERSION_OPTS=""
+    VERSION_OPTS="-XX:+AggressiveHeap"
 else
     echo "unadapted java version, please notice..."
 fi
 
 JAVA_OPTS=" -Djava.awt.headless=true "
 
-JAVA_MEM_OPTS=" -server -Xmx2g -Xms2g -Xmn1g -Xss1m -XX:+DisableExplicitGC -XX:LargePageSizeInBytes=128m ${VERSION_OPTS} -Dio.netty.leakDetection.level=DISABLED "
+JAVA_MEM_OPTS=" -server -Xmx2g -Xms2g -Xmn1g -Xss1m -XX:+UseNUMA -XX:+DisableExplicitGC -XX:LargePageSizeInBytes=128m ${VERSION_OPTS} -Dio.netty.leakDetection.level=DISABLED "
 
 MAIN_CLASS=org.apache.shardingsphere.proxy.Bootstrap
 

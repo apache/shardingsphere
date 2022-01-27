@@ -78,6 +78,6 @@ public final class ShardingAlgorithmsQueryResultSet implements DistSQLResultSet 
     
     @Override
     public String getType() {
-        return ShowShardingAlgorithmsStatement.class.getCanonicalName();
+        return ShowShardingAlgorithmsStatement.class.getName();
     }
 }

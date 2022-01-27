@@ -36,6 +36,6 @@ public final class StopScalingSourceWritingUpdater implements RALUpdater<StopSca
     
     @Override
     public String getType() {
-        return StopScalingSourceWritingStatement.class.getCanonicalName();
+        return StopScalingSourceWritingStatement.class.getName();
     }
 }

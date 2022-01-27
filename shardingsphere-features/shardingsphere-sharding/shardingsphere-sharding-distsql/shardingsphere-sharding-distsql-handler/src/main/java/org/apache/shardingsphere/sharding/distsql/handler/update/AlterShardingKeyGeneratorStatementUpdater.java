@@ -93,6 +93,6 @@ public final class AlterShardingKeyGeneratorStatementUpdater implements RuleDefi
     
     @Override
     public String getType() {
-        return AlterShardingKeyGeneratorStatement.class.getCanonicalName();
+        return AlterShardingKeyGeneratorStatement.class.getName();
     }
 }

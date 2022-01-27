@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
@@ -28,6 +27,7 @@ import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +37,6 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * Abstract pipeline SQL builder.
  */
-@RequiredArgsConstructor
 public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     
     private static final String INSERT_SQL_CACHE_KEY_PREFIX = "INSERT_";
@@ -50,6 +49,14 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     
     @Getter(AccessLevel.PROTECTED)
     private final Map<String, Set<String>> shardingColumnsMap;
+    
+    public AbstractPipelineSQLBuilder() {
+        shardingColumnsMap = Collections.emptyMap();
+    }
+    
+    public AbstractPipelineSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
+        this.shardingColumnsMap = shardingColumnsMap;
+    }
     
     /**
      * Get left identifier quote string.
