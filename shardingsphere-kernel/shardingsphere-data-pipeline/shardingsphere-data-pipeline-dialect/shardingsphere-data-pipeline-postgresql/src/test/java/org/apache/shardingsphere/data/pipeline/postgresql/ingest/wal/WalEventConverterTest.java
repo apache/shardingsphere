@@ -51,7 +51,7 @@ public final class WalEventConverterTest {
     @Before
     public void setUp() {
         DumperConfiguration dumperConfig = mockDumperConfiguration();
-        walEventConverter = new WalEventConverter(dumperConfig);
+        walEventConverter = new WalEventConverter(dumperConfig, new PipelineDataSourceManager());
         initTableData(dumperConfig);
     }
     

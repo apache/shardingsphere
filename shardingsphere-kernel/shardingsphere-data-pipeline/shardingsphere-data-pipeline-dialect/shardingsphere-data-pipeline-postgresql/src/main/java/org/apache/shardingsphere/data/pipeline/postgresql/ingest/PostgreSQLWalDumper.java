@@ -68,7 +68,7 @@ public final class PostgreSQLWalDumper extends AbstractIncrementalDumper<WalPosi
         }
         this.dumperConfig = dumperConfig;
         this.channel = channel;
-        walEventConverter = new WalEventConverter(dumperConfig);
+        walEventConverter = new WalEventConverter(dumperConfig, dataSourceManager);
     }
     
     @Override
