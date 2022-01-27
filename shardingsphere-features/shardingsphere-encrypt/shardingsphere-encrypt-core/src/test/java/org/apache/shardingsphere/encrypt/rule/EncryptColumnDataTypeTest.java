@@ -19,17 +19,22 @@ package org.apache.shardingsphere.encrypt.rule;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import java.util.Map;
+import java.util.TreeMap;
 
-public final class EncryptColumnTest {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public class EncryptColumnDataTypeTest {
     
     @Test
-    public void assertGetAssistedQueryColumn() {
-        assertTrue(new EncryptColumn(null, "cipherColumn", null, "assistedQueryColumn", null, "plainColumn", null, "encryptorName").getAssistedQueryColumn().isPresent());
-    }
-    
-    @Test
-    public void assertGetPlainColumn() {
-        assertTrue(new EncryptColumn(null, "cipherColumn", null, "assistedQueryColumn", null, "plainColumn", null, "encryptorName").getPlainColumn().isPresent());
+    public void assertEncryptColumnDataType() {
+        Map<String, Integer> dataTypes = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        dataTypes.put("BIT", -7);
+        dataTypes.put("TINYINT", -6);
+        dataTypes.put("DATE", 91);
+        assertThat(new EncryptColumnDataType("BIT(5)", dataTypes).getDataType(), is(-7));
+        assertThat(new EncryptColumnDataType("TINYINT(5) UNSIGNED ZEROFILL", dataTypes).getDataType(), is(-6));
+        assertThat(new EncryptColumnDataType("DATE", dataTypes).getDataType(), is(91));
     }
 }

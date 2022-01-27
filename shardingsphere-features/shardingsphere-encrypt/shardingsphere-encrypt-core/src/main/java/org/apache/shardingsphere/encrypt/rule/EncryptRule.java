@@ -28,12 +28,16 @@ import org.apache.shardingsphere.encrypt.rewrite.util.EncryptPropertiesBuilder;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
+import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.DataTypeLoader;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
+import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -58,25 +62,21 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     private final Map<String, EncryptTable> tables = new LinkedHashMap<>();
     
     @Getter
-    private boolean containsConfigDataTypeColumn;
-    
-    @Getter
     private final boolean queryWithCipherColumn;
     
-    public EncryptRule(final EncryptRuleConfiguration config) {
+    public EncryptRule(final EncryptRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
         Preconditions.checkArgument(isValidRuleConfiguration(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
         config.getEncryptors().forEach((key, value) -> encryptors.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, EncryptAlgorithm.class)));
-        config.getTables().forEach(each -> {
-            tables.put(each.getName(), new EncryptTable(each));
-            containsConfigDataTypeColumn = containsConfigDataTypeColumn(each);
-        });
+        Map<String, Integer> dataTypes = getDataTypes(dataSourceMap);
+        config.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each, dataTypes)));
         queryWithCipherColumn = config.isQueryWithCipherColumn();
     }
     
-    public EncryptRule(final AlgorithmProvidedEncryptRuleConfiguration config) {
+    public EncryptRule(final AlgorithmProvidedEncryptRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
         Preconditions.checkArgument(isValidRuleConfigurationWithAlgorithmProvided(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
         encryptors.putAll(config.getEncryptors());
-        config.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
+        Map<String, Integer> dataTypes = getDataTypes(dataSourceMap);
+        config.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each, dataTypes)));
         queryWithCipherColumn = config.isQueryWithCipherColumn();
     }
     
@@ -123,13 +123,16 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
                 && encryptRuleConfig.getEncryptors().containsKey(column.getEncryptorName());
     }
     
-    private boolean containsConfigDataTypeColumn(final EncryptTableRuleConfiguration tableRuleConfiguration) {
-        for (EncryptColumnRuleConfiguration each : tableRuleConfiguration.getColumns()) {
-            if (null != each.getLogicDataType() && !each.getLogicDataType().isEmpty()) {
-                return true;
+    private Map<String, Integer> getDataTypes(final Map<String, DataSource> dataSourceMap) {
+        Optional<DataSource> dataSource = dataSourceMap.values().stream().findAny();
+        if (dataSource.isPresent()) {
+            try {
+                return DataTypeLoader.load(dataSource.get().getConnection().getMetaData());
+            } catch (SQLException ex) {
+                throw new ShardingSphereConfigurationException("Can not load data types: %s", ex.getMessage());
             }
         }
-        return false;
+        return Collections.emptyMap();
     }
     
     /**
