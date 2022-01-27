@@ -21,7 +21,7 @@
         <column name="user_id" type="int" />
         <column name="order_name" type="varchar" />
         <column name="type_decimal" type="decimal" />
-        <column name="type_cher" type="char" />
+        <column name="type_char" type="char" />
         <column name="type_date" type="Date" />
         <column name="type_time" type="time" />
         <column name="type_timestamp" type="timestamp"/>

@@ -38,6 +38,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Driver JDBC executor.
@@ -146,11 +147,7 @@ public final class DriverJDBCExecutor {
     }
     
     private void refreshMetaData(final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
-        List<String> result = new ArrayList<>(routeUnits.size());
-        for (RouteUnit each : routeUnits) {
-            String logicName = each.getDataSourceMapper().getLogicName();
-            result.add(logicName);
-        }
-        metadataRefreshEngine.refresh(sqlStatement, result);
+        metadataRefreshEngine.refresh(sqlStatement,
+            () -> routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toCollection(() -> new ArrayList<>(routeUnits.size()))));
     }
 }

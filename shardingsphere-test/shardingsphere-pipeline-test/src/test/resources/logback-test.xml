@@ -23,7 +23,7 @@
         </encoder>
     </appender>
     <logger name="org.apache.zookeeper" level="off" />
-    <logger name="org.apache.shardingsphere.data.pipeline.core.prepare.InventoryTaskSplitter" level="off" />
+    <logger name="org.apache.shardingsphere.data.pipeline.scenario.rulealtered.prepare.InventoryTaskSplitter" level="off" />
     
     <root>
         <level value="warn" />

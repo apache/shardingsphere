@@ -21,7 +21,6 @@ import org.apache.shardingsphere.data.pipeline.postgresql.importer.PostgreSQLImp
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLInventoryDumper;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLPositionInitializer;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLWalDumper;
-import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.PostgreSQLPipelineSQLBuilder;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 
 /**
@@ -52,11 +51,6 @@ public final class PostgreSQLScalingEntry implements ScalingEntry {
     @Override
     public Class<PostgreSQLEnvironmentChecker> getEnvironmentCheckerClass() {
         return PostgreSQLEnvironmentChecker.class;
-    }
-    
-    @Override
-    public Class<PostgreSQLPipelineSQLBuilder> getSQLBuilderClass() {
-        return PostgreSQLPipelineSQLBuilder.class;
     }
     
     @Override
