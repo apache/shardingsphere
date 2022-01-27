@@ -61,6 +61,7 @@ public final class ProxyContextTest {
         proxyContext.init(contextManager);
         assertThat(proxyContext.getContextManager().getMetaDataContexts(), is(metaDataContexts));
         assertThat(proxyContext.getContextManager().getTransactionContexts(), is(transactionContexts));
+        assertTrue(proxyContext.getStateContext().isPresent());
     }
     
     @Test
