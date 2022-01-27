@@ -106,8 +106,8 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Before
     public void setUp() throws SQLException {
-        PersistRepositoryConfiguration persistRepositoryConfiguration = new ClusterPersistRepositoryConfiguration("TEST", "", "", new Properties());
-        ModeConfiguration modeConfig = new ModeConfiguration("Cluster", persistRepositoryConfiguration, false);
+        PersistRepositoryConfiguration persistRepositoryConfig = new ClusterPersistRepositoryConfiguration("TEST", "", "", new Properties());
+        ModeConfiguration modeConfig = new ModeConfiguration("Cluster", persistRepositoryConfig, false);
         ClusterContextManagerBuilder builder = new ClusterContextManagerBuilder();
         contextManager = builder.build(ContextManagerBuilderParameter.builder().modeConfig(modeConfig).schemaConfigs(new HashMap<>())
                 .globalRuleConfigs(new LinkedList<>()).props(new Properties()).instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307)).build());
@@ -240,7 +240,7 @@ public final class ClusterContextManagerCoordinatorTest {
         when(metaData.getSchema()).thenReturn(schema);
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
-        return Collections.singletonMap("schema", metaData);
+        return new HashMap<>(Collections.singletonMap("schema", metaData));
     }
     
     private OptimizerContext createOptimizerContext() {
