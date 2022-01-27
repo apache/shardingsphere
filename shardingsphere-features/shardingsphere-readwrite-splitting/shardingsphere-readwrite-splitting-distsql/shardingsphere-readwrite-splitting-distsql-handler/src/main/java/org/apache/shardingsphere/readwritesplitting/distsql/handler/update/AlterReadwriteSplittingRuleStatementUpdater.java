@@ -158,6 +158,6 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDe
     
     @Override
     public String getType() {
-        return AlterReadwriteSplittingRuleStatement.class.getCanonicalName();
+        return AlterReadwriteSplittingRuleStatement.class.getName();
     }
 }

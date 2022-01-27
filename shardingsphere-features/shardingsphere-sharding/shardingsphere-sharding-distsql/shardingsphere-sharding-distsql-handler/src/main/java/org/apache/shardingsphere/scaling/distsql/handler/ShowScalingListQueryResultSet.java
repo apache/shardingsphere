@@ -71,6 +71,6 @@ public final class ShowScalingListQueryResultSet implements DistSQLResultSet {
     
     @Override
     public String getType() {
-        return ShowScalingListStatement.class.getCanonicalName();
+        return ShowScalingListStatement.class.getName();
     }
 }

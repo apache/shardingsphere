@@ -36,6 +36,6 @@ public final class DropScalingUpdater implements RALUpdater<DropScalingStatement
     
     @Override
     public String getType() {
-        return DropScalingStatement.class.getCanonicalName();
+        return DropScalingStatement.class.getName();
     }
 }

@@ -110,6 +110,6 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
     
     @Override
     public String getType() {
-        return ShowDatabaseDiscoveryRulesStatement.class.getCanonicalName();
+        return ShowDatabaseDiscoveryRulesStatement.class.getName();
     }
 }

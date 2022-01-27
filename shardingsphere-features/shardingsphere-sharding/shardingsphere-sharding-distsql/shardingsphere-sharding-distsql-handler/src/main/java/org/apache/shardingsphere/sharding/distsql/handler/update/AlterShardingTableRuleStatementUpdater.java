@@ -92,6 +92,6 @@ public final class AlterShardingTableRuleStatementUpdater implements RuleDefinit
     
     @Override
     public String getType() {
-        return AlterShardingTableRuleStatement.class.getCanonicalName();
+        return AlterShardingTableRuleStatement.class.getName();
     }
 }

@@ -80,6 +80,6 @@ public final class ShardingScalingRulesQueryResultSet implements DistSQLResultSe
     
     @Override
     public String getType() {
-        return ShowShardingScalingRulesStatement.class.getCanonicalName();
+        return ShowShardingScalingRulesStatement.class.getName();
     }
 }

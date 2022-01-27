@@ -181,9 +181,9 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         if (!tables.containsKey(logicTable)) {
             return Optional.empty();
         }
-        Optional<EncryptAlgorithm> encryptAlgorithm = tables.get(logicTable).findEncryptorName(logicColumn).map(encryptors::get);
-        encryptAlgorithm.ifPresent(optional -> mergeProps(optional, EncryptPropertiesBuilder.getProperties(schemaName, "", logicTable, logicColumn)));
-        return encryptAlgorithm;
+        Optional<EncryptAlgorithm> result = tables.get(logicTable).findEncryptorName(logicColumn).map(encryptors::get);
+        result.ifPresent(optional -> mergeProps(optional, EncryptPropertiesBuilder.getProperties(schemaName, "", logicTable, logicColumn)));
+        return result;
     }
     
     @SuppressWarnings("rawtypes")
