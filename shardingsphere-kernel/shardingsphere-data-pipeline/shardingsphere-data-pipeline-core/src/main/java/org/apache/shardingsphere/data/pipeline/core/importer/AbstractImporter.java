@@ -76,8 +76,7 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
     protected abstract PipelineSQLBuilder createSQLBuilder(Map<String, Set<String>> shardingColumnsMap);
     
     @Override
-    public final void start() {
-        super.start();
+    protected void doStart() {
         write();
     }
     

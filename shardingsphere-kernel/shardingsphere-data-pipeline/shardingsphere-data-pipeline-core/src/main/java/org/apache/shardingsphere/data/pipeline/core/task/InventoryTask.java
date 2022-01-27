@@ -82,7 +82,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     }
     
     @Override
-    public void start() {
+    protected void doStart() {
         Future<?> future = importerExecuteEngine.submit(importer, new ExecuteCallback() {
             
             @Override

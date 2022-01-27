@@ -74,8 +74,7 @@ public final class OpenGaussWalDumper extends AbstractLifecycleExecutor implemen
     }
     
     @Override
-    public void start() {
-        super.start();
+    protected void doStart() {
         dump();
     }
 

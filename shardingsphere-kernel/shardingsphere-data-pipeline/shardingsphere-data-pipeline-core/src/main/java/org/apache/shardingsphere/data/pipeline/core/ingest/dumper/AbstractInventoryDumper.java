@@ -88,8 +88,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     }
     
     @Override
-    public final void start() {
-        super.start();
+    protected void doStart() {
         dump();
     }
     

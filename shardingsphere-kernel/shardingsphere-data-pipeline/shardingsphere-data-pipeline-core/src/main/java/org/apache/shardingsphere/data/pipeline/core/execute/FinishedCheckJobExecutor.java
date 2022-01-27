@@ -35,9 +35,7 @@ public final class FinishedCheckJobExecutor extends AbstractLifecycleExecutor {
     private static final String CRON_EXPRESSION = "0 * * * * ?";
     
     @Override
-    public void start() {
-        super.start();
-        log.info("Start finished check job executor.");
+    protected void doStart() {
         new ScheduleJobBootstrap(PipelineAPIFactory.getRegistryCenter(), new FinishedCheckJob(), createJobConfig()).schedule();
     }
     

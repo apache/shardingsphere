@@ -88,8 +88,7 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     }
     
     @Override
-    public void start() {
-        super.start();
+    protected void doStart() {
         dump();
     }
     

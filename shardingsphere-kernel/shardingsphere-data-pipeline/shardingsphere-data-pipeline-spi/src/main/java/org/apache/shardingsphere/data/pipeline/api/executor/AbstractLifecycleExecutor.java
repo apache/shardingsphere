@@ -36,7 +36,12 @@ public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
     
     @Override
     public void start() {
+        log.info("start lifecycle executor: {}", super.toString());
         running = true;
+        doStart();
+    }
+    
+    protected void doStart() {
     }
     
     @Override

@@ -81,7 +81,7 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     }
     
     @Override
-    public void start() {
+    protected void doStart() {
         progress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
         Future<?> future = incrementalDumperExecuteEngine.submitAll(importers, getExecuteCallback());
         dumper.start();
