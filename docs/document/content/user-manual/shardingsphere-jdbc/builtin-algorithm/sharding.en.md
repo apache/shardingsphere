@@ -53,11 +53,11 @@ Type: AUTO_INTERVAL
 
 Attributes:
 
-| *Name*           | *DataType* | *Description*                                               |
-| ---------------- | ---------- | ----------------------------------------------------------- |
-| datetime-lower   | String     | Shard datetime begin boundary, pattern: yyyy-MM-dd HH:mm:ss |
-| datetime-upper   | String     | Shard datetime end boundary, pattern: yyyy-MM-dd HH:mm:ss   |
-| sharding-seconds | long       | Max seconds for the data in one shard                       |
+| *Name*           | *DataType* | *Description*                                                                                                     |
+| ---------------- | ---------- |-------------------------------------------------------------------------------------------------------------------|
+| datetime-lower   | String     | Shard datetime begin boundary, pattern: yyyy-MM-dd HH:mm:ss[.S], [.S] represents milliseconds from 0 to any digit |
+| datetime-upper   | String     | Shard datetime end boundary, pattern: yyyy-MM-dd HH:mm:ss[.S], [.S] represents milliseconds from 0 to any digit   |
+| sharding-seconds | long       | Max seconds for the data in one shard                                                                             |
 
 ## Standard Sharding Algorithm
 

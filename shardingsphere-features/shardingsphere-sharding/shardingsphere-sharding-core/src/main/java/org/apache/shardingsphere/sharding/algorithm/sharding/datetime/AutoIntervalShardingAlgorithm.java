@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingVal
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
 import java.text.DecimalFormat;
+import java.text.ParsePosition;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -64,16 +65,16 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     public void init() {
         dateTimeLower = getDateTime(DATE_TIME_LOWER_KEY);
         shardingSeconds = getShardingSeconds();
-        autoTablesAmount = (int) (Math.ceil(parseDate(props.getProperty(DATE_TIME_UPPER_KEY)) / shardingSeconds) + 2);
+        autoTablesAmount = (int) (Math.ceil((double) (parseDate(props.getProperty(DATE_TIME_UPPER_KEY)) / shardingSeconds)) + 2);
     }
     
     private LocalDateTime getDateTime(final String dateTimeKey) {
         String value = props.getProperty(dateTimeKey);
         Preconditions.checkNotNull(value, "%s cannot be null.", dateTimeKey);
         try {
-            return LocalDateTime.parse(value, DATE_TIME_FORMAT);
+            return LocalDateTime.from(DATE_TIME_FORMAT.parse(value, new ParsePosition(0)));
         } catch (final DateTimeParseException ex) {
-            throw new ShardingSphereConfigurationException("Invalid %s, datetime pattern should be `yyyy-MM-dd HH:mm:ss`, value is `%s`", dateTimeKey, value);
+            throw new ShardingSphereConfigurationException("Invalid %s, datetime pattern should be `yyyy-MM-dd HH:mm:ss[.S]`, value is `%s`", dateTimeKey, value);
         }
     }
     
@@ -126,7 +127,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     }
     
     private long parseDate(final Comparable<?> shardingValue) {
-        LocalDateTime dateValue = LocalDateTime.parse(shardingValue.toString(), DATE_TIME_FORMAT);
+        LocalDateTime dateValue = LocalDateTime.from(DATE_TIME_FORMAT.parse(shardingValue.toString(), new ParsePosition(0)));
         return Duration.between(dateTimeLower, dateValue).toMillis() / 1000;
     }
     
