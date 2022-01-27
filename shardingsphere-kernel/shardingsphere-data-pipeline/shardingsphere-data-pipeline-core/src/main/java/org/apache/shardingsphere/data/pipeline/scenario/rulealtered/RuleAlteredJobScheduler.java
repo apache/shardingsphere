@@ -26,6 +26,8 @@ import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseSchemaNameLockEvent;
 
 /**
  * Rule altered job scheduler.
@@ -109,6 +111,8 @@ public final class RuleAlteredJobScheduler implements Runnable {
                 log.error("Inventory task execute failed.", throwable);
                 stop();
                 jobContext.setStatus(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE);
+                ScalingReleaseSchemaNameLockEvent event = new ScalingReleaseSchemaNameLockEvent(jobContext.getJobConfig().getWorkflowConfig().getSchemaName());
+                ShardingSphereEventBus.getInstance().post(event);
             }
         };
     }
@@ -141,6 +145,8 @@ public final class RuleAlteredJobScheduler implements Runnable {
                 log.error("Incremental task execute failed.", throwable);
                 stop();
                 jobContext.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE);
+                ScalingReleaseSchemaNameLockEvent event = new ScalingReleaseSchemaNameLockEvent(jobContext.getJobConfig().getWorkflowConfig().getSchemaName());
+                ShardingSphereEventBus.getInstance().post(event);
             }
         };
     }
