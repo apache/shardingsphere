@@ -24,7 +24,9 @@ import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseSchemaNameLockEvent;
 
 /**
  * Rule altered job.
@@ -52,6 +54,8 @@ public final class RuleAlteredJob implements SimpleJob {
             log.error("job prepare failed, {}-{}", shardingContext.getJobName(), shardingContext.getShardingItem());
             jobContext.setStatus(JobStatus.PREPARING_FAILURE);
             governanceRepositoryAPI.persistJobProgress(jobContext);
+            ScalingReleaseSchemaNameLockEvent event = new ScalingReleaseSchemaNameLockEvent(jobConfig.getWorkflowConfig().getSchemaName());
+            ShardingSphereEventBus.getInstance().post(event);
             throw ex;
         }
         governanceRepositoryAPI.persistJobProgress(jobContext);
