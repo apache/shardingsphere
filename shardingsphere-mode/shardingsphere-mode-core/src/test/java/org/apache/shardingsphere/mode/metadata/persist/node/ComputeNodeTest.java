@@ -38,7 +38,7 @@ public final class ComputeNodeTest {
     }
     
     @Test
-    public void assertGetInstanceLabelNodePath() {
+    public void assertGetInstanceLabelsNodePath() {
         assertThat(ComputeNode.getInstanceLabelsNodePath("127.0.0.1@3307"), is("/nodes/compute_nodes/attributes/127.0.0.1@3307/labels"));
     }
     
