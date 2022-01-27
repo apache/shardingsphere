@@ -103,6 +103,10 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
             Optional<Number> maxUniqueKeyValue;
             while ((maxUniqueKeyValue = dump0(conn, sql, startUniqueKeyValue, round++)).isPresent()) {
                 startUniqueKeyValue = maxUniqueKeyValue.get();
+                if (!isRunning()) {
+                    log.info("inventory dump, running is false, break");
+                    break;
+                }
             }
             log.info("inventory dump done, round={}, maxUniqueKeyValue={}", round, maxUniqueKeyValue);
         } catch (final SQLException ex) {
@@ -132,7 +136,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                 ResultSetMetaData metaData = resultSet.getMetaData();
                 int rowCount = 0;
                 Number maxUniqueKeyValue = null;
-                while (isRunning() && resultSet.next()) {
+                while (resultSet.next()) {
                     DataRecord record = new DataRecord(newPosition(resultSet), metaData.getColumnCount());
                     record.setType(IngestDataChangeType.INSERT);
                     record.setTableName(inventoryDumperConfig.getTableNameMap().get(inventoryDumperConfig.getTableName()));
@@ -146,6 +150,10 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                     }
                     pushRecord(record);
                     rowCount++;
+                    if (!isRunning()) {
+                        log.info("dump, running is false, break");
+                        break;
+                    }
                 }
                 if (log.isDebugEnabled()) {
                     log.debug("dump, round={}, rowCount={}, maxUniqueKeyValue={}", round, rowCount, maxUniqueKeyValue);

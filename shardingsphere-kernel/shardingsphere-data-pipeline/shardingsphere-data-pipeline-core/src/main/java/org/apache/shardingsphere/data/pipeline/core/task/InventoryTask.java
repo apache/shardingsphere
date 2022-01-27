@@ -134,7 +134,6 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     public void stop() {
         dumper.stop();
         importer.stop();
-        channel.close();
     }
     
     @Override
@@ -144,6 +143,6 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     
     @Override
     public void close() {
-        dataSourceManager.close();
+        channel.close();
     }
 }

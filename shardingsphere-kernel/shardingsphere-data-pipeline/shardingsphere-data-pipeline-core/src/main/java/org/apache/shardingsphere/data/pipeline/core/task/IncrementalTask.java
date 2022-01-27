@@ -48,7 +48,7 @@ import java.util.concurrent.Future;
  */
 @Slf4j
 @ToString(exclude = {"incrementalDumperExecuteEngine", "dataSourceManager", "dumper", "progress"})
-public final class IncrementalTask extends AbstractLifecycleExecutor implements PipelineTask {
+public final class IncrementalTask extends AbstractLifecycleExecutor implements PipelineTask, AutoCloseable {
     
     @Getter
     private final String taskId;
@@ -138,6 +138,10 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
         for (Importer each : importers) {
             each.stop();
         }
+    }
+    
+    @Override
+    public void close() {
         channel.close();
     }
 }
