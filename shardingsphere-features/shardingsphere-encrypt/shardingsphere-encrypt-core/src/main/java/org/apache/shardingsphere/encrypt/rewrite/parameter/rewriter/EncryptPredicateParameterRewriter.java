@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.parameter.impl;
+package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;

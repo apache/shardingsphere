@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.impl;
 
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.impl.EncryptCreateTableTokenGenerator;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptCreateTableTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptConfigDataTypeToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;

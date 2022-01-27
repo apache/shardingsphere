@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
+package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
+import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAlterTableToken;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterTableStatementContext;
@@ -34,20 +36,23 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.position.ColumnPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Alter table token generator for encrypt.
  */
-public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator<AlterTableStatementContext> {
+@Setter
+public final class EncryptAlterTableTokenGenerator implements CollectionSQLTokenGenerator<AlterTableStatementContext>, EncryptRuleAware {
+    
+    private EncryptRule encryptRule;
     
     @Override
-    protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof AlterTableStatementContext;
     }
     
@@ -106,7 +111,7 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnDefinitionSegment each : addColumnDefinitionSegment.getColumnDefinitions()) {
             String columnName = each.getColumnName().getIdentifier().getValue();
-            Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
+            Optional<EncryptAlgorithm> encryptor = encryptRule.findEncryptor(tableName, columnName);
             if (encryptor.isPresent()) {
                 result.addAll(getAddColumnTokens(tableName, columnName, addColumnDefinitionSegment, each));
             }
@@ -120,11 +125,11 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
         Collection<SQLToken> result = new LinkedList<>();
         result.add(new RemoveToken(columnDefinitionSegment.getStartIndex(), columnDefinitionSegment.getColumnName().getStopIndex()));
         result.add(new EncryptAlterTableToken(columnDefinitionSegment.getColumnName().getStopIndex() + 1, columnDefinitionSegment.getColumnName().getStopIndex(),
-                getEncryptRule().getCipherColumn(tableName, columnName), null));
-        Optional<String> assistedQueryColumn = getEncryptRule().findAssistedQueryColumn(tableName, columnName);
+                encryptRule.getCipherColumn(tableName, columnName), null));
+        Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, columnName);
         assistedQueryColumn.map(optional -> new EncryptAlterTableToken(
                 addColumnDefinitionSegment.getStopIndex() + 1, columnDefinitionSegment.getColumnName().getStopIndex(), optional, ", ADD COLUMN")).ifPresent(result::add);
-        Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, columnName);
+        Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, columnName);
         plainColumn.map(optional -> new EncryptAlterTableToken(
                 addColumnDefinitionSegment.getStopIndex() + 1, columnDefinitionSegment.getColumnName().getStopIndex(), optional, ", ADD COLUMN")).ifPresent(result::add);
         return result;
@@ -132,7 +137,7 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
     
     private Optional<SQLToken> getAddColumnPositionToken(final String tableName, final AddColumnDefinitionSegment addColumnDefinitionSegment) {
         Optional<EncryptAlgorithm> encryptor = addColumnDefinitionSegment.getColumnPosition().filter(positionSegment -> null != positionSegment.getColumnName())
-                .flatMap(positionSegment -> getEncryptRule().findEncryptor(tableName, positionSegment.getColumnName().getIdentifier().getValue()));
+                .flatMap(positionSegment -> encryptRule.findEncryptor(tableName, positionSegment.getColumnName().getIdentifier().getValue()));
         if (encryptor.isPresent()) {
             return Optional.of(getPositionColumnToken(addColumnDefinitionSegment.getColumnPosition().get(), tableName));
         }
@@ -140,7 +145,7 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
     }
     
     private EncryptAlterTableToken getPositionColumnToken(final ColumnPositionSegment positionSegment, final String tableName) {
-        return new EncryptAlterTableToken(positionSegment.getColumnName().getStartIndex(), positionSegment.getStopIndex(), getEncryptRule()
+        return new EncryptAlterTableToken(positionSegment.getColumnName().getStartIndex(), positionSegment.getStopIndex(), encryptRule
                 .getCipherColumn(tableName, positionSegment.getColumnName().getIdentifier().getValue()), null);
     }
     
@@ -149,7 +154,7 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
         for (ModifyColumnDefinitionSegment each : columnDefinitionSegments) {
             ColumnDefinitionSegment segment = each.getColumnDefinition();
             String columnName = segment.getColumnName().getIdentifier().getValue();
-            Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
+            Optional<EncryptAlgorithm> encryptor = encryptRule.findEncryptor(tableName, columnName);
             if (encryptor.isPresent()) {
                 result.addAll(getModifyColumnTokens(tableName, columnName, each));
             }
@@ -164,17 +169,17 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
         ColumnDefinitionSegment columnDefinitionSegment = modifyColumnDefinitionSegment.getColumnDefinition();
         result.add(new RemoveToken(columnDefinitionSegment.getColumnName().getStartIndex(), columnDefinitionSegment.getColumnName().getStopIndex()));
         result.add(new EncryptAlterTableToken(columnDefinitionSegment.getColumnName().getStopIndex() + 1, columnDefinitionSegment.getColumnName().getStopIndex(),
-                getEncryptRule().getCipherColumn(tableName, columnName), null));
-        getEncryptRule().findAssistedQueryColumn(tableName, columnName).map(optional -> new EncryptAlterTableToken(modifyColumnDefinitionSegment.getStopIndex() + 1,
+                encryptRule.getCipherColumn(tableName, columnName), null));
+        encryptRule.findAssistedQueryColumn(tableName, columnName).map(optional -> new EncryptAlterTableToken(modifyColumnDefinitionSegment.getStopIndex() + 1,
                 columnDefinitionSegment.getColumnName().getStopIndex(), optional, ", MODIFY COLUMN")).ifPresent(result::add);
-        getEncryptRule().findPlainColumn(tableName, columnName).map(optional -> new EncryptAlterTableToken(modifyColumnDefinitionSegment.getStopIndex() + 1,
+        encryptRule.findPlainColumn(tableName, columnName).map(optional -> new EncryptAlterTableToken(modifyColumnDefinitionSegment.getStopIndex() + 1,
                 columnDefinitionSegment.getColumnName().getStopIndex(), optional, ", MODIFY COLUMN")).ifPresent(result::add);
         return result;
     }
     
     private Optional<SQLToken> getColumnPositionToken(final String tableName, final ColumnPositionSegment columnPositionSegment) {
         Optional<EncryptAlgorithm> encryptor = Optional.of(columnPositionSegment).filter(positionSegment -> null != positionSegment.getColumnName())
-                .flatMap(positionSegment -> getEncryptRule().findEncryptor(tableName, positionSegment.getColumnName().getIdentifier().getValue()));
+                .flatMap(positionSegment -> encryptRule.findEncryptor(tableName, positionSegment.getColumnName().getIdentifier().getValue()));
         if (encryptor.isPresent()) {
             return Optional.of(getPositionColumnToken(columnPositionSegment, tableName));
         }
@@ -189,10 +194,10 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
             each.getColumnPosition().flatMap(columnPositionSegment -> getColumnPositionToken(tableName, columnPositionSegment)).ifPresent(result::add);
             if (null != each.getPreviousColumn()) {
                 String previousColumnName = each.getPreviousColumn().getIdentifier().getValue();
-                getEncryptRule().findAssistedQueryColumn(tableName, previousColumnName).map(optional ->
+                encryptRule.findAssistedQueryColumn(tableName, previousColumnName).map(optional ->
                         new EncryptAlterTableToken(each.getStopIndex() + 1, each.getColumnDefinition().getColumnName().getStopIndex(),
                                 each.getColumnDefinition().getColumnName().getIdentifier().getValue() + "_assisted", ", CHANGE COLUMN " + optional)).ifPresent(result::add);
-                getEncryptRule().findPlainColumn(tableName, previousColumnName).map(optional ->
+                encryptRule.findPlainColumn(tableName, previousColumnName).map(optional ->
                         new EncryptAlterTableToken(each.getStopIndex() + 1, each.getColumnDefinition().getColumnName().getStopIndex(),
                                 each.getColumnDefinition().getColumnName().getIdentifier().getValue() + "_plain", ", CHANGE COLUMN " + optional)).ifPresent(result::add);
             }
@@ -202,7 +207,7 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
     
     private Collection<? extends SQLToken> getColumnTokens(final String tableName, final ChangeColumnDefinitionSegment segment) {
         if (null == segment.getPreviousColumn() || null == segment.getPreviousColumn().getIdentifier().getValue()
-                || !getEncryptRule().findEncryptor(tableName, segment.getPreviousColumn().getIdentifier().getValue()).isPresent()) {
+                || !encryptRule.findEncryptor(tableName, segment.getPreviousColumn().getIdentifier().getValue()).isPresent()) {
             return Collections.emptyList();
         }
         if (null == segment.getColumnDefinition() || null == segment.getColumnDefinition().getColumnName() || null == segment.getColumnDefinition().getColumnName().getIdentifier().getValue()) {
@@ -217,13 +222,13 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
     
     private Collection<? extends SQLToken> getPreviousColumnTokens(final String tableName, final ChangeColumnDefinitionSegment segment) {
         if (null == segment.getPreviousColumn() || null == segment.getPreviousColumn().getIdentifier().getValue()
-                || !getEncryptRule().findEncryptor(tableName, segment.getPreviousColumn().getIdentifier().getValue()).isPresent()) {
+                || !encryptRule.findEncryptor(tableName, segment.getPreviousColumn().getIdentifier().getValue()).isPresent()) {
             return Collections.emptyList();
         }
         Collection<SQLToken> result = new LinkedList<>();
         result.add(new RemoveToken(segment.getPreviousColumn().getStartIndex(), segment.getPreviousColumn().getStopIndex()));
         result.add(new EncryptAlterTableToken(segment.getPreviousColumn().getStopIndex() + 1, segment.getPreviousColumn().getStopIndex(),
-                getEncryptRule().getCipherColumn(tableName, segment.getPreviousColumn().getIdentifier().getValue()), null));
+                encryptRule.getCipherColumn(tableName, segment.getPreviousColumn().getIdentifier().getValue()), null));
         return result;
     }
     
@@ -239,7 +244,7 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : dropColumnDefinitionSegment.getColumns()) {
             String columnName = each.getQualifiedName();
-            Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
+            Optional<EncryptAlgorithm> encryptor = encryptRule.findEncryptor(tableName, columnName);
             if (encryptor.isPresent()) {
                 result.addAll(getDropColumnTokens(tableName, columnName, each, dropColumnDefinitionSegment));
             }
@@ -251,10 +256,10 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
                                                      final ColumnSegment columnSegment, final DropColumnDefinitionSegment dropColumnDefinitionSegment) {
         Collection<SQLToken> result = new LinkedList<>();
         result.add(new RemoveToken(columnSegment.getStartIndex(), columnSegment.getStopIndex()));
-        result.add(new EncryptAlterTableToken(columnSegment.getStopIndex() + 1, columnSegment.getStopIndex(), getEncryptRule().getCipherColumn(tableName, columnName), null));
-        getEncryptRule().findAssistedQueryColumn(tableName, columnName).map(optional -> new EncryptAlterTableToken(dropColumnDefinitionSegment.getStopIndex() + 1,
+        result.add(new EncryptAlterTableToken(columnSegment.getStopIndex() + 1, columnSegment.getStopIndex(), encryptRule.getCipherColumn(tableName, columnName), null));
+        encryptRule.findAssistedQueryColumn(tableName, columnName).map(optional -> new EncryptAlterTableToken(dropColumnDefinitionSegment.getStopIndex() + 1,
                 dropColumnDefinitionSegment.getStopIndex(), optional, ", DROP COLUMN")).ifPresent(result::add);
-        getEncryptRule().findPlainColumn(tableName, columnName).map(optional -> new EncryptAlterTableToken(dropColumnDefinitionSegment.getStopIndex() + 1,
+        encryptRule.findPlainColumn(tableName, columnName).map(optional -> new EncryptAlterTableToken(dropColumnDefinitionSegment.getStopIndex() + 1,
                 dropColumnDefinitionSegment.getStopIndex(), optional, ", DROP COLUMN")).ifPresent(result::add);
         return result;
     }

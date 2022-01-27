@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
+package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
+import lombok.Setter;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptConfigDataTypeToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
@@ -40,10 +42,13 @@ import java.util.Optional;
 /**
  * Create table token generator for encrypt.
  */
-public final class EncryptCreateTableTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator<CreateTableStatementContext> {
+@Setter
+public final class EncryptCreateTableTokenGenerator implements CollectionSQLTokenGenerator<CreateTableStatementContext>, EncryptRuleAware {
+    
+    private EncryptRule encryptRule;
     
     @Override
-    protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof CreateTableStatementContext && !(((CreateTableStatementContext) sqlStatementContext).getSqlStatement()).getColumnDefinitions().isEmpty();
     }
     
@@ -55,7 +60,7 @@ public final class EncryptCreateTableTokenGenerator extends BaseEncryptSQLTokenG
         for (int index = 0; index < columns.size(); index++) {
             ColumnDefinitionSegment each = columns.get(index);
             String columnName = each.getColumnName().getIdentifier().getValue();
-            Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
+            Optional<EncryptAlgorithm> encryptor = encryptRule.findEncryptor(tableName, columnName);
             if (encryptor.isPresent()) {
                 result.addAll(getColumnTokens(tableName, columnName, each, columns, index));
             }
@@ -78,11 +83,11 @@ public final class EncryptCreateTableTokenGenerator extends BaseEncryptSQLTokenG
     private SQLToken getCipherColumnToken(final String tableName, final String columnName, final ColumnDefinitionSegment column, final int stopIndex) {
         Optional<EncryptConfigDataTypeToken> configDataTypeToken = findEncryptConfigDataTypeToken(tableName, columnName, column, stopIndex);
         return configDataTypeToken.isPresent() ? configDataTypeToken.get() : new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(), 
-                getColumnProjections(getEncryptRule().getCipherColumn(tableName, columnName)));
+                getColumnProjections(encryptRule.getCipherColumn(tableName, columnName)));
     }
     
     private Optional<EncryptConfigDataTypeToken> findEncryptConfigDataTypeToken(final String tableName, final String columnName, final ColumnDefinitionSegment column, final int stopIndex) {
-        Optional<EncryptColumn> encryptColumn = getEncryptRule().findEncryptTable(tableName).flatMap(encryptTable -> encryptTable.findEncryptColumn(columnName));
+        Optional<EncryptColumn> encryptColumn = encryptRule.findEncryptTable(tableName).flatMap(encryptTable -> encryptTable.findEncryptColumn(columnName));
         if (encryptColumn.isPresent() && null != encryptColumn.get().getCipherDataType() && !encryptColumn.get().getCipherDataType().isEmpty()) {
             return Optional.of(new EncryptConfigDataTypeToken(stopIndex + 1, column.getStopIndex(), encryptColumn.get().getCipherColumn(), encryptColumn.get().getCipherDataType()));
         }
@@ -95,13 +100,13 @@ public final class EncryptCreateTableTokenGenerator extends BaseEncryptSQLTokenG
         if (encryptConfigDataTypeToken.isPresent()) {
             return encryptConfigDataTypeToken;
         } 
-        Optional<String> assistedQueryColumn = getEncryptRule().findAssistedQueryColumn(tableName, columnName);
+        Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, columnName);
         return assistedQueryColumn.map(optional -> new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(), getColumnProjections(optional), lastColumn));
     }
     
     private Optional<EncryptConfigDataTypeToken> findAssistedConfigDataTypeToken(final String tableName, final String columnName, final ColumnDefinitionSegment column, 
                                                                                  final int stopIndex, final boolean lastColumn) {
-        Optional<EncryptColumn> encryptColumn = getEncryptRule().findEncryptTable(tableName).flatMap(encryptTable -> encryptTable.findEncryptColumn(columnName));
+        Optional<EncryptColumn> encryptColumn = encryptRule.findEncryptTable(tableName).flatMap(encryptTable -> encryptTable.findEncryptColumn(columnName));
         Optional<String> assistedQueryColumn = encryptColumn.flatMap(EncryptColumn::getAssistedQueryColumn);
         if (assistedQueryColumn.isPresent()) {
             if (null != encryptColumn.get().getAssistedQueryDataType() && !encryptColumn.get().getAssistedQueryDataType().isEmpty()) {
@@ -118,13 +123,13 @@ public final class EncryptCreateTableTokenGenerator extends BaseEncryptSQLTokenG
         if (encryptConfigDataTypeToken.isPresent()) {
             return encryptConfigDataTypeToken;
         }
-        Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, columnName);
+        Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, columnName);
         return plainColumn.map(optional -> new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(), getColumnProjections(optional), lastColumn));
     }
     
     private Optional<EncryptConfigDataTypeToken> findPlainConfigDataTypeToken(final String tableName, final String columnName, final ColumnDefinitionSegment column, 
                                                                               final int stopIndex, final boolean lastColumn) {
-        Optional<EncryptColumn> encryptColumn = getEncryptRule().findEncryptTable(tableName).flatMap(encryptTable -> encryptTable.findEncryptColumn(columnName));
+        Optional<EncryptColumn> encryptColumn = encryptRule.findEncryptTable(tableName).flatMap(encryptTable -> encryptTable.findEncryptColumn(columnName));
         Optional<String> plainColumn = encryptColumn.flatMap(EncryptColumn::getPlainColumn);
         if (plainColumn.isPresent()) {
             if (null != encryptColumn.get().getPlainDataType() && !encryptColumn.get().getPlainDataType().isEmpty()) {
