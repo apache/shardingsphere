@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
+package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
+import lombok.Setter;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -38,10 +40,13 @@ import java.util.Optional;
 /**
  * Create table token generator for encrypt.
  */
-public final class EncryptCreateTableTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator<CreateTableStatementContext> {
+@Setter
+public final class EncryptCreateTableTokenGenerator implements CollectionSQLTokenGenerator<CreateTableStatementContext>, EncryptRuleAware {
+    
+    private EncryptRule encryptRule;
     
     @Override
-    protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof CreateTableStatementContext && !(((CreateTableStatementContext) sqlStatementContext).getSqlStatement()).getColumnDefinitions().isEmpty();
     }
     
@@ -53,7 +58,7 @@ public final class EncryptCreateTableTokenGenerator extends BaseEncryptSQLTokenG
         for (int index = 0; index < columns.size(); index++) {
             ColumnDefinitionSegment each = columns.get(index);
             String columnName = each.getColumnName().getIdentifier().getValue();
-            Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
+            Optional<EncryptAlgorithm> encryptor = encryptRule.findEncryptor(tableName, columnName);
             if (encryptor.isPresent()) {
                 result.addAll(getColumnTokens(tableName, columnName, each, columns, index));
             }
@@ -75,18 +80,18 @@ public final class EncryptCreateTableTokenGenerator extends BaseEncryptSQLTokenG
     
     private SubstitutableColumnNameToken getCipherColumnToken(final String tableName, final String columnName, final ColumnDefinitionSegment column, final int stopIndex) {
         return new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(), 
-                getColumnProjections(getEncryptRule().getCipherColumn(tableName, columnName)));
+                getColumnProjections(encryptRule.getCipherColumn(tableName, columnName)));
     }
     
     private Optional<SubstitutableColumnNameToken> getAssistedQueryColumnToken(final String tableName, final String columnName, final ColumnDefinitionSegment column, 
                                                                                final int stopIndex, final boolean lastColumn) {
-        Optional<String> assistedQueryColumn = getEncryptRule().findAssistedQueryColumn(tableName, columnName);
+        Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, columnName);
         return assistedQueryColumn.map(optional -> new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(), getColumnProjections(optional), lastColumn));
     }
     
     private Optional<SubstitutableColumnNameToken> getPlainColumnToken(final String tableName, final String columnName, final ColumnDefinitionSegment column, 
                                                                        final int stopIndex, final boolean lastColumn) {
-        Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, columnName);
+        Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, columnName);
         return plainColumn.map(optional -> new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(), getColumnProjections(optional), lastColumn));
     }
     

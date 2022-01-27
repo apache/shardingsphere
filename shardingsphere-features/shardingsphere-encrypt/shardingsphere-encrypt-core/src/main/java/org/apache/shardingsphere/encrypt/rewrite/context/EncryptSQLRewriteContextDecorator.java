@@ -44,19 +44,32 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
     @Override
     public void decorate(final EncryptRule encryptRule, final ConfigurationProperties props, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
         Collection<EncryptCondition> encryptConditions = getEncryptConditions(encryptRule, sqlRewriteContext);
+        SQLStatementContext<?> sqlStatementContext = sqlRewriteContext.getSqlStatementContext();
+        boolean containsEncryptTable = containsEncryptTable(encryptRule, sqlStatementContext);
         if (!sqlRewriteContext.getParameters().isEmpty()) {
-            Collection<ParameterRewriter> parameterRewriters = new EncryptParameterRewriterBuilder(
-                    encryptRule, sqlRewriteContext.getSchema(), sqlRewriteContext.getSqlStatementContext(), encryptConditions).getParameterRewriters();
+            Collection<ParameterRewriter> parameterRewriters = new EncryptParameterRewriterBuilder(encryptRule, 
+                    sqlRewriteContext.getSchema(), sqlStatementContext, encryptConditions, containsEncryptTable).getParameterRewriters();
             rewriteParameters(sqlRewriteContext, parameterRewriters);
         }
+        // TODO Optimize logic of statement context init for encryptors
         encryptRule.setUpEncryptorSchema(sqlRewriteContext.getSchema());
-        sqlRewriteContext.addSQLTokenGenerators(new EncryptTokenGenerateBuilder(encryptRule, sqlRewriteContext.getSqlStatementContext(), encryptConditions).getSQLTokenGenerators());
+        sqlRewriteContext.addSQLTokenGenerators(new EncryptTokenGenerateBuilder(encryptRule, sqlStatementContext, encryptConditions, containsEncryptTable).getSQLTokenGenerators());
     }
     
     private Collection<EncryptCondition> getEncryptConditions(final EncryptRule encryptRule, final SQLRewriteContext sqlRewriteContext) {
         SQLStatementContext<?> sqlStatementContext = sqlRewriteContext.getSqlStatementContext();
         Collection<WhereSegment> whereSegments = sqlStatementContext instanceof WhereAvailable ? ((WhereAvailable) sqlStatementContext).getWhereSegments() : Collections.emptyList();
         return whereSegments.isEmpty() ? Collections.emptyList() : new EncryptConditionEngine(encryptRule, sqlRewriteContext.getSchema()).createEncryptConditions(sqlStatementContext);
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private boolean containsEncryptTable(final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext) {
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
+            if (encryptRule.findEncryptTable(each).isPresent()) {
+                return true;
+            }
+        }
+        return false;
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
