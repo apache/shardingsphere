@@ -29,19 +29,19 @@ import java.util.Properties;
  * CosId key generate algorithm.
  */
 public final class CosIdKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
-
+    
     public static final String TYPE = CosId.COSID.toUpperCase();
-
+    
     public static final String AS_STRING_KEY = "as-string";
-
+    
     @Getter
     @Setter
     private Properties props = new Properties();
-
+    
     private volatile LazyIdGenerator lazyIdGenerator;
-
+    
     private volatile boolean asString;
-
+    
     @Override
     public void init() {
         lazyIdGenerator = new LazyIdGenerator(getProps().getProperty(CosIdAlgorithm.ID_NAME_KEY, IdGeneratorProvider.SHARE));
@@ -49,7 +49,7 @@ public final class CosIdKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
         asString = Boolean.parseBoolean(asStringStr);
         lazyIdGenerator.tryGet(false);
     }
-
+    
     @Override
     public Comparable<?> generateKey() {
         if (asString) {
@@ -57,10 +57,9 @@ public final class CosIdKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
         }
         return lazyIdGenerator.generate();
     }
-
+    
     @Override
     public String getType() {
         return TYPE;
     }
-
 }
