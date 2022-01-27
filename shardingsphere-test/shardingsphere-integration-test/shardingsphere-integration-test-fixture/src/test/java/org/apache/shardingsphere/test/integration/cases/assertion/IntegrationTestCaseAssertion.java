@@ -66,26 +66,26 @@ public final class IntegrationTestCaseAssertion {
         Collection<SQLValue> result = new LinkedList<>();
         int count = 0;
         for (String each : Splitter.on(",").trimResults().splitToList(parameters)) {
-            List<String> parameterPair = parseParameter(each);
+            List<String> parameterPair = parse(each);
             result.add(new SQLValue(parameterPair.get(0), parameterPair.get(1), ++count));
         }
         return result;
     }
     
-    private List<String> parseParameter(final String each) {
-        List<String> result = Splitter.on(":").trimResults().splitToList(each);
+    private List<String> parse(final String parameter) {
+        List<String> result = Splitter.on(":").trimResults().splitToList(parameter);
         int size = result.size();
         if (size <= 2) {
             return result;
         }
-        return mergeParameter(each);
+        return parseComplex(parameter);
     }
     
-    private List<String> mergeParameter(final String each) {
+    private List<String> parseComplex(final String parameter) {
         List<String> result = new ArrayList<>(2);
-        int index = each.lastIndexOf(":");
-        result.add(each.substring(0, index));
-        result.add(each.substring(index + 1));
+        int index = parameter.lastIndexOf(":");
+        result.add(parameter.substring(0, index));
+        result.add(parameter.substring(index + 1));
         return result;
     }
 }
