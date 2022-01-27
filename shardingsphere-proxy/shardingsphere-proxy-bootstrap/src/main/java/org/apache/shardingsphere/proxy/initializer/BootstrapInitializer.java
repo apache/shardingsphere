@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.initializer;
 
 import com.google.common.base.Strings;
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
@@ -28,10 +27,6 @@ import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -48,11 +43,7 @@ import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Bootstrap initializer.
@@ -69,39 +60,21 @@ public final class BootstrapInitializer {
      * @throws SQLException SQL exception
      */
     public void init(final YamlProxyConfiguration yamlConfig, final int port) throws SQLException {
-        ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode()
-                ? null : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
+        ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode() ? null : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
         ContextManager contextManager = createContextManager(yamlConfig, modeConfig, port);
-        initContext(contextManager);
+        ProxyContext.getInstance().init(contextManager);
         initRuleAlteredJobWorker(modeConfig, contextManager);
         setDatabaseServerInfo();
     }
     
     private ContextManager createContextManager(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig, final int port) throws SQLException {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
-        Map<String, Map<String, DataSource>> dataSourcesMap = getDataSourcesMap(proxyConfig.getSchemaResources());
-        ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder().modeConfig(modeConfig).dataSourcesMap(dataSourcesMap).schemaRuleConfigs(proxyConfig.getSchemaRules())
-                .globalRuleConfigs(proxyConfig.getGlobalRules()).props(proxyConfig.getProps()).labels(proxyConfig.getLabels())
+        ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder().modeConfig(modeConfig)
+                .schemaConfigs(proxyConfig.getSchemaConfigurations())
+                .globalRuleConfigs(proxyConfig.getGlobalConfiguration().getRules())
+                .props(proxyConfig.getGlobalConfiguration().getProperties()).labels(proxyConfig.getGlobalConfiguration().getLabels())
                 .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, port)).build();
         return ContextManagerBuilderFactory.newInstance(modeConfig).build(parameter);
-    }
-    
-    private void initContext(final ContextManager contextManager) {
-        ProxyContext.getInstance().init(contextManager);
-    }
-    
-    // TODO add ResourceConfiguration param to ContextManagerBuilder to avoid re-build data source
-    private Map<String, Map<String, DataSource>> getDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigMap) {
-        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourceConfigMap.size(), 1);
-        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigMap.entrySet()) {
-            result.put(entry.getKey(), DataSourcePoolCreator.create(createDataSourcePropertiesMap(entry.getValue())));
-        }
-        return result;
-    }
-    
-    private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Map<String, DataSourceConfiguration> dataSourceConfigMap) {
-        return dataSourceConfigMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, 
-            entry -> DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private void initRuleAlteredJobWorker(final ModeConfiguration modeConfig, final ContextManager contextManager) {

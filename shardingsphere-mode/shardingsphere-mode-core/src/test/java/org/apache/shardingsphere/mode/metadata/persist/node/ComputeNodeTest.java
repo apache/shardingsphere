@@ -38,8 +38,8 @@ public final class ComputeNodeTest {
     }
     
     @Test
-    public void assertGetInstanceLabelNodePath() {
-        assertThat(ComputeNode.getInstanceLabelNodePath("127.0.0.1@3307"), is("/nodes/compute_nodes/attributes/127.0.0.1@3307/label"));
+    public void assertGetInstanceLabelsNodePath() {
+        assertThat(ComputeNode.getInstanceLabelsNodePath("127.0.0.1@3307"), is("/nodes/compute_nodes/attributes/127.0.0.1@3307/labels"));
     }
     
     @Test
@@ -56,6 +56,7 @@ public final class ComputeNodeTest {
     public void assertGetInstanceIdByAttributes() {
         assertThat(ComputeNode.getInstanceIdByAttributes("/nodes/compute_nodes/attributes/127.0.0.1@3307/status"), is("127.0.0.1@3307"));
         assertThat(ComputeNode.getInstanceIdByAttributes("/nodes/compute_nodes/attributes/127.0.0.1@3308/worker_id"), is("127.0.0.1@3308"));
+        assertThat(ComputeNode.getInstanceIdByAttributes("/nodes/compute_nodes/attributes/127.0.0.1@3309/labels"), is("127.0.0.1@3309"));
     }
     
     @Test

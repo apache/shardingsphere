@@ -44,7 +44,7 @@ public final class ResourceSegmentsConverter {
     public static Map<String, DataSourceProperties> convert(final DatabaseType databaseType, final Collection<DataSourceSegment> resources) {
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(resources.size(), 1);
         for (DataSourceSegment each : resources) {
-            result.put(each.getName(), new DataSourceProperties(HikariDataSource.class.getCanonicalName(), createProperties(databaseType, each)));
+            result.put(each.getName(), new DataSourceProperties(HikariDataSource.class.getName(), createProperties(databaseType, each)));
         }
         return result;
     }

@@ -79,6 +79,6 @@ public final class CheckScalingQueryResultSet implements DistSQLResultSet {
     
     @Override
     public String getType() {
-        return CheckScalingStatement.class.getCanonicalName();
+        return CheckScalingStatement.class.getName();
     }
 }

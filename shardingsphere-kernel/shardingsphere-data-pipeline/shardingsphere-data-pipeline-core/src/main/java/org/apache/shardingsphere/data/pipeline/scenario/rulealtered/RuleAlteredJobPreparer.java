@@ -28,9 +28,9 @@ import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.PrepareTar
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
-import org.apache.shardingsphere.data.pipeline.core.prepare.InventoryTaskSplitter;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.prepare.InventoryTaskSplitter;
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
@@ -56,8 +56,9 @@ public final class RuleAlteredJobPreparer {
      * @param jobContext job context
      */
     public void prepare(final RuleAlteredJobContext jobContext) {
+        PipelineDataSourceManager dataSourceManager = jobContext.getDataSourceManager();
         prepareTarget(jobContext.getJobConfig());
-        try (PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager()) {
+        try {
             initDataSourceManager(dataSourceManager, jobContext.getTaskConfig());
             checkDataSource(jobContext, dataSourceManager);
             initIncrementalTasks(jobContext, dataSourceManager);
@@ -107,9 +108,7 @@ public final class RuleAlteredJobPreparer {
     }
     
     private void initInventoryTasks(final RuleAlteredJobContext jobContext, final PipelineDataSourceManager dataSourceManager) {
-        PipelineChannelFactory pipelineChannelFactory = jobContext.getRuleAlteredContext().getPipelineChannelFactory();
-        ExecuteEngine importerExecuteEngine = jobContext.getRuleAlteredContext().getImporterExecuteEngine();
-        List<InventoryTask> allInventoryTasks = inventoryTaskSplitter.splitInventoryData(jobContext, jobContext.getTaskConfig(), dataSourceManager, pipelineChannelFactory, importerExecuteEngine);
+        List<InventoryTask> allInventoryTasks = inventoryTaskSplitter.splitInventoryData(jobContext, dataSourceManager);
         jobContext.getInventoryTasks().addAll(allInventoryTasks);
     }
     
@@ -118,8 +117,9 @@ public final class RuleAlteredJobPreparer {
         ExecuteEngine incrementalDumperExecuteEngine = jobContext.getRuleAlteredContext().getIncrementalDumperExecuteEngine();
         TaskConfiguration taskConfig = jobContext.getTaskConfig();
         taskConfig.getDumperConfig().setPosition(getIncrementalPosition(jobContext, taskConfig, dataSourceManager));
-        jobContext.getIncrementalTasks().add(new IncrementalTask(taskConfig.getHandleConfig().getConcurrency(),
-                taskConfig.getDumperConfig(), taskConfig.getImporterConfig(), pipelineChannelFactory, incrementalDumperExecuteEngine));
+        IncrementalTask incrementalTask = new IncrementalTask(taskConfig.getHandleConfig().getConcurrency(), taskConfig.getDumperConfig(), taskConfig.getImporterConfig(),
+            pipelineChannelFactory, dataSourceManager, incrementalDumperExecuteEngine);
+        jobContext.getIncrementalTasks().add(incrementalTask);
     }
     
     private IngestPosition<?> getIncrementalPosition(
@@ -139,7 +139,8 @@ public final class RuleAlteredJobPreparer {
      * @param jobContext job context
      */
     public void cleanup(final RuleAlteredJobContext jobContext) {
-        try (PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager()) {
+        PipelineDataSourceManager dataSourceManager = jobContext.getDataSourceManager();
+        try {
             TaskConfiguration taskConfig = jobContext.getTaskConfig();
             initDataSourceManager(dataSourceManager, taskConfig);
             PositionInitializer positionInitializer = PositionInitializerFactory.newInstance(taskConfig.getHandleConfig().getSourceDatabaseType());

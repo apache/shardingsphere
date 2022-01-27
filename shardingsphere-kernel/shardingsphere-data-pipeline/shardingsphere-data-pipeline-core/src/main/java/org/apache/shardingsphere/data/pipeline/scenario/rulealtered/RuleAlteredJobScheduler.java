@@ -25,7 +25,6 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
-import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 
 /**
  * Rule altered job scheduler.
@@ -51,14 +50,6 @@ public final class RuleAlteredJobScheduler implements Runnable {
     public void stop() {
         log.info("stop job {}", jobContext.getJobId());
         final boolean almostFinished = jobContext.getStatus() == JobStatus.ALMOST_FINISHED;
-        for (PipelineTask each : jobContext.getInventoryTasks()) {
-            log.info("stop inventory task {} - {}", jobContext.getJobId(), each.getTaskId());
-            each.stop();
-        }
-        for (PipelineTask each : jobContext.getIncrementalTasks()) {
-            log.info("stop incremental task {} - {}", jobContext.getJobId(), each.getTaskId());
-            each.stop();
-        }
         if (almostFinished) {
             log.info("almost finished, preparer cleanup, job {}", jobContext.getJobId());
             RuleAlteredJobPreparer jobPreparer = jobContext.getJobPreparer();
@@ -66,6 +57,17 @@ public final class RuleAlteredJobScheduler implements Runnable {
                 jobPreparer.cleanup(jobContext);
             }
         }
+        for (InventoryTask each : jobContext.getInventoryTasks()) {
+            log.info("stop inventory task {} - {}", jobContext.getJobId(), each.getTaskId());
+            each.stop();
+            each.close();
+        }
+        for (IncrementalTask each : jobContext.getIncrementalTasks()) {
+            log.info("stop incremental task {} - {}", jobContext.getJobId(), each.getTaskId());
+            each.stop();
+            each.close();
+        }
+        jobContext.close();
     }
     
     @Override

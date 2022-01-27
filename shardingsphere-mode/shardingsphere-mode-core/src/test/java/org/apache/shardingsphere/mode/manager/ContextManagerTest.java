@@ -293,7 +293,7 @@ public final class ContextManagerTest {
         assertThat(actual.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getPassword(), is("test"));
         assertThat(actual.getUsername(), is("test"));
-        assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getCanonicalName()));
+        assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getName()));
     }
     
     @Test 
@@ -365,7 +365,7 @@ public final class ContextManagerTest {
         assertTrue(contextManager.getMetaDataContexts().getMetaDataMap().containsKey("test_schema"));
         assertThat(contextManager.getMetaDataContexts().getMetaDataMap().get("test_schema").getResource().getDataSources().size(), is(1));
         MockedDataSource actualDs = (MockedDataSource) contextManager.getMetaDataContexts().getMetaData("test_schema").getResource().getDataSources().get("ds_1");
-        assertThat(actualDs.getDriverClassName(), is(MockedDataSource.class.getCanonicalName()));
+        assertThat(actualDs.getDriverClassName(), is(MockedDataSource.class.getName()));
         assertThat(actualDs.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actualDs.getPassword(), is("test"));
         assertThat(actualDs.getUsername(), is("test"));

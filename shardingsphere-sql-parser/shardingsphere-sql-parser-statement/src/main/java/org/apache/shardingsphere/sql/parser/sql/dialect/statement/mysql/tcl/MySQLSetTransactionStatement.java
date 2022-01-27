@@ -17,23 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL set transaction statement.
  */
-@Getter
-@Setter
-@ToString
 public final class MySQLSetTransactionStatement extends SetTransactionStatement implements MySQLStatement {
-    
-    private String isolationLevel;
-    
-    private String scope;
-    
-    private String accessMode;
 }

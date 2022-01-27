@@ -37,7 +37,7 @@ import org.apache.shardingsphere.spi.singleton.SingletonSPI;
 import org.apache.shardingsphere.spi.singleton.TypedSingletonSPIHolder;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -72,7 +72,7 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
     
     private void checkDuplicate(final String schemaName, final CreateShardingScalingRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         if (currentRuleConfig.getScaling().containsKey(sqlStatement.getScalingName())) {
-            throw new DuplicateRuleException("Scaling", schemaName, Arrays.asList(sqlStatement.getScalingName()));
+            throw new DuplicateRuleException("Scaling", schemaName, Collections.singletonList(sqlStatement.getScalingName()));
         }
     }
     
@@ -160,6 +160,6 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
     
     @Override
     public String getType() {
-        return CreateShardingScalingRuleStatement.class.getCanonicalName();
+        return CreateShardingScalingRuleStatement.class.getName();
     }
 }

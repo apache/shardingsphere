@@ -56,7 +56,7 @@ public class ReadwriteSplittingSpringBootStarterTest {
         assertThat(config.getDataSources().size(), is(1));
         assertTrue(config.getDataSources().stream().findFirst().isPresent());
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = config.getDataSources().stream().findFirst().get();
-        assertThat(dataSourceRuleConfig.getName(), is("pr_ds"));
+        assertThat(dataSourceRuleConfig.getName(), is("readwrite_ds"));
         assertThat(dataSourceRuleConfig.getType(), is("Static"));
         assertNotNull(dataSourceRuleConfig.getProps());
         assertThat(dataSourceRuleConfig.getProps().get("write-data-source-name"), is("write_ds"));

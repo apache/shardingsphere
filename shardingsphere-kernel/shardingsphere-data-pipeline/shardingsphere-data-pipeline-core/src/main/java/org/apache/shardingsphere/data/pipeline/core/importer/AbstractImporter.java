@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.importer;
 
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
@@ -59,12 +58,12 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
     
     private final PipelineSQLBuilder pipelineSqlBuilder;
     
-    @Setter
-    private PipelineChannel channel;
+    private final PipelineChannel channel;
     
-    protected AbstractImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
+    protected AbstractImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
         this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
+        this.channel = channel;
         pipelineSqlBuilder = createSQLBuilder(importerConfig.getShardingColumnsMap());
     }
     
@@ -77,13 +76,11 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
     protected abstract PipelineSQLBuilder createSQLBuilder(Map<String, Set<String>> shardingColumnsMap);
     
     @Override
-    public final void start() {
-        super.start();
+    protected void doStart() {
         write();
     }
     
-    @Override
-    public final void write() {
+    private void write() {
         log.info("importer write");
         int round = 1;
         int rowCount = 0;
@@ -218,5 +215,9 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
             }
             ps.executeBatch();
         }
+    }
+    
+    @Override
+    protected void doStop() {
     }
 }

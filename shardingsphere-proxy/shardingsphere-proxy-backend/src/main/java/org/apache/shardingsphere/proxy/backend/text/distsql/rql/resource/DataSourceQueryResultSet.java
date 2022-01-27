@@ -25,25 +25,33 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCrea
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.TreeMap;
 
 /**
  * Result set for show data source.
  */
 public final class DataSourceQueryResultSet implements DistSQLResultSet {
+    
+    private static final String CONNECTION_TIMEOUT_MILLISECONDS = "connectionTimeoutMilliseconds";
+    
+    private static final String IDLE_TIMEOUT_MILLISECONDS = "idleTimeoutMilliseconds";
+    
+    private static final String MAX_LIFETIME_MILLISECONDS = "maxLifetimeMilliseconds";
+    
+    private static final String MAX_POOL_SIZE = "maxPoolSize";
+    
+    private static final String MIN_POOL_SIZE = "minPoolSize";
+    
+    private static final String READ_ONLY = "readOnly";
     
     private ShardingSphereResource resource;
     
@@ -54,22 +62,17 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         resource = metaData.getResource();
-        Optional<MetaDataPersistService> persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
-        
-        if (persistService.isPresent()) {
-            dataSourcePropsMap = persistService.get().getDataSourceService().load(metaData.getName());
-        } else {
-            dataSourcePropsMap = new LinkedHashMap<>(metaData.getResource().getDataSources().size(), 1);
-            for (Entry<String, DataSource> entry : metaData.getResource().getDataSources().entrySet()) {
-                dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
-            }
+        dataSourcePropsMap = new LinkedHashMap<>(metaData.getResource().getDataSources().size(), 1);
+        for (Entry<String, DataSource> entry : metaData.getResource().getDataSources().entrySet()) {
+            dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
         }
         dataSourceNames = dataSourcePropsMap.keySet().iterator();
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("name", "type", "host", "port", "db", "attribute");
+        return Arrays.asList("name", "type", "host", "port", "db", "connection_timeout_milliseconds", "idle_timeout_milliseconds", 
+                "max_lifetime_milliseconds", "max_pool_size", "min_pool_size", "read_only", "other_attributes");
     }
     
     @Override
@@ -81,22 +84,34 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     public Collection<Object> getRowData() {
         String dataSourceName = dataSourceNames.next();
         DataSourceMetaData metaData = resource.getDataSourcesMetaData().getDataSourceMetaData(dataSourceName);
-        return Arrays.asList(dataSourceName, resource.getDatabaseType().getName(), metaData.getHostname(), metaData.getPort(), metaData.getCatalog(), 
-                new Gson().toJson(getFilteredUndisplayedProperties(dataSourcePropsMap.get(dataSourceName))));
+        Collection<Object> result = new LinkedList<>();
+        result.add(dataSourceName);
+        result.add(resource.getDatabaseType().getName());
+        result.add(metaData.getHostname());
+        result.add(metaData.getPort());
+        result.add(metaData.getCatalog());
+        DataSourceProperties dataSourceProperties = dataSourcePropsMap.get(dataSourceName);
+        Map<String, Object> standardProperties = dataSourceProperties.getPoolPropertySynonyms().getStandardProperties();
+        result.add(getStandardProperty(standardProperties, CONNECTION_TIMEOUT_MILLISECONDS));
+        result.add(getStandardProperty(standardProperties, IDLE_TIMEOUT_MILLISECONDS));
+        result.add(getStandardProperty(standardProperties, MAX_LIFETIME_MILLISECONDS));
+        result.add(getStandardProperty(standardProperties, MAX_POOL_SIZE));
+        result.add(getStandardProperty(standardProperties, MIN_POOL_SIZE));
+        result.add(getStandardProperty(standardProperties, READ_ONLY));
+        Map<String, Object> otherProperties = dataSourceProperties.getCustomDataSourceProperties().getProperties();
+        result.add(otherProperties.isEmpty() ? "" : new Gson().toJson(otherProperties));
+        return result;
     }
     
-    private Map<String, Object> getFilteredUndisplayedProperties(final DataSourceProperties dataSourceProperties) {
-        Map<String, Object> result = new HashMap<>(dataSourceProperties.getPoolPropertySynonyms().getStandardProperties());
-        for (Entry<String, Object> entry : dataSourceProperties.getCustomDataSourceProperties().getProperties().entrySet()) {
-            if (!(entry.getValue() instanceof Collection) && !(entry.getValue() instanceof Map)) {
-                result.put(entry.getKey(), entry.getValue());
-            }
+    private String getStandardProperty(final Map<String, Object> standardProperties, final String key) {
+        if (standardProperties.containsKey(key) && null != standardProperties.get(key)) {
+            return standardProperties.get(key).toString();
         }
-        return new TreeMap<>(result);
+        return "";
     }
     
     @Override
     public String getType() {
-        return ShowResourcesStatement.class.getCanonicalName();
+        return ShowResourcesStatement.class.getName();
     }
 }

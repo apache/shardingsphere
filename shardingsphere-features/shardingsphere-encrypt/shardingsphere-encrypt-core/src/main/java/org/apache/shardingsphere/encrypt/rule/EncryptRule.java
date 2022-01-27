@@ -58,12 +58,18 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     private final Map<String, EncryptTable> tables = new LinkedHashMap<>();
     
     @Getter
+    private boolean containsConfigDataTypeColumn;
+    
+    @Getter
     private final boolean queryWithCipherColumn;
     
     public EncryptRule(final EncryptRuleConfiguration config) {
         Preconditions.checkArgument(isValidRuleConfiguration(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
         config.getEncryptors().forEach((key, value) -> encryptors.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, EncryptAlgorithm.class)));
-        config.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
+        config.getTables().forEach(each -> {
+            tables.put(each.getName(), new EncryptTable(each));
+            containsConfigDataTypeColumn = containsConfigDataTypeColumn(each);
+        });
         queryWithCipherColumn = config.isQueryWithCipherColumn();
     }
     
@@ -117,6 +123,15 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
                 && encryptRuleConfig.getEncryptors().containsKey(column.getEncryptorName());
     }
     
+    private boolean containsConfigDataTypeColumn(final EncryptTableRuleConfiguration tableRuleConfiguration) {
+        for (EncryptColumnRuleConfiguration each : tableRuleConfiguration.getColumns()) {
+            if (null != each.getLogicDataType() && !each.getLogicDataType().isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     /**
      * Find encrypt table.
      * 
@@ -152,9 +167,9 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         if (!tables.containsKey(logicTable)) {
             return Optional.empty();
         }
-        Optional<EncryptAlgorithm> encryptAlgorithm = tables.get(logicTable).findEncryptorName(logicColumn).map(encryptors::get);
-        encryptAlgorithm.ifPresent(optional -> mergeProps(optional, EncryptPropertiesBuilder.getProperties(schemaName, "", logicTable, logicColumn)));
-        return encryptAlgorithm;
+        Optional<EncryptAlgorithm> result = tables.get(logicTable).findEncryptorName(logicColumn).map(encryptors::get);
+        result.ifPresent(optional -> mergeProps(optional, EncryptPropertiesBuilder.getProperties(schemaName, "", logicTable, logicColumn)));
+        return result;
     }
     
     @SuppressWarnings("rawtypes")

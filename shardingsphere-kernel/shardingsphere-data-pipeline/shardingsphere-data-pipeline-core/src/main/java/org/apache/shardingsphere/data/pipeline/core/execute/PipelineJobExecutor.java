@@ -44,9 +44,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     private static final Set<String> EXECUTING_JOBS = Sets.newConcurrentHashSet();
     
     @Override
-    public void start() {
-        super.start();
-        log.info("Start scaling job executor.");
+    protected void doStart() {
         watchGovernanceRepositoryConfiguration();
     }
     
@@ -95,5 +93,9 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
         } else {
             log.info("{} added to executing jobs failed since it already exists", jobConfigPOJO.getJobName());
         }
+    }
+    
+    @Override
+    protected void doStop() {
     }
 }

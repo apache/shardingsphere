@@ -36,7 +36,7 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     
     private final Map<String, Object> invalidProperties = new HashMap<>(2, 1);
     
-    private final Map<String, String> propertySynonyms = new HashMap<>(2, 1);
+    private final Map<String, String> propertySynonyms = new HashMap<>(6, 1);
     
     private final Collection<String> transientFieldNames = new LinkedList<>();
     
@@ -89,6 +89,6 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     
     @Override
     public String getType() {
-        return HikariDataSource.class.getCanonicalName();
+        return HikariDataSource.class.getName();
     }
 }

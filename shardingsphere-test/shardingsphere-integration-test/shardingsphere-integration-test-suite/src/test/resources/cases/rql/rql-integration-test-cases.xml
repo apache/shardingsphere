@@ -15,11 +15,11 @@
   ~ limitations under the License.
   -->
 <integration-test-cases>
-    <test-case sql="SHOW SCHEMA RESOURCES">
+    <test-case sql="SHOW SCHEMA RESOURCES" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
         <assertion expected-data-file="show_resources.xml" />
     </test-case>
     
-    <test-case sql="SHOW SHARDING TABLE RULES">
+    <test-case sql="SHOW SHARDING TABLE RULES" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
         <assertion expected-data-file="show_rules.xml" />
     </test-case>
     
@@ -31,15 +31,15 @@
         <assertion expected-data-file="show_table_rule.xml" />
     </test-case>
     
-    <test-case sql="SHOW SHARDING ALGORITHMS">
+    <test-case sql="SHOW SHARDING ALGORITHMS" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
         <assertion expected-data-file="show_algorithms.xml" />
     </test-case>
     
-    <test-case sql="SHOW SHARDING BINDING TABLE RULES">
+    <test-case sql="SHOW SHARDING BINDING TABLE RULES" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
         <assertion expected-data-file="show_binging_rules.xml" />
     </test-case>
     
-    <test-case sql="SHOW SHARDING BROADCAST TABLE RULES">
+    <test-case sql="SHOW SHARDING BROADCAST TABLE RULES" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
         <assertion expected-data-file="show_broadcast_rules.xml" />
     </test-case>
     

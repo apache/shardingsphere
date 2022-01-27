@@ -72,6 +72,6 @@ public final class CreateDefaultSingleTableRuleStatementUpdater implements RuleD
     
     @Override
     public String getType() {
-        return CreateDefaultSingleTableRuleStatement.class.getCanonicalName();
+        return CreateDefaultSingleTableRuleStatement.class.getName();
     }
 }

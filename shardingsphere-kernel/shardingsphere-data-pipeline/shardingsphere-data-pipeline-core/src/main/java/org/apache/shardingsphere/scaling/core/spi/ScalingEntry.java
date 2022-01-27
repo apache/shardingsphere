@@ -21,7 +21,6 @@ import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
-import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeAwareSPI;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
 
@@ -65,11 +64,4 @@ public interface ScalingEntry extends DatabaseTypeAwareSPI {
      * @return environment checker type
      */
     Class<? extends EnvironmentChecker> getEnvironmentCheckerClass();
-    
-    /**
-     * Get SQL builder class.
-     *
-     * @return SQL builder type
-     */
-    Class<? extends PipelineSQLBuilder> getSQLBuilderClass();
 }

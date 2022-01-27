@@ -104,7 +104,7 @@ public final class SetReadwriteSplittingStatusExecutor implements SetStatementEx
         readwriteSplittingRules.entrySet().stream().filter(entry -> !entry.getValue().isEmpty())
                 .peek(entry -> addPrimaryResource(primaryResources, entry)).forEach(entry -> addReplicaResource(replicaResources, entry));
         if (primaryResources.containsKey(toBeDisabledResource)) {
-            throw new UnsupportedOperationException(String.format("`%s` is the primary resource in the `%s` rule, cannot be disabled", 
+            throw new UnsupportedOperationException(String.format("`%s` is the primary resource in the `%s` rule, cannot be disabled",
                     toBeDisabledResource, primaryResources.get(toBeDisabledResource)));
         }
         if (!replicaResources.containsKey(toBeDisabledResource)) {
@@ -128,15 +128,15 @@ public final class SetReadwriteSplittingStatusExecutor implements SetStatementEx
     }
     
     private Map<String, Map<String, String>> getExportedReadwriteSplittingRules(final String schemaName) {
-        Map<String, Map<String, String>> readwriteSplittingRules = new HashMap<>();
+        Map<String, Map<String, String>> result = new HashMap<>();
         ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().findRules(ReadwriteSplittingRule.class).stream().findAny()
                 .filter(each -> each.containExportableKey(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE)))
                 .map(each -> each.export(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE)))
                 .ifPresent(each -> {
-                    readwriteSplittingRules.putAll((Map) each.getOrDefault(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, Collections.emptyMap()));
-                    readwriteSplittingRules.putAll((Map) each.getOrDefault(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE, Collections.emptyMap()));
+                    result.putAll((Map) each.getOrDefault(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, Collections.emptyMap()));
+                    result.putAll((Map) each.getOrDefault(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE, Collections.emptyMap()));
                 });
-        return readwriteSplittingRules;
+        return result;
     }
     
     private Set<String> getCanBeDisabledResources(final Map<String, String> replicaResources, final Collection<String> haveBeenDisabledResources) {

@@ -76,13 +76,11 @@ public final class OpenGaussAuthenticationHandlerTest {
     
     private final int serverIteration = 2048;
     
-    private PostgreSQLPacketPayload payload;
-    
     private PostgreSQLPasswordMessagePacket passwordMessagePacket;
     
     @Before
     public void init() {
-        payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
         String digest = encodeDigest(password, random64Code, token, serverIteration);
         payload.writeInt4(4 + digest.length() + 1);
         payload.writeStringNul(digest);

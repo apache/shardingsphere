@@ -32,6 +32,7 @@ execute
     | disableInstance
     | showInstance
     | showInstanceMode
+    | countSchemaRules
     | showSingleTable
     | showSingleTableRules
     | createDefaultSingleTableRule
@@ -44,6 +45,7 @@ execute
     | showAuthorityRule
     | showTransactionRule
     | alterTransactionRule
-    | countSchemaRules
+    | showTrafficRules
+    | dropTrafficRule
     ) SEMI?
     ;
