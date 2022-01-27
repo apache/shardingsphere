@@ -42,4 +42,8 @@ public final class FinishedCheckJobExecutor extends AbstractLifecycleExecutor {
     private JobConfiguration createJobConfig() {
         return JobConfiguration.newBuilder(JOB_NAME, 1).cron(CRON_EXPRESSION).build();
     }
+    
+    @Override
+    protected void doStop() {
+    }
 }

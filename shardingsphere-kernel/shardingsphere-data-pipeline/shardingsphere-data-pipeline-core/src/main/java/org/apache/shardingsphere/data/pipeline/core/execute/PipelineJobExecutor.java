@@ -94,4 +94,8 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
             log.info("{} added to executing jobs failed since it already exists", jobConfigPOJO.getJobName());
         }
     }
+    
+    @Override
+    protected void doStop() {
+    }
 }

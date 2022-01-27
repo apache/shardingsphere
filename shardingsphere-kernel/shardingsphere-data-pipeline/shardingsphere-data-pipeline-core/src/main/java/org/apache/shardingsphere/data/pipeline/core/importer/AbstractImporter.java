@@ -216,4 +216,8 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
             ps.executeBatch();
         }
     }
+    
+    @Override
+    protected void doStop() {
+    }
 }

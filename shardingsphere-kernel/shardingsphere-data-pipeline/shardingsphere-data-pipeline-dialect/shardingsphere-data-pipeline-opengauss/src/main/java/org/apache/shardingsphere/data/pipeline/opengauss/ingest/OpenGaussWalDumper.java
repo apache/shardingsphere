@@ -77,7 +77,7 @@ public final class OpenGaussWalDumper extends AbstractLifecycleExecutor implemen
     protected void doStart() {
         dump();
     }
-
+    
     private PgConnection getReplicationConn() throws SQLException {
         return logicalReplication
                 .createPgConnection((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig())
@@ -129,6 +129,10 @@ public final class OpenGaussWalDumper extends AbstractLifecycleExecutor implemen
     
     private void pushRecord(final Record record) {
         channel.pushRecord(record);
+    }
+    
+    @Override
+    protected void doStop() {
     }
 }
 

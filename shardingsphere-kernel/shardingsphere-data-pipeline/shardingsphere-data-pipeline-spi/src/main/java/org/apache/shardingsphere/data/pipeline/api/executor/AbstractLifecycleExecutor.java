@@ -41,8 +41,7 @@ public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
         doStart();
     }
     
-    protected void doStart() {
-    }
+    protected abstract void doStart();
     
     @Override
     public final void stop() {
@@ -51,8 +50,7 @@ public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
         doStop();
     }
     
-    protected void doStop() {
-    }
+    protected abstract void doStop();
     
     @Override
     public final void run() {
