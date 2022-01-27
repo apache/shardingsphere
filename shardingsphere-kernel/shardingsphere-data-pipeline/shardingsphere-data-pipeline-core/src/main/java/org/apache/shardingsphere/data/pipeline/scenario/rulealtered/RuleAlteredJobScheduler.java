@@ -60,13 +60,15 @@ public final class RuleAlteredJobScheduler implements Runnable {
                 jobPreparer.cleanup(jobContext);
             }
         }
-        for (PipelineTask each : jobContext.getInventoryTasks()) {
+        for (InventoryTask each : jobContext.getInventoryTasks()) {
             log.info("stop inventory task {} - {}", jobContext.getJobId(), each.getTaskId());
             each.stop();
+            each.close();
         }
-        for (PipelineTask each : jobContext.getIncrementalTasks()) {
+        for (IncrementalTask each : jobContext.getIncrementalTasks()) {
             log.info("stop incremental task {} - {}", jobContext.getJobId(), each.getTaskId());
             each.stop();
+            each.close();
         }
         jobContext.close();
     }
