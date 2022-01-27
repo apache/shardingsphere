@@ -25,14 +25,14 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Abstract lifecycle executor.
  */
-@Getter
-@Setter
 @Slf4j
 public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
     
     @Setter(AccessLevel.PROTECTED)
     @Getter(AccessLevel.PROTECTED)
     private volatile boolean running;
+    
+    private volatile boolean stopped;
     
     @Override
     public void start() {
@@ -45,9 +45,13 @@ public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
     
     @Override
     public final void stop() {
+        if (stopped) {
+            return;
+        }
         log.info("stop lifecycle executor: {}", super.toString());
         running = false;
         doStop();
+        stopped = true;
     }
     
     protected abstract void doStop();
