@@ -28,10 +28,6 @@ public final class FixtureImporter implements Importer {
     }
     
     @Override
-    public void write() {
-    }
-    
-    @Override
     public void start() {
     }
     
@@ -42,6 +38,5 @@ public final class FixtureImporter implements Importer {
     @Override
     public void run() {
         start();
-        write();
     }
 }

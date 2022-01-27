@@ -82,7 +82,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     }
     
     @Override
-    public void start() {
+    protected void doStart() {
         Future<?> future = importerExecuteEngine.submit(importer, new ExecuteCallback() {
             
             @Override
@@ -131,10 +131,9 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     }
     
     @Override
-    public void stop() {
+    protected void doStop() {
         dumper.stop();
         importer.stop();
-        channel.close();
     }
     
     @Override
@@ -144,6 +143,6 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     
     @Override
     public void close() {
-        dataSourceManager.close();
+        channel.close();
     }
 }
