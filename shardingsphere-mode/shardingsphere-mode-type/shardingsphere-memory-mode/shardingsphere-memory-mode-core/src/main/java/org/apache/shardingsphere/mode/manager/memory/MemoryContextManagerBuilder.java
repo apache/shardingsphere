@@ -48,7 +48,6 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
         Map<String, ShardingSphereSchema> schemas = new SchemaLoader(parameter.getDataSourcesMap(), parameter.getSchemaRuleConfigs(), rules, parameter.getProps()).load();
         MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(parameter.getDataSourcesMap(), parameter.getSchemaRuleConfigs(), parameter.getGlobalRuleConfigs(), 
                 schemas, rules, parameter.getProps()).build(null);
-
         TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules(), null).build();
         ContextManager result = new ContextManager();
         result.init(metaDataContexts, transactionContexts, buildInstanceContext(parameter));
