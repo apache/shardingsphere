@@ -75,7 +75,7 @@ public final class ComputeNodeStateChangedWatcherTest {
     @Test
     public void assertCreateAddLabelEvent() {
         Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
-                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/attributes/127.0.0.1@3307/label", 
+                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/attributes/127.0.0.1@3307/labels", 
                         YamlEngine.marshal(Arrays.asList("label_1", "label_2")), Type.ADDED));
         assertTrue(actual.isPresent());
         assertThat(((LabelEvent) actual.get()).getLabels(), is(Arrays.asList("label_1", "label_2")));
@@ -85,7 +85,7 @@ public final class ComputeNodeStateChangedWatcherTest {
     @Test
     public void assertCreateUpdateLabelEvent() {
         Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
-                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/attributes/127.0.0.1@3307/label", 
+                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/attributes/127.0.0.1@3307/labels", 
                         YamlEngine.marshal(Arrays.asList("label_1", "label_2")), Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((LabelEvent) actual.get()).getLabels(), is(Arrays.asList("label_1", "label_2")));
