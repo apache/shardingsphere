@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -84,15 +85,46 @@ public final class ExampleGenerator {
     public void generate() throws IOException, TemplateException {
         try (InputStream input = ExampleGenerator.class.getResourceAsStream(DATA_MODEL_PATH)) {
             Map<String, String> dataModel = new Yaml().loadAs(input, Map.class);
-            String feature = dataModel.get("feature");
-            String framework = dataModel.get("framework");
-            generateDirs(dataModel, new ExampleScenarioFactory(feature, framework).getJavaClassPaths(), JAVA_CLASS_PATH);
-            generateDirs(dataModel, new ExampleScenarioFactory(feature, framework).getResourcePaths(), RESOURCES_PATH);
-            generateFile(dataModel, new ExampleScenarioFactory(feature, framework).getJavaClassTemplateMap(), JAVA_CLASS_PATH);
-            generateFile(dataModel, new ExampleScenarioFactory(feature, framework).getResourceTemplateMap(), RESOURCES_PATH);
-            String outputPath = generatePath(dataModel, OUTPUT_PATH);
-            processFile(dataModel, "pom.ftl", outputPath + "pom.xml");
+            String features = dataModel.get("features");
+            String frameworks = dataModel.get("frameworks");
+            for (String eachFramework : frameworks.split(",")) {
+                for (String eachFeature : getSonSet2(features)) {
+                    dataModel.put("feature", eachFeature);
+                    dataModel.put("framework", eachFramework);
+                    generateDirs(dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getJavaClassPaths(), JAVA_CLASS_PATH);
+                    generateDirs(dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getResourcePaths(), RESOURCES_PATH);
+                    generateFile(dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getJavaClassTemplateMap(), JAVA_CLASS_PATH);
+                    generateFile(dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getResourceTemplateMap(), RESOURCES_PATH);
+                    processFile(dataModel, "pom.ftl", generatePath(dataModel, OUTPUT_PATH) + "pom.xml");
+                }
+            }
         }
+    }
+
+    private static Collection<String> getSonSet2(String features) {
+        String[] res = features.split(",");
+        int len = res.length;
+        Collection<String> result = new HashSet<>();
+        for (int i = 0, size = 1 << len; i < size; i++) {
+            StringBuilder tmp = new StringBuilder();
+            for (int j = 0; j < len; j++) {
+                if (((1 << j) & i) != 0) {//该位有元素输出
+                    tmp.append(res[j]).append(",");
+                }
+            }
+            if (0 != tmp.length()) {
+                tmp.deleteCharAt(tmp.lastIndexOf(","));
+                result.add(tmp.toString());
+            }
+        }
+        for (String each : result) {
+            System.out.println(each);
+        }
+        return result;
+    }
+    
+    public static void main(String[] args) {
+        getSonSet2("a,b,c");
     }
     
     @SuppressWarnings("ResultOfMethodCallIgnored")
