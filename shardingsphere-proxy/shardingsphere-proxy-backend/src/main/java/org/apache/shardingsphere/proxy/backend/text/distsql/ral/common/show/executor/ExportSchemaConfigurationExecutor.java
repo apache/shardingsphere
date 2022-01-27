@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor;
 
 import com.google.common.base.Strings;
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.ExportSchemaConfigurationStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -89,6 +90,10 @@ public final class ExportSchemaConfigurationExecutor extends AbstractShowExecuto
     
     private static final String PROPS = "props";
     
+    private static final int ZERO = 0;
+    
+    private static final int ONE = 1;
+    
     private static final int TWO = 2;
     
     private static final int THREE = 3;
@@ -113,7 +118,7 @@ public final class ExportSchemaConfigurationExecutor extends AbstractShowExecuto
         String schemaName = getSchemaName();
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(schemaName);
         StringBuilder result = new StringBuilder();
-        result.append("schemaName").append(COLON_SPACE).append(schemaName).append(NEWLINE);
+        configItem(ZERO, "schemaName", schemaName, result);
         getDataSourcesConfig(metaData, result);
         Optional<ShardingRuleConfiguration> ruleConfig = metaData.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findAny();
@@ -136,23 +141,18 @@ public final class ExportSchemaConfigurationExecutor extends AbstractShowExecuto
         if (null == metaData.getResource().getDataSources() || metaData.getResource().getDataSources().isEmpty()) {
             return;
         }
-        result.append(NEWLINE).append("dataSources").append(COLON_NEWLINE);
+        configItem(ZERO, "dataSources", result);
         for (Map.Entry<String, DataSource> each : metaData.getResource().getDataSources().entrySet()) {
-            HikariDataSource dataSource = (HikariDataSource) each.getValue();
-            result.append(INDENT).append(each.getKey()).append(COLON_NEWLINE);
-            result.append(indent(TWO)).append("url").append(COLON_SPACE).append(dataSource.getJdbcUrl()).append(NEWLINE);
-            result.append(indent(TWO)).append("username").append(COLON_SPACE).append(dataSource.getUsername()).append(NEWLINE);
-            result.append(indent(TWO)).append("password").append(COLON_SPACE).append(dataSource.getPassword()).append(NEWLINE);
-            result.append(indent(TWO)).append("connectionTimeoutMilliseconds").append(COLON_SPACE).append(dataSource.getConnectionTimeout()).append(NEWLINE);
-            result.append(indent(TWO)).append("idleTimeoutMilliseconds").append(COLON_SPACE).append(dataSource.getIdleTimeout()).append(NEWLINE);
-            result.append(indent(TWO)).append("maxLifetimeMilliseconds").append(COLON_SPACE).append(dataSource.getMaxLifetime()).append(NEWLINE);
-            result.append(indent(TWO)).append("maxPoolSize").append(COLON_SPACE).append(dataSource.getMaximumPoolSize()).append(NEWLINE);
-            result.append(indent(TWO)).append("minPoolSize").append(COLON_SPACE).append(dataSource.getMinimumIdle()).append(NEWLINE);
+            configItem(ONE, each.getKey(), result);
+            DataSourceProperties dataSourceProps = DataSourcePropertiesCreator.create(each.getValue());
+            dataSourceProps.getAllLocalProperties().entrySet().forEach(standard -> {
+                configItem(TWO, standard.getKey(), standard.getValue(), result);
+            });
         }
     }
     
     private void getRulesConfig(final ShardingRuleConfiguration ruleConfig, final StringBuilder result) {
-        result.append(NEWLINE).append("rules").append(COLON_NEWLINE);
+        configItem(ZERO, "rules", result);
         result.append("- !SHARDING").append(NEWLINE);
         getTablesConfig(ruleConfig, result);
         getBindingTablesConfig(ruleConfig, result);
@@ -167,7 +167,7 @@ public final class ExportSchemaConfigurationExecutor extends AbstractShowExecuto
         if (ruleConfig.getTables().isEmpty() && ruleConfig.getAutoTables().isEmpty()) {
             return;
         }
-        result.append(INDENT).append("tables").append(COLON_NEWLINE);
+        configItem(ONE, "tables", result);
         getTableRulesConfig(ruleConfig, result);
         getAutoTableRulesConfig(ruleConfig, result);
     }
@@ -186,9 +186,9 @@ public final class ExportSchemaConfigurationExecutor extends AbstractShowExecuto
     
     private void getTableRulesItemConfig(final String logicTable, final String actualDataNodes, final ShardingStrategyConfiguration tableShardingStrategy,
                                          final KeyGenerateStrategyConfiguration keyGenerateStrategy, final StringBuilder result) {
-        result.append(indent(TWO)).append(logicTable).append(COLON_NEWLINE);
-        result.append(indent(THREE)).append("actualDataNodes").append(COLON_SPACE).append(actualDataNodes).append(NEWLINE);
-        result.append(indent(THREE)).append("tableStrategy").append(COLON_NEWLINE);
+        configItem(TWO, logicTable, result);
+        configItem(THREE, "actualDataNodes", actualDataNodes, result);
+        configItem(THREE, "tableStrategy", result);
         String algorithmName = "";
         String shardingColumn = "";
         String shardingAlgorithmName = "";
@@ -210,27 +210,27 @@ public final class ExportSchemaConfigurationExecutor extends AbstractShowExecuto
             algorithmName = NONE;
         }
         if (!Strings.isNullOrEmpty(algorithmName)) {
-            result.append(indent(FOUR)).append(algorithmName).append(COLON_NEWLINE);
+            configItem(FOUR, algorithmName, result);
         }
         if (!Strings.isNullOrEmpty(shardingColumn)) {
-            result.append(indent(FIVE)).append(SHARDING_COLUMN).append(COLON_SPACE).append(shardingColumn).append(NEWLINE);
+            configItem(FIVE, SHARDING_COLUMN, shardingColumn, result);
         }
         if (!Strings.isNullOrEmpty(shardingAlgorithmName)) {
-            result.append(indent(FIVE)).append(SHARDING_ALGORITHM_NAME).append(COLON_SPACE).append(shardingAlgorithmName).append(NEWLINE);
+            configItem(FIVE, SHARDING_ALGORITHM_NAME, shardingAlgorithmName, result);
         }
         if (null == keyGenerateStrategy) {
             return;
         }
-        result.append(indent(THREE)).append("keyGenerateStrategy").append(COLON_NEWLINE);
-        result.append(indent(FOUR)).append("column").append(COLON_SPACE).append(keyGenerateStrategy.getColumn()).append(NEWLINE);
-        result.append(indent(FOUR)).append("keyGeneratorName").append(COLON_SPACE).append(keyGenerateStrategy.getKeyGeneratorName()).append(NEWLINE);
+        configItem(THREE, "keyGenerateStrategy", result);
+        configItem(FOUR, "column", keyGenerateStrategy.getColumn(), result);
+        configItem(FOUR, "keyGeneratorName", keyGenerateStrategy.getKeyGeneratorName(), result);
     }
     
     private void getBindingTablesConfig(final ShardingRuleConfiguration ruleConfig, final StringBuilder result) {
         if (ruleConfig.getBindingTableGroups().isEmpty()) {
             return;
         }
-        result.append(INDENT).append("bindingTables").append(COLON_NEWLINE);
+        configItem(ONE, "bindingTables", result);
         result.append(indent(TWO)).append("-").append(SPACE).append(String.join(",", ruleConfig.getBindingTableGroups())).append(NEWLINE);
     }
     
@@ -238,7 +238,7 @@ public final class ExportSchemaConfigurationExecutor extends AbstractShowExecuto
         if (null == ruleConfig.getDefaultDatabaseShardingStrategy()) {
             return;
         }
-        result.append(INDENT).append("defaultDatabaseStrategy").append(COLON_NEWLINE);
+        configItem(ONE, "defaultDatabaseStrategy", result);
         getCommonDefaultStrategyConfig(ruleConfig.getDefaultDatabaseShardingStrategy(), result);
     }
     
@@ -246,7 +246,7 @@ public final class ExportSchemaConfigurationExecutor extends AbstractShowExecuto
         if (null == ruleConfig.getDefaultTableShardingStrategy()) {
             return;
         }
-        result.append(INDENT).append("defaultTableStrategy").append(COLON_NEWLINE);
+        configItem(ONE, "defaultTableStrategy", result);
         getCommonDefaultStrategyConfig(ruleConfig.getDefaultTableShardingStrategy(), result);
     }
     
@@ -254,7 +254,7 @@ public final class ExportSchemaConfigurationExecutor extends AbstractShowExecuto
         if (ruleConfig.getShardingAlgorithms().isEmpty()) {
             return;
         }
-        result.append(INDENT).append("shardingAlgorithms").append(COLON_NEWLINE);
+        configItem(ONE, "shardingAlgorithms", result);
         getAlgorithmConfig(ruleConfig.getShardingAlgorithms(), result);
     }
     
@@ -262,7 +262,7 @@ public final class ExportSchemaConfigurationExecutor extends AbstractShowExecuto
         if (ruleConfig.getKeyGenerators().isEmpty()) {
             return;
         }
-        result.append(INDENT).append("keyGenerators").append(COLON_NEWLINE);
+        configItem(ONE, "keyGenerators", result);
         getAlgorithmConfig(ruleConfig.getKeyGenerators(), result);
     }
     
@@ -270,14 +270,14 @@ public final class ExportSchemaConfigurationExecutor extends AbstractShowExecuto
         if (Strings.isNullOrEmpty(ruleConfig.getScalingName())) {
             return;
         }
-        result.append(INDENT).append("scalingName").append(COLON_SPACE).append(ruleConfig.getScalingName()).append(NEWLINE);
+        configItem(ONE, "scalingName", ruleConfig.getScalingName(), result);
         if (ruleConfig.getScaling().isEmpty()) {
             return;
         }
-        result.append(INDENT).append("scaling").append(COLON_NEWLINE);
+        configItem(ONE, "scaling", result);
         for (Map.Entry<String, OnRuleAlteredActionConfiguration> each : ruleConfig.getScaling().entrySet()) {
             OnRuleAlteredActionConfiguration current = each.getValue();
-            result.append(indent(TWO)).append(each.getKey()).append(COLON_NEWLINE);
+            configItem(TWO, each.getKey(), result);
             if (null != current) {
                 getScalingInputOrOutputConfig("input", current.getInput().getWorkerThread(), current.getInput().getBatchSize(), current.getInput().getRateLimiter(), result);
                 getScalingInputOrOutputConfig("output", current.getOutput().getWorkerThread(), current.getOutput().getBatchSize(), current.getOutput().getRateLimiter(), result);
@@ -290,38 +290,38 @@ public final class ExportSchemaConfigurationExecutor extends AbstractShowExecuto
     
     private void getScalingInputOrOutputConfig(final String itemName, final int workerThread, final int batchSize,
                                                final ShardingSphereAlgorithmConfiguration rateLimiterConfig, final StringBuilder result) {
-        result.append(indent(THREE)).append(itemName).append(COLON_NEWLINE);
-        result.append(indent(FOUR)).append("workerThread").append(COLON_SPACE).append(workerThread).append(NEWLINE);
-        result.append(indent(FOUR)).append("batchSize").append(COLON_SPACE).append(batchSize).append(NEWLINE);
-        result.append(indent(FOUR)).append("rateLimiter").append(COLON_NEWLINE);
-        result.append(indent(FIVE)).append(TYPE).append(COLON_SPACE).append(rateLimiterConfig.getType()).append(NEWLINE);
+        configItem(THREE, itemName, result);
+        configItem(FOUR, "workerThread", workerThread, result);
+        configItem(FOUR, "batchSize", batchSize, result);
+        configItem(FOUR, "rateLimiter", result);
+        configItem(FIVE, TYPE, rateLimiterConfig.getType(), result);
         if (null != rateLimiterConfig.getProps() && !rateLimiterConfig.getProps().isEmpty()) {
-            result.append(indent(FIVE)).append(PROPS).append(COLON_NEWLINE);
+            configItem(FIVE, PROPS, result);
             for (Map.Entry<Object, Object> each : rateLimiterConfig.getProps().entrySet()) {
-                result.append(indent(SIX)).append(each.getKey()).append(COLON_SPACE).append(each.getValue()).append(NEWLINE);
+                configItem(SIX, each.getKey(), each.getValue(), result);
             }
         }
     }
     
     private void getCommonScalingItemConfig(final String itemName, final ShardingSphereAlgorithmConfiguration itemConfig, final StringBuilder result) {
-        result.append(indent(THREE)).append(itemName).append(COLON_NEWLINE);
-        result.append(indent(FOUR)).append(TYPE).append(COLON_SPACE).append(itemConfig.getType()).append(NEWLINE);
+        configItem(THREE, itemName, result);
+        configItem(FOUR, TYPE, itemConfig.getType(), result);
         if (null != itemConfig.getProps() && !itemConfig.getProps().isEmpty()) {
-            result.append(indent(FOUR)).append(PROPS).append(COLON_NEWLINE);
+            configItem(FOUR, PROPS, result);
             for (Map.Entry<Object, Object> each : itemConfig.getProps().entrySet()) {
-                result.append(indent(FIVE)).append(each.getKey()).append(COLON_SPACE).append(each.getValue()).append(NEWLINE);
+                configItem(FIVE, each.getKey(), each.getValue(), result);
             }
         }
     }
     
     private void getAlgorithmConfig(final Map<String, ShardingSphereAlgorithmConfiguration> algorithmMap, final StringBuilder result) {
         for (Map.Entry<String, ShardingSphereAlgorithmConfiguration> each : algorithmMap.entrySet()) {
-            result.append(indent(TWO)).append(each.getKey()).append(COLON_NEWLINE);
-            result.append(indent(THREE)).append(TYPE).append(COLON_SPACE).append(each.getValue().getType()).append(NEWLINE);
+            configItem(TWO, each.getKey(), result);
+            configItem(THREE, TYPE, each.getValue().getType(), result);
             if (null != each.getValue().getProps() && !each.getValue().getProps().isEmpty()) {
-                result.append(indent(THREE)).append(PROPS).append(COLON_NEWLINE);
+                configItem(THREE, PROPS, result);
                 for (Map.Entry<Object, Object> each1 : each.getValue().getProps().entrySet()) {
-                    result.append(indent(FOUR)).append(each1.getKey()).append(COLON_SPACE).append(each1.getValue()).append(NEWLINE);
+                    configItem(FOUR, each1.getKey(), each1.getValue(), result);
                 }
             }
         }
@@ -330,26 +330,34 @@ public final class ExportSchemaConfigurationExecutor extends AbstractShowExecuto
     private void getCommonDefaultStrategyConfig(final ShardingStrategyConfiguration ruleConfig, final StringBuilder result) {
         if (ruleConfig instanceof StandardShardingStrategyConfiguration) {
             StandardShardingStrategyConfiguration strategyConfig = (StandardShardingStrategyConfiguration) ruleConfig;
-            result.append(indent(TWO)).append(STANDARD).append(COLON_NEWLINE);
-            result.append(indent(THREE)).append(SHARDING_COLUMN).append(COLON_SPACE).append(strategyConfig.getShardingColumn()).append(NEWLINE);
-            result.append(indent(THREE)).append(SHARDING_ALGORITHM_NAME).append(COLON_SPACE).append(strategyConfig.getShardingAlgorithmName()).append(NEWLINE);
+            configItem(TWO, STANDARD, result);
+            configItem(THREE, SHARDING_COLUMN, strategyConfig.getShardingColumn(), result);
+            configItem(THREE, SHARDING_ALGORITHM_NAME, strategyConfig.getShardingAlgorithmName(), result);
         } else if (ruleConfig instanceof ComplexShardingStrategyConfiguration) {
             ComplexShardingStrategyConfiguration strategyConfig = (ComplexShardingStrategyConfiguration) ruleConfig;
-            result.append(indent(TWO)).append(COMPLEX).append(COLON_NEWLINE);
-            result.append(indent(THREE)).append(SHARDING_COLUMN).append(COLON_SPACE).append(strategyConfig.getShardingColumns()).append(NEWLINE);
-            result.append(indent(THREE)).append(SHARDING_ALGORITHM_NAME).append(COLON_SPACE).append(strategyConfig.getShardingAlgorithmName()).append(NEWLINE);
+            configItem(TWO, COMPLEX, result);
+            configItem(THREE, SHARDING_COLUMN, strategyConfig.getShardingColumns(), result);
+            configItem(THREE, SHARDING_ALGORITHM_NAME, strategyConfig.getShardingAlgorithmName(), result);
         } else if (ruleConfig instanceof HintShardingStrategyConfiguration) {
             HintShardingStrategyConfiguration strategyConfig = (HintShardingStrategyConfiguration) ruleConfig;
-            result.append(indent(TWO)).append(HINT).append(COLON_NEWLINE);
-            result.append(indent(THREE)).append(SHARDING_ALGORITHM_NAME).append(COLON_SPACE).append(strategyConfig.getShardingAlgorithmName()).append(NEWLINE);
+            configItem(TWO, HINT, result);
+            configItem(THREE, SHARDING_ALGORITHM_NAME, strategyConfig.getShardingAlgorithmName(), result);
         } else if (ruleConfig instanceof NoneShardingStrategyConfiguration) {
-            result.append(indent(TWO)).append(NONE).append(COLON_NEWLINE);
+            configItem(TWO, NONE, result);
         }
+    }
+    
+    private void configItem(final int indent, final Object key, final StringBuilder result) {
+        result.append(indent(indent)).append(key).append(COLON_NEWLINE);
+    }
+    
+    private void configItem(final int indent, final Object key, final Object value, final StringBuilder result) {
+        result.append(indent(indent)).append(key).append(COLON_SPACE).append(value).append(NEWLINE);
     }
     
     private String indent(final int count) {
         if (count <= 0) {
-            return null;
+            return "";
         }
         if (1 == count) {
             return INDENT;
