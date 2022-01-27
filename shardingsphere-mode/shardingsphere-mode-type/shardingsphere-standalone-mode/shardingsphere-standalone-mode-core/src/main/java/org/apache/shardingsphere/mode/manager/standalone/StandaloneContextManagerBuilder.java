@@ -77,15 +77,14 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
                 : metaDataPersistService.getSchemaMetaDataService().loadAllNames();
         Map<String, Map<String, DataSource>> standaloneDataSources = loadDataSourcesMap(metaDataPersistService, parameter.getSchemaConfigs(), schemaNames);
         Map<String, Collection<RuleConfiguration>> standaloneSchemaRules = loadSchemaRules(metaDataPersistService, schemaNames);
-        Map<String, DataSourceProvidedSchemaConfiguration> schemaConfigs = new LinkedHashMap<>(standaloneDataSources.size(), 1);
+        Map<String, SchemaConfiguration> schemaConfigs = new LinkedHashMap<>(standaloneDataSources.size(), 1);
         for (String each : standaloneDataSources.keySet()) {
             schemaConfigs.put(each, new DataSourceProvidedSchemaConfiguration(standaloneDataSources.get(each), standaloneSchemaRules.get(each)));
         }
-        Properties standaloneProps = metaDataPersistService.getPropsService().load();
-        Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(schemaConfigs, standaloneProps);
-        Map<String, ShardingSphereSchema> schemas = new SchemaLoader(schemaConfigs, rules, standaloneProps).load();
-        MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(schemaConfigs, metaDataPersistService.getGlobalRuleService().load(), schemas,
-                rules, standaloneProps).build(metaDataPersistService);
+        Properties loadedProps = metaDataPersistService.getPropsService().load();
+        Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(schemaConfigs, loadedProps);
+        MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(
+                schemaConfigs, metaDataPersistService.getGlobalRuleService().load(), getShardingSphereSchemas(schemaConfigs, rules, loadedProps), rules, loadedProps).build(metaDataPersistService);
         TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
         ContextManager result = new ContextManager();
         result.init(metaDataContexts, transactionContexts, new InstanceContext(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(parameter.getInstanceDefinition()), 
@@ -189,6 +188,15 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         contextManager.getMetaDataContexts().getMetaDataMap().forEach((key, value)
             -> value.getRuleMetaData().getRules().stream().filter(each -> each instanceof InstanceAwareRule)
             .forEach(each -> ((InstanceAwareRule) each).setInstanceContext(contextManager.getInstanceContext())));
+    }
+    
+    private Map<String, ShardingSphereSchema> getShardingSphereSchemas(final Map<String, ? extends SchemaConfiguration> schemaConfigs, final Map<String, Collection<ShardingSphereRule>> rules,
+                                                                       final Properties props) throws SQLException {
+        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(schemaConfigs.size(), 1);
+        for (String each : schemaConfigs.keySet()) {
+            result.put(each, SchemaLoader.load(schemaConfigs.get(each).getDataSources(), rules.get(each), props));
+        }
+        return result;
     }
     
     @Override

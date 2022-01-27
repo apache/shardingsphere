@@ -66,7 +66,8 @@ public final class EncryptTokenGenerateBuilderTest {
         when(selectStatementContext.getOrderByContext().getItems()).thenReturn(Collections.singletonList(mock(OrderByItem.class)));
         when(selectStatementContext.getGroupByContext().getItems()).thenReturn(Collections.emptyList());
         when(selectStatementContext.isContainsJoinQuery()).thenReturn(true);
-        EncryptTokenGenerateBuilder encryptTokenGenerateBuilder = new EncryptTokenGenerateBuilder(encryptRule, selectStatementContext);
+        when(selectStatementContext.getWhereSegments()).thenReturn(Collections.emptyList());
+        EncryptTokenGenerateBuilder encryptTokenGenerateBuilder = new EncryptTokenGenerateBuilder(encryptRule, selectStatementContext, Collections.emptyList());
         Collection<SQLTokenGenerator> sqlTokenGenerators = encryptTokenGenerateBuilder.getSQLTokenGenerators();
         assertThat(sqlTokenGenerators.size(), is(3));
         Iterator<SQLTokenGenerator> iterator = sqlTokenGenerators.iterator();

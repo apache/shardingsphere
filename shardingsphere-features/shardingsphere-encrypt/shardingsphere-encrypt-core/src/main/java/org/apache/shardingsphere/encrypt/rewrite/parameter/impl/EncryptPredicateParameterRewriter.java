@@ -18,18 +18,17 @@
 package org.apache.shardingsphere.encrypt.rewrite.parameter.impl;
 
 import lombok.Setter;
+import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
-import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionEngine;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.util.DMLStatementContextHelper;
+import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 
 import java.util.Collection;
 import java.util.List;
@@ -40,23 +39,19 @@ import java.util.Map.Entry;
  * Predicate parameter rewriter for encrypt.
  */
 @Setter
-public final class EncryptPredicateParameterRewriter implements ParameterRewriter<SQLStatementContext>, SchemaMetaDataAware, EncryptRuleAware {
-    
-    private ShardingSphereSchema schema;
+public final class EncryptPredicateParameterRewriter implements ParameterRewriter<SQLStatementContext>, EncryptRuleAware, EncryptConditionsAware {
     
     private EncryptRule encryptRule;
     
+    private Collection<EncryptCondition> encryptConditions;
+    
     @Override
     public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
-        return true;
+        return sqlStatementContext instanceof WhereAvailable && !((WhereAvailable) sqlStatementContext).getWhereSegments().isEmpty();
     }
     
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        Collection<EncryptCondition> encryptConditions = new EncryptConditionEngine(encryptRule, schema).createEncryptConditions(sqlStatementContext);
-        if (encryptConditions.isEmpty()) {
-            return;
-        }
         String schemaName = DMLStatementContextHelper.getSchemaName(sqlStatementContext);
         for (EncryptCondition each : encryptConditions) {
             boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(each.getTableName());
@@ -77,11 +72,11 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     }
     
     private void checkSortable(final EncryptCondition encryptCondition, final List<Object> values) {
-        values.stream().forEach(each -> {
+        for (Object each : values) {
             if (encryptCondition.isSortable() && !(each instanceof Number)) {
                 throw new ShardingSphereException("The SQL clause is unsupported in encrypt rule as not sortable encrypted values.");
             }
-        });
+        }
     }
     
     private void encryptParameters(final ParameterBuilder parameterBuilder, final Map<Integer, Integer> positionIndexes, final List<Object> encryptValues) {

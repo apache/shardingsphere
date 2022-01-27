@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.type;
+package org.apache.shardingsphere.encrypt.rewrite.aware;
 
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 
 import java.util.Collection;
 
 /**
- * Where available.
+ * Encrypt conditions aware.
  */
-public interface WhereAvailable {
+public interface EncryptConditionsAware {
     
     /**
-     * Get where segments.
+     * Set encrypt conditions.
      * 
-     * @return where segments
+     * @param encryptConditions encrypt conditions
      */
-    Collection<WhereSegment> getWhereSegments();
+    void setEncryptConditions(Collection<EncryptCondition> encryptConditions);
 }

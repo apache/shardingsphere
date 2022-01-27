@@ -309,8 +309,8 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         }
         SelectStatementContext select = (SelectStatementContext) sqlStatementContext;
         Collection<WhereSegment> joinSegments = WhereExtractUtil.getJoinWhereSegments(select.getSqlStatement());
-        Collection<WhereSegment> whereSegments = select.getWhere().isPresent() ? Collections.singletonList(select.getWhere().get()) : Collections.emptyList();
-        return isJoinConditionContainsShardingColumns(schema, select, logicTableNames, joinSegments) || isJoinConditionContainsShardingColumns(schema, select, logicTableNames, whereSegments);
+        return isJoinConditionContainsShardingColumns(schema, select, logicTableNames, joinSegments) 
+                || isJoinConditionContainsShardingColumns(schema, select, logicTableNames, select.getWhereSegments());
     }
     
     private Optional<BindingTableRule> findBindingTableRule(final Collection<String> logicTableNames) {
