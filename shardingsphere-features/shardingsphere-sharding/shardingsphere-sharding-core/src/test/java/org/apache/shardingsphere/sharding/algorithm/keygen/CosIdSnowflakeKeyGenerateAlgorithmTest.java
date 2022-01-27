@@ -32,16 +32,16 @@ import org.junit.Test;
 import java.util.Properties;
 
 public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
-
+    
     private static final long FIXTURE_WORKER_ID = 0;
-
+    
     private final SnowflakeIdStateParser snowflakeIdStateParser = new MillisecondSnowflakeIdStateParser(
             CosIdSnowflakeKeyGenerateAlgorithm.DEFAULT_EPOCH,
             MillisecondSnowflakeId.DEFAULT_TIMESTAMP_BIT,
             MillisecondSnowflakeId.DEFAULT_MACHINE_BIT,
             MillisecondSnowflakeId.DEFAULT_SEQUENCE_BIT
     );
-
+    
     @Test
     public void assertGenerateKey() {
         CosIdSnowflakeKeyGenerateAlgorithm cosIdSnowflakeKeyGenerateAlgorithm = new CosIdSnowflakeKeyGenerateAlgorithm();
@@ -58,7 +58,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
         assertThat(secondActualState.getMachineId(), is(FIXTURE_WORKER_ID));
         assertThat(secondActualState.getSequence(), is(1L));
     }
-
+    
     @Test
     public void assertGenerateKeyAsString() {
         CosIdSnowflakeKeyGenerateAlgorithm cosIdSnowflakeKeyGenerateAlgorithm = new CosIdSnowflakeKeyGenerateAlgorithm();
@@ -76,19 +76,16 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
         assertThat(actualState.getMachineId(), is(FIXTURE_WORKER_ID));
         assertThat(actualState.getSequence(), is(0L));
     }
-
-    @Test
+    
+    @Test(expected = NullPointerException.class)
     public void assertGenerateKeyWhenNoneInstanceContext() {
         CosIdSnowflakeKeyGenerateAlgorithm cosIdSnowflakeKeyGenerateAlgorithm = new CosIdSnowflakeKeyGenerateAlgorithm();
         Properties properties = new Properties();
         cosIdSnowflakeKeyGenerateAlgorithm.setProps(properties);
         cosIdSnowflakeKeyGenerateAlgorithm.init();
-        long actualKey = (Long) cosIdSnowflakeKeyGenerateAlgorithm.generateKey();
-        SnowflakeIdState actualState = snowflakeIdStateParser.parse(actualKey);
-        assertThat(actualState.getMachineId(), is(FIXTURE_WORKER_ID));
-        assertThat(actualState.getSequence(), is(0L));
+        cosIdSnowflakeKeyGenerateAlgorithm.generateKey();
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void assertGenerateKeyWhenNegative() {
         CosIdSnowflakeKeyGenerateAlgorithm cosIdSnowflakeKeyGenerateAlgorithm = new CosIdSnowflakeKeyGenerateAlgorithm();
@@ -96,8 +93,9 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
         cosIdSnowflakeKeyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(), new WorkerIdGeneratorFixture(-1)));
         cosIdSnowflakeKeyGenerateAlgorithm.setProps(properties);
         cosIdSnowflakeKeyGenerateAlgorithm.init();
+        cosIdSnowflakeKeyGenerateAlgorithm.generateKey();
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void assertGenerateKeyWhenGreaterThen1023() {
         CosIdSnowflakeKeyGenerateAlgorithm cosIdSnowflakeKeyGenerateAlgorithm = new CosIdSnowflakeKeyGenerateAlgorithm();
@@ -105,5 +103,6 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
         cosIdSnowflakeKeyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(), new WorkerIdGeneratorFixture(1024)));
         cosIdSnowflakeKeyGenerateAlgorithm.setProps(properties);
         cosIdSnowflakeKeyGenerateAlgorithm.init();
+        cosIdSnowflakeKeyGenerateAlgorithm.generateKey();
     }
 }

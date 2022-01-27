@@ -15,6 +15,7 @@
 
 package org.apache.shardingsphere.sharding.algorithm.keygen;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import me.ahoo.cosid.converter.Radix62IdConverter;
@@ -33,41 +34,45 @@ import java.util.Properties;
  * CosId snowflake key generate algorithm.
  */
 public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm, ShardingSphereInstanceRequiredAlgorithm {
-
+    
     public static final String TYPE = CosIdAlgorithm.TYPE_PREFIX + "SNOWFLAKE";
-
+    
     public static final long DEFAULT_EPOCH = SnowflakeKeyGenerateAlgorithm.EPOCH;
-
+    
     public static final String AS_STRING_KEY = "as-string";
-
+    
     public static final String EPOCH_KEY = "epoch";
-
-    private volatile InstanceContext instanceContext;
-
+    
     private volatile SnowflakeId snowflakeId;
-
+    
     private volatile boolean asString;
-
+    
     @Getter
     @Setter
     private Properties props = new Properties();
-
+    
     @Override
     public Comparable<?> generateKey() {
         if (asString) {
-            return snowflakeId.generateAsString();
+            return getSnowflakeId().generateAsString();
         }
-        return snowflakeId.generate();
+        return getSnowflakeId().generate();
     }
-
+    
+    private SnowflakeId getSnowflakeId() {
+        Preconditions.checkNotNull(snowflakeId, "Instance context not set yet.");
+        return snowflakeId;
+    }
+    
     @Override
     public void init() {
         String asStringStr = getProps().getProperty(AS_STRING_KEY, Boolean.FALSE.toString());
         asString = Boolean.parseBoolean(asStringStr);
-        long workerId = 0;
-        if (null != instanceContext) {
-            workerId = instanceContext.getWorkerId();
-        }
+    }
+    
+    @Override
+    public void setInstanceContext(final InstanceContext instanceContext) {
+        long workerId = instanceContext.getWorkerId();
         long epoch = DEFAULT_EPOCH;
         if (props.containsKey(EPOCH_KEY)) {
             epoch = Long.parseLong(props.getProperty(EPOCH_KEY));
@@ -77,12 +82,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
         ClockSyncSnowflakeId clockSyncSnowflakeId = new ClockSyncSnowflakeId(millisecondSnowflakeId);
         snowflakeId = new StringSnowflakeId(clockSyncSnowflakeId, Radix62IdConverter.PAD_START);
     }
-
-    @Override
-    public void setInstanceContext(final InstanceContext instanceContext) {
-        this.instanceContext = instanceContext;
-    }
-
+    
     @Override
     public String getType() {
         return TYPE;
