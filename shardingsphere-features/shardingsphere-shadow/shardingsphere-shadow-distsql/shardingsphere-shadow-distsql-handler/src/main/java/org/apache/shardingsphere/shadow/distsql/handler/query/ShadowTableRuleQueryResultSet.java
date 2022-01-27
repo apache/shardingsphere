@@ -90,6 +90,6 @@ public final class ShadowTableRuleQueryResultSet implements DistSQLResultSet {
     
     @Override
     public String getType() {
-        return ShowShadowTableRulesStatement.class.getCanonicalName();
+        return ShowShadowTableRulesStatement.class.getName();
     }
 }

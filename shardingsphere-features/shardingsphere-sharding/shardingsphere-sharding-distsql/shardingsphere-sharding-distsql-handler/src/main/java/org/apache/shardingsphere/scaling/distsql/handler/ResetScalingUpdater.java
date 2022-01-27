@@ -36,6 +36,6 @@ public final class ResetScalingUpdater implements RALUpdater<ResetScalingStateme
     
     @Override
     public String getType() {
-        return ResetScalingStatement.class.getCanonicalName();
+        return ResetScalingStatement.class.getName();
     }
 }

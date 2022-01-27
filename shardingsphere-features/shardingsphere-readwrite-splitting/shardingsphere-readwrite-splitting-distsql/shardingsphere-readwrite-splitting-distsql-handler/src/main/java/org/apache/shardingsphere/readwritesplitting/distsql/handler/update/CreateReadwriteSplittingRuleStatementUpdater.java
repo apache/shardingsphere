@@ -98,8 +98,8 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
         Collection<String> result = new LinkedHashSet<>();
         Optional<ExportableRule> exportableRule = shardingSphereMetaData.getRuleMetaData().findRules(ExportableRule.class).stream()
                 .filter(each -> each.containExportableKey(Collections.singletonList(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE))).findAny();
-        exportableRule.ifPresent(op -> {
-            Map<String, Object> exportData = op.export(Collections.singletonList(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE));
+        exportableRule.ifPresent(optional -> {
+            Map<String, Object> exportData = optional.export(Collections.singletonList(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE));
             Set<String> logicResources = ((Map<String, String>) exportData.getOrDefault(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE, Collections.emptyMap())).keySet();
             result.addAll(logicResources);
         });
@@ -134,6 +134,6 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
     
     @Override
     public String getType() {
-        return CreateReadwriteSplittingRuleStatement.class.getCanonicalName();
+        return CreateReadwriteSplittingRuleStatement.class.getName();
     }
 }

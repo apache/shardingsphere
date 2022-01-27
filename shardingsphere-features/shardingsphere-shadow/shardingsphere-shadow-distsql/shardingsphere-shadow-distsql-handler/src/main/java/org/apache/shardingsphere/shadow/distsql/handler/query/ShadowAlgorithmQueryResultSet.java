@@ -86,6 +86,6 @@ public final class ShadowAlgorithmQueryResultSet implements DistSQLResultSet {
     
     @Override
     public String getType() {
-        return ShowShadowAlgorithmsStatement.class.getCanonicalName();
+        return ShowShadowAlgorithmsStatement.class.getName();
     }
 }

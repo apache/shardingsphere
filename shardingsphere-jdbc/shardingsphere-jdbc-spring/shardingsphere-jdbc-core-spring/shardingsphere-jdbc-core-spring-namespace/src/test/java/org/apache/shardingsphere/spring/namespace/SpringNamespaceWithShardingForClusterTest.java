@@ -67,7 +67,7 @@ public final class SpringNamespaceWithShardingForClusterTest extends AbstractJUn
         ShardingRule shardingRule = getShardingRule("shardingRuleWithAttributesDataSourceGovernance");
         assertNotNull(dataSourceMap.get("dbtbl_0"));
         assertNotNull(dataSourceMap.get("dbtbl_1"));
-        assertThat(shardingRule.getDefaultKeyGenerateAlgorithm().getClass().getName(), is(IncrementKeyGenerateAlgorithm.class.getCanonicalName()));
+        assertThat(shardingRule.getDefaultKeyGenerateAlgorithm().getClass().getName(), is(IncrementKeyGenerateAlgorithm.class.getName()));
     }
     
     @Test

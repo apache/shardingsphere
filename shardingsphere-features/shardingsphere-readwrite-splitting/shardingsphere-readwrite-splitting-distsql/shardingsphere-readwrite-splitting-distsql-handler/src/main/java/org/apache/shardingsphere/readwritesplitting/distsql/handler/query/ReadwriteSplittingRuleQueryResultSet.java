@@ -128,6 +128,6 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
     
     @Override
     public String getType() {
-        return ShowReadwriteSplittingRulesStatement.class.getCanonicalName();
+        return ShowReadwriteSplittingRulesStatement.class.getName();
     }
 }
