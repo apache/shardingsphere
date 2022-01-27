@@ -64,8 +64,8 @@ import java.util.stream.Collectors;
 /**
  * Context manager.
  */
-@Slf4j
 @Getter
+@Slf4j
 public final class ContextManager implements AutoCloseable {
     
     private volatile MetaDataContexts metaDataContexts = new MetaDataContexts(null);
@@ -79,7 +79,7 @@ public final class ContextManager implements AutoCloseable {
      *
      * @param metaDataContexts meta data contexts
      * @param transactionContexts transaction contexts
-     * @param instanceContext instance context                           
+     * @param instanceContext instance context
      */
     public void init(final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final InstanceContext instanceContext) {
         this.metaDataContexts = metaDataContexts;
@@ -119,7 +119,7 @@ public final class ContextManager implements AutoCloseable {
      * Add schema.
      * 
      * @param schemaName schema name
-     * @throws SQLException SQL exception                  
+     * @throws SQLException SQL exception
      */
     public void addSchema(final String schemaName) throws SQLException {
         if (metaDataContexts.getMetaDataMap().containsKey(schemaName)) {
@@ -382,19 +382,17 @@ public final class ContextManager implements AutoCloseable {
     private MetaDataContexts rebuildMetaDataContexts(final Map<String, ShardingSphereMetaData> schemaMetaData) {
         return new MetaDataContexts(metaDataContexts.getMetaDataPersistService().orElse(null),
                 schemaMetaData, metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(),
-                metaDataContexts.getProps(), metaDataContexts.getOptimizerContext());
+                metaDataContexts.getOptimizerContext(), metaDataContexts.getProps());
     }
     
     private MetaDataContexts rebuildMetaDataContexts(final ShardingSphereRuleMetaData globalRuleMetaData) {
         return new MetaDataContexts(metaDataContexts.getMetaDataPersistService().orElse(null),
-                metaDataContexts.getMetaDataMap(), globalRuleMetaData, metaDataContexts.getExecutorEngine(),
-                metaDataContexts.getProps(), metaDataContexts.getOptimizerContext());
+                metaDataContexts.getMetaDataMap(), globalRuleMetaData, metaDataContexts.getExecutorEngine(), metaDataContexts.getOptimizerContext(), metaDataContexts.getProps());
     }
     
     private MetaDataContexts rebuildMetaDataContexts(final ConfigurationProperties props) {
         return new MetaDataContexts(metaDataContexts.getMetaDataPersistService().orElse(null),
-                metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(),
-                props, metaDataContexts.getOptimizerContext());
+                metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(), metaDataContexts.getOptimizerContext(), props);
     }
     
     private void refreshMetaDataContext(final String schemaName, final Map<String, DataSourceProperties> dataSourceProps) throws SQLException {
