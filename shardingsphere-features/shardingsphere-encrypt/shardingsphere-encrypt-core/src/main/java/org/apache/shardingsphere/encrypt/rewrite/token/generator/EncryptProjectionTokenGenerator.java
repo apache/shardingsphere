@@ -230,14 +230,4 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         }
         throw new IllegalStateException(String.format("Can not find shorthand projection segment, owner is: `%s`", owner.orElse(null)));
     }
-    
-    @Override
-    public void setPreviousSQLTokens(final List<SQLToken> previousSQLTokens) {
-        this.previousSQLTokens = previousSQLTokens;
-    }
-    
-    @Override
-    public void setSchema(final ShardingSphereSchema schema) {
-        this.schema = schema;
-    }
 }
