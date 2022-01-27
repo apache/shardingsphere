@@ -60,6 +60,6 @@ public final class SingleTableRulesQueryResultSet implements DistSQLResultSet {
     
     @Override
     public String getType() {
-        return ShowSingleTableRulesStatement.class.getCanonicalName();
+        return ShowSingleTableRulesStatement.class.getName();
     }
 }

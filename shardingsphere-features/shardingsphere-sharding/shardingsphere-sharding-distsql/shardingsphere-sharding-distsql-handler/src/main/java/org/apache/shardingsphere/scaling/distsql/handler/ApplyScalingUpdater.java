@@ -36,6 +36,6 @@ public final class ApplyScalingUpdater implements RALUpdater<ApplyScalingStateme
     
     @Override
     public String getType() {
-        return ApplyScalingStatement.class.getCanonicalName();
+        return ApplyScalingStatement.class.getName();
     }
 }

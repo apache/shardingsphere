@@ -152,7 +152,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         }
         log.info("Start scaling job by {}", jobConfig.getHandleConfig());
         PipelineAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%s",
-                DataPipelineConstants.DATA_PIPELINE_ROOT, jobConfig.getHandleConfig().getJobId()), RuleAlteredJob.class.getCanonicalName());
+                DataPipelineConstants.DATA_PIPELINE_ROOT, jobConfig.getHandleConfig().getJobId()), RuleAlteredJob.class.getName());
         PipelineAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%s/config",
                 DataPipelineConstants.DATA_PIPELINE_ROOT, jobConfig.getHandleConfig().getJobId()), createJobConfig(jobConfig));
         return Optional.of(jobConfig.getHandleConfig().getJobId());

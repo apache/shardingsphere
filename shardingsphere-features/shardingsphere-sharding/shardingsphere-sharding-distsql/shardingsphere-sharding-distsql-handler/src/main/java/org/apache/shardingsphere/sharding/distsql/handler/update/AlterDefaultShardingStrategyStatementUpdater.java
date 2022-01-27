@@ -40,7 +40,7 @@ import java.util.Optional;
  */
 public final class AlterDefaultShardingStrategyStatementUpdater implements RuleDefinitionAlterUpdater<AlterDefaultShardingStrategyStatement, ShardingRuleConfiguration> {
     
-    private static final String TYPE = AlterDefaultShardingStrategyStatement.class.getCanonicalName();
+    private static final String TYPE = AlterDefaultShardingStrategyStatement.class.getName();
     
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterDefaultShardingStrategyStatement sqlStatement,
