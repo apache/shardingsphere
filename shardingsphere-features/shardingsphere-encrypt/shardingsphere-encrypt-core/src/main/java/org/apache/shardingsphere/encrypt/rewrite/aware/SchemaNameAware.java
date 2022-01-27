@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.type;
+package org.apache.shardingsphere.encrypt.rewrite.aware;
 
 /**
- * Schema available.
+ * Schema name aware.
  */
-public interface SchemaAvailable {
+public interface SchemaNameAware {
     
     /**
-     * Get schema name.
+     * Set schema name.
      * 
-     * @return current schema name.
+     * @param schemaName schema name
      */
-    String getSchemaName();
+    void setSchemaName(String schemaName);
 }

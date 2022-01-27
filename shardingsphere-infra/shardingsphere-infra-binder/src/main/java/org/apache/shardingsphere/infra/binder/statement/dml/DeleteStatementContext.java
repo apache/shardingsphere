@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.binder.statement.dml;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.SchemaAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
@@ -38,18 +37,15 @@ import java.util.stream.Collectors;
  * Delete statement context.
  */
 @Getter
-public final class DeleteStatementContext extends CommonSQLStatementContext<DeleteStatement> implements TableAvailable, WhereAvailable, SchemaAvailable {
+public final class DeleteStatementContext extends CommonSQLStatementContext<DeleteStatement> implements TableAvailable, WhereAvailable {
     
     private final TablesContext tablesContext;
     
-    private final String schemaName;
-    
     private final Collection<WhereSegment> whereSegments = new LinkedList<>();
     
-    public DeleteStatementContext(final DeleteStatement sqlStatement, final String schemaName) {
+    public DeleteStatementContext(final DeleteStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
-        this.schemaName = schemaName;
         getSqlStatement().getWhere().ifPresent(whereSegments::add);
     }
     
