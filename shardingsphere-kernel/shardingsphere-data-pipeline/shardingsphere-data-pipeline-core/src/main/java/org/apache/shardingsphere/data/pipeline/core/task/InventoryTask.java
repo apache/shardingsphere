@@ -131,7 +131,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     }
     
     @Override
-    public void stop() {
+    protected void doStop() {
         dumper.stop();
         importer.stop();
     }

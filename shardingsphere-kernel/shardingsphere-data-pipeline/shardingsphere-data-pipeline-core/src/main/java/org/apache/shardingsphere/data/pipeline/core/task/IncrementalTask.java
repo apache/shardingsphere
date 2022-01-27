@@ -133,7 +133,7 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     }
     
     @Override
-    public void stop() {
+    protected void doStop() {
         dumper.stop();
         for (Importer each : importers) {
             each.stop();

@@ -40,9 +40,13 @@ public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
     }
     
     @Override
-    public void stop() {
+    public final void stop() {
         log.info("stop lifecycle executor: {}", super.toString());
         running = false;
+        doStop();
+    }
+    
+    protected void doStop() {
     }
     
     @Override

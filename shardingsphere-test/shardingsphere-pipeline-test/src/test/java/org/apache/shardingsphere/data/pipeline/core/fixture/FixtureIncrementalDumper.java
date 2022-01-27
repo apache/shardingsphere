@@ -28,12 +28,4 @@ public final class FixtureIncrementalDumper extends AbstractIncrementalDumper<Fi
     public FixtureIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<FinishedPosition> position, final PipelineChannel channel) {
         super(dumperConfig, position, channel);
     }
-    
-    @Override
-    public void start() {
-    }
-    
-    @Override
-    public void stop() {
-    }
 }
