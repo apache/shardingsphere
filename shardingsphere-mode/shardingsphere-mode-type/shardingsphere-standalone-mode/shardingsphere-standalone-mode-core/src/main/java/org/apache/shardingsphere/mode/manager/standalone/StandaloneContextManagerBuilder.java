@@ -85,7 +85,8 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(schemaConfigs, loadedProps);
         MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(
                 schemaConfigs, metaDataPersistService.getGlobalRuleService().load(), getShardingSphereSchemas(schemaConfigs, rules, loadedProps), rules, loadedProps).build(metaDataPersistService);
-        TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules(), parameter.getInstanceDefinition().getInstanceId().getId()).build();
+        TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules(),
+                parameter.getInstanceDefinition().getInstanceId().getId()).build();
         ContextManager result = new ContextManager();
         result.init(metaDataContexts, transactionContexts, new InstanceContext(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(parameter.getInstanceDefinition()), 
                 new StandaloneWorkerIdGenerator()));

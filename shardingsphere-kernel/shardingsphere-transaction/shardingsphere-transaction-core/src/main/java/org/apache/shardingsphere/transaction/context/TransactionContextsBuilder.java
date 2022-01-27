@@ -86,7 +86,7 @@ public final class TransactionContextsBuilder {
         } else {
             return;
         }
-        String value = NarayanaConfigMapToXml((LinkedHashMap<Object, Object>) result);
+        String value = narayanaConfigMapToXml((LinkedHashMap<Object, Object>) result);
         String path = ClassLoader.getSystemResource("").getPath();
         System.out.println(path);
         try (BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(path, "jbossts-properties.xml"))) {
@@ -97,14 +97,16 @@ public final class TransactionContextsBuilder {
         }
     }
 
-    private void swapJdbcStore(final TransactionRule transactionRule, Map<Object, Object> config) {
+    private void swapJdbcStore(final TransactionRule transactionRule, final Map<Object, Object> config) {
         Object host = transactionRule.getProps().get("host");
         Object port = transactionRule.getProps().get("port");
         Object user = transactionRule.getProps().getProperty("user");
         Object password = transactionRule.getProps().getProperty("password");
         Object databaseName = transactionRule.getProps().getProperty("databaseName");
         if (null != host && null != port && null != user && null != password && null != databaseName) {
-            String jdbcAccess = String.format("com.arjuna.ats.internal.arjuna.objectstore.jdbc.accessors.DynamicDataSourceJDBCAccess;ClassName=com.mysql.cj.jdbc.MysqlDataSource;URL=jdbc:mysql://%s:%d/%s;User=%s;Password=%s", host, port, databaseName, user, password);
+            String jdbcAccessPatten = "com.arjuna.ats.internal.arjuna.objectstore.jdbc.accessors.DynamicDataSourceJDBCAccess;"
+                    + "ClassName=com.mysql.cj.jdbc.MysqlDataSource;URL=jdbc:mysql://%s:%d/%s;User=%s;Password=%s";
+            String jdbcAccess = String.format(jdbcAccessPatten, host, port, databaseName, user, password);
             config.put("ObjectStoreEnvironmentBean.objectStoreType", "com.arjuna.ats.internal.arjuna.objectstore.jdbc.JDBCStore");
             config.put("ObjectStoreEnvironmentBean.jdbcAccess", jdbcAccess);
             config.put("ObjectStoreEnvironmentBean.tablePrefix", "Action");
@@ -146,16 +148,16 @@ public final class TransactionContextsBuilder {
         return result;
     }
 
-    private String NarayanaConfigMapToXml(LinkedHashMap<Object, Object> sortedMap) {
+    private String narayanaConfigMapToXml(final Map<Object, Object> sortedMap) {
         StringBuffer sb = new StringBuffer("<properties>");
         Iterator iterator = sortedMap.keySet().iterator();
         while (iterator.hasNext()) {
             sb.append("\n\t");
             Object key = iterator.next();
             Object value = sortedMap.get(key);
-            sb.append(String.format("<entry key=\"%s\">",key));
+            sb.append(String.format("<entry key=\"%s\">", key));
             if (value instanceof List) {
-                for(Object i : (List)value) {
+                for (Object i : (List) value) {
                     sb.append("\n\t\t");
                     sb.append(i);
                 }
