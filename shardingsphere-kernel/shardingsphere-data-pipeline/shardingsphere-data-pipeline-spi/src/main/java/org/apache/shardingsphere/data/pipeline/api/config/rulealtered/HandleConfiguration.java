@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
 
+import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -71,5 +73,14 @@ public final class HandleConfiguration {
      */
     public int getJobShardingCount() {
         return null == jobShardingDataNodes ? 0 : jobShardingDataNodes.size();
+    }
+    
+    /**
+     * Split {@linkplain #logicTables} to logic table names.
+     *
+     * @return logic table names
+     */
+    public Collection<String> splitLogicTableNames() {
+        return Splitter.on(',').splitToList(logicTables);
     }
 }

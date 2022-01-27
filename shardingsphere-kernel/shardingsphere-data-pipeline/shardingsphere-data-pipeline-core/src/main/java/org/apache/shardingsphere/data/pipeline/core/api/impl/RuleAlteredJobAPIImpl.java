@@ -322,7 +322,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         log.info("Scaling job {} reset target table", jobId);
         PipelineAPIFactory.getGovernanceRepositoryAPI().deleteJobProgress(jobId);
         try {
-            new ScalingEnvironmentManager().resetTargetTable(new RuleAlteredJobContext(getJobConfig(jobId)));
+            new ScalingEnvironmentManager().cleanupTargetTables(getJobConfig(jobId));
         } catch (final SQLException ex) {
             throw new PipelineJobExecutionException("Reset target table failed for job " + jobId);
         }
