@@ -44,7 +44,7 @@ VERSION_OPTS=""
 if [ $int_version = '8' ] ; then
     VERSION_OPTS=" -XX:+UseFastAccessorMethods -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70"
 elif [ $int_version = '11' ] ; then
-    VERSION_OPTS=" -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70"
+    VERSION_OPTS=" -XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler" 
 elif [ $int_version = '17' ] ; then
     VERSION_OPTS=""
 else
