@@ -15,13 +15,4 @@
 # limitations under the License.
 #
 
-product: jdbc
-mode: memory
-transaction: local
-feature: sharding,readwrite-splitting,encrypt
-framework: jdbc
-
-host: localhost
-port: 3306
-username: root
-password: root
+org.apache.shardingsphere.infra.context.refresher.type.DummyDropDatabaseMetaDataRefresher

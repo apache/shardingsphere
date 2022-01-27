@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.metadata.persist;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
@@ -95,27 +96,27 @@ public final class MetaDataPersistServiceTest {
     
     @Test
     public void assertPersistConfigurations() {
-        Map<String, DataSourceProperties> dataSourcePropsMap = createDataSourcePropertiesMap();
-        Collection<RuleConfiguration> schemaRuleConfigs = createRuleConfigurations();
+        Map<String, DataSource> dataSourceMap = createDataSourceMap();
+        Collection<RuleConfiguration> ruleConfigs = createRuleConfigurations();
         Collection<RuleConfiguration> globalRuleConfigs = createGlobalRuleConfigurations();
         Properties props = createProperties();
         metaDataPersistService.persistConfigurations(
-                Collections.singletonMap("foo_db", dataSourcePropsMap), Collections.singletonMap("foo_db", schemaRuleConfigs), globalRuleConfigs, props, false);
-        verify(dataSourceService).persist("foo_db", dataSourcePropsMap, false);
-        verify(schemaRuleService).persist("foo_db", schemaRuleConfigs, false);
+                Collections.singletonMap("foo_db", new DataSourceProvidedSchemaConfiguration(dataSourceMap, ruleConfigs)), globalRuleConfigs, props, false);
+        verify(dataSourceService).persist("foo_db", createDataSourcePropertiesMap(dataSourceMap), false);
+        verify(schemaRuleService).persist("foo_db", ruleConfigs, false);
         verify(globalRuleService).persist(globalRuleConfigs, false);
         verify(propsService).persist(props, false);
+    }
+    
+    private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Map<String, DataSource> dataSourceMap) {
+        return dataSourceMap.entrySet().stream().collect(
+            Collectors.toMap(Entry::getKey, entry -> DataSourcePropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     @Test
     public void assertPersistInstanceConfigurations() {
         metaDataPersistService.persistInstanceConfigurations("127.0.0.1@3307", Collections.singletonList("foo_label"), false);
         verify(computeNodePersistService).persistInstanceLabels(eq("127.0.0.1@3307"), eq(Collections.singletonList("foo_label")), eq(false));
-    }
-    
-    private Map<String, DataSourceProperties> createDataSourcePropertiesMap() {
-        return createDataSourceMap().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry ->
-                DataSourcePropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private Map<String, DataSource> createDataSourceMap() {

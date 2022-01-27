@@ -15,15 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.fixture;
+package org.apache.shardingsphere.encrypt.rewrite.aware;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 
-@Getter
-@Setter
-public final class MethodInvocationFixture {
+import java.util.Collection;
+
+/**
+ * Encrypt conditions aware.
+ */
+public interface EncryptConditionsAware {
     
-    private Integer id;
+    /**
+     * Set encrypt conditions.
+     * 
+     * @param encryptConditions encrypt conditions
+     */
+    void setEncryptConditions(Collection<EncryptCondition> encryptConditions);
 }
-

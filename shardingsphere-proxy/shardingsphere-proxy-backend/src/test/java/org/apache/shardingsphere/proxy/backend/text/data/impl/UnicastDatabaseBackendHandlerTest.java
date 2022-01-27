@@ -76,7 +76,7 @@ public final class UnicastDatabaseBackendHandlerTest {
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Before
-    public void setUp() throws IllegalAccessException, NoSuchFieldException, SQLException {
+    public void setUp() throws IllegalAccessException, NoSuchFieldException {
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);

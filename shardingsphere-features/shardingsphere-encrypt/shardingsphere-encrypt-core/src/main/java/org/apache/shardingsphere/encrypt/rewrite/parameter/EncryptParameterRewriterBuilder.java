@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.encrypt.rewrite.parameter;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
+import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.impl.EncryptAssignmentParameterRewriter;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.impl.EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.impl.EncryptInsertValueParameterRewriter;
@@ -46,6 +48,8 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
     private final ShardingSphereSchema schema;
     
     private final SQLStatementContext<?> sqlStatementContext;
+    
+    private final Collection<EncryptCondition> encryptConditions;
     
     @SuppressWarnings("rawtypes")
     @Override
@@ -81,6 +85,9 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
         }
         if (toBeAddedParameterRewriter instanceof QueryWithCipherColumnAware) {
             ((QueryWithCipherColumnAware) toBeAddedParameterRewriter).setQueryWithCipherColumn(encryptRule.isQueryWithCipherColumn());
+        }
+        if (toBeAddedParameterRewriter instanceof EncryptConditionsAware) {
+            ((EncryptConditionsAware) toBeAddedParameterRewriter).setEncryptConditions(encryptConditions);
         }
         if (toBeAddedParameterRewriter.isNeedRewrite(sqlStatementContext)) {
             parameterRewriters.add(toBeAddedParameterRewriter);

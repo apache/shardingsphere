@@ -15,13 +15,31 @@
 # limitations under the License.
 #
 
-product: jdbc
-mode: memory
-transaction: local
-feature: sharding,readwrite-splitting,encrypt
-framework: jdbc
+schemaName: swapper_test
 
-host: localhost
-port: 3306
-username: root
-password: root
+dataSources:
+  foo_db:
+    url: jdbc:h2:mem:foo_db;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+    connectionTimeoutMilliseconds: 250
+    idleTimeoutMilliseconds: 2
+    maxLifetimeMilliseconds: 3
+    maxPoolSize:  4
+    minPoolSize: 5
+    readOnly: true
+
+rules:
+- !READWRITE_SPLITTING
+  dataSources:
+    readwrite_ds:
+      type: Static
+      props:
+        write-data-source-name: foo_db
+        read-data-source-names: foo_db
+
+  loadBalancers:
+    round_robin:
+      type: ROUND_ROBIN
+      props:
+        foo: foo_value

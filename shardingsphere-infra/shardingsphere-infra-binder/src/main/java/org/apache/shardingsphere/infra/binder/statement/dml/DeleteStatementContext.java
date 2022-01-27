@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteState
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -45,10 +44,13 @@ public final class DeleteStatementContext extends CommonSQLStatementContext<Dele
     
     private final String schemaName;
     
+    private final Collection<WhereSegment> whereSegments = new LinkedList<>();
+    
     public DeleteStatementContext(final DeleteStatement sqlStatement, final String schemaName) {
         super(sqlStatement);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         this.schemaName = schemaName;
+        getSqlStatement().getWhere().ifPresent(whereSegments::add);
     }
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
@@ -76,7 +78,7 @@ public final class DeleteStatementContext extends CommonSQLStatementContext<Dele
     }
     
     @Override
-    public Optional<WhereSegment> getWhere() {
-        return getSqlStatement().getWhere();
+    public Collection<WhereSegment> getWhereSegments() {
+        return whereSegments;
     }
 }

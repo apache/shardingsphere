@@ -15,13 +15,25 @@
 # limitations under the License.
 #
 
-product: jdbc
-mode: memory
-transaction: local
-feature: sharding,readwrite-splitting,encrypt
-framework: jdbc
+mode:
+  type: Cluster
+  repository:
+    type: GOV_FIXTURE
+    props:
+      namespace: governance_ds
+      server-lists: localhost:2181
+      retryIntervalMilliseconds: 500
+      timeToLiveSeconds: 60
+      maxRetries: 3
+      operationTimeoutMilliseconds: 500
+  overwrite: false
 
-host: localhost
-port: 3306
-username: root
-password: root
+rules:
+  - !AUTHORITY
+    users:
+      - root@:123
+    provider:
+      type: test
+
+props:
+  bar: bar_value
