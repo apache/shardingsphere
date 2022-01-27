@@ -19,6 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,7 +32,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @Getter
 @Setter
-public final class WeightReplicaLoadBalanceAlgorithm extends AbstractReplicaLoadBalance {
+public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
     
@@ -40,7 +41,7 @@ public final class WeightReplicaLoadBalanceAlgorithm extends AbstractReplicaLoad
     private Properties props = new Properties();
     
     @Override
-    protected String getDataSourceName(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
+    public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
         double[] weight = WEIGHT_MAP.containsKey(name) ? WEIGHT_MAP.get(name) : initWeight(readDataSourceNames);
         WEIGHT_MAP.putIfAbsent(name, weight);
         return getDataSourceName(readDataSourceNames, weight);
@@ -52,17 +53,16 @@ public final class WeightReplicaLoadBalanceAlgorithm extends AbstractReplicaLoad
         if (index < 0) {
             index = -index - 1;
             return index < weight.length && randomWeight < weight[index] ? readDataSourceNames.get(index) : readDataSourceNames.get(readDataSourceNames.size() - 1);
-        } else {
-            return readDataSourceNames.get(index);
         }
+        return readDataSourceNames.get(index);
     }
 
     private double[] initWeight(final List<String> readDataSourceNames) {
-        double[] weights = getWeights(readDataSourceNames);
-        if (weights.length != 0 && Math.abs(weights[weights.length - 1] - 1.0D) >= ACCURACY_THRESHOLD) {
+        double[] result = getWeights(readDataSourceNames);
+        if (result.length != 0 && Math.abs(result[result.length - 1] - 1.0D) >= ACCURACY_THRESHOLD) {
             throw new IllegalStateException("The cumulative weight is calculated incorrectly, and the sum of the probabilities is not equal to 1.");
         }
-        return weights;
+        return result;
     }
     
     private double[] getWeights(final List<String> readDataSourceNames) {
@@ -84,13 +84,13 @@ public final class WeightReplicaLoadBalanceAlgorithm extends AbstractReplicaLoad
     }
     
     private double[] calcWeight(final double[] exactWeights) {
-        double[] weights = new double[exactWeights.length];
+        double[] result = new double[exactWeights.length];
         double randomRange = 0D;
-        for (int i = 0; i < weights.length; i++) {
-            weights[i] = randomRange + exactWeights[i];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = randomRange + exactWeights[i];
             randomRange += exactWeights[i];
         }
-        return weights;
+        return result;
     }
     
     private double getWeightValue(final String readDataSourceName) {
@@ -98,19 +98,19 @@ public final class WeightReplicaLoadBalanceAlgorithm extends AbstractReplicaLoad
         if (weightObject == null) {
             throw new IllegalStateException("Read database access weight is not configured：" + readDataSourceName);
         }
-        double weight;
+        double result;
         try {
-            weight = Double.parseDouble(weightObject.toString());
+            result = Double.parseDouble(weightObject.toString());
         } catch (NumberFormatException e) {
             throw new NumberFormatException("Read database weight configuration error, configuration parameters:" + weightObject.toString());
         }
-        if (Double.isInfinite(weight)) {
-            weight = 10000.0D;
+        if (Double.isInfinite(result)) {
+            result = 10000.0D;
         }
-        if (Double.isNaN(weight)) {
-            weight = 1.0D;
+        if (Double.isNaN(result)) {
+            result = 1.0D;
         }
-        return weight;
+        return result;
     }
     
     @Override
