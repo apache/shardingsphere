@@ -45,9 +45,9 @@ public final class DataNodeUtilTest {
     
     @Test
     public void assertBuildDataNodeWithSameDataSource() {
-        DataNode dataNode = new DataNode("pr_ds.t_order");
+        DataNode dataNode = new DataNode("readwrite_ds.t_order");
         Map<String, Collection<String>> dataSources = new LinkedHashMap<>();
-        dataSources.put("pr_ds", Arrays.asList("ds_0", "shadow_ds_0"));
+        dataSources.put("readwrite_ds", Arrays.asList("ds_0", "shadow_ds_0"));
         Collection<DataNode> dataNodes = DataNodeUtil.buildDataNode(dataNode, dataSources);
         assertThat(dataNodes.size(), is(2));
         Iterator<DataNode> iterator = dataNodes.iterator();
@@ -59,7 +59,7 @@ public final class DataNodeUtilTest {
     public void assertBuildDataNodeWithoutSameDataSource() {
         DataNode dataNode = new DataNode("read_ds.t_order");
         Map<String, Collection<String>> dataSources = new LinkedHashMap<>();
-        dataSources.put("pr_ds", Arrays.asList("ds_0", "shadow_ds_0"));
+        dataSources.put("readwrite_ds", Arrays.asList("ds_0", "shadow_ds_0"));
         Collection<DataNode> dataNodes = DataNodeUtil.buildDataNode(dataNode, dataSources);
         assertThat(dataNodes.size(), is(1));
         assertThat(dataNodes.iterator().next().getDataSourceName(), is("read_ds"));

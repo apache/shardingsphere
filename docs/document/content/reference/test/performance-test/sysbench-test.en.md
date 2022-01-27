@@ -486,7 +486,7 @@ dataSources:
 rules:
 - !READWRITE_SPLITTING
   dataSources:
-    pr_ds:
+    readwrite_ds:
       primaryDataSourceName: ds_0
       replicaDataSourceNames:
         - ds_0
@@ -784,7 +784,7 @@ dataSources:
 rules:
 - !DB_DISCOVERY
   dataSources:
-    pr_ds:
+    readwrite_ds:
       dataSourceNames:
         - ds_0
         - ds_1

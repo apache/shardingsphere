@@ -109,7 +109,7 @@
     
     <sharding:sharding-algorithm id="databaseAlgorithm" type="INLINE">
         <props>
-            <prop key="algorithm-expression">demo_pr_ds_${user_id % 2}</prop>
+            <prop key="algorithm-expression">demo_readwrite_ds_${user_id % 2}</prop>
         </props>
     </sharding:sharding-algorithm>
     <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="databaseAlgorithm" />
@@ -136,8 +136,8 @@
     
     <sharding:rule id="shardingRule">
         <sharding:table-rules>
-            <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_pr_ds_${0..1}.t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" key-generate-strategy-ref="orderKeyGenerator" />
-            <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_pr_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generate-strategy-ref="itemKeyGenerator" />
+            <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_readwrite_ds_${0..1}.t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" key-generate-strategy-ref="orderKeyGenerator" />
+            <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_readwrite_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generate-strategy-ref="itemKeyGenerator" />
         </sharding:table-rules>
         <sharding:binding-table-rules>
             <sharding:binding-table-rule logic-tables="t_order,t_order_item"/>
@@ -147,13 +147,13 @@
         </sharding:broadcast-table-rules>
     </sharding:rule>
     <readwrite-splitting:rule id="readWriteSplittingRule">
-        <readwrite-splitting:data-source-rule id="demo_pr_ds_0" type="Static" load-balance-algorithm-ref="randomStrategy">
+        <readwrite-splitting:data-source-rule id="demo_readwrite_ds_0" type="Static" load-balance-algorithm-ref="randomStrategy">
             <props>
                 <prop key="write-data-source-name">demo_write_ds_0</prop>
                 <prop key="read-data-source-names">demo_write_ds_0_read_0, demo_write_ds_0_read_1</prop>
             </props>
         </readwrite-splitting:data-source-rule>
-        <readwrite-splitting:data-source-rule id="demo_pr_ds_1" type="Static" load-balance-algorithm-ref="randomStrategy">
+        <readwrite-splitting:data-source-rule id="demo_readwrite_ds_1" type="Static" load-balance-algorithm-ref="randomStrategy">
             <props>
                 <prop key="write-data-source-name">demo_write_ds_1</prop>
                 <prop key="read-data-source-names">demo_write_ds_1_read_0, demo_write_ds_1_read_1</prop>

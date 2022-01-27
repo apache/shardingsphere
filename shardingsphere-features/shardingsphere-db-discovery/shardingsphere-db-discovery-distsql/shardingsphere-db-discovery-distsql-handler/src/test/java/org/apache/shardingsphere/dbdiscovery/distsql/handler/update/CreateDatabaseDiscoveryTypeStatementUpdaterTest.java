@@ -58,7 +58,7 @@ public final class CreateDatabaseDiscoveryTypeStatementUpdaterTest {
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithDuplicate() throws DistSQLException {
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("pr_ds", Collections.emptyList(), "ha-heartbeat", "test");
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds", Collections.emptyList(), "ha-heartbeat", "test");
         Collection<DatabaseDiscoveryTypeSegment> databaseDiscoveryTypeSegments = Arrays.asList(
                 new DatabaseDiscoveryTypeSegment("discovery_type", new AlgorithmSegment("mgr", new Properties())),
                 new DatabaseDiscoveryTypeSegment("discovery_type", new AlgorithmSegment("mgr", new Properties())));
@@ -68,7 +68,7 @@ public final class CreateDatabaseDiscoveryTypeStatementUpdaterTest {
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithExist() throws DistSQLException {
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("pr_ds", Collections.emptyList(), "ha-heartbeat", "test");
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds", Collections.emptyList(), "ha-heartbeat", "test");
         Collection<DatabaseDiscoveryTypeSegment> databaseDiscoveryTypeSegments = Collections.singletonList(
                 new DatabaseDiscoveryTypeSegment("discovery_type", new AlgorithmSegment("mgr", new Properties())));
         updater.checkSQLStatement(shardingSphereMetaData, new CreateDatabaseDiscoveryTypeStatement(databaseDiscoveryTypeSegments),
