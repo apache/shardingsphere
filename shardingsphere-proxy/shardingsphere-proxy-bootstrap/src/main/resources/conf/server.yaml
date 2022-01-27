@@ -43,7 +43,8 @@
 #      type: ALL_PRIVILEGES_PERMITTED
 #  - !TRANSACTION
 #    defaultType: XA
-#    providerType: Narayana
+#    providerType: Atomikos
+#    # When the providertype is Narayana, the following properties can be configured or not
 #    props:
 #      databaseName: jbossts
 #      host: 127.0.0.1
