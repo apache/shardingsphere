@@ -67,7 +67,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     public EncryptRule(final EncryptRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
         Preconditions.checkArgument(isValidRuleConfiguration(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
         config.getEncryptors().forEach((key, value) -> encryptors.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, EncryptAlgorithm.class)));
-        Map<String, Integer> dataTypes = getDataTypes(dataSourceMap);
+        Map<String, Integer> dataTypes = containsConfigDataTypeColumn(config.getTables()) ? getDataTypes(dataSourceMap) : Collections.emptyMap();
         config.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each, dataTypes)));
         queryWithCipherColumn = config.isQueryWithCipherColumn();
     }
@@ -75,7 +75,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     public EncryptRule(final AlgorithmProvidedEncryptRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
         Preconditions.checkArgument(isValidRuleConfigurationWithAlgorithmProvided(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
         encryptors.putAll(config.getEncryptors());
-        Map<String, Integer> dataTypes = getDataTypes(dataSourceMap);
+        Map<String, Integer> dataTypes = containsConfigDataTypeColumn(config.getTables()) ? getDataTypes(dataSourceMap) : Collections.emptyMap();
         config.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each, dataTypes)));
         queryWithCipherColumn = config.isQueryWithCipherColumn();
     }
@@ -133,6 +133,17 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
             }
         }
         return Collections.emptyMap();
+    }
+    
+    private boolean containsConfigDataTypeColumn(final Collection<EncryptTableRuleConfiguration> tableRuleConfigurations) {
+        for (EncryptTableRuleConfiguration each : tableRuleConfigurations) {
+            for (EncryptColumnRuleConfiguration column : each.getColumns()) {
+                if (null != column.getLogicDataType() && !column.getLogicDataType().isEmpty()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     /**
