@@ -23,15 +23,18 @@
         <column name="type_decimal" type="decimal" />
         <column name="type_char" type="char" />
         <column name="type_date" type="Date" />
+        <column name="type_enum" type="enum#season" />
+        <column name="type_boolean" type="boolean" />
+        <column name="type_smallint" type="smallint" />
         <column name="type_time" type="time" />
         <column name="type_timestamp" type="timestamp"/>
     </metadata>
-    <row data-node="shadow_db.t_order" values="1, 0, shadow_order, 10.00, S, 2017-08-08, 18:30:30, 2017-08-08 18:30:30" />
-    <row data-node="shadow_db.t_order" values="2, 0, shadow_order, 10.00, S, 2017-08-08, 18:30:30, 2017-08-08 18:30:30" />
-    <row data-node="shadow_db.t_order" values="3, 0, shadow_order, 10.00, S, 2017-08-08, 18:30:30, 2017-08-08 18:30:30" />
-    <row data-node="shadow_db.t_order" values="4, 0, shadow_order, 10.00, S, 2017-08-08, 18:30:30, 2017-08-08 18:30:30" />
-    <row data-node="shadow_db.t_order" values="5, 0, shadow_order, 10.00, S, 2017-08-08, 18:30:30, 2017-08-08 18:30:30" />
-    <row data-node="shadow_db.t_order" values="6, 0, shadow_order, 100.00, S, 2021-01-01, 12:30:30, 2021-01-01 12:30:30" />
-    <row data-node="shadow_db.t_order" values="7, 0, shadow_order, 100.00, S, 2021-01-01, 12:30:30, 2021-01-01 12:30:30" />
-    <row data-node="shadow_db.t_order" values="8, 0, shadow_order, 100.00, S, 2021-01-01, 12:30:30, 2021-01-01 12:30:30" />
+    <row data-node="shadow_db.t_order" values="1, 0, shadow_order, 10.00, S, 2017-08-08, summer, true, 5, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="shadow_db.t_order" values="2, 0, shadow_order, 10.00, S, 2017-08-08, summer, true, 5, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="shadow_db.t_order" values="3, 0, shadow_order, 10.00, S, 2017-08-08, summer, true, 5, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="shadow_db.t_order" values="4, 0, shadow_order, 10.00, S, 2017-08-08, summer, true, 5, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="shadow_db.t_order" values="5, 0, shadow_order, 10.00, S, 2017-08-08, summer, true, 5, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="shadow_db.t_order" values="6, 0, shadow_order, 100.00, S, 2021-01-01, summer, true, 6, 12:30:30, 2021-01-01 12:30:30.0" />
+    <row data-node="shadow_db.t_order" values="7, 0, shadow_order, 100.00, S, 2021-01-01, summer, true, 7, 12:30:30, 2021-01-01 12:30:30.0" />
+    <row data-node="shadow_db.t_order" values="8, 0, shadow_order, 100.00, S, 2021-01-01, summer, true, 7, 12:30:30, 2021-01-01 12:30:30.0" />
 </dataset>
