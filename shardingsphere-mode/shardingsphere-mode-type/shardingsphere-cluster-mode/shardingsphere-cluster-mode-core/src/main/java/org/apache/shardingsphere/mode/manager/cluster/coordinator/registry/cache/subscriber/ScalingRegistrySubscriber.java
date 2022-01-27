@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ClusterSwitchConfigurationEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationCachedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseSchemaNameLockEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.SchemaRulePersistService;
@@ -129,6 +130,20 @@ public final class ScalingRegistrySubscriber {
         log.info("clusterSwitchConfiguration, schemaName={}", schemaName);
         dataSourcePersistService.persist(schemaName, event.getTargetDataSourcePropertiesMap());
         persistService.persist(schemaName, event.getTargetRuleConfigs());
+    }
+    
+    /**
+     * scaling release schema name lock.
+     *
+     * @param event scaling release schema name lock event
+     */
+    @Subscribe
+    public void scalingReleaseSchemaNameLock(final ScalingReleaseSchemaNameLockEvent event) {
+        if (schemaNameLockedMap.getOrDefault(event.getSchemaName(), false)) {
+            log.info("scaling job finished, release schema name lock, event = {}", event);
+            schemaNameLockedMap.remove(event.getSchemaName());
+            lockRegistryService.releaseLock(decorateLockName(event.getSchemaName()));
+        }
     }
     
     private String decorateLockName(final String schemaName) {
