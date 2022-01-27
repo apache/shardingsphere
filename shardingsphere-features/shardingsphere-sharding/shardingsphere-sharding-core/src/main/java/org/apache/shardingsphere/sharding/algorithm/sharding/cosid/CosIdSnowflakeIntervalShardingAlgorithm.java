@@ -28,13 +28,13 @@ import java.time.LocalDateTime;
  * The algorithm parses the timestamp from snowflake-id as the sharding value of Interval-based time range sharding algorithm.
  */
 public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractIntervalShardingAlgorithm<Comparable<?>> {
-
+    
     public static final String TYPE = CosIdAlgorithm.TYPE_PREFIX + "INTERVAL_SNOWFLAKE";
-
+    
     public static final String EPOCH_KEY = "epoch";
-
+    
     private volatile SnowflakeIdStateParser snowflakeIdStateParser;
-
+    
     @Override
     public void init() {
         super.init();
@@ -50,13 +50,13 @@ public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractInter
                 getZoneId()
         );
     }
-
+    
     @Override
     protected LocalDateTime convertShardingValue(final Comparable<?> shardingValue) {
         Long snowflakeId = convertToSnowflakeId(shardingValue);
         return snowflakeIdStateParser.parseTimestamp(snowflakeId);
     }
-
+    
     private Long convertToSnowflakeId(final Comparable<?> shardingValue) {
         if (shardingValue instanceof Long) {
             return (Long) shardingValue;
@@ -67,7 +67,7 @@ public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractInter
         }
         throw new IllegalArgumentException(Strings.lenientFormat("The current shard type:[%s] is not supported!", shardingValue.getClass()));
     }
-
+    
     @Override
     public String getType() {
         return TYPE;
