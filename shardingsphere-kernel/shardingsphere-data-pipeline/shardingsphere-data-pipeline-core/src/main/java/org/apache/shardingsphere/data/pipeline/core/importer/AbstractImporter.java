@@ -80,8 +80,7 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
         write();
     }
     
-    @Override
-    public final void write() {
+    private void write() {
         log.info("importer write");
         int round = 1;
         int rowCount = 0;
