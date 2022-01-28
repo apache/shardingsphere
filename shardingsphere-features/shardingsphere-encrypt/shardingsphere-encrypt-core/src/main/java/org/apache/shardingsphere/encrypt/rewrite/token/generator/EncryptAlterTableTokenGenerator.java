@@ -303,9 +303,9 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
                 encryptColumn.getCipherColumn(), encryptColumn.getCipherDataType().getTypeName()));
         String previousColumnName = segment.getPreviousColumn().getIdentifier().getValue();
         encryptRule.findAssistedQueryColumn(tableName, previousColumnName).map(optional -> new EncryptConfigDataTypeToken(segment.getStopIndex() + 1, segment.getStopIndex(), 
-                ", CHANGE COLUMN " + optional + encryptColumn.getAssistedQueryColumn().orElse("") + " ", encryptColumn.getAssistedQueryDataType().getTypeName())).ifPresent(result::add);
+                ", CHANGE COLUMN " + optional + " " + encryptColumn.getAssistedQueryColumn().orElse(""), encryptColumn.getAssistedQueryDataType().getTypeName())).ifPresent(result::add);
         encryptRule.findPlainColumn(tableName, previousColumnName).map(optional -> new EncryptConfigDataTypeToken(segment.getStopIndex() + 1, segment.getStopIndex(),
-                ", CHANGE COLUMN " + optional + encryptColumn.getPlainColumn().orElse("") + " ", encryptColumn.getPlainDataType().getTypeName())).ifPresent(result::add);
+                ", CHANGE COLUMN " + optional + " " + encryptColumn.getPlainColumn().orElse(""), encryptColumn.getPlainDataType().getTypeName())).ifPresent(result::add);
         return result;
     }
     
