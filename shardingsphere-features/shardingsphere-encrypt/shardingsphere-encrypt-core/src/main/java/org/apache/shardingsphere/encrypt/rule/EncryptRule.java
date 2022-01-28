@@ -165,7 +165,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      */
     @SuppressWarnings("rawtypes")
     public Optional<EncryptAlgorithm> findEncryptor(final String logicTable, final String logicColumn) {
-        return Optional.ofNullable(tables.get(logicTable)).flatMap(optional -> optional.findEncryptorName(logicColumn).map(encryptors::get));
+        return tables.containsKey(logicTable) ? tables.get(logicTable).findEncryptorName(logicColumn).map(encryptors::get) : Optional.empty();
     }
     
     /**
