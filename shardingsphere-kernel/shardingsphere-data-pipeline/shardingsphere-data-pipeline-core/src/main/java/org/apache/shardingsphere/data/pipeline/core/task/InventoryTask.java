@@ -46,15 +46,13 @@ import java.util.concurrent.Future;
  * Inventory task.
  */
 @Slf4j
-@ToString(exclude = {"importerExecuteEngine", "dataSourceManager", "dumper"})
+@ToString(exclude = {"importerExecuteEngine", "channel", "dumper", "importer"})
 public final class InventoryTask extends AbstractLifecycleExecutor implements PipelineTask, AutoCloseable {
     
     @Getter
     private final String taskId;
     
     private final ExecuteEngine importerExecuteEngine;
-    
-    private final PipelineDataSourceManager dataSourceManager;
     
     private final PipelineChannel channel;
     
@@ -68,7 +66,6 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
                          final PipelineChannelFactory pipelineChannelFactory, final PipelineDataSourceManager dataSourceManager,
                          final ExecuteEngine importerExecuteEngine) {
         this.importerExecuteEngine = importerExecuteEngine;
-        this.dataSourceManager = dataSourceManager;
         taskId = generateTaskId(inventoryDumperConfig);
         channel = createChannel(pipelineChannelFactory);
         dumper = DumperFactory.createInventoryDumper(inventoryDumperConfig, dataSourceManager, channel);

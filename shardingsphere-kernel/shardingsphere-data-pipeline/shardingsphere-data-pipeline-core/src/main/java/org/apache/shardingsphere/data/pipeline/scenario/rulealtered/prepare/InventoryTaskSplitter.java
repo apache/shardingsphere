@@ -65,24 +65,23 @@ public final class InventoryTaskSplitter {
      * Split inventory data to multi-tasks.
      *
      * @param jobContext job context
-     * @param dataSourceManager data source manager
      * @return split inventory data task
      */
-    public List<InventoryTask> splitInventoryData(final RuleAlteredJobContext jobContext, final PipelineDataSourceManager dataSourceManager) {
+    public List<InventoryTask> splitInventoryData(final RuleAlteredJobContext jobContext) {
         List<InventoryTask> result = new LinkedList<>();
         TaskConfiguration taskConfig = jobContext.getTaskConfig();
         PipelineChannelFactory pipelineChannelFactory = jobContext.getRuleAlteredContext().getPipelineChannelFactory();
+        PipelineDataSourceManager dataSourceManager = jobContext.getDataSourceManager();
         ExecuteEngine importerExecuteEngine = jobContext.getRuleAlteredContext().getImporterExecuteEngine();
-        for (InventoryDumperConfiguration each : splitDumperConfig(jobContext, taskConfig.getDumperConfig(), dataSourceManager)) {
+        for (InventoryDumperConfiguration each : splitDumperConfig(jobContext, taskConfig.getDumperConfig())) {
             result.add(new InventoryTask(each, taskConfig.getImporterConfig(), pipelineChannelFactory, dataSourceManager, importerExecuteEngine));
         }
         return result;
     }
     
-    private Collection<InventoryDumperConfiguration> splitDumperConfig(
-            final RuleAlteredJobContext jobContext, final DumperConfiguration dumperConfig, final PipelineDataSourceManager dataSourceManager) {
+    private Collection<InventoryDumperConfiguration> splitDumperConfig(final RuleAlteredJobContext jobContext, final DumperConfiguration dumperConfig) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
-        PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
+        PipelineDataSourceWrapper dataSource = jobContext.getDataSourceManager().getDataSource(dumperConfig.getDataSourceConfig());
         PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSource);
         for (InventoryDumperConfiguration each : splitByTable(dumperConfig)) {
             result.addAll(splitByPrimaryKey(jobContext, dataSource, metaDataLoader, each));

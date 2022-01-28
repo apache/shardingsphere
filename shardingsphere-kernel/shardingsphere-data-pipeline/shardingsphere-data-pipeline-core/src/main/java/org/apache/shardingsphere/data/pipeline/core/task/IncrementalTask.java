@@ -47,15 +47,13 @@ import java.util.concurrent.Future;
  * Incremental task.
  */
 @Slf4j
-@ToString(exclude = {"incrementalDumperExecuteEngine", "dataSourceManager", "dumper", "progress"})
+@ToString(exclude = {"incrementalDumperExecuteEngine", "channel", "dumper", "importers", "progress"})
 public final class IncrementalTask extends AbstractLifecycleExecutor implements PipelineTask, AutoCloseable {
     
     @Getter
     private final String taskId;
     
     private final ExecuteEngine incrementalDumperExecuteEngine;
-    
-    private final PipelineDataSourceManager dataSourceManager;
     
     private final PipelineChannel channel;
     
@@ -70,7 +68,6 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
                            final PipelineChannelFactory pipelineChannelFactory, final PipelineDataSourceManager dataSourceManager,
                            final ExecuteEngine incrementalDumperExecuteEngine) {
         this.incrementalDumperExecuteEngine = incrementalDumperExecuteEngine;
-        this.dataSourceManager = dataSourceManager;
         taskId = dumperConfig.getDataSourceName();
         progress = new IncrementalTaskProgress();
         IngestPosition<?> position = dumperConfig.getPosition();
