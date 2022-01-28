@@ -22,14 +22,13 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 import java.util.Map;
 
 /**
- * Zookeeper Distribute Lock.
+ * distributed locks added to the schema name during scaling.
  */
-public final class ZookeeperDistributeLock {
+public final class ScalingSchemaNameDistributeLock {
     
     private static final LockRegistryService LOCK_REGISTRY_SERVICE;
     
@@ -37,7 +36,7 @@ public final class ZookeeperDistributeLock {
     
     static {
         ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) PipelineContext.getModeConfig().getRepository();
-        ClusterPersistRepository repository = TypedSPIRegistry.getRegisteredService(ClusterPersistRepository.class, repositoryConfig.getType(), repositoryConfig.getProps());
+        ClusterPersistRepository repository = (ClusterPersistRepository) PipelineContext.getContextManager().getMetaDataContexts().getMetaDataPersistService().get().getRepository();
         repository.init(repositoryConfig);
         LOCK_REGISTRY_SERVICE = new LockRegistryService(repository);
         LOCK_NAME_LOCKED_MAP = Maps.newConcurrentMap();

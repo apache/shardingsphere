@@ -34,7 +34,7 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExecutor;
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
-import org.apache.shardingsphere.data.pipeline.core.lock.ZookeeperDistributeLock;
+import org.apache.shardingsphere.data.pipeline.core.lock.ScalingSchemaNameDistributeLock;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -171,7 +171,9 @@ public final class RuleAlteredJobWorker {
      */
     @Subscribe
     public void start(final StartScalingEvent event) {
-        isUncompletedJobOfSameSchemaInJobList(event.getSchemaName());
+        if (!isUncompletedJobOfSameSchemaInJobList(event.getSchemaName())) {
+            return;
+        }
         log.info("Start scaling job by {}", event);
         Optional<JobConfiguration> jobConfigOptional = createJobConfig(event);
         Optional<String> jobId = jobConfigOptional.isPresent() ? PipelineJobAPIFactory.getRuleAlteredJobAPI().start(jobConfigOptional.get()) : Optional.empty();
@@ -275,7 +277,7 @@ public final class RuleAlteredJobWorker {
         }
     }
     
-    private void isUncompletedJobOfSameSchemaInJobList(final String schema) {
+    private boolean isUncompletedJobOfSameSchemaInJobList(final String schema) {
         boolean isUncompletedJobOfSameSchema = false;
         for (JobInfo each : PipelineJobAPIFactory.getRuleAlteredJobAPI().list()) {
             JobConfiguration jobConfiguration = YamlEngine.unmarshal(each.getJobParameter(), JobConfiguration.class, true);
@@ -286,7 +288,9 @@ public final class RuleAlteredJobWorker {
         }
         if (isUncompletedJobOfSameSchema) {
             log.warn("There is an outstanding job with the same schema name");
+            return false;
         }
+        return true;
     }
     
     private boolean isUncompletedJobOfSameSchema(final JobConfiguration jobConfig, final String jobId, final String currentSchema) {
@@ -306,7 +310,7 @@ public final class RuleAlteredJobWorker {
      */
     @Subscribe
     public void scalingReleaseSchemaNameLock(final ScalingReleaseSchemaNameLockEvent event) {
-        ZookeeperDistributeLock.releaseLock(event.getSchemaName());
+        ScalingSchemaNameDistributeLock.releaseLock(event.getSchemaName());
     }
     
     /**

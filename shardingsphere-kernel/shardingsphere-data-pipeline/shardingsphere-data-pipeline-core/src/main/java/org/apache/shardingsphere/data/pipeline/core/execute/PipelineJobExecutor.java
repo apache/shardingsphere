@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfigu
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
-import org.apache.shardingsphere.data.pipeline.core.lock.ZookeeperDistributeLock;
+import org.apache.shardingsphere.data.pipeline.core.lock.ScalingSchemaNameDistributeLock;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobSchedulerCenter;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
@@ -63,8 +63,8 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
                 log.info("remove and stop {}", jobConfigPOJO.getJobName());
                 EXECUTING_JOBS.remove(jobConfigPOJO.getJobName());
                 RuleAlteredJobSchedulerCenter.stop(jobConfigPOJO.getJobName());
-                JobConfiguration jobConfiguration = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), JobConfiguration.class, true);
-                ScalingReleaseSchemaNameLockEvent releaseLockEvent = new ScalingReleaseSchemaNameLockEvent(jobConfiguration.getWorkflowConfig().getSchemaName());
+                JobConfiguration jobConfig = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), JobConfiguration.class, true);
+                ScalingReleaseSchemaNameLockEvent releaseLockEvent = new ScalingReleaseSchemaNameLockEvent(jobConfig.getWorkflowConfig().getSchemaName());
                 ShardingSphereEventBus.getInstance().post(releaseLockEvent);
                 return;
             }
@@ -72,7 +72,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
                 case ADDED:
                 case UPDATED:
                     JobConfiguration jobConfiguration = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), JobConfiguration.class, true);
-                    if (ZookeeperDistributeLock.tryLock(jobConfiguration.getWorkflowConfig().getSchemaName(), 1000)) {
+                    if (ScalingSchemaNameDistributeLock.tryLock(jobConfiguration.getWorkflowConfig().getSchemaName(), 1000)) {
                         execute(jobConfigPOJO);
                     }
                     break;
