@@ -21,6 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.HandleConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowConfiguration;
@@ -28,9 +29,11 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExecutor;
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
+import org.apache.shardingsphere.data.pipeline.core.lock.ZookeeperDistributeLock;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
@@ -43,6 +46,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseSchemaNameLockEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
@@ -163,6 +167,7 @@ public final class RuleAlteredJobWorker {
      */
     @Subscribe
     public void start(final StartScalingEvent event) {
+        isUncompletedJobOfSameSchemaInJobList(event.getSchemaName());
         log.info("Start scaling job by {}", event);
         Optional<JobConfiguration> jobConfigOptional = createJobConfig(event);
         Optional<String> jobId = jobConfigOptional.isPresent() ? PipelineJobAPIFactory.getRuleAlteredJobAPI().start(jobConfigOptional.get()) : Optional.empty();
@@ -264,5 +269,39 @@ public final class RuleAlteredJobWorker {
         for (Entry<String, Map<String, Object>> entry : yamlDataSources.entrySet()) {
             entry.getValue().put(jdbcUrlKey, new JdbcUrlAppender().appendQueryProperties((String) entry.getValue().get(jdbcUrlKey), queryProps));
         }
+    }
+    
+    private void isUncompletedJobOfSameSchemaInJobList(final String schema) {
+        boolean isUncompletedJobOfSameSchema = false;
+        for (JobInfo each : PipelineJobAPIFactory.getRuleAlteredJobAPI().list()) {
+            JobConfiguration jobConfiguration = YamlEngine.unmarshal(each.getJobParameter(), JobConfiguration.class, true);
+            if (isUncompletedJobOfSameSchema(jobConfiguration, each.getJobId(), schema)) {
+                isUncompletedJobOfSameSchema = true;
+                break;
+            }
+        }
+        if (isUncompletedJobOfSameSchema) {
+            log.warn("There is an outstanding job with the same schema name");
+        }
+    }
+    
+    private boolean isUncompletedJobOfSameSchema(final JobConfiguration jobConfig, final String jobId, final String currentSchema) {
+        HandleConfiguration handleConfig = jobConfig.getHandleConfig();
+        WorkflowConfiguration workflowConfig;
+        if (null == handleConfig || null == (workflowConfig = jobConfig.getWorkflowConfig())) {
+            log.warn("handleConfig or workflowConfig null, jobId={}", jobId);
+            return false;
+        }
+        return currentSchema.equals(workflowConfig.getSchemaName());
+    }
+    
+    /**
+     * scaling release schema name lock.
+     *
+     * @param event scaling release schema name lock event
+     */
+    @Subscribe
+    public void scalingReleaseSchemaNameLock(final ScalingReleaseSchemaNameLockEvent event) {
+        ZookeeperDistributeLock.releaseLock(event.getSchemaName());
     }
 }

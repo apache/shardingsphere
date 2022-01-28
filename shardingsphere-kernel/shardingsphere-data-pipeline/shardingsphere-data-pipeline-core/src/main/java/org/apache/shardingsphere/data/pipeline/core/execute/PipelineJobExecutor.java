@@ -19,14 +19,18 @@ package org.apache.shardingsphere.data.pipeline.core.execute;
 
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
+import org.apache.shardingsphere.data.pipeline.core.lock.ZookeeperDistributeLock;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobSchedulerCenter;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseSchemaNameLockEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
 import java.util.Optional;
@@ -59,12 +63,18 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
                 log.info("remove and stop {}", jobConfigPOJO.getJobName());
                 EXECUTING_JOBS.remove(jobConfigPOJO.getJobName());
                 RuleAlteredJobSchedulerCenter.stop(jobConfigPOJO.getJobName());
+                JobConfiguration jobConfiguration = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), JobConfiguration.class, true);
+                ScalingReleaseSchemaNameLockEvent releaseLockEvent = new ScalingReleaseSchemaNameLockEvent(jobConfiguration.getWorkflowConfig().getSchemaName());
+                ShardingSphereEventBus.getInstance().post(releaseLockEvent);
                 return;
             }
             switch (event.getType()) {
                 case ADDED:
                 case UPDATED:
-                    execute(jobConfigPOJO);
+                    JobConfiguration jobConfiguration = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), JobConfiguration.class, true);
+                    if (ZookeeperDistributeLock.tryLock(jobConfiguration.getWorkflowConfig().getSchemaName(), 1000)) {
+                        execute(jobConfigPOJO);
+                    }
                     break;
                 default:
                     break;
