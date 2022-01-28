@@ -23,8 +23,6 @@ import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
-import java.util.Optional;
-
 /**
  * Encrypt context builder.
  */
@@ -42,8 +40,7 @@ public final class EncryptContextBuilder {
      */
     public static EncryptContext build(final String schemaName, final String tableName, final String columnName, final EncryptRule encryptRule) {
         EncryptContext result = new EncryptContext(schemaName, tableName, columnName);
-        Optional<EncryptColumn> encryptColumn = encryptRule.findEncryptTable(tableName).flatMap(optional -> optional.findEncryptColumn(columnName));
-        encryptColumn.ifPresent(optional -> setEncryptDataType(result, optional));
+        encryptRule.findEncryptTable(tableName).flatMap(optional -> optional.findEncryptColumn(columnName)).ifPresent(optional -> setEncryptDataType(result, optional));
         return result;
     }
     
