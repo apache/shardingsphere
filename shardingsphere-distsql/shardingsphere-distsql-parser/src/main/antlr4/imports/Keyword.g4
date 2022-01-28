@@ -231,6 +231,18 @@ TRAFFIC
     : T R A F F I C
     ;
 
+LABELS
+    : L A B E L S 
+    ;
+
+TRAFFIC_ALGORITHM
+    : T R A F F I C UL_ A L G O R I T H M
+    ;
+
+LOAD_BALANCER
+    : L O A D UL_ B A L A N C E R
+    ;
+
 IF  
     : I F
     ;

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
+import org.apache.shardingsphere.encrypt.rewrite.aware.SchemaNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateEqualRightValueToken;
@@ -26,7 +27,6 @@ import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateInRi
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.util.DMLStatementContextHelper;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.ParametersAware;
@@ -43,13 +43,15 @@ import java.util.Optional;
  * Predicate right value token generator for encrypt.
  */
 @Setter
-public final class EncryptPredicateRightValueTokenGenerator implements CollectionSQLTokenGenerator, ParametersAware, EncryptConditionsAware, EncryptRuleAware {
+public final class EncryptPredicateRightValueTokenGenerator implements CollectionSQLTokenGenerator, ParametersAware, EncryptConditionsAware, EncryptRuleAware, SchemaNameAware {
     
     private List<Object> parameters;
     
     private Collection<EncryptCondition> encryptConditions;
     
     private EncryptRule encryptRule;
+    
+    private String schemaName;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -58,7 +60,6 @@ public final class EncryptPredicateRightValueTokenGenerator implements Collectio
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        String schemaName = DMLStatementContextHelper.getSchemaName(sqlStatementContext);
         Collection<SQLToken> result = new LinkedHashSet<>();
         for (EncryptCondition each : encryptConditions) {
             result.add(generateSQLToken(schemaName, each));

@@ -15,17 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.type;
+package org.apache.shardingsphere.proxy.backend.text.distsql.fixture;
 
-/**
- * Schema available.
- */
-public interface SchemaAvailable {
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
+
+import java.util.List;
+import java.util.Properties;
+
+@Getter
+@Setter
+public final class TestTrafficLoadBalanceAlgorithm implements TrafficLoadBalanceAlgorithm {
     
-    /**
-     * Get schema name.
-     * 
-     * @return current schema name.
-     */
-    String getSchemaName();
+    private Properties props = new Properties();
+    
+    @Override
+    public String getType() {
+        return "TEST";
+    }
+    
+    @Override
+    public String getInstanceId(final String name, final List<String> instanceIds) {
+        return null;
+    }
 }

@@ -20,11 +20,12 @@ package org.apache.shardingsphere.data.pipeline.opengauss.ingest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractIncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.OpenGaussLogicalReplication;
@@ -36,7 +37,6 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalPosition
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.DecodingPlugin;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWalEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
 import org.opengauss.jdbc.PgConnection;
 import org.opengauss.replication.PGReplicationStream;
 
@@ -49,7 +49,7 @@ import java.sql.SQLException;
  * OpenGauss WAL dumper.
  */
 @Slf4j
-public final class OpenGaussWalDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
+public final class OpenGaussWalDumper extends AbstractIncrementalDumper<WalPosition> {
     
     private final WalPosition walPosition;
     
@@ -63,14 +63,16 @@ public final class OpenGaussWalDumper extends AbstractLifecycleExecutor implemen
     
     private final PipelineChannel channel;
     
-    public OpenGaussWalDumper(final DumperConfiguration dumperConfig, final IngestPosition<WalPosition> position, final PipelineChannel channel) {
+    public OpenGaussWalDumper(final DumperConfiguration dumperConfig, final IngestPosition<WalPosition> position,
+                              final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
+        super(dumperConfig, position, dataSourceManager, channel);
         walPosition = (WalPosition) position;
         if (!StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass())) {
             throw new UnsupportedOperationException("PostgreSQLWalDumper only support PipelineDataSourceConfiguration");
         }
         this.dumperConfig = dumperConfig;
         this.channel = channel;
-        walEventConverter = new WalEventConverter(dumperConfig);
+        walEventConverter = new WalEventConverter(dumperConfig, dataSourceManager);
     }
     
     @Override

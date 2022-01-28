@@ -79,6 +79,34 @@ showInstanceMode
     : SHOW INSTANCE MODE
     ;
 
+createTrafficRule
+    : CREATE TRAFFIC RULE trafficRuleDefinition (COMMA trafficRuleDefinition)* 
+    ;
+
+trafficRuleDefinition
+    : ruleName LP labelDefinition COMMA trafficAlgorithmDefinition COMMA loadBanlanceDefinition RP
+    ;
+
+labelDefinition
+    : LABELS LP label (COMMA label)* RP
+    ;
+
+trafficAlgorithmDefinition
+    : TRAFFIC_ALGORITHM LP algorithmDefinition RP 
+    ;
+
+loadBanlanceDefinition
+    : LOAD_BALANCER LP algorithmDefinition RP
+    ;
+
+algorithmDefinition
+    : TYPE LP NAME EQ typeName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
+    ;
+
+typeName
+    : IDENTIFIER
+    ;
+
 showTrafficRules
     : SHOW TRAFFIC (RULES | RULE ruleName)
     ;
@@ -185,6 +213,18 @@ schemaName
 
 ruleName
     : IDENTIFIER
+    ;
+
+label
+    : IDENTIFIER
+    ;
+
+algorithmProperties
+    : algorithmProperty (COMMA algorithmProperty)*
+    ;
+
+algorithmProperty
+    : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | IDENTIFIER | STRING)
     ;
 
 ifExists

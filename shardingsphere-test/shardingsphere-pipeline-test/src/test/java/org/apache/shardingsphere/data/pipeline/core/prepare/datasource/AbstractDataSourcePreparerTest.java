@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.TableDefinitionSQLType;
 import org.junit.Test;
 

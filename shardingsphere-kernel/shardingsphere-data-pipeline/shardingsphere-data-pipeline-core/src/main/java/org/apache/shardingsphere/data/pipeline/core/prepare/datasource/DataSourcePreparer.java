@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
-
-import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.PrepareTargetTablesParameter;
+package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
 /**
  * Data source preparer.

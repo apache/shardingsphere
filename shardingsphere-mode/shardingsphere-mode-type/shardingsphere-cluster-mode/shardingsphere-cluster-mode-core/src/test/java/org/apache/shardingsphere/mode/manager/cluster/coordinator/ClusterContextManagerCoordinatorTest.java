@@ -106,15 +106,14 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Before
     public void setUp() throws SQLException {
-        PersistRepositoryConfiguration persistRepositoryConfiguration = new ClusterPersistRepositoryConfiguration("TEST", "", "", new Properties());
-        ModeConfiguration modeConfig = new ModeConfiguration("Cluster", persistRepositoryConfiguration, false);
+        PersistRepositoryConfiguration persistRepositoryConfig = new ClusterPersistRepositoryConfiguration("TEST", "", "", new Properties());
+        ModeConfiguration modeConfig = new ModeConfiguration("Cluster", persistRepositoryConfig, false);
         ClusterContextManagerBuilder builder = new ClusterContextManagerBuilder();
         contextManager = builder.build(ContextManagerBuilderParameter.builder().modeConfig(modeConfig).schemaConfigs(new HashMap<>())
                 .globalRuleConfigs(new LinkedList<>()).props(new Properties()).instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307)).build());
         assertTrue(contextManager.getMetaDataContexts().getMetaDataPersistService().isPresent());
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getMetaDataPersistService().get(), createMetaDataMap(), globalRuleMetaData, 
-                mock(ExecutorEngine.class),
-                new ConfigurationProperties(new Properties()), createOptimizerContext()));
+                mock(ExecutorEngine.class), createOptimizerContext(), new ConfigurationProperties(new Properties())));
         contextManager.renewTransactionContexts(mock(TransactionContexts.class, RETURNS_DEEP_STUBS));
         coordinator = new ClusterContextManagerCoordinator(metaDataPersistService, contextManager, mock(RegistryCenter.class));
     }
@@ -241,7 +240,7 @@ public final class ClusterContextManagerCoordinatorTest {
         when(metaData.getSchema()).thenReturn(schema);
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
-        return Collections.singletonMap("schema", metaData);
+        return new HashMap<>(Collections.singletonMap("schema", metaData));
     }
     
     private OptimizerContext createOptimizerContext() {

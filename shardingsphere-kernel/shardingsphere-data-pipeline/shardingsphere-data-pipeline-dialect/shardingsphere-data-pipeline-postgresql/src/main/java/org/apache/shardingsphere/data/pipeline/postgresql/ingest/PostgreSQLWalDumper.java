@@ -23,6 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Standa
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractIncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
@@ -58,15 +59,16 @@ public final class PostgreSQLWalDumper extends AbstractIncrementalDumper<WalPosi
     
     private final PipelineChannel channel;
     
-    public PostgreSQLWalDumper(final DumperConfiguration dumperConfig, final IngestPosition<WalPosition> position, final PipelineChannel channel) {
-        super(dumperConfig, position, channel);
+    public PostgreSQLWalDumper(final DumperConfiguration dumperConfig, final IngestPosition<WalPosition> position,
+                               final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
+        super(dumperConfig, position, dataSourceManager, channel);
         walPosition = (WalPosition) position;
         if (!StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass())) {
             throw new UnsupportedOperationException("PostgreSQLWalDumper only support PipelineDataSourceConfiguration");
         }
         this.dumperConfig = dumperConfig;
         this.channel = channel;
-        walEventConverter = new WalEventConverter(dumperConfig);
+        walEventConverter = new WalEventConverter(dumperConfig, dataSourceManager);
     }
     
     @Override

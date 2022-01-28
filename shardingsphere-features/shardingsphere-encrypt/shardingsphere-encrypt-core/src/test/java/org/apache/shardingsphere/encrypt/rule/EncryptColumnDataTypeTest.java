@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.prepare.datasource;
+package org.apache.shardingsphere.encrypt.rule;
 
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
+import org.junit.Test;
 
-/**
- * Prepare target tables parameter.
- */
-@RequiredArgsConstructor
-@Getter
-public final class PrepareTargetTablesParameter {
+import java.util.Map;
+import java.util.TreeMap;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public class EncryptColumnDataTypeTest {
     
-    @NonNull
-    private final JobDataNodeLine tablesFirstDataNodes;
-    
-    @NonNull
-    private final PipelineConfiguration pipelineConfiguration;
+    @Test
+    public void assertEncryptColumnDataType() {
+        Map<String, Integer> dataTypes = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        dataTypes.put("BIT", -7);
+        dataTypes.put("TINYINT", -6);
+        dataTypes.put("DATE", 91);
+        assertThat(new EncryptColumnDataType("BIT(5)", dataTypes).getDataType(), is(-7));
+        assertThat(new EncryptColumnDataType("TINYINT(5) UNSIGNED ZEROFILL", dataTypes).getDataType(), is(-6));
+        assertThat(new EncryptColumnDataType("DATE", dataTypes).getDataType(), is(91));
+    }
 }
