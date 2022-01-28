@@ -54,17 +54,17 @@ public final class AlterTrafficRuleExecutor implements AlterStatementExecutor {
     
     @Override
     public ResponseHeader execute() throws DistSQLException {
-        Optional<TrafficRuleConfiguration> trafficRuleConfiguration = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData()
+        Optional<TrafficRuleConfiguration> currentConfiguration = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData()
                 .findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
-        check(sqlStatement, trafficRuleConfiguration);
-        TrafficRuleConfiguration newTrafficRuleConfiguration = createTrafficRuleConfiguration(sqlStatement);
-        updateToRepository(newTrafficRuleConfiguration, trafficRuleConfiguration.get());
+        check(sqlStatement, currentConfiguration);
+        TrafficRuleConfiguration toBeAlteredConfiguration = createTrafficRuleConfiguration(sqlStatement);
+        updateToRepository(toBeAlteredConfiguration, currentConfiguration.get());
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void check(final AlterTrafficRuleStatement sqlStatement, final Optional<TrafficRuleConfiguration> trafficRuleConfiguration) throws DistSQLException {
-        DistSQLException.predictionThrow(trafficRuleConfiguration.isPresent(), new RequiredRuleMissedException("Traffic"));
-        Collection<String> currentRuleNames = trafficRuleConfiguration.get().getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
+    private void check(final AlterTrafficRuleStatement sqlStatement, final Optional<TrafficRuleConfiguration> currentConfiguration) throws DistSQLException {
+        DistSQLException.predictionThrow(currentConfiguration.isPresent(), new RequiredRuleMissedException("Traffic"));
+        Collection<String> currentRuleNames = currentConfiguration.get().getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
         Set<String> notExistRuleNames = sqlStatement.getSegments().stream().map(TrafficRuleSegment::getName).filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toSet());
         DistSQLException.predictionThrow(notExistRuleNames.isEmpty(), new RequiredRuleMissedException("Traffic", notExistRuleNames));
         Collection<String> invalidAlgorithmNames = getInvalidAlgorithmNames(sqlStatement.getSegments());
@@ -109,10 +109,10 @@ public final class AlterTrafficRuleExecutor implements AlterStatementExecutor {
         return new TrafficStrategyConfiguration(trafficRuleSegment.getName(), trafficRuleSegment.getLabels(), trafficAlgorithmName, loadBalancerName);
     }
     
-    private void updateToRepository(final TrafficRuleConfiguration newTrafficRuleConfiguration, final TrafficRuleConfiguration trafficRuleConfiguration) {
-        trafficRuleConfiguration.getTrafficStrategies().addAll(newTrafficRuleConfiguration.getTrafficStrategies());
-        trafficRuleConfiguration.getTrafficAlgorithms().putAll(newTrafficRuleConfiguration.getTrafficAlgorithms());
-        trafficRuleConfiguration.getLoadBalancers().putAll(newTrafficRuleConfiguration.getLoadBalancers());
+    private void updateToRepository(final TrafficRuleConfiguration toBeAlteredConfiguration, final TrafficRuleConfiguration currentConfiguration) {
+        currentConfiguration.getTrafficStrategies().addAll(toBeAlteredConfiguration.getTrafficStrategies());
+        currentConfiguration.getTrafficAlgorithms().putAll(toBeAlteredConfiguration.getTrafficAlgorithms());
+        currentConfiguration.getLoadBalancers().putAll(toBeAlteredConfiguration.getLoadBalancers());
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
         metaDataPersistService.ifPresent(op -> op.getGlobalRuleService().persist(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), true));
