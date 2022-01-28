@@ -147,26 +147,26 @@ public final class TransactionContextsBuilder {
     }
 
     private String narayanaConfigMapToXml(final Map<Object, Object> config) {
-        StringBuilder sb = new StringBuilder("<properties>");
-        for (Object o : config.keySet()) {
-            sb.append("\n\t");
-            Object value = config.get(o);
-            sb.append(String.format("<entry key=\"%s\">", o));
+        StringBuilder result = new StringBuilder("<properties>");
+        for (Object each : config.keySet()) {
+            result.append("\n\t");
+            Object value = config.get(each);
+            result.append(String.format("<entry key=\"%s\">", each));
             if (value instanceof List) {
                 for (Object i : (List) value) {
-                    sb.append("\n\t\t");
-                    sb.append(i);
+                    result.append("\n\t\t");
+                    result.append(i);
                 }
-                sb.append("\n\t</entry>");
+                result.append("\n\t</entry>");
             } else {
                 if (null != value) {
-                    sb.append(value);
+                    result.append(value);
                 }
-                sb.append("</entry>");
+                result.append("</entry>");
             }
         }
-        sb.append("\n");
-        sb.append("</properties>");
-        return sb.toString();
+        result.append("\n");
+        result.append("</properties>");
+        return result.toString();
     }
 }
