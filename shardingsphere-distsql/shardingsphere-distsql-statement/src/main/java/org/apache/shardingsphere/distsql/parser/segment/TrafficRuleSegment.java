@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception.rule;
+package org.apache.shardingsphere.distsql.parser.segment;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 import java.util.Collection;
 
 /**
- * Duplicate rule exception.
+ * Traffic rule segment.
  */
-public final class DuplicateRuleException extends RuleDefinitionViolationException {
+@RequiredArgsConstructor
+@Getter
+public final class TrafficRuleSegment implements ASTNode {
     
-    private static final long serialVersionUID = -1738699538105858939L;
+    private final String name;
     
-    public DuplicateRuleException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
-        super(1113, String.format("Duplicate %s rule names `%s` in schema `%s`", ruleType, ruleNames, schemaName));
-    }
+    private final Collection<String> labels;
     
-    public DuplicateRuleException(final String ruleType, final Collection<String> ruleNames) {
-        super(1113, String.format("Duplicate %s rule names `%s`", ruleType, ruleNames));
-    }
+    private final AlgorithmSegment algorithm;
     
-    public DuplicateRuleException(final String type, final String schemaName) {
-        super(1113, String.format("Duplicate `%s` in schema `%s`", type, schemaName));
-    }
+    private final AlgorithmSegment loadBalancer;
 }

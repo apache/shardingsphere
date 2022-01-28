@@ -15,38 +15,21 @@
  * limitations under the License.
  */
 
-grammar CommonDistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.create;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
 
-execute
-    : (addResource
-    | alterResource
-    | dropResource
-    | showResources
-    | setVariable
-    | showVariable
-    | showAllVariables
-    | clearHint
-    | enableInstance
-    | disableInstance
-    | showInstance
-    | showInstanceMode
-    | countSchemaRules
-    | showSingleTable
-    | showSingleTableRules
-    | createDefaultSingleTableRule
-    | alterDefaultSingleTableRule
-    | dropDefaultSingleTableRule
-    | refreshTableMetadata
-    | showTableMetadata
-    | showSQLParserRule
-    | alterSQLParserRule
-    | showAuthorityRule
-    | showTransactionRule
-    | alterTransactionRule
-    | showTrafficRules
-    | dropTrafficRule
-    | createTrafficRule
-    ) SEMI?
-    ;
+import java.util.Collection;
+
+/**
+ * Create traffic rule statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class CreateTrafficRuleStatement extends CommonDistSQLStatement {
+    
+    private final Collection<TrafficRuleSegment> segments;
+}
