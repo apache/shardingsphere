@@ -69,18 +69,18 @@ for /f "tokens=1,2 delims=." %%a in (%total_version%) do (
 echo we find java version: java%int_version%, full_version=%total_version:~1,9%
 set VERSION_OPTS=
 if %int_version% == 8 (
-    set VERSION_OPTS=-XX:+UseFastAccessorMethods -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70
+    set VERSION_OPTS=-XX:+UseConcMarkSweepGC -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70
 ) else if %int_version% == 11 (
-    set VERSION_OPTS=-XX:+AggressiveHeap -XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler
+    set VERSION_OPTS=-XX:+SegmentedCodeCache -XX:+AggressiveHeap -XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler
 ) else if %int_version% == 17 (
-    set VERSION_OPTS=-XX:+AggressiveHeap
+    set VERSION_OPTS=-XX:+SegmentedCodeCache -XX:+AggressiveHeap
 ) else (
     echo unadapted java version, please notice...
 )
 
 echo Starting the %SERVER_NAME% ...
 
-java -server -Xmx2g -Xms2g -Xmn1g -Xss256k -XX:+DisableExplicitGC -XX:LargePageSizeInBytes=128m %VERSION_OPTS% -Dfile.encoding=UTF-8 -Dio.netty.leakDetection.level=DISABLED -classpath %CLASS_PATH% %MAIN_CLASS%
+java -server -Xmx2g -Xms2g -Xmn1g -Xss1m -XX:AutoBoxCacheMax=4096 -XX:+DisableExplicitGC -XX:LargePageSizeInBytes=128m %VERSION_OPTS% -Dfile.encoding=UTF-8 -Dio.netty.leakDetection.level=DISABLED -classpath %CLASS_PATH% %MAIN_CLASS%
 
 goto exit
 
