@@ -37,6 +37,8 @@ public final class PipelineColumnMetaData {
     
     private final int dataType;
     
+    private final String dataTypeName;
+    
     private final boolean primaryKey;
     
     @Override

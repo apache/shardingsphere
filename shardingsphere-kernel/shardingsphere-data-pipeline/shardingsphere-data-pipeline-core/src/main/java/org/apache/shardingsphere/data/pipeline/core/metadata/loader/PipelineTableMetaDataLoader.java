@@ -54,6 +54,7 @@ public final class PipelineTableMetaDataLoader {
                     continue;
                 }
                 int dataType = resultSet.getInt("DATA_TYPE");
+                String dataTypeName = resultSet.getString("TYPE_NAME");
                 Set<String> primaryKeys;
                 try {
                     primaryKeys = loadPrimaryKeys(connection, tableName);
@@ -62,7 +63,7 @@ public final class PipelineTableMetaDataLoader {
                     throw ex;
                 }
                 boolean primaryKey = primaryKeys.contains(columnName);
-                PipelineColumnMetaData columnMetaData = new PipelineColumnMetaData(columnName, dataType, primaryKey);
+                PipelineColumnMetaData columnMetaData = new PipelineColumnMetaData(columnName, dataType, dataTypeName, primaryKey);
                 columnMetaDataMap.put(columnName, columnMetaData);
             }
         }
