@@ -131,7 +131,8 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     }
     
     private boolean containsConfigDataType(final String tableName, final String columnName) {
-        return encryptRule.findEncryptTable(tableName).flatMap(encryptTable -> encryptTable.findEncryptColumn(columnName).filter(encryptColumn -> null != encryptColumn.getLogicDataType())).isPresent();
+        return encryptRule.findEncryptTable(tableName).flatMap(encryptTable -> encryptTable.findEncryptColumn(columnName)
+                .filter(encryptColumn -> null != encryptColumn.getLogicDataType())).isPresent();
     }
     
     private Collection<SQLToken> getAddColumnTokensByDefault(final String tableName, final String columnName, final AddColumnDefinitionSegment addColumnDefinitionSegment, 
