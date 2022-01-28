@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
@@ -75,20 +74,13 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         persistConfigurations(metaDataPersistService, parameter.getSchemaConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), parameter.getModeConfig().isOverwrite());
         Collection<String> schemaNames = parameter.getInstanceDefinition().getInstanceType() == InstanceType.JDBC ? parameter.getSchemaConfigs().keySet()
                 : metaDataPersistService.getSchemaMetaDataService().loadAllNames();
-        Map<String, Map<String, DataSource>> standaloneDataSources = loadDataSourcesMap(metaDataPersistService, parameter.getSchemaConfigs(), schemaNames);
+        Map<String, Map<String, DataSource>> loadedDataSources = loadDataSourcesMap(metaDataPersistService, parameter.getSchemaConfigs(), schemaNames);
         Properties loadedProps = metaDataPersistService.getPropsService().load();
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataPersistService.getGlobalRuleService().load(), loadedProps);
-        Map<String, Collection<RuleConfiguration>> standaloneSchemaRules = loadSchemaRules(metaDataPersistService, schemaNames);
-        Map<String, SchemaConfiguration> schemaConfigs = new LinkedHashMap<>(standaloneDataSources.size(), 1);
-        for (String each : standaloneDataSources.keySet()) {
-            SchemaConfiguration schemaConfig = new DataSourceProvidedSchemaConfiguration(standaloneDataSources.get(each), standaloneSchemaRules.get(each));
-            schemaConfigs.put(each, schemaConfig);
-            metaDataContextsBuilder.getSchemaConfigMap().put(each, schemaConfig);
+        Map<String, Collection<RuleConfiguration>> loadedSchemaRules = loadSchemaRules(metaDataPersistService, schemaNames);
+        for (String each : loadedDataSources.keySet()) {
+            metaDataContextsBuilder.addSchema(each, new DataSourceProvidedSchemaConfiguration(loadedDataSources.get(each), loadedSchemaRules.get(each)), loadedProps);
         }
-        Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(schemaConfigs, loadedProps);
-        metaDataContextsBuilder.getSchemaRulesMap().putAll(rules);
-        Map<String, ShardingSphereSchema> schemas = getShardingSphereSchemas(schemaConfigs, rules, loadedProps);
-        metaDataContextsBuilder.getSchemaMap().putAll(schemas);
         MetaDataContexts metaDataContexts = metaDataContextsBuilder.build(metaDataPersistService);
         TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
         ContextManager result = new ContextManager();

@@ -30,9 +30,6 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
@@ -99,21 +96,14 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         persistInstanceConfigurations(parameter.getLabels(), parameter.getInstanceDefinition(), parameter.getModeConfig().isOverwrite());
         Collection<String> schemaNames = parameter.getInstanceDefinition().getInstanceType() == InstanceType.JDBC ? parameter.getSchemaConfigs().keySet()
                 : metaDataPersistService.getSchemaMetaDataService().loadAllNames();
-        Map<String, Map<String, DataSource>> clusterDataSources = loadDataSourcesMap(metaDataPersistService, parameter.getSchemaConfigs(), schemaNames);
+        Map<String, Map<String, DataSource>> loadedDataSources = loadDataSourcesMap(metaDataPersistService, parameter.getSchemaConfigs(), schemaNames);
         Properties loadedProps = metaDataPersistService.getPropsService().load();
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataPersistService.getGlobalRuleService().load(), loadedProps);
         Map<String, Collection<RuleConfiguration>> loadedSchemaRuleConfigs = loadSchemaRules(metaDataPersistService, schemaNames);
-        Map<String, SchemaConfiguration> schemaConfigs = new LinkedHashMap<>(clusterDataSources.size(), 1);
-        for (String each : clusterDataSources.keySet()) {
-            SchemaConfiguration schemaConfig = new DataSourceProvidedSchemaConfiguration(clusterDataSources.get(each), loadedSchemaRuleConfigs.get(each));
-            schemaConfigs.put(each, schemaConfig);
-            metaDataContextsBuilder.getSchemaConfigMap().put(each, schemaConfig);
+        for (String each : loadedDataSources.keySet()) {
+            metaDataContextsBuilder.addSchema(each, new DataSourceProvidedSchemaConfiguration(loadedDataSources.get(each), loadedSchemaRuleConfigs.get(each)), loadedProps);
         }
-        Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(schemaConfigs, loadedProps);
-        metaDataContextsBuilder.getSchemaRulesMap().putAll(rules);
-        Map<String, ShardingSphereSchema> schemas = getShardingSphereSchemas(schemaConfigs, rules, loadedProps);
-        metaDataContextsBuilder.getSchemaMap().putAll(schemas);
-        persistMetaData(schemas);
+        persistMetaData(metaDataContextsBuilder.getSchemaMap());
         metaDataContexts = metaDataContextsBuilder.build(metaDataPersistService);
         transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
         instanceContext = new InstanceContext(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(
@@ -221,17 +211,10 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
             each -> each, each -> metaDataPersistService.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private Map<String, ShardingSphereSchema> getShardingSphereSchemas(final Map<String, ? extends SchemaConfiguration> schemaConfigs, final Map<String, Collection<ShardingSphereRule>> rules, 
-                                                                       final Properties props) throws SQLException {
-        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(schemaConfigs.size(), 1);
-        for (String each : schemaConfigs.keySet()) {
-            result.put(each, SchemaLoader.load(schemaConfigs.get(each).getDataSources(), rules.get(each), props));
+    private void persistMetaData(final Map<String, ShardingSphereSchema> schemaMap) {
+        for (Entry<String, ShardingSphereSchema> entry : schemaMap.entrySet()) {
+            metaDataPersistService.getSchemaMetaDataService().persist(entry.getKey(), entry.getValue());
         }
-        return result;
-    }
-    
-    private void persistMetaData(final Map<String, ShardingSphereSchema> schemas) {
-        schemas.forEach((key, value) -> metaDataPersistService.getSchemaMetaDataService().persist(key, value));
     }
     
     private void afterBuildContextManager(final ContextManagerBuilderParameter parameter) {
