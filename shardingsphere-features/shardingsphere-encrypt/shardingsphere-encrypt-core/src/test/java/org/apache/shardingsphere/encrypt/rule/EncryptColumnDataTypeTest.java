@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
+import org.apache.shardingsphere.encrypt.spi.context.EncryptColumnDataType;
 import org.junit.Test;
 
 import java.util.Map;

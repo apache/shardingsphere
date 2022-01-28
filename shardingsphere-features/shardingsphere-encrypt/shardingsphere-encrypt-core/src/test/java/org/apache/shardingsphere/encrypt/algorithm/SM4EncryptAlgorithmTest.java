@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.algorithm;
 
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
@@ -29,6 +30,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class SM4EncryptAlgorithmTest {
     
@@ -49,7 +51,7 @@ public final class SM4EncryptAlgorithmTest {
     
     @Test
     public void assertEncryptWithECBAndPKCS5Padding() {
-        assertThat(encryptAlgorithm.encrypt("test"), is("028654f2ca4f575dee9e1faae85dadde"));
+        assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("028654f2ca4f575dee9e1faae85dadde"));
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -59,17 +61,17 @@ public final class SM4EncryptAlgorithmTest {
         encryptAlgorithm.init();
         props.setProperty("sm4-mode", "ECB");
         props.setProperty("sm4-padding", "PKCS5Padding");
-        assertThat(encryptAlgorithm.encrypt("test"), is("028654f2ca4f575dee9e1faae85dadde"));
+        assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("028654f2ca4f575dee9e1faae85dadde"));
     }
     
     @Test
     public void assertEncryptWithNullPlaintext() {
-        assertNull(encryptAlgorithm.encrypt(null));
+        assertNull(encryptAlgorithm.encrypt(null, mock(EncryptContext.class)));
     }
     
     @Test
     public void assertDecrypt() {
-        assertThat(encryptAlgorithm.decrypt("028654f2ca4f575dee9e1faae85dadde").toString(), is("test"));
+        assertThat(encryptAlgorithm.decrypt("028654f2ca4f575dee9e1faae85dadde", mock(EncryptContext.class)).toString(), is("test"));
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -79,11 +81,11 @@ public final class SM4EncryptAlgorithmTest {
         encryptAlgorithm.init();
         props.setProperty("sm4-mode", "ECB");
         props.setProperty("sm4-padding", "PKCS5Padding");
-        assertThat(encryptAlgorithm.decrypt("028654f2ca4f575dee9e1faae85dadde").toString(), is("test"));
+        assertThat(encryptAlgorithm.decrypt("028654f2ca4f575dee9e1faae85dadde", mock(EncryptContext.class)).toString(), is("test"));
     }
     
     @Test
     public void assertDecryptWithNullCiphertext() {
-        assertNull(encryptAlgorithm.decrypt(null));
+        assertNull(encryptAlgorithm.decrypt(null, mock(EncryptContext.class)));
     }
 }

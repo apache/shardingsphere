@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rule;
+package org.apache.shardingsphere.encrypt.spi.context;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 
 import java.util.Map;
@@ -26,7 +25,6 @@ import java.util.Map;
 /**
  * Encrypt column data type.
  */
-@RequiredArgsConstructor
 @Getter
 public class EncryptColumnDataType {
     
@@ -35,18 +33,19 @@ public class EncryptColumnDataType {
     private final int dataType;
     
     public EncryptColumnDataType(final String typeName, final Map<String, Integer> dataTypes) {
-        this(typeName, extractDataType(typeName, dataTypes));
+        this.typeName = typeName;
+        this.dataType = getDataTypeByTypeName(typeName, dataTypes); 
     }
     
-    private static Integer extractDataType(final String typeName, final Map<String, Integer> dataTypes) {
-        Integer result = dataTypes.get(getDataTypeName(typeName));
+    private static Integer getDataTypeByTypeName(final String typeName, final Map<String, Integer> dataTypes) {
+        Integer result = dataTypes.get(getExactlyTypeName(typeName));
         if (null == result) {
             throw new ShardingSphereConfigurationException("Can not get data types, please check config: %s", typeName);
         }
         return result;
     }
     
-    private static String getDataTypeName(final String dataTypeName) {
+    private static String getExactlyTypeName(final String dataTypeName) {
         String dataType = dataTypeName.trim().toLowerCase();
         if (dataType.contains("(")) {
             return dataType.substring(0, dataType.indexOf("("));

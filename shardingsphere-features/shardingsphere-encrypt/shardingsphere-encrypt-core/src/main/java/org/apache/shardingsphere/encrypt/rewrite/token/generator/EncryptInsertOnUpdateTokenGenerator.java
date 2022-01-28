@@ -72,10 +72,10 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
             return result;
         }
         for (AssignmentSegment each : onDuplicateKeyColumnsSegments) {
-            boolean leftEncryptorPresent = encryptRule.findEncryptor(schemaName, tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent();
+            boolean leftEncryptorPresent = encryptRule.findEncryptor(tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent();
             if (each.getValue() instanceof FunctionSegment && "VALUES".equalsIgnoreCase(((FunctionSegment) each.getValue()).getFunctionName())) {
                 ColumnSegment rightColumn = (ColumnSegment) ((FunctionSegment) each.getValue()).getParameters().stream().findFirst().get();
-                boolean rightEncryptorPresent = encryptRule.findEncryptor(schemaName, tableName, rightColumn.getIdentifier().getValue()).isPresent();
+                boolean rightEncryptorPresent = encryptRule.findEncryptor(tableName, rightColumn.getIdentifier().getValue()).isPresent();
                 if (!leftEncryptorPresent && !rightEncryptorPresent) {
                     continue;
                 }
@@ -83,20 +83,20 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
             if (!leftEncryptorPresent) {
                 continue;
             }
-            generateSQLToken(schemaName, tableName, each).ifPresent(result::add);
+            generateSQLToken(tableName, each).ifPresent(result::add);
         }
         return result;
     }
     
-    private Optional<EncryptAssignmentToken> generateSQLToken(final String schemaName, final String tableName, final AssignmentSegment assignmentSegment) {
+    private Optional<EncryptAssignmentToken> generateSQLToken(final String tableName, final AssignmentSegment assignmentSegment) {
         if (assignmentSegment.getValue() instanceof ParameterMarkerExpressionSegment) {
             return Optional.of(generateParameterSQLToken(tableName, assignmentSegment));
         }
         if (assignmentSegment.getValue() instanceof FunctionSegment && "VALUES".equalsIgnoreCase(((FunctionSegment) assignmentSegment.getValue()).getFunctionName())) {
-            return Optional.of(generateValuesSQLToken(schemaName, tableName, assignmentSegment, (FunctionSegment) assignmentSegment.getValue()));
+            return Optional.of(generateValuesSQLToken(tableName, assignmentSegment, (FunctionSegment) assignmentSegment.getValue()));
         }
         if (assignmentSegment.getValue() instanceof LiteralExpressionSegment) {
-            return Optional.of(generateLiteralSQLToken(schemaName, tableName, assignmentSegment));
+            return Optional.of(generateLiteralSQLToken(tableName, assignmentSegment));
         }
         return Optional.empty();
     }
@@ -110,7 +110,7 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         return result;
     }
     
-    private EncryptAssignmentToken generateLiteralSQLToken(final String schemaName, final String tableName, final AssignmentSegment assignmentSegment) {
+    private EncryptAssignmentToken generateLiteralSQLToken(final String tableName, final AssignmentSegment assignmentSegment) {
         EncryptLiteralAssignmentToken result = new EncryptLiteralAssignmentToken(assignmentSegment.getColumns().get(0).getStartIndex(), assignmentSegment.getStopIndex());
         addCipherAssignment(schemaName, tableName, assignmentSegment, result);
         addAssistedQueryAssignment(schemaName, tableName, assignmentSegment, result);
@@ -118,14 +118,14 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         return result;
     }
     
-    private EncryptAssignmentToken generateValuesSQLToken(final String schemaName, final String tableName, final AssignmentSegment assignmentSegment, final FunctionSegment functionSegment) {
+    private EncryptAssignmentToken generateValuesSQLToken(final String tableName, final AssignmentSegment assignmentSegment, final FunctionSegment functionSegment) {
         ColumnSegment columnSegment = assignmentSegment.getColumns().get(0);
         String column = columnSegment.getIdentifier().getValue();
         ColumnSegment valueColumnSegment = (ColumnSegment) functionSegment.getParameters().stream().findFirst().get();
         String valueColumn = valueColumnSegment.getIdentifier().getValue();
         EncryptFunctionAssignmentToken result = new EncryptFunctionAssignmentToken(columnSegment.getStartIndex(), assignmentSegment.getStopIndex());
-        boolean cipherColumnPresent = encryptRule.findEncryptor(schemaName, tableName, column).isPresent();
-        boolean cipherValueColumnPresent = encryptRule.findEncryptor(schemaName, tableName, valueColumn).isPresent();
+        boolean cipherColumnPresent = encryptRule.findEncryptor(tableName, column).isPresent();
+        boolean cipherValueColumnPresent = encryptRule.findEncryptor(tableName, valueColumn).isPresent();
         if (cipherColumnPresent && cipherValueColumnPresent) {
             String cipherColumn = encryptRule.getCipherColumn(tableName, column);
             String cipherValueColumn = encryptRule.getCipherColumn(tableName, valueColumn);

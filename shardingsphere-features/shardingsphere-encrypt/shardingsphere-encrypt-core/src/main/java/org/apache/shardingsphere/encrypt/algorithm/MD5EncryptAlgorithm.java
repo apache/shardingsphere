@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.algorithm;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
 import java.util.Properties;
@@ -38,7 +39,7 @@ public final class MD5EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     }
     
     @Override
-    public String encrypt(final Object plainValue) {
+    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         if (null == plainValue) {
             return null;
         }
@@ -46,7 +47,7 @@ public final class MD5EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     }
     
     @Override
-    public Object decrypt(final String cipherValue) {
+    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
         return cipherValue;
     }
     

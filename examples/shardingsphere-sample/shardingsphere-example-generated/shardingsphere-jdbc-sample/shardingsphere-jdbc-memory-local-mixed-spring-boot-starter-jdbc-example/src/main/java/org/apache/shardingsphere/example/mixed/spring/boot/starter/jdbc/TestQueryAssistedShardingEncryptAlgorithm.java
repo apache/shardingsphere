@@ -20,6 +20,7 @@ package org.apache.shardingsphere.example.mixed.spring.boot.starter.jdbc;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
 import java.util.Properties;
 
@@ -34,17 +35,17 @@ public final class TestQueryAssistedShardingEncryptAlgorithm implements QueryAss
     }
     
     @Override
-    public String encrypt(final Object plainValue) {
+    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return "encryptValue";
     }
     
     @Override
-    public Object decrypt(final String cipherValue) {
+    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
         return "decryptValue";
     }
     
     @Override
-    public String queryAssistedEncrypt(final Object plainValue) {
+    public String queryAssistedEncrypt(final Object plainValue, final EncryptContext encryptContext) {
         return "assistedEncryptValue";
     }
     

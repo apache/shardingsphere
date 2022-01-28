@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.rule;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptColumnDataType;
 
 import java.util.Optional;
 
