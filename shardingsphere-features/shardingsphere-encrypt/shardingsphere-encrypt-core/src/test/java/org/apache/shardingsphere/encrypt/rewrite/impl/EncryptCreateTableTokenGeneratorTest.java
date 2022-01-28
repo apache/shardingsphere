@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.rewrite.impl;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptCreateTableTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptConfigDataTypeToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
+import org.apache.shardingsphere.encrypt.rule.EncryptColumnDataType;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
@@ -90,8 +91,9 @@ public final class EncryptCreateTableTokenGeneratorTest {
         when(encryptTable.getLogicColumns()).thenReturn(Collections.singletonList("t_encrypt"));
         when(result.findEncryptor("t_encrypt", "certificate_number")).thenReturn(Optional.of(mock(EncryptAlgorithm.class)));
         when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
-        when(encryptTable.findEncryptColumn("certificate_number")).thenReturn(Optional.of(new EncryptColumn("int(20) unsigned not null default 0", "cipher_certificate_number",
-                "varchar(200) not null default ''", "assisted_certificate_number", "varchar(200) not null", "certificate_number_plain", "int(20) unsigned not null default 0", "test")));
+        when(encryptTable.findEncryptColumn("certificate_number")).thenReturn(Optional.of(new EncryptColumn(new EncryptColumnDataType("int(20) unsigned not null default 0", 0), 
+                "cipher_certificate_number", new EncryptColumnDataType("varchar(200) not null default ''", 0), "assisted_certificate_number", 
+                new EncryptColumnDataType("varchar(200) not null", 0), "certificate_number_plain", new EncryptColumnDataType("int(20) unsigned not null default 0", 0), "test")));
         return result;
     }
 }
