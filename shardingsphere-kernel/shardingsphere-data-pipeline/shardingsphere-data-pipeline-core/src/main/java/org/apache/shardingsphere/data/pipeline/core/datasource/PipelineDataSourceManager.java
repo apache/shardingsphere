@@ -49,7 +49,10 @@ public final class PipelineDataSourceManager implements AutoCloseable {
      * @param pipelineDataSourceConfig pipeline data source configuration
      */
     public void createSourceDataSource(final PipelineDataSourceConfiguration pipelineDataSourceConfig) {
-        PipelineDataSourceWrapper dataSource = dataSourceFactory.newInstance(pipelineDataSourceConfig);
+        if (cachedDataSources.containsKey(pipelineDataSourceConfig)) {
+            return;
+        }
+        PipelineDataSourceWrapper dataSource = getDataSource(pipelineDataSourceConfig);
         cachedDataSources.put(pipelineDataSourceConfig, dataSource);
         sourceDataSources.put(pipelineDataSourceConfig, dataSource);
     }
@@ -60,27 +63,31 @@ public final class PipelineDataSourceManager implements AutoCloseable {
      * @param pipelineDataSourceConfig pipeline data source configuration
      */
     public void createTargetDataSource(final PipelineDataSourceConfiguration pipelineDataSourceConfig) {
-        PipelineDataSourceWrapper dataSource = dataSourceFactory.newInstance(pipelineDataSourceConfig);
+        if (cachedDataSources.containsKey(pipelineDataSourceConfig)) {
+            return;
+        }
+        PipelineDataSourceWrapper dataSource = getDataSource(pipelineDataSourceConfig);
         cachedDataSources.put(pipelineDataSourceConfig, dataSource);
         targetDataSources.put(pipelineDataSourceConfig, dataSource);
     }
     
     /**
-     * Get data source.
+     * Get cached data source.
      *
      * @param dataSourceConfig data source configuration
      * @return data source
      */
     public PipelineDataSourceWrapper getDataSource(final PipelineDataSourceConfiguration dataSourceConfig) {
-        // TODO re-init if existing dataSource was closed
-        if (cachedDataSources.containsKey(dataSourceConfig)) {
-            return cachedDataSources.get(dataSourceConfig);
+        PipelineDataSourceWrapper result = cachedDataSources.get(dataSourceConfig);
+        if (null != result) {
+            return result;
         }
         synchronized (cachedDataSources) {
-            if (cachedDataSources.containsKey(dataSourceConfig)) {
-                return cachedDataSources.get(dataSourceConfig);
+            result = cachedDataSources.get(dataSourceConfig);
+            if (null != result) {
+                return result;
             }
-            PipelineDataSourceWrapper result = dataSourceFactory.newInstance(dataSourceConfig);
+            result = dataSourceFactory.newInstance(dataSourceConfig);
             cachedDataSources.put(dataSourceConfig, result);
             return result;
         }
@@ -100,5 +107,6 @@ public final class PipelineDataSourceManager implements AutoCloseable {
         }
         cachedDataSources.clear();
         sourceDataSources.clear();
+        targetDataSources.clear();
     }
 }
