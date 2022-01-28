@@ -42,7 +42,7 @@ echo "we find java version: java${int_version}, full_version=${total_version}"
 
 VERSION_OPTS=""
 if [ $int_version = '8' ] ; then
-    VERSION_OPTS="-XX:+UseFastAccessorMethods -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70"
+    VERSION_OPTS="-XX:+UseConcMarkSweepGC -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70"
 elif [ $int_version = '11' ] ; then
     VERSION_OPTS="-XX:+AggressiveHeap -XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler"
 elif [ $int_version = '17' ] ; then

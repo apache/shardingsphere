@@ -69,7 +69,7 @@ for /f "tokens=1,2 delims=." %%a in (%total_version%) do (
 echo we find java version: java%int_version%, full_version=%total_version:~1,9%
 set VERSION_OPTS=
 if %int_version% == 8 (
-    set VERSION_OPTS=-XX:+UseFastAccessorMethods -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70
+    set VERSION_OPTS=-XX:+UseConcMarkSweepGC -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70
 ) else if %int_version% == 11 (
     set VERSION_OPTS=-XX:+AggressiveHeap -XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler
 ) else if %int_version% == 17 (
