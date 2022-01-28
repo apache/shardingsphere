@@ -412,11 +412,11 @@ public final class ContextManager implements AutoCloseable {
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), props);
         Map<String, SchemaConfiguration> schemaConfigs = Collections.singletonMap(
                 originalMetaData.getName(), new DataSourceProvidedSchemaConfiguration(dataSourceMap, originalMetaData.getRuleMetaData().getConfigurations()));
-        metaDataContextsBuilder.getSchemaConfigs().putAll(schemaConfigs);
+        metaDataContextsBuilder.getSchemaConfigMap().putAll(schemaConfigs);
         Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(schemaConfigs, props);
-        metaDataContextsBuilder.getRules().putAll(rules);
+        metaDataContextsBuilder.getSchemaRulesMap().putAll(rules);
         Map<String, ShardingSphereSchema> schemas = getShardingSphereSchemas(schemaConfigs, rules, props);
-        metaDataContextsBuilder.getSchemas().putAll(schemas);
+        metaDataContextsBuilder.getSchemaMap().putAll(schemas);
         metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persist(originalMetaData.getName(), schemas.get(originalMetaData.getName())));
         return metaDataContextsBuilder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
     }
@@ -426,11 +426,11 @@ public final class ContextManager implements AutoCloseable {
                 originalMetaData.getName(), new DataSourceProvidedSchemaConfiguration(originalMetaData.getResource().getDataSources(), ruleConfigs));
         Properties props = metaDataContexts.getProps().getProps();
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), props);
-        metaDataContextsBuilder.getSchemaConfigs().putAll(schemaConfigs);
+        metaDataContextsBuilder.getSchemaConfigMap().putAll(schemaConfigs);
         Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(schemaConfigs, props);
-        metaDataContextsBuilder.getRules().putAll(rules);
+        metaDataContextsBuilder.getSchemaRulesMap().putAll(rules);
         Map<String, ShardingSphereSchema> schemas = getShardingSphereSchemas(schemaConfigs, rules, props);
-        metaDataContextsBuilder.getSchemas().putAll(schemas);
+        metaDataContextsBuilder.getSchemaMap().putAll(schemas);
         metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persist(originalMetaData.getName(), schemas.get(originalMetaData.getName())));
         return metaDataContextsBuilder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
     }
@@ -444,11 +444,11 @@ public final class ContextManager implements AutoCloseable {
                 originalMetaData.getRuleMetaData().getConfigurations()));
         Properties props = metaDataContexts.getProps().getProps();
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), props);
-        metaDataContextsBuilder.getSchemaConfigs().putAll(schemaConfigs);
+        metaDataContextsBuilder.getSchemaConfigMap().putAll(schemaConfigs);
         Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(schemaConfigs, props);
-        metaDataContextsBuilder.getRules().putAll(rules);
+        metaDataContextsBuilder.getSchemaRulesMap().putAll(rules);
         Map<String, ShardingSphereSchema> schemas = getShardingSphereSchemas(schemaConfigs, rules, props);
-        metaDataContextsBuilder.getSchemas().putAll(schemas);
+        metaDataContextsBuilder.getSchemaMap().putAll(schemas);
         metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persist(originalMetaData.getName(), schemas.get(originalMetaData.getName())));
         return metaDataContextsBuilder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
     }
@@ -503,11 +503,11 @@ public final class ContextManager implements AutoCloseable {
         Map<String, DataSourceProvidedSchemaConfiguration> schemaConfigs = Collections.singletonMap(schemaName, new DataSourceProvidedSchemaConfiguration(new HashMap<>(), new LinkedList<>()));
         Properties props = metaDataContexts.getProps().getProps();
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), props);
-        metaDataContextsBuilder.getSchemaConfigs().putAll(schemaConfigs);
+        metaDataContextsBuilder.getSchemaConfigMap().putAll(schemaConfigs);
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(schemaName, new ShardingSphereSchema());
-        metaDataContextsBuilder.getSchemas().putAll(schemas);
+        metaDataContextsBuilder.getSchemaMap().putAll(schemas);
         Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(schemaConfigs, props);
-        metaDataContextsBuilder.getRules().putAll(rules);
+        metaDataContextsBuilder.getSchemaRulesMap().putAll(rules);
         return metaDataContextsBuilder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
     }
     

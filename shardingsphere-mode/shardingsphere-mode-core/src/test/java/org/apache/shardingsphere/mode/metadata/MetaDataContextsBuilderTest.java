@@ -53,9 +53,9 @@ public final class MetaDataContextsBuilderTest {
         AuthorityRuleConfiguration authorityRuleConfig = new AuthorityRuleConfiguration(Collections.singleton(user),
                 new ShardingSphereAlgorithmConfiguration("ALL_PRIVILEGES_PERMITTED", new Properties()));
         MetaDataContextsBuilder builder = new MetaDataContextsBuilder(Collections.singleton(authorityRuleConfig), props);
-        builder.getSchemaConfigs().put("logic_db", new DataSourceProvidedSchemaConfiguration(Collections.emptyMap(), Collections.singletonList(new FixtureRuleConfiguration())));
-        builder.getSchemas().put("logic_db", mock(ShardingSphereSchema.class));
-        builder.getRules().put("logic_db", Collections.singletonList(mock(FixtureRule.class)));
+        builder.getSchemaConfigMap().put("logic_db", new DataSourceProvidedSchemaConfiguration(Collections.emptyMap(), Collections.singletonList(new FixtureRuleConfiguration())));
+        builder.getSchemaMap().put("logic_db", mock(ShardingSphereSchema.class));
+        builder.getSchemaRulesMap().put("logic_db", Collections.singletonList(mock(FixtureRule.class)));
         MetaDataContexts actual = builder.build(mock(MetaDataPersistService.class));
         assertRules(actual);
         assertTrue(actual.getMetaData("logic_db").getResource().getDataSources().isEmpty());

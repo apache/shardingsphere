@@ -48,11 +48,11 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(parameter.getGlobalRuleConfigs(), parameter.getProps());
-        metaDataContextsBuilder.getSchemaConfigs().putAll(parameter.getSchemaConfigs());
+        metaDataContextsBuilder.getSchemaConfigMap().putAll(parameter.getSchemaConfigs());
         Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(parameter.getSchemaConfigs(), parameter.getProps());
-        metaDataContextsBuilder.getRules().putAll(rules);
+        metaDataContextsBuilder.getSchemaRulesMap().putAll(rules);
         Map<String, ShardingSphereSchema> schemas = getShardingSphereSchemas(parameter.getSchemaConfigs(), rules, parameter.getProps());
-        metaDataContextsBuilder.getSchemas().putAll(schemas);
+        metaDataContextsBuilder.getSchemaMap().putAll(schemas);
         MetaDataContexts metaDataContexts = metaDataContextsBuilder.build(null);
         TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
         ContextManager result = new ContextManager();

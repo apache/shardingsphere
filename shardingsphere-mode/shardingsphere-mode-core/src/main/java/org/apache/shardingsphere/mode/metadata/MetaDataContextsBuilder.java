@@ -45,13 +45,13 @@ import java.util.Properties;
 public final class MetaDataContextsBuilder {
     
     @Getter
-    private final Map<String, SchemaConfiguration> schemaConfigs = new LinkedHashMap<>();
+    private final Map<String, SchemaConfiguration> schemaConfigMap = new LinkedHashMap<>();
     
     @Getter
-    private final Map<String, ShardingSphereSchema> schemas = new LinkedHashMap<>();
+    private final Map<String, Collection<ShardingSphereRule>> schemaRulesMap = new LinkedHashMap<>();
     
     @Getter
-    private final Map<String, Collection<ShardingSphereRule>> rules = new LinkedHashMap<>();
+    private final Map<String, ShardingSphereSchema> schemaMap = new LinkedHashMap<>();
     
     private final Collection<RuleConfiguration> globalRuleConfigs;
     
@@ -63,6 +63,20 @@ public final class MetaDataContextsBuilder {
         this.globalRuleConfigs = globalRuleConfigs;
         this.props = new ConfigurationProperties(null == props ? new Properties() : props);
         executorEngine = new ExecutorEngine(this.props.<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
+    }
+    
+    /**
+     * Add schema information.
+     * 
+     * @param schemaName schema name
+     * @param schemaConfig schema configuration
+     * @param schemaRules schema rules
+     * @param schema schema
+     */
+    public void addSchema(final String schemaName, final SchemaConfiguration schemaConfig, final Collection<ShardingSphereRule> schemaRules, final ShardingSphereSchema schema) {
+        schemaConfigMap.put(schemaName, schemaConfig);
+        schemaRulesMap.put(schemaName, schemaRules);
+        schemaMap.put(schemaName, schema);
     }
     
     /**
@@ -79,10 +93,10 @@ public final class MetaDataContextsBuilder {
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() throws SQLException {
-        Map<String, ShardingSphereMetaData> result = new HashMap<>(schemaConfigs.size(), 1);
-        for (Entry<String, ? extends SchemaConfiguration> entry : schemaConfigs.entrySet()) {
+        Map<String, ShardingSphereMetaData> result = new HashMap<>(schemaConfigMap.size(), 1);
+        for (Entry<String, ? extends SchemaConfiguration> entry : schemaConfigMap.entrySet()) {
             String schemaName = entry.getKey();
-            result.put(schemaName, ShardingSphereMetaData.create(schemaName, schemas.get(schemaName), entry.getValue(), rules.get(schemaName)));
+            result.put(schemaName, ShardingSphereMetaData.create(schemaName, schemaMap.get(schemaName), entry.getValue(), schemaRulesMap.get(schemaName)));
         }
         return result;
     }

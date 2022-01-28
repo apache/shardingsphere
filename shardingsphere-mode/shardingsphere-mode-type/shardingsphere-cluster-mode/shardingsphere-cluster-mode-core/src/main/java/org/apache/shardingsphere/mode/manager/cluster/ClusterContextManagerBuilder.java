@@ -102,17 +102,17 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Map<String, Map<String, DataSource>> clusterDataSources = loadDataSourcesMap(metaDataPersistService, parameter.getSchemaConfigs(), schemaNames);
         Properties loadedProps = metaDataPersistService.getPropsService().load();
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataPersistService.getGlobalRuleService().load(), loadedProps);
-        Map<String, Collection<RuleConfiguration>> clusterSchemaRuleConfigs = loadSchemaRules(metaDataPersistService, schemaNames);
+        Map<String, Collection<RuleConfiguration>> loadedSchemaRuleConfigs = loadSchemaRules(metaDataPersistService, schemaNames);
         Map<String, SchemaConfiguration> schemaConfigs = new LinkedHashMap<>(clusterDataSources.size(), 1);
         for (String each : clusterDataSources.keySet()) {
-            SchemaConfiguration schemaConfig = new DataSourceProvidedSchemaConfiguration(clusterDataSources.get(each), clusterSchemaRuleConfigs.get(each));
+            SchemaConfiguration schemaConfig = new DataSourceProvidedSchemaConfiguration(clusterDataSources.get(each), loadedSchemaRuleConfigs.get(each));
             schemaConfigs.put(each, schemaConfig);
-            metaDataContextsBuilder.getSchemaConfigs().put(each, schemaConfig);
+            metaDataContextsBuilder.getSchemaConfigMap().put(each, schemaConfig);
         }
         Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(schemaConfigs, loadedProps);
-        metaDataContextsBuilder.getRules().putAll(rules);
+        metaDataContextsBuilder.getSchemaRulesMap().putAll(rules);
         Map<String, ShardingSphereSchema> schemas = getShardingSphereSchemas(schemaConfigs, rules, loadedProps);
-        metaDataContextsBuilder.getSchemas().putAll(schemas);
+        metaDataContextsBuilder.getSchemaMap().putAll(schemas);
         persistMetaData(schemas);
         metaDataContexts = metaDataContextsBuilder.build(metaDataPersistService);
         transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();

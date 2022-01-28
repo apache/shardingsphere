@@ -83,12 +83,12 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         for (String each : standaloneDataSources.keySet()) {
             SchemaConfiguration schemaConfig = new DataSourceProvidedSchemaConfiguration(standaloneDataSources.get(each), standaloneSchemaRules.get(each));
             schemaConfigs.put(each, schemaConfig);
-            metaDataContextsBuilder.getSchemaConfigs().put(each, schemaConfig);
+            metaDataContextsBuilder.getSchemaConfigMap().put(each, schemaConfig);
         }
         Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(schemaConfigs, loadedProps);
-        metaDataContextsBuilder.getRules().putAll(rules);
+        metaDataContextsBuilder.getSchemaRulesMap().putAll(rules);
         Map<String, ShardingSphereSchema> schemas = getShardingSphereSchemas(schemaConfigs, rules, loadedProps);
-        metaDataContextsBuilder.getSchemas().putAll(schemas);
+        metaDataContextsBuilder.getSchemaMap().putAll(schemas);
         MetaDataContexts metaDataContexts = metaDataContextsBuilder.build(metaDataPersistService);
         TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
         ContextManager result = new ContextManager();
