@@ -166,6 +166,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearReadwriteSplittingHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearShardingHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.DropTrafficRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ExportSchemaConfigurationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ParseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.PreviewStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.RefreshTableMetadataStatementTestCase;
@@ -310,7 +311,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "alter-table")
     private final List<AlterTableStatementTestCase> alterTableTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "rename-table")
     private final List<RenameTableStatementTestCase> renameTableStatementTestCases = new LinkedList<>();
     
@@ -1057,12 +1058,15 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-unused-sharding-key-generators")
     private final List<ShowUnusedShardingKeyGeneratorsStatementTestCase> showUnusedShardingKeyGeneratorsStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show-binlog-events")
     private final List<ShowBinlogEventsStatementTestCase> showBinlogEventsStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "unlock")
     private final List<UnlockStatementTestCase> unlockStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "export-schema-config")
+    private final List<ExportSchemaConfigurationStatementTestCase> exportSchemaStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -1329,6 +1333,7 @@ public final class SQLParserTestCases {
         putAll(alterExtensionStatementTestCase, result);
         putAll(dropExtensionStatementTestCase, result);
         putAll(unlockStatementTestCases, result);
+        putAll(exportSchemaStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

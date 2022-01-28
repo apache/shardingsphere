@@ -59,8 +59,6 @@ public final class EncryptConditionEngine {
     
     private final EncryptRule encryptRule;
     
-    private final String schemaName;
-    
     private final ShardingSphereSchema schema;
     
     static {
@@ -107,7 +105,7 @@ public final class EncryptConditionEngine {
             ColumnProjection projection = buildColumnProjection(each);
             Optional<String> tableName = Optional.ofNullable(columnTableNames.get(projection.getExpression()));
             Optional<EncryptCondition> encryptCondition = tableName.isPresent() 
-                    && encryptRule.findEncryptor(schemaName, tableName.get(), projection.getName()).isPresent() ? createEncryptCondition(expression, tableName.get()) : Optional.empty();
+                    && encryptRule.findEncryptor(tableName.get(), projection.getName()).isPresent() ? createEncryptCondition(expression, tableName.get()) : Optional.empty();
             encryptCondition.ifPresent(result::add);
         }
         return result;

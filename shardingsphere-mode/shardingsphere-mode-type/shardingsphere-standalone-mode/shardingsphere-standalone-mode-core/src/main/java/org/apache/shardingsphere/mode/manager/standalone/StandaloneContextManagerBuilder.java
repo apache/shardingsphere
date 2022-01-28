@@ -88,7 +88,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
         ContextManager result = new ContextManager();
         result.init(metaDataContexts, transactionContexts, new InstanceContext(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(parameter.getInstanceDefinition()), 
-                new StandaloneWorkerIdGenerator()));
+                new StandaloneWorkerIdGenerator(), getType()));
         buildSpecialRules(result);
         return result;
     }

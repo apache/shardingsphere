@@ -45,7 +45,7 @@ public final class PrometheusPluginBootServiceTest {
     @Test
     public void assertStart() {
         ProxyContext.getInstance().getContextManager().init(mock(MetaDataContexts.class), mock(TransactionContexts.class), new InstanceContext(new ComputeNodeInstance(), 
-                new MemoryWorkerIdGenerator()));
+                new MemoryWorkerIdGenerator(), "Memory"));
         Properties props = new Properties();
         props.setProperty("JVM_INFORMATION_COLLECTOR_ENABLED", "true");
         PluginConfiguration configuration = new PluginConfiguration("localhost", 8090, "", props);

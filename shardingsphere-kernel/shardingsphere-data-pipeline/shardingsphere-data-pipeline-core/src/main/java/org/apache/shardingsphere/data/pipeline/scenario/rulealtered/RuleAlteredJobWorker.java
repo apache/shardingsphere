@@ -30,9 +30,11 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExecutor;
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
+import org.apache.shardingsphere.data.pipeline.core.lock.ScalingSchemaNameDistributeLock;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -47,6 +49,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseSchemaNameLockEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
@@ -168,6 +171,10 @@ public final class RuleAlteredJobWorker {
      */
     @Subscribe
     public void start(final StartScalingEvent event) {
+        if (!isUncompletedJobOfSameSchemaInJobList(event.getSchemaName())) {
+            log.warn("There is an outstanding job with the same schema name");
+            return;
+        }
         log.info("Start scaling job by {}", event);
         Optional<JobConfiguration> jobConfigOptional = createJobConfig(event);
         Optional<String> jobId = jobConfigOptional.isPresent() ? PipelineJobAPIFactory.getRuleAlteredJobAPI().start(jobConfigOptional.get()) : Optional.empty();
@@ -283,5 +290,37 @@ public final class RuleAlteredJobWorker {
                                                     final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
         RuleAlteredJobConfigurationPreparer preparer = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobConfigurationPreparer.class);
         return preparer.createTaskConfiguration(pipelineConfig, handleConfig, onRuleAlteredActionConfig);
+    }
+    
+    private boolean isUncompletedJobOfSameSchemaInJobList(final String schema) {
+        boolean isUncompletedJobOfSameSchema = false;
+        for (JobInfo each : PipelineJobAPIFactory.getRuleAlteredJobAPI().list()) {
+            JobConfiguration jobConfiguration = YamlEngine.unmarshal(each.getJobParameter(), JobConfiguration.class, true);
+            if (isUncompletedJobOfSameSchema(jobConfiguration, each.getJobId(), schema)) {
+                isUncompletedJobOfSameSchema = true;
+                break;
+            }
+        }
+        return !isUncompletedJobOfSameSchema;
+    }
+    
+    private boolean isUncompletedJobOfSameSchema(final JobConfiguration jobConfig, final String jobId, final String currentSchema) {
+        HandleConfiguration handleConfig = jobConfig.getHandleConfig();
+        WorkflowConfiguration workflowConfig;
+        if (null == handleConfig || null == (workflowConfig = jobConfig.getWorkflowConfig())) {
+            log.warn("handleConfig or workflowConfig null, jobId={}", jobId);
+            return false;
+        }
+        return currentSchema.equals(workflowConfig.getSchemaName());
+    }
+    
+    /**
+     * scaling release schema name lock.
+     *
+     * @param event scaling release schema name lock event
+     */
+    @Subscribe
+    public void scalingReleaseSchemaNameLock(final ScalingReleaseSchemaNameLockEvent event) {
+        ScalingSchemaNameDistributeLock.getInstance().releaseLock(event.getSchemaName());
     }
 }
