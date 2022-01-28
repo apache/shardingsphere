@@ -28,7 +28,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public class EncryptColumnDataType {
+public final class EncryptColumnDataType {
     
     private final String typeName;
     
