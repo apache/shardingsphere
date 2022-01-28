@@ -172,6 +172,7 @@ public final class RuleAlteredJobWorker {
     @Subscribe
     public void start(final StartScalingEvent event) {
         if (!isUncompletedJobOfSameSchemaInJobList(event.getSchemaName())) {
+            log.warn("There is an outstanding job with the same schema name");
             return;
         }
         log.info("Start scaling job by {}", event);
@@ -277,6 +278,20 @@ public final class RuleAlteredJobWorker {
         }
     }
     
+    /**
+     * Build task configuration.
+     *
+     * @param pipelineConfig pipeline configuration
+     * @param handleConfig handle configuration
+     * @param onRuleAlteredActionConfig action configuration
+     * @return task configuration
+     */
+    public static TaskConfiguration buildTaskConfig(final PipelineConfiguration pipelineConfig, final HandleConfiguration handleConfig,
+                                                    final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
+        RuleAlteredJobConfigurationPreparer preparer = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobConfigurationPreparer.class);
+        return preparer.createTaskConfiguration(pipelineConfig, handleConfig, onRuleAlteredActionConfig);
+    }
+    
     private boolean isUncompletedJobOfSameSchemaInJobList(final String schema) {
         boolean isUncompletedJobOfSameSchema = false;
         for (JobInfo each : PipelineJobAPIFactory.getRuleAlteredJobAPI().list()) {
@@ -286,11 +301,7 @@ public final class RuleAlteredJobWorker {
                 break;
             }
         }
-        if (isUncompletedJobOfSameSchema) {
-            log.warn("There is an outstanding job with the same schema name");
-            return false;
-        }
-        return true;
+        return !isUncompletedJobOfSameSchema;
     }
     
     private boolean isUncompletedJobOfSameSchema(final JobConfiguration jobConfig, final String jobId, final String currentSchema) {
@@ -310,20 +321,6 @@ public final class RuleAlteredJobWorker {
      */
     @Subscribe
     public void scalingReleaseSchemaNameLock(final ScalingReleaseSchemaNameLockEvent event) {
-        ScalingSchemaNameDistributeLock.releaseLock(event.getSchemaName());
-    }
-    
-    /**
-     * Build task configuration.
-     *
-     * @param pipelineConfig pipeline configuration
-     * @param handleConfig handle configuration
-     * @param onRuleAlteredActionConfig action configuration
-     * @return task configuration
-     */
-    public static TaskConfiguration buildTaskConfig(final PipelineConfiguration pipelineConfig, final HandleConfiguration handleConfig,
-                                                    final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
-        RuleAlteredJobConfigurationPreparer preparer = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobConfigurationPreparer.class);
-        return preparer.createTaskConfiguration(pipelineConfig, handleConfig, onRuleAlteredActionConfig);
+        ScalingSchemaNameDistributeLock.getInstance().releaseLock(event.getSchemaName());
     }
 }

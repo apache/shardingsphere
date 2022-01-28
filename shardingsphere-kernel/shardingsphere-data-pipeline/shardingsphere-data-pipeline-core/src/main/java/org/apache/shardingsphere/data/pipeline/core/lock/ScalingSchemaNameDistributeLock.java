@@ -21,25 +21,39 @@ import com.google.common.collect.Maps;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 
 import java.util.Map;
 
 /**
- * distributed locks added to the schema name during scaling.
+ * Distributed locks added to the schema name during scaling.
  */
 public final class ScalingSchemaNameDistributeLock {
     
-    private static final LockRegistryService LOCK_REGISTRY_SERVICE;
+    private static volatile ScalingSchemaNameDistributeLock instance;
     
-    private static final Map<String, Boolean> LOCK_NAME_LOCKED_MAP;
+    private final LockRegistryService lockRegistryService;
     
-    static {
-        ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) PipelineContext.getModeConfig().getRepository();
+    private final Map<String, Boolean> lockNameLockedMap;
+    
+    private ScalingSchemaNameDistributeLock() {
         ClusterPersistRepository repository = (ClusterPersistRepository) PipelineContext.getContextManager().getMetaDataContexts().getMetaDataPersistService().get().getRepository();
-        repository.init(repositoryConfig);
-        LOCK_REGISTRY_SERVICE = new LockRegistryService(repository);
-        LOCK_NAME_LOCKED_MAP = Maps.newConcurrentMap();
+        lockRegistryService = new LockRegistryService(repository);
+        lockNameLockedMap = Maps.newConcurrentMap();
+    }
+    
+    /**
+     * get ScalingSchemaNameDistributeLock instance.
+     * @return ScalingSchemaNameDistributeLock
+     */
+    public static ScalingSchemaNameDistributeLock getInstance() {
+        if (instance == null) {
+            synchronized (ScalingSchemaNameDistributeLock.class) {
+                if (instance == null) {
+                    instance = new ScalingSchemaNameDistributeLock();
+                }
+            }
+        }
+        return instance;
     }
     
     /**
@@ -48,10 +62,10 @@ public final class ScalingSchemaNameDistributeLock {
      * @param timeoutMilliseconds the maximum time in milliseconds to acquire lock
      * @return true if get the lock, false if not
      */
-    public static boolean tryLock(final String lockName, final long timeoutMilliseconds) {
-        boolean locked = LOCK_REGISTRY_SERVICE.tryLock(decorateLockName(lockName), timeoutMilliseconds);
+    public boolean tryLock(final String lockName, final long timeoutMilliseconds) {
+        boolean locked = lockRegistryService.tryLock(decorateLockName(lockName), timeoutMilliseconds);
         if (locked) {
-            LOCK_NAME_LOCKED_MAP.put(lockName, true);
+            lockNameLockedMap.put(lockName, true);
         }
         return locked;
     }
@@ -60,14 +74,14 @@ public final class ScalingSchemaNameDistributeLock {
      * Release lock.
      * @param lockName lock name
      */
-    public static void releaseLock(final String lockName) {
-        if (LOCK_NAME_LOCKED_MAP.getOrDefault(lockName, false)) {
-            LOCK_NAME_LOCKED_MAP.remove(lockName);
-            LOCK_REGISTRY_SERVICE.releaseLock(decorateLockName(lockName));
+    public void releaseLock(final String lockName) {
+        if (lockNameLockedMap.getOrDefault(lockName, false)) {
+            lockNameLockedMap.remove(lockName);
+            lockRegistryService.releaseLock(decorateLockName(lockName));
         }
     }
     
-    private static String decorateLockName(final String schemaName) {
+    private String decorateLockName(final String schemaName) {
         return "Scaling-" + schemaName;
     }
 }

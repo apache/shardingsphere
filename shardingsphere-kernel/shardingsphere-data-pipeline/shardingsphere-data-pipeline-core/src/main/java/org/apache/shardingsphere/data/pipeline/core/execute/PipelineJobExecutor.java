@@ -71,8 +71,8 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
             switch (event.getType()) {
                 case ADDED:
                 case UPDATED:
-                    JobConfiguration jobConfiguration = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), JobConfiguration.class, true);
-                    if (ScalingSchemaNameDistributeLock.tryLock(jobConfiguration.getWorkflowConfig().getSchemaName(), 1000)) {
+                    JobConfiguration jobConfig = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), JobConfiguration.class, true);
+                    if (ScalingSchemaNameDistributeLock.getInstance().tryLock(jobConfig.getWorkflowConfig().getSchemaName(), 1000)) {
                         execute(jobConfigPOJO);
                     }
                     break;
