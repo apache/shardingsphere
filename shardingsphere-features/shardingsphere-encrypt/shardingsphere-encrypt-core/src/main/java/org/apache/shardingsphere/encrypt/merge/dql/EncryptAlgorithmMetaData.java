@@ -64,7 +64,6 @@ public final class EncryptAlgorithmMetaData {
      */
     public boolean isQueryWithCipherColumn(final String tableName) {
         return encryptRule.isQueryWithCipherColumn(tableName);
-
     }
     
     /**
