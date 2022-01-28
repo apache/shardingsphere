@@ -46,9 +46,9 @@ public final class ScalingSchemaNameDistributeLock {
      * @return ScalingSchemaNameDistributeLock
      */
     public static ScalingSchemaNameDistributeLock getInstance() {
-        if (instance == null) {
+        if (null == instance) {
             synchronized (ScalingSchemaNameDistributeLock.class) {
-                if (instance == null) {
+                if (null == instance) {
                     instance = new ScalingSchemaNameDistributeLock();
                 }
             }
