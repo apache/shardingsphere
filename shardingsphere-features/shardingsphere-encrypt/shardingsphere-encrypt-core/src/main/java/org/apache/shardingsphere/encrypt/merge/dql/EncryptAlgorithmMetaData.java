@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.encrypt.merge.dql;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -79,7 +80,7 @@ public final class EncryptAlgorithmMetaData {
         }
         Map<String, String> columnTableNames = selectStatementContext.getTablesContext().findTableName(Collections.singletonList(columnProjection.get()), schema);
         Optional<String> tableName = findTableName(columnProjection.get(), columnTableNames);
-        return tableName.map(optional -> new EncryptContext(schemaName, optional, columnProjection.get().getName()));
+        return tableName.map(optional -> EncryptContextBuilder.build(schemaName, optional, columnProjection.get().getName(), encryptRule));
     }
     
     private Optional<ColumnProjection> findColumnProjection(final int columnIndex) {

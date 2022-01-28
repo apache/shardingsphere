@@ -239,7 +239,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public List<Object> getEncryptAssistedQueryValues(final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
         Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
-        EncryptContext encryptContext = new EncryptContext(schemaName, logicTable, logicColumn);
+        EncryptContext encryptContext = EncryptContextBuilder.build(schemaName, logicTable, logicColumn, this);
         Preconditions.checkArgument(encryptor.isPresent() && encryptor.get() instanceof QueryAssistedEncryptAlgorithm,
                 String.format("Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn));
         return originalValues.stream().map(input -> null == input 
