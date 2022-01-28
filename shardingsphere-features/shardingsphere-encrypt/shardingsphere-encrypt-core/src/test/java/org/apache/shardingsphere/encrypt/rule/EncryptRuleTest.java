@@ -82,12 +82,12 @@ public final class EncryptRuleTest {
     
     @Test
     public void assertFindEncryptor() {
-        assertTrue(new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).findEncryptor(DefaultSchema.LOGIC_NAME, "t_encrypt", "pwd").isPresent());
+        assertTrue(new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).findEncryptor("t_encrypt", "pwd").isPresent());
     }
     
     @Test
     public void assertNotFindEncryptor() {
-        assertFalse(new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).findEncryptor(DefaultSchema.LOGIC_NAME, "t_encrypt", "other_column").isPresent());
+        assertFalse(new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).findEncryptor("t_encrypt", "other_column").isPresent());
     }
     
     @Test

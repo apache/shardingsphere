@@ -69,10 +69,10 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
         String tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
         for (AssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
-            if (each.getValue() instanceof ParameterMarkerExpressionSegment && encryptRule.findEncryptor(schemaName, tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent()) {
+            if (each.getValue() instanceof ParameterMarkerExpressionSegment && encryptRule.findEncryptor(tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent()) {
                 StandardParameterBuilder standardParameterBuilder = parameterBuilder instanceof StandardParameterBuilder
                         ? (StandardParameterBuilder) parameterBuilder : ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(0);
-                encryptParameters(standardParameterBuilder, schemaName, tableName, each, parameters);
+                encryptParameters(standardParameterBuilder, tableName, each, parameters);
             }
         }
     }
@@ -86,7 +86,7 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
         return ((UpdateStatement) sqlStatement).getSetAssignment();
     }
     
-    private void encryptParameters(final StandardParameterBuilder parameterBuilder, final String schemaName, final String tableName, final AssignmentSegment assignmentSegment, 
+    private void encryptParameters(final StandardParameterBuilder parameterBuilder, final String tableName, final AssignmentSegment assignmentSegment, 
             final List<Object> parameters) {
         String columnName = assignmentSegment.getColumns().get(0).getIdentifier().getValue();
         int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) assignmentSegment.getValue()).getParameterMarkerIndex();

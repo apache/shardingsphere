@@ -24,9 +24,10 @@ import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncry
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.rewrite.util.EncryptPropertiesBuilder;
+import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -44,7 +45,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -169,31 +169,6 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     }
     
     /**
-     * Find encryptor.
-     *
-     * @param schemaName schema name
-     * @param logicTable logic table name
-     * @param logicColumn logic column name
-     * @return encryptor
-     */
-    @SuppressWarnings("rawtypes")
-    public Optional<EncryptAlgorithm> findEncryptor(final String schemaName, final String logicTable, final String logicColumn) {
-        if (!tables.containsKey(logicTable)) {
-            return Optional.empty();
-        }
-        Optional<EncryptAlgorithm> result = tables.get(logicTable).findEncryptorName(logicColumn).map(encryptors::get);
-        result.ifPresent(optional -> mergeProps(optional, EncryptPropertiesBuilder.getProperties(schemaName, "", logicTable, logicColumn)));
-        return result;
-    }
-    
-    @SuppressWarnings("rawtypes")
-    private void mergeProps(final EncryptAlgorithm encryptAlgorithm, final Properties encryptProperties) {
-        Properties props = encryptAlgorithm.getProps();
-        props.putAll(encryptProperties);
-        encryptAlgorithm.setProps(props);
-    }
-    
-    /**
      * get encrypt values.
      *
      * @param schemaName schema name
@@ -204,9 +179,10 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public List<Object> getEncryptValues(final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
-        Optional<EncryptAlgorithm> encryptor = findEncryptor(schemaName, logicTable, logicColumn);
+        Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
+        EncryptContext encryptContext = EncryptContextBuilder.build(schemaName, logicTable, logicColumn, this);
         Preconditions.checkArgument(encryptor.isPresent(), "Can not find EncryptAlgorithm by %s.%s.", logicTable, logicColumn);
-        return originalValues.stream().map(input -> null == input ? null : encryptor.get().encrypt(input)).collect(Collectors.toList());
+        return originalValues.stream().map(input -> null == input ? null : encryptor.get().encrypt(input, encryptContext)).collect(Collectors.toList());
     }
     
     /**
@@ -262,10 +238,12 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public List<Object> getEncryptAssistedQueryValues(final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
-        Optional<EncryptAlgorithm> encryptor = findEncryptor(schemaName, logicTable, logicColumn);
+        Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
+        EncryptContext encryptContext = new EncryptContext(schemaName, logicTable, logicColumn);
         Preconditions.checkArgument(encryptor.isPresent() && encryptor.get() instanceof QueryAssistedEncryptAlgorithm,
                 String.format("Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn));
-        return originalValues.stream().map(input -> null == input ? null : ((QueryAssistedEncryptAlgorithm) encryptor.get()).queryAssistedEncrypt(input)).collect(Collectors.toList());
+        return originalValues.stream().map(input -> null == input 
+                ? null : ((QueryAssistedEncryptAlgorithm) encryptor.get()).queryAssistedEncrypt(input, encryptContext)).collect(Collectors.toList());
     }
     
     /**

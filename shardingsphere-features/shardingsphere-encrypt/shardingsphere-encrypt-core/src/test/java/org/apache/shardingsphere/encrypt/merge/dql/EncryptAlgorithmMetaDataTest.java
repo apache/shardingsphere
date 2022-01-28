@@ -88,9 +88,9 @@ public final class EncryptAlgorithmMetaDataTest {
         Map<String, String> columnTableNames = new HashMap<>();
         columnTableNames.put(columnProjection.getExpression(), "t_order");
         when(tablesContext.findTableName(Collections.singletonList(columnProjection), schema)).thenReturn(columnTableNames);
-        when(encryptRule.findEncryptor(DefaultSchema.LOGIC_NAME, "t_order", "id")).thenReturn(Optional.of(encryptAlgorithm));
+        when(encryptRule.findEncryptor("t_order", "id")).thenReturn(Optional.of(encryptAlgorithm));
         EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(DefaultSchema.LOGIC_NAME, schema, encryptRule, selectStatementContext);
-        Optional<EncryptAlgorithm> actualEncryptor = encryptAlgorithmMetaData.findEncryptor(1);
+        Optional<EncryptAlgorithm> actualEncryptor = encryptAlgorithmMetaData.findEncryptor("1", "");
         assertTrue(actualEncryptor.isPresent());
         assertThat(actualEncryptor.get().getType(), is("MD5"));
     }
@@ -99,9 +99,9 @@ public final class EncryptAlgorithmMetaDataTest {
     public void assertFindEncryptorByColumnName() {
         when(tablesContext.findTableName(Collections.singletonList(columnProjection), schema)).thenReturn(Collections.emptyMap());
         when(tablesContext.getTableNames()).thenReturn(Arrays.asList("t_user", "t_user_item", "t_order_item"));
-        when(encryptRule.findEncryptor(DefaultSchema.LOGIC_NAME, "t_order_item", "id")).thenReturn(Optional.of(encryptAlgorithm));
+        when(encryptRule.findEncryptor("t_order_item", "id")).thenReturn(Optional.of(encryptAlgorithm));
         EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(DefaultSchema.LOGIC_NAME, schema, encryptRule, selectStatementContext);
-        Optional<EncryptAlgorithm> actualEncryptor = encryptAlgorithmMetaData.findEncryptor(1);
+        Optional<EncryptAlgorithm> actualEncryptor = encryptAlgorithmMetaData.findEncryptor("1", "");
         assertTrue(actualEncryptor.isPresent());
         assertThat(actualEncryptor.get().getType(), is("MD5"));
     }
@@ -110,7 +110,7 @@ public final class EncryptAlgorithmMetaDataTest {
     public void assertFindEncryptorWhenColumnProjectionIsNotExist() {
         when(projectionsContext.getExpandProjections()).thenReturn(Collections.singletonList(mock(DerivedProjection.class)));
         EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(DefaultSchema.LOGIC_NAME, schema, encryptRule, selectStatementContext);
-        Optional<EncryptAlgorithm> actualEncryptor = encryptAlgorithmMetaData.findEncryptor(1);
+        Optional<EncryptAlgorithm> actualEncryptor = encryptAlgorithmMetaData.findEncryptor("1", "");
         assertFalse(actualEncryptor.isPresent());
     }
     
@@ -121,6 +121,6 @@ public final class EncryptAlgorithmMetaDataTest {
         when(tablesContext.findTableName(Collections.singletonList(columnProjection), schema)).thenReturn(columnTableNames);
         when(encryptRule.isQueryWithCipherColumn("t_order")).thenReturn(true);
         EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(DefaultSchema.LOGIC_NAME, schema, encryptRule, selectStatementContext);
-        assertTrue(encryptAlgorithmMetaData.isQueryWithCipherColumn(1));
+        assertTrue(encryptAlgorithmMetaData.isQueryWithCipherColumn("1"));
     }
 }

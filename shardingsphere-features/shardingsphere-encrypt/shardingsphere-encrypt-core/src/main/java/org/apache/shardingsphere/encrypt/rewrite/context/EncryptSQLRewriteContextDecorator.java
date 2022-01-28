@@ -60,8 +60,7 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
     private Collection<EncryptCondition> getEncryptConditions(final EncryptRule encryptRule, final SQLRewriteContext sqlRewriteContext) {
         SQLStatementContext<?> sqlStatementContext = sqlRewriteContext.getSqlStatementContext();
         Collection<WhereSegment> whereSegments = sqlStatementContext instanceof WhereAvailable ? ((WhereAvailable) sqlStatementContext).getWhereSegments() : Collections.emptyList();
-        return whereSegments.isEmpty() ? Collections.emptyList() 
-                : new EncryptConditionEngine(encryptRule, sqlRewriteContext.getSchemaName(), sqlRewriteContext.getSchema()).createEncryptConditions(sqlStatementContext);
+        return whereSegments.isEmpty() ? Collections.emptyList() : new EncryptConditionEngine(encryptRule, sqlRewriteContext.getSchema()).createEncryptConditions(sqlStatementContext);
     }
     
     @SuppressWarnings("rawtypes")

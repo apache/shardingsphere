@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.impl;
 
+import org.apache.shardingsphere.encrypt.spi.context.EncryptColumnDataType;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptCreateTableTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptConfigDataTypeToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
-import org.apache.shardingsphere.encrypt.rule.EncryptColumnDataType;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
@@ -34,9 +34,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -91,9 +94,20 @@ public final class EncryptCreateTableTokenGeneratorTest {
         when(encryptTable.getLogicColumns()).thenReturn(Collections.singletonList("t_encrypt"));
         when(result.findEncryptor("t_encrypt", "certificate_number")).thenReturn(Optional.of(mock(EncryptAlgorithm.class)));
         when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
-        when(encryptTable.findEncryptColumn("certificate_number")).thenReturn(Optional.of(new EncryptColumn(new EncryptColumnDataType("int(20) unsigned not null default 0", 0), 
-                "cipher_certificate_number", new EncryptColumnDataType("varchar(200) not null default ''", 0), "assisted_certificate_number", 
-                new EncryptColumnDataType("varchar(200) not null", 0), "certificate_number_plain", new EncryptColumnDataType("int(20) unsigned not null default 0", 0), "test")));
+        EncryptColumn column = mockEncryptColumn();
+        when(encryptTable.findEncryptColumn("certificate_number")).thenReturn(Optional.of(column));
         return result;
+    }
+    
+    private EncryptColumn mockEncryptColumn() {
+        Map<String, Integer> dataTypes = new HashMap<>();
+        dataTypes.put("int", Types.INTEGER);
+        dataTypes.put("varchar", Types.VARCHAR);
+        EncryptColumnDataType logicDataType = new EncryptColumnDataType("int(20) unsigned not null default 0", dataTypes);
+        EncryptColumnDataType cipherDataType = new EncryptColumnDataType("varchar(200) not null default ''", dataTypes);
+        EncryptColumnDataType assistedQueryDataType = new EncryptColumnDataType("varchar(200) not null", dataTypes);
+        EncryptColumnDataType plainDataType = new EncryptColumnDataType("int(20) unsigned not null default 0", dataTypes);
+        return new EncryptColumn(logicDataType, "cipher_certificate_number", cipherDataType, 
+                "assisted_certificate_number", assistedQueryDataType, "certificate_number_plain", plainDataType, "test");
     }
 }
