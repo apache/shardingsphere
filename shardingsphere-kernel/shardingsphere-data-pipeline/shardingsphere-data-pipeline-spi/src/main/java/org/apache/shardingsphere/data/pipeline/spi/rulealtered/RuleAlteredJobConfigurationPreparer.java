@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.HandleConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
+import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.spi.required.RequiredSPI;
 import org.apache.shardingsphere.spi.singleton.SingletonSPI;
 
@@ -41,7 +42,8 @@ public interface RuleAlteredJobConfigurationPreparer extends RequiredSPI, Single
      *
      * @param pipelineConfig pipeline configuration
      * @param handleConfig handle configuration
+     * @param onRuleAlteredActionConfig action configuration
      * @return task configuration
      */
-    TaskConfiguration createTaskConfiguration(PipelineConfiguration pipelineConfig, HandleConfiguration handleConfig);
+    TaskConfiguration createTaskConfiguration(PipelineConfiguration pipelineConfig, HandleConfiguration handleConfig, OnRuleAlteredActionConfiguration onRuleAlteredActionConfig);
 }
