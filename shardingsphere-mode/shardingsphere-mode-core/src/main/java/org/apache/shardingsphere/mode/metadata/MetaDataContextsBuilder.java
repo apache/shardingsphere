@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -42,24 +44,23 @@ import java.util.Properties;
  */
 public final class MetaDataContextsBuilder {
     
-    private final Map<String, ? extends SchemaConfiguration> schemaConfigs;
+    @Getter
+    private final Map<String, SchemaConfiguration> schemaConfigs = new LinkedHashMap<>();
+    
+    @Getter
+    private final Map<String, ShardingSphereSchema> schemas = new LinkedHashMap<>();
+    
+    @Getter
+    private final Map<String, Collection<ShardingSphereRule>> rules = new LinkedHashMap<>();
     
     private final Collection<RuleConfiguration> globalRuleConfigs;
-    
-    private final Map<String, ShardingSphereSchema> schemas;
-    
-    private final Map<String, Collection<ShardingSphereRule>> rules;
     
     private final ConfigurationProperties props;
     
     private final ExecutorEngine executorEngine;
     
-    public MetaDataContextsBuilder(final Map<String, ? extends SchemaConfiguration> schemaConfigs, final Collection<RuleConfiguration> globalRuleConfigs,
-                                   final Map<String, ShardingSphereSchema> schemas, final Map<String, Collection<ShardingSphereRule>> rules, final Properties props) {
-        this.schemaConfigs = schemaConfigs;
+    public MetaDataContextsBuilder(final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
         this.globalRuleConfigs = globalRuleConfigs;
-        this.schemas = schemas;
-        this.rules = rules;
         this.props = new ConfigurationProperties(null == props ? new Properties() : props);
         executorEngine = new ExecutorEngine(this.props.<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
     }

@@ -100,16 +100,21 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Collection<String> schemaNames = parameter.getInstanceDefinition().getInstanceType() == InstanceType.JDBC ? parameter.getSchemaConfigs().keySet()
                 : metaDataPersistService.getSchemaMetaDataService().loadAllNames();
         Map<String, Map<String, DataSource>> clusterDataSources = loadDataSourcesMap(metaDataPersistService, parameter.getSchemaConfigs(), schemaNames);
-        Map<String, Collection<RuleConfiguration>> clusterSchemaRuleConfigs = loadSchemaRules(metaDataPersistService, schemaNames);
-        Map<String, DataSourceProvidedSchemaConfiguration> schemaConfigs = new LinkedHashMap<>(clusterDataSources.size(), 1);
-        for (String each : clusterDataSources.keySet()) {
-            schemaConfigs.put(each, new DataSourceProvidedSchemaConfiguration(clusterDataSources.get(each), clusterSchemaRuleConfigs.get(each)));
-        }
         Properties loadedProps = metaDataPersistService.getPropsService().load();
+        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataPersistService.getGlobalRuleService().load(), loadedProps);
+        Map<String, Collection<RuleConfiguration>> clusterSchemaRuleConfigs = loadSchemaRules(metaDataPersistService, schemaNames);
+        Map<String, SchemaConfiguration> schemaConfigs = new LinkedHashMap<>(clusterDataSources.size(), 1);
+        for (String each : clusterDataSources.keySet()) {
+            SchemaConfiguration schemaConfig = new DataSourceProvidedSchemaConfiguration(clusterDataSources.get(each), clusterSchemaRuleConfigs.get(each));
+            schemaConfigs.put(each, schemaConfig);
+            metaDataContextsBuilder.getSchemaConfigs().put(each, schemaConfig);
+        }
         Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(schemaConfigs, loadedProps);
+        metaDataContextsBuilder.getRules().putAll(rules);
         Map<String, ShardingSphereSchema> schemas = getShardingSphereSchemas(schemaConfigs, rules, loadedProps);
+        metaDataContextsBuilder.getSchemas().putAll(schemas);
         persistMetaData(schemas);
-        metaDataContexts = new MetaDataContextsBuilder(schemaConfigs, metaDataPersistService.getGlobalRuleService().load(), schemas, rules, loadedProps).build(metaDataPersistService);
+        metaDataContexts = metaDataContextsBuilder.build(metaDataPersistService);
         transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
         instanceContext = new InstanceContext(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(
                 parameter.getInstanceDefinition()), new ClusterWorkerIdGenerator(repository, metaDataPersistService, parameter.getInstanceDefinition()));
