@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.simple;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query;
 
 import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.util.Collections;
@@ -45,6 +47,11 @@ public final class PostgreSQLDataRowPacketTest {
     
     @Mock
     private SQLXML sqlxml;
+    
+    @Before
+    public void setup() {
+        when(payload.getCharset()).thenReturn(StandardCharsets.UTF_8);
+    }
     
     @Test
     public void assertWriteWithNull() {
@@ -66,8 +73,9 @@ public final class PostgreSQLDataRowPacketTest {
         when(sqlxml.getString()).thenReturn("value");
         PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singletonList(sqlxml));
         actual.write(payload);
-        verify(payload).writeInt4("value".getBytes().length);
-        verify(payload).writeStringEOF("value");
+        byte[] valueBytes = "value".getBytes(StandardCharsets.UTF_8);
+        verify(payload).writeInt4(valueBytes.length);
+        verify(payload).writeBytes(valueBytes);
     }
     
     @Test
@@ -75,8 +83,9 @@ public final class PostgreSQLDataRowPacketTest {
         PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singletonList("value"));
         assertThat(actual.getData(), is(Collections.singletonList("value")));
         actual.write(payload);
-        verify(payload).writeInt4("value".getBytes().length);
-        verify(payload).writeStringEOF("value");
+        byte[] valueBytes = "value".getBytes(StandardCharsets.UTF_8);
+        verify(payload).writeInt4(valueBytes.length);
+        verify(payload).writeBytes(valueBytes);
     }
     
     @Test(expected = RuntimeException.class)
@@ -93,5 +102,20 @@ public final class PostgreSQLDataRowPacketTest {
         actual.write(payload);
         verify(payload).writeInt2(1);
         verify(payload).writeInt4(0xFFFFFFFF);
+    }
+    
+    @Test
+    public void assertWriteBinaryInt4() {
+        final int value = 12345678;
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singletonList(new BinaryCell(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, value)));
+        actual.write(payload);
+        verify(payload).writeInt2(1);
+        verify(payload).writeInt4(4);
+        verify(payload).writeInt4(value);
+    }
+    
+    @Test
+    public void assertGetIdentifier() {
+        assertThat(new PostgreSQLDataRowPacket(Collections.emptyList()).getIdentifier(), is(PostgreSQLMessagePacketType.DATA_ROW));
     }
 }
