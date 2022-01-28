@@ -72,9 +72,9 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
         String value = props.getProperty(dateTimeKey);
         Preconditions.checkNotNull(value, "%s cannot be null.", dateTimeKey);
         try {
-            return LocalDateTime.from(DATE_TIME_FORMAT.parse(value, new ParsePosition(0)));
+            return LocalDateTime.parse(value, DATE_TIME_FORMAT);
         } catch (final DateTimeParseException ex) {
-            throw new ShardingSphereConfigurationException("Invalid %s, datetime pattern should be `yyyy-MM-dd HH:mm:ss[.S]`, value is `%s`", dateTimeKey, value);
+            throw new ShardingSphereConfigurationException("Invalid %s, datetime pattern should be `yyyy-MM-dd HH:mm:ss`, value is `%s`", dateTimeKey, value);
         }
     }
     

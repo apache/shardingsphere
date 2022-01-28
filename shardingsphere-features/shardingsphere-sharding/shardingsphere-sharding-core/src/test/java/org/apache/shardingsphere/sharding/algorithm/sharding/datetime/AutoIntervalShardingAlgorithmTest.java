@@ -144,20 +144,4 @@ public final class AutoIntervalShardingAlgorithmTest {
                 new RangeShardingValue<>("t_order", "create_time", Range.closed("2020-01-01 00:00:11.123", "2020-01-01 00:00:21.123")));
         assertThat(actualWithThreeMilliseconds.size(), is(11));
     }
-
-    @Test
-    public void assertRangeDoShardingInPropertyWithMilliseconds() {
-        AutoIntervalShardingAlgorithm shardingAlgorithm = new AutoIntervalShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("datetime-lower", "2020-01-01 00:00:00.123");
-        shardingAlgorithm.getProps().setProperty("datetime-upper", "2020-01-01 00:00:30.123");
-        shardingAlgorithm.getProps().setProperty("sharding-seconds", "1");
-        shardingAlgorithm.init();
-        List<String> availableTargetNames = new LinkedList<>();
-        for (int i = 0; i < 32; i++) {
-            availableTargetNames.add("t_order_" + i);
-        }
-        Collection<String> actualWithoutMilliseconds = shardingAlgorithm.doSharding(availableTargetNames,
-                new RangeShardingValue<>("t_order", "create_time", Range.closed("2020-01-01 00:00:11", "2020-01-01 00:00:21")));
-        assertThat(actualWithoutMilliseconds.size(), is(11));
-    }
 }
