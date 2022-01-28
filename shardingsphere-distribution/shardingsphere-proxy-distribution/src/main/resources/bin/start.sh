@@ -44,9 +44,9 @@ VERSION_OPTS=""
 if [ $int_version = '8' ] ; then
     VERSION_OPTS="-XX:+UseConcMarkSweepGC -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70"
 elif [ $int_version = '11' ] ; then
-    VERSION_OPTS="-XX:+AggressiveHeap -XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler"
+    VERSION_OPTS="-XX:+SegmentedCodeCache -XX:+AggressiveHeap -XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler"
 elif [ $int_version = '17' ] ; then
-    VERSION_OPTS="-XX:+AggressiveHeap"
+    VERSION_OPTS="-XX:+SegmentedCodeCache -XX:+AggressiveHeap"
 else
     echo "unadapted java version, please notice..."
 fi
