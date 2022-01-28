@@ -27,6 +27,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -65,9 +66,26 @@ public final class IntegrationTestCaseAssertion {
         Collection<SQLValue> result = new LinkedList<>();
         int count = 0;
         for (String each : Splitter.on(",").trimResults().splitToList(parameters)) {
-            List<String> parameterPair = Splitter.on(":").trimResults().splitToList(each);
+            List<String> parameterPair = parse(each);
             result.add(new SQLValue(parameterPair.get(0), parameterPair.get(1), ++count));
         }
+        return result;
+    }
+    
+    private List<String> parse(final String parameter) {
+        List<String> result = Splitter.on(":").trimResults().splitToList(parameter);
+        int size = result.size();
+        if (size <= 2) {
+            return result;
+        }
+        return parseComplex(parameter);
+    }
+    
+    private List<String> parseComplex(final String parameter) {
+        List<String> result = new ArrayList<>(2);
+        int index = parameter.lastIndexOf(":");
+        result.add(parameter.substring(0, index));
+        result.add(parameter.substring(index + 1));
         return result;
     }
 }
