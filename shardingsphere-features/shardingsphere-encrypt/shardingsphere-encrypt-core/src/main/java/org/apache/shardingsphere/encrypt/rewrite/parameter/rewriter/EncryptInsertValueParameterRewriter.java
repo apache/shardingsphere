@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
+import org.apache.shardingsphere.encrypt.rewrite.aware.SchemaNameAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
@@ -44,9 +45,11 @@ import java.util.Optional;
  * Insert value parameter rewriter for encrypt.
  */
 @Setter
-public final class EncryptInsertValueParameterRewriter implements ParameterRewriter<InsertStatementContext>, EncryptRuleAware {
+public final class EncryptInsertValueParameterRewriter implements ParameterRewriter<InsertStatementContext>, EncryptRuleAware, SchemaNameAware {
     
     private EncryptRule encryptRule;
+    
+    private String schemaName;
     
     @Override
     public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
@@ -58,7 +61,6 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
     public void rewrite(final ParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final List<Object> parameters) {
         String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
-        String schemaName = insertStatementContext.getSchemaName();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
             encryptRule.findEncryptor(schemaName, tableName, columnName).ifPresent(

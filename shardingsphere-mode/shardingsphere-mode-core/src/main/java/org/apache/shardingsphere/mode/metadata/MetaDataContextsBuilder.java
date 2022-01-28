@@ -74,7 +74,7 @@ public final class MetaDataContextsBuilder {
     public MetaDataContexts build(final MetaDataPersistService metaDataPersistService) throws SQLException {
         Map<String, ShardingSphereMetaData> metaDataMap = getMetaDataMap();
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(globalRuleConfigs, GlobalRulesBuilder.buildRules(globalRuleConfigs, metaDataMap));
-        return new MetaDataContexts(metaDataPersistService, metaDataMap, globalMetaData, executorEngine, props, OptimizerContextFactory.create(metaDataMap, globalMetaData));
+        return new MetaDataContexts(metaDataPersistService, metaDataMap, globalMetaData, executorEngine, OptimizerContextFactory.create(metaDataMap, globalMetaData), props);
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() throws SQLException {

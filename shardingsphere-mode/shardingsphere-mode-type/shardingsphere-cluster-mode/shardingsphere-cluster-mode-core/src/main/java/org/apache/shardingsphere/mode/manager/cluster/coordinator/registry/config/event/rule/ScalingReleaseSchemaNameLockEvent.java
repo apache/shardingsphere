@@ -15,19 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule;
 
-import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.PrepareTargetTablesParameter;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Data source preparer.
+ * Scaling release schema name lock event.
  */
-public interface DataSourcePreparer {
-    
-    /**
-     * Prepare target tables.
-     *
-     * @param parameter prepare target tables parameter
-     */
-    void prepareTargetTables(PrepareTargetTablesParameter parameter);
+@RequiredArgsConstructor
+@Getter
+public final class ScalingReleaseSchemaNameLockEvent {
+    private final String schemaName;
 }

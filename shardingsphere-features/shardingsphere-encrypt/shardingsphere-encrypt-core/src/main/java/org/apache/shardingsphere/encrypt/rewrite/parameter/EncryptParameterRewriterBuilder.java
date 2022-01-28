@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
+import org.apache.shardingsphere.encrypt.rewrite.aware.SchemaNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptAssignmentParameterRewriter;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter;
@@ -44,6 +45,8 @@ import java.util.LinkedList;
 public final class EncryptParameterRewriterBuilder implements ParameterRewriterBuilder {
     
     private final EncryptRule encryptRule;
+    
+    private final String schemaName;
     
     private final ShardingSphereSchema schema;
     
@@ -80,6 +83,9 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
         }
         if (toBeAddedParameterRewriter instanceof EncryptConditionsAware) {
             ((EncryptConditionsAware) toBeAddedParameterRewriter).setEncryptConditions(encryptConditions);
+        }
+        if (toBeAddedParameterRewriter instanceof SchemaNameAware) {
+            ((SchemaNameAware) toBeAddedParameterRewriter).setSchemaName(schemaName);
         }
         if (toBeAddedParameterRewriter.isNeedRewrite(sqlStatementContext)) {
             parameterRewriters.add(toBeAddedParameterRewriter);

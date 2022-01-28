@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.scaling.core.job.environment;
 
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,19 +37,19 @@ public final class ScalingEnvironmentManager {
     private final PipelineDataSourceFactory dataSourceFactory = new PipelineDataSourceFactory();
     
     /**
-     * Reset target table.
+     * Cleanup target tables.
      *
-     * @param jobContext job context
+     * @param jobConfig job configuration
      * @throws SQLException SQL exception
      */
     // TODO seems it should be removed, dangerous to use
-    public void resetTargetTable(final RuleAlteredJobContext jobContext) throws SQLException {
-        Collection<String> tables = jobContext.getTaskConfig().getDumperConfig().getTableNameMap().values();
-        YamlPipelineDataSourceConfiguration target = jobContext.getJobConfig().getPipelineConfig().getTarget();
+    public void cleanupTargetTables(final JobConfiguration jobConfig) throws SQLException {
+        Collection<String> tables = jobConfig.getHandleConfig().splitLogicTableNames();
+        YamlPipelineDataSourceConfiguration target = jobConfig.getPipelineConfig().getTarget();
         try (PipelineDataSourceWrapper dataSource = dataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(target.getType(), target.getParameter()));
              Connection connection = dataSource.getConnection()) {
             for (String each : tables) {
-                String sql = PipelineSQLBuilderFactory.getSQLBuilder(jobContext.getJobConfig().getHandleConfig().getTargetDatabaseType()).buildTruncateSQL(each);
+                String sql = PipelineSQLBuilderFactory.getSQLBuilder(jobConfig.getHandleConfig().getTargetDatabaseType()).buildTruncateSQL(each);
                 try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                     preparedStatement.execute();
                 }

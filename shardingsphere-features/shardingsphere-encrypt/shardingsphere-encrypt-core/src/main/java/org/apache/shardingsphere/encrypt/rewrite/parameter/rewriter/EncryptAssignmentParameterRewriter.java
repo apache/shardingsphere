@@ -19,12 +19,12 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
+import org.apache.shardingsphere.encrypt.rewrite.aware.SchemaNameAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.util.DMLStatementContextHelper;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
@@ -48,9 +48,11 @@ import java.util.Optional;
  * Assignment parameter rewriter for encrypt.
  */
 @Setter
-public final class EncryptAssignmentParameterRewriter implements ParameterRewriter<SQLStatementContext>, EncryptRuleAware {
+public final class EncryptAssignmentParameterRewriter implements ParameterRewriter<SQLStatementContext>, EncryptRuleAware, SchemaNameAware {
     
     private EncryptRule encryptRule;
+    
+    private String schemaName;
     
     @Override
     public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
@@ -66,7 +68,6 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
         String tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
-        String schemaName = DMLStatementContextHelper.getSchemaName(sqlStatementContext);
         for (AssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
             if (each.getValue() instanceof ParameterMarkerExpressionSegment && encryptRule.findEncryptor(schemaName, tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent()) {
                 StandardParameterBuilder standardParameterBuilder = parameterBuilder instanceof StandardParameterBuilder

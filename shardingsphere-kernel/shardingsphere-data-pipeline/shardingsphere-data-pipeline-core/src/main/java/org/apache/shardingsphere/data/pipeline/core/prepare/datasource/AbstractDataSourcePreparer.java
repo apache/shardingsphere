@@ -23,8 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSource
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.ActualTableDefinition;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.TableDefinitionSQLType;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.DataSourcePreparer;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -48,14 +47,12 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     
     private static final String[] IGNORE_EXCEPTION_MESSAGE = {"multiple primary keys for table", "already exists"};
     
-    private final PipelineDataSourceFactory dataSourceFactory = new PipelineDataSourceFactory();
-    
-    protected final PipelineDataSourceWrapper getSourceDataSource(final PipelineConfiguration pipelineConfig) {
-        return dataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter()));
+    protected final PipelineDataSourceWrapper getSourceCachedDataSource(final PipelineConfiguration pipelineConfig, final PipelineDataSourceManager dataSourceManager) {
+        return dataSourceManager.getDataSource(PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter()));
     }
     
-    protected final PipelineDataSourceWrapper getTargetDataSource(final PipelineConfiguration pipelineConfig) {
-        return dataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter()));
+    protected final PipelineDataSourceWrapper getTargetCachedDataSource(final PipelineConfiguration pipelineConfig, final PipelineDataSourceManager dataSourceManager) {
+        return dataSourceManager.getDataSource(PipelineDataSourceConfigurationFactory.newInstance(pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter()));
     }
     
     protected final void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {

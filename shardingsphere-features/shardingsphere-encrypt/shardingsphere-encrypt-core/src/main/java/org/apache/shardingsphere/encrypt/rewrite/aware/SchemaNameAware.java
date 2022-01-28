@@ -15,25 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql;
-
-import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
-import org.apache.shardingsphere.data.pipeline.mysql.check.datasource.MySQLDataSourceChecker;
-import org.apache.shardingsphere.data.pipeline.mysql.prepare.datasource.MySQLDataSourcePreparer;
-import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
+package org.apache.shardingsphere.encrypt.rewrite.aware;
 
 /**
- * MySQL environment checker.
+ * Schema name aware.
  */
-public final class MySQLEnvironmentChecker implements EnvironmentChecker {
+public interface SchemaNameAware {
     
-    @Override
-    public Class<MySQLDataSourceChecker> getDataSourceCheckerClass() {
-        return MySQLDataSourceChecker.class;
-    }
-    
-    @Override
-    public Class<? extends DataSourcePreparer> getDataSourcePreparerClass() {
-        return MySQLDataSourcePreparer.class;
-    }
+    /**
+     * Set schema name.
+     * 
+     * @param schemaName schema name
+     */
+    void setSchemaName(String schemaName);
 }

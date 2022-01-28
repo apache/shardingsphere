@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.config.yaml.swapper;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.schema.impl.DataSourceGeneratedSchemaConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -77,7 +79,18 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void assertReadwriteSplittingRuleConfiguration(final ReadwriteSplittingRuleConfiguration actual) {
-        // TODO complete assert 
+        assertThat(actual.getDataSources().size(), is(1));
+        ReadwriteSplittingDataSourceRuleConfiguration dataSource = actual.getDataSources().iterator().next();
+        assertThat(dataSource.getName(), is("readwrite_ds"));
+        assertThat(dataSource.getType(), is("Static"));
+        assertThat(dataSource.getProps().size(), is(2));
+        assertThat(dataSource.getProps().getProperty("read-data-source-names"), is("foo_db"));
+        assertThat(dataSource.getProps().getProperty("write-data-source-name"), is("foo_db"));
+        assertThat(actual.getLoadBalancers().size(), is(1));
+        ShardingSphereAlgorithmConfiguration loadBalancer = actual.getLoadBalancers().get("round_robin");
+        assertThat(loadBalancer.getProps().size(), is(1));
+        assertThat(loadBalancer.getProps().getProperty("foo"), is("foo_value"));
+        assertThat(loadBalancer.getType(), is("ROUND_ROBIN"));
     }
     
     private void assertAuthority(final ProxyConfiguration proxyConfig) {

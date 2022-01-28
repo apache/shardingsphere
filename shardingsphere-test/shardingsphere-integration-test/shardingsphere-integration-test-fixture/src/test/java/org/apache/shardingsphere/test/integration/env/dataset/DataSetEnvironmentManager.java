@@ -86,7 +86,7 @@ public final class DataSetEnvironmentManager {
             String insertSQL;
             try (Connection connection = actualDataSources.get(dataNode.getDataSourceName()).getConnection()) {
                 DatabaseType databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
-                insertSQL = generateInsertSQL(databaseType.getQuoteCharacter().wrap(dataNode.getTableName()), dataSetMetaData.getColumns());
+                insertSQL = generateInsertSQL(databaseType.getQuoteCharacter().wrap(dataNode.getTableName()), dataSetMetaData.getColumns(), databaseType.getName());
             }
             fillDataTasks.add(new InsertTask(actualDataSources.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups));
         }
@@ -110,14 +110,24 @@ public final class DataSetEnvironmentManager {
         return result;
     }
     
-    private String generateInsertSQL(final String tableName, final Collection<DataSetColumn> columnMetaData) {
+    private String generateInsertSQL(final String tableName, final Collection<DataSetColumn> columnMetaData, final String databaseTypeName) {
         List<String> columnNames = new LinkedList<>();
         List<String> placeholders = new LinkedList<>();
         for (DataSetColumn each : columnMetaData) {
             columnNames.add(each.getName());
+            String type = each.getType();
+            if (type.startsWith("enum#") && "PostgreSQL".equals(databaseTypeName)) {
+                placeholders.add(generateEnum(type));
+                continue;
+            }
             placeholders.add("?");
         }
         return String.format("INSERT INTO %s (%s) VALUES (%s)", tableName, Joiner.on(",").join(columnNames), Joiner.on(",").join(placeholders));
+    }
+    
+    private String generateEnum(final String type) {
+        String[] split = type.split("#");
+        return split.length == 2 ? String.format("CAST( ? AS %s )", split[1]) : "?";
     }
     
     /**
