@@ -25,7 +25,6 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
@@ -65,19 +64,9 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     private List<Object> getEncryptedValues(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues) {
         String tableName = encryptCondition.getTableName();
         String columnName = encryptCondition.getColumnName();
-        List<Object> result = encryptRule.findAssistedQueryColumn(tableName, columnName).isPresent()
+        return encryptRule.findAssistedQueryColumn(tableName, columnName).isPresent()
                 ? encryptRule.getEncryptAssistedQueryValues(schemaName, tableName, columnName, originalValues) 
                         : encryptRule.getEncryptValues(schemaName, tableName, columnName, originalValues);
-        checkSortable(encryptCondition, result);
-        return result;
-    }
-    
-    private void checkSortable(final EncryptCondition encryptCondition, final List<Object> values) {
-        for (Object each : values) {
-            if (encryptCondition.isSortable() && !(each instanceof Number)) {
-                throw new ShardingSphereException("The SQL clause is unsupported in encrypt rule as not sortable encrypted values.");
-            }
-        }
     }
     
     private void encryptParameters(final ParameterBuilder parameterBuilder, final Map<Integer, Integer> positionIndexes, final List<Object> encryptValues) {
