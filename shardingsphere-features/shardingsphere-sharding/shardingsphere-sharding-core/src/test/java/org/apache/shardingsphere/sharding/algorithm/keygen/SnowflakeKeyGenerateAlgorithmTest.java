@@ -175,7 +175,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSetWorkerIdFailureWhenNegative() {
-        keyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(), new WorkerIdGeneratorFixture(-1L)));
+        keyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(), new WorkerIdGeneratorFixture(-1L), "Memory"));
         keyGenerateAlgorithm.init();
         keyGenerateAlgorithm.generateKey();
         clearInstanceContext();
@@ -192,7 +192,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSetWorkerIdFailureWhenOutOfRange() {
-        keyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(), new WorkerIdGeneratorFixture(Long.MIN_VALUE)));
+        keyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(), new WorkerIdGeneratorFixture(Long.MIN_VALUE), "Memory"));
         keyGenerateAlgorithm.init();
         keyGenerateAlgorithm.generateKey();
         clearInstanceContext();

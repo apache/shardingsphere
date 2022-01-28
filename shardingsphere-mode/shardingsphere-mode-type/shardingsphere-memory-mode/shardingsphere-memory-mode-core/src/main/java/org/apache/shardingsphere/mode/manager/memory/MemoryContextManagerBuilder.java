@@ -70,7 +70,7 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
         ComputeNodeInstance instance = new ComputeNodeInstance();
         instance.setInstanceDefinition(parameter.getInstanceDefinition());
         instance.setLabels(parameter.getLabels());
-        return new InstanceContext(instance, new MemoryWorkerIdGenerator());
+        return new InstanceContext(instance, new MemoryWorkerIdGenerator(), getType());
     }
     
     private void buildSpecialRules(final ContextManager contextManager) {

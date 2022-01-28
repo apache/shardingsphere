@@ -112,7 +112,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         metaDataContexts = new MetaDataContextsBuilder(schemaConfigs, metaDataPersistService.getGlobalRuleService().load(), schemas, rules, loadedProps).build(metaDataPersistService);
         transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
         instanceContext = new InstanceContext(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(
-                parameter.getInstanceDefinition()), new ClusterWorkerIdGenerator(repository, metaDataPersistService, parameter.getInstanceDefinition()));
+                parameter.getInstanceDefinition()), new ClusterWorkerIdGenerator(repository, metaDataPersistService, parameter.getInstanceDefinition()), getType());
     }
     
     private ClusterPersistRepository createClusterPersistRepository(final ClusterPersistRepositoryConfiguration config) {
