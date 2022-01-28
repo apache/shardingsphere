@@ -44,11 +44,14 @@
     <alter-sql-parser-rule sql-case-id="alter-sql-parser-rule">
         <sql-parser sqlCommentParseEnabled="false">
             <parse-tree-cache initial-capacity="10" maximum-size="11" concurrency-level="1" />
-            <sql-statement-cache initial-capacity="11" maximum-size="11" concurrency-level="100"  />
+            <sql-statement-cache initial-capacity="11" maximum-size="11" concurrency-level="100" />
         </sql-parser>
     </alter-sql-parser-rule>
     <show-traffic-rules sql-case-id="show-traffic-rules" rule-name="rule_name"/>
     <drop-traffic-rule sql-case-id="drop-traffic-rule" >
         <rule-name>rule_name</rule-name>
     </drop-traffic-rule>
+    <export-schema-config sql-case-id="export-schema-config">
+        <schema name="schema_name" start-index="26" stop-index="36" />
+    </export-schema-config>
 </sql-parser-test-cases>

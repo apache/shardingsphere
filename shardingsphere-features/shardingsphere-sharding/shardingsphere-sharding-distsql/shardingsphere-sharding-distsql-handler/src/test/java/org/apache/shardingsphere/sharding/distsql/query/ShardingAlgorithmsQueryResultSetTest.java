@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingAlgorithmQueryResultSet;
+import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingAlgorithmsQueryResultSet;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAlgorithmsStatement;
 import org.junit.Test;
 
@@ -36,13 +36,13 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingAlgorithmQueryResultSetTest {
+public final class ShardingAlgorithmsQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
-        ShardingAlgorithmQueryResultSet resultSet = new ShardingAlgorithmQueryResultSet();
+        ShardingAlgorithmsQueryResultSet resultSet = new ShardingAlgorithmsQueryResultSet();
         resultSet.init(metaData, mock(ShowShardingAlgorithmsStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(3));

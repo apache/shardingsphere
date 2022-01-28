@@ -32,11 +32,11 @@ showAllVariables
     ;
 
 enableInstance
-    :ENABLE INSTANCE (instanceId | instanceDefination)
+    : ENABLE INSTANCE (instanceId | instanceDefination)
     ;
 
 disableInstance
-    :DISABLE INSTANCE (instanceId | instanceDefination)
+    : DISABLE INSTANCE (instanceId | instanceDefination)
     ;
 
 showInstance
@@ -113,6 +113,14 @@ showTrafficRules
 
 dropTrafficRule
     : DROP TRAFFIC RULE ifExists? ruleName (COMMA ruleName)*
+    ;
+
+exportSchemaConfiguration
+    : EXPORT SCHEMA (CONFIGURATION | CONFIG) (FROM schemaName)? (COMMA? FILE EQ filePath)?
+    ;
+
+filePath
+    : STRING
     ;
 
 transactionRuleDefinition

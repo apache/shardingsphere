@@ -48,5 +48,6 @@ execute
     | showTrafficRules
     | dropTrafficRule
     | createTrafficRule
+    | exportSchemaConfiguration
     ) SEMI?
     ;

@@ -15,37 +15,28 @@
  * limitations under the License.
  */
 
-lexer grammar Literals;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common;
 
-import Alphabet, Symbol;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
 
-STRING
-    : (DQ ('\\'. | '""' | ~('"' | '\\'))* DQ)
-    | (SQ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ)
-    ;
+import java.util.Optional;
 
-IDENTIFIER
-    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
-    | BQ ~'`'+ BQ
-    | (DQ ( '\\'. | '""' | ~('"'| '\\') )* DQ)
-    ;
-
-INT
-    : [0-9]+
-    ;
-
-HEX
-    : [0-9a-fA-F]
-    ;
-
-NUMBER
-    : INT? DOT? INT (E (PLUS | MINUS)? INT)?
-    ;
-
-HEXDIGIT
-    : '0x' HEX+ | 'X' SQ HEX+ SQ
-    ;
+/**
+ * Export schema configuration statement.
+ */
+@RequiredArgsConstructor
+public final class ExportSchemaConfigurationStatement extends ShowDistSQLStatement implements FromSchemaAvailable {
     
-BITNUM
-    : '0b' ('0' | '1')+ | B SQ ('0' | '1')+ SQ
-    ;
+    private final SchemaSegment schema;
+    
+    @Getter
+    private final Optional<String> filePath;
+    
+    @Override
+    public Optional<SchemaSegment> getSchema() {
+        return Optional.ofNullable(schema);
+    }
+}

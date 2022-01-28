@@ -218,7 +218,7 @@ CONCURRENCY_LEVEL
 TYPE
     : T Y P E
     ;
-    
+
 MODE
     : M O D E
     ;
@@ -249,4 +249,20 @@ IF
 
 EXISTS
     : E X I S T S
+    ;
+
+EXPORT
+    : E X P O R T
+    ;
+
+CONFIGURATION
+    : C O N F I G U R A T I O N
+    ;
+
+CONFIG
+    : C O N F I G
+    ;
+
+FILE
+    : F I L E
     ;

@@ -36,9 +36,9 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Result set for show sharding algorithm.
+ * Result set for show sharding algorithms.
  */
-public final class ShardingAlgorithmQueryResultSet implements DistSQLResultSet {
+public final class ShardingAlgorithmsQueryResultSet implements DistSQLResultSet {
     
     private Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> data;
     
