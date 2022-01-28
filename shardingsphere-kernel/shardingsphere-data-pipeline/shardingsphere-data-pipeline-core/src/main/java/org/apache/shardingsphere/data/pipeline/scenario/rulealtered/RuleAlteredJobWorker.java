@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.HandleConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
@@ -35,6 +36,8 @@ import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExec
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
 import org.apache.shardingsphere.data.pipeline.core.lock.ZookeeperDistributeLock;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
+import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -48,6 +51,7 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseSchemaNameLockEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
+import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
 import java.util.ArrayList;
@@ -87,7 +91,7 @@ public final class RuleAlteredJobWorker {
      * @param ruleConfig rule configuration
      * @return enabled or not
      */
-    public static boolean isOnRuleAlteredActionEnabled(final org.apache.shardingsphere.infra.config.RuleConfiguration ruleConfig) {
+    public static boolean isOnRuleAlteredActionEnabled(final RuleConfiguration ruleConfig) {
         if (null == ruleConfig) {
             return false;
         }
@@ -133,7 +137,7 @@ public final class RuleAlteredJobWorker {
         if (null == yamlRuleConfig) {
             throw new PipelineJobCreationException("could not find altered rule");
         }
-        org.apache.shardingsphere.infra.config.RuleConfiguration ruleConfig = SWAPPER_ENGINE.swapToRuleConfiguration(yamlRuleConfig);
+        RuleConfiguration ruleConfig = SWAPPER_ENGINE.swapToRuleConfiguration(yamlRuleConfig);
         RuleAlteredDetector detector = RULE_CLASS_NAME_DETECTOR_MAP.get(ruleConfig.getClass().getName());
         Optional<OnRuleAlteredActionConfiguration> onRuleAlteredActionConfigOptional = detector.getOnRuleAlteredActionConfig(ruleConfig);
         if (!onRuleAlteredActionConfigOptional.isPresent()) {
@@ -303,5 +307,19 @@ public final class RuleAlteredJobWorker {
     @Subscribe
     public void scalingReleaseSchemaNameLock(final ScalingReleaseSchemaNameLockEvent event) {
         ZookeeperDistributeLock.releaseLock(event.getSchemaName());
+    }
+    
+    /**
+     * Build task configuration.
+     *
+     * @param pipelineConfig pipeline configuration
+     * @param handleConfig handle configuration
+     * @param onRuleAlteredActionConfig action configuration
+     * @return task configuration
+     */
+    public static TaskConfiguration buildTaskConfig(final PipelineConfiguration pipelineConfig, final HandleConfiguration handleConfig,
+                                                    final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
+        RuleAlteredJobConfigurationPreparer preparer = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobConfigurationPreparer.class);
+        return preparer.createTaskConfiguration(pipelineConfig, handleConfig, onRuleAlteredActionConfig);
     }
 }

@@ -15,19 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
+package org.apache.shardingsphere.encrypt.rule;
 
-import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.PrepareTargetTablesParameter;
+import org.junit.Test;
 
-/**
- * Data source preparer.
- */
-public interface DataSourcePreparer {
+import java.util.Map;
+import java.util.TreeMap;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public class EncryptColumnDataTypeTest {
     
-    /**
-     * Prepare target tables.
-     *
-     * @param parameter prepare target tables parameter
-     */
-    void prepareTargetTables(PrepareTargetTablesParameter parameter);
+    @Test
+    public void assertEncryptColumnDataType() {
+        Map<String, Integer> dataTypes = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        dataTypes.put("BIT", -7);
+        dataTypes.put("TINYINT", -6);
+        dataTypes.put("DATE", 91);
+        assertThat(new EncryptColumnDataType("BIT(5)", dataTypes).getDataType(), is(-7));
+        assertThat(new EncryptColumnDataType("TINYINT(5) UNSIGNED ZEROFILL", dataTypes).getDataType(), is(-6));
+        assertThat(new EncryptColumnDataType("DATE", dataTypes).getDataType(), is(91));
+    }
 }

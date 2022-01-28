@@ -20,10 +20,10 @@ package org.apache.shardingsphere.data.pipeline.mysql.prepare.datasource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.PrepareTargetTablesParameter;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.AbstractDataSourcePreparer;
+import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.mysql.sqlbuilder.MySQLPipelineSQLBuilder;
 
@@ -45,10 +45,9 @@ public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
     @Override
     public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
         PipelineConfiguration pipelineConfig = parameter.getPipelineConfiguration();
-        try (PipelineDataSourceWrapper sourceDataSource = getSourceDataSource(pipelineConfig);
-             Connection sourceConnection = sourceDataSource.getConnection();
-             PipelineDataSourceWrapper targetDataSource = getTargetDataSource(pipelineConfig);
-             Connection targetConnection = targetDataSource.getConnection()) {
+        PipelineDataSourceManager dataSourceManager = parameter.getDataSourceManager();
+        try (Connection sourceConnection = getSourceCachedDataSource(pipelineConfig, dataSourceManager).getConnection();
+             Connection targetConnection = getTargetCachedDataSource(pipelineConfig, dataSourceManager).getConnection()) {
             Collection<String> logicTableNames = parameter.getTablesFirstDataNodes().getEntries().stream().map(JobDataNodeEntry::getLogicTableName).collect(Collectors.toList());
             for (String each : logicTableNames) {
                 String createTableSQL = getCreateTableSQL(sourceConnection, each);

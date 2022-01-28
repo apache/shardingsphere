@@ -36,6 +36,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class EncryptAlgorithmMetaData {
     
+    private final String schemaName;
+    
     private final ShardingSphereSchema schema;
     
     private final EncryptRule encryptRule;
@@ -55,7 +57,6 @@ public final class EncryptAlgorithmMetaData {
         }
         Map<String, String> columnTableNames = selectStatementContext.getTablesContext().findTableName(Collections.singletonList(columnProjection.get()), schema);
         Optional<String> tableName = Optional.ofNullable(columnTableNames.get(columnProjection.get().getExpression()));
-        String schemaName = selectStatementContext.getSchemaName();
         String columnName = columnProjection.get().getName();
         return tableName.isPresent() ? findEncryptor(schemaName, tableName.get(), columnName) : findEncryptor(schemaName, columnName);
     }

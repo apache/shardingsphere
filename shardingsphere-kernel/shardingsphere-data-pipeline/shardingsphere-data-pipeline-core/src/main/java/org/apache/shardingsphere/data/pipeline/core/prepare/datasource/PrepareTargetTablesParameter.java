@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.prepare.datasource;
+package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 
 /**
  * Prepare target tables parameter.
@@ -35,4 +36,7 @@ public final class PrepareTargetTablesParameter {
     
     @NonNull
     private final PipelineConfiguration pipelineConfiguration;
+    
+    @NonNull
+    private final PipelineDataSourceManager dataSourceManager;
 }

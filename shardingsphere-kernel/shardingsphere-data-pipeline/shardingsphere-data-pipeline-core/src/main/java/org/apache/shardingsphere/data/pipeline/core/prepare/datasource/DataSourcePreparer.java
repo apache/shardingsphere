@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.type;
+package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
 /**
- * Schema available.
+ * Data source preparer.
  */
-public interface SchemaAvailable {
+public interface DataSourcePreparer {
     
     /**
-     * Get schema name.
-     * 
-     * @return current schema name.
+     * Prepare target tables.
+     *
+     * @param parameter prepare target tables parameter
      */
-    String getSchemaName();
+    void prepareTargetTables(PrepareTargetTablesParameter parameter);
 }

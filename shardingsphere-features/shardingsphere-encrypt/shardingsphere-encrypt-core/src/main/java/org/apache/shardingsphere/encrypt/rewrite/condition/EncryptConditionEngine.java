@@ -23,7 +23,6 @@ import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInConditi
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.util.DMLStatementContextHelper;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -60,6 +59,8 @@ public final class EncryptConditionEngine {
     
     private final EncryptRule encryptRule;
     
+    private final String schemaName;
+    
     private final ShardingSphereSchema schema;
     
     static {
@@ -82,26 +83,25 @@ public final class EncryptConditionEngine {
         for (WhereSegment each : whereSegments) {
             Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(each.getExpr());
             Map<String, String> columnTableNames = getColumnTableNames(sqlStatementContext, andPredicates);
-            String schemaName = DMLStatementContextHelper.getSchemaName(sqlStatementContext);
             for (AndPredicate predicate : andPredicates) {
-                result.addAll(createEncryptConditions(schemaName, predicate.getPredicates(), columnTableNames));
+                result.addAll(createEncryptConditions(predicate.getPredicates(), columnTableNames));
             }
         }
         return result;
     }
     
-    private Collection<EncryptCondition> createEncryptConditions(final String schemaName, final Collection<ExpressionSegment> predicates, final Map<String, String> columnTableNames) {
+    private Collection<EncryptCondition> createEncryptConditions(final Collection<ExpressionSegment> predicates, final Map<String, String> columnTableNames) {
         Collection<EncryptCondition> result = new LinkedList<>();
         Collection<Integer> stopIndexes = new HashSet<>();
         for (ExpressionSegment each : predicates) {
             if (stopIndexes.add(each.getStopIndex())) {
-                result.addAll(createEncryptConditions(schemaName, each, columnTableNames));
+                result.addAll(createEncryptConditions(each, columnTableNames));
             }
         }
         return result;
     }
     
-    private Collection<EncryptCondition> createEncryptConditions(final String schemaName, final ExpressionSegment expression, final Map<String, String> columnTableNames) {
+    private Collection<EncryptCondition> createEncryptConditions(final ExpressionSegment expression, final Map<String, String> columnTableNames) {
         Collection<EncryptCondition> result = new LinkedList<>();
         for (ColumnSegment each : ColumnExtractor.extract(expression)) {
             ColumnProjection projection = buildColumnProjection(each);
@@ -115,7 +115,7 @@ public final class EncryptConditionEngine {
     
     private Optional<EncryptCondition> createEncryptCondition(final ExpressionSegment expression, final String tableName) {
         if (expression instanceof BinaryOperationExpression) {
-            return createEncryptCondition((BinaryOperationExpression) expression, tableName);
+            return createBinaryEncryptCondition((BinaryOperationExpression) expression, tableName);
         }
         if (expression instanceof InExpression) {
             return createInEncryptCondition(tableName, (InExpression) expression, ((InExpression) expression).getRight());
@@ -126,7 +126,7 @@ public final class EncryptConditionEngine {
         return Optional.empty();
     }
     
-    private Optional<EncryptCondition> createEncryptCondition(final BinaryOperationExpression expression, final String tableName) {
+    private Optional<EncryptCondition> createBinaryEncryptCondition(final BinaryOperationExpression expression, final String tableName) {
         String operator = expression.getOperator();
         if (!LOGICAL_OPERATOR.contains(operator)) {
             if (isSupportedOperator(operator)) {
