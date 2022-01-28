@@ -86,9 +86,8 @@ public final class TransactionContextsBuilder {
         } else {
             return;
         }
-        String value = narayanaConfigMapToXml((LinkedHashMap<Object, Object>) result);
+        String value = narayanaConfigMapToXml(result);
         String path = ClassLoader.getSystemResource("").getPath();
-        System.out.println(path);
         try (BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(path, "jbossts-properties.xml"))) {
             bufferedWriter.write(value);
             bufferedWriter.flush();
