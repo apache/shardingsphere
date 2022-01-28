@@ -114,8 +114,8 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     }
     
     private int doSharding(final long shardingValue) {
-        String position = new DecimalFormat("0.00").format((float) shardingValue / shardingSeconds);
-        return Math.min(Math.max(0, (int) Math.ceil(Float.parseFloat(position))), autoTablesAmount - 1);
+        String position = new DecimalFormat("0.00").format((double) shardingValue / shardingSeconds);
+        return Math.min(Math.max(0, (int) Math.ceil(Double.parseDouble(position))), autoTablesAmount - 1);
     }
     
     private int getFirstPartition(final Range<Comparable<?>> valueRange) {
