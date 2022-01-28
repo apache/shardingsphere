@@ -33,7 +33,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -147,14 +146,12 @@ public final class TransactionContextsBuilder {
         return result;
     }
 
-    private String narayanaConfigMapToXml(final Map<Object, Object> sortedMap) {
-        StringBuffer sb = new StringBuffer("<properties>");
-        Iterator iterator = sortedMap.keySet().iterator();
-        while (iterator.hasNext()) {
+    private String narayanaConfigMapToXml(final Map<Object, Object> config) {
+        StringBuilder sb = new StringBuilder("<properties>");
+        for (Object o : config.keySet()) {
             sb.append("\n\t");
-            Object key = iterator.next();
-            Object value = sortedMap.get(key);
-            sb.append(String.format("<entry key=\"%s\">", key));
+            Object value = config.get(o);
+            sb.append(String.format("<entry key=\"%s\">", o));
             if (value instanceof List) {
                 for (Object i : (List) value) {
                     sb.append("\n\t\t");
