@@ -19,7 +19,7 @@ product: jdbc
 mode: memory
 transaction: local
 features: sharding,readwrite-splitting,encrypt
-frameworks: jdbc
+frameworks: jdbc,spring-boot-starter-jdbc
 
 host: localhost
 port: 3306

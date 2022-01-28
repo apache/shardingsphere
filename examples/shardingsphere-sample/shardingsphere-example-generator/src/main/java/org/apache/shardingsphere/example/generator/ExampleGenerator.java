@@ -42,14 +42,8 @@ public final class ExampleGenerator {
     
     private static final String DATA_MODEL_PATH = "/data-model/data-model.yaml";
     
-    private static final String OUTPUT_PATH = "./examples/shardingsphere-sample/shardingsphere-example-generated"
-            + "<#assign package=\"\">"
-            + "<#if feature?split(\",\")?size gt 1>"
-            + "<#assign package=\"mixed\">"
-            + "<#else>"
-            + "<#assign package=feature />"
-            + "</#if>"
-            + "/shardingsphere-${product}-sample/${package}--${framework}--${mode}--${transaction}/";
+    private static final String OUTPUT_PATH = "./examples/shardingsphere-sample/shardingsphere-example-generator/target/shardingsphere-example-generated"
+            + "/shardingsphere-${product}-sample/${feature?replace(',', '-')}--${framework}--${mode}--${transaction}/";
     
     private static final String JAVA_CLASS_PATH = "src/main/java/org/apache/shardingsphere/example/"
             + "<#assign package=\"\">"
@@ -88,7 +82,7 @@ public final class ExampleGenerator {
             String features = dataModel.get("features");
             String frameworks = dataModel.get("frameworks");
             for (String eachFramework : frameworks.split(",")) {
-                for (String eachFeature : getSonSet2(features)) {
+                for (String eachFeature : generateCombination(features.split(","))) {
                     dataModel.put("feature", eachFeature);
                     dataModel.put("framework", eachFramework);
                     generateDirs(dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getJavaClassPaths(), JAVA_CLASS_PATH);
@@ -100,16 +94,15 @@ public final class ExampleGenerator {
             }
         }
     }
-
-    private static Collection<String> getSonSet2(String features) {
-        String[] res = features.split(",");
-        int len = res.length;
+    
+    private Collection<String> generateCombination(String[] combs) {
+        int len = combs.length;
         Collection<String> result = new HashSet<>();
         for (int i = 0, size = 1 << len; i < size; i++) {
             StringBuilder tmp = new StringBuilder();
             for (int j = 0; j < len; j++) {
-                if (((1 << j) & i) != 0) {//该位有元素输出
-                    tmp.append(res[j]).append(",");
+                if (((1 << j) & i) != 0) {
+                    tmp.append(combs[j]).append(",");
                 }
             }
             if (0 != tmp.length()) {
@@ -117,18 +110,15 @@ public final class ExampleGenerator {
                 result.add(tmp.toString());
             }
         }
-        for (String each : result) {
-            System.out.println(each);
-        }
         return result;
-    }
-    
-    public static void main(String[] args) {
-        getSonSet2("a,b,c");
     }
     
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void generateDirs(final Map<String, String> dataModel, final Collection<String> paths, final String outputRelativePath) throws IOException, TemplateException {
+        if (null == paths || 0 == paths.size()) {
+            new File(generatePath(dataModel, OUTPUT_PATH + outputRelativePath)).mkdirs();
+            return;
+        }
         for (String each : paths) {
             new File(generatePath(dataModel, OUTPUT_PATH + outputRelativePath + "/" + each)).mkdirs();
         }
