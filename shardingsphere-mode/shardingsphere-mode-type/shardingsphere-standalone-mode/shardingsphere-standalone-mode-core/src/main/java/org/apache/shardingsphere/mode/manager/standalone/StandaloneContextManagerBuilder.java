@@ -57,9 +57,9 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(StandalonePersistRepositoryFactory.newInstance(parameter.getModeConfig().getRepository()));
-        persistConfigurations(metaDataPersistService, parameter.getSchemaConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), parameter.getModeConfig().isOverwrite());
-        Collection<String> schemaNames = parameter.getInstanceDefinition().getInstanceType() == InstanceType.JDBC ? parameter.getSchemaConfigs().keySet()
-                : metaDataPersistService.getSchemaMetaDataService().loadAllNames();
+        persistConfigurations(metaDataPersistService, parameter);
+        Collection<String> schemaNames = InstanceType.JDBC == parameter.getInstanceDefinition().getInstanceType()
+                ? parameter.getSchemaConfigs().keySet() : metaDataPersistService.getSchemaMetaDataService().loadAllNames();
         Map<String, Map<String, DataSource>> loadedDataSources = loadDataSourcesMap(metaDataPersistService, parameter.getSchemaConfigs(), schemaNames);
         Properties loadedProps = metaDataPersistService.getPropsService().load();
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataPersistService.getGlobalRuleService().load(), loadedProps);
@@ -76,16 +76,15 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         return result;
     }
     
-    private void persistConfigurations(final MetaDataPersistService metaDataPersistService, final Map<String, ? extends SchemaConfiguration> schemaConfigs, 
-                                       final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean overwrite) {
-        if (!isEmptyLocalConfiguration(schemaConfigs, globalRuleConfigs, props)) {
-            metaDataPersistService.persistConfigurations(schemaConfigs, globalRuleConfigs, props, overwrite);
+    private void persistConfigurations(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) {
+        if (!isEmptyLocalConfiguration(parameter)) {
+            metaDataPersistService.persistConfigurations(parameter.getSchemaConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), parameter.getModeConfig().isOverwrite());
         }
     }
     
-    private boolean isEmptyLocalConfiguration(final Map<String, ? extends SchemaConfiguration> schemaConfigs, final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
-        return schemaConfigs.entrySet().stream().allMatch(entry -> entry.getValue().getDataSources().isEmpty() && entry.getValue().getRuleConfigurations().isEmpty())
-                && globalRuleConfigs.isEmpty() && props.isEmpty();
+    private boolean isEmptyLocalConfiguration(final ContextManagerBuilderParameter parameter) {
+        return parameter.getSchemaConfigs().entrySet().stream().allMatch(entry -> entry.getValue().getDataSources().isEmpty() && entry.getValue().getRuleConfigurations().isEmpty())
+                && parameter.getGlobalRuleConfigs().isEmpty() && parameter.getProps().isEmpty();
     }
     
     private Map<String, Map<String, DataSource>> loadDataSourcesMap(final MetaDataPersistService metaDataPersistService, 

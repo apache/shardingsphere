@@ -86,10 +86,10 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         registryCenter = new RegistryCenter(repository);
         ModeScheduleContextFactory.getInstance().init(parameter.getInstanceDefinition().getInstanceId().getId(), parameter.getModeConfig());
         metaDataPersistService = new MetaDataPersistService(repository);
-        persistConfigurations(metaDataPersistService, parameter.getSchemaConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), parameter.getModeConfig().isOverwrite());
+        persistConfigurations(metaDataPersistService, parameter);
         persistInstanceConfigurations(parameter.getLabels(), parameter.getInstanceDefinition(), parameter.getModeConfig().isOverwrite());
-        Collection<String> schemaNames = parameter.getInstanceDefinition().getInstanceType() == InstanceType.JDBC ? parameter.getSchemaConfigs().keySet()
-                : metaDataPersistService.getSchemaMetaDataService().loadAllNames();
+        Collection<String> schemaNames = InstanceType.JDBC == parameter.getInstanceDefinition().getInstanceType()
+                ? parameter.getSchemaConfigs().keySet() : metaDataPersistService.getSchemaMetaDataService().loadAllNames();
         Map<String, Map<String, DataSource>> loadedDataSources = loadDataSourcesMap(metaDataPersistService, parameter.getSchemaConfigs(), schemaNames);
         Properties loadedProps = metaDataPersistService.getPropsService().load();
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataPersistService.getGlobalRuleService().load(), loadedProps);
@@ -104,27 +104,19 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                 parameter.getInstanceDefinition()), new ClusterWorkerIdGenerator(repository, metaDataPersistService, parameter.getInstanceDefinition()), getType());
     }
     
-    private void persistConfigurations(final MetaDataPersistService metaDataPersistService, final Map<String, ? extends SchemaConfiguration> schemaConfigs, 
-                                       final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean overwrite) {
-        if (!isEmptyLocalConfiguration(schemaConfigs, globalRuleConfigs, props)) {
-            metaDataPersistService.persistConfigurations(schemaConfigs, globalRuleConfigs, props, overwrite);
+    private void persistConfigurations(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) {
+        if (!isEmptyLocalConfiguration(parameter)) {
+            metaDataPersistService.persistConfigurations(parameter.getSchemaConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), parameter.getModeConfig().isOverwrite());
         }
+    }
+    
+    private boolean isEmptyLocalConfiguration(final ContextManagerBuilderParameter parameter) {
+        return parameter.getSchemaConfigs().entrySet().stream().allMatch(entry -> entry.getValue().getDataSources().isEmpty() && entry.getValue().getRuleConfigurations().isEmpty())
+                && parameter.getGlobalRuleConfigs().isEmpty() && parameter.getProps().isEmpty();
     }
     
     private void persistInstanceConfigurations(final Collection<String> labels, final InstanceDefinition instanceDefinition, final boolean overwrite) {
         metaDataPersistService.persistInstanceConfigurations(instanceDefinition.getInstanceId().getId(), labels, overwrite);
-    }
-    
-    private boolean isEmptyLocalConfiguration(final Map<String, ? extends SchemaConfiguration> schemaConfigs, final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
-        return isEmptyLocalDataSourcesMap(schemaConfigs) && isEmptyLocalSchemaRuleConfigurations(schemaConfigs) && globalRuleConfigs.isEmpty() && props.isEmpty();
-    }
-    
-    private boolean isEmptyLocalDataSourcesMap(final Map<String, ? extends SchemaConfiguration> schemaConfigs) {
-        return schemaConfigs.entrySet().stream().allMatch(entry -> entry.getValue().getDataSources().isEmpty());
-    }
-    
-    private boolean isEmptyLocalSchemaRuleConfigurations(final Map<String, ? extends SchemaConfiguration> schemaConfigs) {
-        return schemaConfigs.entrySet().stream().allMatch(entry -> entry.getValue().getRuleConfigurations().isEmpty());
     }
     
     private Map<String, Map<String, DataSource>> loadDataSourcesMap(final MetaDataPersistService metaDataPersistService, final Map<String, ? extends SchemaConfiguration> schemaConfig,
