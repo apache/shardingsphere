@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.metadata.loader;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 
@@ -29,24 +31,40 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Pipeline table meta data loader.
+ * Pipeline table metadata loader.
  */
+@RequiredArgsConstructor
 @Slf4j
 public final class PipelineTableMetaDataLoader {
     
-    private final Map<String, PipelineTableMetaData> tableMetaDataMap;
+    private final PipelineDataSourceWrapper dataSource;
     
-    public PipelineTableMetaDataLoader(final Connection connection, final String tableNamePattern) throws SQLException {
-        this.tableMetaDataMap = loadTableMetadataMap(connection, tableNamePattern);
+    private final Map<String, PipelineTableMetaData> tableMetaDataMap = new ConcurrentHashMap<>();
+    
+    /**
+     * Load table metadata.
+     *
+     * @param tableNamePattern table name pattern
+     * @throws SQLException if loading failure
+     */
+    public void loadTableMetaData(final String tableNamePattern) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            long startMillis = System.currentTimeMillis();
+            Map<String, PipelineTableMetaData> tableMetaDataMap = loadTableMetaData0(connection, tableNamePattern);
+            log.info("loadTableMetaData, tableNamePattern={}, result={}, cost time={} ms", tableNamePattern, tableMetaDataMap, System.currentTimeMillis() - startMillis);
+            this.tableMetaDataMap.putAll(tableMetaDataMap);
+        }
     }
     
-    private Map<String, PipelineTableMetaData> loadTableMetadataMap(final Connection connection, final String tableNamePattern) throws SQLException {
+    private Map<String, PipelineTableMetaData> loadTableMetaData0(final Connection connection, final String tableNamePattern) throws SQLException {
         Map<String, Map<String, PipelineColumnMetaData>> tablePipelineColumnMetaDataMap = new LinkedHashMap<>();
         // TODO if tableNamePattern is '%', it might return inconsistent result, actual table `t_order_2` may be return
         try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), null, tableNamePattern, "%")) {
             while (resultSet.next()) {
+                int ordinalPosition = resultSet.getInt("ORDINAL_POSITION");
                 String tableName = resultSet.getString("TABLE_NAME");
                 Map<String, PipelineColumnMetaData> columnMetaDataMap = tablePipelineColumnMetaDataMap.computeIfAbsent(tableName, k -> new LinkedHashMap<>());
                 String columnName = resultSet.getString("COLUMN_NAME");
@@ -54,6 +72,7 @@ public final class PipelineTableMetaDataLoader {
                     continue;
                 }
                 int dataType = resultSet.getInt("DATA_TYPE");
+                String dataTypeName = resultSet.getString("TYPE_NAME");
                 Set<String> primaryKeys;
                 try {
                     primaryKeys = loadPrimaryKeys(connection, tableName);
@@ -62,7 +81,7 @@ public final class PipelineTableMetaDataLoader {
                     throw ex;
                 }
                 boolean primaryKey = primaryKeys.contains(columnName);
-                PipelineColumnMetaData columnMetaData = new PipelineColumnMetaData(columnName, dataType, primaryKey);
+                PipelineColumnMetaData columnMetaData = new PipelineColumnMetaData(ordinalPosition, columnName, dataType, dataTypeName, primaryKey);
                 columnMetaDataMap.put(columnName, columnMetaData);
             }
         }
@@ -70,12 +89,12 @@ public final class PipelineTableMetaDataLoader {
         for (Entry<String, Map<String, PipelineColumnMetaData>> entry : tablePipelineColumnMetaDataMap.entrySet()) {
             result.put(entry.getKey(), new PipelineTableMetaData(entry.getKey(), entry.getValue()));
         }
-        log.info("loadTableMetadataMap, result={}", result);
         return result;
     }
     
     private Set<String> loadPrimaryKeys(final Connection connection, final String tableName) throws SQLException {
         Set<String> result = new LinkedHashSet<>();
+        // TODO order primary keys
         try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), connection.getSchema(), tableName)) {
             while (resultSet.next()) {
                 result.add(resultSet.getString("COLUMN_NAME"));
@@ -85,12 +104,25 @@ public final class PipelineTableMetaDataLoader {
     }
     
     /**
-     * Get table metadata.
+     * Get table metadata, load if it does not exist.
      *
-     * @param tableName table name
+     * @param tableName dedicated table name, not table name pattern
      * @return table metadata
      */
     public PipelineTableMetaData getTableMetaData(final String tableName) {
-        return tableMetaDataMap.get(tableName);
+        PipelineTableMetaData result = tableMetaDataMap.get(tableName);
+        if (null != result) {
+            return result;
+        }
+        try {
+            loadTableMetaData(tableName);
+        } catch (final SQLException ex) {
+            throw new RuntimeException(String.format("Load metadata for table '%s' failed", tableName), ex);
+        }
+        result = tableMetaDataMap.get(tableName);
+        if (null == result) {
+            log.warn("getTableMetaData, can not load metadata for table '{}'", tableName);
+        }
+        return result;
     }
 }

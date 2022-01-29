@@ -35,12 +35,12 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineMetaDataManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -64,7 +64,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     
     private final PipelineDataSourceManager dataSourceManager;
     
-    private final TableMetaData tableMetaData;
+    private final PipelineTableMetaData tableMetaData;
     
     private final PipelineChannel channel;
     
@@ -80,11 +80,11 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         tableMetaData = createTableMetaData();
     }
     
-    private TableMetaData createTableMetaData() {
+    private PipelineTableMetaData createTableMetaData() {
         PipelineDataSourceConfiguration dataSourceConfig = inventoryDumperConfig.getDataSourceConfig();
-        // TODO share PipelineMetaDataManager
-        PipelineMetaDataManager metaDataManager = new PipelineMetaDataManager(dataSourceManager.getDataSource(dataSourceConfig));
-        return metaDataManager.getTableMetaData(inventoryDumperConfig.getTableName(), dataSourceConfig.getDatabaseType());
+        // TODO share PipelineTableMetaDataLoader
+        PipelineTableMetaDataLoader metaDataManager = new PipelineTableMetaDataLoader(dataSourceManager.getDataSource(dataSourceConfig));
+        return metaDataManager.getTableMetaData(inventoryDumperConfig.getTableName());
     }
     
     @Override
