@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfigura
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
 
 /**
@@ -32,6 +32,6 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDump
 public abstract class AbstractIncrementalDumper<P> extends AbstractLifecycleExecutor implements IncrementalDumper {
     
     public AbstractIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<P> position,
-                                     final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
+                                     final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
     }
 }

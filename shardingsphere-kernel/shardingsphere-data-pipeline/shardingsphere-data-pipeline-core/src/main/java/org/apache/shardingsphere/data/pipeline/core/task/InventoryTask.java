@@ -32,12 +32,14 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.Dumper;
 import org.apache.shardingsphere.scaling.core.job.dumper.DumperFactory;
 import org.apache.shardingsphere.scaling.core.job.importer.ImporterFactory;
 
+import javax.sql.DataSource;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -64,11 +66,12 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     
     public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig,
                          final PipelineChannelFactory pipelineChannelFactory, final PipelineDataSourceManager dataSourceManager,
+                         final DataSource sourceDataSource, final PipelineTableMetaDataLoader sourceMetaDataLoader,
                          final ExecuteEngine importerExecuteEngine) {
         this.importerExecuteEngine = importerExecuteEngine;
         taskId = generateTaskId(inventoryDumperConfig);
         channel = createChannel(pipelineChannelFactory);
-        dumper = DumperFactory.createInventoryDumper(inventoryDumperConfig, dataSourceManager, channel);
+        dumper = DumperFactory.createInventoryDumper(inventoryDumperConfig, channel, sourceDataSource, sourceMetaDataLoader);
         importer = ImporterFactory.createImporter(importerConfig, dataSourceManager, channel);
         position = inventoryDumperConfig.getPosition();
     }

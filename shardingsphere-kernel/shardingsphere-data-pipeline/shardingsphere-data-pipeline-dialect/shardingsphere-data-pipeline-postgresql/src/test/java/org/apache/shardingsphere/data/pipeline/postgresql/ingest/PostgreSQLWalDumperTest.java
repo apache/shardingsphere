@@ -22,10 +22,12 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Standa
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MultiplexMemoryPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.LogicalReplication;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,11 +69,19 @@ public final class PostgreSQLWalDumperTest {
     
     private MultiplexMemoryPipelineChannel channel;
     
+    private final PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
+    
     @Before
     public void setUp() {
         position = new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)));
         channel = new MultiplexMemoryPipelineChannel();
-        walDumper = new PostgreSQLWalDumper(mockDumperConfiguration(), position, new PipelineDataSourceManager(), channel);
+        PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSourceManager.getDataSource(pipelineDataSourceConfig));
+        walDumper = new PostgreSQLWalDumper(mockDumperConfiguration(), position, channel, metaDataLoader);
+    }
+    
+    @After
+    public void tearDown() {
+        dataSourceManager.close();
     }
     
     private DumperConfiguration mockDumperConfiguration() {
