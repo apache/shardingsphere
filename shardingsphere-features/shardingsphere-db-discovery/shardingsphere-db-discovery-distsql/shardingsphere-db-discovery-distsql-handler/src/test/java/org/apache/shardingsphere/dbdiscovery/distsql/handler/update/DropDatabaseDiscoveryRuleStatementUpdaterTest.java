@@ -79,17 +79,17 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     }
     
     private DatabaseDiscoveryRuleConfiguration createCurrentRuleConfiguration() {
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ha_group", Collections.emptyList(), "ha_heartbeat", "pr_ds_MGR");
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ha_group", Collections.emptyList(), "ha_heartbeat", "readwrite_ds_MGR");
         Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes = new HashMap<>(1, 1);
-        discoveryTypes.put("pr_ds_MGR", new ShardingSphereAlgorithmConfiguration("pr_ds_MGR", new Properties()));
+        discoveryTypes.put("readwrite_ds_MGR", new ShardingSphereAlgorithmConfiguration("readwrite_ds_MGR", new Properties()));
         return new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), Collections.emptyMap(), discoveryTypes);
     }
     
     private DatabaseDiscoveryRuleConfiguration createMultipleCurrentRuleConfigurations() {
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ha_group", Collections.emptyList(), "ha_heartbeat", "pr_ds_MGR");
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ha_group", Collections.emptyList(), "ha_heartbeat", "readwrite_ds_MGR");
         Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes = new HashMap<>(1, 1);
-        discoveryTypes.put("pr_ds_MGR", new ShardingSphereAlgorithmConfiguration("pr_ds_MGR", new Properties()));
+        discoveryTypes.put("readwrite_ds_MGR", new ShardingSphereAlgorithmConfiguration("readwrite_ds_MGR", new Properties()));
         return new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Arrays.asList(dataSourceRuleConfig, 
-                new DatabaseDiscoveryDataSourceRuleConfiguration("ha_group_another", Collections.emptyList(), "ha_heartbeat", "pr_ds_MGR"))), Collections.emptyMap(), discoveryTypes);
+                new DatabaseDiscoveryDataSourceRuleConfiguration("ha_group_another", Collections.emptyList(), "ha_heartbeat", "readwrite_ds_MGR"))), Collections.emptyMap(), discoveryTypes);
     }
 }

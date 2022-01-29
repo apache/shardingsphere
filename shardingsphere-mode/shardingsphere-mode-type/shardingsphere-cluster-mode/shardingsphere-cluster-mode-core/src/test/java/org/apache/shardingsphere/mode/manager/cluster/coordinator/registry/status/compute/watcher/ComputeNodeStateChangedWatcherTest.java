@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.watcher;
 
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
@@ -75,20 +75,20 @@ public final class ComputeNodeStateChangedWatcherTest {
     @Test
     public void assertCreateAddLabelEvent() {
         Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
-                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/attributes/127.0.0.1@3307/label", 
+                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/attributes/127.0.0.1@3307/labels", 
                         YamlEngine.marshal(Arrays.asList("label_1", "label_2")), Type.ADDED));
         assertTrue(actual.isPresent());
-        assertThat(((LabelEvent) actual.get()).getLabels(), is(Arrays.asList("label_1", "label_2")));
-        assertThat(((LabelEvent) actual.get()).getInstanceId(), is("127.0.0.1@3307"));
+        assertThat(((LabelsEvent) actual.get()).getLabels(), is(Arrays.asList("label_1", "label_2")));
+        assertThat(((LabelsEvent) actual.get()).getInstanceId(), is("127.0.0.1@3307"));
     }
     
     @Test
-    public void assertCreateUpdateLabelEvent() {
+    public void assertCreateUpdateLabelsEvent() {
         Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
-                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/attributes/127.0.0.1@3307/label", 
+                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/attributes/127.0.0.1@3307/labels", 
                         YamlEngine.marshal(Arrays.asList("label_1", "label_2")), Type.UPDATED));
         assertTrue(actual.isPresent());
-        assertThat(((LabelEvent) actual.get()).getLabels(), is(Arrays.asList("label_1", "label_2")));
-        assertThat(((LabelEvent) actual.get()).getInstanceId(), is("127.0.0.1@3307"));
+        assertThat(((LabelsEvent) actual.get()).getLabels(), is(Arrays.asList("label_1", "label_2")));
+        assertThat(((LabelsEvent) actual.get()).getInstanceId(), is("127.0.0.1@3307"));
     }
 }

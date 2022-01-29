@@ -36,7 +36,7 @@ public final class ProxyInfoCollectorTest {
     @Test
     public void assertCollect() {
         ProxyContext.getInstance().getContextManager().init(mock(MetaDataContexts.class), mock(TransactionContexts.class), new InstanceContext(new ComputeNodeInstance(), 
-                new MemoryWorkerIdGenerator()));
+                new MemoryWorkerIdGenerator(), "Memory"));
         ProxyInfoCollector proxyInfoCollector = new ProxyInfoCollector();
         List<Collector.MetricFamilySamples> metricFamilySamples = proxyInfoCollector.collect();
         assertFalse(metricFamilySamples.isEmpty());

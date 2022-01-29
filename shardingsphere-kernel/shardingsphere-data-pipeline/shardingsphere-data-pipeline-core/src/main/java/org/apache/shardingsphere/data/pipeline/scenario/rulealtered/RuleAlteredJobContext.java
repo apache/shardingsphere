@@ -19,10 +19,12 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 
@@ -34,6 +36,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
+@Slf4j
 // TODO extract JobContext
 public final class RuleAlteredJobContext {
     
@@ -55,6 +58,8 @@ public final class RuleAlteredJobContext {
     
     private final RuleAlteredContext ruleAlteredContext;
     
+    private final PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
+    
     private RuleAlteredJobPreparer jobPreparer;
     
     public RuleAlteredJobContext(final JobConfiguration jobConfig) {
@@ -63,6 +68,14 @@ public final class RuleAlteredJobContext {
         jobConfig.buildHandleConfig();
         jobId = jobConfig.getHandleConfig().getJobId();
         shardingItem = jobConfig.getHandleConfig().getJobShardingItem();
-        taskConfig = jobConfig.buildTaskConfig();
+        taskConfig = RuleAlteredJobWorker.buildTaskConfig(jobConfig.getPipelineConfig(), jobConfig.getHandleConfig(), ruleAlteredContext.getOnRuleAlteredActionConfig());
+    }
+    
+    /**
+     * Release resources.
+     */
+    public void close() {
+        log.info("close...");
+        dataSourceManager.close();
     }
 }

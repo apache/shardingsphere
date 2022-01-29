@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -37,10 +38,13 @@ public final class InstanceContext {
     
     private final WorkerIdGenerator workerIdGenerator;
     
-    public InstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator) {
+    private final String modeType;
+    
+    public InstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator, final String modeType) {
         this.instance = instance;
         switchInstanceState(instance.getStatus());
         this.workerIdGenerator = workerIdGenerator;
+        this.modeType = modeType;
     }
     
     /**
@@ -63,7 +67,7 @@ public final class InstanceContext {
      * @param workerId worker id
      */
     public void updateWorkerId(final Long workerId) {
-        if (workerId != instance.getWorkerId()) {
+        if (!Objects.equals(workerId, instance.getWorkerId())) {
             instance.setWorkerId(workerId);
         }
     }

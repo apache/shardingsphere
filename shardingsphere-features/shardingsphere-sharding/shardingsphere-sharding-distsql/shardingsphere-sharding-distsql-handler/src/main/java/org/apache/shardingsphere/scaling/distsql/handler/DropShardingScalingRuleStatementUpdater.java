@@ -70,6 +70,6 @@ public final class DropShardingScalingRuleStatementUpdater implements RuleDefini
     
     @Override
     public String getType() {
-        return DropShardingScalingRuleStatement.class.getCanonicalName();
+        return DropShardingScalingRuleStatement.class.getName();
     }
 }

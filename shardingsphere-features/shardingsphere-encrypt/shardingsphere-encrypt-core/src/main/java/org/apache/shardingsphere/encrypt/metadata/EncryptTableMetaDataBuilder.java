@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -59,7 +60,15 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
     }
     
     @Override
-    public TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final EncryptRule encryptRule) {
+    public Map<String, TableMetaData> decorate(final Map<String, TableMetaData> tableMetaDataMap, final EncryptRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+        Map<String, TableMetaData> result = new LinkedHashMap<>();
+        for (Entry<String, TableMetaData> entry : tableMetaDataMap.entrySet()) {
+            result.put(entry.getKey(), decorate(entry.getKey(), entry.getValue(), rule));
+        }
+        return result;
+    }
+    
+    private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final EncryptRule encryptRule) {
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
         return encryptTable.map(optional ->
                 new TableMetaData(tableName, getEncryptColumnMetaDataList(optional, tableMetaData.getColumns().values()), tableMetaData.getIndexes().values())).orElse(tableMetaData);
@@ -84,9 +93,8 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
     
     private ColumnMetaData createColumnMetaData(final String columnName, final ColumnMetaData columnMetaData, final EncryptTable encryptTable) {
         Optional<EncryptColumn> encryptColumn = encryptTable.findEncryptColumn(columnName);
-        if (encryptColumn.isPresent() && null != encryptColumn.get().getLogicDataType() && !encryptColumn.get().getLogicDataType().isEmpty()) {
-            // TODO get config data type.
-            return new ColumnMetaData(columnName, 0, columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(), columnMetaData.isCaseSensitive());
+        if (encryptColumn.isPresent() && null != encryptColumn.get().getLogicDataType()) {
+            return new ColumnMetaData(columnName, encryptColumn.get().getLogicDataType().getDataType(), columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(), columnMetaData.isCaseSensitive());
         }
         return new ColumnMetaData(columnName, columnMetaData.getDataType(), columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(), columnMetaData.isCaseSensitive());
     }

@@ -48,7 +48,7 @@ import java.util.concurrent.Future;
  */
 @Slf4j
 @ToString(exclude = {"incrementalDumperExecuteEngine", "dataSourceManager", "dumper", "progress"})
-public final class IncrementalTask extends AbstractLifecycleExecutor implements PipelineTask {
+public final class IncrementalTask extends AbstractLifecycleExecutor implements PipelineTask, AutoCloseable {
     
     @Getter
     private final String taskId;
@@ -67,26 +67,25 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     private final IncrementalTaskProgress progress;
     
     public IncrementalTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig,
-            final PipelineChannelFactory pipelineChannelFactory, final ExecuteEngine incrementalDumperExecuteEngine) {
+                           final PipelineChannelFactory pipelineChannelFactory, final PipelineDataSourceManager dataSourceManager,
+                           final ExecuteEngine incrementalDumperExecuteEngine) {
         this.incrementalDumperExecuteEngine = incrementalDumperExecuteEngine;
-        PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
         this.dataSourceManager = dataSourceManager;
         taskId = dumperConfig.getDataSourceName();
         progress = new IncrementalTaskProgress();
         IngestPosition<?> position = dumperConfig.getPosition();
         progress.setPosition(position);
         channel = createChannel(concurrency, pipelineChannelFactory, progress);
-        dumper = DumperFactory.createIncrementalDumper(dumperConfig, position, channel);
+        dumper = DumperFactory.createIncrementalDumper(dumperConfig, position, dataSourceManager, channel);
         importers = createImporters(concurrency, importerConfig, dataSourceManager, channel);
     }
     
     @Override
-    public void start() {
+    protected void doStart() {
         progress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
         Future<?> future = incrementalDumperExecuteEngine.submitAll(importers, getExecuteCallback());
         dumper.start();
         waitForResult(future);
-        dataSourceManager.close();
     }
     
     private Collection<Importer> createImporters(final int concurrency, final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
@@ -134,12 +133,15 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     }
     
     @Override
-    public void stop() {
+    protected void doStop() {
         dumper.stop();
         for (Importer each : importers) {
             each.stop();
         }
+    }
+    
+    @Override
+    public void close() {
         channel.close();
-        dataSourceManager.close();
     }
 }

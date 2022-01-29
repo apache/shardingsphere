@@ -59,14 +59,17 @@ public final class DumperFactory {
      *
      * @param dumperConfig dumper configuration
      * @param position position
+     * @param dataSourceManager data source manager
      * @param channel channel
      * @return incremental dumper
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static IncrementalDumper createIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<?> position, final PipelineChannel channel) {
+    public static IncrementalDumper createIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<?> position,
+                                                            final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
         String databaseType = dumperConfig.getDataSourceConfig().getDatabaseType().getName();
         ScalingEntry scalingEntry = ScalingEntryLoader.getInstance(databaseType);
-        Constructor<? extends IncrementalDumper> constructor = scalingEntry.getIncrementalDumperClass().getConstructor(DumperConfiguration.class, IngestPosition.class, PipelineChannel.class);
-        return constructor.newInstance(dumperConfig, position, channel);
+        Constructor<? extends IncrementalDumper> constructor = scalingEntry.getIncrementalDumperClass()
+                .getConstructor(DumperConfiguration.class, IngestPosition.class, PipelineDataSourceManager.class, PipelineChannel.class);
+        return constructor.newInstance(dumperConfig, position, dataSourceManager, channel);
     }
 }

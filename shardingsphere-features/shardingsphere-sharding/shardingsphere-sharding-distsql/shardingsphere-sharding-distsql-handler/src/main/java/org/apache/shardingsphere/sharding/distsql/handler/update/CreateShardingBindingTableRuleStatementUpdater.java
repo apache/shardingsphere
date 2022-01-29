@@ -104,6 +104,6 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements Rul
     
     @Override
     public String getType() {
-        return CreateShardingBindingTableRulesStatement.class.getCanonicalName();
+        return CreateShardingBindingTableRulesStatement.class.getName();
     }
 }

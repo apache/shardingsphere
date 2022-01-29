@@ -70,6 +70,6 @@ public final class ShowScalingCheckAlgorithmsQueryResultSet implements DistSQLRe
     
     @Override
     public String getType() {
-        return ShowScalingCheckAlgorithmsStatement.class.getCanonicalName();
+        return ShowScalingCheckAlgorithmsStatement.class.getName();
     }
 }

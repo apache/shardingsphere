@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.codec.binary.StringUtils;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.bouncycastle.crypto.digests.SM3Digest;
 import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
@@ -59,7 +60,7 @@ public final class SM3EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     }
     
     @Override
-    public String encrypt(final Object plainValue) {
+    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         if (null == plainValue) {
             return null;
         }
@@ -67,7 +68,7 @@ public final class SM3EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     }
     
     @Override
-    public Object decrypt(final String cipherValue) {
+    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
         return cipherValue;
     }
     

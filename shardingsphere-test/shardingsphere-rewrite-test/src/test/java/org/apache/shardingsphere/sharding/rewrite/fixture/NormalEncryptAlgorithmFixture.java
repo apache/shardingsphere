@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.rewrite.fixture;
 
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
 public final class NormalEncryptAlgorithmFixture implements EncryptAlgorithm<Object, String> {
@@ -26,12 +27,12 @@ public final class NormalEncryptAlgorithmFixture implements EncryptAlgorithm<Obj
     }
     
     @Override
-    public String encrypt(final Object plainValue) {
+    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return "encrypt_" + plainValue;
     }
     
     @Override
-    public Object decrypt(final String cipherValue) {
+    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
         return cipherValue.replaceAll("encrypt_", "");
     }
     

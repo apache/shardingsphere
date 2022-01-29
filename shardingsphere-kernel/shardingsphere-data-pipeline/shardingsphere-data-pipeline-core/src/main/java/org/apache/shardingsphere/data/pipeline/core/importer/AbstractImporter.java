@@ -76,19 +76,18 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
     protected abstract PipelineSQLBuilder createSQLBuilder(Map<String, Set<String>> shardingColumnsMap);
     
     @Override
-    public final void start() {
-        super.start();
+    protected void doStart() {
         write();
     }
     
-    @Override
-    public final void write() {
+    private void write() {
         log.info("importer write");
         int round = 1;
         int rowCount = 0;
         boolean finishedByBreak = false;
+        int batchSize = importerConfig.getBatchSize() * 2;
         while (isRunning()) {
-            List<Record> records = channel.fetchRecords(1024, 3);
+            List<Record> records = channel.fetchRecords(batchSize, 3);
             if (null != records && !records.isEmpty()) {
                 round++;
                 rowCount += records.size();
@@ -217,5 +216,9 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
             }
             ps.executeBatch();
         }
+    }
+    
+    @Override
+    protected void doStop() {
     }
 }
