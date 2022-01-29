@@ -313,9 +313,9 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     
     /**
      * Check whether contains config data type or not.
+     * 
      * @param tableName table name
      * @param columnName column name
-     * 
      * @return boolean whether contains config data type or not
      */
     public boolean containsConfigDataType(final String tableName, final String columnName) {
