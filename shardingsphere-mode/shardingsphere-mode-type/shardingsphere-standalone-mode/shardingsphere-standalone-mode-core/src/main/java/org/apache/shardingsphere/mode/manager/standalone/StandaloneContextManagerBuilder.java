@@ -76,24 +76,16 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         return result;
     }
     
-    private void persistConfigurations(final MetaDataPersistService metaDataPersistService, final Map<String, ? extends SchemaConfiguration> schemaConfig, 
-                                       final Collection<RuleConfiguration> globalRuleConfigs,
-                                       final Properties props, final boolean overwrite) {
-        if (!isEmptyLocalConfiguration(schemaConfig, globalRuleConfigs, props)) {
-            metaDataPersistService.persistConfigurations(schemaConfig, globalRuleConfigs, props, overwrite);
+    private void persistConfigurations(final MetaDataPersistService metaDataPersistService, final Map<String, ? extends SchemaConfiguration> schemaConfigs, 
+                                       final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean overwrite) {
+        if (!isEmptyLocalConfiguration(schemaConfigs, globalRuleConfigs, props)) {
+            metaDataPersistService.persistConfigurations(schemaConfigs, globalRuleConfigs, props, overwrite);
         }
     }
     
     private boolean isEmptyLocalConfiguration(final Map<String, ? extends SchemaConfiguration> schemaConfigs, final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
-        return isEmptyLocalDataSourcesMap(schemaConfigs) && isEmptyLocalSchemaRuleConfigurations(schemaConfigs) && globalRuleConfigs.isEmpty() && props.isEmpty();
-    }
-    
-    private boolean isEmptyLocalDataSourcesMap(final Map<String, ? extends SchemaConfiguration> schemaConfigs) {
-        return schemaConfigs.entrySet().stream().allMatch(entry -> entry.getValue().getDataSources().isEmpty());
-    }
-    
-    private boolean isEmptyLocalSchemaRuleConfigurations(final Map<String, ? extends SchemaConfiguration> schemaConfigs) {
-        return schemaConfigs.entrySet().stream().allMatch(entry -> entry.getValue().getRuleConfigurations().isEmpty());
+        return schemaConfigs.entrySet().stream().allMatch(entry -> entry.getValue().getDataSources().isEmpty() && entry.getValue().getRuleConfigurations().isEmpty())
+                && globalRuleConfigs.isEmpty() && props.isEmpty();
     }
     
     private Map<String, Map<String, DataSource>> loadDataSourcesMap(final MetaDataPersistService metaDataPersistService, 
