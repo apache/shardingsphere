@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.data.pipeline.core.ingest.position;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
