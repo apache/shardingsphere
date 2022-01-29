@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
 import com.google.common.base.Preconditions;
 import groovy.lang.Closure;
+import groovy.lang.MissingMethodException;
 import groovy.util.Expando;
 import lombok.Getter;
 import lombok.Setter;
@@ -88,7 +89,7 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     private String getTargetShardingNode(final Closure<?> closure, final String columnName) {
         try {
             return closure.call().toString();
-        } catch (final NullPointerException ex) {
+        } catch (final MissingMethodException | NullPointerException ex) {
             throw new ShardingSphereException("Inline sharding algorithms expression `%s` and sharding column `%s` not match.", algorithmExpression, columnName);
         }
     }
