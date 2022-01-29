@@ -19,22 +19,30 @@ package org.apache.shardingsphere.data.pipeline.mysql.prepare.datasource;
 
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.driver.config.datasource.ShardingSpherePipelineDataSourceCreator;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collections;
 
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.RETURNS_MOCKS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -48,10 +56,8 @@ public final class MySQLDataSourcePreparerTest {
     @Mock
     private PipelineConfiguration pipelineConfig;
     
-    @Mock
     private YamlPipelineDataSourceConfiguration sourceYamlPipelineDataSourceConfiguration;
     
-    @Mock
     private YamlPipelineDataSourceConfiguration targetYamlPipelineDataSourceConfiguration;
     
     @Mock
@@ -66,32 +72,68 @@ public final class MySQLDataSourcePreparerTest {
     @Mock(extraInterfaces = AutoCloseable.class)
     private DataSource targetDataSource;
     
+    @Mock
+    private ShardingSpherePipelineDataSourceCreator mockShardingSpherePipelineDataSourceCreator;
+    
     @Before
     public void setUp() throws SQLException {
-        when(prepareTargetTablesParameter.getPipelineConfiguration()).thenReturn(pipelineConfig);
-        when(prepareTargetTablesParameter.getTablesFirstDataNodes()).thenReturn(new JobDataNodeLine(Collections.emptyList()));
+        sourceYamlPipelineDataSourceConfiguration = new YamlPipelineDataSourceConfiguration();
+        targetYamlPipelineDataSourceConfiguration = new YamlPipelineDataSourceConfiguration();
+        sourceYamlPipelineDataSourceConfiguration.setParameter("source");
+        sourceYamlPipelineDataSourceConfiguration.setType("ShardingSphereJDBC");
+        targetYamlPipelineDataSourceConfiguration.setParameter("target");
+        targetYamlPipelineDataSourceConfiguration.setType("ShardingSphereJDBC");
         when(pipelineConfig.getSource()).thenReturn(sourceYamlPipelineDataSourceConfiguration);
-        when(PipelineDataSourceCreatorFactory.getInstance(
-                sourceScalingDataSourceConfig.getType()).createPipelineDataSource(sourceScalingDataSourceConfig.getDataSourceConfiguration())).thenReturn(sourceDataSource);
         when(pipelineConfig.getTarget()).thenReturn(targetYamlPipelineDataSourceConfiguration);
-        when(PipelineDataSourceCreatorFactory.getInstance(
-                targetScalingDataSourceConfig.getType()).createPipelineDataSource(targetScalingDataSourceConfig.getDataSourceConfiguration())).thenReturn(targetDataSource);
+        when(prepareTargetTablesParameter.getTablesFirstDataNodes()).thenReturn(new JobDataNodeLine(Collections.emptyList()));
+        when(prepareTargetTablesParameter.getPipelineConfiguration()).thenReturn(pipelineConfig);
+        when(sourceScalingDataSourceConfig.getType()).thenReturn("ShardingSphereJDBC");
+        DataSourceConfiguration mockSourceDataSourceConfig = mock(DataSourceConfiguration.class);
+//        when(mockSourceDataSourceConfig.getDataSourceClassName()).thenReturn("com.zaxxer.hikari.HikariDataSource");
+        when(sourceScalingDataSourceConfig.getDataSourceConfiguration()).thenReturn(mockSourceDataSourceConfig);
+        when(mockShardingSpherePipelineDataSourceCreator.createPipelineDataSource(eq(mockSourceDataSourceConfig))).thenReturn(sourceDataSource);
+        when(targetScalingDataSourceConfig.getType()).thenReturn("ShardingSphereJDBC");
+        DataSourceConfiguration mockTargetDataSourceConfig = mock(DataSourceConfiguration.class);
+//        when(mockTargetDataSourceConfig.getDataSourceClassName()).thenReturn("com.zaxxer.hikari.HikariDataSource");
+        when(targetScalingDataSourceConfig.getDataSourceConfiguration()).thenReturn(mockTargetDataSourceConfig);
+        when(mockShardingSpherePipelineDataSourceCreator.createPipelineDataSource(eq(mockTargetDataSourceConfig))).thenReturn(targetDataSource);
+    }
+    
+    @After
+    public void cleanUp() {
+//        Mockito.framework().clearInlineMocks();
     }
     
     @Test
-    @Ignore
     public void assertGetConnection() throws SQLException {
-        MySQLDataSourcePreparer mySQLDataSourcePreparer = new MySQLDataSourcePreparer();
-        mySQLDataSourcePreparer.prepareTargetTables(prepareTargetTablesParameter);
-        verify(sourceDataSource).getConnection();
-        verify(targetDataSource).getConnection();
+        try (MockedStatic<PipelineDataSourceConfigurationFactory> mockedStaticPipelineDataSourceConfigurationFactory = mockStatic(PipelineDataSourceConfigurationFactory.class, RETURNS_MOCKS);
+             MockedStatic<PipelineDataSourceCreatorFactory> mockedStaticPipelineDataSourceCreatorFactory = mockStatic(PipelineDataSourceCreatorFactory.class, RETURNS_MOCKS)) {
+            mockedStaticPipelineDataSourceConfigurationFactory.when(() -> PipelineDataSourceConfigurationFactory.newInstance(eq("ShardingSphereJDBC"), eq("source")))
+                    .thenReturn(sourceScalingDataSourceConfig);
+            mockedStaticPipelineDataSourceConfigurationFactory.when(() -> PipelineDataSourceConfigurationFactory.newInstance(eq("ShardingSphereJDBC"), eq("target")))
+                    .thenReturn(targetScalingDataSourceConfig);
+            mockedStaticPipelineDataSourceCreatorFactory.when(() -> PipelineDataSourceCreatorFactory.getInstance(eq("ShardingSphereJDBC")))
+                    .thenReturn(mockShardingSpherePipelineDataSourceCreator);
+            MySQLDataSourcePreparer mySQLDataSourcePreparer = new MySQLDataSourcePreparer();
+            mySQLDataSourcePreparer.prepareTargetTables(prepareTargetTablesParameter);
+            verify(sourceDataSource).getConnection();
+            verify(targetDataSource).getConnection();
+        }
     }
     
     @Test(expected = PipelineJobPrepareFailedException.class)
-    @Ignore
     public void assertThrowPrepareFailedException() throws SQLException {
-        when(sourceDataSource.getConnection()).thenThrow(SQLException.class);
-        MySQLDataSourcePreparer mySQLDataSourcePreparer = new MySQLDataSourcePreparer();
-        mySQLDataSourcePreparer.prepareTargetTables(prepareTargetTablesParameter);
+        try (MockedStatic<PipelineDataSourceConfigurationFactory> mockedStaticPipelineDataSourceConfigurationFactory = mockStatic(PipelineDataSourceConfigurationFactory.class, RETURNS_MOCKS);
+            MockedStatic<PipelineDataSourceCreatorFactory> mockedStaticPipelineDataSourceCreatorFactory = mockStatic(PipelineDataSourceCreatorFactory.class, RETURNS_MOCKS)) {
+            mockedStaticPipelineDataSourceConfigurationFactory.when(() -> PipelineDataSourceConfigurationFactory.newInstance(eq("ShardingSphereJDBC"), eq("source")))
+                   .thenReturn(sourceScalingDataSourceConfig);
+            mockedStaticPipelineDataSourceConfigurationFactory.when(() -> PipelineDataSourceConfigurationFactory.newInstance(eq("ShardingSphereJDBC"), eq("target")))
+                   .thenReturn(targetScalingDataSourceConfig);
+            mockedStaticPipelineDataSourceCreatorFactory.when(() -> PipelineDataSourceCreatorFactory.getInstance(eq("ShardingSphereJDBC")))
+                   .thenReturn(mockShardingSpherePipelineDataSourceCreator);
+            when(sourceDataSource.getConnection()).thenThrow(SQLException.class);
+            MySQLDataSourcePreparer mySQLDataSourcePreparer = new MySQLDataSourcePreparer();
+            mySQLDataSourcePreparer.prepareTargetTables(prepareTargetTablesParameter);
+        }
     }
 }
