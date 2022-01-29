@@ -169,7 +169,7 @@ Contributor Guide:https://shardingsphere.apache.org/community/cn/contribute/
 
 GitHub: https://github.com/apache/shardingsphere
 
-###Author
+### Author
 
 >Apache ShardingSphere Committer & Middleware Engineer at SphereEx. Contributed to the development of Apache ShardingSphere and Apache ShardingSphere ElasticJob.
 

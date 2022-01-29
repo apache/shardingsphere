@@ -373,7 +373,7 @@ RAL not only contains all the SCTL functions, but also provides other useful adm
 For more details about RAL, please consult the relevant documentation: 
 [https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/]()
 
-###Conclusion
+### Conclusion
 
 That's all folks. If you have any questions or suggestions, feel free to comment on our GitHub Issues or Discussions sections. You're welcome to submit your pull request and start contributing to the open source community, too. We've also set up a Slack channel, where you can connect with other members of our community and discuss technology with us.
 

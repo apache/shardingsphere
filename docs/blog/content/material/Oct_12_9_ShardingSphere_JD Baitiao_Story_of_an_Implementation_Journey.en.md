@@ -72,7 +72,7 @@ JD Baitiao is a huge business, so its business scenario is truly related to fina
 
 4. Have an extensible architecture
 
-##The Apache ShardingSphere Solution
+## The Apache ShardingSphere Solution
 
 The lightweight Java framework ShardingSphere-JDBC is Apache ShardingSpheres's first product providing services such as a Java Database Connectivity (JDBC) API. ShardingSphere JDBC uses jar archive file installation package and allows the client-side to directly connect to databases. So, it requires no extra deployment dependencies. It is like an enhanced JDBC driver fully compatible with JDBC and ORM frameworks.
 
@@ -90,7 +90,7 @@ ShardingSphere - JDBC provides the following features, making it the best soluti
 
 After being systematically tested for several times, Apache ShardingSphere became JD Baitiao's first choice of data sharding middleware. The cooperation started at the end of 2018. 
 
-##Product Adaptation
+## Product Adaptation
 
 To provide Baitiao with better services and support the business, Apache ShardingSphere has made many improvements to its product features and performance during the implementation process. At the same time, the user case helps optimize the product in return. 
 
@@ -125,7 +125,7 @@ JD Baitiao & ShardingSphere teams joint efforts amde all indicators of the produ
 ![](https://shardingsphere.apache.org/blog/img/Blog_25_img_JD_System_en.png)
 
 
-##Cutover
+## Cutover
 
 Apache ShardingSphere uses its custom HASH strategy to shard data, effectively avoiding the hot data problem. The total of data nodes almost reaches ten thousand. The cutover process lasts for about 4 weeks. 
 
@@ -135,7 +135,7 @@ Apache ShardingSphere uses its custom HASH strategy to shard data, effectively a
 
 DBRep is fundamental to the product design of ShardingSphere-Scaling. The automation feature of Scaling definitely facilitates migration and scale-up. 
 
-##Apache ShardingSphere Brings Many Benefits
+## Apache ShardingSphere Brings Many Benefits
 
 **Simplified Upgrade Path**
 
@@ -149,13 +149,13 @@ Baitiao directly uses the mature product Apache ShardingSphere, so they do not n
 
 Baitiao also uses the sync migration component Scaling that makes system scale-up even more flexible. It's the company's secret for online shopping festival successes. 
 
-##Summary
+## Summary
 
 The growth of JD Baitiao's business greatly stimulates its data architecture upgrades. This time, it chose Apache ShardingSphere to decouple its architecture and make future upgrades less complicated. Thank to this from now on, developers only have to concentrate on their own product optimization because its data architecture is extensible enough. The case is really a good example of ShardingSphere application in the consumer finance scenario. 
 
 Now, there are more and more internet credit payment models. In the future, Apache ShardingSphere in collaboration with JD Technology will explore more business scenarios, and contribute finance-related technological innovations, further improving Internet finance.
 
-###About Apache ShardingSphere
+### About Apache ShardingSphere
 
 ShardingSphere is one of the Apache Software Foundation Top-Level Open Source projects, used by over 170 enterprises worldwide, across various verticals such as finance, e-commerce, cloud services, tourism, logistics, education, and entertainment. Its GitHub community has so far cumulated over 14,000 stars. 
 
