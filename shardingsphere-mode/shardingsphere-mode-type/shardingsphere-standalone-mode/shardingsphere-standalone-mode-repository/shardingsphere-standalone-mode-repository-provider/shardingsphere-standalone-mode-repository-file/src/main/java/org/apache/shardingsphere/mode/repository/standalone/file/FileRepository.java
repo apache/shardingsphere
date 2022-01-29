@@ -107,6 +107,11 @@ public final class FileRepository implements StandalonePersistRepository {
     }
     
     @Override
+    public boolean isDefault() {
+        return true;
+    }
+    
+    @Override
     public String getType() {
         return "File";
     }

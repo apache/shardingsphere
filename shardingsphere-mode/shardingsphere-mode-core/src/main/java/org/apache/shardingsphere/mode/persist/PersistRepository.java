@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.persist;
 
+import org.apache.shardingsphere.spi.required.RequiredSPI;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 import java.util.List;
@@ -24,7 +25,7 @@ import java.util.List;
 /**
  * Persist repository.
  */
-public interface PersistRepository extends TypedSPI {
+public interface PersistRepository extends TypedSPI, RequiredSPI {
     
     /**
      * Path separator.
