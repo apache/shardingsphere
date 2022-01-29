@@ -70,10 +70,11 @@ public final class FileRepository implements StandalonePersistRepository {
         if (!file.exists()) {
             return Collections.emptyList();
         }
-        return null != file.listFiles() ? Arrays.stream(file.listFiles()).map(File::getName).collect(Collectors.toList())
-                : Collections.emptyList();
+        File[] files = file.listFiles();
+        return null == files ? Collections.emptyList() : Arrays.stream(files).map(File::getName).collect(Collectors.toList());
     }
     
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public void persist(final String key, final String value) {
         File file = new File(path, key);
@@ -102,11 +103,11 @@ public final class FileRepository implements StandalonePersistRepository {
     }
     
     @Override
-    public String getType() {
-        return "File";
+    public void close() {
     }
     
     @Override
-    public void close() {
+    public String getType() {
+        return "File";
     }
 }

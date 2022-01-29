@@ -48,7 +48,7 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
         TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
         ContextManager result = new ContextManager();
         result.init(metaDataContexts, transactionContexts, buildInstanceContext(parameter));
-        buildSpecialRules(result);
+        setInstanceContext(result);
         return result;
     }
     
@@ -59,9 +59,9 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
         return new InstanceContext(instance, new MemoryWorkerIdGenerator(), parameter.getModeConfig());
     }
     
-    private void buildSpecialRules(final ContextManager contextManager) {
-        contextManager.getMetaDataContexts().getMetaDataMap().forEach((key, value)
-            -> value.getRuleMetaData().getRules().stream().filter(each -> each instanceof InstanceAwareRule)
+    private void setInstanceContext(final ContextManager contextManager) {
+        contextManager.getMetaDataContexts().getMetaDataMap()
+            .forEach((key, value) -> value.getRuleMetaData().getRules().stream().filter(each -> each instanceof InstanceAwareRule)
             .forEach(each -> ((InstanceAwareRule) each).setInstanceContext(contextManager.getInstanceContext())));
     }
     
