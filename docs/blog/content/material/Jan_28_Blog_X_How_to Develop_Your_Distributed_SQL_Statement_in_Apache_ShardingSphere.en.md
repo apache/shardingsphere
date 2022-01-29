@@ -1,8 +1,7 @@
 +++
 
-title = "How to Develop Your Distributed SQL Statement in 
-Apache ShardingSphere"
-weight = 
+title = "How to Develop Your Distributed SQL Statement in Apache ShardingSphere"
+weight = 30
 chapter = true
 
 +++

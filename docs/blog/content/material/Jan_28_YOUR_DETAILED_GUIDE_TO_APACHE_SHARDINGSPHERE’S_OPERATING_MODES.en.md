@@ -1,3 +1,9 @@
++++
+title = "Your Detailed Guide to Apache ShardingSphere’s Operating Modes"
+weight = 32
+chapter = true
++++
+
 # Your Detailed Guide to Apache ShardingSphere’s Operating Modes
 
 In [Apache ShardingSphere](https://shardingsphere.apache.org/) 5.0.0 GA version, we added the new concept Operating Mode and provided three configuration methods: Memory, Standalone, and Cluster. Why does ShardingSphere provide these operating modes? What are the differences between them in actual development scenarios?

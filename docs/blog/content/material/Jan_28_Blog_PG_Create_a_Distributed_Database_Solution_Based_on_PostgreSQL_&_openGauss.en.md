@@ -1,3 +1,9 @@
++++
+title = "Create a Distributed Database Solution Based on PostgreSQL/openGauss"
+weight = 28
+chapter = true
++++
+
 # Create a Distributed Database Solution Based on PostgreSQL/openGauss
 
 As the MySQL ShardingSphere-Proxy is becoming mature and widely accepted, ShardingSphere is also focusing on the PostgreSQL ShardingSphere-Proxy.
