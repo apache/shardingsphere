@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.HandleConfiguration;
@@ -32,7 +31,6 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExecutor;
@@ -61,7 +59,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -299,9 +296,8 @@ public final class RuleAlteredJobWorker {
     private boolean isUncompletedJobOfSameSchemaInJobList(final String schema) {
         boolean isUncompletedJobOfSameSchema = false;
         for (JobInfo each : PipelineJobAPIFactory.getRuleAlteredJobAPI().list()) {
-            List<JobProgress> unFinishedJob = PipelineJobAPIFactory.getRuleAlteredJobAPI().getProgress(each.getJobId()).values().stream()
-                    .filter(progress -> !JobStatus.FINISHED.equals(progress.getStatus())).collect(Collectors.toList());
-            if (CollectionUtils.isEmpty(unFinishedJob)) {
+            if (PipelineJobAPIFactory.getRuleAlteredJobAPI().getProgress(each.getJobId()).values().stream()
+                    .allMatch(progress -> progress.getStatus().equals(JobStatus.FINISHED))) {
                 continue;
             }
             JobConfiguration jobConfiguration = YamlEngine.unmarshal(each.getJobParameter(), JobConfiguration.class, true);
