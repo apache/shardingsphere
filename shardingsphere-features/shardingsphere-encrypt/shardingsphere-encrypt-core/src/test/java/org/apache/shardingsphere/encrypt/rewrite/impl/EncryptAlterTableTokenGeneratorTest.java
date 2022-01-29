@@ -168,10 +168,12 @@ public final class EncryptAlterTableTokenGeneratorTest {
         when(result.findEncryptor("t_encrypt", "certificate_number")).thenReturn(Optional.of(encryptAlgorithm));
         when(result.findEncryptor("t_encrypt", "certificate_number_new")).thenReturn(Optional.of(encryptAlgorithm));
         when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
+        when(result.containsConfigDataType("t_encrypt", "certificate_number")).thenReturn(true);
+        when(result.containsConfigDataType("t_encrypt", "certificate_number_new")).thenReturn(true);
         EncryptColumn column = mockEncryptColumn();
-        when(encryptTable.findEncryptColumn("certificate_number")).thenReturn(Optional.of(column));
+        when(result.findEncryptColumn("t_encrypt", "certificate_number")).thenReturn(Optional.of(column));
         EncryptColumn newColumn = mockNewEncryptColumn();
-        when(encryptTable.findEncryptColumn("certificate_number_new")).thenReturn(Optional.of(newColumn));
+        when(result.findEncryptColumn("t_encrypt", "certificate_number_new")).thenReturn(Optional.of(newColumn));
         return result;
     }
     
