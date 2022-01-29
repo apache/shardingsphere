@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.mode.manager.fixture.FixtureContextManagerBuilder
-org.apache.shardingsphere.mode.manager.fixture.DefaultFixtureContextManagerBuilder
