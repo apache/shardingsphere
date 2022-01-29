@@ -42,6 +42,7 @@ github:
     issues: true
     projects: true
     wiki: true
+  protected_branches:
     master:
       required_status_checks:
         strict: true
