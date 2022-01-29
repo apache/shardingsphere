@@ -65,7 +65,7 @@ public final class MetaDataContextsBuilder {
     
     public MetaDataContextsBuilder(final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
         this.globalRuleConfigs = globalRuleConfigs;
-        this.props = new ConfigurationProperties(null == props ? new Properties() : props);
+        this.props = new ConfigurationProperties(props);
         executorEngine = new ExecutorEngine(this.props.<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
     }
     

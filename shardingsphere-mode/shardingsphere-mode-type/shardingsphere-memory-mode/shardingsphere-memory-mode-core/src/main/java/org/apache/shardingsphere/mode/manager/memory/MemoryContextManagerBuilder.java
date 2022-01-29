@@ -32,7 +32,6 @@ import org.apache.shardingsphere.transaction.context.TransactionContextsBuilder;
 
 import java.sql.SQLException;
 import java.util.Map.Entry;
-import java.util.Properties;
 
 /**
  * Memory context manager builder.
@@ -41,10 +40,9 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
     
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
-        Properties props = null == parameter.getProps() ? new Properties() : parameter.getProps();
-        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(parameter.getGlobalRuleConfigs(), props);
+        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(parameter.getGlobalRuleConfigs(), parameter.getProps());
         for (Entry<String, ? extends SchemaConfiguration> entry : parameter.getSchemaConfigs().entrySet()) {
-            metaDataContextsBuilder.addSchema(entry.getKey(), entry.getValue(), props);
+            metaDataContextsBuilder.addSchema(entry.getKey(), entry.getValue(), parameter.getProps());
         }
         MetaDataContexts metaDataContexts = metaDataContextsBuilder.build(null);
         TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
