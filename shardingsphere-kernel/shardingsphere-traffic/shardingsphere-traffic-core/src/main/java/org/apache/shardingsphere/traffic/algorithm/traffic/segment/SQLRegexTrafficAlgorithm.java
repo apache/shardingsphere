@@ -15,34 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.algorithm.shadow.column;
+package org.apache.shardingsphere.traffic.algorithm.traffic.segment;
 
 import com.google.common.base.Preconditions;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficAlgorithm;
+import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue;
 
+import java.util.Properties;
 import java.util.regex.Pattern;
 
 /**
- * Column regex match shadow algorithm.
+ * SQL regex traffic algorithm.
  */
-public final class ColumnRegexMatchShadowAlgorithm extends AbstractColumnMatchShadowAlgorithm {
+@Getter
+@Setter
+public final class SQLRegexTrafficAlgorithm implements SegmentTrafficAlgorithm {
     
     private static final String REGEX_PROPS_KEY = "regex";
+    
+    private Properties props = new Properties();
     
     private Pattern regex;
     
     @Override
-    protected void checkProps() {
-        Preconditions.checkNotNull(getProps().get(REGEX_PROPS_KEY), "Column regex match shadow algorithm regex cannot be null.");
-        regex = Pattern.compile(String.valueOf(getProps().get(REGEX_PROPS_KEY)));
+    public void init() {
+        Preconditions.checkArgument(props.containsKey(REGEX_PROPS_KEY), "%s cannot be null.", REGEX_PROPS_KEY);
+        regex = Pattern.compile(String.valueOf(props.get(REGEX_PROPS_KEY)));
     }
     
     @Override
-    protected boolean isMatchValue(final Comparable<?> value) {
-        return regex.matcher(String.valueOf(value)).matches();
+    public boolean match(final SegmentTrafficValue segmentTrafficValue) {
+        return regex.matcher(segmentTrafficValue.getSql()).matches();
     }
     
     @Override
     public String getType() {
-        return "REGEX_MATCH";
+        return "SQL_REGEX";
     }
 }
