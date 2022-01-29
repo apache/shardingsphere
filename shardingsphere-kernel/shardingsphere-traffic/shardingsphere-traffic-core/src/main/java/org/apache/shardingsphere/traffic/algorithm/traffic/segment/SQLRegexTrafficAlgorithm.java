@@ -47,7 +47,7 @@ public final class SQLRegexTrafficAlgorithm implements SegmentTrafficAlgorithm {
     
     @Override
     public boolean match(final SegmentTrafficValue segmentTrafficValue) {
-        return regex.matcher(segmentTrafficValue.getSql()).find();
+        return regex.matcher(segmentTrafficValue.getSql()).matches();
     }
     
     @Override

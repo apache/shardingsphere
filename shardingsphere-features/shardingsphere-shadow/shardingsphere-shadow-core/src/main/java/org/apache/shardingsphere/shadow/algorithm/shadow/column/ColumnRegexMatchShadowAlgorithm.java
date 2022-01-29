@@ -38,7 +38,7 @@ public final class ColumnRegexMatchShadowAlgorithm extends AbstractColumnMatchSh
     
     @Override
     protected boolean isMatchValue(final Comparable<?> value) {
-        return regex.matcher(String.valueOf(value)).find();
+        return regex.matcher(String.valueOf(value)).matches();
     }
     
     @Override
