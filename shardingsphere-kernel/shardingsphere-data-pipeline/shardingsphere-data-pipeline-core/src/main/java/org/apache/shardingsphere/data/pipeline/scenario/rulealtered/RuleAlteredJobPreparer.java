@@ -39,6 +39,7 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChanne
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -134,7 +135,9 @@ public final class RuleAlteredJobPreparer {
                 return positionOptional.get();
             }
         }
-        return PositionInitializerFactory.newInstance(taskConfig.getHandleConfig().getSourceDatabaseType()).init(dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig()));
+        String databaseType = taskConfig.getHandleConfig().getSourceDatabaseType();
+        DataSource dataSource = dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig());
+        return PositionInitializerFactory.getPositionInitializer(databaseType).init(dataSource);
     }
     
     /**
@@ -146,7 +149,7 @@ public final class RuleAlteredJobPreparer {
         PipelineDataSourceManager dataSourceManager = jobContext.getDataSourceManager();
         try {
             TaskConfiguration taskConfig = jobContext.getTaskConfig();
-            PositionInitializer positionInitializer = PositionInitializerFactory.newInstance(taskConfig.getHandleConfig().getSourceDatabaseType());
+            PositionInitializer positionInitializer = PositionInitializerFactory.getPositionInitializer(taskConfig.getHandleConfig().getSourceDatabaseType());
             positionInitializer.destroy(dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig()));
         } catch (final SQLException ex) {
             log.warn("Scaling job destroying failed", ex);

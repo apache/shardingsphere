@@ -19,9 +19,9 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.position;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
-import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
+import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.spi.singleton.TypedSingletonSPIHolder;
 
 /**
  * Position initializer factory.
@@ -29,14 +29,15 @@ import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PositionInitializerFactory {
     
+    private static final TypedSingletonSPIHolder<PositionInitializer> INITIALIZER_SPI_HOLDER = new TypedSingletonSPIHolder<>(PositionInitializer.class, false);
+    
     /**
-     * New instance of position initializer.
+     * Get position initializer instance.
      *
      * @param databaseType database type
      * @return position initializer
      */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static PositionInitializer newInstance(final String databaseType) {
-        return ScalingEntryLoader.getInstance(databaseType).getPositionInitializerClass().newInstance();
+    public static PositionInitializer getPositionInitializer(final String databaseType) {
+        return INITIALIZER_SPI_HOLDER.get(databaseType).orElseThrow(() -> new ServiceProviderNotFoundException(PositionInitializer.class, databaseType));
     }
 }

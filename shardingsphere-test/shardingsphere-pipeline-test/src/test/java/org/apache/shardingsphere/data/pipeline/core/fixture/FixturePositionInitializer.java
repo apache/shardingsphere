@@ -33,4 +33,9 @@ public final class FixturePositionInitializer implements PositionInitializer {
     public PlaceholderPosition init(final String data) {
         return new PlaceholderPosition();
     }
+    
+    @Override
+    public String getType() {
+        return "H2";
+    }
 }
