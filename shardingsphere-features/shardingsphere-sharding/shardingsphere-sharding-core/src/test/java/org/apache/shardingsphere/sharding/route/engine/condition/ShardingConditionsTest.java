@@ -15,9 +15,6 @@
  * limitations under the License.
  */
 
-
-
-
 package org.apache.shardingsphere.sharding.route.engine.condition;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -53,33 +50,29 @@ public final class ShardingConditionsTest {
     }
 
     @Test
-    public void assertIsAlwaysFalse(){
+    public void assertIsAlwaysFalse() {
         assertFalse(shardingConditions.isAlwaysFalse());
     }
 
     @Test
-    public void assertIsNeedMerge(){
+    public void assertIsNeedMerge() {
         assertTrue(shardingConditions.isNeedMerge());
     }
 
     @Test
-    public void  isSameShardingCondition(){
+    public void isSameShardingCondition() {
         assertFalse(shardingConditions.isSameShardingCondition());
     }
 
     @Test
-    public void assertMerge(){
-       createShardingConditions("t_order").merge();
-    }
-
-    private final ShardingConditions createShardingConditions(final String tableName) {
+    public void assertMerge() {
+        final String tableName = "t_order";
         List<ShardingCondition> result = new ArrayList<>(1);
-        ShardingConditionValue shardingConditionValue1 = new ListShardingConditionValue<>("user_id", tableName, Collections.singleton(1L));
-        ShardingConditionValue shardingConditionValue2 = new ListShardingConditionValue<>("order_id", tableName, Collections.singleton(1L));
+        ShardingConditionValue shardingConditionValue = new ListShardingConditionValue<>("order_id", tableName, Collections.singleton(1L));
         ShardingCondition shardingCondition = new ShardingCondition();
-        shardingCondition.getValues().add(shardingConditionValue1);
-        shardingCondition.getValues().add(shardingConditionValue2);
+        shardingCondition.getValues().add(shardingConditionValue);
         result.add(shardingCondition);
-        return new ShardingConditions(result, mock(SQLStatementContext.class), mock(ShardingRule.class));
+        ShardingConditions shardingConditions = new ShardingConditions(result, mock(SQLStatementContext.class), mock(ShardingRule.class));
+        shardingConditions.merge();
     }
 }
