@@ -50,7 +50,7 @@ The product continuously developed but the early solution had now become one of 
 
 Therefore, the team decided to use a mature sharding component that simplifies system upgrades and architecture changes. To compare Baitiao's shard and ShardingSphere shard, their differences are shown in the following table.
 
-![](../../static/img/Blog_25_img_1_JD_VS_ShardingSphere_Table.en.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_25_img_1_JD_VS_ShardingSphere_Table.en.png)
 
 For Baitiao, decoupling was the next task. 
 
@@ -86,7 +86,7 @@ ShardingSphere - JDBC provides the following features, making it the best soluti
 
 **Extensibility:** users can combine with the migration sync component to easily extend data.
 
-![](../../static/img/Blog_25_img_2_JD_ShardingSphere_JDBC_en.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_25_img_2_JD_ShardingSphere_JDBC_en.png)
 
 After being systematically tested for several times, Apache ShardingSphere became JD Baitiao's first choice of data sharding middleware. The cooperation started at the end of 2018. 
 
@@ -122,7 +122,7 @@ Additionally, Apache ShardingSphere continues to optimize its other features in 
 
 JD Baitiao & ShardingSphere teams joint efforts amde all indicators of the product live up to their expectation. The resulting final performance is almost the same as that of a native JDBC. 
 
-![](../../static/img/Blog_25_img_JD_System_en.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_25_img_JD_System_en.png)
 
 
 ##Cutover

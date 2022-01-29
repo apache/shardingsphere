@@ -72,7 +72,7 @@ Table sharding uid value % 32 database sharding uid value % 1`
 
 The last two digits (i.e. 83) are used for database sharding, of which temporary data is only sharded into the library f6xxx, so the remainder is 0. Later, increasing data volume can be expanded to multiple libraries. The remaining value 105450559179996689 is used for table sharding. At first time, it is divided into 32 single tables so the modulo remainders correspond to the specific sharding table subscripts are 0~31.
 
-![1](../../static/img/F6_Automobile_img_1.png)
+![1](https://shardingsphere.apache.org/blog/img/F6_Automobile_img_1.png)
 
 Given that the business system is growing and we adopt rapid iteration method to develop features step by step, we plan to shard tables first and then do database sharding.
 
@@ -107,7 +107,7 @@ Plan 1: Use other keys such as snowflake
 
 Plan 2: Implement an incremental component (database or Redis) all by ourselves
 
-![2](../../static/img/F6_Automobile_img_2.png)
+![2](https://shardingsphere.apache.org/blog/img/F6_Automobile_img_2.png)
 
 After comparing the two solutions and the business condition, we decided to choose Plan 2 and concurrently, provided a new comprehensive table-level ID generator solution.
 
@@ -134,13 +134,13 @@ In order to ensure quick roll-back when problems caused by new feature releases 
 
 **Plan 1:** Maintain two sets of Mapper interfaces: one uses Sharding-JDBC data sources to connect to databases while the other uses JDBC data sources to connect to databases. At the service layer, it’s necessary to select one of the two interfaces based on the decision workflow diagram below:
 
-![3](../../static/img/F6_Automobile_img_3.png)
+![3](https://shardingsphere.apache.org/blog/img/F6_Automobile_img_3.png)
 
 However, the solution causes another problem: all codes visiting the Mapper layer have an if else branch, resulting in major business code changes, potential code intrusion, and harder code maintenance. Therefore, we found another solution and we call it Plan 2.
 
 **Plan 2 — Adaptive Mapper Selection Plan:** one set of Mapper interface is with two data sources and two sets of implementations. Based on the grayscale configuration, different client requests will go through different Mapper implementations, and one service corresponds to two data sources and two sets of transaction managers, and based on the grayscale configuration, different clients’ requests go to different transaction managers. Accordingly, we leverage multiple Mapper scanners of [MyBatis](https://mybatis.org/mybatis-3/) to generate multiple `mapperInterfaces`, and concurrently generate a `mapperInterface` for wrapping. The wrapper class supports `hintManager` to automatically select mappers; the transaction manager is similar to wrapper class generation. The wrapper class supports `hintManager` to automatically select various transaction managers to manage transactions. This solution actually avoids intrusion because for codes of the service layer, there is only one Mapper interface.
 
-![4](../../static/img/F6_Automobile_img_4.png)
+![4](https://shardingsphere.apache.org/blog/img/F6_Automobile_img_4.png)
 
 ***Data Source Connection Switch***
 
@@ -154,7 +154,7 @@ Apache ShardingSphere already lists some grammars currently not supported by Sha
 - No such statement for batch updates.
 - Even if `UNION ALL` does not support the grayscale release plan, we only need to copy a set of mapper.xml, and modify it based on the syntax of Sharding-JDBC before release.
 
-![5](../../static/img/F6_Automobile_img_5.png)
+![5](https://shardingsphere.apache.org/blog/img/F6_Automobile_img_5.png)
 
 ***Historical Data Sync***
 
@@ -162,7 +162,7 @@ Apache ShardingSphere already lists some grammars currently not supported by Sha
 
 The data synchronization framework DataX can abstract the synchronization of different data sources as a Reader Plugin that reads data from the data source, and then as a Writer Plugin that writes data to the target. In theory, the DataX framework can support data synchronization of all data source types. Additionally, the DataX plugin ecosystem can allow every newly-added data source to immediately interact with the old data sources.
 
-![6](../../static/img/F6_Automobile_img_6.png)
+![6](https://shardingsphere.apache.org/blog/img/F6_Automobile_img_6.png)
 
 ***Verify Data Synchronization***
 
@@ -189,11 +189,11 @@ Note: the execution results of `show master status` of master and slave may be d
 
 Our greyscale switch plan is shown below:
 
-![7](../../static/img/F6_Automobile_img_7.png)
+![7](https://shardingsphere.apache.org/blog/img/F6_Automobile_img_7.png)
 
 We chose the grayscale release solution, which means it was necessary to ensure real-time data updates in both subtables and parent tables. Therefore, all data was synchronized in two directions: for clients with grayscale release being on, reads and writes went to subtables and the data was synchronized to parent tables in real time via Otter, while for clients with grayscale release being off, reads and writes went to parent tables and the data is synchronized to subtables in real time via Otter.
 
-![8](../../static/img/F6_Automobile_img_8.png)
+![8](https://shardingsphere.apache.org/blog/img/F6_Automobile_img_8.png)
 
 **Database Sharding Details**
 
@@ -220,27 +220,27 @@ To avoid potential performance and compatibility problems, database change plan 
 
 **Status Quo:** four application instances +one master db and two slave db
 
-![9](../../static/img/F6_Automobile_img_9.png)
+![9](https://shardingsphere.apache.org/blog/img/F6_Automobile_img_9.png)
 
 **Step 1:** add a new application instance and switch it to RDS, write into or pass dms master database, and the data in dms master database will be synced to rds in real time
 
-![10](../../static/img/F6_Automobile_img_10.png)
+![10](https://shardingsphere.apache.org/blog/img/F6_Automobile_img_10.png)
 
 **Step 2:** add three more application instances, and cut 50% of the data to write into rds database
 
-![11](../../static/img/F6_Automobile_img_11.png)
+![11](https://shardingsphere.apache.org/blog/img/F6_Automobile_img_11.png)
 
 **Step 3:** remove the four original instance traffic, and read them into rds instances while writing still goes into dms master database
 
-![12](../../static/img/F6_Automobile_img_12.png)
+![12](https://shardingsphere.apache.org/blog/img/F6_Automobile_img_12.png)
 
 **Step 4:** switch the master database into rds, and rds data will be reversely synced to dms master database to make it easier for the quick rollback of the data
 
-![13](../../static/img/F6_Automobile_img_13.png)
+![13](https://shardingsphere.apache.org/blog/img/F6_Automobile_img_13.png)
 
 **Step 5:** Completion
 
-![14](../../static/img/F6_Automobile_img_14.png)
+![14](https://shardingsphere.apache.org/blog/img/F6_Automobile_img_14.png)
 
 Each step mentioned above can be quickly rolled back through traffic switching so as to ensure the availability and stability of system.
 
@@ -248,11 +248,11 @@ Each step mentioned above can be quickly rolled back through traffic switching s
 
 When the performance of a single database reaches a plateau, we can scale out the database by modifying sharding database routing algorithms and migrating data.
 
-![15](../../static/img/F6_Automobile_img_15.png)
+![15](https://shardingsphere.apache.org/blog/img/F6_Automobile_img_15.png)
 
 When the capacity of a single table reaches its maximum size, we can scale out the table by modifying sharding table routing algorithms and migrating data.
 
-![16](../../static/img/F6_Automobile_img_16.png)
+![16](https://shardingsphere.apache.org/blog/img/F6_Automobile_img_16.png)
 
 **FAQ**
 
@@ -315,7 +315,7 @@ Apache ShardingSphere Contributor
 
 Passionate about technology and innovation, Yacine moved to Beijing to pursue his Ph.D. in Business Administration, and fell in awe of the local startup and tech scene. His career path has so far been shaped by opportunities at the intersection of technology and business. Recently he took on a keen interest in the development of the ShardingSphere database middleware ecosystem and Open-Source community building.
 
-![](../../static/img/Yacine_Si_Tayeb_Photo.png)
+![](https://shardingsphere.apache.org/blog/img/Yacine_Si_Tayeb_Photo.png)
 
 
 

@@ -15,11 +15,11 @@ Way back in 2018, Keep had already deployed ShardingSphere capabilities such as 
 
 With the release of Apache ShardingSphere 5.0, the concept of Database Plus and pluggable architecture has to some extent, reshaped the ShardingSphere ecosystem. During our visit, we conducted in-depth exchanges and discussions with our counterparts at Keep.
 
-![1](../../static/img/Apache_ShardingSphere_Enterprise_Applications_img_1.jpg)
+![1](https://shardingsphere.apache.org/blog/img/Apache_ShardingSphere_Enterprise_Applications_img_1.jpg)
 
 Keep engineers expressed great interest in Apache ShardingSphere 5.0. At the event, Juan Pan, Apache ShardingSphere PMC and SphereEx CTO, presented a full overview of the initial ShardingSphere architecture, user-end access, community building and the [Database Plus concept](https://www.infoq.com/articles/next-evolution-of-database-sharding-architecture/).
 
-![2](../../static/img/Apache_ShardingSphere_Enterprise_Applications_img_2.jpg)
+![2](https://shardingsphere.apache.org/blog/img/Apache_ShardingSphere_Enterprise_Applications_img_2.jpg)
 <center>Apache SahrdingSphere PMC, Pan Juan</center>
 
 ## Database Plus: Freeing DBAs and Developers
@@ -39,14 +39,14 @@ DBAs are responsible for running the whole business and data system, including d
 If the middle layer can meet transaction traffic and understand the request, DBAs can modify the request accordingly and then more operations can be performed. Therefore, we need to strike a balance between the two sides of demand to carry transaction traffic and support database capacity building, thus creating an efficient, collaborative ecosystem between the two sides.
 Following the version 5.0 release, the sharding function is no longer at the core of Apache ShardingSphere. Actually, sharding has been “downgraded” to a secondary function in the ShardingSphere ecosystem. Following the Database Plus concept, Apache ShardingSphere has built a pluggable architecture ecosystem, enabling the middle layer to achieve more value-added capabilities.
 
-![3](../../static/img/Apache_ShardingSphere_Enterprise_Applications_img_3.png)
+![3](https://shardingsphere.apache.org/blog/img/Apache_ShardingSphere_Enterprise_Applications_img_3.png)
 <center>ShardingSphere’s Database Plus Architecture</center>
 
 Taking data encryption and decryption as an example, we can see how they are generally done at the business layer because [MySQL](https://www.mysql.com/) and other databases do not support encrypted algorithms themselves. This means encryption & decryption is only be achievable at application and business layers. However, this poses a problem if we consider complex online businesses that face considerable tasks when they upgrade their encryption algorithms.
 
 The best solution to this problem is to encrypt and decrypt data at the middle layer. [ShardingSphere-Proxy](https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/) can be directly bound to databases, be placed at the middle layer between applications and underlying databases. ShardingSphere-proxy will feel “DB-like” by taking advantage of protocols that are compatible with different databases, thus deciding which node the SQL quest will fall on, letting upper layer applications be programmed for ShardingSphere, and shielding the impact of underlying databases. Data is in plaintext status when the transaction sends a request, but it will be encrypted after going through Proxy and decrypted when being retrieved.
 
-![4](../../static/img/Apache_ShardingSphere_Enterprise_Applications_img_4.jpeg)
+![4](https://shardingsphere.apache.org/blog/img/Apache_ShardingSphere_Enterprise_Applications_img_4.jpeg)
 <center>ShardingSphere Encryption & Decryption Capability</center>
 
 As such, the ShardingSphere encryption and decryption process can be separated from the existing system of applications and databases and can be linked with special encryption algorithms, especially in the cases where a cipher machine is involved. ShardingSphere capabilities such as encryption can free significant amounts of DBAs’ and developers’ time, allowing them to focus more on businesses.
@@ -57,7 +57,7 @@ As such, the ShardingSphere encryption and decryption process can be separated f
 
 In November 2021, a team from the ShardingSphere community visited iQiyi the innovation center of iQiyi for in-depth interactions and discussions with their counterparts from Beijing and Shanghai. During the meetup, Zhang Liang, Apache ShardingSphere PMC Chair and SphereEx Founder, provided details on the latest Apache ShardingSphere community initiatives, its future development and Database Mesh.
 
-![5](../../static/img/Apache_ShardingSphere_Enterprise_Applications_img_5.jpg)
+![5](https://shardingsphere.apache.org/blog/img/Apache_ShardingSphere_Enterprise_Applications_img_5.jpg)
 
 During the meetup, iQiyi was especially interested in the capabilities and future plans of ShardingSphere and Database Mesh. here are some key takeaway questions from the visit:
 
@@ -111,14 +111,14 @@ Facing diverse users' needs and increasingly diversified products in the databas
 
 By creating upper-level standards and ecosystems for heterogeneous databases, Apache ShardingSphere provides diversified functions that can precisely meet enterprise needs. As an ecosystem consisting of multiple adapters, by using a hybrid deployment model of ShardingSphere-JDBC and ShardingSphere-Proxy, Apache ShardingSphere enables users to configure sharding strategies through one console and to flexibly create application systems that suit the needs in different scenarios. This allows engineers more freedom to build system architectures that could best suit the needs of their ongoing projects.
 
-![6](../../static/img/Apache_ShardingSphere_Enterprise_Applications_img_6.jpeg)
+![6](https://shardingsphere.apache.org/blog/img/Apache_ShardingSphere_Enterprise_Applications_img_6.jpeg)
 <center>ShardingSphere’s Deployment Architecture</center>
 
 Centering around connections, incremental and pluggable features, and based on a pluggable architecture, Apache ShardingSphere creates a powerful kernel architecture in the form of micro-kernel.
 
 Based on its powerful kernel capabilities, Apache ShardingSphere products can provide users with ideal solutions for distributed database, data security, database gateway and [full-link stress testing](https://blog.devgenius.io/full-link-online-stress-testing-for-production-database-apache-shardingsphere-shadow-database-84f7cba56f99), helping increase the efficiency of enterprises and users.
 
-![7](../../static/img/Apache_ShardingSphere_Enterprise_Applications_img_7.jpeg)
+![7](https://shardingsphere.apache.org/blog/img/Apache_ShardingSphere_Enterprise_Applications_img_7.jpeg)
 <center>Overview of Apache ShardingSphere’s Functions</center>
 
 When it comes to future optimization, Pan believes that some deficiencies remain in Apache ShardingSphere’s performance and this is particularly true for ShardingSphere-Proxy’s adaptor. In the future, the community will double down on improving its kernel, minimizing business and data performance loss of the Proxy, improving routing and rewriting logic, reducing creating database objects, and avoiding excess young GC.
@@ -141,7 +141,7 @@ Apache ShardingSphere Contributor
 
 Passionate about technology and innovation, Yacine moved to Beijing to pursue his Ph.D. in Business Administration, and fell in awe of the local startup and tech scene. His career path has so far been shaped by opportunities at the intersection of technology and business. Recently he took on a keen interest in the development of the ShardingSphere database middleware ecosystem and Open-Source community building.
 
-![8](../../static/img/Yacine_Si_Tayeb_Photo_1.png)
+![8](https://shardingsphere.apache.org/blog/img/Yacine_Si_Tayeb_Photo_1.png)
 
 
 
