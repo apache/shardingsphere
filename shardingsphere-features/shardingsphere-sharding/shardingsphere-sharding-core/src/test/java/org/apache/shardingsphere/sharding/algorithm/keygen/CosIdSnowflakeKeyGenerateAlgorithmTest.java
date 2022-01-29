@@ -20,6 +20,7 @@ import me.ahoo.cosid.snowflake.MillisecondSnowflakeId;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeIdStateParser;
 import me.ahoo.cosid.snowflake.SnowflakeIdState;
 import me.ahoo.cosid.snowflake.SnowflakeIdStateParser;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.sharding.algorithm.keygen.fixture.WorkerIdGeneratorFixture;
@@ -46,7 +47,8 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
     public void assertGenerateKey() {
         CosIdSnowflakeKeyGenerateAlgorithm cosIdSnowflakeKeyGenerateAlgorithm = new CosIdSnowflakeKeyGenerateAlgorithm();
         Properties properties = new Properties();
-        cosIdSnowflakeKeyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(), new WorkerIdGeneratorFixture(FIXTURE_WORKER_ID), "Memory"));
+        cosIdSnowflakeKeyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(), new WorkerIdGeneratorFixture(FIXTURE_WORKER_ID), 
+                new ModeConfiguration("Memory", null, false)));
         cosIdSnowflakeKeyGenerateAlgorithm.setProps(properties);
         cosIdSnowflakeKeyGenerateAlgorithm.init();
         long firstActualKey = (Long) cosIdSnowflakeKeyGenerateAlgorithm.generateKey();
@@ -64,7 +66,8 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
         CosIdSnowflakeKeyGenerateAlgorithm cosIdSnowflakeKeyGenerateAlgorithm = new CosIdSnowflakeKeyGenerateAlgorithm();
         Properties properties = new Properties();
         properties.setProperty(CosIdSnowflakeKeyGenerateAlgorithm.AS_STRING_KEY, "true");
-        cosIdSnowflakeKeyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(), new WorkerIdGeneratorFixture(FIXTURE_WORKER_ID), "Memory"));
+        cosIdSnowflakeKeyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(), new WorkerIdGeneratorFixture(FIXTURE_WORKER_ID), 
+                new ModeConfiguration("Memory", null, false)));
         cosIdSnowflakeKeyGenerateAlgorithm.setProps(properties);
         cosIdSnowflakeKeyGenerateAlgorithm.init();
         Comparable<?> actualKey = cosIdSnowflakeKeyGenerateAlgorithm.generateKey();
@@ -90,7 +93,8 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
     public void assertGenerateKeyWhenNegative() {
         CosIdSnowflakeKeyGenerateAlgorithm cosIdSnowflakeKeyGenerateAlgorithm = new CosIdSnowflakeKeyGenerateAlgorithm();
         Properties properties = new Properties();
-        cosIdSnowflakeKeyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(), new WorkerIdGeneratorFixture(-1), "Memory"));
+        cosIdSnowflakeKeyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(), new WorkerIdGeneratorFixture(-1), 
+                new ModeConfiguration("Memory", null, false)));
         cosIdSnowflakeKeyGenerateAlgorithm.setProps(properties);
         cosIdSnowflakeKeyGenerateAlgorithm.init();
         cosIdSnowflakeKeyGenerateAlgorithm.generateKey();
@@ -100,7 +104,8 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
     public void assertGenerateKeyWhenGreaterThen1023() {
         CosIdSnowflakeKeyGenerateAlgorithm cosIdSnowflakeKeyGenerateAlgorithm = new CosIdSnowflakeKeyGenerateAlgorithm();
         Properties properties = new Properties();
-        cosIdSnowflakeKeyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(), new WorkerIdGeneratorFixture(1024), "Memory"));
+        cosIdSnowflakeKeyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(), new WorkerIdGeneratorFixture(1024), 
+                new ModeConfiguration("Memory", null, false)));
         cosIdSnowflakeKeyGenerateAlgorithm.setProps(properties);
         cosIdSnowflakeKeyGenerateAlgorithm.init();
         cosIdSnowflakeKeyGenerateAlgorithm.generateKey();
