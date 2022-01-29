@@ -416,7 +416,6 @@ public final class ContextManagerTest {
         ShardingSphereResource originalResource = mock(ShardingSphereResource.class);
         when(originalResource.getDataSources()).thenReturn(dataSources);
         ShardingSphereRuleMetaData originalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(originalRuleMetaData.getConfigurations()).thenReturn(new LinkedList<>());
         ShardingSphereMetaData originalMetaData = mock(ShardingSphereMetaData.class);
         when(originalMetaData.getResource()).thenReturn(originalResource);
         when(originalMetaData.getRuleMetaData()).thenReturn(originalRuleMetaData);

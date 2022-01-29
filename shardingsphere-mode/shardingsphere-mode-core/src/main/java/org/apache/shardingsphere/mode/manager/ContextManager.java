@@ -41,7 +41,6 @@ import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
@@ -344,10 +343,9 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private ShardingSphereSchema loadActualSchema(final String schemaName) throws SQLException {
-        Map<String, SchemaConfiguration> schemaRuleConfigs = Collections.singletonMap(schemaName, new DataSourceProvidedSchemaConfiguration(
-                metaDataContexts.getMetaData(schemaName).getResource().getDataSources(), metaDataContexts.getMetaData(schemaName).getRuleMetaData().getConfigurations()));
-        Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(schemaRuleConfigs, metaDataContexts.getProps().getProps());
-        return SchemaLoader.load(schemaRuleConfigs.get(schemaName).getDataSources(), rules.get(schemaName), metaDataContexts.getProps().getProps());
+        Map<String, DataSource> dataSourceMap = metaDataContexts.getMetaData(schemaName).getResource().getDataSources();
+        Collection<ShardingSphereRule> rules = metaDataContexts.getMetaDataMap().get(schemaName).getRuleMetaData().getRules();
+        return SchemaLoader.load(dataSourceMap, rules, metaDataContexts.getProps().getProps());
     }
     
     private Collection<DataSource> getPendingClosedDataSources(final String schemaName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
