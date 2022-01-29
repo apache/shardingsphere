@@ -7,7 +7,7 @@ chapter = true
 +++
 
 
-#Kernel Optimizations & Upgrade Guide for Apache ShardingSphere 5.0.0 — The Ideal Database Management Ecosystem
+# Kernel Optimizations & Upgrade Guide for Apache ShardingSphere 5.0.0 — The Ideal Database Management Ecosystem
 
 Having undergone almost two years of development and optimization, the Apache ShardingSphere 5.0.0 GA version has been recently released.
 Compared with the 4.1.1 GA version, the new version’s kernel is greatly improved:
@@ -74,7 +74,7 @@ In summary, the enhanced 5.0.0 GA version’s pluggable kernel allows users to f
 
 In this article, we’d like to showcase some practical examples and showcase how to combine these functions in the 5.0.0 GA version.
 
-##Federation Execution Engine
+## Federation Execution Engine
 
 Federation Execution Engine is another spotlight of the 5.0.0 GA version’s kernel. We aim to support distributed query statements that don’t work in the 4.1.1 GA version, such as cross-database instances related queries and subqueries. Thanks to the Federation Execution Engine, developers no longer need to worry about the usage scope of SQLs, and they can concentrate on their business function development, reducing function limitations at the business level.
 
@@ -140,7 +140,7 @@ SELECT COUNT(DISTINCT user_id), SUM(order_id) FROM t_order;
 
 Federation Execution Engine significantly enhances distributed query capabilities of Apache ShardingSphere. In the future, we will continue to optimize Apache ShardingSphere, aiming at reducing memory usage of the Federation Execution Engine, and improve distributed query capabilities.
 
-##Feature API Adjustments
+## Feature API Adjustments
 
 To help users minimize related costs, the 5.0.0 GA version has made many optimizations at the API level. According to some community feedback, the Data Sharding API was too complex and difficult to understand. After a community-level discussion, we decided to provide a brand-new data sharding API in the new GA version.
 
@@ -670,13 +670,13 @@ When we execute Query statements, we find that the `t_user` table is routed to t
 
 Of course, there are more new features in the 5.0.0 GA version. In this upgrade guide, we only compare some features supported in the two GA versions. We hope this article can help you understand the new features and successfully implement the version upgrade. If you are interested, visit our repo, or please read our documentation and test the new version by yourself.
 
-###Conclusion
+### Conclusion
 
 Having undergone two years of development, the new-look Apache ShardingSphere with **its pluggable kernel gives all developers indefinite development possibilities. In the future, we will continue to develop more new features of the pluggable kernel to expand the Apache ShardingSphere ecosystem with amazing functions.** The Federation Execution Engine is just the beginning of distributed queries. We will make more efforts to optimize its memory and performance, to provide you with more reliable and efficient distributed queries.
 
 As always, you’re welcome to join us in developing the Apache ShardingSphere project.
 
-###References
+### References
 
 1. Apache ShardingSphere Release Notes：https://github.com/apache/shardingsphere/releases
 
@@ -693,7 +693,7 @@ As always, you’re welcome to join us in developing the Apache ShardingSphere p
 7. https://medium.com/codex/create-a-distributed-database-solution-based-on-postgresql-opengauss-b30d0e1ced2c
 
 
-###Open Source Project Links:
+### Open Source Project Links:
 
 ShardingSphere Github: https://github.com/apache/shardingsphere
 
@@ -706,7 +706,7 @@ GitHub Issues: https://github.com/apache/shardingsphere/issues
 Contributor Guide:https://shardingsphere.apache.org/community/cn/contribute/
 
 
-###Author
+### Author
 
 **Duan Zhengqiang**
 
