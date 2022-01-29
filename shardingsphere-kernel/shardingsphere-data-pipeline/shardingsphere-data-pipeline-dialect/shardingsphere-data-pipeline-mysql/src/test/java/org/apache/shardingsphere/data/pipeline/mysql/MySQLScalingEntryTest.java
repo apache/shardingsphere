@@ -21,7 +21,6 @@ import org.apache.shardingsphere.data.pipeline.mysql.check.datasource.MySQLDataS
 import org.apache.shardingsphere.data.pipeline.mysql.importer.MySQLImporter;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLIncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLInventoryDumper;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLPositionInitializer;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 import org.junit.Test;
@@ -36,7 +35,6 @@ public final class MySQLScalingEntryTest {
     public void assertGetScalingEntryByDatabaseType() throws IllegalAccessException, InstantiationException {
         ScalingEntry scalingEntry = ScalingEntryLoader.getInstance("MySQL");
         assertTrue(scalingEntry instanceof MySQLScalingEntry);
-        assertThat(scalingEntry.getPositionInitializerClass(), equalTo(MySQLPositionInitializer.class));
         assertThat(scalingEntry.getEnvironmentCheckerClass(), equalTo(MySQLEnvironmentChecker.class));
         assertThat(scalingEntry.getEnvironmentCheckerClass().newInstance().getDataSourceCheckerClass(), equalTo(MySQLDataSourceChecker.class));
         assertThat(scalingEntry.getImporterClass(), equalTo(MySQLImporter.class));
