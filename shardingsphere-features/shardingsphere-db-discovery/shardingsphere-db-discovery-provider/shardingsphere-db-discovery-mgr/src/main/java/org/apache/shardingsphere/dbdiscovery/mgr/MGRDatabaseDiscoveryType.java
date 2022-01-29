@@ -40,7 +40,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * MGR data base discovery type.
+ * MGR database discovery type.
  */
 @Slf4j
 public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {

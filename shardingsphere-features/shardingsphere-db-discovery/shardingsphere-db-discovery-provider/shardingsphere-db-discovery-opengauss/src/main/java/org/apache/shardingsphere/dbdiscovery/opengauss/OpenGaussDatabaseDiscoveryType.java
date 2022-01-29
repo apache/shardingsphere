@@ -36,12 +36,12 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * OpenGauss data base discovery type.
+ * OpenGauss database discovery type.
  */
 @Slf4j
 public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryType {
     
-    private static final String DB_ROLE = "select local_role,db_state from pg_stat_get_stream_replications()";
+    private static final String DB_ROLE = "SELECT local_role,db_state FROM pg_stat_get_stream_replications()";
     
     private String oldPrimaryDataSource;
     
