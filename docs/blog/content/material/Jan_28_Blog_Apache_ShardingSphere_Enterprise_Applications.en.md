@@ -1,3 +1,9 @@
++++
+title = "Apache ShardingSphere Enterprise Applications"
+weight = 33
+chapter = true
++++
+
 # Apache ShardingSphere Enterprise Applications
 
 > To further understand application scenarios, enterprises’ needs, and improve dev teams’ understanding of Apache ShardingSphere, our community launched the “Enterprise Visits” series.

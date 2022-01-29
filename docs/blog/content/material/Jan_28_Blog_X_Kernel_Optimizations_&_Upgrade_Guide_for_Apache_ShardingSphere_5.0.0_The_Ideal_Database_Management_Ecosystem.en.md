@@ -1,7 +1,7 @@
 +++
 
 title = "Kernel Optimizations & Upgrade Guide for Apache ShardingSphere 5.0.0 — The Ideal Database Management Ecosystem"
-weight = 
+weight = 29
 chapter = true
 
 +++

@@ -1,3 +1,9 @@
++++
+title = "F6 Automobile Technology’s Multimillion Rows of Data Sharding Strategy Based on Apache ShardingSphere"
+weight = 31
+chapter = true
++++
+
 # F6 Automobile Technology’s Multimillion Rows of Data Sharding Strategy Based on Apache ShardingSphere
 
 [F6 Automobile Technology](https://www.f6car.com/) is an Internet platform company focusing on the informatization of the automotive aftermarket. 
