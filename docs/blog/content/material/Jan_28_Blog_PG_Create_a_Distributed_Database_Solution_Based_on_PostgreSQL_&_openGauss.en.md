@@ -20,7 +20,7 @@ This article will introduce improvements to the ShardingSphere-Proxy 5.0.0 built
 
 ShardingSphere-Proxy is an adapter in the ShardingSphere ecosystem and is positioned as a transparent database proxy to users. ShardingSphere Proxy is not limited to Java. Instead, it realizes MySQL and PostgreSQL database protocols, and users can use various clients compatible with MySQL / PostgreSQL protocols to access and manipulate data.
 
-![](../../static/img/PostgreSQL_openGauss_img_1.png)
+![](https://shardingsphere.apache.org/blog/img/PostgreSQL_openGauss_img_1.png)
 
 
 |       | ShardingSphere-JDBC | ShardingSphere-Proxy     |
@@ -43,7 +43,7 @@ However, since ShardingSphere-Proxy has an extra layer of network interaction co
 ## ShardingSphere-Proxy and PostgreSQL Ecosystem Integration
 
 
-![Be compatible with PostgreSQL Simple Query and Extended Query](../../static/img/PostgreSQL_openGauss_img_2.png)
+![Be compatible with PostgreSQL Simple Query and Extended Query](https://shardingsphere.apache.org/blog/img/PostgreSQL_openGauss_img_2.png)
 
 Simple Query and Extended Query are the most common protocols for most users using PostgreSQL. For instance, when using the following command line tool `psql` to connect PostgreSQL for CRUD operation, the Simple Query is often used to interact with the database.
 
@@ -58,7 +58,7 @@ postgres=# select id, name from person where age < 35;
 
 The protocol interaction diagram of Simple Query is as follows:
 
-![3](../../static/img/PostgreSQL_openGauss_img_3.png)
+![3](https://shardingsphere.apache.org/blog/img/PostgreSQL_openGauss_img_3.png)
 
 When using PostgreSQL JDBC Driver and other drivers, code is as follows PreparedStatement, which corresponds to the Extended Query protocol in default.
 
@@ -69,7 +69,7 @@ ResultSet resultSet = ps.executeQuery();`
 
 The protocol interaction diagram of Extended Query is as follows:
 
-![4](../../static/img/PostgreSQL_openGauss_img_4.png)
+![4](https://shardingsphere.apache.org/blog/img/PostgreSQL_openGauss_img_4.png)
 
 Currently, ShardingSphere PostgreSQL Proxy realizes protocols of Simple Query with the most Extended Query. However, since database client end and driver have encapsulated API for users to use, users do not need to worry about database protocols.
 
@@ -109,11 +109,11 @@ At the PostgreSQL protocol layer, `Bind` can transfer one set of parameters to f
 
 Batch insertion could be realized through the repetition of `Bind` and `Execute`. The protocol interaction diagram is as follows:
 
-![PostgreSQL Batch Insertion](../../static/img/PostgreSQL_openGauss_img_5.png)
+![PostgreSQL Batch Insertion](https://shardingsphere.apache.org/blog/img/PostgreSQL_openGauss_img_5.png)
 
 `Batch Bind` is a message exclusive to openGauss. Compared with `Bind`, `Batch Bind` can transfer multiple sets of parameters at a time. The protocol interaction diagram using `Batch Bind` to perform batch insertion is as follows:
 
-![openGauss Batch Insertion](../../static/img/PostgreSQL_openGauss_img_6.png)
+![openGauss Batch Insertion](https://shardingsphere.apache.org/blog/img/PostgreSQL_openGauss_img_6.png)
 
 ShardingSphere-Proxy openGauss supports Batch Bind protocol, meaning that **users could use the openGauss client end or driver to perform batch insertion of the ShardingSphere Proxy.**
 
@@ -125,7 +125,7 @@ ShardingSphere-Proxy is a transparent database proxy, which means that users do 
 
 In the picture below, when configuring logic database `sharding_db` and logic table `person` ShardingSphere-Proxy, there are four tables in two databases behind Proxy.
 
-![](../../static/img/PostgreSQL_openGauss_img_7.png)
+![](https://shardingsphere.apache.org/blog/img/PostgreSQL_openGauss_img_7.png)
 
 Currently, when executing `show schemas` and `show tables` languages in ShardingSphere MySQL Proxy, the query results are listed as logic database `sharding_db` and logic table `person`.
 
@@ -173,4 +173,4 @@ GitHub: https://github.com/apache/shardingsphere
 
 >Apache ShardingSphere Committer & Middleware Engineer at SphereEx. Contributed to the development of Apache ShardingSphere and Apache ShardingSphere ElasticJob.
 
-![](../../static/img/Wu_Weijie_Photo.png)
+![](https://shardingsphere.apache.org/blog/img/Wu_Weijie_Photo.png)

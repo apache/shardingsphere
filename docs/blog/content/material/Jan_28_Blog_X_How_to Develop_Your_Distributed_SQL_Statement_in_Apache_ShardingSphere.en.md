@@ -34,17 +34,17 @@ Therefore, DistSQL provides a syntax structure and syntax validation system simi
 
 + First, choose the right Test Rule:
 
-![](../../static/img/DistSQL_Statement_Development_img_1.png)
+![](https://shardingsphere.apache.org/blog/img/DistSQL_Statement_Development_img_1.png)
 
 + Input the statement to be verified in ANTLR Preview:
 
-![](../../static/img/DistSQL_Statement_Development_img_2.png)
+![](https://shardingsphere.apache.org/blog/img/DistSQL_Statement_Development_img_2.png)
 
 You need to know the DistSQL execution process as well as the basics of synatics and plug-ins. The complete DistSQL execution process is truly complicated, but the awesome architecture of ShardingSphere allows developers to develop DistSQL features without having to pay attention to the whole process.
 
 However, you still need to take care of the following core procedures:
 
-![](../../static/img/DistSQL_Statement_Development_img_3.png)
+![](https://shardingsphere.apache.org/blog/img/DistSQL_Statement_Development_img_3.png)
 
 _Note: Here, we take data sharding as an example. Be aware that different features have different visitors._
 
@@ -74,13 +74,13 @@ show sharding tables count [from schema] ;
 
 Add the following statement definition into the file `src/main/antlr4/imports/sharding/RQLStatement.g4`. When it’s done, you can use ANTLR v4 to test it.
 
-![](../../static/img/DistSQL_Statement_Development_img_4.png)
+![](https://shardingsphere.apache.org/blog/img/DistSQL_Statement_Development_img_4.png)
 
 Please ensure that all keywords in that statement are defined. For example, `COUNT` is an undefined statement here, so you need to define it in `src/main/antlr4/imports/sharding/Keyword.g4'`.
 
 After you define the statement, you also need to add it into the file `ShardingDistSQLStatement.g4`.  It's for the parsing router.
 
-![](../../static/img/DistSQL_Statement_Development_img_5.png)
+![](https://shardingsphere.apache.org/blog/img/DistSQL_Statement_Development_img_5.png)
 
 Now, it’s time to use  `shardingsphere-sharding-distsql-parser` to compile and generate the relevant objects.
 
@@ -88,11 +88,11 @@ Now, it’s time to use  `shardingsphere-sharding-distsql-parser` to compile and
 
 Then you also need to add a DistSQLStatement object of the definition in `shardingsphere-distsql-statement` to save the variable attributes of the statement. For example, the `schemaName` of the statement definition needs to be saved to the object `DistSQLStatement`.
 
-![](../../static/img/DistSQL_Statement_Development_img_6.png)
+![](https://shardingsphere.apache.org/blog/img/DistSQL_Statement_Development_img_6.png)
 
 Since ShardingSphere uses ANTLR’s Visitor mode, in terms of definition handling, it is required to rewrite `visitShowShardingTableCount` in `ShardingDistSQLStatementVisitor`. The purpose of this method is to create a `ShowShardingTablesCountStatement` object and save the related variable attributes to the object  `DistSQLStatement`.
 
-![](../../static/img/DistSQL_Statement_Development_img_7.png)
+![](https://shardingsphere.apache.org/blog/img/DistSQL_Statement_Development_img_7.png)
 
 `shardingsphere-distsql-statement` actually depends on `shardingsphere-sharding-distsql-parser`, so it's necessary to compile `shardingsphere-distsql-statement`.
 
@@ -102,13 +102,13 @@ Data handling is managed by the `execute`method of `Handler` or `Executor`, and 
 
 Show the execution method and the `DistSQLResultSet` as shown in the below image:
 
-![](../../static/img/DistSQL_Statement_Development_img_8.png)
+![](https://shardingsphere.apache.org/blog/img/DistSQL_Statement_Development_img_8.png)
 
-![](../../static/img/DistSQL_Statement_Development_img_9.png)
+![](https://shardingsphere.apache.org/blog/img/DistSQL_Statement_Development_img_9.png)
 
 In `ShardingTablesCountResultSet`, `init` gets and assembles data, and `getRowData` returna row data. `getType` is also obviously in the class. The method belongs to the `TypedSPI` interface, so `ShardingTablesCountResultSet` also needs to add `org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet` into the directory `src/main/resources/META-INF/services` of the current module to complete the SPI injection. The path and content are as follows:
 
-![](../../static/img/DistSQL_Statement_Development_img_10.png)
+![](https://shardingsphere.apache.org/blog/img/DistSQL_Statement_Development_img_10.png)
 
 Now, you have successfully developed the feature of this statement definition.
 
@@ -117,33 +117,33 @@ Now, you have successfully developed the feature of this statement definition.
 When you complete the basic feature development, to ensure its continuous usability, you need to add test cases to the new class or method, and to complete parse tests for the new syntax. The following code block is the unit test of
 `ShardingTablesCountResultSet`.
 
-![](../../static/img/DistSQL_Statement_Development_img_11.png)
+![](https://shardingsphere.apache.org/blog/img/DistSQL_Statement_Development_img_11.png)
 
 In addition to the unit test, you are also required to complete a parsing test for the grammar definition in `shardingsphere-parser-test`. The purpose is to parse the input DistSQL into a `DistSQLStatement` and then compare the parsed statement with your expected `TestCase` object. The steps are as follows:
 
 a. Add the SQL you want to test in `src/main/resources/sql/supported/rql/show.xml`;
 
-![](../../static/img/DistSQL_Statement_Development_img_12.png)
+![](https://shardingsphere.apache.org/blog/img/DistSQL_Statement_Development_img_12.png)
 
 b. Add a test case in `src/main/resources/case/rql/show.xml`;
 
-![](../../static/img/DistSQL_Statement_Development_img_13.png)
+![](https://shardingsphere.apache.org/blog/img/DistSQL_Statement_Development_img_13.png)
 
 c. Add a `TestCase` object whose function is to save the result defined in the case
 
-![](../../static/img/DistSQL_Statement_Development_img_14.png)
+![](https://shardingsphere.apache.org/blog/img/DistSQL_Statement_Development_img_14.png)
 
 d. Use the `SQLParserTestCases` class to load `TestCase`;
 
-![](../../static/img/DistSQL_Statement_Development_img_15.png)
+![](https://shardingsphere.apache.org/blog/img/DistSQL_Statement_Development_img_15.png)
 
 e. Add the right `Assert` object to the `ShowRulesStatementAssert` judgment
 
-![](../../static/img/DistSQL_Statement_Development_img_16.png)
+![](https://shardingsphere.apache.org/blog/img/DistSQL_Statement_Development_img_16.png)
 
 f. Execute the test method in `DistSQLParserParameterizedTest`. Now,the test comes to an end.
 
-![](../../static/img/DistSQL_Statement_Development_img_17.png)
+![](https://shardingsphere.apache.org/blog/img/DistSQL_Statement_Development_img_17.png)
 
 Finally, you can execute the developed DistSQL verification function by using command line tools.
 
@@ -156,7 +156,7 @@ If you’re interested, you are welcome to develop the grammar system or provide
 
 Lan Chengxiang
 
-![](../../static/img/Lan_Chengxiang_Photo.png)
+![](https://shardingsphere.apache.org/blog/img/Lan_Chengxiang_Photo.png)
 
 > SphereEx Middleware Development Engineer & Apache ShardingSphere Contributor. He focuses on designing and developing DistSQL.
 

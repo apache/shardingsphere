@@ -14,7 +14,7 @@ This article is a guide for you to better understand ShardingSphere’s new oper
 
 Distributed governance is the foundation of cluster deployment in ShardingSphere. In previous versions, users needed to configure the governance tag in the configuration file to enable distributed governance:
 
-![1](../../static/img/Your_Detailed_Guide_to_Apache_ShardingSphere’s_Operating_Modes_img_1.png)
+![1](https://shardingsphere.apache.org/blog/img/Your_Detailed_Guide_to_Apache_ShardingSphere’s_Operating_Modes_img_1.png)
 
 The most important features of distributed governance include persistent user configuration and [metadata](https://dzone.com/articles/shardingshpheres-metadata-loading-process).
 
@@ -27,7 +27,7 @@ Like other standard SQLs, DistSQL, known as the operating language of the distri
 
 In previous versions, only when you enabled distributed governance could the feature be implemented. That’s the reason why DistSQL was only available in the distributed governance scenario in its early development stage.
 
-![2](../../static/img/Your_Detailed_Guide_to_Apache_ShardingSphere’s_Operating_Modes_img_2.png)
+![2](https://shardingsphere.apache.org/blog/img/Your_Detailed_Guide_to_Apache_ShardingSphere’s_Operating_Modes_img_2.png)
 
 ## Why We Created Operating Modes
 
@@ -49,7 +49,7 @@ So far ShardingSphere has three modes, i.e. Memory, Standalone, and Cluster. The
 
 The `governance` configuration method is removed from the 5.0.0 version, and instead, we start to use the different operating modes.
 
-![3](../../static/img/Your_Detailed_Guide_to_Apache_ShardingSphere’s_Operating_Modes_img_3.png)
+![3](https://shardingsphere.apache.org/blog/img/Your_Detailed_Guide_to_Apache_ShardingSphere’s_Operating_Modes_img_3.png)
 
 Next, I’d like to explain the basic concepts of the three operating modes in detail, and show you how to choose the right operating mode when you use ShardingSphere for development.
 
@@ -69,7 +69,7 @@ The Standalone mode makes it convenient for development engineers to quickly bui
 
 The mode’s configuration is shown as follows:
 
-![4](../../static/img/Your_Detailed_Guide_to_Apache_ShardingSphere’s_Operating_Modes_img_4.png)
+![4](https://shardingsphere.apache.org/blog/img/Your_Detailed_Guide_to_Apache_ShardingSphere’s_Operating_Modes_img_4.png)
 
 The Standalone mode can persist local files by default. Configurations are persisted in the user directory `.shardingsphere` by default, but you can also customize your storage path by configuring `path`.
 
@@ -81,11 +81,11 @@ The mode can provide distributed governance capability. By integrating an indepe
 
 We take Zookeeper as the example, to demonstrate mode configuration:
 
-![5](../../static/img/Your_Detailed_Guide_to_Apache_ShardingSphere’s_Operating_Modes_img_5.png)
+![5](https://shardingsphere.apache.org/blog/img/Your_Detailed_Guide_to_Apache_ShardingSphere’s_Operating_Modes_img_5.png)
 
 We also compare the differences between the three modes (shown in the table below). Our suggestion is that you consider your needs first and then choose the right mode.
 
-![6](../../static/img/Your_Detailed_Guide_to_Apache_ShardingSphere’s_Operating_Modes_img_6.png)
+![6](https://shardingsphere.apache.org/blog/img/Your_Detailed_Guide_to_Apache_ShardingSphere’s_Operating_Modes_img_6.png)
 
 ## Summary
 ShardingSphere’s three operating modes can meet virtually all user needs in various environments from testing, to development, to deployment.
@@ -109,7 +109,7 @@ Meng Haoran
 > 
 > Previously responsible for the database products R&D at JingDong Technology, he is passionate about Open-Source and database ecosystems. Currently, he focuses on the development of the ShardingSphere database ecosystem and open source community building.
 
-![](../../static/img/Meng_Haoran_Photo.png)
+![](https://shardingsphere.apache.org/blog/img/Meng_Haoran_Photo.png)
 
 
 

@@ -29,7 +29,7 @@ ShardingSphere can provide users with management services and enhanced features 
 
 The emergence of the Database Plus concept indicates that ShardingSphere has evolved from a middleware into an innovative distributed database ecosystem. Since we set Database Plus as our new direction and there are many extension points in our pluggable system, having a pluggable kernel was a given. The figure below illustrates the new pluggable Kernel:
 
-![Version Comparison](../../static/img/kernel_img_1.png)
+![Version Comparison](https://shardingsphere.apache.org/blog/img/kernel_img_1.png)
 
 All of Apache ShardingSphere kernel’s processes (i.e. metadata loader, SQL parser, SQL router, SQL rewriter, and SQL executor & result merger) provide extension points on which ShardingSphere implements default features such as data sharding, read/write splitting, encryption & decryption, shadow database stress testing, and high availability.
 
@@ -78,7 +78,7 @@ In this article, we’d like to showcase some practical examples and showcase ho
 
 Federation Execution Engine is another spotlight of the 5.0.0 GA version’s kernel. We aim to support distributed query statements that don’t work in the 4.1.1 GA version, such as cross-database instances related queries and subqueries. Thanks to the Federation Execution Engine, developers no longer need to worry about the usage scope of SQLs, and they can concentrate on their business function development, reducing function limitations at the business level.
 
-![Federation Execution Engine Flow](../../static/img/kernel_img_2.png)
+![Federation Execution Engine Flow](https://shardingsphere.apache.org/blog/img/kernel_img_2.png)
 
 The figure above illustrates the flow of the Federation Execution Engine. In general, the flow still follows the sequence: SQL Parser, SQL Router, SQL Rewriter, and then SQL Executor. The only different step is the additional SQL Optimizer used in the Federation Execution Engine. The optimizer contains RBO (Rule-Based Optimizer) and CBO (Cost-Based Optimizer) to optimize distributed query statements and get the execution plan with minimal cost. In the SQL Router, the router engine analyzes whether a SQL statement is given to cross-database instances and if yes, it determines to use Federation Execution Engine to execute the SQL.
 
@@ -710,7 +710,7 @@ Contributor Guide:https://shardingsphere.apache.org/community/cn/contribute/
 
 **Duan Zhengqiang**
 
-![](../../static/img/Duan_Zhengqiang.png)
+![](https://shardingsphere.apache.org/blog/img/Duan_Zhengqiang.png)
 
 > SphereEx Senior Middleware Development Engineer & Apache ShardingSphere Committer
 
