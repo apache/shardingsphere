@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MultiplexMemoryPipelineChannel;
@@ -63,9 +64,9 @@ public final class PostgreSQLWalDumperTest {
     
     private WalPosition position;
     
-    private PostgreSQLWalDumper walDumper;
+    private DumperConfiguration dumperConfig;
     
-    private StandardPipelineDataSourceConfiguration pipelineDataSourceConfig;
+    private PostgreSQLWalDumper walDumper;
     
     private MultiplexMemoryPipelineChannel channel;
     
@@ -75,8 +76,9 @@ public final class PostgreSQLWalDumperTest {
     public void setUp() {
         position = new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)));
         channel = new MultiplexMemoryPipelineChannel();
-        PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSourceManager.getDataSource(pipelineDataSourceConfig));
-        walDumper = new PostgreSQLWalDumper(mockDumperConfiguration(), position, channel, metaDataLoader);
+        dumperConfig = mockDumperConfiguration();
+        PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig()));
+        walDumper = new PostgreSQLWalDumper(dumperConfig, position, channel, metaDataLoader);
     }
     
     @After
@@ -96,9 +98,9 @@ public final class PostgreSQLWalDumperTest {
         } catch (final SQLException e) {
             throw new RuntimeException("Init table failed", e);
         }
-        pipelineDataSourceConfig = new StandardPipelineDataSourceConfiguration(jdbcUrl, username, password);
+        PipelineDataSourceConfiguration dataSourceConfig = new StandardPipelineDataSourceConfiguration(jdbcUrl, username, password);
         DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceConfig(pipelineDataSourceConfig);
+        result.setDataSourceConfig(dataSourceConfig);
         Map<String, String> tableNameMap = new HashMap<>();
         tableNameMap.put("t_order_0", "t_order");
         result.setTableNameMap(tableNameMap);
@@ -107,9 +109,10 @@ public final class PostgreSQLWalDumperTest {
     
     @Test
     public void assertStart() throws SQLException, NoSuchFieldException, IllegalAccessException {
+        StandardPipelineDataSourceConfiguration dataSourceConfig = (StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig();
         try {
             ReflectionUtil.setFieldValue(walDumper, "logicalReplication", logicalReplication);
-            when(logicalReplication.createConnection(pipelineDataSourceConfig)).thenReturn(pgConnection);
+            when(logicalReplication.createConnection(dataSourceConfig)).thenReturn(pgConnection);
             when(pgConnection.unwrap(PgConnection.class)).thenReturn(pgConnection);
             when(logicalReplication.createReplicationStream(pgConnection, PostgreSQLPositionInitializer.getUniqueSlotName(pgConnection), position.getLogSequenceNumber()))
                     .thenReturn(pgReplicationStream);
