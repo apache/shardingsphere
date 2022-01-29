@@ -59,6 +59,6 @@ public final class ShardingBroadcastTableRuleQueryResultSet implements DistSQLRe
     
     @Override
     public String getType() {
-        return ShowShardingBroadcastTableRulesStatement.class.getCanonicalName();
+        return ShowShardingBroadcastTableRulesStatement.class.getName();
     }
 }

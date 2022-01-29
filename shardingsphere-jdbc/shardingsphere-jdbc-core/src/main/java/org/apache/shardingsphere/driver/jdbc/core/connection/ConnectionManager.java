@@ -25,16 +25,16 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.InstanceId;
-import org.apache.shardingsphere.infra.instance.InstanceType;
+import org.apache.shardingsphere.infra.instance.definition.InstanceId;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -92,33 +92,31 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
         if (!trafficRule.isPresent() || !metaDataPersistService.isPresent()) {
             return Collections.emptyMap();
         }
-        Map<String, DataSourceConfiguration> dataSourceConfigs = metaDataPersistService.get().getDataSourceService().load(schema);
-        Preconditions.checkState(!dataSourceConfigs.isEmpty(), "Can not get dataSource configurations from meta data.");
-        DataSourceConfiguration dataSourceConfigSample = dataSourceConfigs.values().iterator().next();
-        Collection<ComputeNodeInstance> instances = metaDataPersistService.get().loadComputeNodeInstances(InstanceType.PROXY, trafficRule.get().getLabels());
-        return DataSourcePoolCreatorUtil.getDataSourceMap(createDataSourceConfigs(instances, dataSourceConfigSample, schema));
+        Map<String, DataSourceProperties> dataSourcePropsMap = metaDataPersistService.get().getDataSourceService().load(schema);
+        Preconditions.checkState(!dataSourcePropsMap.isEmpty(), "Can not get data source properties from meta data.");
+        DataSourceProperties dataSourcePropsSample = dataSourcePropsMap.values().iterator().next();
+        Collection<ShardingSphereUser> users = metaDataPersistService.get().getGlobalRuleService().loadUsers();
+        Collection<ComputeNodeInstance> instances = metaDataPersistService.get().getComputeNodePersistService().loadComputeNodeInstances(InstanceType.PROXY, trafficRule.get().getLabels());
+        return DataSourcePoolCreator.create(createDataSourcePropertiesMap(instances, users, dataSourcePropsSample, schema));
     }
     
-    private Map<String, DataSourceConfiguration> createDataSourceConfigs(final Collection<ComputeNodeInstance> instances,
-                                                                         final DataSourceConfiguration dataSourceConfigSample, final String schema) {
-        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>();
+    private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Collection<ComputeNodeInstance> instances, final Collection<ShardingSphereUser> users,
+                                                                            final DataSourceProperties dataSourcePropsSample, final String schema) {
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>();
         for (ComputeNodeInstance each : instances) {
-            result.put(each.getInstanceDefinition().getInstanceId().getId(), createDataSourceConfig(each, dataSourceConfigSample, schema));
+            result.put(each.getInstanceDefinition().getInstanceId().getId(), createDataSourceProperties(each, users, dataSourcePropsSample, schema));
         }
         return result;
     }
     
-    private DataSourceConfiguration createDataSourceConfig(final ComputeNodeInstance instance,
-                                                           final DataSourceConfiguration dataSourceConfigSample, final String schema) {
-        Map<String, Object> props = dataSourceConfigSample.getProps();
+    private DataSourceProperties createDataSourceProperties(final ComputeNodeInstance instance, final Collection<ShardingSphereUser> users,
+                                                            final DataSourceProperties dataSourcePropsSample, final String schema) {
+        Map<String, Object> props = dataSourcePropsSample.getAllLocalProperties();
         props.put("jdbcUrl", createJdbcUrl(instance, schema, props));
-        Preconditions.checkState(!instance.getUsers().isEmpty(), "Can not get users from meta data.");
-        ShardingSphereUser user = instance.getUsers().iterator().next();
+        ShardingSphereUser user = users.iterator().next();
         props.put("username", user.getGrantee().getUsername());
         props.put("password", user.getPassword());
-        DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());
-        result.getProps().putAll(props);
-        return result;
+        return new DataSourceProperties(HikariDataSource.class.getName(), props);
     }
     
     private String createJdbcUrl(final ComputeNodeInstance instance, final String schema, final Map<String, Object> props) {
@@ -127,7 +125,7 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
         DataSourceMetaData dataSourceMetaData = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl).getDataSourceMetaData(jdbcUrl, username);
         InstanceId instanceId = instance.getInstanceDefinition().getInstanceId();
         return jdbcUrl.replace(dataSourceMetaData.getHostname(), instanceId.getIp())
-                .replace(String.valueOf(dataSourceMetaData.getPort()), String.valueOf(instanceId.getPort())).replace(dataSourceMetaData.getCatalog(), schema);
+                .replace(String.valueOf(dataSourceMetaData.getPort()), String.valueOf(instanceId.getUniqueSign())).replace(dataSourceMetaData.getCatalog(), schema);
     }
     
     private ConnectionTransaction createConnectionTransaction(final String schemaName, final ContextManager contextManager) {
@@ -137,11 +135,7 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
             return transactionRule.map(optional -> new ConnectionTransaction(schemaName, optional, contextManager.getTransactionContexts()))
                     .orElseGet(() -> new ConnectionTransaction(schemaName, contextManager.getTransactionContexts()));
         }
-        ConnectionTransaction result = new ConnectionTransaction(schemaName, type, contextManager.getTransactionContexts());
-        if (null == result) {
-            throw new RuntimeException(String.format("Get connectionTransaction error for transaction type %s", type.name()));
-        }
-        return result;
+        return new ConnectionTransaction(schemaName, type, contextManager.getTransactionContexts());
     }
     
     /**

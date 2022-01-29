@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.distsql.handler;
 
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingStatusStatement;
@@ -35,12 +36,14 @@ import java.util.stream.Collectors;
  */
 public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSet {
     
+    private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = PipelineJobAPIFactory.getRuleAlteredJobAPI();
+    
     private Iterator<Collection<Object>> data;
     
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         long currentTimeMillis = System.currentTimeMillis();
-        data = PipelineJobAPIFactory.getPipelineJobAPI().getProgress(((ShowScalingStatusStatement) sqlStatement).getJobId()).entrySet().stream()
+        data = RULE_ALTERED_JOB_API.getProgress(((ShowScalingStatusStatement) sqlStatement).getJobId()).entrySet().stream()
                 .map(entry -> {
                     Collection<Object> list = new LinkedList<>();
                     list.add(entry.getKey());
@@ -52,6 +55,7 @@ public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSe
                         long latestActiveTimeMillis = entry.getValue().getIncrementalLatestActiveTimeMillis();
                         list.add(latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toMinutes(currentTimeMillis - latestActiveTimeMillis) : 0);
                     } else {
+                        list.add("");
                         list.add("");
                         list.add("");
                         list.add("");
@@ -78,6 +82,6 @@ public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSe
     
     @Override
     public String getType() {
-        return ShowScalingStatusStatement.class.getCanonicalName();
+        return ShowScalingStatusStatement.class.getName();
     }
 }

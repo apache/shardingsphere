@@ -22,8 +22,8 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.url.JdbcUrlParser;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Pipeline data source configuration for standard JDBC.
@@ -45,7 +46,7 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     @Getter
     private final String parameter;
     
-    private final DataSourceConfiguration dataSourceConfig;
+    private final DataSourceProperties dataSourceProperties;
     
     @Getter
     private final HikariConfig hikariConfig;
@@ -67,7 +68,7 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
         if (!yamlConfig.containsKey(DATA_SOURCE_CLASS_NAME)) {
             yamlConfig.put(DATA_SOURCE_CLASS_NAME, HikariDataSource.class.getName());
         }
-        dataSourceConfig = new YamlDataSourceConfigurationSwapper().swapToDataSourceConfiguration(yamlConfig);
+        dataSourceProperties = new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(yamlConfig);
         yamlConfig.remove(DATA_SOURCE_CLASS_NAME);
         hikariConfig = YamlEngine.unmarshal(YamlEngine.marshal(yamlConfig), HikariConfig.class, true);
         databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(hikariConfig.getJdbcUrl());
@@ -92,12 +93,12 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     
     @Override
     public Object getDataSourceConfiguration() {
-        return dataSourceConfig;
+        return dataSourceProperties;
     }
     
     @Override
-    public void appendJDBCQueryProperties(final Map<String, String> queryProps) {
-        hikariConfig.setJdbcUrl(new JdbcUrlParser().appendQueryProperties(hikariConfig.getJdbcUrl(), queryProps));
+    public void appendJDBCQueryProperties(final Properties queryProps) {
+        hikariConfig.setJdbcUrl(new JdbcUrlAppender().appendQueryProperties(hikariConfig.getJdbcUrl(), queryProps));
     }
     
     // TODO toShardingSphereJDBCDataSource(final String actualDataSourceName, final String logicTableName, final String actualTableName)

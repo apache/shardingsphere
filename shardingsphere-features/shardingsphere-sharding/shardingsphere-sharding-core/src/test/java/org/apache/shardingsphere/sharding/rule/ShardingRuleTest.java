@@ -77,8 +77,10 @@ public final class ShardingRuleTest {
     public void assertNewShardingRuleWithMaximumConfiguration() {
         ShardingRule actual = createMaximumShardingRule();
         assertThat(actual.getTableRules().size(), is(2));
-        assertThat(actual.getBindingTableRules().size(), is(1));
-        assertThat(actual.getBindingTableRules().iterator().next().getTableRules().size(), is(2));
+        assertThat(actual.getBindingTableRules().size(), is(2));
+        assertTrue(actual.getBindingTableRules().containsKey("logic_table"));
+        assertTrue(actual.getBindingTableRules().containsKey("sub_logic_table"));
+        assertThat(actual.getBindingTableRules().values().iterator().next().getTableRules().size(), is(2));
         assertThat(actual.getBroadcastTables(), is(new TreeSet<>(Collections.singletonList("BROADCAST_TABLE"))));
         assertThat(actual.getDefaultKeyGenerateAlgorithm(), instanceOf(IncrementKeyGenerateAlgorithm.class));
         assertThat(actual.getDefaultShardingColumn(), is("table_id"));
@@ -532,6 +534,19 @@ public final class ShardingRuleTest {
         when(sqlStatementContext.getTablesContext().findTableName(Arrays.asList(buildColumnProjection(leftTableJoin), 
                 buildColumnProjection(rightTableJoin)), schema)).thenReturn(createColumnTableNameMap());
         assertTrue(createMaximumShardingRule().isAllBindingTables(schema, sqlStatementContext, Arrays.asList("logic_Table", "sub_Logic_Table")));
+    }
+    
+    @Test
+    public void assertIsAllTablesInSameDataSource() {
+        Collection<String> logicTableNames = new LinkedHashSet<>();
+        logicTableNames.add("logic_Table");
+        ShardingRuleConfiguration config = new ShardingRuleConfiguration();
+        Collection<String> dataSourceNames = new LinkedHashSet<>();
+        dataSourceNames.add("resource0");
+        ShardingTableRuleConfiguration shardingTableRuleConfiguration = new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds_${0}.table_${0..2}");
+        config.getTables().add(shardingTableRuleConfiguration);
+        ShardingRule shardingRule = new ShardingRule(config, dataSourceNames);
+        assertTrue(shardingRule.isAllTablesInSameDataSource(logicTableNames));
     }
     
     private BinaryOperationExpression createBinaryOperationExpression(final ExpressionSegment left, final ExpressionSegment right, final String operator) {

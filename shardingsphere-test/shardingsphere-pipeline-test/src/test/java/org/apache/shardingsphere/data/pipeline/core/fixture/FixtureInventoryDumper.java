@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.fixture;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractInventoryDumper;
 
@@ -27,8 +28,8 @@ import java.sql.SQLException;
 
 public final class FixtureInventoryDumper extends AbstractInventoryDumper {
     
-    public FixtureInventoryDumper(final InventoryDumperConfiguration dumperConfig, final PipelineDataSourceManager dataSourceManager) {
-        super(dumperConfig, dataSourceManager);
+    public FixtureInventoryDumper(final InventoryDumperConfiguration dumperConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
+        super(dumperConfig, dataSourceManager, channel);
     }
     
     @Override

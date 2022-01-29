@@ -35,6 +35,7 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -89,17 +90,19 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
     
     private void assertReadwriteSplittingRule(final ReadwriteSplittingRule rule) {
         assertTrue(rule.findDataSourceRule("ds_0").isPresent());
-        assertThat(rule.findDataSourceRule("ds_0").get().getWriteDataSourceName(), is("ds_0_write"));
-        assertThat(rule.findDataSourceRule("ds_0").get().getReadDataSourceNames(), is(Arrays.asList("ds_0_read_0", "ds_0_read_1")));
+        Properties props = rule.findDataSourceRule("ds_0").get().getReadwriteSplittingType().getProps();
+        assertNotNull(props);
+        assertThat(props.getProperty("read-data-source-names"), is("ds_0_read_0, ds_0_read_1"));
         assertTrue(rule.findDataSourceRule("ds_1").isPresent());
-        assertThat(rule.findDataSourceRule("ds_1").get().getWriteDataSourceName(), is("ds_1_write"));
-        assertThat(rule.findDataSourceRule("ds_1").get().getReadDataSourceNames(), is(Arrays.asList("ds_1_read_0", "ds_1_read_1")));
+        props = rule.findDataSourceRule("ds_1").get().getReadwriteSplittingType().getProps();
+        assertNotNull(props);
+        assertThat(props.getProperty("read-data-source-names"), is("ds_1_read_0, ds_1_read_1"));
     }
     
     private void assertEncryptRule(final EncryptRule rule) {
         assertThat(rule.getCipherColumn("t_order", "pwd"), is("pwd_cipher"));
-        assertTrue(rule.findEncryptor(DefaultSchema.LOGIC_NAME, "t_order", "pwd").isPresent());
-        assertThat(rule.findEncryptor(DefaultSchema.LOGIC_NAME, "t_order", "pwd").get().getProps().getProperty("aes-key-value"), is("123456"));
+        assertTrue(rule.findEncryptor("t_order", "pwd").isPresent());
+        assertThat(rule.findEncryptor("t_order", "pwd").get().getProps().getProperty("aes-key-value"), is("123456"));
     }
     
     private void assertSQLParserRule(final SQLParserRule sqlParserRule) {

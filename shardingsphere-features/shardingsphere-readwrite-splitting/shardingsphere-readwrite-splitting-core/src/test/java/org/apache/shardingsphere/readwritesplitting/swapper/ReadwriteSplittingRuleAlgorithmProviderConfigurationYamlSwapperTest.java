@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.swapper;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.readwritesplitting.algorithm.RandomReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
@@ -27,6 +27,7 @@ import org.apache.shardingsphere.readwritesplitting.yaml.swapper.ReadwriteSplitt
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -44,9 +45,11 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
         assertNotNull(actual);
         assertNotNull(actual.getDataSources());
         assertThat(actual.getDataSources().keySet(), is(Collections.singleton("name")));
-        assertThat(actual.getDataSources().get("name").getWriteDataSourceName(), is("writeDataSourceName"));
+        Properties props = actual.getDataSources().get("name").getProps();
+        assertNotNull(props);
+        assertThat(props.getProperty("write-data-source-name"), is("writeDataSourceName"));
+        assertThat(props.getProperty("read-data-source-names"), is("readDataSourceName"));
         assertThat(actual.getDataSources().get("name").getLoadBalancerName(), is("loadBalancerName"));
-        assertThat(actual.getDataSources().get("name").getReadDataSourceNames(), is(Collections.singletonList("readDataSourceName")));
         assertNotNull(actual.getLoadBalancers());
         assertThat(actual.getLoadBalancers().keySet(), is(Collections.singleton("name")));
         assertNotNull(actual.getLoadBalancers().get("name"));
@@ -62,9 +65,10 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
         ReadwriteSplittingDataSourceRuleConfiguration ruleConfig = actual.getDataSources().iterator().next();
         assertNotNull(ruleConfig);
         assertThat(ruleConfig.getName(), is("name"));
-        assertThat(ruleConfig.getWriteDataSourceName(), is("writeDataSourceName"));
+        assertNotNull(ruleConfig.getProps());
+        assertThat(ruleConfig.getProps().getProperty("write-data-source-name"), is("writeDataSourceName"));
+        assertThat(ruleConfig.getProps().getProperty("read-data-source-names"), is("readDataSourceName"));
         assertThat(ruleConfig.getLoadBalancerName(), is("loadBalancerName"));
-        assertThat(ruleConfig.getReadDataSourceNames(), is(Collections.singletonList("readDataSourceName")));
         assertThat(actual.getLoadBalanceAlgorithms(), is(Collections.emptyMap()));
     }
     
@@ -84,8 +88,10 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
     }
     
     private YamlReadwriteSplittingRuleConfiguration createYamlReadwriteSplittingRuleConfiguration() {
-        ReadwriteSplittingDataSourceRuleConfiguration ruleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("name", "", "writeDataSourceName",
-                Collections.singletonList("readDataSourceName"), "loadBalancerName");
+        Properties props = new Properties();
+        props.setProperty("write-data-source-name", "writeDataSourceName");
+        props.setProperty("read-data-source-names", "readDataSourceName");
+        ReadwriteSplittingDataSourceRuleConfiguration ruleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("name", "Static", props, "loadBalancerName");
         return swapper.swapToYamlConfiguration(
                 new AlgorithmProvidedReadwriteSplittingRuleConfiguration(Collections.singletonList(ruleConfig), ImmutableMap.of("name", new RandomReplicaLoadBalanceAlgorithm())));
     }

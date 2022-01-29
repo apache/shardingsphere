@@ -30,12 +30,16 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class PipelineColumnMetaData {
+public final class PipelineColumnMetaData implements Comparable<PipelineColumnMetaData> {
+    
+    private final int ordinalPosition;
     
     @NonNull
     private final String name;
     
     private final int dataType;
+    
+    private final String dataTypeName;
     
     private final boolean primaryKey;
     
@@ -54,5 +58,10 @@ public final class PipelineColumnMetaData {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+    
+    @Override
+    public int compareTo(final PipelineColumnMetaData o) {
+        return Integer.compare(ordinalPosition, o.ordinalPosition);
     }
 }

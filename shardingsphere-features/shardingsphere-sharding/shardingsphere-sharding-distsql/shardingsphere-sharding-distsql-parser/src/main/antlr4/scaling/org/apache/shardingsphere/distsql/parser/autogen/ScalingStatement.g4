@@ -17,7 +17,7 @@
 
 grammar ScalingStatement;
 
-import Symbol, RALStatement, RDLStatement;
+import Symbol, RALStatement, RDLStatement, RQLStatement;
 
 execute
     : (showScalingList
@@ -29,8 +29,11 @@ execute
     | checkScaling
     | showScalingCheckAlgorithms
     | stopScalingSourceWriting
-    | checkoutScaling
-    | createShardingScaling
-    | dropShardingScaling
+    | applyScaling
+    | showShardingScalingRules
+    | createShardingScalingRule
+    | dropShardingScalingRule
+    | enableShardingScalingRule
+    | disableShardingScalingRule
     ) SEMI?
     ;

@@ -61,11 +61,6 @@ public final class TrafficRule implements GlobalRule {
         config.getLoadBalancers().forEach((key, value) -> loadBalancers.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, TrafficLoadBalanceAlgorithm.class)));
     }
     
-    @Override
-    public String getType() {
-        return TrafficRule.class.getSimpleName();
-    }
-    
     /**
      * Find matched strategy rule.
      * 
@@ -135,5 +130,10 @@ public final class TrafficRule implements GlobalRule {
             result.addAll(each.getLabels());
         }
         return result;
+    }
+    
+    @Override
+    public String getType() {
+        return TrafficRule.class.getSimpleName();
     }
 }

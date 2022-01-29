@@ -389,7 +389,7 @@ public final class SelectStatementContextTest {
         assertThat(actual.getTablesContext().getTableNames(), is(Collections.emptySet()));
         assertThat(actual.getAllTables(), is(Lists.newLinkedList()));
         assertThat(actual.getGroupByContext().getItems(), is(Lists.newLinkedList()));
-        assertThat(actual.getWhere(), is(Optional.of(whereSegment)));
+        assertThat(actual.getWhereSegments(), is(Collections.singletonList(whereSegment)));
     }
     
     @Test

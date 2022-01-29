@@ -28,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class RoundRobinTrafficLoadBalanceAlgorithmTest {
     
@@ -49,5 +50,15 @@ public final class RoundRobinTrafficLoadBalanceAlgorithmTest {
         assertThat(roundRobinAlgorithm.getInstanceId("simple_traffic", instanceIds), is(instanceId1));
         assertThat(roundRobinAlgorithm.getInstanceId("simple_traffic", instanceIds), is(instanceId2));
         assertThat(roundRobinAlgorithm.getInstanceId("simple_traffic", instanceIds), is(instanceId1));
+    }
+    
+    @Test
+    public void assertGetType() {
+        assertThat(roundRobinAlgorithm.getType(), is("ROUND_ROBIN"));
+    }
+    
+    @Test
+    public void assertIsDefault() {
+        assertTrue(roundRobinAlgorithm.isDefault());
     }
 }

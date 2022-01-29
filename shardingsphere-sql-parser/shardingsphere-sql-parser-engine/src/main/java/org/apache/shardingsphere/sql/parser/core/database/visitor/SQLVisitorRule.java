@@ -30,6 +30,8 @@ public enum SQLVisitorRule {
     
     SELECT("Select", SQLStatementType.DML),
     
+    TABLE("Table", SQLStatementType.DML),
+    
     INSERT("Insert", SQLStatementType.DML),
     
     UPDATE("Update", SQLStatementType.DML),
@@ -44,7 +46,19 @@ public enum SQLVisitorRule {
     
     CREATE_TABLE("CreateTable", SQLStatementType.DDL),
     
+    RENAME_TABLE("RenameTable", SQLStatementType.DDL),
+    
     ALTER_TABLE("AlterTable", SQLStatementType.DDL),
+    
+    ALTER_AGGREGATE("AlterAggregate", SQLStatementType.DDL),
+    
+    ALTER_COLLATION("AlterCollation", SQLStatementType.DDL),
+    
+    ALTER_DEFAULT_PRIVILEGES("AlterDefaultPrivileges", SQLStatementType.DDL),
+    
+    ALTER_FOREIGN_DATA_WRAPPER("AlterForeignDataWrapper", SQLStatementType.DDL),
+    
+    ALTER_FOREIGN_TABLE("AlterForeignTable", SQLStatementType.DDL),
     
     DROP_TABLE("DropTable", SQLStatementType.DDL),
     
@@ -160,6 +174,12 @@ public enum SQLVisitorRule {
 
     RENAME("Rename", SQLStatementType.DDL),
     
+    CREATE_EXTENSION("CreateExtension", SQLStatementType.DDL),
+    
+    ALTER_EXTENSION("AlterExtension", SQLStatementType.DDL),
+    
+    DROP_EXTENSION("DropExtension", SQLStatementType.DDL),
+    
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
     
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),
@@ -189,6 +209,8 @@ public enum SQLVisitorRule {
     RELEASE_SAVEPOINT("ReleaseSavepoint", SQLStatementType.TCL),
     
     ROLLBACK_TO_SAVEPOINT("RollbackToSavepoint", SQLStatementType.TCL),
+    
+    UNLOCK("Unlock", SQLStatementType.TCL),
     
     GRANT("Grant", SQLStatementType.DCL),
     
@@ -383,6 +405,8 @@ public enum SQLVisitorRule {
     CREATE_TYPE("CreateType", SQLStatementType.DDL),
     
     DROP_CONVERSION("DropConversion", SQLStatementType.DDL),
+    
+    ALTER_DOMAIN("AlterDomain", SQLStatementType.DDL),
     
     ALTER_CONVERSION("AlterConversion", SQLStatementType.DDL),
     

@@ -56,10 +56,11 @@ public final class ProxyInfoCollector extends Collector {
             return result;
         }
         Optional<GaugeMetricFamily> proxyInfo = FACTORY.createGaugeMetricFamily(MetricIds.PROXY_INFO);
-        StateType currentState = ProxyContext.getInstance().getStateContext().getCurrentState();
-        proxyInfo.ifPresent(m -> 
-                m.addMetric(Collections.singletonList(PROXY_STATE), PROXY_STATE_MAP.get(currentState)));
-        proxyInfo.ifPresent(result::add);
+        ProxyContext.getInstance().getStateContext().ifPresent(optional -> {
+            proxyInfo.ifPresent(m ->
+                    m.addMetric(Collections.singletonList(PROXY_STATE), PROXY_STATE_MAP.get(optional.getCurrentState())));
+            proxyInfo.ifPresent(result::add);
+        });
         return result;
     }
 }

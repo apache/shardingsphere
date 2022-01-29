@@ -59,12 +59,24 @@ CHECK
     : C H E C K
     ;
 
-CHECKOUT
-    : C H E C K O U T
+APPLY
+    : A P P L Y
     ;
 
 SCALING
     : S C A L I N G
+    ;
+
+RULE
+    :  R U L E
+    ;
+
+RULES
+    :  R U L E S
+    ;
+
+FROM
+    : F R O M
     ;
 
 JOB
@@ -101,4 +113,44 @@ NAME
 
 PROPERTIES
     : P R O P E R T I E S
+    ;
+
+COMPLETION_DETECTOR
+    : C O M P L E T I O N UL_ D E T E C T O R
+    ;
+
+DATA_CONSISTENCY_CHECKER
+    : D A T A UL_ C O N S I S T E N C Y UL_ C H E C K E R
+    ;
+
+INPUT
+    : I N P U T
+    ;
+
+OUTPUT
+    : O U T P U T
+    ;
+
+WORKER_THREAD
+    : W O R K E R UL_ T H R E A D
+    ;
+
+BATCH_SIZE
+    : B A T C H UL_ S I Z E
+    ;
+
+RATE_LIMITER
+    : R A T E UL_ L I M I T E R
+    ;
+
+STREAM_CHANNEL
+    : S T R E A M UL_ C H A N N E L
+    ;
+
+ENABLE
+    : E N A B L E
+    ;
+
+DISABLE
+    : D I S A B L E
     ;

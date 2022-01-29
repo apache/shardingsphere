@@ -29,6 +29,9 @@ import java.util.Set;
  */
 public final class MySQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
+    public MySQLPipelineSQLBuilder() {
+    }
+    
     public MySQLPipelineSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
         super(shardingColumnsMap);
     }
@@ -76,5 +79,10 @@ public final class MySQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
      */
     public String buildSumCrc32SQL(final String tableName, final String column) {
         return String.format("SELECT SUM(CRC32(%s)) AS checksum FROM %s", quote(column), quote(tableName));
+    }
+    
+    @Override
+    public String getType() {
+        return "MySQL";
     }
 }

@@ -50,7 +50,10 @@ chapter = true
 | Lu Qiu          | Lucas-307               |
 | Hongsheng Zhong | sandynz                 |
 | Longtao Jiang   | RaigorJiang             |
-| Thanoshan MV | ThanoshanMV |
+| Thanoshan MV    | ThanoshanMV             |
+| Chengxiang Lan  | lanchengx               |
+| Xiao Yang       | yx9o                    |
+| Guocheng Tang   | totalo                  |
 
 ## Contributors
 
@@ -65,4 +68,3 @@ The ShardingSphere community follows the [Apache Community’s process](http://c
 Contributors that actively participate in ShardingSphere's community will be invited by the project's (P)PMC and Committers to join them by becoming a committer.
 
 You can read the [Contributor Guide](/en/contribute/contributor/) for more information on how you can contribute to the community, as well as the [Committer Guide](/en/contribute/committer/) for more details on how to become a committer.
- 

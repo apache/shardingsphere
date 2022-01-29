@@ -69,6 +69,6 @@ public final class SingleTableQueryResultSet implements DistSQLResultSet {
     
     @Override
     public String getType() {
-        return ShowSingleTableStatement.class.getCanonicalName();
+        return ShowSingleTableStatement.class.getName();
     }
 }

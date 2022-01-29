@@ -42,7 +42,9 @@ mode:
   overwrite: false
 ```
 
-4. 修改配置文件 `conf/config-sharding.yaml` 的 `scalingName` 和 `scaling` 部分。
+4. 开启 scaling
+
+方法1：修改配置文件 `conf/config-sharding.yaml` 的 `scalingName` 和 `scaling` 部分。
 
 配置项说明：
 ```yaml
@@ -53,26 +55,29 @@ rules:
   scalingName: # 启用的弹性伸缩配置名称
   scaling:
     <scaling-action-config-name> (+):
-      blockQueueSize: # 数据通道阻塞队列大小
-      input:
-        workerThread: # 从源端摄取全量数据的线程池大小
-        batchSize: # 一次查询操作返回的最大记录数
-        rateLimiter: # 限流算法
+      input: # 数据读取配置。如果不配置则部分参数默认生效。
+        workerThread: # 从源端摄取全量数据的线程池大小。如果不配置则使用默认值。
+        batchSize: # 一次查询操作返回的最大记录数。如果不配置则使用默认值。
+        rateLimiter: # 限流算法。如果不配置则不限流。
           type: # 算法类型。可选项：QPS
           props: # 算法属性
             qps: # qps属性。适用算法类型：QPS
-      output:
-        workerThread: # 数据导入到目标端的线程池大小
-        batchSize: # 一次批量写入操作的最大记录数
-        rateLimiter: # 限流算法
+      output: # 数据写入配置。如果不配置则部分参数默认生效。
+        workerThread: # 数据写入到目标端的线程池大小。如果不配置则使用默认值。
+        batchSize: # 一次批量写入操作的最大记录数。如果不配置则使用默认值。
+        rateLimiter: # 限流算法。如果不配置则不限流。
           type: # 算法类型。可选项：TPS
           props: # 算法属性
             tps: # tps属性。适用算法类型：TPS
-      completionDetector: # 作业是否接近完成检测算法。如果不配置，那么系统无法自动进行后续步骤，可以通过 DistSQL 手动操作。
+      streamChannel: # 数据通道，连接生产者和消费者，用于 input 和 output 环节。如果不配置则默认使用 MEMORY 类型
+        type: # 算法类型。可选项：MEMORY
+        props: # 算法属性
+          block-queue-size: # 属性：阻塞队列大小
+      completionDetector: # 作业是否接近完成检测算法。如果不配置则无法自动进行后续步骤，可以通过 DistSQL 手动操作。
         type: # 算法类型。可选项：IDLE
         props: # 算法属性
           incremental-task-idle-minute-threshold: # 如果增量同步任务不再活动超过一定时间，那么可以认为增量同步任务接近完成。适用算法类型：IDLE
-      dataConsistencyChecker: # 数据一致性校验算法。如果不配置，那么系统会跳过这个步骤。
+      dataConsistencyChecker: # 数据一致性校验算法。如果不配置则跳过这个步骤。
         type: # 算法类型。可选项：DATA_MATCH, CRC32_MATCH
         props: # 算法属性
           chunk-size: # 一次查询操作返回的最大记录数
@@ -87,7 +92,6 @@ rules:
   scalingName: default_scaling
   scaling:
     default_scaling:
-      blockQueueSize: 10000
       input:
         workerThread: 40
         batchSize: 1000
@@ -102,6 +106,10 @@ rules:
           type: TPS
           props:
             tps: 2000
+      streamChannel:
+        type: MEMORY
+        props:
+          block-queue-size: 10000
       completionDetector:
         type: IDLE
         props:
@@ -112,7 +120,30 @@ rules:
           chunk-size: 1000
 ```
 
-以上的 `rateLimiter`，`completionDetector`，`sourceWritingStopper`，`dataConsistencyChecker` 和 `checkoutLocker` 都可以通过实现SPI自定义。可以参考现有实现，详情请参见[开发者手册#弹性伸缩](/cn/dev-manual/scaling/)。
+以上的 `completionDetector`，`dataConsistencyChecker` 都可以通过实现 SPI 自定义。可以参考现有实现，详情请参见[开发者手册#弹性伸缩](/cn/dev-manual/scaling/)。
+
+方法2：通过 DistSQL 配置 scaling
+
+创建 scaling 配置示例：
+```sql
+CREATE SHARDING SCALING RULE default_scaling (
+INPUT(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000,
+  RATE_LIMITER(TYPE(NAME=QPS, PROPERTIES("qps"=50)))
+),
+OUTPUT(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000,
+  RATE_LIMITER(TYPE(NAME=TPS, PROPERTIES("tps"=2000)))
+),
+STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
+COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-minute-threshold"=3))),
+DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
+);
+```
+
+详情请参见[RDL#数据分片](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/)。
 
 5. 启动 ShardingSphere-Proxy：
 

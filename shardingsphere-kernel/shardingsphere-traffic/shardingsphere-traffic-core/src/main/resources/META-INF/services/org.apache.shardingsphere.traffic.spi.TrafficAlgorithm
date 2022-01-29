@@ -16,3 +16,5 @@
 #
 
 org.apache.shardingsphere.traffic.algorithm.traffic.hint.SQLHintTrafficAlgorithm
+org.apache.shardingsphere.traffic.algorithm.traffic.segment.SQLMatchTrafficAlgorithm
+org.apache.shardingsphere.traffic.algorithm.traffic.segment.SQLRegexTrafficAlgorithm

@@ -38,20 +38,22 @@ public final class OnRuleAlteredActionConfigurationYamlSwapperTest {
     @Test
     public void assertSwap() {
         YamlOnRuleAlteredActionConfiguration yamlConfig = new YamlOnRuleAlteredActionConfiguration();
-        yamlConfig.setBlockQueueSize(1000);
         Properties rateLimiterProps = new Properties();
         rateLimiterProps.setProperty("batch-size", "1000");
         rateLimiterProps.setProperty("qps", "50");
         YamlInputConfiguration yamlInputConfig = new YamlInputConfiguration();
+        yamlConfig.setInput(yamlInputConfig);
         yamlInputConfig.setWorkerThread(40);
         yamlInputConfig.setBatchSize(1000);
         yamlInputConfig.setRateLimiter(new YamlShardingSphereAlgorithmConfiguration("INPUT", rateLimiterProps));
-        yamlConfig.setInput(yamlInputConfig);
         YamlOutputConfiguration yamlOutputConfig = new YamlOutputConfiguration();
         yamlOutputConfig.setWorkerThread(40);
         yamlOutputConfig.setBatchSize(1000);
         yamlOutputConfig.setRateLimiter(new YamlShardingSphereAlgorithmConfiguration("OUTPUT", rateLimiterProps));
         yamlConfig.setOutput(yamlOutputConfig);
+        Properties streamChannelProps = new Properties();
+        streamChannelProps.setProperty("block-queue-size", "10000");
+        yamlConfig.setStreamChannel(new YamlShardingSphereAlgorithmConfiguration("MEMORY", streamChannelProps));
         Properties completionDetectorProps = new Properties();
         completionDetectorProps.setProperty("incremental-task-idle-minute-threshold", "30");
         yamlConfig.setCompletionDetector(new YamlShardingSphereAlgorithmConfiguration("IDLE", completionDetectorProps));

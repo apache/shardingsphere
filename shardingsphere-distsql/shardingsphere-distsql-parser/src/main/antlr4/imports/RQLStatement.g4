@@ -26,18 +26,15 @@ showResources
 showSingleTableRules
     : SHOW SINGLE TABLE RULES (FROM schemaName)?
     ;
-    
+
 showSingleTable
-    : SHOW SINGLE (table | TABLES)  (FROM schemaName)?;
-    
-showAuthorityRule
-    : SHOW AUTHORITY RULE
+    : SHOW SINGLE (table | TABLES)  (FROM schemaName)?
     ;
-    
-showTransactionRule
-    : SHOW TRANSACTION RULE
+
+countSchemaRules
+    : COUNT SCHEMA RULES (FROM schemaName)?
     ;
-    
+
 schemaName
     : IDENTIFIER
     ;
@@ -45,7 +42,7 @@ schemaName
 table
     : TABLE tableName
     ;
-    
+
 tableName
     : IDENTIFIER
     ;

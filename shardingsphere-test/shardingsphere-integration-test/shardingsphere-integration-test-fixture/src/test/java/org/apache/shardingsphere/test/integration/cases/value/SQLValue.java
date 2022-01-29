@@ -19,7 +19,10 @@ package org.apache.shardingsphere.test.integration.cases.value;
 
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -40,11 +43,15 @@ public final class SQLValue {
     }
     
     private Object getValue(final String value, final String type) throws ParseException {
+        if (type.startsWith("enum#")) {
+            return value;
+        }
         switch (type) {
             case "String":
             case "varchar":
             case "char":
                 return value;
+            case "smallint":
             case "int":
                 return Integer.parseInt(value);
             case "long":
@@ -53,9 +60,17 @@ public final class SQLValue {
                 return Double.parseDouble(value);
             case "numeric":
                 return value.contains("//.") ? Double.parseDouble(value) : Long.parseLong(value);
+            case "decimal":
+                return new BigDecimal(value);
+            case "boolean":
+                return Boolean.parseBoolean(value);
             case "Date":
             case "datetime":
                 return new Date(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(value).getTime());
+            case "time":
+                return new Time(new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).parse(value).getTime());
+            case "timestamp":
+                return new Timestamp(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(value).getTime());
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support type: `%s`", type));
         }
@@ -64,11 +79,21 @@ public final class SQLValue {
     @Override
     public String toString() {
         if (value instanceof String) {
-            return "'" + value + "'";
+            return formatString((String) value);
         }
         if (value instanceof Date) {
-            return new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(value);
+            return formatString(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(value));
+        }
+        if (value instanceof Time) {
+            return formatString(new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(value));
+        }
+        if (value instanceof Timestamp) {
+            return formatString(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(value));
         }
         return value.toString();
+    }
+    
+    private String formatString(final String value) {
+        return "'" + value + "'";
     }
 }

@@ -26,10 +26,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 
-import java.util.Collection;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -42,10 +40,6 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 // TODO share for totally new scenario
 public final class JobConfiguration {
-    
-    static {
-        ShardingSphereServiceLoader.register(RuleAlteredJobConfigurationPreparer.class);
-    }
     
     private WorkflowConfiguration workflowConfig;
     
@@ -65,7 +59,6 @@ public final class JobConfiguration {
         PipelineConfiguration pipelineConfig = getPipelineConfig();
         HandleConfiguration handleConfig = getHandleConfig();
         if (null == handleConfig || null == handleConfig.getJobShardingDataNodes()) {
-            // TODO singleton
             RuleAlteredJobConfigurationPreparer preparer = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobConfigurationPreparer.class);
             handleConfig = preparer.createHandleConfiguration(pipelineConfig);
             this.handleConfig = handleConfig;
@@ -87,15 +80,5 @@ public final class JobConfiguration {
         if (null == handleConfig.getJobShardingItem()) {
             handleConfig.setJobShardingItem(0);
         }
-    }
-    
-    /**
-     * Split job configuration to task configurations.
-     *
-     * @return task configurations
-     */
-    public Collection<TaskConfiguration> buildTaskConfigs() {
-        RuleAlteredJobConfigurationPreparer preparer = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobConfigurationPreparer.class);
-        return preparer.createTaskConfigurations(pipelineConfig, handleConfig);
     }
 }

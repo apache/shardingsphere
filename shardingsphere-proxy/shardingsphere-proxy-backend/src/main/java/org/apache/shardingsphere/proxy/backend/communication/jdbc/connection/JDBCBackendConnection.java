@@ -35,8 +35,8 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JD
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.proxy.backend.util.TransactionUtil;
+import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.Connection;
@@ -51,8 +51,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * JDBC backend connection.
@@ -60,10 +58,6 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 public final class JDBCBackendConnection implements BackendConnection<Void>, ExecutorJDBCManager {
-    
-    static {
-        ShardingSphereServiceLoader.register(StatementMemoryStrictlyFetchSizeSetter.class);
-    }
     
     private final ConnectionSession connectionSession;
     
@@ -85,17 +79,11 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     
     public JDBCBackendConnection(final ConnectionSession connectionSession) {
         this.connectionSession = connectionSession;
-        fetchSizeSetters = ShardingSphereServiceLoader.getSingletonServiceInstances(StatementMemoryStrictlyFetchSizeSetter.class).stream()
-                .collect(Collectors.toMap(TypedSPI::getType, Function.identity()));
+        fetchSizeSetters = SingletonSPIRegistry.getTypedSingletonInstancesMap(StatementMemoryStrictlyFetchSizeSetter.class);
     }
     
     @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return connectionSession.getTransactionStatus().isInTransaction()
-                ? getConnectionsWithTransaction(dataSourceName, connectionSize, connectionMode) : getConnectionsWithoutTransaction(dataSourceName, connectionSize, connectionMode);
-    }
-    
-    private List<Connection> getConnectionsWithTransaction(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         Collection<Connection> connections;
         synchronized (cachedConnections) {
             connections = cachedConnections.get(dataSourceName);
@@ -124,16 +112,12 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
         Preconditions.checkNotNull(connectionSession.getSchemaName(), "Current schema is null.");
         List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(connectionSession.getSchemaName(), dataSourceName, connectionSize, connectionMode);
         for (Connection each : result) {
-            replayMethodsInvocation(each);
+            replayTransactionOption(each);
         }
-        return result;
-    }
-    
-    private List<Connection> getConnectionsWithoutTransaction(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(connectionSession.getSchemaName(), "Current schema is null.");
-        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(connectionSession.getSchemaName(), dataSourceName, connectionSize, connectionMode);
-        synchronized (cachedConnections) {
-            cachedConnections.putAll(dataSourceName, result);
+        if (connectionSession.getTransactionStatus().isInTransaction()) {
+            for (Connection each : result) {
+                replayMethodsInvocation(each);
+            }
         }
         return result;
     }
@@ -141,6 +125,18 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     private void replayMethodsInvocation(final Connection target) {
         for (ConnectionPostProcessor<Connection> each : connectionPostProcessors) {
             each.process(target);
+        }
+    }
+
+    private void replayTransactionOption(final Connection connection) throws SQLException {
+        if (null == connection) {
+            return;
+        }
+        if (connectionSession.isReadOnly()) {
+            connection.setReadOnly(true);
+        }
+        if (null != connectionSession.getIsolationLevel()) {
+            connection.setTransactionIsolation(TransactionUtil.getTransactionIsolationLevel(connectionSession.getIsolationLevel()));
         }
     }
     
@@ -304,6 +300,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
                 if (forceRollback && connectionSession.getTransactionStatus().isInTransaction()) {
                     each.rollback();
                 }
+                resetConnection(each);
                 each.close();
             } catch (final SQLException ex) {
                 result.add(ex);
@@ -313,7 +310,19 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
         connectionPostProcessors.clear();
         return result;
     }
-    
+
+    private void resetConnection(final Connection connection) throws SQLException {
+        if (null == connection) {
+            return;
+        }
+        if (connectionSession.isReadOnly()) {
+            connection.setReadOnly(false);
+        }
+        if (null != connectionSession.getDefaultIsolationLevel()) {
+            connection.setTransactionIsolation(TransactionUtil.getTransactionIsolationLevel(connectionSession.getIsolationLevel()));
+        }
+    }
+
     /**
      * Close federation executor.
      * 

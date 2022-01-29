@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.instance.InstanceId;
+import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ComputeNodeStatusChangedEvent;
@@ -52,10 +52,10 @@ public final class ComputeNodeStatusSubscriber {
         String computeStatusNodePath = ComputeNode.getInstanceStatusNodePath(new InstanceId(event.getIp(), Integer.valueOf(event.getPort())).getId());
         String yamlContext = repository.get(computeStatusNodePath);
         Collection<String> status = Strings.isNullOrEmpty(yamlContext) ? new ArrayList<>() : YamlEngine.unmarshal(yamlContext, Collection.class);
-        if (event.getStatus() == ComputeNodeStatus.CIRCUIT_BREAKER) {
-            status.add(ComputeNodeStatus.CIRCUIT_BREAKER.name());
+        if (event.getStatus() == ComputeNodeStatus.CIRCUIT_BREAK) {
+            status.add(ComputeNodeStatus.CIRCUIT_BREAK.name());
         } else {
-            status.remove(ComputeNodeStatus.CIRCUIT_BREAKER.name());
+            status.remove(ComputeNodeStatus.CIRCUIT_BREAK.name());
         }
         repository.persist(computeStatusNodePath, YamlEngine.marshal(status));
     }

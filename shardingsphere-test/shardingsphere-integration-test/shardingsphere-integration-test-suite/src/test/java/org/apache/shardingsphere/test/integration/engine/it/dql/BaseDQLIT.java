@@ -64,7 +64,11 @@ public abstract class BaseDQLIT extends SingleITCase {
     
     protected final void assertResultSet(final ResultSet resultSet) throws SQLException {
         assertMetaData(resultSet.getMetaData(), getExpectedColumns());
-        assertRows(resultSet, getDataSet().getRows());
+        if (getDataSet().isIgnoreRowOrder()) {
+            assertRowsIgnoreOrder(resultSet, getDataSet().getRows());
+        } else {
+            assertRows(resultSet, getDataSet().getRows());
+        }
     }
     
     private Collection<DataSetColumn> getExpectedColumns() {
@@ -76,10 +80,6 @@ public abstract class BaseDQLIT extends SingleITCase {
     }
     
     private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {
-        // TODO Fix shadow
-        if ("shadow".equals(getScenario())) {
-            return;
-        }
         assertThat(actual.getColumnCount(), is(expected.size()));
         int index = 1;
         for (DataSetColumn each : expected) {
@@ -96,6 +96,50 @@ public abstract class BaseDQLIT extends SingleITCase {
             rowCount++;
         }
         assertThat("Size of actual result set is different with size of expected dat set rows.", rowCount, is(expected.size()));
+    }
+    
+    private void assertRowsIgnoreOrder(final ResultSet actual, final List<DataSetRow> expected) throws SQLException {
+        int rowCount = 0;
+        ResultSetMetaData actualMetaData = actual.getMetaData();
+        while (actual.next()) {
+            assertTrue("Size of actual result set is different with size of expected dat set rows.", rowCount < expected.size());
+            assertTrue(String.format("Actual result set does not exist in expected, row count [%d].", rowCount), assertContains(actual, actualMetaData, expected));
+            rowCount++;
+        }
+        assertThat("Size of actual result set is different with size of expected dat set rows.", rowCount, is(expected.size()));
+    }
+    
+    private boolean assertContains(final ResultSet actual, final ResultSetMetaData actualMetaData, final List<DataSetRow> expected) throws SQLException {
+        for (DataSetRow each : expected) {
+            if (isSameRow(actual, actualMetaData, each)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isSameRow(final ResultSet actual, final ResultSetMetaData actualMetaData, final DataSetRow expected) throws SQLException {
+        int columnIndex = 1;
+        for (String each : expected.splitValues(",")) {
+            if (!isSameDateValue(actual, columnIndex, actualMetaData.getColumnLabel(columnIndex), each)) {
+                return false;
+            }
+            columnIndex++;
+        }
+        return true;
+    }
+    
+    private boolean isSameDateValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {
+        if (Types.DATE == actual.getMetaData().getColumnType(columnIndex)) {
+            assertDateValue(actual, columnIndex, columnLabel, expected);
+            if (NOT_VERIFY_FLAG.equals(expected)) {
+                return true;
+            }
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            return expected.equals(dateFormat.format(actual.getDate(columnIndex))) && expected.equals(dateFormat.format(actual.getDate(columnLabel)));
+        } else {
+            return expected.equals(String.valueOf(actual.getObject(columnIndex))) && expected.equals(String.valueOf(actual.getObject(columnLabel)));
+        }
     }
     
     private void assertRow(final ResultSet actual, final ResultSetMetaData actualMetaData, final DataSetRow expected) throws SQLException {

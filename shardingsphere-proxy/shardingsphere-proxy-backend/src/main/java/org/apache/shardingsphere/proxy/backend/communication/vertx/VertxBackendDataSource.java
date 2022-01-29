@@ -20,9 +20,11 @@ package org.apache.shardingsphere.proxy.backend.communication.vertx;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.zaxxer.hikari.HikariDataSource;
+import io.netty.util.NettyRuntime;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.impl.cpu.CpuCoreSensor;
 import io.vertx.mysqlclient.MySQLConnectOptions;
 import io.vertx.mysqlclient.MySQLPool;
 import io.vertx.sqlclient.Pool;
@@ -55,7 +57,11 @@ public final class VertxBackendDataSource implements BackendDataSource {
     private final Vertx vertx;
     
     private VertxBackendDataSource() {
-        vertx = Vertx.vertx(new VertxOptions().setPreferNativeTransport(true).setEventLoopPoolSize(Runtime.getRuntime().availableProcessors()));
+        vertx = Vertx.vertx(new VertxOptions().setPreferNativeTransport(true).setEventLoopPoolSize(determineEventLoopPoolSize()));
+    }
+    
+    private int determineEventLoopPoolSize() {
+        return Math.min(CpuCoreSensor.availableProcessors(), NettyRuntime.availableProcessors());
     }
     
     /**

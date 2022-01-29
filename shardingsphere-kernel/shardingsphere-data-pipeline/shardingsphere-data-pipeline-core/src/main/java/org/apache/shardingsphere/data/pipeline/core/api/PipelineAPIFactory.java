@@ -17,34 +17,28 @@
 
 package org.apache.shardingsphere.data.pipeline.core.api;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.GovernanceRepositoryAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
+import org.apache.shardingsphere.data.pipeline.core.registry.CoordinatorRegistryCenterInitializer;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobAPIFactory;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobOperateAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobStatisticsAPI;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
-import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
-import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
-import java.util.Properties;
-
 /**
  * Pipeline API factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-// TODO separate methods
 public final class PipelineAPIFactory {
     
     /**
@@ -92,12 +86,6 @@ public final class PipelineAPIFactory {
         return RegistryCenterHolder.getInstance();
     }
     
-    private static void checkServerConfig() {
-        ModeConfiguration modeConfig = RuleAlteredContext.getModeConfig();
-        Preconditions.checkNotNull(modeConfig, "Mode configuration is required.");
-        Preconditions.checkArgument("Cluster".equals(modeConfig.getType()), "Mode must be `Cluster`.");
-    }
-    
     private static final class GovernanceRepositoryAPIHolder {
         
         private static volatile GovernanceRepositoryAPI instance;
@@ -118,8 +106,7 @@ public final class PipelineAPIFactory {
         }
         
         private static GovernanceRepositoryAPI createGovernanceRepositoryAPI() {
-            checkServerConfig();
-            ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) RuleAlteredContext.getModeConfig().getRepository();
+            ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) PipelineContext.getModeConfig().getRepository();
             ClusterPersistRepository repository = TypedSPIRegistry.getRegisteredService(ClusterPersistRepository.class, repositoryConfig.getType(), repositoryConfig.getProps());
             repository.init(repositoryConfig);
             return new GovernanceRepositoryAPIImpl(repository);
@@ -138,8 +125,7 @@ public final class PipelineAPIFactory {
         private final JobOperateAPI jobOperateAPI;
         
         private ElasticJobAPIHolder() {
-            checkServerConfig();
-            ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) RuleAlteredContext.getModeConfig().getRepository();
+            ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) PipelineContext.getModeConfig().getRepository();
             String namespace = repositoryConfig.getNamespace() + DataPipelineConstants.DATA_PIPELINE_ROOT;
             jobStatisticsAPI = JobAPIFactory.createJobStatisticsAPI(repositoryConfig.getServerLists(), namespace, null);
             jobConfigurationAPI = JobAPIFactory.createJobConfigurationAPI(repositoryConfig.getServerLists(), namespace, null);
@@ -174,25 +160,9 @@ public final class PipelineAPIFactory {
         }
         
         private static CoordinatorRegistryCenter createRegistryCenter() {
-            CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(getZookeeperConfig());
-            result.init();
-            return result;
-        }
-        
-        private static ZookeeperConfiguration getZookeeperConfig() {
-            checkServerConfig();
-            ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) RuleAlteredContext.getModeConfig().getRepository();
-            ZookeeperConfiguration result = new ZookeeperConfiguration(repositoryConfig.getServerLists(), repositoryConfig.getNamespace() + DataPipelineConstants.DATA_PIPELINE_ROOT);
-            Properties props = repositoryConfig.getProps();
-            result.setMaxSleepTimeMilliseconds(getProperty(props, "max.sleep.time.milliseconds", result.getMaxSleepTimeMilliseconds()));
-            result.setBaseSleepTimeMilliseconds(getProperty(props, "base.sleep.time.milliseconds", result.getBaseSleepTimeMilliseconds()));
-            result.setConnectionTimeoutMilliseconds(getProperty(props, "connection.timeout.milliseconds", result.getConnectionTimeoutMilliseconds()));
-            result.setSessionTimeoutMilliseconds(getProperty(props, "session.timeout.milliseconds", result.getSessionTimeoutMilliseconds()));
-            return result;
-        }
-        
-        private static int getProperty(final Properties props, final String key, final int defaultValue) {
-            return Strings.isNullOrEmpty(props.getProperty(key)) ? defaultValue : Integer.parseInt(props.getProperty(key));
+            CoordinatorRegistryCenterInitializer registryCenterInitializer = new CoordinatorRegistryCenterInitializer();
+            ModeConfiguration modeConfig = PipelineContext.getModeConfig();
+            return registryCenterInitializer.createRegistryCenter(modeConfig, DataPipelineConstants.DATA_PIPELINE_ROOT);
         }
     }
 }

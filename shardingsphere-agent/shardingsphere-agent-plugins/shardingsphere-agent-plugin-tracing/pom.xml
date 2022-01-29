@@ -74,7 +74,7 @@
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
                 <configuration>
-                    <outputFile>${tracing.target.directory}/${project.build.finalName}</outputFile>
+                    <outputFile>${tracing.target.directory}/${project.build.finalName}.jar</outputFile>
                 </configuration>
             </plugin>
         </plugins>

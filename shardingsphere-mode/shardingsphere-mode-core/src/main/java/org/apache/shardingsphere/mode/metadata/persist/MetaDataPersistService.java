@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.mode.metadata.persist;
 
 import lombok.Getter;
-import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.InstanceType;
+import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.mode.metadata.persist.service.ComputeNodePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
@@ -31,13 +30,12 @@ import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPe
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
-import java.util.ArrayList;
+import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * Meta data persist service.
@@ -72,21 +70,28 @@ public final class MetaDataPersistService {
     /**
      * Persist configurations.
      *
-     * @param dataSourceConfigs schema and data source configuration map
-     * @param schemaRuleConfigs schema and rule configuration map
+     * @param schemaConfigs schema configurations
      * @param globalRuleConfigs global rule configurations
      * @param props properties
      * @param isOverwrite whether overwrite registry center's configuration if existed
      */
-    public void persistConfigurations(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigs, final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, 
+    public void persistConfigurations(final Map<String, ? extends SchemaConfiguration> schemaConfigs,
                                       final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
         globalRuleService.persist(globalRuleConfigs, isOverwrite);
         propsService.persist(props, isOverwrite);
-        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigs.entrySet()) {
+        for (Entry<String, ? extends SchemaConfiguration> entry : schemaConfigs.entrySet()) {
             String schemaName = entry.getKey();
-            dataSourceService.persist(schemaName, dataSourceConfigs.get(schemaName), isOverwrite);
-            schemaRuleService.persist(schemaName, schemaRuleConfigs.get(schemaName), isOverwrite);
+            dataSourceService.persist(schemaName, getDataSourcePropertiesMap(entry.getValue().getDataSources()), isOverwrite);
+            schemaRuleService.persist(schemaName, entry.getValue().getRuleConfigurations(), isOverwrite);
         }
+    }
+    
+    private Map<String, DataSourceProperties> getDataSourcePropertiesMap(final Map<String, DataSource> dataSourceMap) {
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(dataSourceMap.size(), 1);
+        for (Entry<String, DataSource> each : dataSourceMap.entrySet()) {
+            result.put(each.getKey(), DataSourcePropertiesCreator.create(each.getValue()));
+        }
+        return result;
     }
     
     /**
@@ -94,36 +99,9 @@ public final class MetaDataPersistService {
      * 
      * @param instanceId instance id
      * @param labels collection of label
+     * @param isOverwrite whether overwrite registry center's configuration if existed               
      */
-    public void persistInstanceConfigurations(final String instanceId, final Collection<String> labels) {
-        computeNodePersistService.persistInstanceLabels(instanceId, labels);
-    }
-    
-    /**
-     * Load compute node instances by instance type and labels.
-     * 
-     * @param instanceType instance type
-     * @param labels collection of label
-     * @return collection of compute node instance
-     */
-    public Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType instanceType, final Collection<String> labels) {
-        Collection<ComputeNodeInstance> computeNodeInstances = computeNodePersistService.loadAllComputeNodeInstances(instanceType);
-        Collection<ComputeNodeInstance> result = new ArrayList<>(computeNodeInstances.size());
-        result.addAll(computeNodeInstances.stream().filter(each -> each.getLabels().stream().anyMatch(labels::contains)).collect(Collectors.toList()));
-        if (!result.isEmpty()) {
-            Optional<AuthorityRuleConfiguration> authorityRuleConfig = globalRuleService.load().stream().filter(each -> each instanceof AuthorityRuleConfiguration)
-                    .map(each -> (AuthorityRuleConfiguration) each).findFirst();
-            authorityRuleConfig.ifPresent(optional -> result.forEach(each -> each.setUsers(optional.getUsers())));
-        }
-        return result;
-    }
-    
-    /**
-     * Load all compute node instances.
-     *
-     * @return collection of compute node instance
-     */
-    public Collection<ComputeNodeInstance> loadComputeNodeInstances() {
-        return computeNodePersistService.loadAllComputeNodeInstances();
+    public void persistInstanceConfigurations(final String instanceId, final Collection<String> labels, final boolean isOverwrite) {
+        computeNodePersistService.persistInstanceLabels(instanceId, labels, isOverwrite);
     }
 }

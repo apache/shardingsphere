@@ -19,14 +19,18 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+
+import java.util.Optional;
 
 /**
  * Owner segment.
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 public final class OwnerSegment implements SQLSegment {
     
     private final int startIndex;
@@ -34,4 +38,15 @@ public final class OwnerSegment implements SQLSegment {
     private final int stopIndex;
     
     private final IdentifierValue identifier;
+    
+    private OwnerSegment owner;
+    
+    /**
+     * Get owner.
+     *
+     * @return owner segment
+     */
+    public Optional<OwnerSegment> getOwner() {
+        return Optional.ofNullable(owner);
+    }
 }

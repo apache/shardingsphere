@@ -63,4 +63,9 @@ public final class MySQLPositionInitializer implements PositionInitializer {
             return resultSet.getLong(2);
         }
     }
+    
+    @Override
+    public String getType() {
+        return "MySQL";
+    }
 }

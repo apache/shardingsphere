@@ -26,7 +26,7 @@ import java.util.Map;
 public final class TestDatabaseDiscoveryType implements DatabaseDiscoveryType {
     
     @Override
-    public void checkDatabaseDiscoveryConfiguration(final String schemaName, final DataSource dataSource) {
+    public void checkDatabaseDiscoveryConfiguration(final String schemaName, final Map<String, DataSource> dataSourceMap) {
     }
     
     @Override

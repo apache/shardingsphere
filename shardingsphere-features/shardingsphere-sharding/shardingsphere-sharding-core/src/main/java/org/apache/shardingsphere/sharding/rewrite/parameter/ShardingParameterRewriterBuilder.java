@@ -18,16 +18,17 @@
 package org.apache.shardingsphere.sharding.rewrite.parameter;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
-import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingGeneratedKeyInsertValueParameterRewriter;
-import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingPaginationParameterRewriter;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriterBuilder;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingGeneratedKeyInsertValueParameterRewriter;
+import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingPaginationParameterRewriter;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -42,31 +43,32 @@ public final class ShardingParameterRewriterBuilder implements ParameterRewriter
     
     private final RouteContext routeContext;
     
+    private final ShardingSphereSchema schema;
+    
+    private final SQLStatementContext<?> sqlStatementContext;
+    
+    @SuppressWarnings("rawtypes")
     @Override
-    public Collection<ParameterRewriter> getParameterRewriters(final ShardingSphereSchema schema) {
-        Collection<ParameterRewriter> result = getParameterRewriters();
-        for (ParameterRewriter each : result) {
-            setUpParameterRewriters(each, schema);
-        }
-        return result;
-    }
-    
-    private static Collection<ParameterRewriter> getParameterRewriters() {
+    public Collection<ParameterRewriter> getParameterRewriters() {
         Collection<ParameterRewriter> result = new LinkedList<>();
-        result.add(new ShardingGeneratedKeyInsertValueParameterRewriter());
-        result.add(new ShardingPaginationParameterRewriter());
+        addParameterRewriter(result, new ShardingGeneratedKeyInsertValueParameterRewriter());
+        addParameterRewriter(result, new ShardingPaginationParameterRewriter());
         return result;
     }
     
-    private void setUpParameterRewriters(final ParameterRewriter parameterRewriter, final ShardingSphereSchema schema) {
-        if (parameterRewriter instanceof SchemaMetaDataAware) {
-            ((SchemaMetaDataAware) parameterRewriter).setSchema(schema);
+    @SuppressWarnings("rawtypes")
+    private void addParameterRewriter(final Collection<ParameterRewriter> parameterRewriters, final ParameterRewriter toBeAddedParameterRewriter) {
+        if (toBeAddedParameterRewriter instanceof SchemaMetaDataAware) {
+            ((SchemaMetaDataAware) toBeAddedParameterRewriter).setSchema(schema);
         }
-        if (parameterRewriter instanceof ShardingRuleAware) {
-            ((ShardingRuleAware) parameterRewriter).setShardingRule(shardingRule);
+        if (toBeAddedParameterRewriter instanceof ShardingRuleAware) {
+            ((ShardingRuleAware) toBeAddedParameterRewriter).setShardingRule(shardingRule);
         }
-        if (parameterRewriter instanceof RouteContextAware) {
-            ((RouteContextAware) parameterRewriter).setRouteContext(routeContext);
+        if (toBeAddedParameterRewriter instanceof RouteContextAware) {
+            ((RouteContextAware) toBeAddedParameterRewriter).setRouteContext(routeContext);
+        }
+        if (toBeAddedParameterRewriter.isNeedRewrite(sqlStatementContext)) {
+            parameterRewriters.add(toBeAddedParameterRewriter);
         }
     }
 }
