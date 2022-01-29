@@ -63,7 +63,7 @@
         <groovy.version>2.4.19</groovy.version>
         <snakeyaml.version>1.16</snakeyaml.version>
         
-        <netty.version>4.1.70.Final</netty.version>
+        <netty.version>4.1.73.Final</netty.version>
         <commons-lang3.version>3.8</commons-lang3.version>
         <commons-codec.version>1.10</commons-codec.version>
         <commons-cli.version>1.4</commons-cli.version>
@@ -79,6 +79,7 @@
         <btm.version>2.1.3</btm.version>
         
         <curator.version>5.1.0</curator.version>
+        <zookeeper.version>3.6.0</zookeeper.version>
         <jetcd.version>0.5.0</jetcd.version>
         
         <lombok.version>1.18.20</lombok.version>
@@ -268,7 +269,7 @@
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
-                <artifactId>netty-transport-native-epoll</artifactId>
+                <artifactId>netty-transport-classes-epoll</artifactId>
                 <version>${netty.version}</version>
             </dependency>
             <dependency>
@@ -386,6 +387,17 @@
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-recipes</artifactId>
                 <version>${curator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.zookeeper</groupId>
+                <artifactId>zookeeper</artifactId>
+                <version>${zookeeper.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>io.netty</groupId>
+                        <artifactId>netty-transport-native-epoll</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>io.etcd</groupId>
