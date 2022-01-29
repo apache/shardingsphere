@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Persist repository.
  */
-public interface PersistRepository extends TypedSPI, RequiredSPI {
+public interface PersistRepository extends TypedSPI {
     
     /**
      * Path separator.
