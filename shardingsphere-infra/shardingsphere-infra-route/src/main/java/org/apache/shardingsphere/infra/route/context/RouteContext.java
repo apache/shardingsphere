@@ -143,7 +143,7 @@ public final class RouteContext {
      * @param tableMappers table mapper collection
      */
     public void putRouteUnit(final RouteMapper dataSourceMapper, final Collection<RouteMapper> tableMappers) {
-        Collection<RouteUnit> targets = routeUnits.stream().filter(unit -> unit.getDataSourceMapper().equals(dataSourceMapper)).collect(Collectors.toList());
+        Collection<RouteUnit> targets = getTargetRouteUnits(dataSourceMapper);
         if (targets.isEmpty()) {
             RouteUnit unit = new RouteUnit(dataSourceMapper, new LinkedHashSet<>());
             unit.getTableMappers().addAll(tableMappers);
@@ -163,6 +163,16 @@ public final class RouteContext {
                 routeUnits.removeAll(toBeRemoved);
             }
         }
+    }
+    
+    private Collection<RouteUnit> getTargetRouteUnits(final RouteMapper dataSourceMapper) {
+        Collection<RouteUnit> result = new LinkedList<>();
+        for (RouteUnit each : routeUnits) {
+            if (each.getDataSourceMapper().equals(dataSourceMapper)) {
+                result.add(each);
+            }
+        }
+        return result;
     }
     
     /**
