@@ -69,10 +69,12 @@ public final class BootstrapInitializer {
     
     private ContextManager createContextManager(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig, final int port) throws SQLException {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
-        ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder().modeConfig(modeConfig)
+        ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder()
+                .modeConfig(modeConfig)
                 .schemaConfigs(proxyConfig.getSchemaConfigurations())
                 .globalRuleConfigs(proxyConfig.getGlobalConfiguration().getRules())
-                .props(proxyConfig.getGlobalConfiguration().getProperties()).labels(proxyConfig.getGlobalConfiguration().getLabels())
+                .props(proxyConfig.getGlobalConfiguration().getProperties())
+                .labels(proxyConfig.getGlobalConfiguration().getLabels())
                 .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, port)).build();
         return ContextManagerBuilderFactory.newInstance(modeConfig).build(parameter);
     }
