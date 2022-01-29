@@ -83,8 +83,9 @@ public final class RuleAlteredContext {
     
     private final ExecuteEngine importerExecuteEngine;
     
-    public RuleAlteredContext(final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
-        this.onRuleAlteredActionConfig = convertActionConfig(onRuleAlteredActionConfig);
+    public RuleAlteredContext(final OnRuleAlteredActionConfiguration actionConfig) {
+        OnRuleAlteredActionConfiguration onRuleAlteredActionConfig = convertActionConfig(actionConfig);
+        this.onRuleAlteredActionConfig = onRuleAlteredActionConfig;
         InputConfiguration inputConfig = onRuleAlteredActionConfig.getInput();
         ShardingSphereAlgorithmConfiguration inputRateLimiter = inputConfig.getRateLimiter();
         inputRateLimitAlgorithm = null != inputRateLimiter ? ShardingSphereAlgorithmFactory.createAlgorithm(inputRateLimiter, JobRateLimitAlgorithm.class) : null;
