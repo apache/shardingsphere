@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.create;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.alter.excutor;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateTrafficRuleStatement;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AlterTrafficRuleStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.alter.AlterStatementExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.convert.TrafficRuleConverter;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
@@ -45,29 +44,28 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Create traffic rule handler.
+ * Alter traffic rule handler.
  */
 @RequiredArgsConstructor
-public final class CreateTrafficRuleHandler implements TextProtocolBackendHandler {
+public final class AlterTrafficRuleExecutor implements AlterStatementExecutor {
     
-    private final CreateTrafficRuleStatement sqlStatement;
+    private final AlterTrafficRuleStatement sqlStatement;
     
     @Override
     public ResponseHeader execute() throws DistSQLException {
-        Optional<TrafficRuleConfiguration> trafficRuleConfiguration = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData()
+        Optional<TrafficRuleConfiguration> currentConfiguration = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData()
                 .findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
-        check(sqlStatement, trafficRuleConfiguration);
-        TrafficRuleConfiguration toBeCreatedConfiguration = TrafficRuleConverter.convert(sqlStatement.getSegments());
-        updateToRepository(toBeCreatedConfiguration, trafficRuleConfiguration);
+        check(sqlStatement, currentConfiguration);
+        TrafficRuleConfiguration toBeAlteredConfiguration = TrafficRuleConverter.convert(sqlStatement.getSegments());
+        updateToRepository(toBeAlteredConfiguration, currentConfiguration.get());
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void check(final CreateTrafficRuleStatement sqlStatement, final Optional<TrafficRuleConfiguration> trafficRuleConfiguration) throws DistSQLException {
-        if (trafficRuleConfiguration.isPresent()) {
-            Collection<String> currentRuleNames = trafficRuleConfiguration.get().getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
-            Set<String> duplicatedRuleNames = sqlStatement.getSegments().stream().map(TrafficRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toSet());
-            DistSQLException.predictionThrow(duplicatedRuleNames.isEmpty(), new DuplicateRuleException("traffic", duplicatedRuleNames));
-        }
+    private void check(final AlterTrafficRuleStatement sqlStatement, final Optional<TrafficRuleConfiguration> currentConfiguration) throws DistSQLException {
+        DistSQLException.predictionThrow(currentConfiguration.isPresent(), new RequiredRuleMissedException("Traffic"));
+        Collection<String> currentRuleNames = currentConfiguration.get().getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
+        Set<String> notExistRuleNames = sqlStatement.getSegments().stream().map(TrafficRuleSegment::getName).filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toSet());
+        DistSQLException.predictionThrow(notExistRuleNames.isEmpty(), new RequiredRuleMissedException("Traffic", notExistRuleNames));
         Collection<String> invalidAlgorithmNames = getInvalidAlgorithmNames(sqlStatement.getSegments());
         DistSQLException.predictionThrow(invalidAlgorithmNames.isEmpty(), new InvalidAlgorithmConfigurationException("traffic", invalidAlgorithmNames));
     }
@@ -85,17 +83,12 @@ public final class CreateTrafficRuleHandler implements TextProtocolBackendHandle
         return result;
     }
     
-    private void updateToRepository(final TrafficRuleConfiguration toBeCreatedRuleConfiguration, final Optional<TrafficRuleConfiguration> currentRuleConfiguration) {
+    private void updateToRepository(final TrafficRuleConfiguration toBeAlteredConfiguration, final TrafficRuleConfiguration currentConfiguration) {
+        currentConfiguration.getTrafficStrategies().addAll(toBeAlteredConfiguration.getTrafficStrategies());
+        currentConfiguration.getTrafficAlgorithms().putAll(toBeAlteredConfiguration.getTrafficAlgorithms());
+        currentConfiguration.getLoadBalancers().putAll(toBeAlteredConfiguration.getLoadBalancers());
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        Collection<RuleConfiguration> globalRuleConfigurations = metaDataContexts.getGlobalRuleMetaData().getConfigurations();
-        if (currentRuleConfiguration.isPresent()) {
-            currentRuleConfiguration.get().getTrafficStrategies().addAll(toBeCreatedRuleConfiguration.getTrafficStrategies());
-            currentRuleConfiguration.get().getTrafficAlgorithms().putAll(toBeCreatedRuleConfiguration.getTrafficAlgorithms());
-            currentRuleConfiguration.get().getLoadBalancers().putAll(toBeCreatedRuleConfiguration.getLoadBalancers());
-        } else {
-            globalRuleConfigurations.add(toBeCreatedRuleConfiguration);
-        }
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
-        metaDataPersistService.ifPresent(op -> op.getGlobalRuleService().persist(globalRuleConfigurations, true));
+        metaDataPersistService.ifPresent(op -> op.getGlobalRuleService().persist(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), true));
     }
 }
