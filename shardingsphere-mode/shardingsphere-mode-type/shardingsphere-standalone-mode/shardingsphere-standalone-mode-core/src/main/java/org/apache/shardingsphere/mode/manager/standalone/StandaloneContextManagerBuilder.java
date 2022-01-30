@@ -73,14 +73,9 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     }
     
     private void persistConfigurations(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) {
-        if (!isEmptyLocalConfiguration(parameter)) {
+        if (!parameter.isEmpty()) {
             metaDataPersistService.persistConfigurations(parameter.getSchemaConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), parameter.getModeConfig().isOverwrite());
         }
-    }
-    
-    private boolean isEmptyLocalConfiguration(final ContextManagerBuilderParameter parameter) {
-        return parameter.getSchemaConfigs().entrySet().stream().allMatch(entry -> entry.getValue().getDataSources().isEmpty() && entry.getValue().getRuleConfigurations().isEmpty())
-                && parameter.getGlobalRuleConfigs().isEmpty() && parameter.getProps().isEmpty();
     }
     
     private Map<String, DataSource> getEffectiveDataSources(final MetaDataPersistService metaDataPersistService, 
