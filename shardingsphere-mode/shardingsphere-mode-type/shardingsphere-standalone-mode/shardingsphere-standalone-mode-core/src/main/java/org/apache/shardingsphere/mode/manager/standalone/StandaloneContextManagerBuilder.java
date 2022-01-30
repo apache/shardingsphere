@@ -54,9 +54,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(StandalonePersistRepositoryFactory.newInstance(parameter.getModeConfig().getRepository()));
         persistConfigurations(metaDataPersistService, parameter);
-        MetaDataContexts metaDataContexts = createMetaDataContexts(metaDataPersistService, parameter);
-        TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
-        return createContextManager(metaDataPersistService, parameter, metaDataContexts, transactionContexts);
+        return createContextManager(metaDataPersistService, parameter, createMetaDataContexts(metaDataPersistService, parameter));
     }
     
     private MetaDataContexts createMetaDataContexts(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) throws SQLException {
@@ -113,9 +111,9 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         return result;
     }
     
-    private ContextManager createContextManager(final MetaDataPersistService metaDataPersistService,
-                                                final ContextManagerBuilderParameter parameter, final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts) {
+    private ContextManager createContextManager(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter, final MetaDataContexts metaDataContexts) {
         ContextManager result = new ContextManager();
+        TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
         InstanceContext instanceContext = new InstanceContext(
                 metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(parameter.getInstanceDefinition()), new StandaloneWorkerIdGenerator(), parameter.getModeConfig());
         result.init(metaDataContexts, transactionContexts, instanceContext);

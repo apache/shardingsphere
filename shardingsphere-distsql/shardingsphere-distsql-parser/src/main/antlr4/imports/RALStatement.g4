@@ -83,6 +83,18 @@ createTrafficRule
     : CREATE TRAFFIC RULE trafficRuleDefinition (COMMA trafficRuleDefinition)* 
     ;
 
+alterTrafficRule
+    : ALTER TRAFFIC RULE trafficRuleDefinition (COMMA trafficRuleDefinition)* 
+    ;
+
+showTrafficRules
+    : SHOW TRAFFIC (RULES | RULE ruleName)
+    ;
+
+dropTrafficRule
+    : DROP TRAFFIC RULE ifExists? ruleName (COMMA ruleName)*
+    ;
+
 trafficRuleDefinition
     : ruleName LP labelDefinition COMMA trafficAlgorithmDefinition COMMA loadBanlanceDefinition RP
     ;
@@ -105,14 +117,6 @@ algorithmDefinition
 
 typeName
     : IDENTIFIER
-    ;
-
-showTrafficRules
-    : SHOW TRAFFIC (RULES | RULE ruleName)
-    ;
-
-dropTrafficRule
-    : DROP TRAFFIC RULE ifExists? ruleName (COMMA ruleName)*
     ;
 
 exportSchemaConfiguration
