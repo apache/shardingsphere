@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -37,8 +36,6 @@ public final class SchemaRulesBuilderMaterials {
     private final String schemaName;
     
     private final Collection<RuleConfiguration> schemaRuleConfigs;
-    
-    private final DatabaseType databaseType;
     
     private final Map<String, DataSource> dataSourceMap;
     

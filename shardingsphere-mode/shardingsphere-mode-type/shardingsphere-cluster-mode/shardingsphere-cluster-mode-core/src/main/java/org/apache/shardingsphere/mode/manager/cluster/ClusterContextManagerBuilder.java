@@ -60,8 +60,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         persistConfigurations(metaDataPersistService, parameter);
         MetaDataContextsBuilder metaDataContextsBuilder = createMetaDataContextsBuilder(metaDataPersistService, parameter);
         persistMetaData(metaDataPersistService, metaDataContextsBuilder.getSchemaMap());
-        ContextManager result = createContextManager(repository, metaDataPersistService, parameter.getInstanceDefinition(), metaDataContextsBuilder.build(metaDataPersistService), 
-                parameter.getModeConfig());
+        ContextManager result = createContextManager(repository, metaDataPersistService, 
+                parameter.getInstanceDefinition(), metaDataContextsBuilder.build(metaDataPersistService), parameter.getModeConfig());
         registerOnline(repository, metaDataPersistService, parameter.getInstanceDefinition(), result);
         return result;
     }

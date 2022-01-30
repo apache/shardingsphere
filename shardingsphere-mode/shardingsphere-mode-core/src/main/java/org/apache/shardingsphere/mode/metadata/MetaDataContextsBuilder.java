@@ -22,8 +22,6 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -88,8 +86,7 @@ public final class MetaDataContextsBuilder {
     
     private Collection<ShardingSphereRule> getSchemaRules(final String schemaName,
                                                           final Collection<RuleConfiguration> schemaRuleConfigs, final Map<String, DataSource> dataSourceMap, final Properties props) {
-        DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
-        return SchemaRulesBuilder.buildRules(new SchemaRulesBuilderMaterials(schemaName, schemaRuleConfigs, databaseType, dataSourceMap, new ConfigurationProperties(props)));
+        return SchemaRulesBuilder.buildRules(new SchemaRulesBuilderMaterials(schemaName, schemaRuleConfigs, dataSourceMap, new ConfigurationProperties(props)));
     }
     
     /**
