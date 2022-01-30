@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 import org.junit.Test;
@@ -53,8 +52,7 @@ public final class DatabaseDiscoveryRuleBuilderTest {
                 Collections.singleton(dataSourceConfig), Collections.singletonMap("ha_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
                 Collections.singletonMap("TEST", new ShardingSphereAlgorithmConfiguration("TEST", new Properties())));
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, Collections.singletonList(config)).get(config);
-        assertThat(builder.build(new SchemaRulesBuilderMaterials("test_schema", 
-                new DataSourceProvidedSchemaConfiguration(Collections.singletonMap("name", mock(DataSource.class)), Collections.emptyList()), 
-                new ConfigurationProperties(new Properties())), config, Collections.emptyList()), instanceOf(DatabaseDiscoveryRule.class));
+        assertThat(builder.build("test_schema", new DataSourceProvidedSchemaConfiguration(Collections.singletonMap("name", mock(DataSource.class)), Collections.emptyList()), 
+                new ConfigurationProperties(new Properties()), config, Collections.emptyList()), instanceOf(DatabaseDiscoveryRule.class));
     }
 }

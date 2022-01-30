@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shadow.rule.builder;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -45,7 +44,7 @@ public final class ShadowRuleBuilderTest {
     public void assertBuild() {
         ShadowRuleConfiguration ruleConfig = mock(ShadowRuleConfiguration.class);
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
-        assertThat(builder.build(new SchemaRulesBuilderMaterials("", new DataSourceProvidedSchemaConfiguration(Collections.emptyMap(), Collections.emptyList()), 
-                new ConfigurationProperties(new Properties())), ruleConfig, Collections.emptyList()), instanceOf(ShadowRule.class));
+        assertThat(builder.build("", new DataSourceProvidedSchemaConfiguration(Collections.emptyMap(), Collections.emptyList()), 
+                new ConfigurationProperties(new Properties()), ruleConfig, Collections.emptyList()), instanceOf(ShadowRule.class));
     }
 }

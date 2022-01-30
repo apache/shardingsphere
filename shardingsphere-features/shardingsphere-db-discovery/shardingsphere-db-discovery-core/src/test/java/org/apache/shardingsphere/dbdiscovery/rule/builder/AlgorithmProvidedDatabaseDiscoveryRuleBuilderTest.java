@@ -25,7 +25,6 @@ import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 import org.junit.Test;
@@ -53,10 +52,8 @@ public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilderTest {
         when(algorithmProvidedRuleConfig.getDataSources()).thenReturn(Collections.singletonList(ruleConfig));
         when(algorithmProvidedRuleConfig.getDiscoveryHeartbeats()).thenReturn(Collections.singletonMap("ha_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())));
         when(algorithmProvidedRuleConfig.getDiscoveryTypes()).thenReturn(Collections.singletonMap("discoveryTypeName", new TestDatabaseDiscoveryType()));
-        SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(
-                SchemaRuleBuilder.class, Collections.singletonList(algorithmProvidedRuleConfig)).get(algorithmProvidedRuleConfig);
-        assertThat(builder.build(new SchemaRulesBuilderMaterials("", new DataSourceProvidedSchemaConfiguration(Collections.singletonMap("name", mock(DataSource.class)), Collections.emptyList()), 
-                        new ConfigurationProperties(new Properties())),
-                algorithmProvidedRuleConfig, Collections.emptyList()), instanceOf(DatabaseDiscoveryRule.class));
+        SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, Collections.singletonList(algorithmProvidedRuleConfig)).get(algorithmProvidedRuleConfig);
+        assertThat(builder.build("", new DataSourceProvidedSchemaConfiguration(Collections.singletonMap("name", mock(DataSource.class)), Collections.emptyList()), 
+                new ConfigurationProperties(new Properties()), algorithmProvidedRuleConfig, Collections.emptyList()), instanceOf(DatabaseDiscoveryRule.class));
     }
 }

@@ -40,7 +40,6 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
@@ -91,7 +90,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
         String databaseType = getTestParameters().getDatabaseType();
         SchemaConfiguration schemaConfig = new DataSourceProvidedSchemaConfiguration(
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()));
-        Collection<ShardingSphereRule> rules = SchemaRulesBuilder.buildRules(new SchemaRulesBuilderMaterials("schema_name", schemaConfig, new ConfigurationProperties(new Properties())));
+        Collection<ShardingSphereRule> rules = SchemaRulesBuilder.buildRules("schema_name", schemaConfig, new ConfigurationProperties(new Properties()));
         mockRules(rules);
         rules.add(sqlParserRule);
         ConfigurationProperties props = new ConfigurationProperties(rootConfig.getProps());

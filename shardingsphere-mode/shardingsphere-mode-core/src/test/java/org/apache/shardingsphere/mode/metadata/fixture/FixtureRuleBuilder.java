@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.mode.metadata.fixture;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 
 import java.util.Collection;
@@ -26,7 +27,8 @@ import java.util.Collection;
 public final class FixtureRuleBuilder implements SchemaRuleBuilder<FixtureRuleConfiguration> {
     
     @Override
-    public FixtureRule build(final SchemaRulesBuilderMaterials materials, final FixtureRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
+    public FixtureRule build(final String schemaName, final SchemaConfiguration schemaConfig, final ConfigurationProperties props, 
+                             final FixtureRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
         return new FixtureRule();
     }
     

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.readwritesplitting.rule.builder;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
@@ -53,7 +52,7 @@ public final class ReadwriteSplittingRuleBuilderTest {
                 "name", "Static", props, "loadBalancerName");
         when(ruleConfig.getDataSources()).thenReturn(Collections.singletonList(dataSourceRuleConfig));
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
-        assertThat(builder.build(new SchemaRulesBuilderMaterials("", new DataSourceProvidedSchemaConfiguration(Collections.emptyMap(), Collections.emptyList()), 
-                new ConfigurationProperties(new Properties())), ruleConfig, Collections.emptyList()), instanceOf(ReadwriteSplittingRule.class));
+        assertThat(builder.build("", new DataSourceProvidedSchemaConfiguration(Collections.emptyMap(), Collections.emptyList()), 
+                new ConfigurationProperties(new Properties()), ruleConfig, Collections.emptyList()), instanceOf(ReadwriteSplittingRule.class));
     }
 }

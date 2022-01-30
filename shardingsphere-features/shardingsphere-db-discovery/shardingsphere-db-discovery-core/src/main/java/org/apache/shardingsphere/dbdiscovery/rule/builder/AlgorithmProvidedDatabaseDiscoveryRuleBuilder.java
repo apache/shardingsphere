@@ -20,8 +20,9 @@ package org.apache.shardingsphere.dbdiscovery.rule.builder;
 import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryOrder;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 
 import java.util.Collection;
@@ -32,9 +33,9 @@ import java.util.Collection;
 public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilder implements SchemaRuleBuilder<AlgorithmProvidedDatabaseDiscoveryRuleConfiguration> {
     
     @Override
-    public DatabaseDiscoveryRule build(final SchemaRulesBuilderMaterials materials, final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config,
-                                       final Collection<ShardingSphereRule> builtRules) {
-        return new DatabaseDiscoveryRule(materials.getSchemaName(), materials.getSchemaConfig().getDataSources(), config);
+    public DatabaseDiscoveryRule build(final String schemaName, final SchemaConfiguration schemaConfig, final ConfigurationProperties props, 
+                                       final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
+        return new DatabaseDiscoveryRule(schemaName, schemaConfig.getDataSources(), config);
     }
     
     @Override

@@ -22,6 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
@@ -49,23 +51,25 @@ public final class SchemaRulesBuilder {
     /**
      * Build rules.
      *
-     * @param materials rules builder materials
+     * @param schemaName schema name
+     * @param schemaConfig schema configuration
+     * @param props configuration properties
      * @return built rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Collection<ShardingSphereRule> buildRules(final SchemaRulesBuilderMaterials materials) {
+    public static Collection<ShardingSphereRule> buildRules(final String schemaName, final SchemaConfiguration schemaConfig, final ConfigurationProperties props) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        for (Entry<RuleConfiguration, SchemaRuleBuilder> entry : getRuleBuilderMap(materials).entrySet()) {
-            result.add(entry.getValue().build(materials, entry.getKey(), result));
+        for (Entry<RuleConfiguration, SchemaRuleBuilder> entry : getRuleBuilderMap(schemaConfig).entrySet()) {
+            result.add(entry.getValue().build(schemaName, schemaConfig, props, entry.getKey(), result));
         }
         return result;
     }
     
     @SuppressWarnings("rawtypes")
-    private static Map<RuleConfiguration, SchemaRuleBuilder> getRuleBuilderMap(final SchemaRulesBuilderMaterials materials) {
+    private static Map<RuleConfiguration, SchemaRuleBuilder> getRuleBuilderMap(final SchemaConfiguration schemaConfig) {
         Map<RuleConfiguration, SchemaRuleBuilder> result = new LinkedHashMap<>();
-        result.putAll(getDistributedRuleBuilderMap(materials.getSchemaConfig().getRuleConfigurations()));
-        result.putAll(getEnhancedRuleBuilderMap(materials.getSchemaConfig().getRuleConfigurations()));
+        result.putAll(getDistributedRuleBuilderMap(schemaConfig.getRuleConfigurations()));
+        result.putAll(getEnhancedRuleBuilderMap(schemaConfig.getRuleConfigurations()));
         result.putAll(getMissedDefaultRuleBuilderMap(result.values()));
         return result;
     }

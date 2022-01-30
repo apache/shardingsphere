@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.rule.builder;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -30,7 +29,6 @@ import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -58,25 +56,22 @@ public final class AlgorithmProvidedShardingRuleBuilderTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertBuild() {
-        SchemaRulesBuilderMaterials materials = createSchemaRulesBuilderMaterials(Collections.singletonMap("name", mock(DataSource.class, RETURNS_DEEP_STUBS)));
-        assertThat(builder.build(materials, ruleConfig, Collections.emptyList()), instanceOf(ShardingRule.class));
+        assertThat(builder.build("test_schema", 
+                new DataSourceProvidedSchemaConfiguration(Collections.singletonMap("name", mock(DataSource.class, RETURNS_DEEP_STUBS)), 
+                        Collections.emptyList()), new ConfigurationProperties(new Properties()), ruleConfig, Collections.emptyList()), instanceOf(ShardingRule.class));
     }
     
     @SuppressWarnings("unchecked")
     @Test(expected = IllegalArgumentException.class)
     public void assertBuildWithNullDataSourceMap() {
-        SchemaRulesBuilderMaterials materials = createSchemaRulesBuilderMaterials(null);
-        assertThat(builder.build(materials, ruleConfig, Collections.emptyList()), instanceOf(ShardingRule.class));
+        assertThat(builder.build("test_schema", new DataSourceProvidedSchemaConfiguration(null, Collections.emptyList()), 
+                new ConfigurationProperties(new Properties()), ruleConfig, Collections.emptyList()), instanceOf(ShardingRule.class));
     }
     
     @SuppressWarnings("unchecked")
     @Test(expected = IllegalArgumentException.class)
     public void assertBuildWithEmptyDataSourceMap() {
-        SchemaRulesBuilderMaterials materials = createSchemaRulesBuilderMaterials(Collections.emptyMap());
-        assertThat(builder.build(materials, ruleConfig, Collections.emptyList()), instanceOf(ShardingRule.class));
-    }
-    
-    private SchemaRulesBuilderMaterials createSchemaRulesBuilderMaterials(final Map<String, DataSource> dataSourceMap) {
-        return new SchemaRulesBuilderMaterials("test_schema", new DataSourceProvidedSchemaConfiguration(dataSourceMap, Collections.emptyList()), new ConfigurationProperties(new Properties()));
+        assertThat(builder.build("test_schema", new DataSourceProvidedSchemaConfiguration(Collections.emptyMap(), Collections.emptyList()), 
+                new ConfigurationProperties(new Properties()), ruleConfig, Collections.emptyList()), instanceOf(ShardingRule.class));
     }
 }

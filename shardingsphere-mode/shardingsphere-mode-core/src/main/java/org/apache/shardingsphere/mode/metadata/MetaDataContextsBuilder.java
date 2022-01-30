@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
 import java.sql.SQLException;
@@ -83,7 +82,7 @@ public final class MetaDataContextsBuilder {
     }
     
     private Collection<ShardingSphereRule> getSchemaRules(final String schemaName, final SchemaConfiguration schemaConfig, final Properties props) {
-        return SchemaRulesBuilder.buildRules(new SchemaRulesBuilderMaterials(schemaName, schemaConfig, new ConfigurationProperties(props)));
+        return SchemaRulesBuilder.buildRules(schemaName, schemaConfig, new ConfigurationProperties(props));
     }
     
     /**
