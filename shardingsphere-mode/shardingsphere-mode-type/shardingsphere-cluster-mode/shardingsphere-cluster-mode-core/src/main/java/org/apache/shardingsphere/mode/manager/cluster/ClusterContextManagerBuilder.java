@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolD
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -55,42 +56,20 @@ import java.util.Properties;
  */
 public final class ClusterContextManagerBuilder implements ContextManagerBuilder {
     
-    private RegistryCenter registryCenter;
-    
-    private MetaDataPersistService metaDataPersistService;
-    
-    private MetaDataContexts metaDataContexts;
-    
-    private TransactionContexts transactionContexts;
-    
-    private InstanceContext instanceContext;
-    
-    private ContextManager contextManager;
-    
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
-        beforeBuildContextManager(parameter);
-        contextManager = new ContextManager();
-        contextManager.init(metaDataContexts, transactionContexts, instanceContext);
-        afterBuildContextManager(parameter);
-        return contextManager;
-    }
-    
-    private void beforeBuildContextManager(final ContextManagerBuilderParameter parameter) throws SQLException {
-        ClusterPersistRepository repository = ClusterPersistRepositoryFactory.newInstance((ClusterPersistRepositoryConfiguration) parameter.getModeConfig().getRepository());
-        registryCenter = new RegistryCenter(repository);
         ModeScheduleContextFactory.getInstance().init(parameter.getInstanceDefinition().getInstanceId().getId(), parameter.getModeConfig());
-        metaDataPersistService = new MetaDataPersistService(repository);
+        ClusterPersistRepository repository = ClusterPersistRepositoryFactory.newInstance((ClusterPersistRepositoryConfiguration) parameter.getModeConfig().getRepository());
+        MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
         persistConfigurations(metaDataPersistService, parameter);
-        MetaDataContextsBuilder metaDataContextsBuilder = createMetaDataContextsBuilder(parameter);
-        persistMetaData(metaDataContextsBuilder.getSchemaMap());
-        metaDataContexts = metaDataContextsBuilder.build(metaDataPersistService);
-        transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
-        instanceContext = new InstanceContext(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(
-                parameter.getInstanceDefinition()), new ClusterWorkerIdGenerator(repository, metaDataPersistService, parameter.getInstanceDefinition()), getType());
+        MetaDataContextsBuilder metaDataContextsBuilder = createMetaDataContextsBuilder(metaDataPersistService, parameter);
+        persistMetaData(metaDataPersistService, metaDataContextsBuilder.getSchemaMap());
+        ContextManager result = createContextManager(repository, metaDataPersistService, parameter.getInstanceDefinition(), metaDataContextsBuilder.build(metaDataPersistService));
+        registerOnline(repository, metaDataPersistService, parameter.getInstanceDefinition(), result);
+        return result;
     }
     
-    private MetaDataContextsBuilder createMetaDataContextsBuilder(final ContextManagerBuilderParameter parameter) throws SQLException {
+    private MetaDataContextsBuilder createMetaDataContextsBuilder(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) throws SQLException {
         Collection<String> schemaNames = InstanceType.JDBC == parameter.getInstanceDefinition().getInstanceType()
                 ? parameter.getSchemaConfigs().keySet() : metaDataPersistService.getSchemaMetaDataService().loadAllNames();
         Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
@@ -146,15 +125,27 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return result;
     }
     
-    private void persistMetaData(final Map<String, ShardingSphereSchema> schemaMap) {
+    private void persistMetaData(final MetaDataPersistService metaDataPersistService, final Map<String, ShardingSphereSchema> schemaMap) {
         for (Entry<String, ShardingSphereSchema> entry : schemaMap.entrySet()) {
             metaDataPersistService.getSchemaMetaDataService().persist(entry.getKey(), entry.getValue());
         }
     }
     
-    private void afterBuildContextManager(final ContextManagerBuilderParameter parameter) {
+    private ContextManager createContextManager(final ClusterPersistRepository repository,
+                                                final MetaDataPersistService metaDataPersistService, final InstanceDefinition instanceDefinition, final MetaDataContexts metaDataContexts) {
+        TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
+        InstanceContext instanceContext = new InstanceContext(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(instanceDefinition),
+                new ClusterWorkerIdGenerator(repository, metaDataPersistService, instanceDefinition), getType());
+        ContextManager result = new ContextManager();
+        result.init(metaDataContexts, transactionContexts, instanceContext);
+        return result;
+    }
+    
+    private void registerOnline(final ClusterPersistRepository repository, 
+                                final MetaDataPersistService metaDataPersistService, final InstanceDefinition instanceDefinition, final ContextManager contextManager) {
+        RegistryCenter registryCenter = new RegistryCenter(repository);
         new ClusterContextManagerCoordinator(metaDataPersistService, contextManager, registryCenter);
-        registryCenter.onlineInstance(parameter.getInstanceDefinition());
+        registryCenter.onlineInstance(instanceDefinition);
     }
     
     @Override
