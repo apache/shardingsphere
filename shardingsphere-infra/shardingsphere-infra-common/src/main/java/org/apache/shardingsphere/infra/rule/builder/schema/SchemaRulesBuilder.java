@@ -60,7 +60,7 @@ public final class SchemaRulesBuilder {
     public static Collection<ShardingSphereRule> buildRules(final String schemaName, final SchemaConfiguration schemaConfig, final ConfigurationProperties props) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, SchemaRuleBuilder> entry : getRuleBuilderMap(schemaConfig).entrySet()) {
-            result.add(entry.getValue().build(schemaName, schemaConfig, props, entry.getKey(), result));
+            result.add(entry.getValue().build(entry.getKey(), schemaName, schemaConfig.getDataSources(), result, props));
         }
         return result;
     }

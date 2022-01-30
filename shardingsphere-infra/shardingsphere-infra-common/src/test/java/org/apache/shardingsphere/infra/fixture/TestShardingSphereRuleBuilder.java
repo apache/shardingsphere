@@ -19,12 +19,13 @@ package org.apache.shardingsphere.infra.fixture;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 
+import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Map;
 
 public final class TestShardingSphereRuleBuilder implements SchemaRuleBuilder<TestRuleConfiguration> {
     
@@ -32,8 +33,8 @@ public final class TestShardingSphereRuleBuilder implements SchemaRuleBuilder<Te
     private static final SchemaRule RULE = new TestShardingSphereRule();
     
     @Override
-    public SchemaRule build(final String schemaName, final SchemaConfiguration schemaConfig, final ConfigurationProperties props, 
-                            final TestRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
+    public SchemaRule build(final TestRuleConfiguration config, final String schemaName,
+                            final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
         return RULE;
     }
     

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.singletable.rule.builder;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
@@ -26,7 +25,9 @@ import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration
 import org.apache.shardingsphere.singletable.constant.SingleTableOrder;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 
+import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Single table rule builder.
@@ -34,9 +35,9 @@ import java.util.Collection;
 public final class SingleTableRuleBuilder implements SchemaRuleBuilder<SingleTableRuleConfiguration> {
     
     @Override
-    public SingleTableRule build(final String schemaName, final SchemaConfiguration schemaConfig, final ConfigurationProperties props, 
-                                 final SingleTableRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
-        return new SingleTableRule(config, DatabaseTypeRecognizer.getDatabaseType(schemaConfig.getDataSources().values()), schemaConfig.getDataSources(), builtRules, props);
+    public SingleTableRule build(final SingleTableRuleConfiguration config, final String schemaName,
+                                 final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
+        return new SingleTableRule(config, DatabaseTypeRecognizer.getDatabaseType(dataSources.values()), dataSources, builtRules, props);
     }
     
     @Override

@@ -21,11 +21,12 @@ import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedD
 import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryOrder;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 
+import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Algorithm provided database discovery rule builder.
@@ -33,9 +34,9 @@ import java.util.Collection;
 public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilder implements SchemaRuleBuilder<AlgorithmProvidedDatabaseDiscoveryRuleConfiguration> {
     
     @Override
-    public DatabaseDiscoveryRule build(final String schemaName, final SchemaConfiguration schemaConfig, final ConfigurationProperties props, 
-                                       final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
-        return new DatabaseDiscoveryRule(schemaName, schemaConfig.getDataSources(), config);
+    public DatabaseDiscoveryRule build(final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config, final String schemaName, 
+                                       final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
+        return new DatabaseDiscoveryRule(schemaName, dataSources, config);
     }
     
     @Override

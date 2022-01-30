@@ -19,7 +19,6 @@ package org.apache.shardingsphere.singletable.rule.builder;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
@@ -38,7 +37,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 public final class SingleTableRuleBuilderTest {
@@ -55,7 +53,7 @@ public final class SingleTableRuleBuilderTest {
         props.setProperty(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED.getKey(), Boolean.FALSE.toString());
         SingleTableRuleConfiguration config = mock(SingleTableRuleConfiguration.class);
         ShardingSphereRule shardingSphereRule = mock(ShardingSphereRule.class);
-        SchemaRule schemaRule = builder.build("", mock(SchemaConfiguration.class, RETURNS_DEEP_STUBS), new ConfigurationProperties(props), config, Collections.singletonList(shardingSphereRule));
+        SchemaRule schemaRule = builder.build(config, "", Collections.emptyMap(), Collections.singletonList(shardingSphereRule), new ConfigurationProperties(props));
         assertThat(schemaRule, instanceOf(SingleTableRule.class));
         assertFalse(((SingleTableRule) schemaRule).getDefaultDataSource().isPresent());
     }
@@ -69,7 +67,7 @@ public final class SingleTableRuleBuilderTest {
         SchemaRuleBuilder builder = builders.iterator().next();
         SingleTableRuleConfiguration config = new SingleTableRuleConfiguration();
         config.setDefaultDataSource("ds_0");
-        SchemaRule schemaRule = builder.build("", mock(SchemaConfiguration.class, RETURNS_DEEP_STUBS), new ConfigurationProperties(props), config, Collections.singletonList(shardingSphereRule));
+        SchemaRule schemaRule = builder.build(config, "", Collections.emptyMap(), Collections.singletonList(shardingSphereRule), new ConfigurationProperties(props));
         assertThat(schemaRule, instanceOf(SingleTableRule.class));
         assertTrue(((SingleTableRule) schemaRule).getDefaultDataSource().isPresent());
         assertThat(((SingleTableRule) schemaRule).getDefaultDataSource().get(), is("ds_0"));

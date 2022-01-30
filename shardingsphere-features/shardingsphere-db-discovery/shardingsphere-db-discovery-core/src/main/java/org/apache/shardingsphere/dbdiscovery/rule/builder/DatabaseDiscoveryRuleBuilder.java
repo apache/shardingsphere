@@ -22,7 +22,6 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryOrder;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 
@@ -37,12 +36,12 @@ import java.util.Map;
 public final class DatabaseDiscoveryRuleBuilder implements SchemaRuleBuilder<DatabaseDiscoveryRuleConfiguration> {
     
     @Override
-    public DatabaseDiscoveryRule build(final String schemaName, final SchemaConfiguration schemaConfig, final ConfigurationProperties props,
-                                       final DatabaseDiscoveryRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
+    public DatabaseDiscoveryRule build(final DatabaseDiscoveryRuleConfiguration config, final String schemaName,
+                                       final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
         Map<String, DataSource> realDataSourceMap = new HashMap<>();
         for (DatabaseDiscoveryDataSourceRuleConfiguration each : config.getDataSources()) {
             for (String datasourceName : each.getDataSourceNames()) {
-                realDataSourceMap.put(datasourceName, schemaConfig.getDataSources().get(datasourceName));
+                realDataSourceMap.put(datasourceName, dataSources.get(datasourceName));
             }
         }
         return new DatabaseDiscoveryRule(schemaName, realDataSourceMap, config);

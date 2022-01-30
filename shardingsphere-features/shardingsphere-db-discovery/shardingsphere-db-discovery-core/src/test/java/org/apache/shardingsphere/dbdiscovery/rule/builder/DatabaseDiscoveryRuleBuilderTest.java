@@ -23,7 +23,6 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHe
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
@@ -46,13 +45,12 @@ public final class DatabaseDiscoveryRuleBuilderTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertBuild() {
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig =
-                new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.singletonList("name"), "", "TEST");
         DatabaseDiscoveryRuleConfiguration config = new DatabaseDiscoveryRuleConfiguration(
-                Collections.singleton(dataSourceConfig), Collections.singletonMap("ha_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
+                Collections.singleton(new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.singletonList("name"), "", "TEST")), 
+                Collections.singletonMap("ha_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
                 Collections.singletonMap("TEST", new ShardingSphereAlgorithmConfiguration("TEST", new Properties())));
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, Collections.singletonList(config)).get(config);
-        assertThat(builder.build("test_schema", new DataSourceProvidedSchemaConfiguration(Collections.singletonMap("name", mock(DataSource.class)), Collections.emptyList()), 
-                new ConfigurationProperties(new Properties()), config, Collections.emptyList()), instanceOf(DatabaseDiscoveryRule.class));
+        assertThat(builder.build(config, "test_schema", Collections.singletonMap("name", mock(DataSource.class)), Collections.emptyList(), new ConfigurationProperties(new Properties())), 
+                instanceOf(DatabaseDiscoveryRule.class));
     }
 }
