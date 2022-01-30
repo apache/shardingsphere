@@ -91,7 +91,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         if (!isEmptyLocalConfiguration(parameter)) {
             metaDataPersistService.persistConfigurations(parameter.getSchemaConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), isOverwrite);
         }
-        metaDataPersistService.persistInstanceConfigurations(parameter.getInstanceDefinition().getInstanceId().getId(), parameter.getLabels(), isOverwrite);
+        metaDataPersistService.persistInstanceLabels(parameter.getInstanceDefinition().getInstanceId().getId(), parameter.getLabels(), isOverwrite);
     }
     
     private boolean isEmptyLocalConfiguration(final ContextManagerBuilderParameter parameter) {
