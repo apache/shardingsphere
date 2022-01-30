@@ -18,21 +18,13 @@
 package org.apache.shardingsphere.proxy.initializer;
 
 import com.google.common.base.Strings;
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -40,22 +32,20 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfiguratio
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
+import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
-import org.apache.shardingsphere.infra.config.SchemaConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
+import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Bootstrap initializer.
@@ -75,55 +65,34 @@ public final class BootstrapInitializer {
         ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode() ? null : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
         ContextManager contextManager = createContextManager(yamlConfig, modeConfig, port);
         ProxyContext.getInstance().init(contextManager);
-        initRuleAlteredJobWorker(modeConfig, contextManager);
+        contextManagerInitializedCallback(modeConfig, contextManager);
         setDatabaseServerInfo();
     }
     
     private ContextManager createContextManager(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig, final int port) throws SQLException {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
-        Map<String, Map<String, DataSource>> dataSourcesMap = getDataSourcesMap(proxyConfig.getSchemaConfigurations());
-        ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder().modeConfig(modeConfig).dataSourcesMap(dataSourcesMap)
-                .schemaRuleConfigs(getSchemaRuleConfigurations(proxyConfig.getSchemaConfigurations()))
-                .globalRuleConfigs(proxyConfig.getGlobalRules()).props(proxyConfig.getProps()).labels(proxyConfig.getLabels())
+        ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder()
+                .modeConfig(modeConfig)
+                .schemaConfigs(proxyConfig.getSchemaConfigurations())
+                .globalRuleConfigs(proxyConfig.getGlobalConfiguration().getRules())
+                .props(proxyConfig.getGlobalConfiguration().getProperties())
+                .labels(proxyConfig.getGlobalConfiguration().getLabels())
                 .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, port)).build();
         return ContextManagerBuilderFactory.newInstance(modeConfig).build(parameter);
     }
     
-    // TODO add DataSourceConfiguration param to ContextManagerBuilder to avoid re-build data source
-    private Map<String, Map<String, DataSource>> getDataSourcesMap(final Map<String, SchemaConfiguration> schemaConfigMap) {
-        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(schemaConfigMap.size(), 1);
-        for (Entry<String, SchemaConfiguration> entry : schemaConfigMap.entrySet()) {
-            result.put(entry.getKey(), DataSourcePoolCreator.create(createDataSourcePropertiesMap(entry.getValue().getDataSources())));
+    private void contextManagerInitializedCallback(final ModeConfiguration modeConfig, final ContextManager contextManager) {
+        Map<String, ContextManagerLifecycleListener> listenerMap = SingletonSPIRegistry.getTypedSingletonInstancesMap(ContextManagerLifecycleListener.class);
+        log.info("listenerMap.keySet={}", listenerMap.keySet());
+        for (Entry<String, ContextManagerLifecycleListener> entry : listenerMap.entrySet()) {
+            try {
+                entry.getValue().onInitialized(modeConfig, contextManager);
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                log.error("contextManager onInitialized callback for '{}' failed", entry.getKey(), ex);
+            }
         }
-        return result;
-    }
-    
-    private Map<String, Collection<RuleConfiguration>> getSchemaRuleConfigurations(final Map<String, SchemaConfiguration> schemaConfigMap) {
-        Map<String, Collection<RuleConfiguration>> result = new LinkedHashMap<>(schemaConfigMap.size(), 1);
-        for (Entry<String, SchemaConfiguration> entry : schemaConfigMap.entrySet()) {
-            result.put(entry.getKey(), entry.getValue().getRules());
-        }
-        return result;
-    }
-    
-    private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Map<String, DataSourceConfiguration> dataSourceConfigMap) {
-        return dataSourceConfigMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, 
-            entry -> DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-    }
-    
-    private void initRuleAlteredJobWorker(final ModeConfiguration modeConfig, final ContextManager contextManager) {
-        if (null == modeConfig) {
-            return;
-        }
-        // TODO decouple "Cluster" to pluggable
-        if (!"Cluster".equals(modeConfig.getType())) {
-            log.info("mode type is not Cluster, ignore initRuleAlteredJobWorker");
-            return;
-        }
-        PipelineContext.initModeConfig(modeConfig);
-        PipelineContext.initContextManager(contextManager);
-        // TODO init worker only if necessary, e.g. 1) rule altered action configured, 2) enabled job exists, 3) stopped job restarted
-        RuleAlteredJobWorker.initWorkerIfNecessary();
     }
     
     private void setDatabaseServerInfo() {

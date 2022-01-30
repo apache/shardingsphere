@@ -74,7 +74,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     
     @Override
     public Optional<DatabasePacket<?>> getOtherPacket(final ConnectionSession connectionSession) {
-        return Optional.of(new PostgreSQLReadyForQueryPacket(connectionSession.getTransactionStatus().isInTransaction()));
+        return Optional.of(connectionSession.getTransactionStatus().isInTransaction() ? PostgreSQLReadyForQueryPacket.TRANSACTION_FAILED : PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
     }
     
     @Override
@@ -93,14 +93,16 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     
     private boolean processSimpleQuery(final ChannelHandlerContext context, final JDBCBackendConnection backendConnection, final PostgreSQLComQueryExecutor queryExecutor) throws SQLException {
         if (ResponseType.UPDATE == queryExecutor.getResponseType()) {
-            context.write(new PostgreSQLReadyForQueryPacket(backendConnection.getConnectionSession().getTransactionStatus().isInTransaction()));
+            context.write(backendConnection.getConnectionSession().getTransactionStatus().isInTransaction() ? PostgreSQLReadyForQueryPacket.IN_TRANSACTION
+                    : PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
             return true;
         }
         long dataRows = writeDataPackets(context, backendConnection, queryExecutor);
         if (ResponseType.QUERY == queryExecutor.getResponseType()) {
             context.write(new PostgreSQLCommandCompletePacket(PostgreSQLCommand.SELECT.name(), dataRows));
         }
-        context.write(new PostgreSQLReadyForQueryPacket(backendConnection.getConnectionSession().getTransactionStatus().isInTransaction()));
+        context.write(backendConnection.getConnectionSession().getTransactionStatus().isInTransaction() ? PostgreSQLReadyForQueryPacket.IN_TRANSACTION
+                : PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
         return true;
     }
     

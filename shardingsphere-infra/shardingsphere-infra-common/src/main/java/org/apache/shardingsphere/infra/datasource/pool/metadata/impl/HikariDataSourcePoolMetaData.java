@@ -89,6 +89,6 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     
     @Override
     public String getType() {
-        return HikariDataSource.class.getCanonicalName();
+        return HikariDataSource.class.getName();
     }
 }

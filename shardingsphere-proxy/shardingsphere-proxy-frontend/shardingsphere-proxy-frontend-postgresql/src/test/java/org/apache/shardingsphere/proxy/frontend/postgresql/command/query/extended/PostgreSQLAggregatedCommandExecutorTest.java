@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended;
 
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLAggregatedResponsesPacket;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.junit.Test;
 
@@ -28,6 +29,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -47,6 +49,7 @@ public final class PostgreSQLAggregatedCommandExecutorTest {
         }
         PostgreSQLAggregatedCommandExecutor actualExecutor = new PostgreSQLAggregatedCommandExecutor(executors);
         List<DatabasePacket<?>> actualPackets = new ArrayList<>(actualExecutor.execute());
-        assertThat(actualPackets, is(expectedPackets));
+        assertThat(actualPackets.size(), is(1));
+        assertTrue(actualPackets.iterator().next() instanceof PostgreSQLAggregatedResponsesPacket);
     }
 }

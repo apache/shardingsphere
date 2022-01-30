@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
@@ -71,7 +72,8 @@ public final class SQLRewriteContextTest {
         InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(((TableAvailable) statementContext).getTablesContext().getSchemaName().isPresent()).thenReturn(false);
         when(statementContext.getInsertSelectContext()).thenReturn(null);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(ShardingSphereSchema.class), statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(DefaultSchema.LOGIC_NAME, 
+                mock(ShardingSphereSchema.class), statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
         assertThat(sqlRewriteContext.getParameterBuilder(), instanceOf(GroupedParameterBuilder.class));
     }
     
@@ -79,13 +81,15 @@ public final class SQLRewriteContextTest {
     public void assertNotInsertStatementContext() {
         SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(((TableAvailable) statementContext).getTablesContext().getSchemaName().isPresent()).thenReturn(false);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(ShardingSphereSchema.class), statementContext, "SELECT * FROM tbl WHERE id = ?", Collections.singletonList(1));
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(DefaultSchema.LOGIC_NAME, 
+                mock(ShardingSphereSchema.class), statementContext, "SELECT * FROM tbl WHERE id = ?", Collections.singletonList(1));
         assertThat(sqlRewriteContext.getParameterBuilder(), instanceOf(StandardParameterBuilder.class));
     }
     
     @Test
     public void assertGenerateOptionalSQLToken() {
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(schema, sqlStatementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(DefaultSchema.LOGIC_NAME, 
+                schema, sqlStatementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
         sqlRewriteContext.addSQLTokenGenerators(Collections.singleton(optionalSQLTokenGenerator));
         sqlRewriteContext.generateSQLTokens();
         assertFalse(sqlRewriteContext.getSqlTokens().isEmpty());
@@ -94,7 +98,8 @@ public final class SQLRewriteContextTest {
     
     @Test
     public void assertGenerateCollectionSQLToken() {
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(schema, sqlStatementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(DefaultSchema.LOGIC_NAME, 
+                schema, sqlStatementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1));
         sqlRewriteContext.addSQLTokenGenerators(Collections.singleton(collectionSQLTokenGenerator));
         sqlRewriteContext.generateSQLTokens();
         assertFalse(sqlRewriteContext.getSqlTokens().isEmpty());

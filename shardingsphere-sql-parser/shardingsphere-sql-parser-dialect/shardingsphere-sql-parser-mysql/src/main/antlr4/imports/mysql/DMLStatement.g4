@@ -266,7 +266,7 @@ unqualifiedShorthand
     ;
 
 qualifiedShorthand
-    : identifier DOT_ASTERISK_
+    : (identifier DOT_)? identifier DOT_ASTERISK_
     ;
 
 fromClause

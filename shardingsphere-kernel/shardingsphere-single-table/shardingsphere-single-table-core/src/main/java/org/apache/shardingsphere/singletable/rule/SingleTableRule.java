@@ -177,6 +177,11 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
         tableNames.remove(tableName.toLowerCase());
     }
     
+    @Override
+    public Collection<String> getDataSourceNames() {
+        return dataSourceNames;
+    }
+    
     private Collection<String> getExcludedTables(final Collection<ShardingSphereRule> rules) {
         return rules.stream().filter(each -> each instanceof DataNodeContainedRule)
                 .flatMap(each -> ((DataNodeContainedRule) each).getAllTables().stream()).collect(Collectors.toCollection(() -> new TreeSet<>(String.CASE_INSENSITIVE_ORDER)));

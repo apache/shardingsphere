@@ -19,6 +19,8 @@ package org.apache.shardingsphere.infra.rule.identifier.type;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
+import java.util.Collection;
+
 /**
  * ShardingSphere rule which contains mutable data node.
  */
@@ -38,4 +40,11 @@ public interface MutableDataNodeRule extends ShardingSphereRule {
      * @param tableName table name
      */
     void remove(String tableName);
+    
+    /**
+     * Get data source names.
+     *
+     * @return Get data source names
+     */
+    Collection<String> getDataSourceNames();
 }

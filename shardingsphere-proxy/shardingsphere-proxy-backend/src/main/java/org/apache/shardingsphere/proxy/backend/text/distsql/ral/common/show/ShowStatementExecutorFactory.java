@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show;
 
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.ExportSchemaConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAllVariablesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAuthorityRuleStatement;
@@ -24,9 +25,11 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowIn
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTableMetadataStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ExportSchemaConfigurationExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowAllVariablesExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowAuthorityRuleExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowInstanceExecutor;
@@ -34,6 +37,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.exec
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowReadwriteSplittingReadResourcesExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowSQLParserRuleExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowTableMetadataExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowTrafficRulesExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowTransactionRuleExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowVariableExecutor;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingReadResourcesStatement;
@@ -80,6 +84,12 @@ public final class ShowStatementExecutorFactory {
         }
         if (sqlStatement instanceof ShowInstanceModeStatement) {
             return new ShowInstanceModeExecutor();
+        }
+        if (sqlStatement instanceof ShowTrafficRulesStatement) {
+            return new ShowTrafficRulesExecutor((ShowTrafficRulesStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof ExportSchemaConfigurationStatement) {
+            return new ExportSchemaConfigurationExecutor((ExportSchemaConfigurationStatement) sqlStatement, connectionSession);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }

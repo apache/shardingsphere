@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
@@ -105,18 +104,16 @@ public final class ClusterContextManagerCoordinatorTest {
     @Mock
     private ShardingSphereRuleMetaData globalRuleMetaData;
     
-    @SneakyThrows
     @Before
-    public void setUp() {
-        PersistRepositoryConfiguration persistRepositoryConfiguration = new ClusterPersistRepositoryConfiguration("TEST", "", "", new Properties());
-        ModeConfiguration configuration = new ModeConfiguration("Cluster", persistRepositoryConfiguration, false);
+    public void setUp() throws SQLException {
+        PersistRepositoryConfiguration persistRepositoryConfig = new ClusterPersistRepositoryConfiguration("TEST", "", "", new Properties());
+        ModeConfiguration modeConfig = new ModeConfiguration("Cluster", persistRepositoryConfig, false);
         ClusterContextManagerBuilder builder = new ClusterContextManagerBuilder();
-        contextManager = builder.build(ContextManagerBuilderParameter.builder().modeConfig(configuration).dataSourcesMap(new HashMap<>()).schemaRuleConfigs(new HashMap<>())
+        contextManager = builder.build(ContextManagerBuilderParameter.builder().modeConfig(modeConfig).schemaConfigs(new HashMap<>())
                 .globalRuleConfigs(new LinkedList<>()).props(new Properties()).instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307)).build());
         assertTrue(contextManager.getMetaDataContexts().getMetaDataPersistService().isPresent());
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getMetaDataPersistService().get(), createMetaDataMap(), globalRuleMetaData, 
-                mock(ExecutorEngine.class),
-                new ConfigurationProperties(new Properties()), createOptimizerContext()));
+                mock(ExecutorEngine.class), createOptimizerContext(), new ConfigurationProperties(new Properties())));
         contextManager.renewTransactionContexts(mock(TransactionContexts.class, RETURNS_DEEP_STUBS));
         coordinator = new ClusterContextManagerCoordinator(metaDataPersistService, contextManager, mock(RegistryCenter.class));
     }
@@ -243,7 +240,7 @@ public final class ClusterContextManagerCoordinatorTest {
         when(metaData.getSchema()).thenReturn(schema);
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
-        return Collections.singletonMap("schema", metaData);
+        return new HashMap<>(Collections.singletonMap("schema", metaData));
     }
     
     private OptimizerContext createOptimizerContext() {

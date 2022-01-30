@@ -88,7 +88,7 @@ public final class ShardingSphereProxyContainer extends ShardingSphereAdapterCon
     @Override
     protected void configure() {
         withConfMapping("/docker/proxy/conf/" + getParameterizedArray().getScenario() + "/" + getParameterizedArray().getDatabaseType().getName().toLowerCase());
-        setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*ShardingSphere-Proxy start success.*"));
+        setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*ShardingSphere-Proxy .* mode started successfully.*"));
         super.configure();
     }
     

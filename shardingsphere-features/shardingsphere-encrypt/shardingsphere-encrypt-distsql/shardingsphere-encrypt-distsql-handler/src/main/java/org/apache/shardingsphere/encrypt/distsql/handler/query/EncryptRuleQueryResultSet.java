@@ -89,6 +89,6 @@ public final class EncryptRuleQueryResultSet implements DistSQLResultSet {
     
     @Override
     public String getType() {
-        return ShowEncryptRulesStatement.class.getCanonicalName();
+        return ShowEncryptRulesStatement.class.getName();
     }
 }

@@ -210,6 +210,8 @@ public enum SQLVisitorRule {
     
     ROLLBACK_TO_SAVEPOINT("RollbackToSavepoint", SQLStatementType.TCL),
     
+    UNLOCK("Unlock", SQLStatementType.TCL),
+    
     GRANT("Grant", SQLStatementType.DCL),
     
     GRANT_ROLE_OR_PRIVILEGE_TO("GrantRoleOrPrivilegeTo", SQLStatementType.DCL),

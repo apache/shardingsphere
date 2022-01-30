@@ -165,6 +165,8 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearReadwriteSplittingHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearShardingHintStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.DropTrafficRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ExportSchemaConfigurationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ParseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.PreviewStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.RefreshTableMetadataStatementTestCase;
@@ -180,6 +182,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowScalingListStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowShardingHintStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowTableMetadataStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowTrafficRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowTransactionRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowVariableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ApplyScalingStatementTestCase;
@@ -272,6 +275,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SetAutoCommitStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SetConstraintsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SetTransactionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.UnlockStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.XATestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -307,7 +311,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "alter-table")
     private final List<AlterTableStatementTestCase> alterTableTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "rename-table")
     private final List<RenameTableStatementTestCase> renameTableStatementTestCases = new LinkedList<>();
     
@@ -989,8 +993,14 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-transaction-rule")
     private final List<ShowTransactionRuleStatementTestCase> showTransactionRuleStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "show-traffic-rules")
+    private final List<ShowTrafficRulesStatementTestCase> showTrafficRulesStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "alter-sql-parser-rule")
     private final List<AlterSQLParserRuleStatementTestCase> alterSQLParserRuleStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-traffic-rule")
+    private final List<DropTrafficRuleStatementTestCase> dropTrafficRuleStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-table-metadata")
     private final List<ShowTableMetadataStatementTestCase> showTableMetadataStatementTestCases = new LinkedList<>();
@@ -1048,9 +1058,15 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-unused-sharding-key-generators")
     private final List<ShowUnusedShardingKeyGeneratorsStatementTestCase> showUnusedShardingKeyGeneratorsStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show-binlog-events")
     private final List<ShowBinlogEventsStatementTestCase> showBinlogEventsStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "unlock")
+    private final List<UnlockStatementTestCase> unlockStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "export-schema-config")
+    private final List<ExportSchemaConfigurationStatementTestCase> exportSchemaStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -1288,6 +1304,7 @@ public final class SQLParserTestCases {
         putAll(createRuleStatementTestCases, result);
         putAll(showAuthorityRuleStatementTestCases, result);
         putAll(showTransactionRuleStatementTestCases, result);
+        putAll(showTrafficRulesStatementTestCases, result);
         putAll(alterSQLParserRuleStatementTestCases, result);
         putAll(createTypeStatementTestCases, result);
         putAll(createConversionStatementTestCase, result);
@@ -1305,6 +1322,7 @@ public final class SQLParserTestCases {
         putAll(alterLanguageStatementTestCases, result);
         putAll(dropLanguageStatementTestCases, result);
         putAll(showTableMetadataStatementTestCases, result);
+        putAll(dropTrafficRuleStatementTestCases, result);
         putAll(helpStatementTestCases, result);
         putAll(showUnusedShardingAlgorithmsStatementTestCases, result);
         putAll(showUnusedShardingKeyGeneratorsStatementTestCases, result);
@@ -1314,6 +1332,8 @@ public final class SQLParserTestCases {
         putAll(countSchemaRulesStatementTestCases, result);
         putAll(alterExtensionStatementTestCase, result);
         putAll(dropExtensionStatementTestCase, result);
+        putAll(unlockStatementTestCases, result);
+        putAll(exportSchemaStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

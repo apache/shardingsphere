@@ -50,6 +50,6 @@ public final class HikariDataSourcePoolDestroyer implements DataSourcePoolDestro
     
     @Override
     public String getType() {
-        return HikariDataSource.class.getCanonicalName();
+        return HikariDataSource.class.getName();
     }
 }

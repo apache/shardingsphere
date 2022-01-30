@@ -39,21 +39,21 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ComputeNodePersistServiceTest {
-
+    
     @Mock
     private PersistRepository repository;
-
+    
     @Test
     public void assertPersistInstanceLabels() {
         ComputeNodePersistService computeNodePersistService = new ComputeNodePersistService(repository);
         InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307);
         final String instanceId = instanceDefinition.getInstanceId().getId();
         computeNodePersistService.persistInstanceLabels(instanceId, Collections.singletonList("test"), true);
-        verify(repository, times(1)).persist(ComputeNode.getInstanceLabelNodePath(instanceId), YamlEngine.marshal(Collections.singletonList("test")));
+        verify(repository, times(1)).persist(ComputeNode.getInstanceLabelsNodePath(instanceId), YamlEngine.marshal(Collections.singletonList("test")));
         computeNodePersistService.persistInstanceLabels(instanceId, Collections.emptyList(), true);
-        verify(repository, times(0)).persist(ComputeNode.getInstanceLabelNodePath(instanceId), YamlEngine.marshal(Collections.emptyList()));
+        verify(repository, times(0)).persist(ComputeNode.getInstanceLabelsNodePath(instanceId), YamlEngine.marshal(Collections.emptyList()));
     }
-
+    
     @Test
     public void assertPersistInstanceWorkerId() {
         InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307);
@@ -61,15 +61,15 @@ public final class ComputeNodePersistServiceTest {
         new ComputeNodePersistService(repository).persistInstanceWorkerId(instanceId, 100L);
         verify(repository).persist(ComputeNode.getInstanceWorkerIdNodePath(instanceId), String.valueOf(100L));
     }
-
+    
     @Test
     public void assertLoadInstanceLabels() {
         InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307);
         final String instanceId = instanceDefinition.getInstanceId().getId();
         new ComputeNodePersistService(repository).loadInstanceLabels(instanceId);
-        verify(repository).get(ComputeNode.getInstanceLabelNodePath(instanceId));
+        verify(repository).get(ComputeNode.getInstanceLabelsNodePath(instanceId));
     }
-
+    
     @Test
     public void assertLoadInstanceStatus() {
         InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307);
@@ -77,7 +77,7 @@ public final class ComputeNodePersistServiceTest {
         new ComputeNodePersistService(repository).loadInstanceStatus(instanceId);
         verify(repository).get(ComputeNode.getInstanceStatusNodePath(instanceId));
     }
-
+    
     @Test
     public void assertLoadInstanceWorkerId() {
         InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307);
@@ -85,20 +85,20 @@ public final class ComputeNodePersistServiceTest {
         new ComputeNodePersistService(repository).loadInstanceWorkerId(instanceId);
         verify(repository).get(ComputeNode.getInstanceWorkerIdNodePath(instanceId));
     }
-
+    
     @Test
     public void assertLoadComputeNodeInstances() {
         InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307);
         new ComputeNodePersistService(repository).loadComputeNodeInstances(instanceDefinition.getInstanceType(), Collections.singletonList("test"));
         verify(repository).getChildrenKeys(ComputeNode.getOnlineNodePath(instanceDefinition.getInstanceType()));
     }
-
+    
     @Test
     public void assertLoadAllComputeNodeInstances() {
         Collection<ComputeNodeInstance> actual = new ComputeNodePersistService(repository).loadAllComputeNodeInstances();
         assertThat(actual, isA(Collection.class));
     }
-
+    
     @Test
     public void assertLoadComputeNodeInstance() {
         InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307);

@@ -39,7 +39,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Rule spring boot configuration for data base discovery.
+ * Rule spring boot configuration for database discovery.
  */
 @Configuration
 @EnableConfigurationProperties(YamlDatabaseDiscoveryRuleSpringBootConfiguration.class)
@@ -61,7 +61,7 @@ public class DatabaseDiscoveryRuleSpringbootConfiguration {
     @Bean
     public RuleConfiguration discoveryRuleConfiguration(final ObjectProvider<Map<String, DatabaseDiscoveryType>> discoveryTypes) {
         AlgorithmProvidedDatabaseDiscoveryRuleConfiguration result = swapper.swapToObject(yamlConfig.getDatabaseDiscovery());
-        Map<String, DatabaseDiscoveryType> discoveryTypeMap = Optional.ofNullable(discoveryTypes.getIfAvailable()).orElse(Collections.emptyMap());
+        Map<String, DatabaseDiscoveryType> discoveryTypeMap = Optional.ofNullable(discoveryTypes.getIfAvailable()).orElseGet(Collections::emptyMap);
         result.setDiscoveryTypes(discoveryTypeMap);
         return result;
     }

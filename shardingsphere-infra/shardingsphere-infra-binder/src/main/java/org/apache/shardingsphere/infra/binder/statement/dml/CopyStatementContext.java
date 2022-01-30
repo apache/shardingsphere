@@ -17,21 +17,15 @@
 
 package org.apache.shardingsphere.infra.binder.statement.dml;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.SchemaAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CopyStatement;
 
 /**
  * Copy statement context.
  */
-@Getter
-public final class CopyStatementContext extends CommonSQLStatementContext<CopyStatement> implements SchemaAvailable {
+public final class CopyStatementContext extends CommonSQLStatementContext<CopyStatement> {
     
-    private final String schemaName;
-    
-    public CopyStatementContext(final CopyStatement sqlStatement, final String schemaName) {
+    public CopyStatementContext(final CopyStatement sqlStatement) {
         super(sqlStatement);
-        this.schemaName = schemaName;
     }
 }

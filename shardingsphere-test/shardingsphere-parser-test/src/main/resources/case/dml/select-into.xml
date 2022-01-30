@@ -195,4 +195,10 @@
         </where>
         <lock start-index="46" stop-index="55"/>
     </select>
+    
+    <select sql-case-id="select_into_param_without_at">
+        <projections start-index="7" stop-index="7">
+            <expression-projection text="1" start-index="7" stop-index="7" />
+        </projections>
+    </select>
 </sql-parser-test-cases>

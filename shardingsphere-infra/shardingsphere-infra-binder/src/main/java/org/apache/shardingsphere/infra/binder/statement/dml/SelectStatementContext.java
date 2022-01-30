@@ -36,7 +36,6 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ParameterMarkerProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.SchemaAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
@@ -45,6 +44,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.SubqueryType;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -61,9 +61,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -75,7 +75,7 @@ import java.util.stream.Collectors;
  * Select SQL statement context.
  */
 @Getter
-public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable, WhereAvailable, SchemaAvailable {
+public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable, WhereAvailable {
     
     private final TablesContext tablesContext;
     
@@ -89,7 +89,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private final Map<Integer, SelectStatementContext> subqueryContexts;
     
-    private final String schemaName;
+    private final Collection<WhereSegment> whereSegments = new LinkedList<>();
     
     @Setter
     private SubqueryType subqueryType;
@@ -97,8 +97,10 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     @Setter
     private boolean needAggregateRewrite;
     
-    public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, final SelectStatement sqlStatement, final String defaultSchemaName) {
+    public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, 
+                                  final SelectStatement sqlStatement, final String defaultSchemaName) {
         super(sqlStatement);
+        whereSegments.addAll(getWhereSegments(sqlStatement));
         subqueryContexts = createSubqueryContexts(metaDataMap, parameters, defaultSchemaName);
         tablesContext = new TablesContext(getAllTableSegments(), subqueryContexts);
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
@@ -106,11 +108,11 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
         projectionsContext = new ProjectionsContextEngine(schema, getDatabaseType())
                 .createProjectionsContext(getSqlStatement().getFrom(), getSqlStatement().getProjections(), groupByContext, orderByContext);
-        paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
-        schemaName = defaultSchemaName;
+        paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters, whereSegments);
     }
     
-    private Map<Integer, SelectStatementContext> createSubqueryContexts(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, final String defaultSchemaName) {
+    private Map<Integer, SelectStatementContext> createSubqueryContexts(final Map<String, ShardingSphereMetaData> metaDataMap, 
+                                                                        final List<Object> parameters, final String defaultSchemaName) {
         Collection<SubquerySegment> subquerySegments = SubqueryExtractUtil.getSubquerySegments(getSqlStatement());
         Map<Integer, SelectStatementContext> result = new HashMap<>(subquerySegments.size(), 1);
         for (SubquerySegment each : subquerySegments) {
@@ -177,14 +179,20 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
                 return true;
             }
         }
-        Collection<ParameterMarkerExpressionSegment> expressions = getWhere().isPresent() 
-                ? ExpressionExtractUtil.getParameterMarkerExpressions(Collections.singletonList(getWhere().get().getExpr())) : Collections.emptyList();
-        for (ParameterMarkerExpressionSegment each : expressions) {
+        for (ParameterMarkerExpressionSegment each : getParameterMarkerExpressions()) {
             if (ParameterMarkerType.DOLLAR == each.getParameterMarkerType()) {
                 return true;
             }
         }
         return false;
+    }
+    
+    private Collection<ParameterMarkerExpressionSegment> getParameterMarkerExpressions() {
+        Collection<ExpressionSegment> expressions = new LinkedList<>();
+        for (WhereSegment each : whereSegments) {
+            expressions.add(each.getExpr());
+        }
+        return ExpressionExtractUtil.getParameterMarkerExpressions(expressions);
     }
     
     /**
@@ -288,8 +296,16 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     @Override
-    public Optional<WhereSegment> getWhere() {
-        return getSqlStatement().getWhere();
+    public Collection<WhereSegment> getWhereSegments() {
+        return whereSegments;
+    }
+    
+    private Collection<WhereSegment> getWhereSegments(final SelectStatement selectStatement) {
+        Collection<WhereSegment> result = new LinkedList<>();
+        selectStatement.getWhere().ifPresent(result::add);
+        result.addAll(WhereExtractUtil.getSubqueryWhereSegments(selectStatement));
+        result.addAll(WhereExtractUtil.getJoinWhereSegments(selectStatement));
+        return result;
     }
     
     private Collection<TableSegment> getAllTableSegments() {

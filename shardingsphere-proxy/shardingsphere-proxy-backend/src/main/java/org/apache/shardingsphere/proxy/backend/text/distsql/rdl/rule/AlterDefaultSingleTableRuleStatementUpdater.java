@@ -75,6 +75,6 @@ public final class AlterDefaultSingleTableRuleStatementUpdater implements RuleDe
     
     @Override
     public String getType() {
-        return AlterDefaultSingleTableRuleStatement.class.getCanonicalName();
+        return AlterDefaultSingleTableRuleStatement.class.getName();
     }
 }

@@ -16,22 +16,16 @@
   ~ limitations under the License.
   -->
 
-<#assign package="" />
-<#if feature?split(",")?size gt 1>
-    <#assign package="mixed" />
-<#else>
-    <#assign package = feature?replace('-', '.') />
-</#if>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>shardingsphere-jdbc-sample</artifactId>
+        <artifactId>shardingsphere-${product}-sample</artifactId>
         <version>${r'${revision}'}</version>
     </parent>
-    <artifactId>shardingsphere-jdbc-${mode}-${transaction}-${package}-${framework}-example</artifactId>
+    <artifactId>${feature?replace(',', '-')}--${framework}--${mode}--${transaction}</artifactId>
     <name>${r'${project.artifactId}'}</name>
     
     <dependencies>

@@ -34,6 +34,6 @@ public final class DataSourcePoolMetaDataFactoryTest {
     
     @Test
     public void assertNewInstanceForHikari() {
-        assertThat(DataSourcePoolMetaDataFactory.newInstance(HikariDataSource.class.getCanonicalName()), instanceOf(HikariDataSourcePoolMetaData.class));
+        assertThat(DataSourcePoolMetaDataFactory.newInstance(HikariDataSource.class.getName()), instanceOf(HikariDataSourcePoolMetaData.class));
     }
 }

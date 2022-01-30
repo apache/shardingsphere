@@ -40,6 +40,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public final class PaginationContextEngineTest {
     
@@ -48,7 +49,8 @@ public final class PaginationContextEngineTest {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, new NumberLiteralLimitValueSegment(0, 10, 100L),
                 new NumberLiteralLimitValueSegment(0, 10, 100L)));
-        PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(selectStatement, null, Collections.emptyList());
+        PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(
+                selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
         assertTrue(paginationContext.getOffsetSegment().isPresent());
         assertTrue(paginationContext.getRowCountSegment().isPresent());
     }
@@ -58,7 +60,8 @@ public final class PaginationContextEngineTest {
         PostgreSQLSelectStatement selectStatement = new PostgreSQLSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, new NumberLiteralLimitValueSegment(0, 10, 100L),
                 new NumberLiteralLimitValueSegment(0, 10, 100L)));
-        PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(selectStatement, null, Collections.emptyList());
+        PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(
+                selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
         assertTrue(paginationContext.getOffsetSegment().isPresent());
         assertTrue(paginationContext.getRowCountSegment().isPresent());
     }
@@ -68,7 +71,8 @@ public final class PaginationContextEngineTest {
         SQL92SelectStatement selectStatement = new SQL92SelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, new NumberLiteralLimitValueSegment(0, 10, 100L),
                 new NumberLiteralLimitValueSegment(0, 10, 100L)));
-        PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(selectStatement, null, Collections.emptyList());
+        PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(
+                selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
         assertTrue(paginationContext.getOffsetSegment().isPresent());
         assertTrue(paginationContext.getRowCountSegment().isPresent());
     }
@@ -78,7 +82,8 @@ public final class PaginationContextEngineTest {
         SQLServerSelectStatement selectStatement = new SQLServerSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, new NumberLiteralLimitValueSegment(0, 10, 100L),
                 new NumberLiteralLimitValueSegment(0, 10, 100L)));
-        PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(selectStatement, null, Collections.emptyList());
+        PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(
+                selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
         assertTrue(paginationContext.getOffsetSegment().isPresent());
         assertTrue(paginationContext.getRowCountSegment().isPresent());
     }
@@ -91,7 +96,8 @@ public final class PaginationContextEngineTest {
         SQLServerSelectStatement selectStatement = new SQLServerSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.getProjections().getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(0, 0, subquerySelectStatement), ""));
-        PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(selectStatement, null, Collections.emptyList());
+        PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(
+                selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
     }
@@ -100,9 +106,11 @@ public final class PaginationContextEngineTest {
     public void assertCreatePaginationContextWhenLimitSegmentTopSegmentAbsentAndWhereSegmentPresent() {
         SQLServerSelectStatement selectStatement = new SQLServerSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        selectStatement.setWhere(new WhereSegment(0, 10, null));
+        WhereSegment where = new WhereSegment(0, 10, null);
+        selectStatement.setWhere(where);
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
-        PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(selectStatement, projectionsContext, Collections.emptyList());
+        PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(
+                selectStatement, projectionsContext, Collections.emptyList(), Collections.singletonList(where));
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
     }
@@ -135,6 +143,7 @@ public final class PaginationContextEngineTest {
     private void assertCreatePaginationContextWhenResultIsPaginationContext(final SelectStatement selectStatement) {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
-        assertThat(new PaginationContextEngine().createPaginationContext(selectStatement, projectionsContext, Collections.emptyList()), instanceOf(PaginationContext.class));
+        assertThat(new PaginationContextEngine().createPaginationContext(
+                selectStatement, projectionsContext, Collections.emptyList(), Collections.emptyList()), instanceOf(PaginationContext.class));
     }
 }
