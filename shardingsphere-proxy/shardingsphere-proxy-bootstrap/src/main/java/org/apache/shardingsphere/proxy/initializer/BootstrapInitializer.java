@@ -20,8 +20,6 @@ package org.apache.shardingsphere.proxy.initializer;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
@@ -34,15 +32,19 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfiguratio
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
+import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
+import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -63,7 +65,7 @@ public final class BootstrapInitializer {
         ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode() ? null : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
         ContextManager contextManager = createContextManager(yamlConfig, modeConfig, port);
         ProxyContext.getInstance().init(contextManager);
-        initRuleAlteredJobWorker(modeConfig, contextManager);
+        contextManagerInitializedCallback(modeConfig, contextManager);
         setDatabaseServerInfo();
     }
     
@@ -79,19 +81,18 @@ public final class BootstrapInitializer {
         return ContextManagerBuilderFactory.newInstance(modeConfig).build(parameter);
     }
     
-    private void initRuleAlteredJobWorker(final ModeConfiguration modeConfig, final ContextManager contextManager) {
-        if (null == modeConfig) {
-            return;
+    private void contextManagerInitializedCallback(final ModeConfiguration modeConfig, final ContextManager contextManager) {
+        Map<String, ContextManagerLifecycleListener> listenerMap = SingletonSPIRegistry.getTypedSingletonInstancesMap(ContextManagerLifecycleListener.class);
+        log.info("listenerMap.keySet={}", listenerMap.keySet());
+        for (Entry<String, ContextManagerLifecycleListener> entry : listenerMap.entrySet()) {
+            try {
+                entry.getValue().onInitialized(modeConfig, contextManager);
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                log.error("contextManager onInitialized callback for '{}' failed", entry.getKey(), ex);
+            }
         }
-        // TODO decouple "Cluster" to pluggable
-        if (!"Cluster".equals(modeConfig.getType())) {
-            log.info("mode type is not Cluster, ignore initRuleAlteredJobWorker");
-            return;
-        }
-        PipelineContext.initModeConfig(modeConfig);
-        PipelineContext.initContextManager(contextManager);
-        // TODO init worker only if necessary, e.g. 1) rule altered action configured, 2) enabled job exists, 3) stopped job restarted
-        RuleAlteredJobWorker.initWorkerIfNecessary();
     }
     
     private void setDatabaseServerInfo() {
