@@ -73,20 +73,17 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -269,7 +266,7 @@ public final class ClusterContextManagerCoordinatorTest {
         when(qualifiedSchema.getSchemaName()).thenReturn("test_schema");
         when(mockPrimaryStateChangedEvent.getQualifiedSchema()).thenReturn(qualifiedSchema);
         ShardingSphereRuleMetaData mockShardingSphereRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        List<ShardingSphereRule> rules = new ArrayList<>();
+        Collection<ShardingSphereRule> rules = new LinkedList<>();
         StatusContainedRule mockStatusContainedRule = mock(StatusContainedRule.class);
         rules.add(mockStatusContainedRule);
         when(mockShardingSphereRuleMetaData.getRules()).thenReturn(rules);
@@ -284,17 +281,17 @@ public final class ClusterContextManagerCoordinatorTest {
     public void assertRenewInstanceStatus() {
         StateEvent mockStateEvent = mock(StateEvent.class);
         when(mockStateEvent.getInstanceId()).thenReturn(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId());
-        List<String> testStates = new ArrayList<>();
+        Collection<String> testStates = new LinkedList<>();
         testStates.add(StateType.OK.name());
         testStates.add(StateType.LOCK.name());
         when(mockStateEvent.getStatus()).thenReturn(testStates);
         coordinator.renew(mockStateEvent);
         assertNotNull(contextManager.getInstanceContext());
         assertNotNull(contextManager.getInstanceContext().getInstance());
-        assertEquals(testStates, contextManager.getInstanceContext().getInstance().getStatus());
+        assertThat(contextManager.getInstanceContext().getInstance().getStatus(), is(testStates));
         testStates.add(StateType.CIRCUIT_BREAK.name());
         coordinator.renew(mockStateEvent);
-        assertEquals(StateType.CIRCUIT_BREAK, contextManager.getInstanceContext().getState().getCurrentState());
+        assertThat(contextManager.getInstanceContext().getState().getCurrentState(), is(StateType.CIRCUIT_BREAK));
     }
     
     @Test
@@ -305,19 +302,19 @@ public final class ClusterContextManagerCoordinatorTest {
         coordinator.renew(mockWorkerIdEvent);
         assertNotNull(contextManager.getInstanceContext());
         assertNotNull(contextManager.getInstanceContext().getInstance());
-        assertEquals(12223L, contextManager.getInstanceContext().getWorkerId());
+        assertThat(contextManager.getInstanceContext().getWorkerId(), is(12223L));
     }
     
     @Test
     public void assertRenewInstanceLabels() {
         LabelsEvent mockLabelsEvent = mock(LabelsEvent.class);
-        List<String> labels = new ArrayList<>();
+        Collection<String> labels = new LinkedList<String>();
         labels.add("test");
         when(mockLabelsEvent.getLabels()).thenReturn(labels);
         when(mockLabelsEvent.getInstanceId()).thenReturn(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId());
         coordinator.renew(mockLabelsEvent);
         assertNotNull(contextManager.getInstanceContext());
         assertNotNull(contextManager.getInstanceContext().getInstance());
-        assertEquals(labels, contextManager.getInstanceContext().getInstance().getLabels());
+        assertThat(contextManager.getInstanceContext().getInstance().getLabels(), is(labels));
     }
 } 
