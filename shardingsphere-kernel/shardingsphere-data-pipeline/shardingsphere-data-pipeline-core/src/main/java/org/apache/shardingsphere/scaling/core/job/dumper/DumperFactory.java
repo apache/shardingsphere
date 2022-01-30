@@ -24,12 +24,13 @@ import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfigura
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 
+import javax.sql.DataSource;
 import java.lang.reflect.Constructor;
 
 /**
@@ -42,16 +43,18 @@ public final class DumperFactory {
      * Create inventory dumper.
      *
      * @param inventoryDumperConfig inventory dumper configuration
-     * @param dataSourceManager data source factory
      * @param channel channel
+     * @param sourceDataSource data source
+     * @param sourceMetaDataLoader metadata loader
      * @return inventory dumper
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static InventoryDumper createInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
+    public static InventoryDumper createInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineChannel channel,
+                                                        final DataSource sourceDataSource, final PipelineTableMetaDataLoader sourceMetaDataLoader) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getInstance(inventoryDumperConfig.getDataSourceConfig().getDatabaseType().getName());
         Constructor<? extends InventoryDumper> constructor = scalingEntry.getInventoryDumperClass()
-                .getConstructor(InventoryDumperConfiguration.class, PipelineDataSourceManager.class, PipelineChannel.class);
-        return constructor.newInstance(inventoryDumperConfig, dataSourceManager, channel);
+                .getConstructor(InventoryDumperConfiguration.class, PipelineChannel.class, DataSource.class, PipelineTableMetaDataLoader.class);
+        return constructor.newInstance(inventoryDumperConfig, channel, sourceDataSource, sourceMetaDataLoader);
     }
     
     /**
@@ -59,17 +62,17 @@ public final class DumperFactory {
      *
      * @param dumperConfig dumper configuration
      * @param position position
-     * @param dataSourceManager data source manager
      * @param channel channel
+     * @param sourceMetaDataLoader metadata loader
      * @return incremental dumper
      */
     @SneakyThrows(ReflectiveOperationException.class)
     public static IncrementalDumper createIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<?> position,
-                                                            final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
+                                                            final PipelineChannel channel, final PipelineTableMetaDataLoader sourceMetaDataLoader) {
         String databaseType = dumperConfig.getDataSourceConfig().getDatabaseType().getName();
         ScalingEntry scalingEntry = ScalingEntryLoader.getInstance(databaseType);
         Constructor<? extends IncrementalDumper> constructor = scalingEntry.getIncrementalDumperClass()
-                .getConstructor(DumperConfiguration.class, IngestPosition.class, PipelineDataSourceManager.class, PipelineChannel.class);
-        return constructor.newInstance(dumperConfig, position, dataSourceManager, channel);
+                .getConstructor(DumperConfiguration.class, IngestPosition.class, PipelineChannel.class, PipelineTableMetaDataLoader.class);
+        return constructor.newInstance(dumperConfig, position, channel, sourceMetaDataLoader);
     }
 }
