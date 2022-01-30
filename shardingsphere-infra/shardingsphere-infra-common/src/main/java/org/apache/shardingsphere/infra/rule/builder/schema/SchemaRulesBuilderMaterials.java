@@ -19,12 +19,8 @@ package org.apache.shardingsphere.infra.rule.builder.schema;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-
-import javax.sql.DataSource;
-import java.util.Collection;
-import java.util.Map;
+import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 
 /**
  * Schema rules builder materials.
@@ -35,9 +31,7 @@ public final class SchemaRulesBuilderMaterials {
     
     private final String schemaName;
     
-    private final Collection<RuleConfiguration> schemaRuleConfigs;
-    
-    private final Map<String, DataSource> dataSourceMap;
+    private final SchemaConfiguration schemaConfig;
     
     private final ConfigurationProperties props;
 }

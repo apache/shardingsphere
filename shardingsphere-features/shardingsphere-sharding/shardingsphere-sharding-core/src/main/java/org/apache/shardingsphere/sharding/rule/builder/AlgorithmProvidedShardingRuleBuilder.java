@@ -36,7 +36,7 @@ public final class AlgorithmProvidedShardingRuleBuilder implements SchemaRuleBui
     
     @Override
     public ShardingRule build(final SchemaRulesBuilderMaterials materials, final AlgorithmProvidedShardingRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
-        Map<String, DataSource> dataSourceMap = materials.getDataSourceMap();
+        Map<String, DataSource> dataSourceMap = materials.getSchemaConfig().getDataSources();
         Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data sources cannot be empty.");
         return new ShardingRule(config, dataSourceMap.keySet());
     }

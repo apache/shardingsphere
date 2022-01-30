@@ -34,7 +34,7 @@ public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilder implements Sche
     @Override
     public DatabaseDiscoveryRule build(final SchemaRulesBuilderMaterials materials, final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config,
                                        final Collection<ShardingSphereRule> builtRules) {
-        return new DatabaseDiscoveryRule(materials.getSchemaName(), materials.getDataSourceMap(), config);
+        return new DatabaseDiscoveryRule(materials.getSchemaName(), materials.getSchemaConfig().getDataSources(), config);
     }
     
     @Override

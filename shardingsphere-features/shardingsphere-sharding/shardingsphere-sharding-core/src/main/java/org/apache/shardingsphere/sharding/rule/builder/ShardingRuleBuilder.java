@@ -36,7 +36,7 @@ public final class ShardingRuleBuilder implements SchemaRuleBuilder<ShardingRule
     
     @Override
     public ShardingRule build(final SchemaRulesBuilderMaterials materials, final ShardingRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
-        Map<String, DataSource> dataSourceMap = materials.getDataSourceMap();
+        Map<String, DataSource> dataSourceMap = materials.getSchemaConfig().getDataSources();
         Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data source names cannot be empty.");
         return new ShardingRule(config, dataSourceMap.keySet());
     }

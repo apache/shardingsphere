@@ -38,6 +38,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -51,7 +52,7 @@ public final class SingleTableRuleBuilderTest {
     public void assertBuild() {
         Collection<SchemaRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class);
         SchemaRuleBuilder builder = builders.iterator().next();
-        SchemaRulesBuilderMaterials materials = mock(SchemaRulesBuilderMaterials.class);
+        SchemaRulesBuilderMaterials materials = mock(SchemaRulesBuilderMaterials.class, RETURNS_DEEP_STUBS);
         Properties properties = new Properties();
         properties.setProperty(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED.getKey(), Boolean.FALSE.toString());
         when(materials.getProps()).thenReturn(new ConfigurationProperties(properties));
@@ -66,7 +67,7 @@ public final class SingleTableRuleBuilderTest {
     public void assertBuildWithDefaultDataSource() {
         Properties properties = new Properties();
         properties.setProperty(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED.getKey(), Boolean.FALSE.toString());
-        SchemaRulesBuilderMaterials materials = mock(SchemaRulesBuilderMaterials.class);
+        SchemaRulesBuilderMaterials materials = mock(SchemaRulesBuilderMaterials.class, RETURNS_DEEP_STUBS);
         when(materials.getProps()).thenReturn(new ConfigurationProperties(properties));
         ShardingSphereRule shardingSphereRule = mock(ShardingSphereRule.class);
         Collection<SchemaRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class);

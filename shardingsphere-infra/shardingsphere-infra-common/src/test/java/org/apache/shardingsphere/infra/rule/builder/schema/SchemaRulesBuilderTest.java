@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.rule.builder.schema;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
 import org.apache.shardingsphere.infra.fixture.TestRuleConfiguration;
 import org.apache.shardingsphere.infra.fixture.TestShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -36,7 +37,7 @@ public final class SchemaRulesBuilderTest {
     @Test
     public void assertBuild() {
         Collection<ShardingSphereRule> actual = SchemaRulesBuilder.buildRules(new SchemaRulesBuilderMaterials(
-                "schema_name", Collections.singleton(new TestRuleConfiguration()), Collections.emptyMap(), new ConfigurationProperties(new Properties())));
+                "schema_name", new DataSourceProvidedSchemaConfiguration(Collections.emptyMap(), Collections.singleton(new TestRuleConfiguration())), new ConfigurationProperties(new Properties())));
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), instanceOf(TestShardingSphereRule.class));
     }

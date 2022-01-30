@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rule.builder;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
@@ -76,6 +77,6 @@ public final class AlgorithmProvidedShardingRuleBuilderTest {
     }
     
     private SchemaRulesBuilderMaterials createSchemaRulesBuilderMaterials(final Map<String, DataSource> dataSourceMap) {
-        return new SchemaRulesBuilderMaterials("test_schema", Collections.emptyList(), dataSourceMap, new ConfigurationProperties(new Properties()));
+        return new SchemaRulesBuilderMaterials("test_schema", new DataSourceProvidedSchemaConfiguration(dataSourceMap, Collections.emptyList()), new ConfigurationProperties(new Properties()));
     }
 }

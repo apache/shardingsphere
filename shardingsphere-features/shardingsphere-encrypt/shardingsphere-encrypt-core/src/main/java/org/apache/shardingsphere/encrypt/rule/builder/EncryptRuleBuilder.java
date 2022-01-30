@@ -33,7 +33,7 @@ public final class EncryptRuleBuilder implements SchemaRuleBuilder<EncryptRuleCo
     
     @Override
     public EncryptRule build(final SchemaRulesBuilderMaterials materials, final EncryptRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
-        return new EncryptRule(config, materials.getDataSourceMap());
+        return new EncryptRule(config, materials.getSchemaConfig().getDataSources());
     }
     
     @Override

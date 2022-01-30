@@ -23,6 +23,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHe
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -31,8 +32,6 @@ import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -54,9 +53,8 @@ public final class DatabaseDiscoveryRuleBuilderTest {
                 Collections.singleton(dataSourceConfig), Collections.singletonMap("ha_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
                 Collections.singletonMap("TEST", new ShardingSphereAlgorithmConfiguration("TEST", new Properties())));
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, Collections.singletonList(config)).get(config);
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put("name", mock(DataSource.class));
-        assertThat(builder.build(new SchemaRulesBuilderMaterials("test_schema", Collections.emptyList(),
-                dataSourceMap, new ConfigurationProperties(new Properties())), config, Collections.emptyList()), instanceOf(DatabaseDiscoveryRule.class));
+        assertThat(builder.build(new SchemaRulesBuilderMaterials("test_schema", 
+                new DataSourceProvidedSchemaConfiguration(Collections.singletonMap("name", mock(DataSource.class)), Collections.emptyList()), 
+                new ConfigurationProperties(new Properties())), config, Collections.emptyList()), instanceOf(DatabaseDiscoveryRule.class));
     }
 }

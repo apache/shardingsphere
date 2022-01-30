@@ -64,8 +64,8 @@ public final class SchemaRulesBuilder {
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, SchemaRuleBuilder> getRuleBuilderMap(final SchemaRulesBuilderMaterials materials) {
         Map<RuleConfiguration, SchemaRuleBuilder> result = new LinkedHashMap<>();
-        result.putAll(getDistributedRuleBuilderMap(materials.getSchemaRuleConfigs()));
-        result.putAll(getEnhancedRuleBuilderMap(materials.getSchemaRuleConfigs()));
+        result.putAll(getDistributedRuleBuilderMap(materials.getSchemaConfig().getRuleConfigurations()));
+        result.putAll(getEnhancedRuleBuilderMap(materials.getSchemaConfig().getRuleConfigurations()));
         result.putAll(getMissedDefaultRuleBuilderMap(result.values()));
         return result;
     }

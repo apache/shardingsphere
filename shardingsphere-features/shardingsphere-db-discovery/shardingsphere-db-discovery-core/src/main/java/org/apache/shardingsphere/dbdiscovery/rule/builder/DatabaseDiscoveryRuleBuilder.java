@@ -40,7 +40,7 @@ public final class DatabaseDiscoveryRuleBuilder implements SchemaRuleBuilder<Dat
         Map<String, DataSource> realDataSourceMap = new HashMap<>();
         for (DatabaseDiscoveryDataSourceRuleConfiguration each : config.getDataSources()) {
             for (String datasourceName : each.getDataSourceNames()) {
-                realDataSourceMap.put(datasourceName, materials.getDataSourceMap().get(datasourceName));
+                realDataSourceMap.put(datasourceName, materials.getSchemaConfig().getDataSources().get(datasourceName));
             }
         }
         return new DatabaseDiscoveryRule(materials.getSchemaName(), realDataSourceMap, config);
