@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.sharding.rule.builder;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -47,8 +46,7 @@ public final class ShardingRuleBuilderTest {
     public void assertBuild() {
         ShardingRuleConfiguration ruleConfig = mock(ShardingRuleConfiguration.class);
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
-        assertThat(builder.build(new SchemaRulesBuilderMaterials("test_schema", Collections.emptyList(), 
-                mock(DatabaseType.class), Collections.singletonMap("name", mock(DataSource.class, RETURNS_DEEP_STUBS)), 
+        assertThat(builder.build(new SchemaRulesBuilderMaterials("test_schema", Collections.emptyList(), Collections.singletonMap("name", mock(DataSource.class, RETURNS_DEEP_STUBS)), 
                 new ConfigurationProperties(new Properties())), ruleConfig, Collections.emptyList()), instanceOf(ShardingRule.class));
     }
     
@@ -57,8 +55,7 @@ public final class ShardingRuleBuilderTest {
     public void assertBuildWithNullDataSourceMap() {
         ShardingRuleConfiguration ruleConfig = mock(ShardingRuleConfiguration.class);
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
-        builder.build(new SchemaRulesBuilderMaterials("test_schema", Collections.emptyList(),
-                mock(DatabaseType.class), null, new ConfigurationProperties(new Properties())), ruleConfig, Collections.emptyList());
+        builder.build(new SchemaRulesBuilderMaterials("test_schema", Collections.emptyList(), null, new ConfigurationProperties(new Properties())), ruleConfig, Collections.emptyList());
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -67,6 +64,6 @@ public final class ShardingRuleBuilderTest {
         ShardingRuleConfiguration ruleConfig = mock(ShardingRuleConfiguration.class);
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
         builder.build(new SchemaRulesBuilderMaterials("test_schema", Collections.emptyList(),
-                mock(DatabaseType.class), Collections.emptyMap(), new ConfigurationProperties(new Properties())), ruleConfig, Collections.emptyList());
+                Collections.emptyMap(), new ConfigurationProperties(new Properties())), ruleConfig, Collections.emptyList());
     }
 }
