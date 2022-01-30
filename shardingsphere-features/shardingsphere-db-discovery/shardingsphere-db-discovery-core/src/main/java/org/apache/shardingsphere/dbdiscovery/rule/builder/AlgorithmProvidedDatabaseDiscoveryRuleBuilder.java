@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 import java.util.Collection;
 
 /**
- * Algorithm provided data base discovery rule builder.
+ * Algorithm provided database discovery rule builder.
  */
 public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilder implements SchemaRuleBuilder<AlgorithmProvidedDatabaseDiscoveryRuleConfiguration> {
     
