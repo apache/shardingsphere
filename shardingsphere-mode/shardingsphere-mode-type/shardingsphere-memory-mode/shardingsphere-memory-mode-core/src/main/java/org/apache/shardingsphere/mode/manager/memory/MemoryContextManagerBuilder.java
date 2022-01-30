@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.memory;
 
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.transaction.context.TransactionContextsBuilder;
 
 import java.sql.SQLException;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Memory context manager builder.
@@ -56,13 +58,17 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
         ComputeNodeInstance instance = new ComputeNodeInstance();
         instance.setInstanceDefinition(parameter.getInstanceDefinition());
         instance.setLabels(parameter.getLabels());
-        return new InstanceContext(instance, new MemoryWorkerIdGenerator(), parameter.getModeConfig());
+        return new InstanceContext(instance, new MemoryWorkerIdGenerator(), buildMemoryModeConfiguration(parameter.getModeConfig()));
     }
     
     private void setInstanceContext(final ContextManager contextManager) {
         contextManager.getMetaDataContexts().getMetaDataMap()
             .forEach((key, value) -> value.getRuleMetaData().getRules().stream().filter(each -> each instanceof InstanceAwareRule)
             .forEach(each -> ((InstanceAwareRule) each).setInstanceContext(contextManager.getInstanceContext())));
+    }
+    
+    private ModeConfiguration buildMemoryModeConfiguration(final ModeConfiguration modeConfiguration) {
+        return Optional.ofNullable(modeConfiguration).orElseGet(() -> new ModeConfiguration(getType(), null, false));
     }
     
     @Override
