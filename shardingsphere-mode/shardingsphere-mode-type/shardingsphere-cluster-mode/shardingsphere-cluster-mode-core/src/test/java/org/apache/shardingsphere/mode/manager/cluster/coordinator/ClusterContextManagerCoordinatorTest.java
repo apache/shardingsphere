@@ -40,6 +40,8 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
+import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
@@ -51,7 +53,11 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
@@ -67,24 +73,29 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -249,5 +260,64 @@ public final class ClusterContextManagerCoordinatorTest {
         schemas.put("schema", new FederationSchemaMetaData("schema", Collections.emptyMap()));
         when(result.getFederationMetaData().getSchemas()).thenReturn(schemas);
         return result;
+    }
+    
+    @Test
+    public void assertRenewPrimaryDSNames() {
+        PrimaryStateChangedEvent mockPrimaryStateChangedEvent = mock(PrimaryStateChangedEvent.class);
+        QualifiedSchema qualifiedSchema = mock(QualifiedSchema.class);
+        when(qualifiedSchema.getSchemaName()).thenReturn("test_schema");
+        when(mockPrimaryStateChangedEvent.getQualifiedSchema()).thenReturn(qualifiedSchema);
+        ShardingSphereRuleMetaData mockShardingSphereRuleMetaData = mock(ShardingSphereRuleMetaData.class);
+        List<ShardingSphereRule> rules = new ArrayList<>();
+        StatusContainedRule mockStatusContainedRule = mock(StatusContainedRule.class);
+        rules.add(mockStatusContainedRule);
+        when(mockShardingSphereRuleMetaData.getRules()).thenReturn(rules);
+        ShardingSphereMetaData mockShardingSphereMetaData = mock(ShardingSphereMetaData.class);
+        when(mockShardingSphereMetaData.getRuleMetaData()).thenReturn(mockShardingSphereRuleMetaData);
+        contextManager.getMetaDataContexts().getMetaDataMap().put("test_schema", mockShardingSphereMetaData);
+        coordinator.renew(mockPrimaryStateChangedEvent);
+        verify(mockStatusContainedRule, times(1)).updateStatus(any());
+    }   
+    
+    @Test
+    public void assertRenewInstanceStatus() {
+        StateEvent mockStateEvent = mock(StateEvent.class);
+        when(mockStateEvent.getInstanceId()).thenReturn(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId());
+        List<String> testStates = new ArrayList<>();
+        testStates.add(StateType.OK.name());
+        testStates.add(StateType.LOCK.name());
+        when(mockStateEvent.getStatus()).thenReturn(testStates);
+        coordinator.renew(mockStateEvent);
+        assertNotNull(contextManager.getInstanceContext());
+        assertNotNull(contextManager.getInstanceContext().getInstance());
+        assertEquals(testStates, contextManager.getInstanceContext().getInstance().getStatus());
+        testStates.add(StateType.CIRCUIT_BREAK.name());
+        coordinator.renew(mockStateEvent);
+        assertEquals(StateType.CIRCUIT_BREAK, contextManager.getInstanceContext().getState().getCurrentState());
+    }
+    
+    @Test
+    public void assertRenewWorkerIdChange() {
+        WorkerIdEvent mockWorkerIdEvent = mock(WorkerIdEvent.class);
+        when(mockWorkerIdEvent.getWorkerId()).thenReturn(12223L);
+        when(mockWorkerIdEvent.getInstanceId()).thenReturn(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId());
+        coordinator.renew(mockWorkerIdEvent);
+        assertNotNull(contextManager.getInstanceContext());
+        assertNotNull(contextManager.getInstanceContext().getInstance());
+        assertEquals(12223L, contextManager.getInstanceContext().getWorkerId());
+    }
+    
+    @Test
+    public void assertRenewInstanceLabels() {
+        LabelsEvent mockLabelsEvent = mock(LabelsEvent.class);
+        List<String> labels = new ArrayList<>();
+        labels.add("test");
+        when(mockLabelsEvent.getLabels()).thenReturn(labels);
+        when(mockLabelsEvent.getInstanceId()).thenReturn(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId());
+        coordinator.renew(mockLabelsEvent);
+        assertNotNull(contextManager.getInstanceContext());
+        assertNotNull(contextManager.getInstanceContext().getInstance());
+        assertEquals(labels, contextManager.getInstanceContext().getInstance().getLabels());
     }
 } 
