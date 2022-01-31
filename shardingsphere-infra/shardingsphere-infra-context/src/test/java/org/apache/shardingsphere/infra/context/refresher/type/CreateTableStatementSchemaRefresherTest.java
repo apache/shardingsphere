@@ -83,8 +83,6 @@ public final class CreateTableStatementSchemaRefresherTest {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))));
         DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
         when(dataSource.getConnection().getMetaData().getTables(any(), any(), any(), any())).thenReturn(mock(ResultSet.class));
-        //ShardingSphereSchema schema = ShardingSphereSchemaBuildUtil.buildSchema();
-        //ShardingSphereMetaData metaData = new ShardingSphereMetaData("", mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), schema);
         MetaDataRefresher<CreateTableStatement> schemaRefresher = new CreateTableStatementSchemaRefresher();
         schemaRefresher.refresh(schemaMetaData, schema, optimizerPlanners, Collection.singleton("ds"), sqlStatement, props);
         assertTrue(schema.containsTable("t_order_0"));
