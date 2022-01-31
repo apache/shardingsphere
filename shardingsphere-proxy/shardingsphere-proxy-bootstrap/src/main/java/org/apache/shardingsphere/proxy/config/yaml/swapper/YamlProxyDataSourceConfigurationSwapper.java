@@ -43,7 +43,6 @@ public final class YamlProxyDataSourceConfigurationSwapper {
     
     private PoolConfiguration swapPoolConfiguration(final YamlProxyDataSourceConfiguration yamlConfig) {
         return new PoolConfiguration(yamlConfig.getConnectionTimeoutMilliseconds(), yamlConfig.getIdleTimeoutMilliseconds(),
-                yamlConfig.getMaxLifetimeMilliseconds(), yamlConfig.getMaxPoolSize(), yamlConfig.getMinPoolSize(), yamlConfig.getReadOnly(),
-                yamlConfig.getCustomPoolProps());
+                yamlConfig.getMaxLifetimeMilliseconds(), yamlConfig.getMaxPoolSize(), yamlConfig.getMinPoolSize(), yamlConfig.getReadOnly(), yamlConfig.getCustomPoolProps());
     }
 }
