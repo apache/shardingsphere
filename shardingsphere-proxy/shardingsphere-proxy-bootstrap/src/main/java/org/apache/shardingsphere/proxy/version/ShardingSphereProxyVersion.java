@@ -43,19 +43,21 @@ public final class ShardingSphereProxyVersion {
      */
     public static void setVersion(final ContextManager contextManager) {
         CommonConstants.PROXY_VERSION.set(ShardingSphereProxyVersion.getProxyVersion());
-        findBackendDataSource(contextManager).ifPresent(optional -> {
-            DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(optional);
-            log.info(databaseServerInfo.toString());
-            switch (databaseServerInfo.getDatabaseName()) {
-                case "MySQL":
-                    MySQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
-                    break;
-                case "PostgreSQL":
-                    PostgreSQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
-                    break;
-                default:
-            }
-        });
+        Optional<DataSource> sampleDataSource = findSampleBackendDataSource(contextManager);
+        if (!sampleDataSource.isPresent()) {
+            return;
+        }
+        DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(sampleDataSource.get());
+        log.info(databaseServerInfo.toString());
+        switch (databaseServerInfo.getDatabaseName()) {
+            case "MySQL":
+                MySQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
+                break;
+            case "PostgreSQL":
+                PostgreSQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
+                break;
+            default:
+        }
     }
     
     private static String getProxyVersion() {
@@ -68,7 +70,7 @@ public final class ShardingSphereProxyVersion {
         return result;
     }
     
-    private static Optional<DataSource> findBackendDataSource(final ContextManager contextManager) {
+    private static Optional<DataSource> findSampleBackendDataSource(final ContextManager contextManager) {
         Optional<ShardingSphereMetaData> metaData = contextManager.getMetaDataContexts().getMetaDataMap().values().stream().filter(ShardingSphereMetaData::isComplete).findFirst();
         return metaData.flatMap(optional -> optional.getResource().getDataSources().values().stream().findFirst());
     }
