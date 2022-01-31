@@ -20,12 +20,12 @@ package org.apache.shardingsphere.proxy.version;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
+import org.apache.shardingsphere.proxy.frontend.protocol.DatabaseProtocolFrontendEngineFactory;
 
 import javax.sql.DataSource;
 import java.util.Optional;
@@ -49,7 +49,7 @@ public final class ShardingSphereProxyVersion {
         }
         DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(sampleDataSource.get());
         log.info(databaseServerInfo.toString());
-        setBackendDataSourceVersion(databaseServerInfo);
+        DatabaseProtocolFrontendEngineFactory.newInstance(DatabaseTypeRegistry.getTrunkDatabaseType(databaseServerInfo.getDatabaseName())).setDatabaseVersion(databaseServerInfo.getDatabaseName());
     }
     
     private static String getProxyVersion() {
@@ -65,18 +65,5 @@ public final class ShardingSphereProxyVersion {
     private static Optional<DataSource> findSampleBackendDataSource(final ContextManager contextManager) {
         Optional<ShardingSphereMetaData> metaData = contextManager.getMetaDataContexts().getMetaDataMap().values().stream().filter(ShardingSphereMetaData::isComplete).findFirst();
         return metaData.flatMap(optional -> optional.getResource().getDataSources().values().stream().findFirst());
-    }
-    
-    private static void setBackendDataSourceVersion(final DatabaseServerInfo databaseServerInfo) {
-        // TODO extract as SPI
-        switch (databaseServerInfo.getDatabaseName()) {
-            case "MySQL":
-                MySQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
-                break;
-            case "PostgreSQL":
-                PostgreSQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
-                break;
-            default:
-        }
     }
 }
