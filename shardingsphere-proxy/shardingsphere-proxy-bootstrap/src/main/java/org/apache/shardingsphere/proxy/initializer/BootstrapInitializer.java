@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.proxy.initializer;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
-import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
@@ -39,6 +37,7 @@ import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
+import org.apache.shardingsphere.proxy.version.ShardingSphereProxyVersion;
 import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
 import javax.sql.DataSource;
@@ -96,9 +95,9 @@ public final class BootstrapInitializer {
     }
     
     private void setDatabaseServerInfo() {
-        CommonConstants.PROXY_VERSION.set(getShardingSphereVersion());
-        findBackendDataSource().ifPresent(dataSourceSample -> {
-            DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSourceSample);
+        CommonConstants.PROXY_VERSION.set(ShardingSphereProxyVersion.getVersion());
+        findBackendDataSource().ifPresent(optional -> {
+            DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(optional);
             log.info(databaseServerInfo.toString());
             switch (databaseServerInfo.getDatabaseName()) {
                 case "MySQL":
@@ -110,16 +109,6 @@ public final class BootstrapInitializer {
                 default:
             }
         });
-    }
-    
-    private String getShardingSphereVersion() {
-        String result = ShardingSphereVersion.VERSION;
-        if (!ShardingSphereVersion.IS_SNAPSHOT || Strings.isNullOrEmpty(ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV)) {
-            return result;
-        }
-        result += ShardingSphereVersion.BUILD_GIT_DIRTY ? "-dirty" : "";
-        result += "-" + ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV;
-        return result;
     }
     
     private Optional<DataSource> findBackendDataSource() {
