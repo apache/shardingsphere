@@ -49,7 +49,7 @@ public final class ShardingSphereProxyVersion {
         }
         DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(sampleDataSource.get());
         log.info(databaseServerInfo.toString());
-        DatabaseProtocolFrontendEngineFactory.newInstance(DatabaseTypeRegistry.getTrunkDatabaseType(databaseServerInfo.getDatabaseName())).setDatabaseVersion(databaseServerInfo.getDatabaseName());
+        DatabaseProtocolFrontendEngineFactory.newInstance(DatabaseTypeRegistry.getTrunkDatabaseType(databaseServerInfo.getDatabaseName())).setDatabaseVersion(databaseServerInfo.getDatabaseVersion());
     }
     
     private static String getProxyVersion() {
