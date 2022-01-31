@@ -104,17 +104,6 @@ public final class PostgreSQLCommandExecutorFactoryTest {
         return result;
     }
     
-    @RequiredArgsConstructor
-    @Getter
-    private static final class InputOutput {
-        
-        private final PostgreSQLCommandPacketType commandPacketType;
-        
-        private final Class<? extends PostgreSQLCommandPacket> commandPacketClass;
-        
-        private final Class<? extends CommandExecutor> resultClass;
-    }
-    
     @Test
     public void assertAggregatedPacketNotBatchedInserts() throws SQLException {
         PostgreSQLComParsePacket parsePacket = mock(PostgreSQLComParsePacket.class);
@@ -170,5 +159,16 @@ public final class PostgreSQLCommandExecutorFactoryTest {
         Field field = PostgreSQLAggregatedCommandExecutor.class.getDeclaredField("executors");
         field.setAccessible(true);
         return (List<CommandExecutor>) field.get(executor);
+    }
+    
+    @RequiredArgsConstructor
+    @Getter
+    private static final class InputOutput {
+        
+        private final PostgreSQLCommandPacketType commandPacketType;
+        
+        private final Class<? extends PostgreSQLCommandPacket> commandPacketClass;
+        
+        private final Class<? extends CommandExecutor> resultClass;
     }
 }
