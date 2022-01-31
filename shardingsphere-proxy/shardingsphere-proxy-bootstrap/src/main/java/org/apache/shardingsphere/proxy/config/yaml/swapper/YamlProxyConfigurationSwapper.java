@@ -19,9 +19,7 @@ package org.apache.shardingsphere.proxy.config.yaml.swapper;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.schema.impl.DataSourceGeneratedSchemaConfiguration;
-import org.apache.shardingsphere.infra.datasource.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.datasource.config.PoolConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyGlobalConfiguration;
@@ -33,13 +31,15 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * YAML proxy configuration swapper.
  */
 public final class YamlProxyConfigurationSwapper {
+    
+    private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
+    
+    private final YamlRuleConfigurationSwapperEngine ruleConfigSwapperEngine = new YamlRuleConfigurationSwapperEngine();
     
     /**
      * Swap YAML proxy configuration to proxy configuration.
@@ -48,44 +48,27 @@ public final class YamlProxyConfigurationSwapper {
      * @return proxy configuration
      */
     public ProxyConfiguration swap(final YamlProxyConfiguration yamlConfig) {
-        Map<String, Map<String, DataSourceConfiguration>> schemaDataSourceConfigs = getDataSourceConfigurationMap(yamlConfig.getSchemaConfigurations());
-        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = getSchemaConfigurations(yamlConfig.getSchemaConfigurations());
-        Map<String, DataSourceGeneratedSchemaConfiguration> schemaConfigs = new LinkedHashMap<>(schemaDataSourceConfigs.size(), 1);
-        for (Entry<String, Map<String, DataSourceConfiguration>> entry : schemaDataSourceConfigs.entrySet()) {
-            schemaConfigs.put(entry.getKey(), new DataSourceGeneratedSchemaConfiguration(entry.getValue(), schemaRuleConfigs.get(entry.getKey())));
-        }
-        Collection<RuleConfiguration> globalRules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules());
-        Properties props = yamlConfig.getServerConfiguration().getProps();
-        return new ProxyConfiguration(schemaConfigs, new ProxyGlobalConfiguration(globalRules, props, yamlConfig.getServerConfiguration().getLabels()));
+        Map<String, DataSourceGeneratedSchemaConfiguration> schemaConfigs = swapSchemaConfigurations(yamlConfig);
+        ProxyGlobalConfiguration globalConfig = new ProxyGlobalConfiguration(ruleConfigSwapperEngine.swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules()), 
+                yamlConfig.getServerConfiguration().getProps(), yamlConfig.getServerConfiguration().getLabels());
+        return new ProxyConfiguration(schemaConfigs, globalConfig);
     }
     
-    private Map<String, Map<String, DataSourceConfiguration>> getDataSourceConfigurationMap(final Map<String, YamlProxySchemaConfiguration> yamlSchemaConfigs) {
-        Map<String, Map<String, DataSourceConfiguration>> result = new LinkedHashMap<>(yamlSchemaConfigs.size(), 1);
-        for (Entry<String, YamlProxySchemaConfiguration> entry : yamlSchemaConfigs.entrySet()) {
-            result.put(entry.getKey(), getDataSourceConfigurations(entry.getValue().getDataSources()));
+    private Map<String, DataSourceGeneratedSchemaConfiguration> swapSchemaConfigurations(final YamlProxyConfiguration yamlConfig) {
+        Map<String, DataSourceGeneratedSchemaConfiguration> result = new LinkedHashMap<>(yamlConfig.getSchemaConfigurations().size(), 1);
+        for (Entry<String, YamlProxySchemaConfiguration> entry : yamlConfig.getSchemaConfigurations().entrySet()) {
+            Map<String, DataSourceConfiguration> schemaDataSourceConfigs = swapDataSourceConfigurations(entry.getValue().getDataSources());
+            Collection<RuleConfiguration> schemaRuleConfigs = ruleConfigSwapperEngine.swapToRuleConfigurations(entry.getValue().getRules());
+            result.put(entry.getKey(), new DataSourceGeneratedSchemaConfiguration(schemaDataSourceConfigs, schemaRuleConfigs));
         }
         return result;
     }
     
-    private Map<String, DataSourceConfiguration> getDataSourceConfigurations(final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceConfigs) {
-        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(yamlDataSourceConfigs.size(), 1);
-        for (Entry<String, YamlProxyDataSourceConfiguration> entry : yamlDataSourceConfigs.entrySet()) {
-            result.put(entry.getKey(), getDataSourceConfiguration(entry.getValue()));
+    private Map<String, DataSourceConfiguration> swapDataSourceConfigurations(final Map<String, YamlProxyDataSourceConfiguration> yamlConfigs) {
+        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(yamlConfigs.size(), 1);
+        for (Entry<String, YamlProxyDataSourceConfiguration> entry : yamlConfigs.entrySet()) {
+            result.put(entry.getKey(), dataSourceConfigSwapper.swap(entry.getValue()));
         }
         return result;
-    }
-    
-    private DataSourceConfiguration getDataSourceConfiguration(final YamlProxyDataSourceConfiguration yamlDataSourceConfig) {
-        ConnectionConfiguration connectionConfig = new ConnectionConfiguration(yamlDataSourceConfig.getUrl(), yamlDataSourceConfig.getUsername(), yamlDataSourceConfig.getPassword());
-        PoolConfiguration poolConfig = new PoolConfiguration(yamlDataSourceConfig.getConnectionTimeoutMilliseconds(), yamlDataSourceConfig.getIdleTimeoutMilliseconds(),
-                yamlDataSourceConfig.getMaxLifetimeMilliseconds(), yamlDataSourceConfig.getMaxPoolSize(), yamlDataSourceConfig.getMinPoolSize(), yamlDataSourceConfig.getReadOnly(),
-                yamlDataSourceConfig.getCustomPoolProps());
-        return new DataSourceConfiguration(connectionConfig, poolConfig);
-    }
-    
-    private Map<String, Collection<RuleConfiguration>> getSchemaConfigurations(final Map<String, YamlProxySchemaConfiguration> yamlSchemaConfigs) {
-        YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
-        return yamlSchemaConfigs.entrySet().stream().collect(Collectors.toMap(Entry::getKey, 
-            entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
 }
