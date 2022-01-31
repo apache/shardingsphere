@@ -49,14 +49,14 @@ public final class YamlProxyConfigurationSwapper {
      */
     public ProxyConfiguration swap(final YamlProxyConfiguration yamlConfig) {
         Map<String, Map<String, DataSourceConfiguration>> schemaDataSourceConfigs = getDataSourceConfigurationMap(yamlConfig.getSchemaConfigurations());
-        Map<String, Collection<RuleConfiguration>> schemaConfigs = getSchemaConfigurations(yamlConfig.getSchemaConfigurations());
-        Map<String, DataSourceGeneratedSchemaConfiguration> schemaConfigurations = new LinkedHashMap<>(schemaDataSourceConfigs.size(), 1);
+        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = getSchemaConfigurations(yamlConfig.getSchemaConfigurations());
+        Map<String, DataSourceGeneratedSchemaConfiguration> schemaConfigs = new LinkedHashMap<>(schemaDataSourceConfigs.size(), 1);
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : schemaDataSourceConfigs.entrySet()) {
-            schemaConfigurations.put(entry.getKey(), new DataSourceGeneratedSchemaConfiguration(entry.getValue(), schemaConfigs.get(entry.getKey())));
+            schemaConfigs.put(entry.getKey(), new DataSourceGeneratedSchemaConfiguration(entry.getValue(), schemaRuleConfigs.get(entry.getKey())));
         }
         Collection<RuleConfiguration> globalRules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules());
         Properties props = yamlConfig.getServerConfiguration().getProps();
-        return new ProxyConfiguration(schemaConfigurations, new ProxyGlobalConfiguration(globalRules, props, yamlConfig.getServerConfiguration().getLabels()));
+        return new ProxyConfiguration(schemaConfigs, new ProxyGlobalConfiguration(globalRules, props, yamlConfig.getServerConfiguration().getLabels()));
     }
     
     private Map<String, Map<String, DataSourceConfiguration>> getDataSourceConfigurationMap(final Map<String, YamlProxySchemaConfiguration> yamlSchemaConfigs) {
