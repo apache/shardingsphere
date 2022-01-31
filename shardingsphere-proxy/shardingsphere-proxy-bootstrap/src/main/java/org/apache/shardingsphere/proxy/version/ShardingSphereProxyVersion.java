@@ -49,15 +49,7 @@ public final class ShardingSphereProxyVersion {
         }
         DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(sampleDataSource.get());
         log.info(databaseServerInfo.toString());
-        switch (databaseServerInfo.getDatabaseName()) {
-            case "MySQL":
-                MySQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
-                break;
-            case "PostgreSQL":
-                PostgreSQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
-                break;
-            default:
-        }
+        setBackendDataSourceVersion(databaseServerInfo);
     }
     
     private static String getProxyVersion() {
@@ -73,5 +65,18 @@ public final class ShardingSphereProxyVersion {
     private static Optional<DataSource> findSampleBackendDataSource(final ContextManager contextManager) {
         Optional<ShardingSphereMetaData> metaData = contextManager.getMetaDataContexts().getMetaDataMap().values().stream().filter(ShardingSphereMetaData::isComplete).findFirst();
         return metaData.flatMap(optional -> optional.getResource().getDataSources().values().stream().findFirst());
+    }
+    
+    private static void setBackendDataSourceVersion(final DatabaseServerInfo databaseServerInfo) {
+        // TODO extract as SPI
+        switch (databaseServerInfo.getDatabaseName()) {
+            case "MySQL":
+                MySQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
+                break;
+            case "PostgreSQL":
+                PostgreSQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
+                break;
+            default:
+        }
     }
 }
