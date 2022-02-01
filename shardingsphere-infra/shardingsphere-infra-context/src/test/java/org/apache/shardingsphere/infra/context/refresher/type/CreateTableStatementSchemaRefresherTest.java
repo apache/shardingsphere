@@ -92,6 +92,6 @@ public final class CreateTableStatementSchemaRefresherTest {
         when(dataSource.getConnection().getMetaData().getTables(any(), any(), any(), any())).thenReturn(mock(ResultSet.class));
         MetaDataRefresher<CreateTableStatement> schemaRefresher = new CreateTableStatementSchemaRefresher();
         schemaRefresher.refresh(schemaMetaData, schema, optimizerPlanners, Collections.singleton("ds"), sqlStatement, props);
-        assertTrue(schema.containsTable("t_order_0"));
+        assertTrue(schemaRefresher.containsTable("t_order_0"));
     }
 }
