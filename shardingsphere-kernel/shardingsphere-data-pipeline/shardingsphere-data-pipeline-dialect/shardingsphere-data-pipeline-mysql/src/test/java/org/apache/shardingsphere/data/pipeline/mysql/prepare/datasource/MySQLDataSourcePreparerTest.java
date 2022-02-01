@@ -26,7 +26,6 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPi
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
-import org.apache.shardingsphere.driver.config.datasource.ShardingSpherePipelineDataSourceCreator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,9 +70,6 @@ public final class MySQLDataSourcePreparerTest {
     
     @Mock
     private PipelineDataSourceWrapper targetDataSourceWrapper;
-    
-    @Mock
-    private ShardingSpherePipelineDataSourceCreator mockShardingSpherePipelineDataSourceCreator;
     
     @Before
     public void setUp() throws SQLException {
