@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL92CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -40,7 +39,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.lang.String;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -51,38 +49,38 @@ import static org.mockito.Mockito.when;
 public final class CreateTableStatementSchemaRefresherTest {
     
     @Test
-    public void refreshForMySQL(ShardingSphereMetaData schemaMetaData, FederationSchemaMetaData schema, Map<String, OptimizerPlannerContext> optimizerPlanners,
-                                Collection<String> logicDataSourceNames, ConfigurationProperties props) throws SQLException {
+    public void refreshForMySQL(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners,
+                                final Collection<String> logicDataSourceNames, final ConfigurationProperties props) throws SQLException {
         MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
         createTableStatement.setContainsNotExistClause(false);
         refresh(schemaMetaData, schema, optimizerPlanners, logicDataSourceNames, createTableStatement, props);
     }
     
     @Test
-    public void refreshForOracle(ShardingSphereMetaData schemaMetaData, FederationSchemaMetaData schema, Map<String, OptimizerPlannerContext> optimizerPlanners,
-                                 Collection<String> logicDataSourceNames, ConfigurationProperties props) throws SQLException {
+    public void refreshForOracle(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners,
+                                 final Collection<String> logicDataSourceNames, final ConfigurationProperties props) throws SQLException {
         OracleCreateTableStatement createTableStatement = new OracleCreateTableStatement();
         refresh(schemaMetaData, schema, optimizerPlanners, logicDataSourceNames, createTableStatement, props);
     }
     
     @Test
-    public void refreshForPostgreSQL(ShardingSphereMetaData schemaMetaData, FederationSchemaMetaData schema, Map<String, OptimizerPlannerContext> optimizerPlanners,
-                                     Collection<String> logicDataSourceNames, ConfigurationProperties props) throws SQLException {
+    public void refreshForPostgreSQL(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners,
+                                     final Collection<String> logicDataSourceNames, final ConfigurationProperties props) throws SQLException {
         PostgreSQLCreateTableStatement createTableStatement = new PostgreSQLCreateTableStatement();
         createTableStatement.setContainsNotExistClause(false);
         refresh(schemaMetaData, schema, optimizerPlanners, logicDataSourceNames, createTableStatement, props);
     }
     
     @Test
-    public void refreshForSQL92(ShardingSphereMetaData schemaMetaData, FederationSchemaMetaData schema, Map<String, OptimizerPlannerContext> optimizerPlanners,
-                                Collection<String> logicDataSourceNames, ConfigurationProperties props) throws SQLException {
+    public void refreshForSQL92(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners,
+                                final Collection<String> logicDataSourceNames, final ConfigurationProperties props) throws SQLException {
         SQL92CreateTableStatement createTableStatement = new SQL92CreateTableStatement();
         refresh(schemaMetaData, schema, optimizerPlanners, logicDataSourceNames, createTableStatement, props);
     }
     
     @Test
-    public void refreshForSQLServer(ShardingSphereMetaData schemaMetaData, FederationSchemaMetaData schema, Map<String, OptimizerPlannerContext> optimizerPlanners,
-                                    Collection<String> logicDataSourceNames, ConfigurationProperties props) throws SQLException {
+    public void refreshForSQLServer(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners,
+                                    final Collection<String> logicDataSourceNames, final ConfigurationProperties props) throws SQLException {
         SQLServerCreateTableStatement createTableStatement = new SQLServerCreateTableStatement();
         refresh(schemaMetaData, schema, optimizerPlanners, logicDataSourceNames, createTableStatement, props);
     }
