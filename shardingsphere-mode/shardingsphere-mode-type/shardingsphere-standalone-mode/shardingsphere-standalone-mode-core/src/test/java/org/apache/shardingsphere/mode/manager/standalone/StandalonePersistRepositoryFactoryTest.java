@@ -28,8 +28,9 @@ import org.junit.Test;
 
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 
 public final class StandalonePersistRepositoryFactoryTest {
 
@@ -40,7 +41,7 @@ public final class StandalonePersistRepositoryFactoryTest {
     @Test
     public void assertNewInstanceWithNoConfig() {
         StandalonePersistRepository standalonePersistRepository = StandalonePersistRepositoryFactory.newInstance(null);
-        assertTrue(standalonePersistRepository instanceof StandalonePersistRepositoryFixture);
+        assertThat(standalonePersistRepository.getType(), is("File"));
     }
 
     @Test
