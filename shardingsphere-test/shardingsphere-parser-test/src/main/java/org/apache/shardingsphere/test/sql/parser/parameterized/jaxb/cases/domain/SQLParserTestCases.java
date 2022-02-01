@@ -270,6 +270,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.UpdateStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.BeginTransactionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.CommitStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.LockStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.RollbackStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SavepointStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SetAutoCommitStatementTestCase;
@@ -1062,6 +1063,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-binlog-events")
     private final List<ShowBinlogEventsStatementTestCase> showBinlogEventsStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "lock")
+    private final List<LockStatementTestCase> lockStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "unlock")
     private final List<UnlockStatementTestCase> unlockStatementTestCases = new LinkedList<>();
     
@@ -1332,6 +1336,7 @@ public final class SQLParserTestCases {
         putAll(countSchemaRulesStatementTestCases, result);
         putAll(alterExtensionStatementTestCase, result);
         putAll(dropExtensionStatementTestCase, result);
+        putAll(lockStatementTestCases, result);
         putAll(unlockStatementTestCases, result);
         putAll(exportSchemaStatementTestCases, result);
         return result;
