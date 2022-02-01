@@ -40,10 +40,10 @@
     </lock>
     <lock sql-case-id="lock_instance_for_backup" />
     <lock sql-case-id="lock_table_with_read_local">
-        <table name="t1" start-index="11" stop-index="12" />
+        <table name="t1" start-index="12" stop-index="13" />
     </lock>
     <lock sql-case-id="lock_table_with_alias">
-        <table name="t1" start-index="11" stop-index="12" />
-        <table name="t1" alias="TableAlias" start-index="20" stop-index="35" />
+        <table name="t1" start-index="12" stop-index="13" />
+        <table name="t1" alias="TableAlias" start-index="21" stop-index="36" />
     </lock>
 </sql-parser-test-cases>
