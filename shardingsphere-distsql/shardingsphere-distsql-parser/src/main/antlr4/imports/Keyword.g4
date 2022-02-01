@@ -266,3 +266,19 @@ CONFIG
 FILE
     : F I L E
     ;
+
+SHARDING
+    : S H A R D I N G
+    ;
+
+USED
+    : U S E D
+    ;
+   
+KEY
+    : K E Y 
+    ;
+   
+GENERATOR
+    : G E N E R A T O R
+    ;

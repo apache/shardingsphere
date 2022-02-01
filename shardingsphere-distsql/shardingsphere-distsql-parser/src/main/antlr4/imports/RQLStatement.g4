@@ -31,6 +31,10 @@ showSingleTable
     : SHOW SINGLE (table | TABLES)  (FROM schemaName)?
     ;
 
+showShardingTableRulesUsedKeyGenerator
+    : SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName (FROM schemaName)?
+    ;
+
 countSchemaRules
     : COUNT SCHEMA RULES (FROM schemaName)?
     ;
@@ -44,5 +48,9 @@ table
     ;
 
 tableName
+    : IDENTIFIER
+    ;
+    
+keyGeneratorName
     : IDENTIFIER
     ;
