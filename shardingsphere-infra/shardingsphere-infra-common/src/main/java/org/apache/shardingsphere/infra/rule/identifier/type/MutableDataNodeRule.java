@@ -48,5 +48,5 @@ public interface MutableDataNodeRule extends ShardingSphereRule {
      * @param tableName table name
      * @return single table data node
      */
-    Optional<DataNode> findSingleTableDataNodeByTableName(String tableName);
+    Optional<DataNode> findSingleTableDataNode(String tableName);
 }
