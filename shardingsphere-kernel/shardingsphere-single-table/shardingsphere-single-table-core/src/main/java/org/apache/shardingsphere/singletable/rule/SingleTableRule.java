@@ -178,8 +178,8 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     }
     
     @Override
-    public Collection<String> getDataSourceNames() {
-        return dataSourceNames;
+    public Optional<DataNode> findSingleTableDataNodeByTableName(final String tableName) {
+        return findSingleTableDataNode(tableName);
     }
     
     private Collection<String> getExcludedTables(final Collection<ShardingSphereRule> rules) {

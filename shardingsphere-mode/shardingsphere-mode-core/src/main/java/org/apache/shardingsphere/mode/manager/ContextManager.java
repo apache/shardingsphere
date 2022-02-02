@@ -251,9 +251,7 @@ public final class ContextManager implements AutoCloseable {
      */
     public void alterSchema(final String schemaName, final TableMetaData changedTableMetaData, final String deletedTable) {
         ShardingSphereMetaData metaData = metaDataContexts.getMetaData(schemaName);
-        if (!containsInDataNodeContainedRule(changedTableMetaData.getName(), metaData)) {
-            metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(changedTableMetaData.getName(), each.getDataSourceNames().iterator().next()));
-        }
+        singleTableDataSourceMappingRelation(metaData, changedTableMetaData);
         FederationSchemaMetaData schemaMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName);
         if (null != changedTableMetaData) {
             metaData.getSchema().put(changedTableMetaData.getName(), changedTableMetaData);
@@ -264,6 +262,16 @@ public final class ContextManager implements AutoCloseable {
             metaData.getSchema().remove(deletedTable);
             schemaMetaData.remove(deletedTable);
             metaDataContexts.getOptimizerContext().getPlannerContexts().put(schemaName, OptimizerPlannerContextFactory.create(schemaMetaData));
+        }
+    }
+    
+    private void singleTableDataSourceMappingRelation(final ShardingSphereMetaData metaData, final TableMetaData changedTableMetaData) {
+        if (!containsInDataNodeContainedRule(changedTableMetaData.getName(), metaData)) {
+            metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> {
+                if (each.findSingleTableDataNodeByTableName(changedTableMetaData.getName()).isPresent()) {
+                    each.put(changedTableMetaData.getName(), each.findSingleTableDataNodeByTableName(changedTableMetaData.getName()).get().getDataSourceName());
+                }
+            });
         }
     }
     
