@@ -142,26 +142,13 @@ public final class ContextManagerTest {
     
     @Test
     public void assertAddResource() throws SQLException {
-        ShardingSphereMetaData originalMetaData = mockOriginalMetaData();
-        when(metaDataContexts.getMetaData("test_schema")).thenReturn(originalMetaData);
-        Map<String, ShardingSphereMetaData> metaDataMap = new LinkedHashMap<>();
-        metaDataMap.put("test_schema", originalMetaData);
-        when(metaDataContexts.getMetaDataMap()).thenReturn(metaDataMap);
+        when(metaDataContexts.getMetaDataMap()).thenReturn(new HashMap<>(Collections.singletonMap("foo_schema", new ShardingSphereMetaData(
+                "foo_schema", mock(ShardingSphereResource.class), new ShardingSphereRuleMetaData(new LinkedList<>(), new LinkedList<>()), mock(ShardingSphereSchema.class)))));
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(globalRuleMetaData.getConfigurations()).thenReturn(new LinkedList<>());
         when(metaDataContexts.getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        when(metaDataContexts.getOptimizerContext().getFederationMetaData()).thenReturn(mock(FederationMetaData.class));
-        when(metaDataContexts.getOptimizerContext().getParserContexts()).thenReturn(new LinkedHashMap<>());
-        contextManager.addResource("test_schema", createToBeAddedDataSourceProperties());
-        assertAddedDataSources(contextManager.getMetaDataContexts().getMetaDataMap().get("test_schema").getResource().getDataSources());
-    }
-    
-    private ShardingSphereMetaData mockOriginalMetaData() {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(result.getName()).thenReturn("test_schema");
-        when(result.getResource().getDataSources()).thenReturn(new LinkedHashMap<>());
-        when(result.getRuleMetaData().getConfigurations()).thenReturn(new LinkedList<>());
-        return result;
+        contextManager.addResource("foo_schema", createToBeAddedDataSourceProperties());
+        assertAddedDataSources(contextManager.getMetaDataContexts().getMetaDataMap().get("foo_schema").getResource().getDataSources());
     }
     
     private void assertAddedDataSources(final Map<String, DataSource> actual) {
@@ -173,11 +160,9 @@ public final class ContextManagerTest {
     }
     
     private Map<String, DataSourceProperties> createToBeAddedDataSourceProperties() {
-        Properties dataSourceProps = new Properties();
-        dataSourceProps.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
         Map<String, DataSourceProperties> result = new LinkedHashMap<>();
-        result.put("foo_ds_1", new DataSourceProperties(MockedDataSource.class.getName(), createProperties(dataSourceProps)));
-        result.put("foo_ds_2", new DataSourceProperties(MockedDataSource.class.getName(), createProperties(dataSourceProps)));
+        result.put("foo_ds_1", new DataSourceProperties(MockedDataSource.class.getName(), createProperties("root", "root")));
+        result.put("foo_ds_2", new DataSourceProperties(MockedDataSource.class.getName(), createProperties("root", "root")));
         return result;
     }
     
@@ -204,12 +189,8 @@ public final class ContextManagerTest {
     }
     
     private Map<String, DataSourceProperties> createToBeAlteredDataSourceProperties() {
-        Properties dataSourceProps = new Properties();
-        dataSourceProps.put("url", "jdbc:mock://127.0.0.1/foo_ds");
-        dataSourceProps.put("username", "test");
-        dataSourceProps.put("password", "test");
         Map<String, DataSourceProperties> result = new LinkedHashMap<>();
-        result.put("foo_ds", new DataSourceProperties(MockedDataSource.class.getName(), createProperties(dataSourceProps)));
+        result.put("foo_ds", new DataSourceProperties(MockedDataSource.class.getName(), createProperties("test", "test")));
         return result;
     }
     
@@ -218,7 +199,6 @@ public final class ContextManagerTest {
         assertThat(actual.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getPassword(), is("test"));
         assertThat(actual.getUsername(), is("test"));
-        assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getName()));
     }
     
     @Test 
@@ -264,10 +244,7 @@ public final class ContextManagerTest {
         originalMetaDataMap.put("test_schema", originalMetaData);
         when(metaDataContexts.getMetaDataMap()).thenReturn(originalMetaDataMap);
         Map<String, DataSourceProperties> newDataSourceProps = new LinkedHashMap<>();
-        Properties dataSourceProps = new Properties();
-        dataSourceProps.put("username", "test");
-        dataSourceProps.put("password", "test");
-        newDataSourceProps.put("ds_1", new DataSourceProperties(MockedDataSource.class.getName(), createProperties(dataSourceProps)));
+        newDataSourceProps.put("ds_1", new DataSourceProperties(MockedDataSource.class.getName(), createProperties("test", "test")));
         contextManager.alterDataSourceConfiguration("test_schema", newDataSourceProps);
         assertTrue(contextManager.getMetaDataContexts().getMetaDataMap().containsKey("test_schema"));
         assertThat(contextManager.getMetaDataContexts().getMetaDataMap().get("test_schema").getResource().getDataSources().size(), is(1));
@@ -330,12 +307,11 @@ public final class ContextManagerTest {
         assertTrue(contextManager.getMetaDataContexts().getMetaData("test_schema").getResource().getDataSources().containsKey("foo_ds"));
     }
     
-    private Map<String, Object> createProperties(final Properties dataSourceProps) {
-        Map<String, Object> result = new HashMap(dataSourceProps);
-        result.putIfAbsent("driverClassName", MockedDataSource.class.getName());
+    private Map<String, Object> createProperties(final String username, final String password) {
+        Map<String, Object> result = new HashMap<>(3, 1);
         result.putIfAbsent("url", "jdbc:mock://127.0.0.1/foo_ds");
-        result.putIfAbsent("username", "root");
-        result.putIfAbsent("password", "root");
+        result.putIfAbsent("username", username);
+        result.putIfAbsent("password", password);
         return result;
     }
     
