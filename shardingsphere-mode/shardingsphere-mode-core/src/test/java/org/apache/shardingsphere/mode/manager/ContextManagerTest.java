@@ -151,19 +151,23 @@ public final class ContextManagerTest {
         assertAddedDataSources(contextManager.getMetaDataContexts().getMetaDataMap().get("foo_schema").getResource().getDataSources());
     }
     
-    private void assertAddedDataSources(final Map<String, DataSource> actual) {
-        assertThat(actual.size(), is(2));
-        assertTrue(actual.containsKey("foo_ds_1"));
-        assertDataSource((MockedDataSource) actual.get("foo_ds_1"));
-        assertTrue(actual.containsKey("foo_ds_2"));
-        assertDataSource((MockedDataSource) actual.get("foo_ds_2"));
-    }
-    
     private Map<String, DataSourceProperties> createToBeAddedDataSourceProperties() {
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>();
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(2, 1);
         result.put("foo_ds_1", new DataSourceProperties(MockedDataSource.class.getName(), createProperties("root", "root")));
         result.put("foo_ds_2", new DataSourceProperties(MockedDataSource.class.getName(), createProperties("root", "root")));
         return result;
+    }
+    
+    private void assertAddedDataSources(final Map<String, DataSource> actual) {
+        assertThat(actual.size(), is(2));
+        assertAddedDataSource((MockedDataSource) actual.get("foo_ds_1"));
+        assertAddedDataSource((MockedDataSource) actual.get("foo_ds_2"));
+    }
+    
+    private void assertAddedDataSource(final MockedDataSource actual) {
+        assertThat(actual.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
+        assertThat(actual.getUsername(), is("root"));
+        assertThat(actual.getPassword(), is("root"));
     }
     
     @Test
@@ -313,12 +317,6 @@ public final class ContextManagerTest {
         result.putIfAbsent("username", username);
         result.putIfAbsent("password", password);
         return result;
-    }
-    
-    private void assertDataSource(final MockedDataSource actual) {
-        assertThat(actual.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
-        assertThat(actual.getUsername(), is("root"));
-        assertThat(actual.getPassword(), is("root"));
     }
     
     @Test
