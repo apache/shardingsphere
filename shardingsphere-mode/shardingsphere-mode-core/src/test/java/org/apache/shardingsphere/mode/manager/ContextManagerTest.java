@@ -233,17 +233,17 @@ public final class ContextManagerTest {
         Properties dataSourceProps = new Properties();
         dataSourceProps.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
         Map<String, DataSourceProperties> result = new LinkedHashMap<>();
-        result.put("test_ds_1", new DataSourceProperties(MockedDataSource.class.getName(), createProperties(dataSourceProps)));
-        result.put("test_ds_2", new DataSourceProperties(MockedDataSource.class.getName(), createProperties(dataSourceProps)));
+        result.put("foo_ds_1", new DataSourceProperties(MockedDataSource.class.getName(), createProperties(dataSourceProps)));
+        result.put("foo_ds_2", new DataSourceProperties(MockedDataSource.class.getName(), createProperties(dataSourceProps)));
         return result;
     }
     
     private void assertAddedDataSources(final Map<String, DataSource> actual) {
         assertThat(contextManager.getMetaDataContexts().getMetaDataMap().get("test_schema").getResource().getDataSources().size(), is(2));
-        assertTrue(actual.containsKey("test_ds_1"));
-        assertDataSource((MockedDataSource) actual.get("test_ds_1"));
-        assertTrue(actual.containsKey("test_ds_2"));
-        assertDataSource((MockedDataSource) actual.get("test_ds_2"));
+        assertTrue(actual.containsKey("foo_ds_1"));
+        assertDataSource((MockedDataSource) actual.get("foo_ds_1"));
+        assertTrue(actual.containsKey("foo_ds_2"));
+        assertDataSource((MockedDataSource) actual.get("foo_ds_2"));
     }
     
     @Test
@@ -263,28 +263,25 @@ public final class ContextManagerTest {
         metaDataMap.put("test_schema", originalMetaData);
         when(metaDataContexts.getMetaDataMap()).thenReturn(metaDataMap);
         when(metaDataContexts.getMetaData("test_schema")).thenReturn(originalMetaData);
-        Properties properties = new Properties();
-        ConfigurationProperties configurationProperties = new ConfigurationProperties(properties);
-        when(metaDataContexts.getProps()).thenReturn(configurationProperties);
+        when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         ShardingSphereRuleMetaData globalShardingSphereRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        List<RuleConfiguration> globalRuleConfigurations = new LinkedList<>();
-        when(globalShardingSphereRuleMetaData.getConfigurations()).thenReturn(globalRuleConfigurations);
+        when(globalShardingSphereRuleMetaData.getConfigurations()).thenReturn(new LinkedList<>());
         when(metaDataContexts.getGlobalRuleMetaData()).thenReturn(globalShardingSphereRuleMetaData);
         when(metaDataContexts.getOptimizerContext()).thenReturn(mock(OptimizerContext.class));
         when(metaDataContexts.getOptimizerContext().getFederationMetaData()).thenReturn(mock(FederationMetaData.class));
         when(metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas()).thenReturn(new LinkedHashMap<>());
         when(metaDataContexts.getOptimizerContext().getParserContexts()).thenReturn(new LinkedHashMap<>());
         contextManager.alterResource("test_schema", createToBeAlteredDataSourceProperties());
-        assertAlteredDataSource((MockedDataSource) contextManager.getMetaDataContexts().getMetaDataMap().get("test_schema").getResource().getDataSources().get("test_ds"));
+        assertAlteredDataSource((MockedDataSource) contextManager.getMetaDataContexts().getMetaDataMap().get("test_schema").getResource().getDataSources().get("foo_ds"));
     }
     
     private Map<String, DataSourceProperties> createToBeAlteredDataSourceProperties() {
         Properties dataSourceProps = new Properties();
-        dataSourceProps.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
+        dataSourceProps.put("url", "jdbc:mock://127.0.0.1/foo_ds");
         dataSourceProps.put("username", "test");
         dataSourceProps.put("password", "test");
         Map<String, DataSourceProperties> result = new LinkedHashMap<>();
-        result.put("test_ds", new DataSourceProperties(MockedDataSource.class.getName(), createProperties(dataSourceProps)));
+        result.put("foo_ds", new DataSourceProperties(MockedDataSource.class.getName(), createProperties(dataSourceProps)));
         return result;
     }
     
@@ -412,7 +409,7 @@ public final class ContextManagerTest {
         when(testDataSource.getConnection().getMetaData()).thenReturn(mock(DatabaseMetaData.class));
         when(testDataSource.getConnection().getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
         Map<String, DataSource> dataSources = new LinkedHashMap<>();
-        dataSources.put("test_ds", testDataSource);
+        dataSources.put("foo_ds", testDataSource);
         ShardingSphereResource originalResource = mock(ShardingSphereResource.class);
         when(originalResource.getDataSources()).thenReturn(dataSources);
         ShardingSphereRuleMetaData originalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
@@ -435,9 +432,9 @@ public final class ContextManagerTest {
         verify(schemaMetaDataPersistService, times(1)).persist(eq("test_schema"), any(ShardingSphereSchema.class));
         contextManager.reloadMetaData("test_schema", "test_table");
         assertNotNull(contextManager.getMetaDataContexts().getMetaData("test_schema"));
-        contextManager.reloadMetaData("test_schema", "test_table", "test_ds");
+        contextManager.reloadMetaData("test_schema", "test_table", "foo_ds");
         assertNotNull(contextManager.getMetaDataContexts().getMetaData("test_schema").getSchema());
-        assertTrue(contextManager.getMetaDataContexts().getMetaData("test_schema").getResource().getDataSources().containsKey("test_ds"));
+        assertTrue(contextManager.getMetaDataContexts().getMetaData("test_schema").getResource().getDataSources().containsKey("foo_ds"));
     }
     
     private Map<String, Object> createProperties(final Properties dataSourceProps) {
