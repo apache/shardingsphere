@@ -135,6 +135,58 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
+     * Alter schema.
+     *
+     * @param schemaName schema name
+     * @param schema schema
+     */
+    public void alterSchema(final String schemaName, final ShardingSphereSchema schema) {
+        ShardingSphereMetaData alteredMetaData = new ShardingSphereMetaData(
+                schemaName, metaDataContexts.getMetaData(schemaName).getResource(), metaDataContexts.getMetaData(schemaName).getRuleMetaData(), schema);
+        Map<String, ShardingSphereMetaData> alteredMetaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
+        alteredMetaDataMap.put(schemaName, alteredMetaData);
+        FederationSchemaMetaData alteredSchemaMetaData = new FederationSchemaMetaData(schemaName, schema.getTables());
+        metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().put(schemaName, alteredSchemaMetaData);
+        metaDataContexts.getOptimizerContext().getPlannerContexts().put(schemaName, OptimizerPlannerContextFactory.create(alteredSchemaMetaData));
+        renewMetaDataContexts(rebuildMetaDataContexts(alteredMetaDataMap));
+    }
+    
+    /**
+     * Alter schema.
+     *
+     * @param schemaName schema name
+     * @param changedTableMetaData changed table meta data
+     * @param deletedTable deleted table
+     */
+    public void alterSchema(final String schemaName, final TableMetaData changedTableMetaData, final String deletedTable) {
+        ShardingSphereMetaData metaData = metaDataContexts.getMetaData(schemaName);
+        alterSingleTableDataNodes(metaData, changedTableMetaData);
+        FederationSchemaMetaData schemaMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName);
+        metaData.getSchema().put(changedTableMetaData.getName(), changedTableMetaData);
+        schemaMetaData.put(changedTableMetaData);
+        metaDataContexts.getOptimizerContext().getPlannerContexts().put(schemaName, OptimizerPlannerContextFactory.create(schemaMetaData));
+        if (null != deletedTable) {
+            metaData.getSchema().remove(deletedTable);
+            schemaMetaData.remove(deletedTable);
+            metaDataContexts.getOptimizerContext().getPlannerContexts().put(schemaName, OptimizerPlannerContextFactory.create(schemaMetaData));
+        }
+    }
+    
+    private void alterSingleTableDataNodes(final ShardingSphereMetaData metaData, final TableMetaData changedTableMetaData) {
+        if (!containsInDataNodeContainedRule(changedTableMetaData.getName(), metaData)) {
+            metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> {
+                if (each.findSingleTableDataNode(changedTableMetaData.getName()).isPresent()) {
+                    each.put(changedTableMetaData.getName(), each.findSingleTableDataNode(changedTableMetaData.getName()).get().getDataSourceName());
+                }
+            });
+        }
+    }
+    
+    private boolean containsInDataNodeContainedRule(final String tableName, final ShardingSphereMetaData schemaMetaData) {
+        return schemaMetaData.getRuleMetaData().findRules(DataNodeContainedRule.class).stream().anyMatch(each -> each.getAllTables().contains(tableName));
+    }
+    
+    /**
      * Delete schema.
      * 
      * @param schemaName schema name
@@ -223,60 +275,6 @@ public final class ContextManager implements AutoCloseable {
         } catch (final SQLException ex) {
             log.error("Alter schema:{} data source configuration failed", schemaName, ex);
         }
-    }
-    
-    /**
-     * Alter schema.
-     * 
-     * @param schemaName schema name
-     * @param schema schema
-     */
-    public void alterSchema(final String schemaName, final ShardingSphereSchema schema) {
-        ShardingSphereMetaData kernelMetaData = new ShardingSphereMetaData(schemaName, metaDataContexts.getMetaData(schemaName).getResource(),
-                metaDataContexts.getMetaData(schemaName).getRuleMetaData(), schema);
-        Map<String, ShardingSphereMetaData> kernelMetaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
-        kernelMetaDataMap.put(schemaName, kernelMetaData);
-        FederationSchemaMetaData schemaMetaData = new FederationSchemaMetaData(schemaName, schema.getTables());
-        metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().put(schemaName, schemaMetaData);
-        metaDataContexts.getOptimizerContext().getPlannerContexts().put(schemaName, OptimizerPlannerContextFactory.create(schemaMetaData));
-        renewMetaDataContexts(rebuildMetaDataContexts(kernelMetaDataMap));
-    }
-    
-    /**
-     * Alter schema.
-     *
-     * @param schemaName schema name
-     * @param changedTableMetaData changed table meta data                  
-     * @param deletedTable deleted table
-     */
-    public void alterSchema(final String schemaName, final TableMetaData changedTableMetaData, final String deletedTable) {
-        ShardingSphereMetaData metaData = metaDataContexts.getMetaData(schemaName);
-        alterSingleTableDataNodes(metaData, changedTableMetaData);
-        FederationSchemaMetaData schemaMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName);
-        if (null != changedTableMetaData) {
-            metaData.getSchema().put(changedTableMetaData.getName(), changedTableMetaData);
-            schemaMetaData.put(changedTableMetaData);
-            metaDataContexts.getOptimizerContext().getPlannerContexts().put(schemaName, OptimizerPlannerContextFactory.create(schemaMetaData));
-        }
-        if (null != deletedTable) {
-            metaData.getSchema().remove(deletedTable);
-            schemaMetaData.remove(deletedTable);
-            metaDataContexts.getOptimizerContext().getPlannerContexts().put(schemaName, OptimizerPlannerContextFactory.create(schemaMetaData));
-        }
-    }
-    
-    private void alterSingleTableDataNodes(final ShardingSphereMetaData metaData, final TableMetaData changedTableMetaData) {
-        if (!containsInDataNodeContainedRule(changedTableMetaData.getName(), metaData)) {
-            metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> {
-                if (each.findSingleTableDataNode(changedTableMetaData.getName()).isPresent()) {
-                    each.put(changedTableMetaData.getName(), each.findSingleTableDataNode(changedTableMetaData.getName()).get().getDataSourceName());
-                }
-            });
-        }
-    }
-    
-    private boolean containsInDataNodeContainedRule(final String tableName, final ShardingSphereMetaData schemaMetaData) {
-        return schemaMetaData.getRuleMetaData().findRules(DataNodeContainedRule.class).stream().anyMatch(each -> each.getAllTables().contains(tableName));
     }
     
     /**
