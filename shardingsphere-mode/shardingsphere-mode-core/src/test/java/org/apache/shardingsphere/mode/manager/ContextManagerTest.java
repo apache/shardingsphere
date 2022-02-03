@@ -116,21 +116,15 @@ public final class ContextManagerTest {
     public void assertAddSchema() throws SQLException {
         when(metaDataContexts.getMetaDataMap()).thenReturn(new LinkedHashMap<>());
         contextManager.addSchema("foo_schema");
-        assertTrue(metaDataContexts.getMetaDataMap().containsKey("foo_schema"));
-        assertTrue(metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().containsKey("foo_schema"));
+        assertTrue(contextManager.getMetaDataContexts().getMetaDataMap().containsKey("foo_schema"));
+        assertTrue(contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getSchemas().containsKey("foo_schema"));
     }
     
     @Test
     public void assertAlterSchema() {
-        Map<String, ShardingSphereMetaData> metaDataMap = new LinkedHashMap<>();
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        metaDataMap.put("test_schema", metaData);
-        when(metaDataContexts.getMetaDataMap()).thenReturn(metaDataMap);
-        when(metaDataContexts.getMetaData("test_schema")).thenReturn(metaData);
-        Map<String, TableMetaData> tables = new HashMap<>();
-        tables.put("test_table_1", new TableMetaData("test_table_1", Collections.emptyList(), Collections.emptyList()));
-        contextManager.alterSchema("test_schema", new ShardingSphereSchema(tables));
-        assertTrue(metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get("test_schema").getTables().containsKey("test_table_1"));
+        contextManager.alterSchema("foo_schema", new ShardingSphereSchema(Collections.singletonMap("foo_table", new TableMetaData("foo_table", Collections.emptyList(), Collections.emptyList()))));
+        assertTrue(contextManager.getMetaDataContexts().getMetaDataMap().get("foo_schema").getSchema().containsTable("foo_table"));
+        assertTrue(contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getSchemas().get("foo_schema").getTables().containsKey("foo_table"));
     }
     
     @Test
@@ -140,10 +134,10 @@ public final class ContextManagerTest {
         when(metaDataContexts.getOptimizerContext().getParserContexts()).thenReturn(new HashMap<>(Collections.singletonMap("foo_schema", mock(OptimizerParserContext.class))));
         when(metaDataContexts.getOptimizerContext().getPlannerContexts()).thenReturn(new HashMap<>(Collections.singletonMap("foo_schema", mock(OptimizerPlannerContext.class))));
         contextManager.deleteSchema("foo_schema");
-        assertFalse(metaDataContexts.getMetaDataMap().containsKey("foo_schema"));
-        assertFalse(metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().containsKey("foo_schema"));
-        assertFalse(metaDataContexts.getOptimizerContext().getParserContexts().containsKey("foo_schema"));
-        assertFalse(metaDataContexts.getOptimizerContext().getPlannerContexts().containsKey("foo_schema"));
+        assertFalse(contextManager.getMetaDataContexts().getMetaDataMap().containsKey("foo_schema"));
+        assertFalse(contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getSchemas().containsKey("foo_schema"));
+        assertFalse(contextManager.getMetaDataContexts().getOptimizerContext().getParserContexts().containsKey("foo_schema"));
+        assertFalse(contextManager.getMetaDataContexts().getOptimizerContext().getPlannerContexts().containsKey("foo_schema"));
     }
     
     @Test
@@ -171,7 +165,7 @@ public final class ContextManagerTest {
     }
     
     private void assertAddedDataSources(final Map<String, DataSource> actual) {
-        assertThat(contextManager.getMetaDataContexts().getMetaDataMap().get("test_schema").getResource().getDataSources().size(), is(2));
+        assertThat(actual.size(), is(2));
         assertTrue(actual.containsKey("foo_ds_1"));
         assertDataSource((MockedDataSource) actual.get("foo_ds_1"));
         assertTrue(actual.containsKey("foo_ds_2"));
@@ -277,11 +271,11 @@ public final class ContextManagerTest {
         contextManager.alterDataSourceConfiguration("test_schema", newDataSourceProps);
         assertTrue(contextManager.getMetaDataContexts().getMetaDataMap().containsKey("test_schema"));
         assertThat(contextManager.getMetaDataContexts().getMetaDataMap().get("test_schema").getResource().getDataSources().size(), is(1));
-        MockedDataSource actualDs = (MockedDataSource) contextManager.getMetaDataContexts().getMetaData("test_schema").getResource().getDataSources().get("ds_1");
-        assertThat(actualDs.getDriverClassName(), is(MockedDataSource.class.getName()));
-        assertThat(actualDs.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
-        assertThat(actualDs.getPassword(), is("test"));
-        assertThat(actualDs.getUsername(), is("test"));
+        MockedDataSource actualDataSource = (MockedDataSource) contextManager.getMetaDataContexts().getMetaData("test_schema").getResource().getDataSources().get("ds_1");
+        assertThat(actualDataSource.getDriverClassName(), is(MockedDataSource.class.getName()));
+        assertThat(actualDataSource.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
+        assertThat(actualDataSource.getPassword(), is("test"));
+        assertThat(actualDataSource.getUsername(), is("test"));
     }
     
     private ShardingSphereResource mockOriginalResource() {
