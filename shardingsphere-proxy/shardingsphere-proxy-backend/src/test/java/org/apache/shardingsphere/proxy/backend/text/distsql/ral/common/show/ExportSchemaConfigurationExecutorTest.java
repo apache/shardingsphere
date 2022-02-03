@@ -58,7 +58,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ExportSchemaConfigurationExecutorTest {
-
+    
     @Before
     public void init() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
@@ -70,7 +70,7 @@ public final class ExportSchemaConfigurationExecutorTest {
         when(contextManager.getMetaDataContexts().getMetaData("sharding_db")).thenReturn(shardingSphereMetaData);
         ProxyContext.getInstance().init(contextManager);
     }
-
+    
     @Test
     public void assertExportSchemaExecutor() throws SQLException {
         ExportSchemaConfigurationExecutor executor = new ExportSchemaConfigurationExecutor(createSqlStatement(), mockConnectionSession());
@@ -80,7 +80,7 @@ public final class ExportSchemaConfigurationExecutorTest {
         List<Object> data = new ArrayList<>(queryResponseRow.getData());
         assertThat(data.size(), is(1));
     }
-
+    
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(createTableRuleConfiguration());
@@ -95,14 +95,14 @@ public final class ExportSchemaConfigurationExecutorTest {
         result.getScaling().put(scalingName, null);
         return result;
     }
-
+    
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
         result.put("ds_0", createDataSource("demo_ds_0"));
         result.put("ds_1", createDataSource("demo_ds_1"));
         return result;
     }
-
+    
     private DataSource createDataSource(final String dbName) {
         HikariDataSource result = new HikariDataSource();
         result.setJdbcUrl(String.format("jdbc:mysql://127.0.0.1:3306/%s?serverTimezone=UTC&useSSL=false", dbName));
@@ -115,7 +115,7 @@ public final class ExportSchemaConfigurationExecutorTest {
         result.setMinimumIdle(1);
         return result;
     }
-
+    
     private Map<String, TableMetaData> createTableMap() {
         Map<String, TableMetaData> result = new HashMap<>(1, 1);
         List<ColumnMetaData> columns = Collections.singletonList(new ColumnMetaData("order_id", 0, false, false, false));
@@ -123,17 +123,17 @@ public final class ExportSchemaConfigurationExecutorTest {
         result.put("t_order", new TableMetaData("t_order", columns, indexes));
         return result;
     }
-
+    
     private ShardingTableRuleConfiguration createTableRuleConfiguration() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..1}");
         result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
         return result;
     }
-
+    
     private ExportSchemaConfigurationStatement createSqlStatement() {
         return new ExportSchemaConfigurationStatement(new SchemaSegment(0, 0, new IdentifierValue("sharding_db")), Optional.empty());
     }
-
+    
     private ConnectionSession mockConnectionSession() {
         return mock(ConnectionSession.class);
     }
