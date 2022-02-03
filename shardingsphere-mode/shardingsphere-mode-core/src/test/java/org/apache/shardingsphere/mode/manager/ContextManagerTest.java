@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.parser.OptimizerParserContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationMetaData;
@@ -66,7 +65,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -77,28 +75,27 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class ContextManagerTest {
     
-    private static Map<String, DataSource> dataSourceMap;
-    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private MetaDataContexts metaDataContexts;
-    
-    @Mock
-    private TransactionContexts transactionContexts;
-    
-    @Mock
-    private InstanceContext instanceContext;
     
     private ContextManager contextManager;
     
     @Before
     public void setUp() throws SQLException {
         contextManager = new ContextManager();
-        contextManager.init(metaDataContexts, transactionContexts, instanceContext);
-        dataSourceMap = new HashMap<>(2, 1);
-        DataSource primaryDataSource = mock(DataSource.class);
-        DataSource replicaDataSource = mock(DataSource.class);
-        dataSourceMap.put("test_primary_ds", primaryDataSource);
-        dataSourceMap.put("test_replica_ds", replicaDataSource);
+        contextManager.init(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class));
+        when(metaDataContexts.getGlobalRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class, RETURNS_DEEP_STUBS));
+        when(metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas()).thenReturn(new LinkedHashMap<>());
+        when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+    }
+    
+    @Test
+    public void assertGetDataSourceMap() {
+        ShardingSphereResource resource = new ShardingSphereResource(
+                Collections.singletonMap("foo_ds", new MockedDataSource()), mock(DataSourcesMetaData.class), mock(CachedDatabaseMetaData.class), mock(DatabaseType.class));
+        when(metaDataContexts.getMetaData(DefaultSchema.LOGIC_NAME)).thenReturn(
+                new ShardingSphereMetaData(DefaultSchema.LOGIC_NAME, resource, mock(ShardingSphereRuleMetaData.class), new ShardingSphereSchema()));
+        assertThat(contextManager.getDataSourceMap(DefaultSchema.LOGIC_NAME).size(), is(1));
     }
     
     @Test
@@ -116,57 +113,37 @@ public final class ContextManagerTest {
     }
     
     @Test
-    public void assertGetDataSourceMap() {
-        ShardingSphereResource resource = new ShardingSphereResource(dataSourceMap, mock(DataSourcesMetaData.class), mock(CachedDatabaseMetaData.class), mock(DatabaseType.class));
-        when(metaDataContexts.getMetaData(anyString())).thenReturn(new ShardingSphereMetaData("logic_schema", resource, mock(ShardingSphereRuleMetaData.class), new ShardingSphereSchema()));
-        assertThat(contextManager.getDataSourceMap(DefaultSchema.LOGIC_NAME).size(), is(2));
-    }
-    
-    @Test
     public void assertAddSchema() throws SQLException {
         when(metaDataContexts.getMetaDataMap()).thenReturn(new LinkedHashMap<>());
-        when(metaDataContexts.getGlobalRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class, RETURNS_DEEP_STUBS));
-        when(metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas()).thenReturn(new LinkedHashMap<>());
-        when(metaDataContexts.getProps()).thenReturn(mock(ConfigurationProperties.class));
-        contextManager.addSchema("test_add_schema");
-        assertTrue(metaDataContexts.getMetaDataMap().containsKey("test_add_schema"));
-        assertTrue(metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().containsKey("test_add_schema"));
-    }
-    
-    @Test
-    public void assertDeleteSchema() {
-        Map<String, ShardingSphereMetaData> metaDataMap = new LinkedHashMap<>();
-        metaDataMap.put("test_delete_schema", mock(ShardingSphereMetaData.class));
-        when(metaDataContexts.getMetaDataMap()).thenReturn(metaDataMap);
-        FederationSchemaMetaData federationSchemaMetaData = mock(FederationSchemaMetaData.class);
-        Map<String, FederationSchemaMetaData> federationSchemaMetaDataMap = new LinkedHashMap<>();
-        federationSchemaMetaDataMap.put("test_delete_schema", federationSchemaMetaData);
-        when(metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas()).thenReturn(federationSchemaMetaDataMap);
-        Map<String, OptimizerParserContext> parserContexts = new LinkedHashMap<>();
-        parserContexts.put("test_delete_schema", mock(OptimizerParserContext.class));
-        when(metaDataContexts.getOptimizerContext().getParserContexts()).thenReturn(parserContexts);
-        Map<String, OptimizerPlannerContext> plannerContexts = new LinkedHashMap<>();
-        plannerContexts.put("test_delete_schema", mock(OptimizerPlannerContext.class));
-        when(metaDataContexts.getOptimizerContext().getPlannerContexts()).thenReturn(plannerContexts);
-        contextManager.deleteSchema("test_delete_schema");
-        assertFalse(metaDataContexts.getMetaDataMap().containsKey("test_delete_schema"));
-        assertFalse(metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().containsKey("test_delete_schema"));
-        assertFalse(parserContexts.containsKey("test_delete_schema"));
-        assertFalse(plannerContexts.containsKey("test_delete_schema"));
+        contextManager.addSchema("foo_schema");
+        assertTrue(metaDataContexts.getMetaDataMap().containsKey("foo_schema"));
+        assertTrue(metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().containsKey("foo_schema"));
     }
     
     @Test
     public void assertAlterSchema() {
         Map<String, ShardingSphereMetaData> metaDataMap = new LinkedHashMap<>();
-        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        metaDataMap.put("test_schema", shardingSphereMetaData);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        metaDataMap.put("test_schema", metaData);
         when(metaDataContexts.getMetaDataMap()).thenReturn(metaDataMap);
-        when(metaDataContexts.getMetaData("test_schema")).thenReturn(shardingSphereMetaData);
-        when(metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas()).thenReturn(new LinkedHashMap<>());
+        when(metaDataContexts.getMetaData("test_schema")).thenReturn(metaData);
         Map<String, TableMetaData> tables = new HashMap<>();
         tables.put("test_table_1", new TableMetaData("test_table_1", Collections.emptyList(), Collections.emptyList()));
         contextManager.alterSchema("test_schema", new ShardingSphereSchema(tables));
         assertTrue(metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get("test_schema").getTables().containsKey("test_table_1"));
+    }
+    
+    @Test
+    public void assertDeleteSchema() {
+        when(metaDataContexts.getMetaDataMap()).thenReturn(new HashMap<>(Collections.singletonMap("foo_schema", mock(ShardingSphereMetaData.class))));
+        when(metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas()).thenReturn(new HashMap<>(Collections.singletonMap("foo_schema", mock(FederationSchemaMetaData.class))));
+        when(metaDataContexts.getOptimizerContext().getParserContexts()).thenReturn(new HashMap<>(Collections.singletonMap("foo_schema", mock(OptimizerParserContext.class))));
+        when(metaDataContexts.getOptimizerContext().getPlannerContexts()).thenReturn(new HashMap<>(Collections.singletonMap("foo_schema", mock(OptimizerPlannerContext.class))));
+        contextManager.deleteSchema("foo_schema");
+        assertFalse(metaDataContexts.getMetaDataMap().containsKey("foo_schema"));
+        assertFalse(metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().containsKey("foo_schema"));
+        assertFalse(metaDataContexts.getOptimizerContext().getParserContexts().containsKey("foo_schema"));
+        assertFalse(metaDataContexts.getOptimizerContext().getPlannerContexts().containsKey("foo_schema"));
     }
     
     @Test
@@ -179,11 +156,8 @@ public final class ContextManagerTest {
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(globalRuleMetaData.getConfigurations()).thenReturn(new LinkedList<>());
         when(metaDataContexts.getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        when(metaDataContexts.getOptimizerContext()).thenReturn(mock(OptimizerContext.class));
         when(metaDataContexts.getOptimizerContext().getFederationMetaData()).thenReturn(mock(FederationMetaData.class));
-        when(metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas()).thenReturn(new LinkedHashMap<>());
         when(metaDataContexts.getOptimizerContext().getParserContexts()).thenReturn(new LinkedHashMap<>());
-        when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         contextManager.addResource("test_schema", createToBeAddedDataSourceProperties());
         assertAddedDataSources(contextManager.getMetaDataContexts().getMetaDataMap().get("test_schema").getResource().getDataSources());
     }
@@ -226,14 +200,11 @@ public final class ContextManagerTest {
         metaDataMap.put("test_schema", originalMetaData);
         when(metaDataContexts.getMetaDataMap()).thenReturn(metaDataMap);
         when(metaDataContexts.getMetaData("test_schema")).thenReturn(originalMetaData);
-        ShardingSphereRuleMetaData globalShardingSphereRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(globalShardingSphereRuleMetaData.getConfigurations()).thenReturn(new LinkedList<>());
-        when(metaDataContexts.getGlobalRuleMetaData()).thenReturn(globalShardingSphereRuleMetaData);
-        when(metaDataContexts.getOptimizerContext()).thenReturn(mock(OptimizerContext.class));
+        ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
+        when(globalRuleMetaData.getConfigurations()).thenReturn(new LinkedList<>());
+        when(metaDataContexts.getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(metaDataContexts.getOptimizerContext().getFederationMetaData()).thenReturn(mock(FederationMetaData.class));
-        when(metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas()).thenReturn(new LinkedHashMap<>());
         when(metaDataContexts.getOptimizerContext().getParserContexts()).thenReturn(new LinkedHashMap<>());
-        when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         contextManager.alterResource("test_schema", createToBeAlteredDataSourceProperties());
         assertAlteredDataSource((MockedDataSource) contextManager.getMetaDataContexts().getMetaDataMap().get("test_schema").getResource().getDataSources().get("foo_ds"));
     }
@@ -277,9 +248,6 @@ public final class ContextManagerTest {
         metaDataMap.put("test", shardingSphereMetaData);
         when(metaDataContexts.getMetaDataMap()).thenReturn(metaDataMap);
         when(metaDataContexts.getMetaDataPersistService()).thenReturn(Optional.of(mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS)));
-        when(metaDataContexts.getGlobalRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class, RETURNS_DEEP_STUBS));
-        when(metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas()).thenReturn(new LinkedHashMap<>());
-        when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         Collection<RuleConfiguration> ruleConfigs = new LinkedList<>();
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
         ruleConfigs.add(ruleConfig);
@@ -297,9 +265,6 @@ public final class ContextManagerTest {
         when(originalMetaData.getResource()).thenReturn(originalResource);
         ShardingSphereRuleMetaData ruleMetaData = mockRuleMetaData();
         when(originalMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(metaDataContexts.getGlobalRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class));
-        when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        when(metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas()).thenReturn(new LinkedHashMap<>());
         when(metaDataContexts.getMetaData("test_schema")).thenReturn(originalMetaData);
         Map<String, ShardingSphereMetaData> originalMetaDataMap = new LinkedHashMap<>();
         originalMetaDataMap.put("test_schema", originalMetaData);
@@ -358,12 +323,10 @@ public final class ContextManagerTest {
         ShardingSphereResource originalResource = mock(ShardingSphereResource.class);
         when(originalResource.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
         when(metaDataContexts.getMetaData("test_schema").getResource()).thenReturn(originalResource);
-        when(metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas()).thenReturn(new LinkedHashMap<>());
         SchemaMetaDataPersistService schemaMetaDataPersistService = mock(SchemaMetaDataPersistService.class, RETURNS_DEEP_STUBS);
         MetaDataPersistService metaDataPersistService = mock(MetaDataPersistService.class);
         when(metaDataPersistService.getSchemaMetaDataService()).thenReturn(schemaMetaDataPersistService);
         when(metaDataContexts.getMetaDataPersistService()).thenReturn(Optional.of(metaDataPersistService));
-        when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         contextManager.reloadMetaData("test_schema");
         verify(schemaMetaDataPersistService, times(1)).persist(eq("test_schema"), any(ShardingSphereSchema.class));
         contextManager.reloadMetaData("test_schema", "test_table");
