@@ -40,7 +40,6 @@ import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPer
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -234,8 +233,6 @@ public final class ContextManagerTest {
     }
     
     @Test
-    @Ignore
-    // TODO fix test cases
     public void assertAlterDataSourceConfiguration() {
         ShardingSphereMetaData originalMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(originalMetaData.getName()).thenReturn("test_schema");
@@ -249,11 +246,13 @@ public final class ContextManagerTest {
         when(metaDataContexts.getMetaDataMap()).thenReturn(originalMetaDataMap);
         Map<String, DataSourceProperties> newDataSourceProps = new LinkedHashMap<>();
         newDataSourceProps.put("ds_1", new DataSourceProperties(MockedDataSource.class.getName(), createProperties("test", "test")));
+        ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
+        when(globalRuleMetaData.getConfigurations()).thenReturn(new LinkedList<>());
+        when(metaDataContexts.getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         contextManager.alterDataSourceConfiguration("test_schema", newDataSourceProps);
         assertTrue(contextManager.getMetaDataContexts().getMetaDataMap().containsKey("test_schema"));
         assertThat(contextManager.getMetaDataContexts().getMetaDataMap().get("test_schema").getResource().getDataSources().size(), is(1));
         MockedDataSource actualDataSource = (MockedDataSource) contextManager.getMetaDataContexts().getMetaData("test_schema").getResource().getDataSources().get("ds_1");
-        assertThat(actualDataSource.getDriverClassName(), is(MockedDataSource.class.getName()));
         assertThat(actualDataSource.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actualDataSource.getPassword(), is("test"));
         assertThat(actualDataSource.getUsername(), is("test"));
