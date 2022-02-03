@@ -101,6 +101,6 @@ public final class DataSourceMapSetter {
         bean.setJndiName(jndiName);
         bean.setProxyInterface(DataSource.class);
         bean.afterPropertiesSet();
-        return (DataSource) bean.getObject();
+        return (DataSource) AopProxyUtils.getTarget(bean.getObject());
     }
 }
