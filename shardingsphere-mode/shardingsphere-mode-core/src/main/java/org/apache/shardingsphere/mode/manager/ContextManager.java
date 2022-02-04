@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
@@ -208,7 +207,7 @@ public final class ContextManager implements AutoCloseable {
      *
      * @param schemaName schema name
      * @param dataSourcePropsMap data source properties map
-     * @throws SQLException SQL exception                         
+     * @throws SQLException SQL exception
      */
     public void addResource(final String schemaName, final Map<String, DataSourceProperties> dataSourcePropsMap) throws SQLException {
         refreshMetaDataContext(schemaName, dataSourcePropsMap);
@@ -220,7 +219,7 @@ public final class ContextManager implements AutoCloseable {
      *
      * @param schemaName schema name
      * @param dataSourcePropsMap data source properties map
-     * @throws SQLException SQL exception                         
+     * @throws SQLException SQL exception
      */
     public void alterResource(final String schemaName, final Map<String, DataSourceProperties> dataSourcePropsMap) throws SQLException {
         refreshMetaDataContext(schemaName, dataSourcePropsMap);
@@ -318,7 +317,7 @@ public final class ContextManager implements AutoCloseable {
      * Reload table meta data.
      *
      * @param schemaName schema name
-     * @param tableName logic table name                  
+     * @param tableName logic table name
      */
     public void reloadMetaData(final String schemaName, final String tableName) {
         try {
@@ -336,7 +335,7 @@ public final class ContextManager implements AutoCloseable {
      *
      * @param schemaName schema name
      * @param tableName logic table name
-     * @param dataSourceName data source name                 
+     * @param dataSourceName data source name
      */
     public void reloadMetaData(final String schemaName, final String tableName, final String dataSourceName) {
         try {
@@ -468,15 +467,6 @@ public final class ContextManager implements AutoCloseable {
     
     private Map<String, DataSource> buildChangedDataSources(final ShardingSphereMetaData originalMetaData, final Map<String, DataSourceProperties> newDataSourcePropsMap) {
         return DataSourcePoolCreator.create(getChangedDataSourceConfiguration(originalMetaData, newDataSourcePropsMap));
-    }
-    
-    private Map<String, ShardingSphereSchema> getShardingSphereSchemas(final Map<String, ? extends SchemaConfiguration> schemaConfigs, final Map<String, Collection<ShardingSphereRule>> rules,
-                                                                       final Properties props) throws SQLException {
-        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(schemaConfigs.size(), 1);
-        for (String each : schemaConfigs.keySet()) {
-            result.put(each, SchemaLoader.load(schemaConfigs.get(each).getDataSources(), rules.get(each), props));
-        }
-        return result;
     }
     
     private void renewTransactionContext(final String schemaName, final ShardingSphereResource resource) {
