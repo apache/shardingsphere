@@ -82,7 +82,7 @@ public final class ExampleService {
     /**
      * Execute test.
      *
-     * @throws SQLException
+     * @throws SQLException SQL exception
      */
     public void run() throws SQLException {
         try {
@@ -95,7 +95,8 @@ public final class ExampleService {
     
     /**
      * Initialize the database test environment.
-     * @throws SQLException
+     * 
+     * @throws SQLException SQL exception
      */
     private void initEnvironment() throws SQLException {
         orderRepository.createTableIfNotExists();
@@ -136,7 +137,7 @@ public final class ExampleService {
             orderItem.setPhone("13800000001");
             orderItem.setStatus("INSERT_TEST");
             orderItemRepository.insert(orderItem);
-
+            
             Address address = new Address();
             address.setAddressId((long) i);
             address.setAddressName("address_test_" + i);
@@ -185,7 +186,8 @@ public final class ExampleService {
     
     /**
      * Restore the environment.
-     * @throws SQLException
+     * 
+     * @throws SQLException SQL exception
      */
     private void cleanEnvironment() throws SQLException {
     <#if feature?contains("shadow")>
