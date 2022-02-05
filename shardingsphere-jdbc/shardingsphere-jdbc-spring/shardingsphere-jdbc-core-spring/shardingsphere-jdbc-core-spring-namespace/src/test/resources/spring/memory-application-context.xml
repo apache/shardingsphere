@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -17,28 +18,26 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
-       xmlns:cluster="http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context 
+                           http://www.springframework.org/schema/context/spring-context.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster
-                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository.xsd
                            ">
-    <import resource="namespace/encrypt-data-source-namespace.xml" />
+    <context:property-placeholder location="classpath:spring/conf/conf.properties" />
     
-    <cluster:repository id="clusterRepository" type="TestRegistry" namespace="regCenter" server-lists="localhost:3182">
-        <props>
-            <prop key="max-retries">3</prop>
-            <prop key="operation-timeout-milliseconds">1000</prop>
-        </props>
-    </cluster:repository>
+    <import resource="included/data-sources-context.xml" />
+    <import resource="included/rules-context.xml" />
     
-    <shardingsphere:data-source id="encryptDataSourceGovernance" data-source-names="dbtbl_0" rule-refs="encryptRule">
-        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
+    <shardingsphere:data-source id="dataSource" data-source-names="ds_0_write,ds_0_read_0,ds_0_read_1,ds_1_write,ds_1_read_0,ds_1_read_1" rule-refs="shardingRule, readWriteSplittingRule, encryptRule, sqlParseRule">
         <props>
-            <prop key="sql-show">${sql_show}</prop>
+            <prop key="sql-show">false</prop>
+            <prop key="kernel-executor-size">${kernel-executor-size}</prop>
         </props>
     </shardingsphere:data-source>
+    
+    <shardingsphere:tx-type-annotation-driven />
 </beans>

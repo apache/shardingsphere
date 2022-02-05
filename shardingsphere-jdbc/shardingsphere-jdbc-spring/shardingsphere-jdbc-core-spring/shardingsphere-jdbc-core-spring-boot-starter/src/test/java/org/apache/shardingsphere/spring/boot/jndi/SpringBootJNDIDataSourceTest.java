@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.spring.boot.jndi;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.spring.boot.jndi.fixture.InitialDataSourceInitialContextFactory;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.BeforeClass;
@@ -56,7 +55,7 @@ public class SpringBootJNDIDataSourceTest {
     
     @Test
     public void assertDataSources() {
-        Map<String, DataSource> dataSources = dataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources();
+        Map<String, DataSource> dataSources = dataSource.getContextManager().getMetaDataContexts().getMetaData("foo_db").getResource().getDataSources();
         assertThat(dataSources.size(), is(2));
         assertTrue(dataSources.containsKey("ds0"));
         assertTrue(dataSources.containsKey("ds1"));

@@ -38,8 +38,7 @@ public final class HikariDataSourcePropertiesSetter implements DataSourcePropert
         Properties props = new Properties();
         String dataSourcePropKey = prefix + dataSourceName.trim() + ".data-source-properties";
         if (PropertyUtil.containPropertyPrefix(environment, dataSourcePropKey)) {
-            Map<?, ?> datasourceProperties = PropertyUtil.handle(environment, dataSourcePropKey, Map.class);
-            props.putAll(datasourceProperties);
+            props.putAll(PropertyUtil.handle(environment, dataSourcePropKey, Map.class));
             Method method = dataSource.getClass().getMethod("setDataSourceProperties", Properties.class);
             method.invoke(dataSource, props);
         }

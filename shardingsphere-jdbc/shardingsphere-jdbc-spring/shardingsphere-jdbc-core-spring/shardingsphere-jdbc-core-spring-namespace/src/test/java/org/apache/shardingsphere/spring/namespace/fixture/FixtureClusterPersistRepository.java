@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.namespace.fixture.repository;
+package org.apache.shardingsphere.spring.namespace.fixture;
 
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public final class TestClusterPersistRepository implements ClusterPersistRepository {
+public final class FixtureClusterPersistRepository implements ClusterPersistRepository {
     
     private final Map<String, String> registryData = new LinkedHashMap<>();
     
@@ -86,6 +86,6 @@ public final class TestClusterPersistRepository implements ClusterPersistReposit
     
     @Override
     public String getType() {
-        return "TestRegistry";
+        return "Fixture";
     }
 }
