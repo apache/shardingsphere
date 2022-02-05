@@ -196,6 +196,6 @@ Contributor Guide：[https://shardingsphere.apache.org/community/en/contribute/]
 
 Longtao Jiang
 
-![](https://shardingsphere.apache.org/blog/img/Blog_22_img_5_Liang_Longtao_Photo.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_22_img_5_Jiang_Longtao_Photo.png)
 
 > SphereEx Middleware Development Engineer & Apache ShardingSphere Contributor.
