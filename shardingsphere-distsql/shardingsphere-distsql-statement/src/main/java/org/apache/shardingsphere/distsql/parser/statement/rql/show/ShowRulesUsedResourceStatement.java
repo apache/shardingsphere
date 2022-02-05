@@ -15,42 +15,23 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
-import Keyword, Literals, Symbol;
+import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
-showResources
-    : SHOW SCHEMA RESOURCES (FROM schemaName)?
-    ;
+import java.util.Optional;
 
-showSingleTableRules
-    : SHOW SINGLE TABLE RULES (FROM schemaName)?
-    ;
-
-showSingleTable
-    : SHOW SINGLE (table | TABLES) (FROM schemaName)?
-    ;
-
-countSchemaRules
-    : COUNT SCHEMA RULES (FROM schemaName)?
-    ;
-
-showRulesUsedResource
-    : SHOW RULES USED RESOURCE resourceName (FROM schemaName)?
-    ;
-
-resourceName
-    : IDENTIFIER | STRING
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
-
-table
-    : TABLE tableName
-    ;
-
-tableName
-    : IDENTIFIER
-    ;
+/**
+ * Show rules used resource statement.
+ */
+@Getter
+public final class ShowRulesUsedResourceStatement extends ShowRulesStatement {
+    
+    private final Optional<String> resourceName;
+    
+    public ShowRulesUsedResourceStatement(final Optional<String> resourceName, final SchemaSegment schema) {
+        super(schema);
+        this.resourceName = resourceName;
+    }
+}
