@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.boot;
+package org.apache.shardingsphere.spring.boot.jndi;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.spring.boot.fixture.InitialDataSourceInitialContextFactory;
+import org.apache.shardingsphere.spring.boot.jndi.fixture.InitialDataSourceInitialContextFactory;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.BeforeClass;
 import org.junit.Test;

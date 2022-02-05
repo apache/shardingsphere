@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.boot.fixture;
+package org.apache.shardingsphere.spring.boot.jndi.fixture;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -25,6 +25,9 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
+/**
+ * Initial data source initial context factory.
+ */
 public final class InitialDataSourceInitialContextFactory implements InitialContextFactory {
     
     private static InitialDataSourceContext context;
