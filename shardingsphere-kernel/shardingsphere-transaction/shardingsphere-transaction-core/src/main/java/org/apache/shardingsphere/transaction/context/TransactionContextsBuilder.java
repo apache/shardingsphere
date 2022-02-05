@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.transaction.context;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -34,7 +33,6 @@ import java.util.Optional;
 /**
  * Transaction contexts builder.
  */
-@Slf4j
 @RequiredArgsConstructor
 public final class TransactionContextsBuilder {
     
