@@ -39,5 +39,4 @@ public final class FieldValueUtil {
         field.setAccessible(true);
         return field.get(obj);
     }
-    
 }
