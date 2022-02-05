@@ -25,9 +25,9 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
-public final class TestJndiInitialContextFactory implements InitialContextFactory {
+public final class InitialDataSourceInitialContextFactory implements InitialContextFactory {
     
-    private static JndiContext context;
+    private static InitialDataSourceContext context;
     
     @Override
     public Context getInitialContext(final Hashtable<?, ?> environment) {
@@ -35,19 +35,19 @@ public final class TestJndiInitialContextFactory implements InitialContextFactor
     }
     
     /**
-     * Bind.
+     * Bind JNDI object.
      * 
-     * @param name bind
-     * @param obj object
+     * @param name JNDI name
+     * @param value object JNDI value
      */
-    public static void bind(final String name, final Object obj) {
-        getContext().bind(name, obj);
+    public static void bind(final String name, final Object value) {
+        getContext().bind(name, value);
     }
     
-    private static JndiContext getContext() {
+    private static InitialDataSourceContext getContext() {
         if (null == context) {
             try {
-                context = new JndiContext();
+                context = new InitialDataSourceContext();
             } catch (final NamingException ex) {
                 throw new IllegalStateException(ex);
             }
@@ -55,11 +55,11 @@ public final class TestJndiInitialContextFactory implements InitialContextFactor
         return context;
     }
     
-    private static final class JndiContext extends InitialContext {
+    private static final class InitialDataSourceContext extends InitialContext {
         
         private final Map<String, Object> bindings = new HashMap<>();
         
-        private JndiContext() throws NamingException {
+        private InitialDataSourceContext() throws NamingException {
             super(true);
         }
         
