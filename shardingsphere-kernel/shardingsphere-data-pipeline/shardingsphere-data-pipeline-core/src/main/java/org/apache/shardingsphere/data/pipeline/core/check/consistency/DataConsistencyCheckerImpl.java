@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
@@ -84,7 +83,7 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         this.jobConfig = jobConfig;
         ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         jobId = jobConfig.getHandleConfig().getJobId();
-        logicTableNames = Splitter.on(',').splitToList(jobConfig.getHandleConfig().getLogicTables());
+        logicTableNames = jobConfig.getHandleConfig().splitLogicTableNames();
     }
     
     @Override

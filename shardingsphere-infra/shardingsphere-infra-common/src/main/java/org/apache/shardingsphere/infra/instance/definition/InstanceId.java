@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 
 import java.lang.management.ManagementFactory;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Instance id.
@@ -32,34 +33,36 @@ public final class InstanceId {
     
     private static final String DELIMITER = "@";
     
+    private static final AtomicLong ATOMIC_LONG = new AtomicLong();
+    
     private final String id;
     
     private final String ip;
     
-    private final Integer port;
+    private final Integer uniqueSign;
     
-    public InstanceId(final String ip, final Integer port) {
+    public InstanceId(final String ip, final Integer uniqueSign) {
         this.ip = ip;
-        this.port = port;
-        id = String.join(DELIMITER, ip, String.valueOf(port));
+        this.uniqueSign = uniqueSign;
+        id = String.join(DELIMITER, ip, String.valueOf(uniqueSign));
     }
     
-    public InstanceId(final Integer port) {
-        this.port = port;
+    public InstanceId(final Integer uniqueSign) {
+        this.uniqueSign = uniqueSign;
         ip = IpUtils.getIp();
-        id = String.join(DELIMITER, ip, String.valueOf(port));
+        id = String.join(DELIMITER, ip, String.valueOf(uniqueSign));
     }
     
     public InstanceId(final String id) {
         this.id = id;
         List<String> ids = Splitter.on("@").splitToList(id);
         ip = ids.get(0);
-        port = Integer.valueOf(ids.get(1));
+        uniqueSign = Integer.valueOf(ids.get(1));
     }
     
     public InstanceId() {
-        port = 0;
         ip = IpUtils.getIp();
-        id = String.join(DELIMITER, ip, ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0]);
+        uniqueSign = Integer.valueOf(String.join("", ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0], String.valueOf(ATOMIC_LONG.incrementAndGet())));
+        id = String.join(DELIMITER, ip, String.valueOf(uniqueSign));
     }
 }

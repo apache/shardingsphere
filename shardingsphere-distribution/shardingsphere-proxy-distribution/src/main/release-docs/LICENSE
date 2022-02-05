@@ -264,22 +264,23 @@ The text of each license is the standard Apache 2.0 license.
     listenablefuture 9999.0-empty-to-avoid-conflict-with-guava:https://github.com/google/guava, Apache 2.0
     log4j 1.2.17: http://logging.apache.org/log4j/1.2/, Apache 2.0
     memory 0.9.0, Apache 2.0
-    netty-buffer 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-codec 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-codec-dns 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-codec-http2 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-codec-http 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-codec-socks 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-common 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-handler 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-handler-proxy 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-resolver 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-resolver-dns 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-transport 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-transport-native-epoll 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-transport-native-epoll 4.1.69.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
-    netty-transport-native-epoll 4.1.69.Final-linux-x86_64: https://github.com/netty, Apache 2.0
-    netty-transport-native-unix-common 4.1.69.Final: https://github.com/netty, Apache 2.0
+    netty-buffer 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-codec 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-codec-dns 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-codec-http 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-codec-http2 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-codec-socks 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-common 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-handler 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-handler-proxy 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-resolver 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-resolver-dns 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-tcnative-classes 2.0.46.Final: https://github.com/netty/netty-tcnative, Apache 2.0
+    netty-transport 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-transport-classes-epoll 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-transport-native-epoll 4.1.73.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
+    netty-transport-native-epoll 4.1.73.Final-linux-x86_64: https://github.com/netty, Apache 2.0
+    netty-transport-native-unix-common 4.1.73.Final: https://github.com/netty, Apache 2.0
     perfmark-api 0.19.0: https://github.com/perfmark/perfmark, Apache 2.0
     proto-google-common-protos 1.17.0: https://github.com/googleapis/common-protos-java, Apache 2.0
     quartz 2.3.2: https://github.com/quartz-scheduler/quartz, Apache 2.0

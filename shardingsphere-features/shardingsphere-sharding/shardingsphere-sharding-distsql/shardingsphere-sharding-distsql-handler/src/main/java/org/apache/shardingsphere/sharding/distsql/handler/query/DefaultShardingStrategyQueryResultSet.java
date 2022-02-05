@@ -91,6 +91,6 @@ public final class DefaultShardingStrategyQueryResultSet implements DistSQLResul
     
     @Override
     public String getType() {
-        return ShowDefaultShardingStrategyStatement.class.getCanonicalName();
+        return ShowDefaultShardingStrategyStatement.class.getName();
     }
 }

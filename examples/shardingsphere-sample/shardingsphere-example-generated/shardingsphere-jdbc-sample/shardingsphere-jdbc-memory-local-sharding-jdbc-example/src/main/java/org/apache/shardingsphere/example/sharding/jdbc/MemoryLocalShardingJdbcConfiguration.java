@@ -47,8 +47,9 @@ public final class MemoryLocalShardingJdbcConfiguration {
     /**
      * Create a DataSource object, which is an object rewritten by ShardingSphere itself 
      * and contains various rules for rewriting the original data storage. When in use, you only need to use this object.
-     * @return
-     * @throws SQLException
+     * 
+     * @return data source
+     * @throws SQLException SQL exception
     */
     public DataSource getDataSource() throws SQLException {
         return ShardingSphereDataSourceFactory.createDataSource(createModeConfiguration(), createDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), new Properties());

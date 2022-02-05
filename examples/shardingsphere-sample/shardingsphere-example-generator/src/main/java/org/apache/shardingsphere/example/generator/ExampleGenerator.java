@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -41,14 +42,8 @@ public final class ExampleGenerator {
     
     private static final String DATA_MODEL_PATH = "/data-model/data-model.yaml";
     
-    private static final String OUTPUT_PATH = "./examples/shardingsphere-sample/shardingsphere-example-generated"
-            + "<#assign package=\"\">"
-            + "<#if feature?split(\",\")?size gt 1>"
-            + "<#assign package=\"mixed\">"
-            + "<#else>"
-            + "<#assign package=feature />"
-            + "</#if>"
-            + "/shardingsphere-${product}-sample/${package}--${framework}--${mode}--${transaction}/";
+    private static final String OUTPUT_PATH = "./examples/shardingsphere-sample/shardingsphere-example-generator/target/shardingsphere-example-generated"
+            + "/shardingsphere-${product}-sample/${feature?replace(',', '-')}--${framework}--${mode}--${transaction}/";
     
     private static final String JAVA_CLASS_PATH = "src/main/java/org/apache/shardingsphere/example/"
             + "<#assign package=\"\">"
@@ -84,19 +79,46 @@ public final class ExampleGenerator {
     public void generate() throws IOException, TemplateException {
         try (InputStream input = ExampleGenerator.class.getResourceAsStream(DATA_MODEL_PATH)) {
             Map<String, String> dataModel = new Yaml().loadAs(input, Map.class);
-            String feature = dataModel.get("feature");
-            String framework = dataModel.get("framework");
-            generateDirs(dataModel, new ExampleScenarioFactory(feature, framework).getJavaClassPaths(), JAVA_CLASS_PATH);
-            generateDirs(dataModel, new ExampleScenarioFactory(feature, framework).getResourcePaths(), RESOURCES_PATH);
-            generateFile(dataModel, new ExampleScenarioFactory(feature, framework).getJavaClassTemplateMap(), JAVA_CLASS_PATH);
-            generateFile(dataModel, new ExampleScenarioFactory(feature, framework).getResourceTemplateMap(), RESOURCES_PATH);
-            String outputPath = generatePath(dataModel, OUTPUT_PATH);
-            processFile(dataModel, "pom.ftl", outputPath + "pom.xml");
+            String features = dataModel.get("features");
+            String frameworks = dataModel.get("frameworks");
+            for (String eachFramework : frameworks.split(",")) {
+                for (String eachFeature : generateCombination(features.split(","))) {
+                    dataModel.put("feature", eachFeature);
+                    dataModel.put("framework", eachFramework);
+                    generateDirs(dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getJavaClassPaths(), JAVA_CLASS_PATH);
+                    generateDirs(dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getResourcePaths(), RESOURCES_PATH);
+                    generateFile(dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getJavaClassTemplateMap(), JAVA_CLASS_PATH);
+                    generateFile(dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getResourceTemplateMap(), RESOURCES_PATH);
+                    processFile(dataModel, "pom.ftl", generatePath(dataModel, OUTPUT_PATH) + "pom.xml");
+                }
+            }
         }
+    }
+    
+    private Collection<String> generateCombination(String[] combs) {
+        int len = combs.length;
+        Collection<String> result = new HashSet<>();
+        for (int i = 0, size = 1 << len; i < size; i++) {
+            StringBuilder tmp = new StringBuilder();
+            for (int j = 0; j < len; j++) {
+                if (((1 << j) & i) != 0) {
+                    tmp.append(combs[j]).append(",");
+                }
+            }
+            if (0 != tmp.length()) {
+                tmp.deleteCharAt(tmp.lastIndexOf(","));
+                result.add(tmp.toString());
+            }
+        }
+        return result;
     }
     
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void generateDirs(final Map<String, String> dataModel, final Collection<String> paths, final String outputRelativePath) throws IOException, TemplateException {
+        if (null == paths || 0 == paths.size()) {
+            new File(generatePath(dataModel, OUTPUT_PATH + outputRelativePath)).mkdirs();
+            return;
+        }
         for (String each : paths) {
             new File(generatePath(dataModel, OUTPUT_PATH + outputRelativePath + "/" + each)).mkdirs();
         }

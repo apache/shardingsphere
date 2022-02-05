@@ -94,6 +94,6 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     
     @Override
     public String getType() {
-        return CreateEncryptRuleStatement.class.getCanonicalName();
+        return CreateEncryptRuleStatement.class.getName();
     }
 }

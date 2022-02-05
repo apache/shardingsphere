@@ -36,31 +36,31 @@ import java.util.Properties;
  * Interval-based time range sharding algorithm.
  */
 public abstract class AbstractIntervalShardingAlgorithm<T extends Comparable<?>> implements StandardShardingAlgorithm<T> {
-
+    
     public static final String DEFAULT_DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
-
+    
     public static final DateTimeFormatter DEFAULT_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_PATTERN);
-
+    
     public static final String DATE_TIME_LOWER_KEY = "datetime-lower";
-
+    
     public static final String DATE_TIME_UPPER_KEY = "datetime-upper";
-
+    
     public static final String SHARDING_SUFFIX_FORMAT_KEY = "sharding-suffix-pattern";
-
+    
     public static final String INTERVAL_UNIT_KEY = "datetime-interval-unit";
-
+    
     public static final String INTERVAL_AMOUNT_KEY = "datetime-interval-amount";
-
+    
     public static final String ZONE_ID_KEY = "zone-id";
-
+    
     private volatile IntervalTimeline intervalTimeline;
-
+    
     private ZoneId zoneId = ZoneId.systemDefault();
-
+    
     @Getter
     @Setter
     private Properties props = new Properties();
-
+    
     /**
      * get zone id.
      *
@@ -69,7 +69,7 @@ public abstract class AbstractIntervalShardingAlgorithm<T extends Comparable<?>>
     protected ZoneId getZoneId() {
         return zoneId;
     }
-
+    
     @Override
     public void init() {
         if (getProps().containsKey(ZONE_ID_KEY)) {
@@ -83,23 +83,23 @@ public abstract class AbstractIntervalShardingAlgorithm<T extends Comparable<?>>
         int stepAmount = Integer.parseInt(getProps().getProperty(INTERVAL_AMOUNT_KEY, "1"));
         intervalTimeline = new IntervalTimeline(logicNamePrefix, Range.closed(effectiveLower, effectiveUpper), IntervalStep.of(stepUnit, stepAmount), suffixFormatter);
     }
-
+    
     private String getRequiredValue(final String key) {
         return PropertiesUtil.getRequiredValue(getProps(), key);
     }
-
+    
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<T> shardingValue) {
         LocalDateTime shardingTime = convertShardingValue(shardingValue.getValue());
         return this.intervalTimeline.sharding(shardingTime);
     }
-
+    
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<T> shardingValue) {
         Range<LocalDateTime> shardingRangeTime = convertRangeShardingValue(shardingValue.getValueRange());
         return this.intervalTimeline.sharding(shardingRangeTime);
     }
-
+    
     /**
      * convert sharding value to {@link LocalDateTime}.
      *
@@ -107,7 +107,7 @@ public abstract class AbstractIntervalShardingAlgorithm<T extends Comparable<?>>
      * @return The {@link LocalDateTime} represented by the sharding value
      */
     protected abstract LocalDateTime convertShardingValue(T shardingValue);
-
+    
     @SuppressWarnings("unchecked")
     private Range<LocalDateTime> convertRangeShardingValue(final Range<T> shardingValue) {
         if (Range.all().equals(shardingValue)) {

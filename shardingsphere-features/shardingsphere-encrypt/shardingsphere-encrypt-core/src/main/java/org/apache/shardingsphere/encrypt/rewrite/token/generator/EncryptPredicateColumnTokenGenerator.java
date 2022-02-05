@@ -42,7 +42,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Predicate column token generator for encrypt.
@@ -93,14 +92,14 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
                 if (!queryWithCipherColumn) {
                     Optional<String> plainColumn = encryptTable.get().findPlainColumn(column.getIdentifier().getValue());
                     if (plainColumn.isPresent()) {
-                        result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(plainColumn.get())));
+                        result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, buildColumnProjections(plainColumn.get())));
                         continue;
                     }
                 }
                 Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(column.getIdentifier().getValue());
                 SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.map(columnName
-                    -> new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(columnName))).orElseGet(()
-                        -> new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(encryptTable.get().getCipherColumn(column.getIdentifier().getValue()))));
+                    -> new SubstitutableColumnNameToken(startIndex, stopIndex, buildColumnProjections(columnName))).orElseGet(()
+                        -> new SubstitutableColumnNameToken(startIndex, stopIndex, buildColumnProjections(encryptTable.get().getCipherColumn(column.getIdentifier().getValue()))));
                 result.add(encryptColumnNameToken);
             }
         }
@@ -108,9 +107,21 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     }
     
     private Map<String, String> getColumnTableNames(final SQLStatementContext<?> sqlStatementContext, final Collection<AndPredicate> andPredicates) {
-        Collection<ColumnProjection> columns = andPredicates.stream().flatMap(each -> each.getPredicates().stream())
-                .flatMap(each -> ColumnExtractor.extract(each).stream()).map(this::buildColumnProjection).collect(Collectors.toList());
+        Collection<ColumnProjection> columns = new LinkedList<>();
+        for (AndPredicate each : andPredicates) {
+            columns.addAll(getColumnProjections(each));
+        }
         return sqlStatementContext.getTablesContext().findTableName(columns, schema);
+    }
+    
+    private Collection<ColumnProjection> getColumnProjections(final AndPredicate predicate) {
+        Collection<ColumnProjection> result = new LinkedList<>();
+        for (ExpressionSegment each : predicate.getPredicates()) {
+            for (ColumnSegment columnSegment : ColumnExtractor.extract(each)) {
+                result.add(buildColumnProjection(columnSegment));
+            }
+        }
+        return result;
     }
     
     private ColumnProjection buildColumnProjection(final ColumnSegment segment) {
@@ -118,11 +129,11 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         return new ColumnProjection(owner, segment.getIdentifier().getValue(), null);
     }
     
-    private Optional<String> findTableName(final Map<String, String> columnTableNames, final ColumnProjection column) {
-        return Optional.ofNullable(columnTableNames.get(column.getExpression()));
+    private Collection<ColumnProjection> buildColumnProjections(final String columnName) {
+        return Collections.singletonList(new ColumnProjection(null, columnName, null));
     }
     
-    private Collection<ColumnProjection> getColumnProjections(final String columnName) {
-        return Collections.singletonList(new ColumnProjection(null, columnName, null));
+    private Optional<String> findTableName(final Map<String, String> columnTableNames, final ColumnProjection column) {
+        return Optional.ofNullable(columnTableNames.get(column.getExpression()));
     }
 }

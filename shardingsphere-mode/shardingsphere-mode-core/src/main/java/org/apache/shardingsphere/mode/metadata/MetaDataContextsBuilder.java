@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -26,13 +27,16 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerCon
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -42,26 +46,43 @@ import java.util.Properties;
  */
 public final class MetaDataContextsBuilder {
     
-    private final Map<String, ? extends SchemaConfiguration> schemaConfigs;
+    private final Map<String, SchemaConfiguration> schemaConfigMap = new LinkedHashMap<>();
+    
+    private final Map<String, Collection<ShardingSphereRule>> schemaRulesMap = new LinkedHashMap<>();
+    
+    @Getter
+    private final Map<String, ShardingSphereSchema> schemaMap = new LinkedHashMap<>();
     
     private final Collection<RuleConfiguration> globalRuleConfigs;
-    
-    private final Map<String, ShardingSphereSchema> schemas;
-    
-    private final Map<String, Collection<ShardingSphereRule>> rules;
     
     private final ConfigurationProperties props;
     
     private final ExecutorEngine executorEngine;
     
-    public MetaDataContextsBuilder(final Map<String, ? extends SchemaConfiguration> schemaConfigs, final Collection<RuleConfiguration> globalRuleConfigs,
-                                   final Map<String, ShardingSphereSchema> schemas, final Map<String, Collection<ShardingSphereRule>> rules, final Properties props) {
-        this.schemaConfigs = schemaConfigs;
+    public MetaDataContextsBuilder(final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
         this.globalRuleConfigs = globalRuleConfigs;
-        this.schemas = schemas;
-        this.rules = rules;
-        this.props = new ConfigurationProperties(null == props ? new Properties() : props);
+        this.props = new ConfigurationProperties(props);
         executorEngine = new ExecutorEngine(this.props.<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
+    }
+    
+    /**
+     * Add schema information.
+     * 
+     * @param schemaName schema name
+     * @param schemaConfig schema configuration
+     * @param props properties
+     * @throws SQLException SQL exception
+     */
+    public void addSchema(final String schemaName, final SchemaConfiguration schemaConfig, final Properties props) throws SQLException {
+        Collection<ShardingSphereRule> schemaRules = getSchemaRules(schemaName, schemaConfig, props);
+        ShardingSphereSchema schema = SchemaLoader.load(schemaConfig.getDataSources(), schemaRules, props);
+        schemaConfigMap.put(schemaName, schemaConfig);
+        schemaRulesMap.put(schemaName, schemaRules);
+        schemaMap.put(schemaName, schema);
+    }
+    
+    private Collection<ShardingSphereRule> getSchemaRules(final String schemaName, final SchemaConfiguration schemaConfig, final Properties props) {
+        return SchemaRulesBuilder.buildRules(schemaName, schemaConfig, new ConfigurationProperties(props));
     }
     
     /**
@@ -74,14 +95,14 @@ public final class MetaDataContextsBuilder {
     public MetaDataContexts build(final MetaDataPersistService metaDataPersistService) throws SQLException {
         Map<String, ShardingSphereMetaData> metaDataMap = getMetaDataMap();
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(globalRuleConfigs, GlobalRulesBuilder.buildRules(globalRuleConfigs, metaDataMap));
-        return new MetaDataContexts(metaDataPersistService, metaDataMap, globalMetaData, executorEngine, props, OptimizerContextFactory.create(metaDataMap, globalMetaData));
+        return new MetaDataContexts(metaDataPersistService, metaDataMap, globalMetaData, executorEngine, OptimizerContextFactory.create(metaDataMap, globalMetaData), props);
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() throws SQLException {
-        Map<String, ShardingSphereMetaData> result = new HashMap<>(schemaConfigs.size(), 1);
-        for (Entry<String, ? extends SchemaConfiguration> entry : schemaConfigs.entrySet()) {
+        Map<String, ShardingSphereMetaData> result = new HashMap<>(schemaConfigMap.size(), 1);
+        for (Entry<String, ? extends SchemaConfiguration> entry : schemaConfigMap.entrySet()) {
             String schemaName = entry.getKey();
-            result.put(schemaName, ShardingSphereMetaData.create(schemaName, schemas.get(schemaName), entry.getValue(), rules.get(schemaName)));
+            result.put(schemaName, ShardingSphereMetaData.create(schemaName, schemaMap.get(schemaName), entry.getValue(), schemaRulesMap.get(schemaName)));
         }
         return result;
     }

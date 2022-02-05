@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.metadata;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
@@ -38,6 +39,7 @@ import java.util.Properties;
 /**
  * Meta data contexts.
  */
+@RequiredArgsConstructor
 @Getter
 public final class MetaDataContexts implements AutoCloseable {
     
@@ -55,17 +57,7 @@ public final class MetaDataContexts implements AutoCloseable {
     
     public MetaDataContexts(final MetaDataPersistService metaDataPersistService) {
         this(metaDataPersistService, new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()), null, 
-                new ConfigurationProperties(new Properties()), OptimizerContextFactory.create(new HashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList())));
-    }
-    
-    public MetaDataContexts(final MetaDataPersistService metaDataPersistService, final Map<String, ShardingSphereMetaData> metaDataMap, final ShardingSphereRuleMetaData globalRuleMetaData,
-                            final ExecutorEngine executorEngine, final ConfigurationProperties props, final OptimizerContext optimizerContext) {
-        this.metaDataPersistService = metaDataPersistService;
-        this.metaDataMap = new LinkedHashMap<>(metaDataMap);
-        this.globalRuleMetaData = globalRuleMetaData;
-        this.executorEngine = executorEngine;
-        this.optimizerContext = optimizerContext;
-        this.props = props;
+                OptimizerContextFactory.create(new HashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList())), new ConfigurationProperties(new Properties()));
     }
     
     /**

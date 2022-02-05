@@ -49,7 +49,7 @@ public final class MemoryLocalShadowSpringNamespaceJdbcExampleService {
     /**
      * Execute test.
      *
-     * @throws SQLException
+     * @throws SQLException SQL exception
      */
     public void run() throws SQLException {
         try {
@@ -62,7 +62,8 @@ public final class MemoryLocalShadowSpringNamespaceJdbcExampleService {
     
     /**
      * Initialize the database test environment.
-     * @throws SQLException
+     * 
+     * @throws SQLException SQL exception
      */
     private void initEnvironment() throws SQLException {
         orderRepository.createTableIfNotExists();
@@ -101,7 +102,7 @@ public final class MemoryLocalShadowSpringNamespaceJdbcExampleService {
             orderItem.setPhone("13800000001");
             orderItem.setStatus("INSERT_TEST");
             orderItemRepository.insert(orderItem);
-
+            
             Address address = new Address();
             address.setAddressId((long) i);
             address.setAddressName("address_test_" + i);
@@ -146,7 +147,8 @@ public final class MemoryLocalShadowSpringNamespaceJdbcExampleService {
     
     /**
      * Restore the environment.
-     * @throws SQLException
+     * 
+     * @throws SQLException SQL exception
      */
     private void cleanEnvironment() throws SQLException {
         orderRepository.dropTableShadow();

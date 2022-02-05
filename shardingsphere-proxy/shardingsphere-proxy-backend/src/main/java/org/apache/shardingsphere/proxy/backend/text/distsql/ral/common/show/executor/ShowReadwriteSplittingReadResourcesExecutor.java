@@ -56,8 +56,6 @@ public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractS
     
     private static final String DELIMITER = "\\.";
     
-    private static final String SCHEMA_NAME = "schema_name";
-    
     private static final String RESOURCE = "resource";
     
     private static final String STATUS = "status";

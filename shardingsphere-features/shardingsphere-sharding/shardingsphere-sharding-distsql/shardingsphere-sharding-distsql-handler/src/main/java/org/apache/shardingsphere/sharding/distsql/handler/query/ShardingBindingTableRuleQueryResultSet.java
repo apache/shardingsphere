@@ -59,6 +59,6 @@ public final class ShardingBindingTableRuleQueryResultSet implements DistSQLResu
     
     @Override
     public String getType() {
-        return ShowShardingBindingTableRulesStatement.class.getCanonicalName();
+        return ShowShardingBindingTableRulesStatement.class.getName();
     }
 }

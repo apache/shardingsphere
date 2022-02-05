@@ -26,8 +26,10 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.RefreshTabl
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.drop.DropTrafficRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateTrafficRuleStatement;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.create.CreateTrafficRuleHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.drop.DropTrafficRuleHandler;
 
 import java.sql.SQLException;
@@ -64,6 +66,9 @@ public final class CommonDistSQLBackendHandlerFactory {
         }
         if (sqlStatement instanceof DropTrafficRuleStatement) {
             return new DropTrafficRuleHandler((DropTrafficRuleStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof CreateTrafficRuleStatement) {
+            return new CreateTrafficRuleHandler((CreateTrafficRuleStatement) sqlStatement);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }

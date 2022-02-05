@@ -42,13 +42,14 @@ public final class MemoryLocalDbDiscoveryJdbcConfiguration {
     /**
      * Create a DataSource object, which is an object rewritten by ShardingSphere itself 
      * and contains various rules for rewriting the original data storage. When in use, you only need to use this object.
-     * @return
-     * @throws SQLException
+     * 
+     * @return data source
+     * @throws SQLException SQL exception
      */
     public DataSource getDataSource() throws SQLException {
         return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(createDatabaseDiscoveryRuleConfiguration()), new Properties());
     }
-
+    
     private DatabaseDiscoveryRuleConfiguration createDatabaseDiscoveryRuleConfiguration() {
         return new DatabaseDiscoveryRuleConfiguration(createDataSources(), createDiscoveryHeartbeats(), createDiscoveryTypes());
     }
@@ -65,7 +66,7 @@ public final class MemoryLocalDbDiscoveryJdbcConfiguration {
         DatabaseDiscoveryDataSourceRuleConfiguration dsRuleConf1 = new DatabaseDiscoveryDataSourceRuleConfiguration("rule", Lists.newArrayList("ds_0", "ds_0_replica_0", "ds_0_replica_1"), "mgr-heartbeat", "mgr");
         return Lists.newArrayList(dsRuleConf1);
     }
-
+    
     private Map<String, DatabaseDiscoveryHeartBeatConfiguration> createDiscoveryHeartbeats() {
         Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartBeatConfiguration = new HashMap<>(1, 1);
         Properties props = new Properties();
@@ -91,7 +92,7 @@ public final class MemoryLocalDbDiscoveryJdbcConfiguration {
         result.setPassword(PASSWORD);
         return result;
     }
-
+    
     private DataSource createReplicaDataSource1() {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName("com.mysql.jdbc.Driver");
@@ -100,7 +101,7 @@ public final class MemoryLocalDbDiscoveryJdbcConfiguration {
         result.setPassword(PASSWORD);
         return result;
     }
-
+    
     private DataSource createReplicaDataSource2() {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName("com.mysql.jdbc.Driver");

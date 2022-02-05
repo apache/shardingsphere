@@ -20,7 +20,6 @@ package org.apache.shardingsphere.scaling.core.spi;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeAwareSPI;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
 
@@ -43,13 +42,6 @@ public interface ScalingEntry extends DatabaseTypeAwareSPI {
      * @return incremental dumper type
      */
     Class<? extends IncrementalDumper> getIncrementalDumperClass();
-    
-    /**
-     * Get position initializer type.
-     *
-     * @return position initializer type
-     */
-    Class<? extends PositionInitializer> getPositionInitializerClass();
     
     /**
      * Get importer type.

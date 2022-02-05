@@ -125,7 +125,7 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
         DataSourceMetaData dataSourceMetaData = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl).getDataSourceMetaData(jdbcUrl, username);
         InstanceId instanceId = instance.getInstanceDefinition().getInstanceId();
         return jdbcUrl.replace(dataSourceMetaData.getHostname(), instanceId.getIp())
-                .replace(String.valueOf(dataSourceMetaData.getPort()), String.valueOf(instanceId.getPort())).replace(dataSourceMetaData.getCatalog(), schema);
+                .replace(String.valueOf(dataSourceMetaData.getPort()), String.valueOf(instanceId.getUniqueSign())).replace(dataSourceMetaData.getCatalog(), schema);
     }
     
     private ConnectionTransaction createConnectionTransaction(final String schemaName, final ContextManager contextManager) {

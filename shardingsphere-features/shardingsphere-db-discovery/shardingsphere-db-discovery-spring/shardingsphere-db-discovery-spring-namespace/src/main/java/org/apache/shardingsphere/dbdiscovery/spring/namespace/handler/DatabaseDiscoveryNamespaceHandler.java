@@ -25,7 +25,7 @@ import org.apache.shardingsphere.spring.namespace.parser.ShardingSphereAlgorithm
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * Spring namespace handler for data base discovery.
+ * Spring namespace handler for database discovery.
  */
 public final class DatabaseDiscoveryNamespaceHandler extends NamespaceHandlerSupport {
     

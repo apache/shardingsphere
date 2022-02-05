@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.merge.dql;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.junit.Before;
 import org.junit.Test;
@@ -78,48 +80,62 @@ public final class EncryptAlgorithmMetaDataTest {
         List<Projection> columnProjectionList = Collections.singletonList(columnProjection);
         when(projectionsContext.getExpandProjections()).thenReturn(columnProjectionList);
         when(columnProjection.getName()).thenReturn("id");
+        when(columnProjection.getExpression()).thenReturn("id");
         when(selectStatementContext.getTablesContext()).thenReturn(tablesContext);
         encryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration("Md5", new Properties()), EncryptAlgorithm.class);
     }
     
     @Test
-    public void assertFindEncryptorByTableNameAndColumnName() {
+    public void assertFindEncryptContextByMetaData() {
         Map<String, String> columnTableNames = new HashMap<>();
         columnTableNames.put(columnProjection.getExpression(), "t_order");
         when(tablesContext.findTableName(Collections.singletonList(columnProjection), schema)).thenReturn(columnTableNames);
-        when(encryptRule.findEncryptor(null, "t_order", "id")).thenReturn(Optional.of(encryptAlgorithm));
-        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(schema, encryptRule, selectStatementContext);
-        Optional<EncryptAlgorithm> actualEncryptor = encryptAlgorithmMetaData.findEncryptor(1);
-        assertTrue(actualEncryptor.isPresent());
-        assertThat(actualEncryptor.get().getType(), is("MD5"));
+        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(DefaultSchema.LOGIC_NAME, schema, encryptRule, selectStatementContext);
+        Optional<EncryptContext> actual = encryptAlgorithmMetaData.findEncryptContext(1);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getSchemaName(), is(DefaultSchema.LOGIC_NAME));
+        assertThat(actual.get().getTableName(), is("t_order"));
+        assertThat(actual.get().getColumnName(), is("id"));
     }
     
     @Test
-    public void assertFindEncryptorByColumnName() {
+    public void assertFindEncryptContextByStatementContext() {
         when(tablesContext.findTableName(Collections.singletonList(columnProjection), schema)).thenReturn(Collections.emptyMap());
         when(tablesContext.getTableNames()).thenReturn(Arrays.asList("t_user", "t_user_item", "t_order_item"));
-        when(encryptRule.findEncryptor(null, "t_order_item", "id")).thenReturn(Optional.of(encryptAlgorithm));
-        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(schema, encryptRule, selectStatementContext);
-        Optional<EncryptAlgorithm> actualEncryptor = encryptAlgorithmMetaData.findEncryptor(1);
-        assertTrue(actualEncryptor.isPresent());
-        assertThat(actualEncryptor.get().getType(), is("MD5"));
+        when(encryptRule.findEncryptor("t_order_item", "id")).thenReturn(Optional.of(encryptAlgorithm));
+        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(DefaultSchema.LOGIC_NAME, schema, encryptRule, selectStatementContext);
+        Optional<EncryptContext> actual = encryptAlgorithmMetaData.findEncryptContext(1);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getSchemaName(), is(DefaultSchema.LOGIC_NAME));
+        assertThat(actual.get().getTableName(), is("t_order_item"));
+        assertThat(actual.get().getColumnName(), is("id"));
     }
     
     @Test
-    public void assertFindEncryptorWhenColumnProjectionIsNotExist() {
+    public void assertFindEncryptContextWhenColumnProjectionIsNotExist() {
         when(projectionsContext.getExpandProjections()).thenReturn(Collections.singletonList(mock(DerivedProjection.class)));
-        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(schema, encryptRule, selectStatementContext);
-        Optional<EncryptAlgorithm> actualEncryptor = encryptAlgorithmMetaData.findEncryptor(1);
-        assertFalse(actualEncryptor.isPresent());
+        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(DefaultSchema.LOGIC_NAME, schema, encryptRule, selectStatementContext);
+        Optional<EncryptContext> actual = encryptAlgorithmMetaData.findEncryptContext(1);
+        assertFalse(actual.isPresent());
+    }
+    
+    @Test
+    public void assertFindEncryptor() {
+        Map<String, String> columnTableNames = new HashMap<>();
+        columnTableNames.put(columnProjection.getExpression(), "t_order");
+        when(encryptRule.findEncryptor("t_order", "id")).thenReturn(Optional.of(encryptAlgorithm));
+        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(DefaultSchema.LOGIC_NAME, schema, encryptRule, selectStatementContext);
+        Optional<EncryptAlgorithm> actualEncryptor = encryptAlgorithmMetaData.findEncryptor("t_order", "id");
+        assertTrue(actualEncryptor.isPresent());
+        assertThat(actualEncryptor.get().getType(), is("MD5"));
     }
     
     @Test
     public void assertIsQueryWithCipherColumn() {
         Map<String, String> columnTableNames = new HashMap<>();
         columnTableNames.put(columnProjection.getExpression(), "t_order");
-        when(tablesContext.findTableName(Collections.singletonList(columnProjection), schema)).thenReturn(columnTableNames);
         when(encryptRule.isQueryWithCipherColumn("t_order")).thenReturn(true);
-        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(schema, encryptRule, selectStatementContext);
-        assertTrue(encryptAlgorithmMetaData.isQueryWithCipherColumn(1));
+        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(DefaultSchema.LOGIC_NAME, schema, encryptRule, selectStatementContext);
+        assertTrue(encryptAlgorithmMetaData.isQueryWithCipherColumn("t_order"));
     }
 }

@@ -74,6 +74,6 @@ public final class DropDefaultStrategyStatementUpdater implements RuleDefinition
     
     @Override
     public String getType() {
-        return DropDefaultShardingStrategyStatement.class.getCanonicalName();
+        return DropDefaultShardingStrategyStatement.class.getName();
     }
 }

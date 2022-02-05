@@ -81,14 +81,4 @@ public final class JobConfiguration {
             handleConfig.setJobShardingItem(0);
         }
     }
-    
-    /**
-     * Split job configuration to task configuration.
-     *
-     * @return task configurations
-     */
-    public TaskConfiguration buildTaskConfig() {
-        RuleAlteredJobConfigurationPreparer preparer = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobConfigurationPreparer.class);
-        return preparer.createTaskConfiguration(pipelineConfig, handleConfig);
-    }
 }

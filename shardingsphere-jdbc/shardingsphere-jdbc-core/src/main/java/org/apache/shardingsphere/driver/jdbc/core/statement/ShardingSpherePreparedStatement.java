@@ -75,8 +75,10 @@ import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleCo
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.traffic.context.TrafficContext;
+import org.apache.shardingsphere.traffic.context.TrafficContextHolder;
 import org.apache.shardingsphere.traffic.engine.TrafficEngine;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
+import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.sql.Connection;
 import java.sql.ParameterMetaData;
@@ -187,7 +189,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             clearPrevious();
             LogicSQL logicSQL = createLogicSQL();
-            trafficContext = createTrafficContext(logicSQL);
+            trafficContext = getTrafficContext(logicSQL);
             if (trafficContext.isMatchTraffic()) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficContext);
                 return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).executeQuery());
@@ -211,6 +213,14 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine();
         ExecutionGroupContext<JDBCExecutionUnit> context = prepareEngine.prepare(trafficContext.getRouteContext(), trafficContext.getExecutionUnits());
         return context.getInputGroups().stream().flatMap(each -> each.getInputs().stream()).findFirst().orElseThrow(() -> new ShardingSphereException("Can not get traffic execution unit."));
+    }
+    
+    private TrafficContext getTrafficContext(final LogicSQL logicSQL) {
+        TrafficContext result = TrafficContextHolder.get().orElseGet(() -> createTrafficContext(logicSQL));
+        if (TransactionHolder.isTransaction()) {
+            TrafficContextHolder.set(result);
+        }
+        return result;
     }
     
     private TrafficContext createTrafficContext(final LogicSQL logicSQL) {
@@ -267,7 +277,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             clearPrevious();
             LogicSQL logicSQL = createLogicSQL();
-            trafficContext = createTrafficContext(logicSQL);
+            trafficContext = getTrafficContext(logicSQL);
             if (trafficContext.isMatchTraffic()) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficContext);
                 return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).executeUpdate());
@@ -319,7 +329,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             clearPrevious();
             LogicSQL logicSQL = createLogicSQL();
-            trafficContext = createTrafficContext(logicSQL);
+            trafficContext = getTrafficContext(logicSQL);
             if (trafficContext.isMatchTraffic()) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficContext);
                 return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).execute());
