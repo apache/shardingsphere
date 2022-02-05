@@ -235,7 +235,7 @@ public final class ContextManagerTest {
     }
     
     @Test
-    public void assertAlterProps() {
+    public void assertAlterProperties() {
         Properties props = new Properties();
         props.put("foo", "foo_value");
         contextManager.alterProperties(props);
