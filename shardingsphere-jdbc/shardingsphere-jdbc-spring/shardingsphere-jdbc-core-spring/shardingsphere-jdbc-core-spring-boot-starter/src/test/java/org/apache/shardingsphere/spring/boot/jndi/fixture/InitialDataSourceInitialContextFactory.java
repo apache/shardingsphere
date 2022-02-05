@@ -40,8 +40,8 @@ public final class InitialDataSourceInitialContextFactory implements InitialCont
     /**
      * Bind JNDI object.
      * 
-     * @param name JNDI name
-     * @param value object JNDI value
+     * @param name to be bind JNDI name
+     * @param value to be bind JNDI value
      */
     public static void bind(final String name, final Object value) {
         getContext().bind(name, value);
