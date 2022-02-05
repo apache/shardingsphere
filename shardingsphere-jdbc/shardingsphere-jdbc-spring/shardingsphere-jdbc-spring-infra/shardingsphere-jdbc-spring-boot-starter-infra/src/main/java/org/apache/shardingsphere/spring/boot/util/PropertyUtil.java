@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.spring.boot.util;
 
+import com.google.common.base.CaseFormat;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -27,6 +28,7 @@ import org.springframework.core.env.PropertyResolver;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -109,5 +111,20 @@ public final class PropertyUtil {
         Object bindResultObject = bindMethod.invoke(binderObject, prefixParam, targetClass);
         Method resultGetMethod = bindResultObject.getClass().getDeclaredMethod("get");
         return resultGetMethod.invoke(bindResultObject);
+    }
+    
+    /**
+     * Convert keys of map to camel case.
+     * 
+     * @param dataSourceProps map to be converted
+     * @return converted map
+     */
+    public static Map<String, Object> getCamelCaseKeys(final Map<String, Object> dataSourceProps) {
+        Map<String, Object> result = new LinkedHashMap<>(dataSourceProps.size(), 1);
+        for (Entry<String, Object> entry : dataSourceProps.entrySet()) {
+            String key = entry.getKey();
+            result.put(key.contains("-") ? CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_CAMEL, key) : key, entry.getValue());
+        }
+        return result;
     }
 }
