@@ -50,15 +50,15 @@ public class SpringBootJNDIDataSourceTest {
     @BeforeClass
     public static void setUp() {
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY, InitialDataSourceInitialContextFactory.class.getName());
-        InitialDataSourceInitialContextFactory.bind("java:comp/env/jdbc/jndi0", new MockedDataSource());
-        InitialDataSourceInitialContextFactory.bind("java:comp/env/jdbc/jndi1", new MockedDataSource());
+        InitialDataSourceInitialContextFactory.bind("java:comp/env/jdbc/ds0", new MockedDataSource());
+        InitialDataSourceInitialContextFactory.bind("java:comp/env/jdbc/ds1", new MockedDataSource());
     }
     
     @Test
     public void assertDataSources() {
         Map<String, DataSource> dataSources = dataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources();
         assertThat(dataSources.size(), is(2));
-        assertTrue(dataSources.containsKey("jndi0"));
-        assertTrue(dataSources.containsKey("jndi1"));
+        assertTrue(dataSources.containsKey("ds0"));
+        assertTrue(dataSources.containsKey("ds1"));
     }
 }
