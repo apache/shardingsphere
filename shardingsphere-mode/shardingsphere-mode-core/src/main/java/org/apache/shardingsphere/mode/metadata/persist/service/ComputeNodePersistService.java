@@ -72,7 +72,7 @@ public final class ComputeNodePersistService {
      * Load instance labels.
      * 
      * @param instanceId instance id
-     * @return collection of label
+     * @return labels
      */
     public Collection<String> loadInstanceLabels(final String instanceId) {
         String yamlContent = repository.get(ComputeNode.getInstanceLabelsNodePath(instanceId));
@@ -83,7 +83,7 @@ public final class ComputeNodePersistService {
      * Load instance status.
      * 
      * @param instanceId instance id
-     * @return collection of status
+     * @return status
      */
     public Collection<String> loadInstanceStatus(final String instanceId) {
         String yamlContent = repository.get(ComputeNode.getInstanceStatusNodePath(instanceId));
@@ -110,8 +110,8 @@ public final class ComputeNodePersistService {
      * Load compute node instances by instance type and labels.
      *
      * @param instanceType instance type
-     * @param labels collection of contained label                     
-     * @return collection of compute node instance
+     * @param labels collection of contained label
+     * @return compute node instances
      */
     public Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType instanceType, final Collection<String> labels) {
         Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
@@ -133,7 +133,7 @@ public final class ComputeNodePersistService {
     /**
      * Load all compute node instances.
      *
-     * @return collection of compute node instance
+     * @return compute node instances
      */
     public Collection<ComputeNodeInstance> loadAllComputeNodeInstances() {
         Collection<ComputeNodeInstance> result = new ArrayList<>();

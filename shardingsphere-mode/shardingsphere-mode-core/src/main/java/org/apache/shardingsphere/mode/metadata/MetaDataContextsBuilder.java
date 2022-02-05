@@ -22,8 +22,6 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -33,10 +31,8 @@ import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -78,18 +74,15 @@ public final class MetaDataContextsBuilder {
      * @throws SQLException SQL exception
      */
     public void addSchema(final String schemaName, final SchemaConfiguration schemaConfig, final Properties props) throws SQLException {
-        Map<String, DataSource> dataSourceMap = schemaConfig.getDataSources();
-        Collection<ShardingSphereRule> schemaRules = getSchemaRules(schemaName, schemaConfig.getRuleConfigurations(), dataSourceMap, props);
-        ShardingSphereSchema schema = SchemaLoader.load(dataSourceMap, schemaRules, props);
+        Collection<ShardingSphereRule> schemaRules = getSchemaRules(schemaName, schemaConfig, props);
+        ShardingSphereSchema schema = SchemaLoader.load(schemaConfig.getDataSources(), schemaRules, props);
         schemaConfigMap.put(schemaName, schemaConfig);
         schemaRulesMap.put(schemaName, schemaRules);
         schemaMap.put(schemaName, schema);
     }
     
-    private Collection<ShardingSphereRule> getSchemaRules(final String schemaName,
-                                                          final Collection<RuleConfiguration> schemaRuleConfigs, final Map<String, DataSource> dataSourceMap, final Properties props) {
-        DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
-        return SchemaRulesBuilder.buildRules(new SchemaRulesBuilderMaterials(schemaName, schemaRuleConfigs, databaseType, dataSourceMap, new ConfigurationProperties(props)));
+    private Collection<ShardingSphereRule> getSchemaRules(final String schemaName, final SchemaConfiguration schemaConfig, final Properties props) {
+        return SchemaRulesBuilder.buildRules(schemaName, schemaConfig, new ConfigurationProperties(props));
     }
     
     /**

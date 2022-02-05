@@ -20,10 +20,6 @@ package org.apache.shardingsphere.mode.manager.cluster;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyerFactory;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
@@ -47,7 +43,6 @@ import org.apache.shardingsphere.transaction.context.TransactionContextsBuilder;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -65,8 +60,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         persistConfigurations(metaDataPersistService, parameter);
         MetaDataContextsBuilder metaDataContextsBuilder = createMetaDataContextsBuilder(metaDataPersistService, parameter);
         persistMetaData(metaDataPersistService, metaDataContextsBuilder.getSchemaMap());
-        ContextManager result = createContextManager(repository, metaDataPersistService, parameter.getInstanceDefinition(), metaDataContextsBuilder.build(metaDataPersistService), 
-                parameter.getModeConfig());
+        ContextManager result = createContextManager(repository, metaDataPersistService, 
+                parameter.getInstanceDefinition(), metaDataContextsBuilder.build(metaDataPersistService), parameter.getModeConfig());
         registerOnline(repository, metaDataPersistService, parameter.getInstanceDefinition(), result);
         return result;
     }
@@ -78,8 +73,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Properties props = metaDataPersistService.getPropsService().load();
         MetaDataContextsBuilder result = new MetaDataContextsBuilder(globalRuleConfigs, props);
         for (String each : schemaNames) {
-            Map<String, DataSource> dataSources = parameter.getSchemaConfigs().containsKey(each)
-                    ? getEffectiveDataSources(metaDataPersistService, each, parameter.getSchemaConfigs().get(each).getDataSources()) : loadDataSources(metaDataPersistService, each);
+            Map<String, DataSource> dataSources = metaDataPersistService.getEffectiveDataSources(each, parameter.getSchemaConfigs());
             Collection<RuleConfiguration> schemaRuleConfigs = metaDataPersistService.getSchemaRuleService().load(each);
             result.addSchema(each, new DataSourceProvidedSchemaConfiguration(dataSources, schemaRuleConfigs), props);
         }
@@ -88,43 +82,10 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private void persistConfigurations(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) {
         boolean isOverwrite = parameter.getModeConfig().isOverwrite();
-        if (!isEmptyLocalConfiguration(parameter)) {
+        if (!parameter.isEmpty()) {
             metaDataPersistService.persistConfigurations(parameter.getSchemaConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), isOverwrite);
         }
         metaDataPersistService.persistInstanceLabels(parameter.getInstanceDefinition().getInstanceId().getId(), parameter.getLabels(), isOverwrite);
-    }
-    
-    private boolean isEmptyLocalConfiguration(final ContextManagerBuilderParameter parameter) {
-        return parameter.getSchemaConfigs().entrySet().stream().allMatch(entry -> entry.getValue().getDataSources().isEmpty() && entry.getValue().getRuleConfigurations().isEmpty())
-                && parameter.getGlobalRuleConfigs().isEmpty() && parameter.getProps().isEmpty();
-    }
-    
-    private Map<String, DataSource> getEffectiveDataSources(final MetaDataPersistService metaDataPersistService,
-                                                            final String schemaName, final Map<String, DataSource> localDataSources) throws SQLException {
-        Map<String, DataSourceProperties> loadedDataSourcePropsMap = metaDataPersistService.getDataSourceService().load(schemaName);
-        Map<String, DataSource> result = new LinkedHashMap<>(loadedDataSourcePropsMap.size(), 1);
-        for (Entry<String, DataSourceProperties> entry : loadedDataSourcePropsMap.entrySet()) {
-            String dataSourceName = entry.getKey();
-            DataSourceProperties loadedDataSourceProps = entry.getValue();
-            DataSource localDataSource = localDataSources.get(dataSourceName);
-            if (null == localDataSource) {
-                result.put(dataSourceName, DataSourcePoolCreator.create(loadedDataSourceProps));
-            } else if (DataSourcePropertiesCreator.create(localDataSource).equals(loadedDataSourceProps)) {
-                result.put(dataSourceName, localDataSource);
-            } else {
-                DataSourcePoolDestroyerFactory.destroy(localDataSource);
-            }
-        }
-        return result;
-    }
-    
-    private Map<String, DataSource> loadDataSources(final MetaDataPersistService metaDataPersistService, final String schemaName) {
-        Map<String, DataSourceProperties> dataSourceProps = metaDataPersistService.getDataSourceService().load(schemaName);
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceProps.size(), 1);
-        for (Entry<String, DataSourceProperties> entry : dataSourceProps.entrySet()) {
-            result.put(entry.getKey(), DataSourcePoolCreator.create(entry.getValue()));
-        }
-        return result;
     }
     
     private void persistMetaData(final MetaDataPersistService metaDataPersistService, final Map<String, ShardingSphereSchema> schemaMap) {

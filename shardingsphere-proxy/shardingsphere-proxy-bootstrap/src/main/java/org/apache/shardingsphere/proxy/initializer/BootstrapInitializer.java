@@ -17,35 +17,26 @@
 
 package org.apache.shardingsphere.proxy.initializer;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.db.protocol.CommonConstants;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
-import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
-import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
+import org.apache.shardingsphere.proxy.version.ShardingSphereProxyVersion;
 import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 
 /**
  * Bootstrap initializer.
@@ -66,7 +57,7 @@ public final class BootstrapInitializer {
         ContextManager contextManager = createContextManager(yamlConfig, modeConfig, port);
         ProxyContext.getInstance().init(contextManager);
         contextManagerInitializedCallback(modeConfig, contextManager);
-        setDatabaseServerInfo();
+        ShardingSphereProxyVersion.setVersion(contextManager);
     }
     
     private ContextManager createContextManager(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig, final int port) throws SQLException {
@@ -82,9 +73,9 @@ public final class BootstrapInitializer {
     }
     
     private void contextManagerInitializedCallback(final ModeConfiguration modeConfig, final ContextManager contextManager) {
-        Map<String, ContextManagerLifecycleListener> listenerMap = SingletonSPIRegistry.getTypedSingletonInstancesMap(ContextManagerLifecycleListener.class);
-        log.info("listenerMap.keySet={}", listenerMap.keySet());
-        for (Entry<String, ContextManagerLifecycleListener> entry : listenerMap.entrySet()) {
+        Map<String, ContextManagerLifecycleListener> listeners = SingletonSPIRegistry.getTypedSingletonInstancesMap(ContextManagerLifecycleListener.class);
+        log.info("listeners.keySet={}", listeners.keySet());
+        for (Entry<String, ContextManagerLifecycleListener> entry : listeners.entrySet()) {
             try {
                 entry.getValue().onInitialized(modeConfig, contextManager);
                 // CHECKSTYLE:OFF
@@ -93,38 +84,5 @@ public final class BootstrapInitializer {
                 log.error("contextManager onInitialized callback for '{}' failed", entry.getKey(), ex);
             }
         }
-    }
-    
-    private void setDatabaseServerInfo() {
-        CommonConstants.PROXY_VERSION.set(getShardingSphereVersion());
-        findBackendDataSource().ifPresent(dataSourceSample -> {
-            DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSourceSample);
-            log.info(databaseServerInfo.toString());
-            switch (databaseServerInfo.getDatabaseName()) {
-                case "MySQL":
-                    MySQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
-                    break;
-                case "PostgreSQL":
-                    PostgreSQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
-                    break;
-                default:
-            }
-        });
-    }
-    
-    private String getShardingSphereVersion() {
-        String result = ShardingSphereVersion.VERSION;
-        if (!ShardingSphereVersion.IS_SNAPSHOT || Strings.isNullOrEmpty(ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV)) {
-            return result;
-        }
-        result += ShardingSphereVersion.BUILD_GIT_DIRTY ? "-dirty" : "";
-        result += "-" + ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV;
-        return result;
-    }
-    
-    private Optional<DataSource> findBackendDataSource() {
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        Optional<ShardingSphereMetaData> metaData = metaDataContexts.getMetaDataMap().values().stream().filter(ShardingSphereMetaData::isComplete).findFirst();
-        return metaData.flatMap(optional -> optional.getResource().getDataSources().values().stream().findFirst());
     }
 }

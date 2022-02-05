@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
@@ -135,6 +134,58 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
+     * Alter schema.
+     *
+     * @param schemaName schema name
+     * @param schema schema
+     */
+    public void alterSchema(final String schemaName, final ShardingSphereSchema schema) {
+        ShardingSphereMetaData alteredMetaData = new ShardingSphereMetaData(
+                schemaName, metaDataContexts.getMetaData(schemaName).getResource(), metaDataContexts.getMetaData(schemaName).getRuleMetaData(), schema);
+        Map<String, ShardingSphereMetaData> alteredMetaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
+        alteredMetaDataMap.put(schemaName, alteredMetaData);
+        FederationSchemaMetaData alteredSchemaMetaData = new FederationSchemaMetaData(schemaName, schema.getTables());
+        metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().put(schemaName, alteredSchemaMetaData);
+        metaDataContexts.getOptimizerContext().getPlannerContexts().put(schemaName, OptimizerPlannerContextFactory.create(alteredSchemaMetaData));
+        renewMetaDataContexts(rebuildMetaDataContexts(alteredMetaDataMap));
+    }
+    
+    /**
+     * Alter schema.
+     *
+     * @param schemaName schema name
+     * @param changedTableMetaData changed table meta data
+     * @param deletedTable deleted table
+     */
+    public void alterSchema(final String schemaName, final TableMetaData changedTableMetaData, final String deletedTable) {
+        ShardingSphereMetaData metaData = metaDataContexts.getMetaData(schemaName);
+        alterSingleTableDataNodes(metaData, changedTableMetaData);
+        FederationSchemaMetaData schemaMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName);
+        metaData.getSchema().put(changedTableMetaData.getName(), changedTableMetaData);
+        schemaMetaData.put(changedTableMetaData);
+        metaDataContexts.getOptimizerContext().getPlannerContexts().put(schemaName, OptimizerPlannerContextFactory.create(schemaMetaData));
+        if (null != deletedTable) {
+            metaData.getSchema().remove(deletedTable);
+            schemaMetaData.remove(deletedTable);
+            metaDataContexts.getOptimizerContext().getPlannerContexts().put(schemaName, OptimizerPlannerContextFactory.create(schemaMetaData));
+        }
+    }
+    
+    private void alterSingleTableDataNodes(final ShardingSphereMetaData metaData, final TableMetaData changedTableMetaData) {
+        if (!containsInDataNodeContainedRule(changedTableMetaData.getName(), metaData)) {
+            metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> {
+                if (each.findSingleTableDataNode(changedTableMetaData.getName()).isPresent()) {
+                    each.put(changedTableMetaData.getName(), each.findSingleTableDataNode(changedTableMetaData.getName()).get().getDataSourceName());
+                }
+            });
+        }
+    }
+    
+    private boolean containsInDataNodeContainedRule(final String tableName, final ShardingSphereMetaData schemaMetaData) {
+        return schemaMetaData.getRuleMetaData().findRules(DataNodeContainedRule.class).stream().anyMatch(each -> each.getAllTables().contains(tableName));
+    }
+    
+    /**
      * Delete schema.
      * 
      * @param schemaName schema name
@@ -156,7 +207,7 @@ public final class ContextManager implements AutoCloseable {
      *
      * @param schemaName schema name
      * @param dataSourcePropsMap data source properties map
-     * @throws SQLException SQL exception                         
+     * @throws SQLException SQL exception
      */
     public void addResource(final String schemaName, final Map<String, DataSourceProperties> dataSourcePropsMap) throws SQLException {
         refreshMetaDataContext(schemaName, dataSourcePropsMap);
@@ -168,7 +219,7 @@ public final class ContextManager implements AutoCloseable {
      *
      * @param schemaName schema name
      * @param dataSourcePropsMap data source properties map
-     * @throws SQLException SQL exception                         
+     * @throws SQLException SQL exception
      */
     public void alterResource(final String schemaName, final Map<String, DataSourceProperties> dataSourcePropsMap) throws SQLException {
         refreshMetaDataContext(schemaName, dataSourcePropsMap);
@@ -226,52 +277,6 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
-     * Alter schema.
-     * 
-     * @param schemaName schema name
-     * @param schema schema
-     */
-    public void alterSchema(final String schemaName, final ShardingSphereSchema schema) {
-        ShardingSphereMetaData kernelMetaData = new ShardingSphereMetaData(schemaName, metaDataContexts.getMetaData(schemaName).getResource(),
-                metaDataContexts.getMetaData(schemaName).getRuleMetaData(), schema);
-        Map<String, ShardingSphereMetaData> kernelMetaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
-        kernelMetaDataMap.put(schemaName, kernelMetaData);
-        FederationSchemaMetaData schemaMetaData = new FederationSchemaMetaData(schemaName, schema.getTables());
-        metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().put(schemaName, schemaMetaData);
-        metaDataContexts.getOptimizerContext().getPlannerContexts().put(schemaName, OptimizerPlannerContextFactory.create(schemaMetaData));
-        renewMetaDataContexts(rebuildMetaDataContexts(kernelMetaDataMap));
-    }
-    
-    /**
-     * Alter schema.
-     *
-     * @param schemaName schema name
-     * @param changedTableMetaData changed table meta data                  
-     * @param deletedTable deleted table
-     */
-    public void alterSchema(final String schemaName, final TableMetaData changedTableMetaData, final String deletedTable) {
-        ShardingSphereMetaData metaData = metaDataContexts.getMetaData(schemaName);
-        if (!containsInDataNodeContainedRule(changedTableMetaData.getName(), metaData)) {
-            metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(changedTableMetaData.getName(), each.getDataSourceNames().iterator().next()));
-        }
-        FederationSchemaMetaData schemaMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName);
-        if (null != changedTableMetaData) {
-            metaData.getSchema().put(changedTableMetaData.getName(), changedTableMetaData);
-            schemaMetaData.put(changedTableMetaData);
-            metaDataContexts.getOptimizerContext().getPlannerContexts().put(schemaName, OptimizerPlannerContextFactory.create(schemaMetaData));
-        }
-        if (null != deletedTable) {
-            metaData.getSchema().remove(deletedTable);
-            schemaMetaData.remove(deletedTable);
-            metaDataContexts.getOptimizerContext().getPlannerContexts().put(schemaName, OptimizerPlannerContextFactory.create(schemaMetaData));
-        }
-    }
-    
-    private boolean containsInDataNodeContainedRule(final String tableName, final ShardingSphereMetaData schemaMetaData) {
-        return schemaMetaData.getRuleMetaData().findRules(DataNodeContainedRule.class).stream().anyMatch(each -> each.getAllTables().contains(tableName));
-    }
-    
-    /**
      * Alter global rule configuration.
      * 
      * @param ruleConfigurations global rule configuration
@@ -312,7 +317,7 @@ public final class ContextManager implements AutoCloseable {
      * Reload table meta data.
      *
      * @param schemaName schema name
-     * @param tableName logic table name                  
+     * @param tableName logic table name
      */
     public void reloadMetaData(final String schemaName, final String tableName) {
         try {
@@ -330,7 +335,7 @@ public final class ContextManager implements AutoCloseable {
      *
      * @param schemaName schema name
      * @param tableName logic table name
-     * @param dataSourceName data source name                 
+     * @param dataSourceName data source name
      */
     public void reloadMetaData(final String schemaName, final String tableName, final String dataSourceName) {
         try {
@@ -462,15 +467,6 @@ public final class ContextManager implements AutoCloseable {
     
     private Map<String, DataSource> buildChangedDataSources(final ShardingSphereMetaData originalMetaData, final Map<String, DataSourceProperties> newDataSourcePropsMap) {
         return DataSourcePoolCreator.create(getChangedDataSourceConfiguration(originalMetaData, newDataSourcePropsMap));
-    }
-    
-    private Map<String, ShardingSphereSchema> getShardingSphereSchemas(final Map<String, ? extends SchemaConfiguration> schemaConfigs, final Map<String, Collection<ShardingSphereRule>> rules,
-                                                                       final Properties props) throws SQLException {
-        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(schemaConfigs.size(), 1);
-        for (String each : schemaConfigs.keySet()) {
-            result.put(each, SchemaLoader.load(schemaConfigs.get(each).getDataSources(), rules.get(each), props));
-        }
-        return result;
     }
     
     private void renewTransactionContext(final String schemaName, final ShardingSphereResource resource) {

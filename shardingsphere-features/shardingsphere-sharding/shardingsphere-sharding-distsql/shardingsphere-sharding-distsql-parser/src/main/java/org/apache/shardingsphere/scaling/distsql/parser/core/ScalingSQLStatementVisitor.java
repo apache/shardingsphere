@@ -22,7 +22,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ApplyScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CheckScalingContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CompleteAutoDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CompletionDetectorContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CreateShardingScalingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DataConsistencyCheckerContext;
@@ -31,8 +30,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.D
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DropShardingScalingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.EnableShardingScalingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.InputDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ManualDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.MinimumAutoDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.OutputDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.RateLimiterContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ResetScalingContext;
@@ -141,42 +138,22 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitScalingRuleDefinition(final ScalingRuleDefinitionContext ctx) {
-        ShardingScalingRuleConfigurationSegment result = null;
-        if (null != ctx.minimumAutoDefinition()) {
-            result = (ShardingScalingRuleConfigurationSegment) visit(ctx.minimumAutoDefinition());
-        } else if (null != ctx.completeAutoDefinition()) {
-            result = (ShardingScalingRuleConfigurationSegment) visit(ctx.completeAutoDefinition());
-        } else if (null != ctx.manualDefinition()) {
-            result = (ShardingScalingRuleConfigurationSegment) visit(ctx.manualDefinition());
+        ShardingScalingRuleConfigurationSegment result = new ShardingScalingRuleConfigurationSegment();
+        if (null != ctx.inputDefinition()) {
+            result.setInputSegment((InputOrOutputSegment) visit(ctx.inputDefinition()));
         }
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitMinimumAutoDefinition(final MinimumAutoDefinitionContext ctx) {
-        ShardingScalingRuleConfigurationSegment result = new ShardingScalingRuleConfigurationSegment();
-        result.setCompletionDetector((AlgorithmSegment) visit(ctx.completionDetector()));
-        result.setDataConsistencyChecker((AlgorithmSegment) visit(ctx.dataConsistencyChecker()));
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitCompleteAutoDefinition(final CompleteAutoDefinitionContext ctx) {
-        ShardingScalingRuleConfigurationSegment result = new ShardingScalingRuleConfigurationSegment();
-        result.setInputSegment((InputOrOutputSegment) visit(ctx.inputDefinition()));
-        result.setOutputSegment((InputOrOutputSegment) visit(ctx.outputDefinition()));
-        result.setStreamChannel((AlgorithmSegment) visit(ctx.streamChannel()));
-        result.setCompletionDetector((AlgorithmSegment) visit(ctx.completionDetector()));
-        result.setDataConsistencyChecker((AlgorithmSegment) visit(ctx.dataConsistencyChecker()));
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitManualDefinition(final ManualDefinitionContext ctx) {
-        ShardingScalingRuleConfigurationSegment result = new ShardingScalingRuleConfigurationSegment();
-        result.setInputSegment((InputOrOutputSegment) visit(ctx.inputDefinition()));
-        result.setOutputSegment((InputOrOutputSegment) visit(ctx.outputDefinition()));
-        result.setStreamChannel((AlgorithmSegment) visit(ctx.streamChannel()));
+        if (null != ctx.outputDefinition()) {
+            result.setOutputSegment((InputOrOutputSegment) visit(ctx.outputDefinition()));
+        }
+        if (null != ctx.streamChannel()) {
+            result.setStreamChannel((AlgorithmSegment) visit(ctx.streamChannel()));
+        }
+        if (null != ctx.completionDetector()) {
+            result.setCompletionDetector((AlgorithmSegment) visit(ctx.completionDetector()));
+        }
+        if (null != ctx.dataConsistencyChecker()) {
+            result.setDataConsistencyChecker((AlgorithmSegment) visit(ctx.dataConsistencyChecker()));
+        }
         return result;
     }
     

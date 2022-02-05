@@ -35,7 +35,6 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 | stop scaling source writing xx                      | 旧的 ShardingSphere 数据源停写，xx：任务id                        | stop scaling source writing 1234                |
 | apply scaling xx                                    | 切换至新的 ShardingSphere 元数据，xx：任务id                      | apply scaling 1234                              |
 
-
 ## 熔断
 
 | 语句                                                           | 说明                                                | 示例                                            |
@@ -44,7 +43,6 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 | [enable / disable] instance [IP=xxx, PORT=xxx / instanceId]   | 启用 / 禁用 proxy 实例                               | disable instance 127.0.0.1@3307            |
 | show instance list                                            | 查询 proxy 实例信息                                  | show instance list                              |
 | show readwrite_splitting read resources [from schema]         | 查询所有读库的状态                                    | show readwrite_splitting read resources         |
-
 
 ## 全局规则
 
@@ -71,7 +69,8 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 | parse SQL                                                                   | 解析 SQL 并输出抽象语法树                                        parse select * from t_order                      |
 | refresh table metadata                                                      | 刷新所有表的元数据                                              | refresh table metadata                          |
 | refresh table metadata [tableName / tableName from resource resourceName]   | 刷新指定表的元数据                                              | refresh table metadata t_order from resource ds_1 |
-| show table metadata tableName [, tableName] ...                             | 查询表的元数据                                                 | show table metadata t_order                                |
+| show table metadata tableName [, tableName] ...                             | 查询表的元数据                                                 | show table metadata t_order                       |
+| export schema config [from schema_name] [, file="file_path"]                | 查询 / 导出 schema 中的资源和规则配置                            | export schema config from readwrite_splitting_db  |
 
 ## 注意事项
 

@@ -58,7 +58,8 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
         assertThat(firstActualState.getMachineId(), is(FIXTURE_WORKER_ID));
         assertThat(firstActualState.getSequence(), is(0L));
         assertThat(secondActualState.getMachineId(), is(FIXTURE_WORKER_ID));
-        assertThat(secondActualState.getSequence(), is(1L));
+        long expectedSecondSequence = secondActualState.getTimestamp().isAfter(firstActualState.getTimestamp()) ? 0L : 1L;
+        assertThat(secondActualState.getSequence(), is(expectedSecondSequence));
     }
     
     @Test
