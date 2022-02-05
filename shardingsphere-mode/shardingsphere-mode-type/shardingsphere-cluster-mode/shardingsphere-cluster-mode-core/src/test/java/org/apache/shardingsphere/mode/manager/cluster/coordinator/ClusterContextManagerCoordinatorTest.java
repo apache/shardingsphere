@@ -92,7 +92,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -120,7 +119,7 @@ public final class ClusterContextManagerCoordinatorTest {
         contextManager = builder.build(ContextManagerBuilderParameter.builder().modeConfig(modeConfig).schemaConfigs(new HashMap<>())
                 .globalRuleConfigs(new LinkedList<>()).props(new Properties()).instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307)).build());
         assertTrue(contextManager.getMetaDataContexts().getMetaDataPersistService().isPresent());
-        contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getMetaDataPersistService().get(), createMetaDataMap(), globalRuleMetaData, 
+        contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getMetaDataPersistService().get(), createMetaDataMap(), globalRuleMetaData,
                 mock(ExecutorEngine.class), createOptimizerContext(), new ConfigurationProperties(new Properties())));
         contextManager.renewTransactionContexts(mock(TransactionContexts.class, RETURNS_DEEP_STUBS));
         coordinator = new ClusterContextManagerCoordinator(metaDataPersistService, contextManager, mock(RegistryCenter.class));
@@ -260,34 +259,26 @@ public final class ClusterContextManagerCoordinatorTest {
     }
     
     @Test
-    public void assertRenewPrimaryDSNames() {
-        PrimaryStateChangedEvent mockPrimaryStateChangedEvent = mock(PrimaryStateChangedEvent.class);
-        QualifiedSchema qualifiedSchema = mock(QualifiedSchema.class);
-        when(qualifiedSchema.getSchemaName()).thenReturn("test_schema");
-        when(mockPrimaryStateChangedEvent.getQualifiedSchema()).thenReturn(qualifiedSchema);
-        ShardingSphereRuleMetaData mockShardingSphereRuleMetaData = mock(ShardingSphereRuleMetaData.class);
+    public void assertRenewPrimaryDataSourceName() {
         Collection<ShardingSphereRule> rules = new LinkedList<>();
         StatusContainedRule mockStatusContainedRule = mock(StatusContainedRule.class);
         rules.add(mockStatusContainedRule);
-        when(mockShardingSphereRuleMetaData.getRules()).thenReturn(rules);
+        ShardingSphereRuleMetaData mockShardingSphereRuleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(), rules);
         ShardingSphereMetaData mockShardingSphereMetaData = mock(ShardingSphereMetaData.class);
         when(mockShardingSphereMetaData.getRuleMetaData()).thenReturn(mockShardingSphereRuleMetaData);
-        contextManager.getMetaDataContexts().getMetaDataMap().put("test_schema", mockShardingSphereMetaData);
+        contextManager.getMetaDataContexts().getMetaDataMap().put("schema", mockShardingSphereMetaData);
+        PrimaryStateChangedEvent mockPrimaryStateChangedEvent = new PrimaryStateChangedEvent(new QualifiedSchema("schema.test_ds"), "test_ds");
         coordinator.renew(mockPrimaryStateChangedEvent);
-        verify(mockStatusContainedRule, times(1)).updateStatus(any());
-    }   
+        verify(mockStatusContainedRule).updateStatus(any());
+    }
     
     @Test
     public void assertRenewInstanceStatus() {
-        StateEvent mockStateEvent = mock(StateEvent.class);
-        when(mockStateEvent.getInstanceId()).thenReturn(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId());
         Collection<String> testStates = new LinkedList<>();
         testStates.add(StateType.OK.name());
         testStates.add(StateType.LOCK.name());
-        when(mockStateEvent.getStatus()).thenReturn(testStates);
+        StateEvent mockStateEvent = new StateEvent(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId(), testStates);
         coordinator.renew(mockStateEvent);
-        assertNotNull(contextManager.getInstanceContext());
-        assertNotNull(contextManager.getInstanceContext().getInstance());
         assertThat(contextManager.getInstanceContext().getInstance().getStatus(), is(testStates));
         testStates.add(StateType.CIRCUIT_BREAK.name());
         coordinator.renew(mockStateEvent);
@@ -296,25 +287,17 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertRenewWorkerIdChange() {
-        WorkerIdEvent mockWorkerIdEvent = mock(WorkerIdEvent.class);
-        when(mockWorkerIdEvent.getWorkerId()).thenReturn(12223L);
-        when(mockWorkerIdEvent.getInstanceId()).thenReturn(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId());
+        WorkerIdEvent mockWorkerIdEvent = new WorkerIdEvent(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId(), 12223L);
         coordinator.renew(mockWorkerIdEvent);
-        assertNotNull(contextManager.getInstanceContext());
-        assertNotNull(contextManager.getInstanceContext().getInstance());
         assertThat(contextManager.getInstanceContext().getWorkerId(), is(12223L));
     }
     
     @Test
     public void assertRenewInstanceLabels() {
-        LabelsEvent mockLabelsEvent = mock(LabelsEvent.class);
-        Collection<String> labels = new LinkedList<String>();
+        Collection<String> labels = new LinkedList<>();
         labels.add("test");
-        when(mockLabelsEvent.getLabels()).thenReturn(labels);
-        when(mockLabelsEvent.getInstanceId()).thenReturn(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId());
+        LabelsEvent mockLabelsEvent = new LabelsEvent(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId(), labels);
         coordinator.renew(mockLabelsEvent);
-        assertNotNull(contextManager.getInstanceContext());
-        assertNotNull(contextManager.getInstanceContext().getInstance());
         assertThat(contextManager.getInstanceContext().getInstance().getLabels(), is(labels));
     }
 } 
