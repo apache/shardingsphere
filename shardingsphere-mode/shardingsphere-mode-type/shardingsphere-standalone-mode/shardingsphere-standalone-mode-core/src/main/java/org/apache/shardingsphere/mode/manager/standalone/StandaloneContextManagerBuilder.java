@@ -42,6 +42,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.utils.NarayanaConfigUtil;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
@@ -85,8 +86,8 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(schemaConfigs, loadedProps);
         MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(
                 schemaConfigs, metaDataPersistService.getGlobalRuleService().load(), getShardingSphereSchemas(schemaConfigs, rules, loadedProps), rules, loadedProps).build(metaDataPersistService);
-        TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules(),
-                parameter.getInstanceDefinition().getInstanceId().getId()).build();
+        NarayanaConfigUtil.generateNarayanaConfig(metaDataContexts, parameter.getInstanceDefinition().getInstanceId().getId());
+        TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
         ContextManager result = new ContextManager();
         result.init(metaDataContexts, transactionContexts, new InstanceContext(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(parameter.getInstanceDefinition()), 
                 new StandaloneWorkerIdGenerator()));

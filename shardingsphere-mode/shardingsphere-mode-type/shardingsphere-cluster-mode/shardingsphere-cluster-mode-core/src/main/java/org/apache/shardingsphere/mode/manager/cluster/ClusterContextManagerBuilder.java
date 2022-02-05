@@ -44,6 +44,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.utils.NarayanaConfigUtil;
 import org.apache.shardingsphere.schedule.core.api.ModeScheduleContextFactory;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
@@ -110,8 +111,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Map<String, ShardingSphereSchema> schemas = getShardingSphereSchemas(schemaConfigs, rules, loadedProps);
         persistMetaData(schemas);
         metaDataContexts = new MetaDataContextsBuilder(schemaConfigs, metaDataPersistService.getGlobalRuleService().load(), schemas, rules, loadedProps).build(metaDataPersistService);
-        transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules(),
-                parameter.getInstanceDefinition().getInstanceId().getId()).build();
+        NarayanaConfigUtil.generateNarayanaConfig(metaDataContexts, parameter.getInstanceDefinition().getInstanceId().getId());
+        transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
         instanceContext = new InstanceContext(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(
                 parameter.getInstanceDefinition()), new ClusterWorkerIdGenerator(repository, metaDataPersistService, parameter.getInstanceDefinition()));
     }
