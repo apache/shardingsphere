@@ -15,26 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.namespace.fixture.sharding;
+package org.apache.shardingsphere.spring.namespace;
 
-import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
-import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
+import org.springframework.test.context.ContextConfiguration;
 
-import java.util.Collection;
-
-public final class DefaultComplexKeysShardingAlgorithm implements ComplexKeysShardingAlgorithm<Integer> {
-    
-    @Override
-    public void init() {
-    }
-    
-    @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<Integer> shardingValue) {
-        return availableTargetNames;
-    }
-    
-    @Override
-    public String getType() {
-        return "COMPLEX_TEST";
-    }
+@ContextConfiguration(locations = "classpath:spring/cluster-application-context.xml")
+public final class ClusterModeSpringNamespaceTest extends AbstractSpringNamespaceTest {
 }

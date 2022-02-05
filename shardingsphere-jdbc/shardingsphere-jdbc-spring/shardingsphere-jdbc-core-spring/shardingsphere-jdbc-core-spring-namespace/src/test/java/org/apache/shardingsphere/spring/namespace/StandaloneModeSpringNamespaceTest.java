@@ -15,27 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.namespace.fixture.keygen;
+package org.apache.shardingsphere.spring.namespace;
 
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.springframework.test.context.ContextConfiguration;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-public final class IncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
-    
-    private final AtomicInteger sequence = new AtomicInteger(100);
-    
-    @Override
-    public void init() {
-    }
-    
-    @Override
-    public Comparable<?> generateKey() {
-        return sequence.incrementAndGet();
-    }
-    
-    @Override
-    public String getType() {
-        return "INCREMENT";
-    }
+@ContextConfiguration(locations = "classpath:spring/standalone-application-context.xml")
+public final class StandaloneModeSpringNamespaceTest extends AbstractSpringNamespaceTest {
 }
