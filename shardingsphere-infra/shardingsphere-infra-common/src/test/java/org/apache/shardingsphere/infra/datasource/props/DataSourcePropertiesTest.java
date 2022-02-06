@@ -67,7 +67,7 @@ public final class DataSourcePropertiesTest {
     }
 
     @Test
-    public void assertgetAllLocalProperties() {
+    public void assertGetAllLocalProperties() {
         DataSourceProperties originalDataSourceProps = new DataSourceProperties(MockedDataSource.class.getName(), getProperties());
         Map<String, Object> actualAllProperties = originalDataSourceProps.getAllLocalProperties();
         assertNotNull(actualAllProperties);
