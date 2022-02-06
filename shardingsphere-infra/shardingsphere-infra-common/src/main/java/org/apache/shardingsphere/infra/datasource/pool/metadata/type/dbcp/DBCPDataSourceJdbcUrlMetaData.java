@@ -15,50 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.metadata.type;
+package org.apache.shardingsphere.infra.datasource.pool.metadata.type.dbcp;
 
-import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourceJdbcUrlMetaData;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.Properties;
 
 /**
- * Hikari data source pool meta data.
+ * Hikari data source JDBC URL meta data.
  */
-@Getter
-public final class DBCPDataSourcePoolMetaData implements DataSourcePoolMetaData<BasicDataSource> {
-    
-    private final Collection<String> transientFieldNames = new LinkedList<>();
-    
-    public DBCPDataSourcePoolMetaData() {
-        buildTransientFieldNames();
-    }
-    
-    private void buildTransientFieldNames() {
-        transientFieldNames.add("closed");
-    }
-    
-    @Override
-    public Map<String, Object> getDefaultProperties() {
-        return Collections.emptyMap();
-    }
-    
-    @Override
-    public Map<String, Object> getInvalidProperties() {
-        return Collections.emptyMap();
-    }
-    
-    @Override
-    public Map<String, String> getPropertySynonyms() {
-        return Collections.emptyMap();
-    }
+public final class DBCPDataSourceJdbcUrlMetaData implements DataSourceJdbcUrlMetaData<BasicDataSource> {
     
     @Override
     public String getJdbcUrl(final BasicDataSource targetDataSource) {
@@ -81,10 +50,5 @@ public final class DBCPDataSourcePoolMetaData implements DataSourcePoolMetaData<
     @Override
     public void appendJdbcUrlProperties(final String key, final String value, final BasicDataSource targetDataSource) {
         targetDataSource.addConnectionProperty(key, value);
-    }
-    
-    @Override
-    public String getType() {
-        return BasicDataSource.class.getName();
     }
 }

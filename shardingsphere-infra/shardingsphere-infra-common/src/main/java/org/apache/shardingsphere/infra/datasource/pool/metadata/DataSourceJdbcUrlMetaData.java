@@ -17,51 +17,45 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.metadata;
 
-import org.apache.shardingsphere.spi.typed.TypedSPI;
-
 import javax.sql.DataSource;
-import java.util.Collection;
-import java.util.Map;
+import java.util.Properties;
 
 /**
- * Data source pool meta data.
+ * Data source JDBC URL meta data.
  * 
  * @param <T> type of target data source
  */
-public interface DataSourcePoolMetaData<T extends DataSource> extends TypedSPI {
+public interface DataSourceJdbcUrlMetaData<T extends DataSource> {
     
     /**
-     * Get default properties.
+     * Get JDBC URL.
+     * 
+     * @param targetDataSource target data source
+     * @return JDBC URL
+     */
+    String getJdbcUrl(T targetDataSource);
+    
+    /**
+     * Get JDBC URL properties field name.
      *
-     * @return default properties
+     * @return JDBC URL properties field name
      */
-    Map<String, Object> getDefaultProperties();
+    String getJdbcUrlPropertiesFieldName();
     
     /**
-     * Get invalid properties.
+     * Get JDBC URL properties.
      * 
-     * @return invalid properties
+     * @param targetDataSource target data source
+     * @return JDBC URL properties
      */
-    Map<String, Object> getInvalidProperties();
+    Properties getJdbcUrlProperties(T targetDataSource);
     
     /**
-     * Get property synonyms.
+     * Append JDBC URL properties.
      * 
-     * @return property synonyms
+     * @param key key
+     * @param value value
+     * @param targetDataSource target data source
      */
-    Map<String, String> getPropertySynonyms();
-    
-    /**
-     * Get transient field names.
-     *
-     * @return transient field names
-     */
-    Collection<String> getTransientFieldNames();
-    
-    /**
-     * Get JDBC URL meta data.
-     * 
-     * @return data source JDBC URL meta data
-     */
-    DataSourceJdbcUrlMetaData<T> getJdbcUrlMetaData();
+    void appendJdbcUrlProperties(String key, String value, T targetDataSource);
 }
