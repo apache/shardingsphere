@@ -61,8 +61,8 @@
         <antlr4.version>4.9.2</antlr4.version>
         
         <groovy.version>4.0.0</groovy.version>
-        <snakeyaml.version>1.16</snakeyaml.version>
-        
+        <snakeyaml.version>1.30</snakeyaml.version>
+
         <netty.version>4.1.73.Final</netty.version>
         <commons-lang3.version>3.8</commons-lang3.version>
         <commons-codec.version>1.10</commons-codec.version>
