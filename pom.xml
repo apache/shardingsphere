@@ -60,7 +60,7 @@
         <cosid.version>1.8.6</cosid.version>
         <antlr4.version>4.9.2</antlr4.version>
         
-        <groovy.version>2.4.19</groovy.version>
+        <groovy.version>2.5.15</groovy.version>
         <snakeyaml.version>1.16</snakeyaml.version>
         
         <netty.version>4.1.73.Final</netty.version>
