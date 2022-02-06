@@ -30,7 +30,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -51,7 +50,7 @@ public final class DataSourcePoolCreator {
     
     /**
      * Create data source.
-     * 
+     *
      * @param dataSourceProps data source properties
      * @return created data source
      */
@@ -106,9 +105,9 @@ public final class DataSourcePoolCreator {
     private static void appendJdbcUrlProperties(final CustomDataSourceProperties customDataSourceProps, final DataSource targetDataSource, final DataSourcePoolMetaData poolMetaData) {
         String jdbcUrlPropertiesFieldName = poolMetaData.getJdbcUrlMetaData().getJdbcUrlPropertiesFieldName();
         if (null != jdbcUrlPropertiesFieldName && customDataSourceProps.getProperties().containsKey(jdbcUrlPropertiesFieldName)) {
-            Properties jdbcUrlProps = (Properties) customDataSourceProps.getProperties().get(jdbcUrlPropertiesFieldName);
-            for (Entry<Object, Object> entry : jdbcUrlProps.entrySet()) {
-                poolMetaData.getJdbcUrlMetaData().appendJdbcUrlProperties(entry.getKey().toString(), entry.getValue().toString(), targetDataSource);
+            Map<String, Object> jdbcUrlProps = (Map<String, Object>) customDataSourceProps.getProperties().get(jdbcUrlPropertiesFieldName);
+            for (Entry<String, Object> entry : jdbcUrlProps.entrySet()) {
+                poolMetaData.getJdbcUrlMetaData().appendJdbcUrlProperties(entry.getKey(), entry.getValue().toString(), targetDataSource);
             }
         }
     }
