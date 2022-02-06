@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.datasource.pool.metadata;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.impl.DefaultDataSourcePoolMetaData;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.impl.HikariDataSourcePoolMetaData;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.type.DefaultDataSourcePoolMetaData;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.type.HikariDataSourcePoolMetaData;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

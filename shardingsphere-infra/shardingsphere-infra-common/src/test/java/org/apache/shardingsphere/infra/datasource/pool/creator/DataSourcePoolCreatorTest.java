@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.creator;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
@@ -28,7 +27,6 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -81,33 +79,6 @@ public final class DataSourcePoolCreatorTest {
         result.put("url", "jdbc:mock://127.0.0.1/foo_ds");
         result.put("username", "root");
         result.put("password", "root");
-        return result;
-    }
-    
-    @Test
-    public void assertCreateHikariDataSource() {
-        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreator.create(new DataSourceProperties(HikariDataSource.class.getName(), createHikariProperties()));
-        assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
-        assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getName()));
-        assertThat(actual.getUsername(), is("root"));
-        assertThat(actual.getPassword(), is("root"));
-        assertThat(actual.getDataSourceProperties(), is(createJdbcUrlProperties()));
-    }
-    
-    private Map<String, Object> createHikariProperties() {
-        Map<String, Object> result = new HashMap<>();
-        result.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
-        result.put("driverClassName", MockedDataSource.class.getName());
-        result.put("username", "root");
-        result.put("password", "root");
-        result.put("dataSourceProperties", createJdbcUrlProperties());
-        return result;
-    }
-    
-    private Properties createJdbcUrlProperties() {
-        Properties result = new Properties();
-        result.put("foo", "foo_value");
-        result.put("bar", "bar_value");
         return result;
     }
 }

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.spi.typed.TypedSPI;
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Data source pool meta data.
@@ -62,10 +63,27 @@ public interface DataSourcePoolMetaData<T extends DataSource> extends TypedSPI, 
     
     /**
      * Get JDBC URL properties field name.
-     * 
+     *
      * @return JDBC URL properties field name
      */
     String getJdbcUrlPropertiesFieldName();
+    
+    /**
+     * Get JDBC URL properties.
+     * 
+     * @param targetDataSource target data source
+     * @return JDBC URL properties
+     */
+    Properties getJdbcUrlProperties(T targetDataSource);
+    
+    /**
+     * Append JDBC URL properties.
+     * 
+     * @param key key
+     * @param value value
+     * @param targetDataSource target data source
+     */
+    void appendJdbcUrlProperties(String key, String value, T targetDataSource);
     
     /**
      * Get transient field names.

@@ -15,19 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.metadata.impl;
+package org.apache.shardingsphere.infra.datasource.pool.metadata.type;
 
+import lombok.Getter;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
+import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 
-import javax.sql.DataSource;
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Properties;
 
 /**
- * Default data source pool meta data.
+ * Tomcat JDBC data source pool meta data.
  */
-public final class DefaultDataSourcePoolMetaData implements DataSourcePoolMetaData<DataSource> {
+@Getter
+public final class TomcatDBCPDataSourcePoolMetaData implements DataSourcePoolMetaData<BasicDataSource> {
+    
+    private final Collection<String> transientFieldNames = new LinkedList<>();
+    
+    public TomcatDBCPDataSourcePoolMetaData() {
+        buildTransientFieldNames();
+    }
+    
+    private void buildTransientFieldNames() {
+        transientFieldNames.add("closed");
+    }
     
     @Override
     public Map<String, Object> getDefaultProperties() {
@@ -45,27 +61,30 @@ public final class DefaultDataSourcePoolMetaData implements DataSourcePoolMetaDa
     }
     
     @Override
-    public String getJdbcUrl(final DataSource targetDataSource) {
-        return null;
+    public String getJdbcUrl(final BasicDataSource targetDataSource) {
+        return targetDataSource.getUrl();
     }
     
     @Override
     public String getJdbcUrlPropertiesFieldName() {
-        return null;
+        return "connectionProperties";
     }
     
     @Override
-    public Collection<String> getTransientFieldNames() {
-        return Collections.emptyList();
+    @SneakyThrows(ReflectiveOperationException.class)
+    public Properties getJdbcUrlProperties(final BasicDataSource targetDataSource) {
+        Field field = BasicDataSource.class.getDeclaredField("connectionProperties");
+        field.setAccessible(true);
+        return (Properties) field.get(targetDataSource);
+    }
+    
+    @Override
+    public void appendJdbcUrlProperties(final String key, final String value, final BasicDataSource targetDataSource) {
+        targetDataSource.addConnectionProperty(key, value);
     }
     
     @Override
     public String getType() {
-        return "Default";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
+        return BasicDataSource.class.getName();
     }
 }
