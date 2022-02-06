@@ -105,7 +105,7 @@ public final class DataSourcePoolCreator {
     private static void appendJdbcUrlProperties(final CustomDataSourceProperties customDataSourceProps, final DataSource targetDataSource, final DataSourcePoolMetaData poolMetaData) {
         String jdbcUrlPropertiesFieldName = poolMetaData.getJdbcUrlMetaData().getJdbcUrlPropertiesFieldName();
         if (null != jdbcUrlPropertiesFieldName && customDataSourceProps.getProperties().containsKey(jdbcUrlPropertiesFieldName)) {
-            LinkedHashMap<String, Object> jdbcUrlProps = (LinkedHashMap<String, Object>) customDataSourceProps.getProperties().get(jdbcUrlPropertiesFieldName);
+            Map<String, Object> jdbcUrlProps = (Map<String, Object>) customDataSourceProps.getProperties().get(jdbcUrlPropertiesFieldName);
             for (Entry<String, Object> entry : jdbcUrlProps.entrySet()) {
                 poolMetaData.getJdbcUrlMetaData().appendJdbcUrlProperties(entry.getKey(), entry.getValue().toString(), targetDataSource);
             }
