@@ -88,7 +88,7 @@ public final class RulesUsedResourceQueryResultSet implements DistSQLResultSet {
     }
     
     private void getRulesConfigForSharding(final RuleConfiguration ruleConfig, final List<Collection<Object>> result) {
-        if (!(ruleConfig.getClass().getCanonicalName().equals(FEATURE_MAP.get(SHARDING).getCanonicalName()))) {
+        if (!matchFeature(ruleConfig, SHARDING)) {
             return;
         }
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) ruleConfig;
@@ -101,7 +101,7 @@ public final class RulesUsedResourceQueryResultSet implements DistSQLResultSet {
     }
     
     private void getRulesConfigForReadwriteSplitting(final RuleConfiguration ruleConfig, final String resourceName, final List<Collection<Object>> result) {
-        if (!(ruleConfig.getClass().getCanonicalName().equals(FEATURE_MAP.get(READWRITE_SPLITTING).getCanonicalName()))) {
+        if (!matchFeature(ruleConfig, READWRITE_SPLITTING)) {
             return;
         }
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) ruleConfig;
@@ -116,7 +116,7 @@ public final class RulesUsedResourceQueryResultSet implements DistSQLResultSet {
     }
     
     private void getRulesConfigForDBDiscovery(final RuleConfiguration ruleConfig, final String resourceName, final List<Collection<Object>> result) {
-        if (!(ruleConfig.getClass().getCanonicalName().equals(FEATURE_MAP.get(DB_DISCOVERY).getCanonicalName()))) {
+        if (!matchFeature(ruleConfig, DB_DISCOVERY)) {
             return;
         }
         DatabaseDiscoveryRuleConfiguration config = (DatabaseDiscoveryRuleConfiguration) ruleConfig;
@@ -128,7 +128,7 @@ public final class RulesUsedResourceQueryResultSet implements DistSQLResultSet {
     }
     
     private void getRulesConfigForEncrypt(final RuleConfiguration ruleConfig, final List<Collection<Object>> result) {
-        if (!(ruleConfig.getClass().getCanonicalName().equals(FEATURE_MAP.get(ENCRYPT).getCanonicalName()))) {
+        if (!matchFeature(ruleConfig, ENCRYPT)) {
             return;
         }
         EncryptRuleConfiguration config = (EncryptRuleConfiguration) ruleConfig;
@@ -138,7 +138,7 @@ public final class RulesUsedResourceQueryResultSet implements DistSQLResultSet {
     }
     
     private void getRulesConfigForShadow(final RuleConfiguration ruleConfig, final String resourceName, final List<Collection<Object>> result) {
-        if (!(ruleConfig.getClass().getCanonicalName().equals(FEATURE_MAP.get(SHADOW).getCanonicalName()))) {
+        if (!matchFeature(ruleConfig, SHADOW)) {
             return;
         }
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) ruleConfig;
@@ -147,6 +147,13 @@ public final class RulesUsedResourceQueryResultSet implements DistSQLResultSet {
                 result.add(buildRow(SHADOW, each.getKey()));
             }
         }
+    }
+    
+    private boolean matchFeature(final RuleConfiguration ruleConfig, final String feature) {
+        if (null != ruleConfig && ruleConfig.getClass().getName().equals(FEATURE_MAP.get(feature).getName())) {
+            return true;
+        }
+        return false;
     }
     
     private Collection<Object> buildRow(final String type, final String name) {
