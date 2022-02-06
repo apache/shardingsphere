@@ -54,4 +54,3 @@ public final class DataSourceMapSetterTest {
         assertThat(dataSourceMap.get("ds1").getConnection().getMetaData().getUserName(), is("SA"));
     }
 }
-
