@@ -52,13 +52,14 @@ public final class DataSourcePoolCreator {
      * @param dataSourceProps data source properties
      * @return created data source
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static DataSource create(final DataSourceProperties dataSourceProps) {
         DataSource result = createDataSource(dataSourceProps.getDataSourceClassName());
         DataSourcePoolMetaData poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceProps.getDataSourceClassName());
         DataSourceReflection dataSourceReflection = new DataSourceReflection(result);
         setDefaultFields(dataSourceReflection, poolMetaData);
         setConfiguredFields(dataSourceProps, dataSourceReflection, poolMetaData);
-        dataSourceReflection.addDefaultDataSourceProperties(poolMetaData.getJdbcUrlPropertiesFieldName(), poolMetaData.getJdbcUrlFieldName());
+        dataSourceReflection.addDefaultDataSourceProperties(poolMetaData.getJdbcUrlPropertiesFieldName(), poolMetaData.getJdbcUrl(result));
         return result;
     }
     
@@ -67,13 +68,13 @@ public final class DataSourcePoolCreator {
         return (DataSource) Class.forName(dataSourceClassName).getConstructor().newInstance();
     }
     
-    private static void setDefaultFields(final DataSourceReflection dataSourceReflection, final DataSourcePoolMetaData poolMetaData) {
+    private static void setDefaultFields(final DataSourceReflection dataSourceReflection, final DataSourcePoolMetaData<?> poolMetaData) {
         for (Entry<String, Object> entry : poolMetaData.getDefaultProperties().entrySet()) {
             dataSourceReflection.setField(entry.getKey(), entry.getValue());
         }
     }
     
-    private static void setConfiguredFields(final DataSourceProperties dataSourceProps, final DataSourceReflection dataSourceReflection, final DataSourcePoolMetaData poolMetaData) {
+    private static void setConfiguredFields(final DataSourceProperties dataSourceProps, final DataSourceReflection dataSourceReflection, final DataSourcePoolMetaData<?> poolMetaData) {
         for (Entry<String, Object> entry : dataSourceProps.getAllLocalProperties().entrySet()) {
             String fieldName = entry.getKey();
             Object fieldValue = entry.getValue();
@@ -83,7 +84,7 @@ public final class DataSourcePoolCreator {
         }
     }
     
-    private static boolean isValidProperty(final String key, final Object value, final DataSourcePoolMetaData poolMetaData) {
+    private static boolean isValidProperty(final String key, final Object value, final DataSourcePoolMetaData<?> poolMetaData) {
         return !poolMetaData.getInvalidProperties().containsKey(key) || null == value || !value.equals(poolMetaData.getInvalidProperties().get(key));
     }
 }

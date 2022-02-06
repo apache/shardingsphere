@@ -30,7 +30,7 @@ import java.util.Map;
  * Hikari data source pool meta data.
  */
 @Getter
-public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaData {
+public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaData<HikariDataSource> {
     
     private final Map<String, Object> defaultProperties = new HashMap<>(6, 1);
     
@@ -78,8 +78,8 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     }
     
     @Override
-    public String getJdbcUrlFieldName() {
-        return "jdbcUrl";
+    public String getJdbcUrl(HikariDataSource targetDataSource) {
+        return targetDataSource.getJdbcUrl();
     }
     
     @Override

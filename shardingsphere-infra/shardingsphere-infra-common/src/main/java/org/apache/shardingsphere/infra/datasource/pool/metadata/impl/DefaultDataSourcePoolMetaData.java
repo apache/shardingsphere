@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.datasource.pool.metadata.impl;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -26,7 +27,7 @@ import java.util.Map;
 /**
  * Default data source pool meta data.
  */
-public final class DefaultDataSourcePoolMetaData implements DataSourcePoolMetaData {
+public final class DefaultDataSourcePoolMetaData implements DataSourcePoolMetaData<DataSource> {
     
     @Override
     public Map<String, Object> getDefaultProperties() {
@@ -44,7 +45,7 @@ public final class DefaultDataSourcePoolMetaData implements DataSourcePoolMetaDa
     }
     
     @Override
-    public String getJdbcUrlFieldName() {
+    public String getJdbcUrl(final DataSource targetDataSource) {
         return null;
     }
     

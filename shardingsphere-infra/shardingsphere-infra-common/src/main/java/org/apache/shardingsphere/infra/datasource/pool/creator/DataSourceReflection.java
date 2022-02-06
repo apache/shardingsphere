@@ -154,14 +154,13 @@ public final class DataSourceReflection {
      * Add default data source properties.
      *
      * @param dataSourcePropsFieldName data source properties field name
-     * @param jdbcUrlFieldName JDBC URL field name
+     * @param jdbcUrl JDBC URL
      */
-    public void addDefaultDataSourceProperties(final String dataSourcePropsFieldName, final String jdbcUrlFieldName) {
-        if (null == dataSourcePropsFieldName || null == jdbcUrlFieldName) {
+    public void addDefaultDataSourceProperties(final String dataSourcePropsFieldName, final String jdbcUrl) {
+        if (null == dataSourcePropsFieldName || null == jdbcUrl) {
             return;
         }
         Properties targetDataSourceProps = getDataSourceProperties(dataSourcePropsFieldName);
-        String jdbcUrl = getJdbcUrl(jdbcUrlFieldName);
         DataSourceMetaData dataSourceMetaData = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl).getDataSourceMetaData(jdbcUrl, null);
         Properties queryProps = dataSourceMetaData.getQueryProperties();
         for (Entry<Object, Object> entry : dataSourceMetaData.getDefaultQueryProperties().entrySet()) {
@@ -180,11 +179,6 @@ public final class DataSourceReflection {
     @SneakyThrows(ReflectiveOperationException.class)
     private Properties getDataSourceProperties(final String dataSourcePropsFieldName) {
         return (Properties) dataSource.getClass().getMethod(getGetterMethodName(dataSourcePropsFieldName)).invoke(dataSource);
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private String getJdbcUrl(final String jdbcUrlFieldName) {
-        return (String) dataSource.getClass().getMethod(getGetterMethodName(jdbcUrlFieldName)).invoke(dataSource);
     }
     
     private String getGetterMethodName(final String fieldName) {

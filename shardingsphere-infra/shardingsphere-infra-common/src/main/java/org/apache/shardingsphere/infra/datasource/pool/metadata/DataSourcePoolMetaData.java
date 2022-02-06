@@ -20,13 +20,16 @@ package org.apache.shardingsphere.infra.datasource.pool.metadata;
 import org.apache.shardingsphere.spi.required.RequiredSPI;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
 
 /**
  * Data source pool meta data.
+ * 
+ * @param <T> type of target data source
  */
-public interface DataSourcePoolMetaData extends TypedSPI, RequiredSPI {
+public interface DataSourcePoolMetaData<T extends DataSource> extends TypedSPI, RequiredSPI {
     
     /**
      * Get default properties.
@@ -50,11 +53,12 @@ public interface DataSourcePoolMetaData extends TypedSPI, RequiredSPI {
     Map<String, String> getPropertySynonyms();
     
     /**
-     * Get JDBC URL field name.
-     *
-     * @return JDBC URL field name
+     * Get JDBC URL.
+     * 
+     * @param targetDataSource target data source
+     * @return JDBC URL
      */
-    String getJdbcUrlFieldName();
+    String getJdbcUrl(T targetDataSource);
     
     /**
      * Get JDBC URL properties field name.
