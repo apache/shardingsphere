@@ -38,7 +38,7 @@
     </modules>
     
     <properties>
-        <maven-shade-plugin.version>3.2.0</maven-shade-plugin.version>
+        <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
         <shade.package>org.apache.shardingsphere.dependencies</shade.package>
     </properties>
     
