@@ -268,7 +268,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         Optional<String> originColumnName = findOriginColumnName(logicTable, logicColumn);
         return originColumnName.isPresent() && tables.containsKey(logicTable) ? tables.get(logicTable).findPlainColumn(originColumnName.get()) : Optional.empty();
     }
-
+    
     /**
      * Judge whether table is support QueryWithCipherColumn or not.
      *
