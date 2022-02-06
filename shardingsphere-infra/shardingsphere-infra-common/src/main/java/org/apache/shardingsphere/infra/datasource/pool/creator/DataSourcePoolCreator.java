@@ -29,6 +29,7 @@ import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -57,12 +58,16 @@ public final class DataSourcePoolCreator {
     @SuppressWarnings("rawtypes")
     public static DataSource create(final DataSourceProperties dataSourceProps) {
         DataSource result = createDataSource(dataSourceProps.getDataSourceClassName());
-        DataSourcePoolMetaData poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceProps.getDataSourceClassName());
+        Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceProps.getDataSourceClassName());
         DataSourceReflection dataSourceReflection = new DataSourceReflection(result);
-        setDefaultFields(dataSourceReflection, poolMetaData);
-        setConfiguredFields(dataSourceProps, dataSourceReflection, poolMetaData);
-        appendJdbcUrlProperties(dataSourceProps.getCustomDataSourceProperties(), result, poolMetaData);
-        dataSourceReflection.addDefaultDataSourceProperties(poolMetaData);
+        if (poolMetaData.isPresent()) {
+            setDefaultFields(dataSourceReflection, poolMetaData.get());
+            setConfiguredFields(dataSourceProps, dataSourceReflection, poolMetaData.get());
+            appendJdbcUrlProperties(dataSourceProps.getCustomDataSourceProperties(), result, poolMetaData.get());
+            dataSourceReflection.addDefaultDataSourceProperties(poolMetaData.get());
+        } else {
+            setConfiguredFields(dataSourceProps, dataSourceReflection);
+        }
         return result;
     }
     
@@ -73,6 +78,12 @@ public final class DataSourcePoolCreator {
     
     private static void setDefaultFields(final DataSourceReflection dataSourceReflection, final DataSourcePoolMetaData<?> poolMetaData) {
         for (Entry<String, Object> entry : poolMetaData.getDefaultProperties().entrySet()) {
+            dataSourceReflection.setField(entry.getKey(), entry.getValue());
+        }
+    }
+    
+    private static void setConfiguredFields(final DataSourceProperties dataSourceProps, final DataSourceReflection dataSourceReflection) {
+        for (Entry<String, Object> entry : dataSourceProps.getAllLocalProperties().entrySet()) {
             dataSourceReflection.setField(entry.getKey(), entry.getValue());
         }
     }

@@ -28,6 +28,7 @@ import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Data source properties creator.
@@ -74,13 +75,14 @@ public final class DataSourcePropertiesCreator {
         return result;
     }
     
+    @SuppressWarnings("rawtypes")
     private static Map<String, Object> createProperties(final DataSource dataSource) {
         Map<String, Object> result = new LinkedHashMap<>();
-        DataSourcePoolMetaData<?> poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSource.getClass().getName());
+        Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSource.getClass().getName());
         for (Entry<String, Object> entry : new DataSourceReflection(dataSource).convertToProperties().entrySet()) {
             String propertyName = entry.getKey();
             Object propertyValue = entry.getValue();
-            if (isValidProperty(propertyName, propertyValue, poolMetaData)) {
+            if (poolMetaData.isPresent() && isValidProperty(propertyName, propertyValue, poolMetaData.get())) {
                 result.put(propertyName, propertyValue);
             }
         }
