@@ -47,12 +47,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -169,13 +167,13 @@ public final class ContextManagerTest {
     public void assertAlterResource() throws SQLException {
         Map<String, ShardingSphereMetaData> originalMetaDataMap = new HashMap<>(Collections.singletonMap("foo_schema", createOriginalMetaData()));
         when(metaDataContexts.getMetaDataMap()).thenReturn(originalMetaDataMap);
-        contextManager.alterResource("foo_schema", Collections.singletonMap("foo_ds", new DataSourceProperties(MockedDataSource.class.getName(), createProperties("test", "test"))));
-        assertAlteredDataSource((MockedDataSource) contextManager.getMetaDataContexts().getMetaDataMap().get("foo_schema").getResource().getDataSources().get("foo_ds"));
+        contextManager.alterResource("foo_schema", Collections.singletonMap("bar_ds", new DataSourceProperties(MockedDataSource.class.getName(), createProperties("test", "test"))));
+        assertAlteredDataSource((MockedDataSource) contextManager.getMetaDataContexts().getMetaDataMap().get("foo_schema").getResource().getDataSources().get("bar_ds"));
     }
     
     private ShardingSphereMetaData createOriginalMetaData() {
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
-        when(resource.getDataSources()).thenReturn(Collections.singletonMap("original_ds", new MockedDataSource()));
+        when(resource.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getConfigurations()).thenReturn(new LinkedList<>());
         return new ShardingSphereMetaData("foo_schema", resource, ruleMetaData, mock(ShardingSphereSchema.class));
@@ -189,105 +187,75 @@ public final class ContextManagerTest {
     
     @Test 
     public void assertDropResource() {
-        ShardingSphereMetaData originalMetaData = mock(ShardingSphereMetaData.class);
-        when(metaDataContexts.getMetaData("test_schema")).thenReturn(originalMetaData);
-        ShardingSphereResource originalResource = mock(ShardingSphereResource.class);
-        when(originalMetaData.getResource()).thenReturn(originalResource);
-        Map<String, DataSource> originalDataSources = new LinkedHashMap<>();
-        originalDataSources.put("ds_1", new MockedDataSource());
-        when(originalResource.getDataSources()).thenReturn(originalDataSources);
-        contextManager.dropResource("test_schema", Collections.singleton("ds_1"));
-        assertTrue(contextManager.getMetaDataContexts().getMetaData("test_schema").getResource().getDataSources().isEmpty());
+        when(metaDataContexts.getMetaData("foo_schema").getResource().getDataSources()).thenReturn(new HashMap<>(Collections.singletonMap("foo_ds", new MockedDataSource())));
+        contextManager.dropResource("foo_schema", Collections.singleton("foo_ds"));
+        assertTrue(contextManager.getMetaDataContexts().getMetaData("foo_schema").getResource().getDataSources().isEmpty());
     }
     
     @Test
     public void assertAlterRuleConfiguration() {
-        Map<String, ShardingSphereMetaData> metaDataMap = new LinkedHashMap<>();
-        ShardingSphereMetaData shardingSphereMetaData = new ShardingSphereMetaData(
-                "test", mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), mock(ShardingSphereSchema.class));
-        metaDataMap.put("test", shardingSphereMetaData);
-        when(metaDataContexts.getMetaDataMap()).thenReturn(metaDataMap);
+        when(metaDataContexts.getMetaDataMap()).thenReturn(Collections.singletonMap("foo_schema", 
+                new ShardingSphereMetaData("foo_schema", mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), mock(ShardingSphereSchema.class))));
         when(metaDataContexts.getMetaDataPersistService()).thenReturn(Optional.of(mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS)));
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>();
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
-        ruleConfigs.add(ruleConfig);
-        contextManager.alterRuleConfiguration("test", ruleConfigs);
-        assertTrue(contextManager.getMetaDataContexts().getMetaDataMap().get("test").getRuleMetaData().getConfigurations().contains(ruleConfig));
+        contextManager.alterRuleConfiguration("foo_schema", Collections.singleton(ruleConfig));
+        assertTrue(contextManager.getMetaDataContexts().getMetaDataMap().get("foo_schema").getRuleMetaData().getConfigurations().contains(ruleConfig));
     }
     
     @Test
     public void assertAlterDataSourceConfiguration() {
-        ShardingSphereMetaData originalMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(originalMetaData.getName()).thenReturn("test_schema");
-        ShardingSphereResource originalResource = mockOriginalResource();
-        when(originalMetaData.getResource()).thenReturn(originalResource);
-        ShardingSphereRuleMetaData ruleMetaData = mockRuleMetaData();
-        when(originalMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(metaDataContexts.getMetaData("test_schema")).thenReturn(originalMetaData);
-        Map<String, ShardingSphereMetaData> originalMetaDataMap = new LinkedHashMap<>();
-        originalMetaDataMap.put("test_schema", originalMetaData);
-        when(metaDataContexts.getMetaDataMap()).thenReturn(originalMetaDataMap);
-        Map<String, DataSourceProperties> newDataSourceProps = new LinkedHashMap<>();
-        newDataSourceProps.put("ds_1", new DataSourceProperties(MockedDataSource.class.getName(), createProperties("test", "test")));
-        contextManager.alterDataSourceConfiguration("test_schema", newDataSourceProps);
-        assertTrue(contextManager.getMetaDataContexts().getMetaDataMap().containsKey("test_schema"));
-        assertThat(contextManager.getMetaDataContexts().getMetaDataMap().get("test_schema").getResource().getDataSources().size(), is(1));
-        MockedDataSource actualDataSource = (MockedDataSource) contextManager.getMetaDataContexts().getMetaData("test_schema").getResource().getDataSources().get("ds_1");
-        assertThat(actualDataSource.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
-        assertThat(actualDataSource.getPassword(), is("test"));
-        assertThat(actualDataSource.getUsername(), is("test"));
+        ShardingSphereMetaData originalMetaData = new ShardingSphereMetaData("foo_schema", createOriginalResource(), createOriginalRuleMetaData(), mock(ShardingSphereSchema.class));
+        when(metaDataContexts.getMetaData("foo_schema")).thenReturn(originalMetaData);
+        when(metaDataContexts.getMetaDataMap()).thenReturn(Collections.singletonMap("foo_schema", originalMetaData));
+        contextManager.alterDataSourceConfiguration("foo_schema", Collections.singletonMap("foo_ds", new DataSourceProperties(MockedDataSource.class.getName(), createProperties("test", "test"))));
+        assertThat(contextManager.getMetaDataContexts().getMetaDataMap().get("foo_schema").getResource().getDataSources().size(), is(1));
+        assertAlteredDataSource((MockedDataSource) contextManager.getMetaDataContexts().getMetaData("foo_schema").getResource().getDataSources().get("foo_ds"));
     }
     
-    private ShardingSphereResource mockOriginalResource() {
-        ShardingSphereResource result = mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS);
-        Map<String, DataSource> originalDataSources = new LinkedHashMap<>();
+    private ShardingSphereResource createOriginalResource() {
+        ShardingSphereResource result = mock(ShardingSphereResource.class);
+        Map<String, DataSource> originalDataSources = new LinkedHashMap<>(2, 1);
         originalDataSources.put("ds_1", new MockedDataSource());
         originalDataSources.put("ds_2", new MockedDataSource());
         when(result.getDataSources()).thenReturn(originalDataSources);
         return result;
     }
     
-    private ShardingSphereRuleMetaData mockRuleMetaData() {
-        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class, RETURNS_DEEP_STUBS);
-        List<RuleConfiguration> ruleConfigs = new LinkedList<>();
-        ruleConfigs.add(mock(RuleConfiguration.class));
-        when(result.getConfigurations()).thenReturn(ruleConfigs);
+    private ShardingSphereRuleMetaData createOriginalRuleMetaData() {
+        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
+        when(result.getConfigurations()).thenReturn(Collections.singleton(mock(RuleConfiguration.class)));
         return result;
     }
     
     @Test
     public void assertAlterGlobalRuleConfiguration() {
-        List<RuleConfiguration> newRuleConfigs = new LinkedList<>();
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
-        newRuleConfigs.add(ruleConfig);
-        contextManager.alterGlobalRuleConfiguration(newRuleConfigs);
+        contextManager.alterGlobalRuleConfiguration(Collections.singleton(ruleConfig));
         assertTrue(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getConfigurations().contains(ruleConfig));
     }
     
     @Test
-    public void assertAlterProps() {
-        Properties newProps = new Properties();
-        newProps.put("test1", "test1_value");
-        contextManager.alterProps(newProps);
-        assertThat(contextManager.getMetaDataContexts().getProps().getProps().get("test1"), is("test1_value"));
+    public void assertAlterProperties() {
+        Properties props = new Properties();
+        props.put("foo", "foo_value");
+        contextManager.alterProperties(props);
+        assertThat(contextManager.getMetaDataContexts().getProps().getProps().get("foo"), is("foo_value"));
     }
     
     @Test
     public void assertReloadMetaData() {
-        ShardingSphereResource originalResource = mock(ShardingSphereResource.class);
-        when(originalResource.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
-        when(metaDataContexts.getMetaData("test_schema").getResource()).thenReturn(originalResource);
+        when(metaDataContexts.getMetaData("foo_schema").getResource().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
         SchemaMetaDataPersistService schemaMetaDataPersistService = mock(SchemaMetaDataPersistService.class, RETURNS_DEEP_STUBS);
         MetaDataPersistService metaDataPersistService = mock(MetaDataPersistService.class);
         when(metaDataPersistService.getSchemaMetaDataService()).thenReturn(schemaMetaDataPersistService);
         when(metaDataContexts.getMetaDataPersistService()).thenReturn(Optional.of(metaDataPersistService));
-        contextManager.reloadMetaData("test_schema");
-        verify(schemaMetaDataPersistService, times(1)).persist(eq("test_schema"), any(ShardingSphereSchema.class));
-        contextManager.reloadMetaData("test_schema", "test_table");
-        assertNotNull(contextManager.getMetaDataContexts().getMetaData("test_schema"));
-        contextManager.reloadMetaData("test_schema", "test_table", "foo_ds");
-        assertNotNull(contextManager.getMetaDataContexts().getMetaData("test_schema").getSchema());
-        assertTrue(contextManager.getMetaDataContexts().getMetaData("test_schema").getResource().getDataSources().containsKey("foo_ds"));
+        contextManager.reloadMetaData("foo_schema");
+        verify(schemaMetaDataPersistService, times(1)).persist(eq("foo_schema"), any(ShardingSphereSchema.class));
+        contextManager.reloadMetaData("foo_schema", "foo_table");
+        assertNotNull(contextManager.getMetaDataContexts().getMetaData("foo_schema"));
+        contextManager.reloadMetaData("foo_schema", "foo_table", "foo_ds");
+        assertNotNull(contextManager.getMetaDataContexts().getMetaData("foo_schema").getSchema());
+        assertTrue(contextManager.getMetaDataContexts().getMetaData("foo_schema").getResource().getDataSources().containsKey("foo_ds"));
     }
     
     private Map<String, Object> createProperties(final String username, final String password) {

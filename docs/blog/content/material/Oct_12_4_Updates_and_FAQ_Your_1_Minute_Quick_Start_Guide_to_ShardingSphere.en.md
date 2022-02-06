@@ -320,7 +320,7 @@ If you have any questions or have found any issues, we are looking forward to yo
 
 **Authors**
 
-![](https://shardingsphere.apache.org/blog/img/Blog_20_img_2_Liang_Longtao_Photo.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_20_img_2_Jiang_Longtao_Photo.png)
 
 I’m Jiang Longtao, SphereEx middleware engineer & Apache ShardingSphere contributor. At present, I focus on ShardingSphere database middleware and its open source community.
 

@@ -15,25 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.metadata;
+package org.apache.shardingsphere.spring.boot.util;
 
-import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.type.DefaultDataSourcePoolMetaData;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.type.HikariDataSourcePoolMetaData;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class DataSourcePoolMetaDataFactoryTest {
+public final class PropertyUtilTest {
     
     @Test
-    public void assertNewInstanceForDefault() {
-        assertThat(DataSourcePoolMetaDataFactory.newInstance(""), instanceOf(DefaultDataSourcePoolMetaData.class));
+    public void assertGetCamelCaseKeys() {
+        assertThat(PropertyUtil.getCamelCaseKeys(createToBeConvertedMap()), is(createConvertedMap()));
     }
     
-    @Test
-    public void assertNewInstanceForHikari() {
-        assertThat(DataSourcePoolMetaDataFactory.newInstance(HikariDataSource.class.getName()), instanceOf(HikariDataSourcePoolMetaData.class));
+    private Map<String, Object> createToBeConvertedMap() {
+        Map<String, Object> result = new LinkedHashMap<>(2, 1);
+        result.put("fooKey", "fooValue");
+        result.put("bar-key", "barValue");
+        return result;
+    }
+    
+    private Map<String, Object> createConvertedMap() {
+        Map<String, Object> result = new LinkedHashMap<>(2, 1);
+        result.put("fooKey", "fooValue");
+        result.put("barKey", "barValue");
+        return result;
     }
 }

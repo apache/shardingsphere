@@ -290,18 +290,18 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
-     * Alter props.
+     * Alter properties.
      * 
-     * @param props props
+     * @param props properties to be altered
      */
-    public void alterProps(final Properties props) {
+    public void alterProperties(final Properties props) {
         renewMetaDataContexts(rebuildMetaDataContexts(new ConfigurationProperties(props)));
     }
     
     /**
      * Reload meta data.
      *
-     * @param schemaName schema name
+     * @param schemaName schema name to be reload
      */
     public void reloadMetaData(final String schemaName) {
         try {

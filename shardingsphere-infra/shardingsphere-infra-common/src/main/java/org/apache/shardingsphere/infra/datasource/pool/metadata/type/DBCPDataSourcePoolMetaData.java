@@ -15,68 +15,76 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.metadata.fixture;
+package org.apache.shardingsphere.infra.datasource.pool.metadata.type;
 
+import lombok.Getter;
+import lombok.SneakyThrows;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
-public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaData<MockedDataSource> {
+/**
+ * Hikari data source pool meta data.
+ */
+@Getter
+public final class DBCPDataSourcePoolMetaData implements DataSourcePoolMetaData<BasicDataSource> {
+    
+    private final Collection<String> transientFieldNames = new LinkedList<>();
+    
+    public DBCPDataSourcePoolMetaData() {
+        buildTransientFieldNames();
+    }
+    
+    private void buildTransientFieldNames() {
+        transientFieldNames.add("closed");
+    }
     
     @Override
     public Map<String, Object> getDefaultProperties() {
-        Map<String, Object> result = new HashMap<>(1, 1);
-        result.put("maxPoolSize", 100);
-        return result;
+        return Collections.emptyMap();
     }
     
     @Override
     public Map<String, Object> getInvalidProperties() {
-        Map<String, Object> result = new HashMap<>(2, 1);
-        result.put("maxPoolSize", -1);
-        result.put("minPoolSize", -1);
-        return result;
+        return Collections.emptyMap();
     }
     
     @Override
     public Map<String, String> getPropertySynonyms() {
-        Map<String, String> result = new HashMap<>(2, 1);
-        result.put("maxPoolSize", "maxPoolSize");
-        result.put("minPoolSize", "minPoolSize");
-        return result;
+        return Collections.emptyMap();
     }
     
     @Override
-    public String getJdbcUrl(final MockedDataSource targetDataSource) {
+    public String getJdbcUrl(final BasicDataSource targetDataSource) {
         return targetDataSource.getUrl();
     }
     
     @Override
     public String getJdbcUrlPropertiesFieldName() {
-        return null;
+        return "connectionProperties";
     }
     
     @Override
-    public Properties getJdbcUrlProperties(final MockedDataSource targetDataSource) {
-        return new Properties();
+    @SneakyThrows(ReflectiveOperationException.class)
+    public Properties getJdbcUrlProperties(final BasicDataSource targetDataSource) {
+        Field field = BasicDataSource.class.getDeclaredField("connectionProperties");
+        field.setAccessible(true);
+        return (Properties) field.get(targetDataSource);
     }
     
     @Override
-    public void appendJdbcUrlProperties(final String key, final String value, final MockedDataSource targetDataSource) {
-    }
-    
-    @Override
-    public Collection<String> getTransientFieldNames() {
-        return Collections.emptyList();
+    public void appendJdbcUrlProperties(final String key, final String value, final BasicDataSource targetDataSource) {
+        targetDataSource.addConnectionProperty(key, value);
     }
     
     @Override
     public String getType() {
-        return MockedDataSource.class.getName();
+        return BasicDataSource.class.getName();
     }
 }

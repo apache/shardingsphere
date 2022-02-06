@@ -15,45 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.metadata.fixture;
+package org.apache.shardingsphere.infra.datasource.pool.metadata.type;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaData<MockedDataSource> {
+/**
+ * Default data source pool meta data.
+ */
+public final class DefaultDataSourcePoolMetaData implements DataSourcePoolMetaData<DataSource> {
     
     @Override
     public Map<String, Object> getDefaultProperties() {
-        Map<String, Object> result = new HashMap<>(1, 1);
-        result.put("maxPoolSize", 100);
-        return result;
+        return Collections.emptyMap();
     }
     
     @Override
     public Map<String, Object> getInvalidProperties() {
-        Map<String, Object> result = new HashMap<>(2, 1);
-        result.put("maxPoolSize", -1);
-        result.put("minPoolSize", -1);
-        return result;
+        return Collections.emptyMap();
     }
     
     @Override
     public Map<String, String> getPropertySynonyms() {
-        Map<String, String> result = new HashMap<>(2, 1);
-        result.put("maxPoolSize", "maxPoolSize");
-        result.put("minPoolSize", "minPoolSize");
-        return result;
+        return Collections.emptyMap();
     }
     
     @Override
-    public String getJdbcUrl(final MockedDataSource targetDataSource) {
-        return targetDataSource.getUrl();
+    public String getJdbcUrl(final DataSource targetDataSource) {
+        return null;
     }
     
     @Override
@@ -62,12 +56,12 @@ public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaDat
     }
     
     @Override
-    public Properties getJdbcUrlProperties(final MockedDataSource targetDataSource) {
-        return new Properties();
+    public Properties getJdbcUrlProperties(final DataSource targetDataSource) {
+        return null;
     }
     
     @Override
-    public void appendJdbcUrlProperties(final String key, final String value, final MockedDataSource targetDataSource) {
+    public void appendJdbcUrlProperties(final String key, final String value, final DataSource targetDataSource) {
     }
     
     @Override
@@ -77,6 +71,11 @@ public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaDat
     
     @Override
     public String getType() {
-        return MockedDataSource.class.getName();
+        return "Default";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }
