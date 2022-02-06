@@ -28,6 +28,7 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -85,7 +86,12 @@ public final class DataSourcePoolCreatorTest {
     
     @Test
     public void assertCreateHikariDataSource() {
-        assertThat(DataSourcePoolCreator.create(new DataSourceProperties(HikariDataSource.class.getName(), createHikariProperties())), instanceOf(HikariDataSource.class));
+        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreator.create(new DataSourceProperties(HikariDataSource.class.getName(), createHikariProperties()));
+        assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
+        assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getName()));
+        assertThat(actual.getUsername(), is("root"));
+        assertThat(actual.getPassword(), is("root"));
+        assertThat(actual.getDataSourceProperties(), is(createJdbcUrlProperties()));
     }
     
     private Map<String, Object> createHikariProperties() {
@@ -94,6 +100,14 @@ public final class DataSourcePoolCreatorTest {
         result.put("driverClassName", MockedDataSource.class.getName());
         result.put("username", "root");
         result.put("password", "root");
+        result.put("dataSourceProperties", createJdbcUrlProperties());
+        return result;
+    }
+    
+    private Properties createJdbcUrlProperties() {
+        Properties result = new Properties();
+        result.put("foo", "foo_value");
+        result.put("bar", "bar_value");
         return result;
     }
 }
