@@ -15,29 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.metadata.type;
+package org.apache.shardingsphere.infra.datasource.pool.metadata.type.dbcp;
 
 import lombok.Getter;
-import lombok.SneakyThrows;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
-import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 
-import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Properties;
 
 /**
- * Tomcat JDBC data source pool meta data.
+ * DBCP data source pool meta data.
  */
 @Getter
-public final class TomcatDBCPDataSourcePoolMetaData implements DataSourcePoolMetaData<BasicDataSource> {
+public final class DBCPDataSourcePoolMetaData implements DataSourcePoolMetaData<BasicDataSource> {
     
     private final Collection<String> transientFieldNames = new LinkedList<>();
     
-    public TomcatDBCPDataSourcePoolMetaData() {
+    public DBCPDataSourcePoolMetaData() {
         buildTransientFieldNames();
     }
     
@@ -61,26 +58,8 @@ public final class TomcatDBCPDataSourcePoolMetaData implements DataSourcePoolMet
     }
     
     @Override
-    public String getJdbcUrl(final BasicDataSource targetDataSource) {
-        return targetDataSource.getUrl();
-    }
-    
-    @Override
-    public String getJdbcUrlPropertiesFieldName() {
-        return "connectionProperties";
-    }
-    
-    @Override
-    @SneakyThrows(ReflectiveOperationException.class)
-    public Properties getJdbcUrlProperties(final BasicDataSource targetDataSource) {
-        Field field = BasicDataSource.class.getDeclaredField("connectionProperties");
-        field.setAccessible(true);
-        return (Properties) field.get(targetDataSource);
-    }
-    
-    @Override
-    public void appendJdbcUrlProperties(final String key, final String value, final BasicDataSource targetDataSource) {
-        targetDataSource.addConnectionProperty(key, value);
+    public DBCPDataSourceJdbcUrlMetaData getJdbcUrlMetaData() {
+        return new DBCPDataSourceJdbcUrlMetaData();
     }
     
     @Override

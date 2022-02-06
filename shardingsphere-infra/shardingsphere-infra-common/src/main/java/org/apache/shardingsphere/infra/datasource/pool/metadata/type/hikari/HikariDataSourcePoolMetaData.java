@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.metadata.type;
+package org.apache.shardingsphere.infra.datasource.pool.metadata.type.hikari;
 
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Hikari data source pool meta data.
@@ -79,23 +78,8 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     }
     
     @Override
-    public String getJdbcUrl(final HikariDataSource targetDataSource) {
-        return targetDataSource.getJdbcUrl();
-    }
-    
-    @Override
-    public String getJdbcUrlPropertiesFieldName() {
-        return "dataSourceProperties";
-    }
-    
-    @Override
-    public Properties getJdbcUrlProperties(final HikariDataSource targetDataSource) {
-        return targetDataSource.getDataSourceProperties();
-    }
-    
-    @Override
-    public void appendJdbcUrlProperties(final String key, final String value, final HikariDataSource targetDataSource) {
-        targetDataSource.getDataSourceProperties().put(key, value);
+    public HikariDataSourceJdbcUrlMetaData getJdbcUrlMetaData() {
+        return new HikariDataSourceJdbcUrlMetaData();
     }
     
     @Override

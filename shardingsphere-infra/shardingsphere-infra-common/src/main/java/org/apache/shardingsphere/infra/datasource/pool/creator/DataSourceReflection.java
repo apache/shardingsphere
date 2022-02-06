@@ -158,8 +158,8 @@ public final class DataSourceReflection {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void addDefaultDataSourceProperties(final DataSourcePoolMetaData dataSourcePoolMetaData) {
-        String jdbcUrl = dataSourcePoolMetaData.getJdbcUrl(dataSource);
-        Properties jdbcUrlProps = dataSourcePoolMetaData.getJdbcUrlProperties(dataSource);
+        String jdbcUrl = dataSourcePoolMetaData.getJdbcUrlMetaData().getJdbcUrl(dataSource);
+        Properties jdbcUrlProps = dataSourcePoolMetaData.getJdbcUrlMetaData().getJdbcUrlProperties(dataSource);
         if (null == jdbcUrl || null == jdbcUrlProps) {
             return;
         }
@@ -169,7 +169,7 @@ public final class DataSourceReflection {
             String defaultPropertyKey = entry.getKey().toString();
             String defaultPropertyValue = entry.getValue().toString();
             if (!containsDefaultProperty(defaultPropertyKey, jdbcUrlProps, queryProps)) {
-                dataSourcePoolMetaData.appendJdbcUrlProperties(defaultPropertyKey, defaultPropertyValue, dataSource);
+                dataSourcePoolMetaData.getJdbcUrlMetaData().appendJdbcUrlProperties(defaultPropertyKey, defaultPropertyValue, dataSource);
             }
         }
     }
