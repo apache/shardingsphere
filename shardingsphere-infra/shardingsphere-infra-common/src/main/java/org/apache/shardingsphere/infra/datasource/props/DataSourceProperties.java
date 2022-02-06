@@ -26,10 +26,12 @@ import org.apache.shardingsphere.infra.datasource.props.synonym.ConnectionProper
 import org.apache.shardingsphere.infra.datasource.props.synonym.PoolPropertySynonyms;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Data source properties.
@@ -45,13 +47,15 @@ public final class DataSourceProperties {
     
     private final CustomDataSourceProperties customDataSourceProperties;
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public DataSourceProperties(final String dataSourceClassName, final Map<String, Object> props) {
         this.dataSourceClassName = dataSourceClassName;
-        DataSourcePoolMetaData<?> poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceClassName);
-        Map<String, String> propertySynonyms = poolMetaData.getPropertySynonyms();
+        Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceClassName);
+        Map<String, String> propertySynonyms = poolMetaData.isPresent() ? poolMetaData.get().getPropertySynonyms() : Collections.emptyMap();
         connectionPropertySynonyms = new ConnectionPropertySynonyms(props, propertySynonyms);
         poolPropertySynonyms = new PoolPropertySynonyms(props, propertySynonyms);
-        customDataSourceProperties = new CustomDataSourceProperties(props, getStandardPropertyKeys(), poolMetaData.getTransientFieldNames(), propertySynonyms);
+        customDataSourceProperties = new CustomDataSourceProperties(
+                props, getStandardPropertyKeys(), poolMetaData.isPresent() ? poolMetaData.get().getTransientFieldNames() : Collections.emptyList(), propertySynonyms);
     }
     
     private Collection<String> getStandardPropertyKeys() {

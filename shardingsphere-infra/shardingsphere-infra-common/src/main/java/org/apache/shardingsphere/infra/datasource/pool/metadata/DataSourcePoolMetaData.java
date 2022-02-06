@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.metadata;
 
-import org.apache.shardingsphere.spi.required.RequiredSPI;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 import javax.sql.DataSource;
@@ -30,7 +29,7 @@ import java.util.Properties;
  * 
  * @param <T> type of target data source
  */
-public interface DataSourcePoolMetaData<T extends DataSource> extends TypedSPI, RequiredSPI {
+public interface DataSourcePoolMetaData<T extends DataSource> extends TypedSPI {
     
     /**
      * Get default properties.
