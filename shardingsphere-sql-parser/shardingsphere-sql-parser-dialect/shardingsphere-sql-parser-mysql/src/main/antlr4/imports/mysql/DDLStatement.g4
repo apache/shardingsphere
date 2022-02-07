@@ -825,3 +825,7 @@ signalStatement
 signalInformationItem
     : conditionInformationItemName EQ_ expr
     ;
+    
+prepare
+    : PREPARE identifier FROM string_
+    ;
