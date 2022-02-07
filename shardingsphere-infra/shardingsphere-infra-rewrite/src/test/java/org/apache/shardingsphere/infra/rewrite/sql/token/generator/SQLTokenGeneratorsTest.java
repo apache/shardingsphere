@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SQLTokenGeneratorsTest {
+public final class SQLTokenGeneratorsTest {
 
     @Test
     public void assertAddAllWithList() throws Exception {
@@ -59,16 +59,16 @@ public class SQLTokenGeneratorsTest {
     @Test
     public void assertAddAllWithSameClass() throws Exception {
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
-        SQLTokenGenerator firstItem = mock(SQLTokenGenerator.class);
-        SQLTokenGenerator secondItem = mock(SQLTokenGenerator.class);
+        SQLTokenGenerator expectedSqlTokenGenerator = mock(SQLTokenGenerator.class);
+        SQLTokenGenerator unexpectedSqlTokenGenerator = mock(SQLTokenGenerator.class);
         Collection<SQLTokenGenerator> collection = new ArrayList<>();
-        collection.add(firstItem);
-        collection.add(secondItem);
+        collection.add(expectedSqlTokenGenerator);
+        collection.add(unexpectedSqlTokenGenerator);
         sqlTokenGenerators.addAll(collection);
         Map<Class<?>, SQLTokenGenerator> actualSqlTokenGeneratorsMap = getSqlTokenGeneratorsMap(sqlTokenGenerators);
         assertThat(actualSqlTokenGeneratorsMap.size(), is(1));
-        SQLTokenGenerator actualSqlTokenGenerator = actualSqlTokenGeneratorsMap.get(firstItem.getClass());
-        assertThat(actualSqlTokenGenerator, is(firstItem));
+        SQLTokenGenerator actualSqlTokenGenerator = actualSqlTokenGeneratorsMap.get(expectedSqlTokenGenerator.getClass());
+        assertThat(actualSqlTokenGenerator, is(expectedSqlTokenGenerator));
     }
 
     @Test
@@ -88,10 +88,10 @@ public class SQLTokenGeneratorsTest {
         sqlTokenGenerators.addAll(Collections.singleton(optionalSQLTokenGenerator));
         SQLToken expectedToken = mock(SQLToken.class);
         when(optionalSQLTokenGenerator.generateSQLToken(any(SQLStatementContext.class))).thenReturn(expectedToken);
-        List<SQLToken> actualSqlTokens = sqlTokenGenerators.generateSQLTokens(mock(SQLStatementContext.class), new ArrayList<>(), mock(ShardingSphereSchema.class));
+        Collection<SQLToken> actualSqlTokens = sqlTokenGenerators.generateSQLTokens(mock(SQLStatementContext.class), Collections.emptyList(), mock(ShardingSphereSchema.class));
         assertNotNull(actualSqlTokens);
         assertThat(actualSqlTokens.size(), is(1));
-        assertThat(actualSqlTokens.get(0), is(expectedToken));
+        assertThat(actualSqlTokens.iterator().next(), is(expectedToken));
     }
 
     @Test
@@ -102,7 +102,7 @@ public class SQLTokenGeneratorsTest {
         sqlTokenGenerators.addAll(Collections.singleton(collectionSQLTokenGenerator));
         List<SQLToken> expectedCollection = Arrays.asList(mock(SQLToken.class), mock(SQLToken.class));
         doReturn(expectedCollection).when(collectionSQLTokenGenerator).generateSQLTokens(any());
-        List<SQLToken> actualSqlTokens = sqlTokenGenerators.generateSQLTokens(mock(SQLStatementContext.class), new ArrayList<>(), mock(ShardingSphereSchema.class));
+        List<SQLToken> actualSqlTokens = sqlTokenGenerators.generateSQLTokens(mock(SQLStatementContext.class), Collections.emptyList(), mock(ShardingSphereSchema.class));
         assertNotNull(actualSqlTokens);
         assertThat(actualSqlTokens.size(), is(2));
         assertThat(actualSqlTokens, is(expectedCollection));
