@@ -33,10 +33,10 @@ import static org.junit.Assert.assertTrue;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowRulesUsedResourceStatementAssert {
-
+    
     /**
      * Assert show rules used resource statement is correct with expected parser result.
-     *`
+     *
      * @param assertContext assert context
      * @param actual actual show rules used resource statement
      * @param expected expected show rules used resource statement test case

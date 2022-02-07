@@ -74,7 +74,7 @@ public final class RulesUsedResourceQueryResultSet implements DistSQLResultSet {
         if (hasRulesConfig(metaData) && metaData.getResource().getDataSources().keySet().contains(resourceName)) {
             getRulesConfig(metaData.getRuleMetaData().getConfigurations(), resourceName, result);
         }
-        this.data = result.iterator();
+        data = result.iterator();
     }
     
     private void getRulesConfig(final Collection<RuleConfiguration> ruleConfigurations, final String resourceName, final List<Collection<Object>> result) {
