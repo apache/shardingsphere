@@ -21,9 +21,10 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.codec.binary.StringUtils;
-import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.bouncycastle.crypto.digests.SM3Digest;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 
 import java.security.Security;
@@ -37,7 +38,7 @@ import java.util.Properties;
 public final class SM3EncryptAlgorithm implements EncryptAlgorithm<Object, String> {
     
     static {
-        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+        Security.addProvider(new BouncyCastleProvider());
     }
     
     private static final String SM3_SALT = "sm3-salt";
