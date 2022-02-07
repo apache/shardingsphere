@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.opengauss;
 
 import org.apache.shardingsphere.data.pipeline.opengauss.importer.OpenGaussImporter;
-import org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussPositionInitializer;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussWalDumper;
 import org.apache.shardingsphere.data.pipeline.postgresql.check.datasource.PostgreSQLDataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLInventoryDumper;
@@ -36,7 +35,6 @@ public final class OpenGaussScalingEntryTest {
     public void assertGetScalingEntryByDatabaseType() throws IllegalAccessException, InstantiationException {
         ScalingEntry scalingEntry = ScalingEntryLoader.getInstance("openGauss");
         assertTrue(scalingEntry instanceof OpenGaussScalingEntry);
-        assertThat(scalingEntry.getPositionInitializerClass(), equalTo(OpenGaussPositionInitializer.class));
         assertThat(scalingEntry.getEnvironmentCheckerClass(), equalTo(OpenGaussEnvironmentChecker.class));
         assertThat(scalingEntry.getEnvironmentCheckerClass().newInstance().getDataSourceCheckerClass(), equalTo(PostgreSQLDataSourceChecker.class));
         assertThat(scalingEntry.getImporterClass(), equalTo(OpenGaussImporter.class));

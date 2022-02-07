@@ -71,6 +71,6 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements Rul
     
     @Override
     public String getType() {
-        return DropShardingBroadcastTableRulesStatement.class.getCanonicalName();
+        return DropShardingBroadcastTableRulesStatement.class.getName();
     }
 }

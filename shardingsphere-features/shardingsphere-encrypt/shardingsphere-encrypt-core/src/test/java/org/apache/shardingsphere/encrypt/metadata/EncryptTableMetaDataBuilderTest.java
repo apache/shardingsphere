@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.metadata;
 
+import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptColumnDataType;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -48,6 +50,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -162,9 +165,9 @@ public final class EncryptTableMetaDataBuilderTest {
     
     private ResultSet createDataTypeResultSet() throws SQLException {
         ResultSet dataTypeResultSet = mock(ResultSet.class);
-        when(dataTypeResultSet.next()).thenReturn(true, false);
-        when(dataTypeResultSet.getString("TYPE_NAME")).thenReturn("INT");
-        when(dataTypeResultSet.getInt("DATA_TYPE")).thenReturn(1);
+        when(dataTypeResultSet.next()).thenReturn(true, true, false);
+        when(dataTypeResultSet.getString("TYPE_NAME")).thenReturn("INT", "VARCHAR");
+        when(dataTypeResultSet.getInt("DATA_TYPE")).thenReturn(1, 12);
         return dataTypeResultSet;
     }
     
@@ -313,13 +316,41 @@ public final class EncryptTableMetaDataBuilderTest {
     }
     
     @Test
-    public void assertDecorate() {
+    public void assertDecorate() throws SQLException {
         EncryptRule rule = createEncryptRule();
         EncryptTableMetaDataBuilder loader = getEncryptMetaDataBuilder(rule, Collections.singleton(rule));
-        TableMetaData actual = loader.decorate("t_encrypt", createTableMetaData(), rule);
+        Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
+        tableMetaDataMap.put("t_encrypt", createTableMetaData());
+        TableMetaData actual = loader.decorate(tableMetaDataMap, rule, mock(SchemaBuilderMaterials.class)).get("t_encrypt");
         assertThat(actual.getColumns().size(), is(2));
         assertTrue(actual.getColumns().containsKey("id"));
         assertTrue(actual.getColumns().containsKey("pwd"));
+    }
+    
+    @Test
+    public void assertDecorateWithConfigDataType() throws SQLException {
+        EncryptRule rule = createEncryptRuleWithDataTypeConfig();
+        EncryptTableMetaDataBuilder loader = getEncryptMetaDataBuilder(rule, Collections.singleton(rule));
+        Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
+        tableMetaDataMap.put("t_encrypt", createTableMetaData());
+        SchemaBuilderMaterials materials = mock(SchemaBuilderMaterials.class, RETURNS_DEEP_STUBS);
+        when(materials.getDataSourceMap().values().stream().findAny()).thenReturn(Optional.of(dataSource));
+        TableMetaData actual = loader.decorate(tableMetaDataMap, rule, materials).get("t_encrypt");
+        assertThat(actual.getColumns().size(), is(2));
+        assertTrue(actual.getColumns().containsKey("id"));
+        assertTrue(actual.getColumns().containsKey("pwd"));
+        assertThat(actual.getColumns().get("pwd").getDataType(), is(12));
+    }
+    
+    private EncryptRule createEncryptRuleWithDataTypeConfig() {
+        EncryptRule result = createEncryptRule();
+        EncryptTable encryptTable = result.findEncryptTable(TABLE_NAME).get();
+        EncryptColumn encryptColumn = mock(EncryptColumn.class);
+        EncryptColumnDataType encryptColumnDataType = mock(EncryptColumnDataType.class);
+        when(encryptColumnDataType.getDataType()).thenReturn(12);
+        when(encryptColumn.getLogicDataType()).thenReturn(encryptColumnDataType);
+        when(encryptTable.findEncryptColumn("pwd")).thenReturn(Optional.of(encryptColumn));
+        return result;
     }
     
     private EncryptRule createEncryptRule() {

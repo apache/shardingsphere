@@ -16,7 +16,7 @@ SphereEx 中间件研发工程师，Apache ShardingSphere contributor。目前�
 
 **Sharding**是 Apache ShardingSphere 的核心特性，也是 ShardingSphere 最被人们熟知的一项能力。在过去，用户若需要进行分库分表，一种典型的实施流程（不含数据迁移）如下：
 
-![](../../static/img/Blog_22_img_4_Rewarded_User_Issue_Snapshot.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_22_img_4_Rewarded_User_Issue_Snapshot.png)
 
 					图1 Sharding 实施流程示意图
 
@@ -24,7 +24,7 @@ SphereEx 中间件研发工程师，Apache ShardingSphere contributor。目前�
 
 以上述分库分表场景为例，实际的数据表分布情况可能如下：
 
-![](../../static/img/Blog_22_img_2_8_Databases_4_Tables_Distribution.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_22_img_2_8_Databases_4_Tables_Distribution.png)
 
 					图2 8 库 * 4 表分布示意图
 
@@ -66,7 +66,7 @@ shardingAlgorithms:
 
 如这位用户提出的 issue：
 
-![](../../static/img/Blog_22_img_3_Question_Comment.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_22_img_3_Question_Comment.png)
 
 ## AutoTable 横空出世
 

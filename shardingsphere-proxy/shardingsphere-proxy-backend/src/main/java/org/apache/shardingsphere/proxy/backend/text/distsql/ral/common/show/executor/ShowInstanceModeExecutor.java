@@ -17,14 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor;
 
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.persist.PersistRepository;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
@@ -60,28 +56,15 @@ public final class ShowInstanceModeExecutor extends AbstractShowExecutor {
     
     @Override
     protected MergedResult createMergedResult() {
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        MetaDataPersistService persistService = contextManager.getMetaDataContexts().getMetaDataPersistService().orElse(null);
-        ComputeNodeInstance instance = contextManager.getInstanceContext().getInstance();
-        if (null == persistService || null == persistService.getRepository()) {
-            return new MultipleLocalDataMergedResult(Collections.emptyList());
-        }
-        return new MultipleLocalDataMergedResult(buildRows(instance, persistService.getRepository()));
+        return new MultipleLocalDataMergedResult(buildRows());
     }
     
-    private Collection<List<Object>> buildRows(final ComputeNodeInstance instance, final PersistRepository persistService) {
+    private Collection<List<Object>> buildRows() {
         // TODO Add display of overwrite after metadata save overwrite.
-        return Collections.singleton(Arrays.asList(instance.getInstanceDefinition().getInstanceId().getId(), getTypeName(persistService), persistService.getType(),
-                PropertiesConverter.convert(persistService.getProps())));
-    }
-    
-    private String getTypeName(final PersistRepository persistRepository) {
-        if (persistRepository instanceof ClusterPersistRepository) {
-            return "Cluster";
-        } else if (persistRepository instanceof StandalonePersistRepository) {
-            return "Standalone";
-        } else {
-            return "";
-        }
+        InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
+        PersistRepositoryConfiguration repositoryConfiguration = instanceContext.getModeConfiguration().getRepository();
+        return Collections.singleton(Arrays.asList(instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId(), instanceContext.getModeConfiguration().getType(),
+                null == repositoryConfiguration ? "" : repositoryConfiguration.getType(),
+                null == repositoryConfiguration ? "" : PropertiesConverter.convert(repositoryConfiguration.getProps())));
     }
 }

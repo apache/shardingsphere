@@ -57,7 +57,7 @@ public final class DatabaseDiscoveryRuleQueryResultSetTest {
         Collection<String> columnNames = resultSet.getColumnNames();
         ArrayList<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(columnNames.size(), is(5));
-        columnNames.containsAll(Arrays.asList("group_name", "data_source_names", "primary_data_source_name", "discover_type", "heartbeat"));
+        assertThat(columnNames.containsAll(Arrays.asList("group_name", "data_source_names", "primary_data_source_name", "discovery_type", "discovery_heartbeat")), is(true));
         assertThat(actual.size(), is(5));
         assertThat(actual.get(0), is("ms_group"));
         assertThat(actual.get(1), is("ds_0,ds_1"));

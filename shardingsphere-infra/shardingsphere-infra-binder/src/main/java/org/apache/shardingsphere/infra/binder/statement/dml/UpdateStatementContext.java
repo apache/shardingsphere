@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.binder.statement.dml;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.SchemaAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
@@ -29,22 +28,22 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 
 import java.util.Collection;
-import java.util.Optional;
+import java.util.LinkedList;
 
 /**
  * Update SQL statement context.
  */
 @Getter
-public final class UpdateStatementContext extends CommonSQLStatementContext<UpdateStatement> implements TableAvailable, WhereAvailable, SchemaAvailable {
+public final class UpdateStatementContext extends CommonSQLStatementContext<UpdateStatement> implements TableAvailable, WhereAvailable {
     
     private final TablesContext tablesContext;
     
-    private final String schemaName;
+    private final Collection<WhereSegment> whereSegments = new LinkedList<>();
     
-    public UpdateStatementContext(final UpdateStatement sqlStatement, final String schemaName) {
+    public UpdateStatementContext(final UpdateStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
-        this.schemaName = schemaName;
+        getSqlStatement().getWhere().ifPresent(whereSegments::add);
     }
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
@@ -59,7 +58,7 @@ public final class UpdateStatementContext extends CommonSQLStatementContext<Upda
     }
     
     @Override
-    public Optional<WhereSegment> getWhere() {
-        return getSqlStatement().getWhere();
+    public Collection<WhereSegment> getWhereSegments() {
+        return whereSegments;
     }
 }

@@ -22,18 +22,20 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChanne
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractIncrementalDumper;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 
 public final class FixtureIncrementalDumper extends AbstractIncrementalDumper<FinishedPosition> {
     
-    public FixtureIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<FinishedPosition> position, final PipelineChannel channel) {
-        super(dumperConfig, position, channel);
+    public FixtureIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<FinishedPosition> position,
+                                    final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
+        super(dumperConfig, position, channel, metaDataLoader);
     }
     
     @Override
-    public void start() {
+    protected void doStart() {
     }
     
     @Override
-    public void stop() {
+    protected void doStop() {
     }
 }

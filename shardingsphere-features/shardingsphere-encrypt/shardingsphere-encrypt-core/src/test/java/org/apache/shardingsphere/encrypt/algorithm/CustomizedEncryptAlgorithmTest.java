@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.algorithm;
 
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
@@ -28,6 +29,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class CustomizedEncryptAlgorithmTest {
     
@@ -44,11 +46,13 @@ public final class CustomizedEncryptAlgorithmTest {
     
     @Test
     public void assertEncrypt() {
-        assertThat(encryptAlgorithm.encrypt(1000), is(1765228022));
+        Integer actual = encryptAlgorithm.encrypt(1000, mock(EncryptContext.class));
+        assertThat(actual, is(1765228022));
     }
     
     @Test
     public void assertDecrypt() {
-        assertThat(encryptAlgorithm.decrypt(1765228022), is(1000));
+        Integer actual = encryptAlgorithm.decrypt(1765228022, mock(EncryptContext.class));
+        assertThat(actual, is(1000));
     }
 }

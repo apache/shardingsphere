@@ -94,6 +94,7 @@ public final class ModeScheduleContext {
         // TODO do not hard-code cluster type and property key, refactor later
         if ("ZooKeeper".equalsIgnoreCase(clusterType)) {
             ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(props.getProperty("server-lists"), props.getProperty("namespace"));
+            // TODO add timeout settings; CoordinatorRegistryCenterInitializer could not be used for now since dependency;
             CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(zkConfig);
             result.init();
             return result;

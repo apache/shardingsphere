@@ -29,32 +29,32 @@ import java.util.Properties;
  * Modular sharding algorithm.
  */
 public final class CosIdModShardingAlgorithm<T extends Number & Comparable<T>> implements StandardShardingAlgorithm<T> {
-
+    
     public static final String TYPE = CosIdAlgorithm.TYPE_PREFIX + "MOD";
-
+    
     public static final String MODULO_KEY = "mod";
-
+    
     @Getter
     @Setter
     private Properties props = new Properties();
-
+    
     private volatile ModCycle<T> modCycle;
-
+    
     @Override
     public String getType() {
         return TYPE;
     }
-
+    
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<T> shardingValue) {
         return modCycle.sharding(shardingValue.getValue());
     }
-
+    
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<T> shardingValue) {
         return modCycle.sharding(shardingValue.getValueRange());
     }
-
+    
     @Override
     public void init() {
         String divisorStr = PropertiesUtil.getRequiredValue(getProps(), MODULO_KEY);

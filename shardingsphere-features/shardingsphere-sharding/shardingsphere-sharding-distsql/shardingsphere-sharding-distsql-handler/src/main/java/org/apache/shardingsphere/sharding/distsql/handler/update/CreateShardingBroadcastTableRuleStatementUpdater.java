@@ -62,6 +62,6 @@ public final class CreateShardingBroadcastTableRuleStatementUpdater implements R
     
     @Override
     public String getType() {
-        return CreateShardingBroadcastTableRulesStatement.class.getCanonicalName();
+        return CreateShardingBroadcastTableRulesStatement.class.getName();
     }
 }

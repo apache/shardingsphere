@@ -82,6 +82,6 @@ public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSe
     
     @Override
     public String getType() {
-        return ShowScalingStatusStatement.class.getCanonicalName();
+        return ShowScalingStatusStatement.class.getName();
     }
 }

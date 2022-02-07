@@ -27,13 +27,12 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorEx
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback.RawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
+import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.List;
-import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
+import java.util.Objects;
 
 /**
  * Raw executor.
@@ -56,16 +55,14 @@ public final class RawExecutor {
      * @return execute results
      * @throws SQLException SQL exception
      */
-    public Collection<ExecuteResult> execute(final ExecutionGroupContext<RawSQLExecutionUnit> executionGroupContext,
-                                             final LogicSQL logicSQL,
-                                             final RawSQLExecutorCallback callback) throws SQLException {
+    public List<ExecuteResult> execute(final ExecutionGroupContext<RawSQLExecutionUnit> executionGroupContext, final LogicSQL logicSQL, final RawSQLExecutorCallback callback) throws SQLException {
         try {
             ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, props);
             // TODO Load query header for first query
             List<ExecuteResult> results = execute(executionGroupContext, (RawSQLExecutorCallback) null, callback);
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
             return CollectionUtils.isEmpty(results) || Objects.isNull(results.get(0)) ? Collections
-                .singleton(new UpdateResult(0, 0L)) : results;
+                .singletonList(new UpdateResult(0, 0L)) : results;
         } finally {
             ExecuteProcessEngine.clean();
         }

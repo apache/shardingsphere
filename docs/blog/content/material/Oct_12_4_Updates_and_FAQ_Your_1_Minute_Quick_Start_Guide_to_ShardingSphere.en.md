@@ -158,7 +158,7 @@ Related details are as follows:
 
 According to JetBrains’s “A Picture of Java in 2020”, Java8 LTS is the most popular version among Java developers.
 
-![](../../static/img/Blog_20_img_1_Popularity_of_Java_versions_in_2020_en.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_20_img_1_Popularity_of_Java_versions_in_2020_en.png)
 
 Following this update, shardingsphere-example uses Java 8 and newer versions. If you use Java 7 or earlier versions, please update your JDK version first.
 
@@ -320,11 +320,11 @@ If you have any questions or have found any issues, we are looking forward to yo
 
 **Authors**
 
-![](../../static/img/Blog_20_img_2_Liang_Longtao_Photo.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_20_img_2_Jiang_Longtao_Photo.png)
 
 I’m Jiang Longtao, SphereEx middleware engineer & Apache ShardingSphere contributor. At present, I focus on ShardingSphere database middleware and its open source community.
 
-![](../../static/img/Blog_20_img_3_Hou_Yang_Photo.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_20_img_3_Hou_Yang_Photo.png)
 
 I’m Hou Yang, and I am a middleware enigneer at SphereEx. I love open source and I want to contribute to building a better community with everyone.
 

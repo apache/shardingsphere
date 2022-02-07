@@ -94,6 +94,6 @@ public final class CreateShadowAlgorithmStatementUpdater implements RuleDefiniti
     
     @Override
     public String getType() {
-        return CreateShadowAlgorithmStatement.class.getCanonicalName();
+        return CreateShadowAlgorithmStatement.class.getName();
     }
 }

@@ -152,7 +152,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         }
         log.info("Start scaling job by {}", jobConfig.getHandleConfig());
         PipelineAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%s",
-                DataPipelineConstants.DATA_PIPELINE_ROOT, jobConfig.getHandleConfig().getJobId()), RuleAlteredJob.class.getCanonicalName());
+                DataPipelineConstants.DATA_PIPELINE_ROOT, jobConfig.getHandleConfig().getJobId()), RuleAlteredJob.class.getName());
         PipelineAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%s/config",
                 DataPipelineConstants.DATA_PIPELINE_ROOT, jobConfig.getHandleConfig().getJobId()), createJobConfig(jobConfig));
         return Optional.of(jobConfig.getHandleConfig().getJobId());
@@ -322,7 +322,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         log.info("Scaling job {} reset target table", jobId);
         PipelineAPIFactory.getGovernanceRepositoryAPI().deleteJobProgress(jobId);
         try {
-            new ScalingEnvironmentManager().resetTargetTable(new RuleAlteredJobContext(getJobConfig(jobId)));
+            new ScalingEnvironmentManager().cleanupTargetTables(getJobConfig(jobId));
         } catch (final SQLException ex) {
             throw new PipelineJobExecutionException("Reset target table failed for job " + jobId);
         }
@@ -338,10 +338,10 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     }
     
     private JobConfigurationPOJO getElasticJobConfigPOJO(final String jobId) {
-        try {
-            return PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
-        } catch (final NullPointerException ex) {
+        JobConfigurationPOJO result = PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
+        if (null == result) {
             throw new PipelineJobNotFoundException(String.format("Can not find scaling job %s", jobId), jobId);
         }
+        return result;
     }
 }

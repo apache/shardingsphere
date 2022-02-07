@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.datasource;
 
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
@@ -31,7 +30,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * Pipeline data source manager.
  */
 @NoArgsConstructor
-@Getter
 @Slf4j
 public final class PipelineDataSourceManager implements AutoCloseable {
     
@@ -39,48 +37,23 @@ public final class PipelineDataSourceManager implements AutoCloseable {
     
     private final Map<PipelineDataSourceConfiguration, PipelineDataSourceWrapper> cachedDataSources = new ConcurrentHashMap<>();
     
-    private final Map<PipelineDataSourceConfiguration, PipelineDataSourceWrapper> sourceDataSources = new ConcurrentHashMap<>();
-    
-    private final Map<PipelineDataSourceConfiguration, PipelineDataSourceWrapper> targetDataSources = new ConcurrentHashMap<>();
-    
     /**
-     * Create source data source.
-     *
-     * @param pipelineDataSourceConfig pipeline data source configuration
-     */
-    public void createSourceDataSource(final PipelineDataSourceConfiguration pipelineDataSourceConfig) {
-        PipelineDataSourceWrapper dataSource = dataSourceFactory.newInstance(pipelineDataSourceConfig);
-        cachedDataSources.put(pipelineDataSourceConfig, dataSource);
-        sourceDataSources.put(pipelineDataSourceConfig, dataSource);
-    }
-    
-    /**
-     * Create target data source.
-     *
-     * @param pipelineDataSourceConfig pipeline data source configuration
-     */
-    public void createTargetDataSource(final PipelineDataSourceConfiguration pipelineDataSourceConfig) {
-        PipelineDataSourceWrapper dataSource = dataSourceFactory.newInstance(pipelineDataSourceConfig);
-        cachedDataSources.put(pipelineDataSourceConfig, dataSource);
-        targetDataSources.put(pipelineDataSourceConfig, dataSource);
-    }
-    
-    /**
-     * Get data source.
+     * Get cached data source.
      *
      * @param dataSourceConfig data source configuration
      * @return data source
      */
     public PipelineDataSourceWrapper getDataSource(final PipelineDataSourceConfiguration dataSourceConfig) {
-        // TODO re-init if existing dataSource was closed
-        if (cachedDataSources.containsKey(dataSourceConfig)) {
-            return cachedDataSources.get(dataSourceConfig);
+        PipelineDataSourceWrapper result = cachedDataSources.get(dataSourceConfig);
+        if (null != result) {
+            return result;
         }
         synchronized (cachedDataSources) {
-            if (cachedDataSources.containsKey(dataSourceConfig)) {
-                return cachedDataSources.get(dataSourceConfig);
+            result = cachedDataSources.get(dataSourceConfig);
+            if (null != result) {
+                return result;
             }
-            PipelineDataSourceWrapper result = dataSourceFactory.newInstance(dataSourceConfig);
+            result = dataSourceFactory.newInstance(dataSourceConfig);
             cachedDataSources.put(dataSourceConfig, result);
             return result;
         }
@@ -99,6 +72,5 @@ public final class PipelineDataSourceManager implements AutoCloseable {
             }
         }
         cachedDataSources.clear();
-        sourceDataSources.clear();
     }
 }

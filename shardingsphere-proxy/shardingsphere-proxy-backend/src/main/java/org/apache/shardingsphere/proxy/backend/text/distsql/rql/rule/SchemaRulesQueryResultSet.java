@@ -154,7 +154,7 @@ public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
                          final RuleConfiguration ruleConfiguration, final Function<RuleConfiguration, Integer> apply) {
         if (null == ruleConfiguration) {
             dataMap.putIfAbsent(dataKey, buildRow(feature, type, DEFAULT_COUNT));
-            return;   
+            return;
         }
         Class<? extends RuleConfiguration> clz = FEATURE_MAP.get(feature);
         if (!(ruleConfiguration.getClass().getCanonicalName().equals(clz.getCanonicalName()))) {
@@ -185,6 +185,6 @@ public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
     
     @Override
     public String getType() {
-        return CountSchemaRulesStatement.class.getCanonicalName();
+        return CountSchemaRulesStatement.class.getName();
     }
 }

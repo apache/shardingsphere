@@ -131,6 +131,6 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
     
     @Override
     public String getType() {
-        return CreateDatabaseDiscoveryRuleStatement.class.getCanonicalName();
+        return CreateDatabaseDiscoveryRuleStatement.class.getName();
     }
 }
