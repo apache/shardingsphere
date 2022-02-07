@@ -44,7 +44,6 @@ jobs:
         uses: apache/skywalking-eyes@main
   
   windows:
-    needs: check-license
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
@@ -76,7 +75,6 @@ jobs:
   
   unix:
     name: CI Tests - JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
-    needs: check-license
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
