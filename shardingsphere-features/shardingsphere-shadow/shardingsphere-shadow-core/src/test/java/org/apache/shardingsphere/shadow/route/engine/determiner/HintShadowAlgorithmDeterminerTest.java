@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.engine.determiner.algorithm;
+package org.apache.shardingsphere.shadow.route.engine.determiner;
 
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
+import org.apache.shardingsphere.shadow.algorithm.shadow.hint.SimpleHintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
-import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
-import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
+import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
-import org.apache.shardingsphere.shadow.route.engine.determiner.ShadowAlgorithmDeterminer;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -41,33 +38,21 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ColumnShadowAlgorithmDeterminerTest {
-    
-    private ShadowAlgorithmDeterminer shadowAlgorithmDeterminer;
-    
-    @Before
-    public void init() {
-        shadowAlgorithmDeterminer = new ColumnShadowAlgorithmDeterminer(createColumnShadowAlgorithms());
-    }
-    
-    private ColumnShadowAlgorithm<Comparable<?>> createColumnShadowAlgorithms() {
-        ColumnShadowAlgorithm<Comparable<?>> result = new ColumnRegexMatchShadowAlgorithm();
-        result.setProps(createProperties());
-        result.init();
-        return result;
-    }
-    
-    private Properties createProperties() {
-        Properties properties = new Properties();
-        properties.setProperty("column", "user_id");
-        properties.setProperty("operation", "insert");
-        properties.setProperty("regex", "[1]");
-        return properties;
-    }
+public final class HintShadowAlgorithmDeterminerTest {
     
     @Test
     public void assertIsShadow() {
-        assertThat(shadowAlgorithmDeterminer.isShadow(createShadowDetermineCondition(), new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration())), is(true));
+        assertThat(HintShadowAlgorithmDeterminer.isShadow(createHintShadowAlgorithm(), createShadowDetermineCondition(), new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration())), is(true));
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private HintShadowAlgorithm<Comparable<?>> createHintShadowAlgorithm() {
+        HintShadowAlgorithm result = new SimpleHintShadowAlgorithm();
+        Properties properties = new Properties();
+        properties.setProperty("foo", "bar");
+        result.setProps(properties);
+        result.init();
+        return result;
     }
     
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
@@ -77,22 +62,22 @@ public final class ColumnShadowAlgorithmDeterminerTest {
         result.setShadowAlgorithms(createShadowAlgorithms());
         return result;
     }
-    
+
     private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
         Map<String, ShadowAlgorithm> result = new LinkedHashMap<>();
-        result.put("user_id-insert-regex-algorithm", createColumnShadowAlgorithms());
+        result.put("simple-hint-algorithm", createHintShadowAlgorithm());
         return result;
     }
-    
+
     private Map<String, ShadowTableConfiguration> createTables() {
         Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
         result.put("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source-0"), createShadowAlgorithmNames()));
         return result;
     }
-    
+
     private Collection<String> createShadowAlgorithmNames() {
         Collection<String> result = new LinkedList<>();
-        result.add("user_id-insert-regex-algorithm");
+        result.add("simple-hint-algorithm");
         return result;
     }
     
@@ -105,13 +90,8 @@ public final class ColumnShadowAlgorithmDeterminerTest {
     
     private ShadowDetermineCondition createShadowDetermineCondition() {
         ShadowDetermineCondition result = new ShadowDetermineCondition("t_order", ShadowOperationType.INSERT);
-        result.initShadowColumnCondition(createColumnValuesMapping());
-        return result;
-    }
-    
-    private ShadowColumnCondition createColumnValuesMapping() {
-        Collection<Comparable<?>> values = new LinkedList<>();
-        values.add(1);
-        return new ShadowColumnCondition("t_order", "user_id", values);
+        Collection<String> sqlComments = new LinkedList<>();
+        sqlComments.add("/*foo:bar*/");
+        return result.initSQLComments(sqlComments);
     }
 }
