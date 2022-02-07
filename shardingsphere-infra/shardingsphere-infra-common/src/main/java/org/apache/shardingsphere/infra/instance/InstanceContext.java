@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.instance;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
@@ -38,13 +39,13 @@ public final class InstanceContext {
     
     private final WorkerIdGenerator workerIdGenerator;
     
-    private final String modeType;
+    private final ModeConfiguration modeConfiguration;
     
-    public InstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator, final String modeType) {
+    public InstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator, final ModeConfiguration modeConfiguration) {
         this.instance = instance;
         switchInstanceState(instance.getStatus());
         this.workerIdGenerator = workerIdGenerator;
-        this.modeType = modeType;
+        this.modeConfiguration = modeConfiguration;
     }
     
     /**

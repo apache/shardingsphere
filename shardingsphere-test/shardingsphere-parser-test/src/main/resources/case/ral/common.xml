@@ -54,4 +54,34 @@
     <export-schema-config sql-case-id="export-schema-config">
         <schema name="schema_name" start-index="26" stop-index="36" />
     </export-schema-config>
+    <create-traffic-rule sql-case-id="create-traffic-rule" >
+        <rule name="sql_match_traffic">
+            <label>OLTP</label>
+            <traffic-algorithm algorithm-name="SQL_MATCH">
+                <properties>
+                    <property key="sql" value="SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;"/>
+                </properties>
+            </traffic-algorithm>
+            <load-balancer algorithm-name="RANDOM">
+                <properties>
+                    <property key="key" value="value"/>
+                </properties>
+            </load-balancer>
+        </rule>
+    </create-traffic-rule>
+    <alter-traffic-rule sql-case-id="alter-traffic-rule" >
+        <rule name="sql_match_traffic">
+            <label>OLTP</label>
+            <traffic-algorithm algorithm-name="SQL_MATCH">
+                <properties>
+                    <property key="sql" value="SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;"/>
+                </properties>
+            </traffic-algorithm>
+            <load-balancer algorithm-name="RANDOM">
+                <properties>
+                    <property key="key" value="value"/>
+                </properties>
+            </load-balancer>
+        </rule>
+    </alter-traffic-rule>
 </sql-parser-test-cases>

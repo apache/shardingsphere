@@ -157,6 +157,17 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     }
     
     /**
+     * Find encrypt column.
+     * 
+     * @param logicTable logic table
+     * @param columnName column name
+     * @return encrypt column
+     */
+    public Optional<EncryptColumn> findEncryptColumn(final String logicTable, final String columnName) {
+        return findEncryptTable(logicTable).flatMap(encryptTable -> encryptTable.findEncryptColumn(columnName));
+    }
+    
+    /**
      * Find encryptor.
      *
      * @param logicTable logic table name
@@ -257,7 +268,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         Optional<String> originColumnName = findOriginColumnName(logicTable, logicColumn);
         return originColumnName.isPresent() && tables.containsKey(logicTable) ? tables.get(logicTable).findPlainColumn(originColumnName.get()) : Optional.empty();
     }
-
+    
     /**
      * Judge whether table is support QueryWithCipherColumn or not.
      *
@@ -298,5 +309,17 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
                 ((SchemaMetaDataAware) each).setSchema(schema);
             }
         }
+    }
+    
+    /**
+     * Check whether contains config data type or not.
+     * 
+     * @param tableName table name
+     * @param columnName column name
+     * @return boolean whether contains config data type or not
+     */
+    public boolean containsConfigDataType(final String tableName, final String columnName) {
+        return findEncryptTable(tableName).flatMap(encryptTable -> encryptTable.findEncryptColumn(columnName)
+                .filter(encryptColumn -> null != encryptColumn.getLogicDataType())).isPresent();
     }
 }

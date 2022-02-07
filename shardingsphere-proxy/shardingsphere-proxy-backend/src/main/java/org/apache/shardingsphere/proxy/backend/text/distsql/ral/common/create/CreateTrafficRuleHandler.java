@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.create;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateTrafficRuleStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
@@ -32,6 +30,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.convert.TrafficRuleConverter;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
@@ -58,7 +57,7 @@ public final class CreateTrafficRuleHandler implements TextProtocolBackendHandle
         Optional<TrafficRuleConfiguration> trafficRuleConfiguration = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData()
                 .findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
         check(sqlStatement, trafficRuleConfiguration);
-        TrafficRuleConfiguration toBeCreatedConfiguration = createTrafficRuleConfiguration(sqlStatement);
+        TrafficRuleConfiguration toBeCreatedConfiguration = TrafficRuleConverter.convert(sqlStatement.getSegments());
         updateToRepository(toBeCreatedConfiguration, trafficRuleConfiguration);
         return new UpdateResponseHeader(sqlStatement);
     }
@@ -86,31 +85,6 @@ public final class CreateTrafficRuleHandler implements TextProtocolBackendHandle
         return result;
     }
     
-    private TrafficRuleConfiguration createTrafficRuleConfiguration(final CreateTrafficRuleStatement sqlStatement) {
-        TrafficRuleConfiguration result = new TrafficRuleConfiguration();
-        sqlStatement.getSegments().forEach(each -> setConfigurationData(result, each));
-        return result;
-    }
-    
-    private void setConfigurationData(final TrafficRuleConfiguration result, final TrafficRuleSegment each) {
-        ShardingSphereAlgorithmConfiguration trafficAlgorithm = createAlgorithmConfiguration(each.getAlgorithm());
-        ShardingSphereAlgorithmConfiguration loadBalancer = createAlgorithmConfiguration(each.getLoadBalancer());
-        String trafficAlgorithmName = createAlgorithmName(each.getName(), trafficAlgorithm);
-        String loadBalancerName = createAlgorithmName(each.getName(), loadBalancer);
-        TrafficStrategyConfiguration trafficStrategy = createTrafficStrategy(each, trafficAlgorithmName, loadBalancerName);
-        result.getTrafficStrategies().add(trafficStrategy);
-        result.getTrafficAlgorithms().put(trafficAlgorithmName, trafficAlgorithm);
-        result.getLoadBalancers().put(loadBalancerName, loadBalancer);
-    }
-    
-    private ShardingSphereAlgorithmConfiguration createAlgorithmConfiguration(final AlgorithmSegment segment) {
-        return new ShardingSphereAlgorithmConfiguration(segment.getName(), segment.getProps());
-    }
-    
-    private TrafficStrategyConfiguration createTrafficStrategy(final TrafficRuleSegment trafficRuleSegment, final String trafficAlgorithmName, final String loadBalancerName) {
-        return new TrafficStrategyConfiguration(trafficRuleSegment.getName(), trafficRuleSegment.getLabels(), trafficAlgorithmName, loadBalancerName);
-    }
-    
     private void updateToRepository(final TrafficRuleConfiguration toBeCreatedRuleConfiguration, final Optional<TrafficRuleConfiguration> currentRuleConfiguration) {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         Collection<RuleConfiguration> globalRuleConfigurations = metaDataContexts.getGlobalRuleMetaData().getConfigurations();
@@ -123,9 +97,5 @@ public final class CreateTrafficRuleHandler implements TextProtocolBackendHandle
         }
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
         metaDataPersistService.ifPresent(op -> op.getGlobalRuleService().persist(globalRuleConfigurations, true));
-    }
-    
-    private String createAlgorithmName(final String ruleName, final ShardingSphereAlgorithmConfiguration algorithm) {
-        return String.format("%s_%s", ruleName, algorithm.getType()).toLowerCase();
     }
 }

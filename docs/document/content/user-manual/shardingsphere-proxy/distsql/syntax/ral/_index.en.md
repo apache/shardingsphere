@@ -43,7 +43,6 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 | show instance list                                            | Query proxy instance information   | show instance list                         |
 | show readwrite_splitting read resources [from schema]         | Query all read resources status    | show readwrite_splitting read resources    |
 
-
 ## Global Rule
 
 | Statement                                                                                                                                                                                                           | Function                                                                                                                                                                                                             | Example                                                                                                                                                                                                             |
@@ -53,7 +52,6 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 | SHOW SQL_PARSER RULE                                                                                                                                                                                                | Query SQL parser rule configuration                                                                                                                                                                                  | SHOW SQL_PARSER RULE                                                                                                                                                                                                |
 | ALTER TRANSACTION RULE(DEFAULT=xx,TYPE(NAME=xxx, PROPERTIES("key1"="value1","key2"="value2"...)))                                                                                                                   | Alter transaction rule configuration，`DEFAULT`: default transaction type，support LOCAL、XA、BASE; `NAME`: name of transaction manager, support Atomikos, Narayana and Bitronix                                      | ALTER TRANSACTION RULE(DEFAULT=XA,TYPE(NAME=Narayana, PROPERTIES("databaseName"="jbossts","host"="127.0.0.1")))                                                                                                     |
 | ALTER SQL_PARSER RULE SQL_COMMENT_PARSE_ENABLE=xx, PARSE_TREE_CACHE(INITIAL_CAPACITY=xx, MAXIMUM_SIZE=xx, CONCURRENCY_LEVEL=xx), SQL_STATEMENT_CACHE(INITIAL_CAPACITY=xxx, MAXIMUM_SIZE=xxx, CONCURRENCY_LEVEL=xxx) | Alter SQL parser rule configuration, `SQL_COMMENT_PARSE_ENABLE`: whether to parse the SQL comment, `PARSE_TREE_CACHE`: local cache configuration of syntax tree, `SQL_STATEMENT_CACHE`: local cache of SQL statement | ALTER SQL_PARSER RULE SQL_COMMENT_PARSE_ENABLE=false, PARSE_TREE_CACHE(INITIAL_CAPACITY=10, MAXIMUM_SIZE=11, CONCURRENCY_LEVEL=1), SQL_STATEMENT_CACHE(INITIAL_CAPACITY=11, MAXIMUM_SIZE=11, CONCURRENCY_LEVEL=100) |
-
 
 ## Other
 
@@ -69,8 +67,9 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 | preview SQL                                                                 | Preview the actual SQLs                                                            | preview select * from t_order             |
 | parse SQL                                                                   | Parse SQL and output abstract syntax tree                                          | parse select * from t_order               |
 | refresh table metadata                                                      | Refresh the metadata of all tables                                                 | refresh table metadata                    |
-| refresh table metadata [tableName / tableName from resource resourceName]   | Refresh the metadata of a table                                                    | refresh table metadata t_order from resource ds_1                   |
-| show table metadata tableName [, tableName] ...                             | Query table metadata                                                               | show table metadata t_order               |
+| refresh table metadata [tableName / tableName from resource resourceName]   | Refresh the metadata of a table                                                    | refresh table metadata t_order from resource ds_1  |
+| show table metadata tableName [, tableName] ...                             | Query table metadata                                                               | show table metadata t_order                        |
+| export schema config [from schema_name] [, file="file_path"]                | Query / export resources and rule configuration in schema                          | export schema config from readwrite_splitting_db   |
 
 ## Notice
 

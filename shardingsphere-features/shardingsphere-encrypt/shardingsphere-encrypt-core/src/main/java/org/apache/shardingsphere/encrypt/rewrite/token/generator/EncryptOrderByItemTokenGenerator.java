@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaM
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,7 +38,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Order by item token generator for encrypt.
@@ -54,23 +52,23 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
     @SuppressWarnings("rawtypes")
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext && getColumnSegments(sqlStatementContext).size() > 0;
+        return sqlStatementContext instanceof SelectStatementContext && containsOrderByItem(sqlStatementContext);
     }
     
     @SuppressWarnings("rawtypes")
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
-        for (OrderByItemSegment each : getColumnSegments(sqlStatementContext)) {
-            if (each instanceof ColumnOrderByItemSegment) {
-                ColumnSegment columnSegment = ((ColumnOrderByItemSegment) each).getColumn();
+        for (OrderByItem each : getOrderByItems(sqlStatementContext)) {
+            if (each.getSegment() instanceof ColumnOrderByItemSegment) {
+                ColumnSegment columnSegment = ((ColumnOrderByItemSegment) each.getSegment()).getColumn();
                 Map<String, String> columnTableNames = sqlStatementContext.getTablesContext().findTableName(Collections.singletonList(buildColumnProjection(columnSegment)), schema);
                 result.addAll(generateSQLTokensWithColumnSegments(Collections.singletonList(columnSegment), columnTableNames));
             }
         }
         return result;
     }
-
+    
     private Collection<SubstitutableColumnNameToken> generateSQLTokensWithColumnSegments(final Collection<ColumnSegment> columnSegments, final Map<String, String> columnTableNames) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (ColumnSegment column : columnSegments) {
@@ -98,18 +96,34 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
         return result;
     }
     
-    private Collection<OrderByItemSegment> getColumnSegments(final SQLStatementContext<?> sqlStatementContext) {
-        Collection<OrderByItemSegment> result = new LinkedList<>();
-        if (sqlStatementContext instanceof SelectStatementContext) {
-            Collection<OrderByItem> orderByItemList = new LinkedList<>();
-            orderByItemList.addAll(((SelectStatementContext) sqlStatementContext).getOrderByContext().getItems());
-            orderByItemList.addAll(((SelectStatementContext) sqlStatementContext).getGroupByContext().getItems());
-            result.addAll(orderByItemList.stream().map(OrderByItem::getSegment).collect(Collectors.toList()));
-            for (SelectStatementContext each : ((SelectStatementContext) sqlStatementContext).getSubqueryContexts().values()) {
-                result.addAll(getColumnSegments(each));
-            }
+    private Collection<OrderByItem> getOrderByItems(final SQLStatementContext<?> sqlStatementContext) {
+        if (!(sqlStatementContext instanceof SelectStatementContext)) {
+            return Collections.emptyList();
+        }
+        Collection<OrderByItem> result = new LinkedList<>();
+        SelectStatementContext statementContext = (SelectStatementContext) sqlStatementContext;
+        result.addAll(statementContext.getOrderByContext().getItems());
+        result.addAll(statementContext.getGroupByContext().getItems());
+        for (SelectStatementContext each : statementContext.getSubqueryContexts().values()) {
+            result.addAll(getOrderByItems(each));
         }
         return result;
+    }
+    
+    private boolean containsOrderByItem(final SQLStatementContext<?> sqlStatementContext) {
+        if (!(sqlStatementContext instanceof SelectStatementContext)) {
+            return false;
+        }
+        SelectStatementContext statementContext = (SelectStatementContext) sqlStatementContext;
+        if (!statementContext.getOrderByContext().getItems().isEmpty() || !statementContext.getGroupByContext().getItems().isEmpty()) {
+            return true;
+        }
+        for (SelectStatementContext each : statementContext.getSubqueryContexts().values()) {
+            if (containsOrderByItem(each)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private ColumnProjection buildColumnProjection(final ColumnSegment segment) {

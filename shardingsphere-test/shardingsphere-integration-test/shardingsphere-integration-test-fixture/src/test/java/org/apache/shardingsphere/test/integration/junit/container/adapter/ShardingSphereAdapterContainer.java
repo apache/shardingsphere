@@ -55,7 +55,7 @@ public abstract class ShardingSphereAdapterContainer extends ShardingSphereConta
     private YamlUserConfiguration loadAuthentication(final ParameterizedArray parameterizedArray) throws IOException {
         YamlProxyServerConfiguration configuration = YamlEngine.unmarshal(
                 ByteStreams.toByteArray(this.getClass().getResourceAsStream(
-                        "/docker/" + parameterizedArray.getScenario() + "/" + parameterizedArray.getDatabaseType().getName().toLowerCase() + "/proxy/conf/server.yaml")), 
+                        "/docker/proxy/conf/" + parameterizedArray.getScenario() + "/" + parameterizedArray.getDatabaseType().getName().toLowerCase() + "/server.yaml")),
                 YamlProxyServerConfiguration.class);
         return YamlUsersConfigurationConverter.convertYamlUserConfiguration(getUsersFromConfiguration(configuration))
                 .stream()

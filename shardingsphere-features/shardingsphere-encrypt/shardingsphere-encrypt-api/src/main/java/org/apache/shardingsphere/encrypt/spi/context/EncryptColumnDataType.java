@@ -26,7 +26,7 @@ import java.util.Map;
  * Encrypt column data type.
  */
 @Getter
-public class EncryptColumnDataType {
+public final class EncryptColumnDataType {
     
     private final String typeName;
     

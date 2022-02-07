@@ -26,7 +26,7 @@ import java.util.TreeMap;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class EncryptColumnDataTypeTest {
+public final class EncryptColumnDataTypeTest {
     
     @Test
     public void assertEncryptColumnDataType() {

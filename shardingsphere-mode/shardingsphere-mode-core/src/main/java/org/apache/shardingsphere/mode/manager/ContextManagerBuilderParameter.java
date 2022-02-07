@@ -46,4 +46,14 @@ public final class ContextManagerBuilderParameter {
     private final Collection<String> labels;
     
     private final InstanceDefinition instanceDefinition;
+    
+    /**
+     * Whether is empty or not.
+     * 
+     * @return is empty or not
+     */
+    public boolean isEmpty() {
+        return props.isEmpty() && globalRuleConfigs.isEmpty()
+                && schemaConfigs.entrySet().stream().allMatch(entry -> entry.getValue().getDataSources().isEmpty() && entry.getValue().getRuleConfigurations().isEmpty());
+    }
 }

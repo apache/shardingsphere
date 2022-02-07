@@ -65,4 +65,9 @@ public final class OpenGaussPositionInitializer implements PositionInitializer {
             OpenGaussLogicalReplication.dropSlot(conn);
         }
     }
+    
+    @Override
+    public String getType() {
+        return "openGauss";
+    }
 }

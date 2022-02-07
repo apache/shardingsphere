@@ -142,7 +142,7 @@ DROP SHARDING BROADCAST TABLE RULES
 ### Sharding Scaling Rule
 
 ```sql
-CREATE SHARDING SCALING RULE scalingName [scalingDefinition]
+CREATE SHARDING SCALING RULE scalingName [scalingRuleDefinition]
 
 DROP SHARDING SCALING RULE scalingName
 
@@ -150,17 +150,8 @@ ENABLE SHARDING SCALING RULE scalingName
 
 DISABLE SHARDING SCALING RULE scalingName
 
-scalingDefinition:
-    (minimumAutoDefinition | completeAutoDefinition | manualDefinition)
-
-minimumAutoDefinition:
-    completionDetector, dataConsistencyChecker
-
-completeAutoDefinition:
-    inputDefinition, outputDefinition, streamChannel, completionDetector, dataConsistencyChecker
-
-manualDefinition:
-    inputDefinition, outputDefinition, streamChannel
+scalingRuleDefinition:
+    [inputDefinition] [, outputDefinition] [, streamChannel] [, completionDetector] [, dataConsistencyChecker]
 
 inputDefinition:
     INPUT (workerThread, batchSize, rateLimiter)

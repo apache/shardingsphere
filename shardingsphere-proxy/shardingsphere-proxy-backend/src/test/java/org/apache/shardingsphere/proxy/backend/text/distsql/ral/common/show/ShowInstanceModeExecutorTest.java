@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show;
 
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.persist.PersistRepository;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowInstanceModeExecutor;
@@ -29,7 +28,6 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -43,8 +41,6 @@ public final class ShowInstanceModeExecutorTest {
     @Test
     public void assertExecutor() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        Optional<MetaDataPersistService> metaDataPersistService = Optional.of(createMetaDataPersistService());
-        when(contextManager.getMetaDataContexts().getMetaDataPersistService()).thenReturn(metaDataPersistService);
         InstanceContext instanceContext = createInstanceContext();
         when(contextManager.getInstanceContext()).thenReturn(instanceContext);
         ShowInstanceModeExecutor executor = new ShowInstanceModeExecutor();
@@ -60,18 +56,11 @@ public final class ShowInstanceModeExecutorTest {
         assertThat(data.get(3), is("key=value"));
     }
     
-    private MetaDataPersistService createMetaDataPersistService() {
-        MetaDataPersistService result = mock(MetaDataPersistService.class);
-        PersistRepository repository = mock(ClusterPersistRepository.class, RETURNS_DEEP_STUBS);
-        when(result.getRepository()).thenReturn(repository);
-        when(repository.getType()).thenReturn("ZooKeeper");
-        when(repository.getProps()).thenReturn(createProperties("key", "value"));
-        return result;
-    }
-    
     private InstanceContext createInstanceContext() {
         InstanceContext result = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
         when(result.getInstance().getInstanceDefinition().getInstanceId().getId()).thenReturn("127.0.0.1@3309");
+        when(result.getModeConfiguration()).thenReturn(new ModeConfiguration("Cluster", 
+                new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance_ds", "127.0.0.1:2181", createProperties("key", "value")), false));
         return result;
     }
     
