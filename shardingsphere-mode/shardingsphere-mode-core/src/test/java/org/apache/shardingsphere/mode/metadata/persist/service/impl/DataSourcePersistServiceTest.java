@@ -45,7 +45,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DataSourceMetaDataPersistServiceTest {
+public final class DataSourcePersistServiceTest {
     
     @Mock
     private PersistRepository repository;
