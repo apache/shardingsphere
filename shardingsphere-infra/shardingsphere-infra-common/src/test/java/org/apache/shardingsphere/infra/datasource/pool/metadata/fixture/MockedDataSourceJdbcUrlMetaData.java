@@ -15,21 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.metadata;
+package org.apache.shardingsphere.infra.datasource.pool.metadata.fixture;
 
-import org.apache.shardingsphere.infra.datasource.pool.metadata.fixture.MockedDataSourcePoolMetaData;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourceJdbcUrlMetaData;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
-import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import java.util.Properties;
 
-public final class DataSourcePoolMetaDataFactoryTest {
+public final class MockedDataSourceJdbcUrlMetaData implements DataSourceJdbcUrlMetaData<MockedDataSource> {
     
-    @Test
-    public void assertNewInstance() {
-        assertTrue(DataSourcePoolMetaDataFactory.newInstance(MockedDataSource.class.getName()).isPresent());
-        assertThat(DataSourcePoolMetaDataFactory.newInstance(MockedDataSource.class.getName()).get(), instanceOf(MockedDataSourcePoolMetaData.class));
+    @Override
+    public String getJdbcUrl(final MockedDataSource targetDataSource) {
+        return targetDataSource.getUrl();
+    }
+    
+    @Override
+    public String getJdbcUrlPropertiesFieldName() {
+        return null;
+    }
+    
+    @Override
+    public Properties getJdbcUrlProperties(final MockedDataSource targetDataSource) {
+        return new Properties();
+    }
+    
+    @Override
+    public void appendJdbcUrlProperties(final String key, final String value, final MockedDataSource targetDataSource) {
     }
 }

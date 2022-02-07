@@ -15,5 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.datasource.pool.metadata.impl.DefaultDataSourcePoolMetaData
-org.apache.shardingsphere.infra.datasource.pool.metadata.impl.HikariDataSourcePoolMetaData
+org.apache.shardingsphere.infra.datasource.pool.metadata.type.hikari.HikariDataSourcePoolMetaData
+org.apache.shardingsphere.infra.datasource.pool.metadata.type.dbcp.DBCPDataSourcePoolMetaData
+org.apache.shardingsphere.infra.datasource.pool.metadata.type.dbcp.TomcatDBCPDataSourcePoolMetaData

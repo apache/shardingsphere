@@ -15,18 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.metadata.impl;
+package org.apache.shardingsphere.infra.datasource.pool.metadata.type.dbcp;
 
+import lombok.Getter;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Default data source pool meta data.
+ * DBCP data source pool meta data.
  */
-public final class DefaultDataSourcePoolMetaData implements DataSourcePoolMetaData {
+@Getter
+public final class DBCPDataSourcePoolMetaData implements DataSourcePoolMetaData<BasicDataSource> {
+    
+    private final Collection<String> transientFieldNames = new LinkedList<>();
+    
+    public DBCPDataSourcePoolMetaData() {
+        buildTransientFieldNames();
+    }
+    
+    private void buildTransientFieldNames() {
+        transientFieldNames.add("closed");
+    }
     
     @Override
     public Map<String, Object> getDefaultProperties() {
@@ -44,27 +58,12 @@ public final class DefaultDataSourcePoolMetaData implements DataSourcePoolMetaDa
     }
     
     @Override
-    public String getJdbcUrlFieldName() {
-        return null;
-    }
-    
-    @Override
-    public String getJdbcUrlPropertiesFieldName() {
-        return null;
-    }
-    
-    @Override
-    public Collection<String> getTransientFieldNames() {
-        return Collections.emptyList();
+    public DBCPDataSourceJdbcUrlMetaData getJdbcUrlMetaData() {
+        return new DBCPDataSourceJdbcUrlMetaData();
     }
     
     @Override
     public String getType() {
-        return "Default";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
+        return BasicDataSource.class.getName();
     }
 }

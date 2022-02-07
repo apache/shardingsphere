@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 /**
  * Config data type token for encrypt.
  */
-
 @Getter
 public final class EncryptConfigDataTypeToken extends SQLToken implements Substitutable {
     

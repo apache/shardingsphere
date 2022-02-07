@@ -52,7 +52,7 @@ public final class EncryptRuleQueryResultSet implements DistSQLResultSet {
         Optional<EncryptRuleConfiguration> ruleConfig = metaData.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof EncryptRuleConfiguration).map(each -> (EncryptRuleConfiguration) each).findAny();
         data = ruleConfig.map(optional -> getAllEncryptColumns(optional, ((ShowEncryptRulesStatement) sqlStatement).getTableName()).entrySet().iterator()).orElse(Collections.emptyIterator());
-        encryptors = ruleConfig.map(EncryptRuleConfiguration::getEncryptors).orElse(Collections.emptyMap());
+        encryptors = ruleConfig.map(EncryptRuleConfiguration::getEncryptors).orElseGet(Collections::emptyMap);
     }
     
     private Map<String, EncryptColumnRuleConfiguration> getAllEncryptColumns(final EncryptRuleConfiguration encryptRuleConfig, final String tableName) {
