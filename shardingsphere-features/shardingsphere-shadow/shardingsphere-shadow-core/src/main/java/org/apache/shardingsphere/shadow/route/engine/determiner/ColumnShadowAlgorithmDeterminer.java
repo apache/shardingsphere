@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.route.engine.determiner.algorithm;
+package org.apache.shardingsphere.shadow.route.engine.determiner;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.column.PreciseColumnShadowValue;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
-import org.apache.shardingsphere.shadow.route.engine.determiner.ShadowAlgorithmDeterminer;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -32,26 +31,29 @@ import java.util.LinkedList;
 /**
  * Column shadow algorithm determiner.
  */
-@RequiredArgsConstructor
-public final class ColumnShadowAlgorithmDeterminer implements ShadowAlgorithmDeterminer {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ColumnShadowAlgorithmDeterminer {
     
-    private final ColumnShadowAlgorithm<Comparable<?>> columnShadowAlgorithm;
-    
-    @Override
-    public boolean isShadow(final ShadowDetermineCondition shadowDetermineCondition, final ShadowRule shadowRule) {
-        return isShadowColumn(shadowDetermineCondition.getShadowColumnCondition(), shadowDetermineCondition.getTableName(), shadowDetermineCondition.getShadowOperationType());
-    }
-    
-    private boolean isShadowColumn(final ShadowColumnCondition shadowColumnCondition, final String tableName, final ShadowOperationType operationType) {
+    /**
+     * Is shadow in column shadow algorithm.
+     *
+     * @param shadowAlgorithm column shadow algorithm
+     * @param shadowCondition shadow determine condition
+     * @return is shadow or not
+     */
+    public static boolean isShadow(final ColumnShadowAlgorithm<Comparable<?>> shadowAlgorithm, final ShadowDetermineCondition shadowCondition) {
+        ShadowColumnCondition shadowColumnCondition = shadowCondition.getShadowColumnCondition();
+        String tableName = shadowCondition.getTableName();
+        ShadowOperationType operationType = shadowCondition.getShadowOperationType();
         for (PreciseColumnShadowValue<Comparable<?>> each : createColumnShadowValues(shadowColumnCondition.getColumn(), shadowColumnCondition.getValues(), tableName, operationType)) {
-            if (!tableName.equals(shadowColumnCondition.getOwner()) || !columnShadowAlgorithm.isShadow(each)) {
+            if (!tableName.equals(shadowColumnCondition.getOwner()) || !shadowAlgorithm.isShadow(each)) {
                 return false;
             }
         }
         return true;
     }
     
-    private Collection<PreciseColumnShadowValue<Comparable<?>>> createColumnShadowValues(final String columnName, final Collection<Comparable<?>> columnValues, final String tableName,
+    private static Collection<PreciseColumnShadowValue<Comparable<?>>> createColumnShadowValues(final String columnName, final Collection<Comparable<?>> columnValues, final String tableName,
                                                                                          final ShadowOperationType operationType) {
         Collection<PreciseColumnShadowValue<Comparable<?>>> result = new LinkedList<>();
         for (Comparable<?> each : columnValues) {
