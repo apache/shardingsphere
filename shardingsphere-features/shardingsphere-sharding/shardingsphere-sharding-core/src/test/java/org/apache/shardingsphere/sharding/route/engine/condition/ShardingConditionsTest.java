@@ -21,14 +21,13 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.Assert.assertFalse;
@@ -40,18 +39,15 @@ import static org.mockito.Mockito.when;
 public final class ShardingConditionsTest {
 
     @Mock
-    private ShardingConditions shardingConditions;
+    private List<ShardingCondition> conditions;
 
-    @Before
-    public void setUp() {
-        when(shardingConditions.isAlwaysFalse()).thenReturn(false);
-        when(shardingConditions.isNeedMerge()).thenReturn(true);
-        when(shardingConditions.isSameShardingCondition()).thenReturn(false);
-    }
+    private ShardingConditions shardingConditions = new ShardingConditions(conditions, mock(SQLStatementContext.class), mock(ShardingRule.class));
 
     @Test
     public void assertIsAlwaysFalse() {
         assertFalse(shardingConditions.isAlwaysFalse());
+        when(shardingConditions.isAlwaysFalse()).thenReturn(true);
+        assertTrue(shardingConditions.isAlwaysFalse());
     }
 
     @Test
@@ -66,13 +62,15 @@ public final class ShardingConditionsTest {
 
     @Test
     public void assertMerge() {
-        final String tableName = "t_order";
-        List<ShardingCondition> result = new ArrayList<>(1);
+        createShardingConditions("t_order").merge();
+    }
+
+    private ShardingConditions createShardingConditions(final String tableName) {
+        LinkedList<ShardingCondition> result = new LinkedList<>();
         ShardingConditionValue shardingConditionValue = new ListShardingConditionValue<>("order_id", tableName, Collections.singleton(1L));
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getValues().add(shardingConditionValue);
         result.add(shardingCondition);
-        ShardingConditions shardingConditions = new ShardingConditions(result, mock(SQLStatementContext.class), mock(ShardingRule.class));
-        shardingConditions.merge();
+        return new ShardingConditions(result, mock(SQLStatementContext.class), mock(ShardingRule.class));
     }
 }
