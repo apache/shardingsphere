@@ -5,6 +5,17 @@ weight = 8
 chapter = true
 +++
 
+## ReadwriteSplittingType
+
+| *SPI 名称*                                 | *详细说明*                 |
+| ----------------------------------------- | ------------------------- |
+| ReadwriteSplittingType                    | Readwrite-splitting type  |
+
+| *已知实现类*                               | *详细说明*                         |
+| ----------------------------------------- | -------------------------------- |
+| StaticReadwriteSplittingType              | Static readwrite-splitting type  |
+| DynamicReadwriteSplittingType             | Dynamic readwrite-splitting type |
+
 ## ReplicaLoadBalanceAlgorithm
 
 | *SPI Name*                            | *Description*                                           |

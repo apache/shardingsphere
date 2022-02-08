@@ -54,9 +54,9 @@ public final class PipelineDataSourceManagerTest {
     @Test
     public void assertClose() throws NoSuchFieldException, IllegalAccessException {
         try (PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager()) {
-            dataSourceManager.createSourceDataSource(
+            dataSourceManager.getDataSource(
                     PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter()));
-            dataSourceManager.createTargetDataSource(
+            dataSourceManager.getDataSource(
                     PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getPipelineConfig().getTarget().getType(), jobConfig.getPipelineConfig().getTarget().getParameter()));
             Map<?, ?> cachedDataSources = ReflectionUtil.getFieldValue(dataSourceManager, "cachedDataSources", Map.class);
             assertNotNull(cachedDataSources);

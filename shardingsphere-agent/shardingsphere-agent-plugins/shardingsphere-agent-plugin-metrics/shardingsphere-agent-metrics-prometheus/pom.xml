@@ -94,7 +94,7 @@
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
                 <configuration>
-                    <outputFile>${metrics.target.directory}/${project.build.finalName}</outputFile>
+                    <outputFile>${metrics.target.directory}/${project.build.finalName}.jar</outputFile>
                 </configuration>
             </plugin>
         </plugins>

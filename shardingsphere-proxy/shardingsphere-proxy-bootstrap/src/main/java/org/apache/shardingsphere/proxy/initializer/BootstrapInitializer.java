@@ -17,39 +17,26 @@
 
 package org.apache.shardingsphere.proxy.initializer;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
-import org.apache.shardingsphere.db.protocol.CommonConstants;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
-import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.resource.ProxyResourceConfiguration;
-import org.apache.shardingsphere.proxy.config.resource.ProxyResourceConfigurationConverter;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
-import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
+import org.apache.shardingsphere.proxy.version.ShardingSphereProxyVersion;
+import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 
 /**
  * Bootstrap initializer.
@@ -66,82 +53,36 @@ public final class BootstrapInitializer {
      * @throws SQLException SQL exception
      */
     public void init(final YamlProxyConfiguration yamlConfig, final int port) throws SQLException {
-        ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode()
-                ? null : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
+        ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode() ? null : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
         ContextManager contextManager = createContextManager(yamlConfig, modeConfig, port);
-        initContext(contextManager);
-        initRuleAlteredJobWorker(modeConfig, contextManager);
-        setDatabaseServerInfo();
+        ProxyContext.getInstance().init(contextManager);
+        contextManagerInitializedCallback(modeConfig, contextManager);
+        ShardingSphereProxyVersion.setVersion(contextManager);
     }
     
     private ContextManager createContextManager(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig, final int port) throws SQLException {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
-        boolean isOverwrite = null == modeConfig || modeConfig.isOverwrite();
-        Map<String, Map<String, DataSource>> dataSourcesMap = getDataSourcesMap(proxyConfig.getSchemaResources());
-        ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder().modeConfig(modeConfig).dataSourcesMap(dataSourcesMap).schemaRuleConfigs(proxyConfig.getSchemaRules())
-                .globalRuleConfigs(proxyConfig.getGlobalRules()).props(proxyConfig.getProps()).isOverwrite(isOverwrite).labels(proxyConfig.getLabels())
+        ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder()
+                .modeConfig(modeConfig)
+                .schemaConfigs(proxyConfig.getSchemaConfigurations())
+                .globalRuleConfigs(proxyConfig.getGlobalConfiguration().getRules())
+                .props(proxyConfig.getGlobalConfiguration().getProperties())
+                .labels(proxyConfig.getGlobalConfiguration().getLabels())
                 .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, port)).build();
         return ContextManagerBuilderFactory.newInstance(modeConfig).build(parameter);
     }
     
-    private void initContext(final ContextManager contextManager) {
-        ProxyContext.getInstance().init(contextManager);
-    }
-    
-    // TODO add ResourceConfiguration param to ContextManagerBuilder to avoid re-build data source
-    private Map<String, Map<String, DataSource>> getDataSourcesMap(final Map<String, Map<String, ProxyResourceConfiguration>> resourceConfigMap) {
-        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(resourceConfigMap.size(), 1);
-        for (Entry<String, Map<String, ProxyResourceConfiguration>> entry : resourceConfigMap.entrySet()) {
-            result.put(entry.getKey(), DataSourcePoolCreator.create(ProxyResourceConfigurationConverter.getDataSourceConfigurationMap(entry.getValue())));
-        }
-        return result;
-    }
-    
-    private void initRuleAlteredJobWorker(final ModeConfiguration modeConfig, final ContextManager contextManager) {
-        if (null == modeConfig) {
-            return;
-        }
-        // TODO decouple "Cluster" to pluggable
-        if (!"Cluster".equals(modeConfig.getType())) {
-            log.info("mode type is not Cluster, ignore initRuleAlteredJobWorker");
-            return;
-        }
-        PipelineContext.initModeConfig(modeConfig);
-        PipelineContext.initContextManager(contextManager);
-        // TODO init worker only if necessary, e.g. 1) rule altered action configured, 2) enabled job exists, 3) stopped job restarted
-        RuleAlteredJobWorker.initWorkerIfNecessary();
-    }
-    
-    private void setDatabaseServerInfo() {
-        CommonConstants.PROXY_VERSION.set(getShardingSphereVersion());
-        findBackendDataSource().ifPresent(dataSourceSample -> {
-            DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSourceSample);
-            log.info(databaseServerInfo.toString());
-            switch (databaseServerInfo.getDatabaseName()) {
-                case "MySQL":
-                    MySQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
-                    break;
-                case "PostgreSQL":
-                    PostgreSQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
-                    break;
-                default:
+    private void contextManagerInitializedCallback(final ModeConfiguration modeConfig, final ContextManager contextManager) {
+        Map<String, ContextManagerLifecycleListener> listeners = SingletonSPIRegistry.getTypedSingletonInstancesMap(ContextManagerLifecycleListener.class);
+        log.info("listeners.keySet={}", listeners.keySet());
+        for (Entry<String, ContextManagerLifecycleListener> entry : listeners.entrySet()) {
+            try {
+                entry.getValue().onInitialized(modeConfig, contextManager);
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                log.error("contextManager onInitialized callback for '{}' failed", entry.getKey(), ex);
             }
-        });
-    }
-    
-    private String getShardingSphereVersion() {
-        String result = ShardingSphereVersion.VERSION;
-        if (!ShardingSphereVersion.IS_SNAPSHOT || Strings.isNullOrEmpty(ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV)) {
-            return result;
         }
-        result += ShardingSphereVersion.BUILD_GIT_DIRTY ? "-dirty" : "";
-        result += "-" + ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV;
-        return result;
-    }
-    
-    private Optional<DataSource> findBackendDataSource() {
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        Optional<ShardingSphereMetaData> metaData = metaDataContexts.getMetaDataMap().values().stream().filter(ShardingSphereMetaData::isComplete).findFirst();
-        return metaData.flatMap(optional -> optional.getResource().getDataSources().values().stream().findFirst());
     }
 }

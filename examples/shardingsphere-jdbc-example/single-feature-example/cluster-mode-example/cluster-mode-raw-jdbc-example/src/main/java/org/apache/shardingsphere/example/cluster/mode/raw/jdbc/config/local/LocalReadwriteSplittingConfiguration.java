@@ -26,7 +26,6 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,9 +42,16 @@ public final class LocalReadwriteSplittingConfiguration implements ExampleConfig
     @Override
     public DataSource getDataSource() throws SQLException {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceRuleConfiguration(
-                "demo_readwrite_splitting_ds", "", "demo_write_ds", Arrays.asList("demo_read_ds_0", "demo_read_ds_1"), null);
+                "demo_readwrite_splitting_ds", "Static", getReadProperties(), null);
         ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap());
         return ShardingSphereDataSourceFactory.createDataSource(modeConfig, createDataSourceMap(), Collections.singleton(ruleConfig), new Properties());
+    }
+    
+    private Properties getReadProperties() {
+        Properties result = new Properties();
+        result.setProperty("write-data-source-name", "demo_write_ds");
+        result.setProperty("read-data-source-names", "demo_read_ds_0, demo_read_ds_1");
+        return result;
     }
     
     private Map<String, DataSource> createDataSourceMap() {

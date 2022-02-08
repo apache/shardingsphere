@@ -19,11 +19,9 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest;
 
 import com.google.common.base.Preconditions;
 import com.zaxxer.hikari.HikariConfig;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
@@ -32,8 +30,11 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractIncrementalDumper;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractRowsEvent;
@@ -43,17 +44,13 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.UpdateR
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.WriteRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ConnectInfo;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.MySQLClient;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.metadata.MySQLColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.metadata.MySQLColumnMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.ValueHandler;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
@@ -62,7 +59,7 @@ import java.util.Random;
  * MySQL incremental dumper.
  */
 @Slf4j
-public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
+public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<BinlogPosition> {
     
     private static final Map<String, ValueHandler> VALUE_HANDLER_MAP;
     
@@ -70,27 +67,28 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     
     private final DumperConfiguration dumperConfig;
     
-    private final MySQLColumnMetaDataLoader columnMetaDataLoader;
+    private final PipelineTableMetaDataLoader metaDataLoader;
     
     private final Random random = new SecureRandom();
     
-    @Setter
-    private PipelineChannel channel;
+    private final PipelineChannel channel;
     
     static {
         VALUE_HANDLER_MAP = SingletonSPIRegistry.getSingletonInstancesMap(ValueHandler.class, ValueHandler::getTypeName);
     }
     
-    public MySQLIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<BinlogPosition> binlogPosition) {
+    public MySQLIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<BinlogPosition> binlogPosition,
+                                  final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
+        super(dumperConfig, binlogPosition, channel, metaDataLoader);
         this.binlogPosition = (BinlogPosition) binlogPosition;
         this.dumperConfig = dumperConfig;
         Preconditions.checkArgument(dumperConfig.getDataSourceConfig() instanceof StandardPipelineDataSourceConfiguration, "MySQLBinlogDumper only support StandardPipelineDataSourceConfiguration");
-        columnMetaDataLoader = new MySQLColumnMetaDataLoader(new PipelineDataSourceFactory().newInstance(dumperConfig.getDataSourceConfig()));
+        this.channel = channel;
+        this.metaDataLoader = metaDataLoader;
     }
     
     @Override
-    public void start() {
-        super.start();
+    protected void doStart() {
         dump();
     }
     
@@ -132,19 +130,20 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     }
     
     private void handleWriteRowsEvent(final WriteRowsEvent event) {
-        List<MySQLColumnMetaData> tableMetaData = columnMetaDataLoader.load(event.getTableName());
+        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(event.getTableName());
         for (Serializable[] each : event.getAfterRows()) {
             DataRecord record = createDataRecord(event, each.length);
             record.setType(IngestDataChangeType.INSERT);
             for (int i = 0; i < each.length; i++) {
-                record.addColumn(new Column(tableMetaData.get(i).getName(), handleValue(tableMetaData.get(i), each[i]), true, tableMetaData.get(i).isPrimaryKey()));
+                PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i);
+                record.addColumn(new Column(columnMetaData.getName(), handleValue(columnMetaData, each[i]), true, columnMetaData.isPrimaryKey()));
             }
             pushRecord(record);
         }
     }
     
     private void handleUpdateRowsEvent(final UpdateRowsEvent event) {
-        List<MySQLColumnMetaData> tableMetaData = columnMetaDataLoader.load(event.getTableName());
+        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(event.getTableName());
         for (int i = 0; i < event.getBeforeRows().size(); i++) {
             Serializable[] beforeValues = event.getBeforeRows().get(i);
             Serializable[] afterValues = event.getAfterRows().get(i);
@@ -154,27 +153,29 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
                 Serializable oldValue = beforeValues[j];
                 Serializable newValue = afterValues[j];
                 boolean updated = !Objects.equals(newValue, oldValue);
-                record.addColumn(new Column(tableMetaData.get(j).getName(),
-                        (tableMetaData.get(j).isPrimaryKey() && updated) ? handleValue(tableMetaData.get(j), oldValue) : null,
-                        handleValue(tableMetaData.get(j), newValue), updated, tableMetaData.get(j).isPrimaryKey()));
+                PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(j);
+                record.addColumn(new Column(columnMetaData.getName(),
+                        (columnMetaData.isPrimaryKey() && updated) ? handleValue(columnMetaData, oldValue) : null,
+                        handleValue(columnMetaData, newValue), updated, columnMetaData.isPrimaryKey()));
             }
             pushRecord(record);
         }
     }
     
     private void handleDeleteRowsEvent(final DeleteRowsEvent event) {
-        List<MySQLColumnMetaData> tableMetaData = columnMetaDataLoader.load(event.getTableName());
+        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(event.getTableName());
         for (Serializable[] each : event.getBeforeRows()) {
             DataRecord record = createDataRecord(event, each.length);
             record.setType(IngestDataChangeType.DELETE);
-            for (int i = 0; i < each.length; i++) {
-                record.addColumn(new Column(tableMetaData.get(i).getName(), handleValue(tableMetaData.get(i), each[i]), true, tableMetaData.get(i).isPrimaryKey()));
+            for (int i = 0, length = each.length; i < length; i++) {
+                PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i);
+                record.addColumn(new Column(columnMetaData.getName(), handleValue(columnMetaData, each[i]), true, columnMetaData.isPrimaryKey()));
             }
             pushRecord(record);
         }
     }
     
-    private Serializable handleValue(final MySQLColumnMetaData columnMetaData, final Serializable value) {
+    private Serializable handleValue(final PipelineColumnMetaData columnMetaData, final Serializable value) {
         ValueHandler valueHandler = VALUE_HANDLER_MAP.get(columnMetaData.getDataTypeName());
         if (null != valueHandler) {
             return valueHandler.handle(value);
@@ -197,5 +198,9 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     
     private void pushRecord(final Record record) {
         channel.pushRecord(record);
+    }
+    
+    @Override
+    protected void doStop() {
     }
 }

@@ -76,17 +76,14 @@ public final class ShardingTableNodesQueryResultSet implements DistSQLResultSet 
     }
     
     private int getTotalShardingCount(final ShardingRuleConfiguration ruleConfiguration, final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
-        int result = 0;
         Map<String, ShardingSphereAlgorithmConfiguration> shardingAlgorithms = ruleConfiguration.getShardingAlgorithms();
         ShardingStrategyConfiguration shardingStrategy = shardingAutoTableRuleConfig.getShardingStrategy();
         if (useDefaultStrategy(shardingStrategy, ruleConfiguration)) {
             int tableCount = getShardingCount(shardingAlgorithms.get(ruleConfiguration.getDefaultTableShardingStrategy().getShardingAlgorithmName()));
             int databaseCount = getShardingCount(shardingAlgorithms.get(ruleConfiguration.getDefaultDatabaseShardingStrategy().getShardingAlgorithmName()));
-            result = tableCount * databaseCount;
-        } else {
-            result = getShardingCount(shardingAlgorithms.get(shardingStrategy.getShardingAlgorithmName()));
+            return tableCount * databaseCount;
         }
-        return result;
+        return getShardingCount(shardingAlgorithms.get(shardingStrategy.getShardingAlgorithmName()));
     }
     
     private boolean useDefaultStrategy(final ShardingStrategyConfiguration currentShardingStrategy, final ShardingRuleConfiguration ruleConfiguration) {
@@ -147,6 +144,6 @@ public final class ShardingTableNodesQueryResultSet implements DistSQLResultSet 
     
     @Override
     public String getType() {
-        return ShowShardingTableNodesStatement.class.getCanonicalName();
+        return ShowShardingTableNodesStatement.class.getName();
     }
 }

@@ -38,9 +38,9 @@ import static org.mockito.Mockito.when;
 
 public final class OpenGaussDatabaseDiscoveryTypeTest {
     
-    private static final String DB_ROLE = "select local_role,db_state from pg_stat_get_stream_replications()";
+    private static final String DB_ROLE = "SELECT local_role,db_state FROM pg_stat_get_stream_replications()";
     
-    private static final String STANDBYS = "select client_addr,sync_state from pg_stat_replication";
+    private static final String STANDBYS = "SELECT client_addr,sync_state FROM pg_stat_replication";
     
     private final OpenGaussDatabaseDiscoveryType ogHaType = new OpenGaussDatabaseDiscoveryType();
     
@@ -58,7 +58,9 @@ public final class OpenGaussDatabaseDiscoveryTypeTest {
         when(resultSet.getString("local_role")).thenReturn("Primary");
         when(resultSet.getString("db_state")).thenReturn("Normal");
         when(resultSet.getString("db_state")).thenReturn("Sync");
-        ogHaType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSource);
+        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
+        dataSourceMap.put("ds_0", dataSource);
+        ogHaType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSourceMap);
     }
     
     @Test

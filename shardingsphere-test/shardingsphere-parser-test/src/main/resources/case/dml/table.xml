@@ -17,12 +17,38 @@
   -->
 
 <sql-parser-test-cases>
-    <table sql-case-id="table_with_order_limit_offset">
+    <select sql-case-id="table_with_order_by_limit_offset">
         <simple-table name="t_order" start-index="6" stop-index="12" />
-        <column name="order_id" start-index="23" stop-index="30"/>
-        <limit literal-start-index="32" literal-stop-index="47">
+        <order-by>
+            <column-item name="order_id" start-index="23" stop-index="30" />
+        </order-by>
+        <limit start-index="32" stop-index="47">
             <offset value="2" literal-start-index="47" literal-stop-index="47" />
-            <row-count value="1" literal-start-index="38" literal-stop-index="38" />
+            <row-count value="1" start-index="38" stop-index="38"/>
         </limit>
-    </table>
+    </select>
+    
+    <select sql-case-id="table_union">
+        <simple-table name="T1" start-index="6" stop-index="7" />
+        <union union-type="UNION_DISTINCT" start-index="9" stop-index="22">
+            <select>
+                <simple-table name="T2" start-index="21" stop-index="22" />
+            </select>
+        </union>
+    </select>
+    
+    <select sql-case-id="select_from_with_table">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <subquery-table alias="dt">
+                <subquery>
+                    <select>
+                        <simple-table name="t0" start-index="21" stop-index="22" />
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

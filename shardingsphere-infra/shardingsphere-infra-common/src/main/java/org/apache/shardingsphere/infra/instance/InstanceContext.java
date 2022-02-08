@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.infra.instance;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -37,10 +39,13 @@ public final class InstanceContext {
     
     private final WorkerIdGenerator workerIdGenerator;
     
-    public InstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator) {
+    private final ModeConfiguration modeConfiguration;
+    
+    public InstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator, final ModeConfiguration modeConfiguration) {
         this.instance = instance;
         switchInstanceState(instance.getStatus());
         this.workerIdGenerator = workerIdGenerator;
+        this.modeConfiguration = modeConfiguration;
     }
     
     /**
@@ -63,9 +68,18 @@ public final class InstanceContext {
      * @param workerId worker id
      */
     public void updateWorkerId(final Long workerId) {
-        if (workerId != instance.getWorkerId()) {
+        if (!Objects.equals(workerId, instance.getWorkerId())) {
             instance.setWorkerId(workerId);
         }
+    }
+    
+    /**
+     * Update instance label.
+     * 
+     * @param labels collection of label
+     */
+    public void updateLabel(final Collection<String> labels) {
+        instance.setLabels(labels);
     }
     
     /**

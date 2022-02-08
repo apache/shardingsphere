@@ -35,7 +35,7 @@ public final class ComputeNode {
     
     private static final String ATTRIBUTES_NODE = "attributes";
     
-    private static final String LABEL_NODE = "label";
+    private static final String LABELS_NODE = "labels";
     
     private static final String STATUS_NODE = "status";
     
@@ -63,13 +63,13 @@ public final class ComputeNode {
     }
     
     /**
-     * Get compute node instance label path.
+     * Get compute node instance labels path.
      *
      * @param instanceId instance id
-     * @return path of compute node instance label
+     * @return path of compute node instance labels
      */
-    public static String getInstanceLabelNodePath(final String instanceId) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ATTRIBUTES_NODE, instanceId, LABEL_NODE);
+    public static String getInstanceLabelsNodePath(final String instanceId) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ATTRIBUTES_NODE, instanceId, LABELS_NODE);
     }
     
     /**
@@ -98,7 +98,7 @@ public final class ComputeNode {
      * @return instance id
      */
     public static String getInstanceIdByAttributes(final String attributesPath) {
-        Pattern pattern = Pattern.compile(getAttributesNodePath() + "/([\\S]+)" + "(/status|/worker_id)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getAttributesNodePath() + "/([\\S]+)" + "(/status|/worker_id|/labels)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(attributesPath);
         return matcher.find() ? matcher.group(1) : "";
     }

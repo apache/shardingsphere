@@ -19,27 +19,39 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql.resource;
 
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
-import org.apache.shardingsphere.infra.config.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.config.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Map.Entry;
 
 /**
  * Result set for show data source.
  */
 public final class DataSourceQueryResultSet implements DistSQLResultSet {
+    
+    private static final String CONNECTION_TIMEOUT_MILLISECONDS = "connectionTimeoutMilliseconds";
+    
+    private static final String IDLE_TIMEOUT_MILLISECONDS = "idleTimeoutMilliseconds";
+    
+    private static final String MAX_LIFETIME_MILLISECONDS = "maxLifetimeMilliseconds";
+    
+    private static final String MAX_POOL_SIZE = "maxPoolSize";
+    
+    private static final String MIN_POOL_SIZE = "minPoolSize";
+    
+    private static final String READ_ONLY = "readOnly";
     
     private ShardingSphereResource resource;
     
@@ -50,16 +62,17 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         resource = metaData.getResource();
-        Optional<MetaDataPersistService> persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
-        dataSourcePropsMap = persistService.isPresent()
-                ? persistService.get().getDataSourceService().load(metaData.getName())
-                : DataSourcePropertiesCreator.create(metaData.getResource().getDataSources());
+        dataSourcePropsMap = new LinkedHashMap<>(metaData.getResource().getDataSources().size(), 1);
+        for (Entry<String, DataSource> entry : metaData.getResource().getDataSources().entrySet()) {
+            dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
+        }
         dataSourceNames = dataSourcePropsMap.keySet().iterator();
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("name", "type", "host", "port", "db", "attribute");
+        return Arrays.asList("name", "type", "host", "port", "db", "connection_timeout_milliseconds", "idle_timeout_milliseconds", 
+                "max_lifetime_milliseconds", "max_pool_size", "min_pool_size", "read_only", "other_attributes");
     }
     
     @Override
@@ -71,26 +84,34 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     public Collection<Object> getRowData() {
         String dataSourceName = dataSourceNames.next();
         DataSourceMetaData metaData = resource.getDataSourcesMetaData().getDataSourceMetaData(dataSourceName);
-        return Arrays.asList(dataSourceName, resource.getDatabaseType().getName(), 
-                metaData.getHostname(), metaData.getPort(), metaData.getCatalog(), (new Gson()).toJson(getAttributeMap(dataSourcePropsMap.get(dataSourceName))));
+        Collection<Object> result = new LinkedList<>();
+        result.add(dataSourceName);
+        result.add(resource.getDatabaseType().getName());
+        result.add(metaData.getHostname());
+        result.add(metaData.getPort());
+        result.add(metaData.getCatalog());
+        DataSourceProperties dataSourceProperties = dataSourcePropsMap.get(dataSourceName);
+        Map<String, Object> standardProperties = dataSourceProperties.getPoolPropertySynonyms().getStandardProperties();
+        result.add(getStandardProperty(standardProperties, CONNECTION_TIMEOUT_MILLISECONDS));
+        result.add(getStandardProperty(standardProperties, IDLE_TIMEOUT_MILLISECONDS));
+        result.add(getStandardProperty(standardProperties, MAX_LIFETIME_MILLISECONDS));
+        result.add(getStandardProperty(standardProperties, MAX_POOL_SIZE));
+        result.add(getStandardProperty(standardProperties, MIN_POOL_SIZE));
+        result.add(getStandardProperty(standardProperties, READ_ONLY));
+        Map<String, Object> otherProperties = dataSourceProperties.getCustomDataSourceProperties().getProperties();
+        result.add(otherProperties.isEmpty() ? "" : new Gson().toJson(otherProperties));
+        return result;
     }
     
-    private Map<String, Object> getAttributeMap(final DataSourceProperties dataSourceProps) {
-        Map<String, Object> result = new LinkedHashMap<>(7, 1);
-        result.put("connectionTimeoutMilliseconds", dataSourceProps.getStandardProperties().get("connectionTimeoutMilliseconds"));
-        result.put("idleTimeoutMilliseconds", dataSourceProps.getStandardProperties().get("idleTimeoutMilliseconds"));
-        result.put("maxLifetimeMilliseconds", dataSourceProps.getStandardProperties().get("maxLifetimeMilliseconds"));
-        result.put("maxPoolSize", dataSourceProps.getStandardProperties().get("maxPoolSize"));
-        result.put("minPoolSize", dataSourceProps.getStandardProperties().get("minPoolSize"));
-        result.put("readOnly", dataSourceProps.getStandardProperties().get("readOnly"));
-        if (!dataSourceProps.getCustomPoolProps().isEmpty()) {
-            result.put(DataSourceProperties.CUSTOM_POOL_PROPS_KEY, dataSourceProps.getCustomPoolProps());
+    private String getStandardProperty(final Map<String, Object> standardProperties, final String key) {
+        if (standardProperties.containsKey(key) && null != standardProperties.get(key)) {
+            return standardProperties.get(key).toString();
         }
-        return result;
+        return "";
     }
     
     @Override
     public String getType() {
-        return ShowResourcesStatement.class.getCanonicalName();
+        return ShowResourcesStatement.class.getName();
     }
 }

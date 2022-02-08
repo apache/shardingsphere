@@ -76,13 +76,11 @@ public final class OpenGaussAuthenticationHandlerTest {
     
     private final int serverIteration = 2048;
     
-    private PostgreSQLPacketPayload payload;
-    
     private PostgreSQLPasswordMessagePacket passwordMessagePacket;
     
     @Before
     public void init() {
-        payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
         String digest = encodeDigest(password, random64Code, token, serverIteration);
         payload.writeInt4(4 + digest.length() + 1);
         payload.writeStringNul(digest);
@@ -130,7 +128,7 @@ public final class OpenGaussAuthenticationHandlerTest {
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
         return new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(),
-                buildGlobalRuleMetaData(user), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContext.class));
+                buildGlobalRuleMetaData(user), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
     }
     
     private ByteBuf createByteBuf(final int initialCapacity, final int maxCapacity) {

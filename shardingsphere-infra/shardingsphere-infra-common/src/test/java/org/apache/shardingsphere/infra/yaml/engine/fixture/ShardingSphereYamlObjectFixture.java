@@ -33,6 +33,8 @@ public final class ShardingSphereYamlObjectFixture {
     
     private Map<String, String> map;
     
+    private Map<String, Map<String, String>> embeddedMap;
+    
     private CustomizedClassFixture customizedClass;
     
     private String customizedTag;

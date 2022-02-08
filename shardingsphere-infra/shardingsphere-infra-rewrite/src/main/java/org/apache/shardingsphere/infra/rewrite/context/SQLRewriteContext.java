@@ -40,6 +40,8 @@ import java.util.List;
 @Getter
 public final class SQLRewriteContext {
     
+    private final String schemaName;
+    
     private final ShardingSphereSchema schema;
     
     private final SQLStatementContext<?> sqlStatementContext;
@@ -55,12 +57,13 @@ public final class SQLRewriteContext {
     @Getter(AccessLevel.NONE)
     private final SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
     
-    public SQLRewriteContext(final ShardingSphereSchema schema, final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> parameters) {
+    public SQLRewriteContext(final String schemaName, final ShardingSphereSchema schema, final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> parameters) {
+        this.schemaName = schemaName;
         this.schema = schema;
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
         this.parameters = parameters;
-        addSQLTokenGenerators(new DefaultTokenGeneratorBuilder().getSQLTokenGenerators());
+        addSQLTokenGenerators(new DefaultTokenGeneratorBuilder(sqlStatementContext).getSQLTokenGenerators());
         parameterBuilder = ((sqlStatementContext instanceof InsertStatementContext) && (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()))
                 ? new GroupedParameterBuilder(
                         ((InsertStatementContext) sqlStatementContext).getGroupedParameters(), ((InsertStatementContext) sqlStatementContext).getOnDuplicateKeyUpdateParameters())

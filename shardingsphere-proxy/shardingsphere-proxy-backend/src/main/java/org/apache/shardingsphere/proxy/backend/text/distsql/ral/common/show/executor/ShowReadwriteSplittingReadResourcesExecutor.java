@@ -31,8 +31,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingReadResourcesStatement;
 import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
 
@@ -57,8 +55,6 @@ import java.util.stream.Stream;
 public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractShowExecutor {
     
     private static final String DELIMITER = "\\.";
-    
-    private static final String SCHEMA_NAME = "schema_name";
     
     private static final String RESOURCE = "resource";
     
@@ -103,11 +99,13 @@ public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractS
                 .map(each -> buildRow(each, ENABLE)).collect(Collectors.toCollection(LinkedList::new));
     }
     
+    // TODO Fix it.
     private LinkedList<String> getConfiguredResourceRows(final ShardingSphereMetaData metaData) {
-        Collection<ReadwriteSplittingRuleConfiguration> ruleConfiguration = metaData.getRuleMetaData().findRuleConfiguration(ReadwriteSplittingRuleConfiguration.class);
+/*        Collection<ReadwriteSplittingRuleConfiguration> ruleConfiguration = metaData.getRuleMetaData().findRuleConfiguration(ReadwriteSplittingRuleConfiguration.class);
         return ruleConfiguration.stream().map(ReadwriteSplittingRuleConfiguration::getDataSources).flatMap(Collection::stream).filter(Objects::nonNull)
                 .map(ReadwriteSplittingDataSourceRuleConfiguration::getReadDataSourceNames)
-                .flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));
+                .flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));*/
+        return new LinkedList<>();
     }
     
     private Collection<String> getAutoAwareResourceRows(final ShardingSphereMetaData metaData, final Collection<Object> notShownResourceRows) {
@@ -119,8 +117,8 @@ public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractS
     
     private Map<String, Map<String, String>> getAutoAwareResourceData(final ShardingSphereMetaData metaData) {
         return metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof ExportableRule)
-                .map(each -> ((ExportableRule) each).export().get(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY))
-                .filter(Objects::nonNull).map(each -> (Map<String, Map<String, String>>) each)
+                .map(each -> ((ExportableRule) each).export(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE))
+                .map(each -> (Map<String, Map<String, String>>) each.orElse(Collections.emptyMap()))
                 .map(Map::entrySet).flatMap(Collection::stream).filter(entry -> !entry.getValue().isEmpty()).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     

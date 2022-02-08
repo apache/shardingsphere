@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
+import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.authority.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
@@ -34,12 +34,16 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Optional;
@@ -53,10 +57,14 @@ public final class ClusterContextManagerCoordinator {
     
     private final ContextManager contextManager;
     
-    public ClusterContextManagerCoordinator(final MetaDataPersistService metaDataPersistService, final ContextManager contextManager) {
+    private final RegistryCenter registryCenter;
+    
+    public ClusterContextManagerCoordinator(final MetaDataPersistService metaDataPersistService, final ContextManager contextManager, final RegistryCenter registryCenter) {
         this.metaDataPersistService = metaDataPersistService;
         this.contextManager = contextManager;
+        this.registryCenter = registryCenter;
         ShardingSphereEventBus.getInstance().register(this);
+        buildSpecialRules();
     }
     
     /**
@@ -88,7 +96,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final PropertiesChangedEvent event) {
-        contextManager.alterProps(event.getProps());
+        contextManager.alterProperties(event.getProps());
     }
     
     /**
@@ -121,6 +129,7 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final RuleConfigurationsChangedEvent event) {
         contextManager.alterRuleConfiguration(event.getSchemaName(), event.getRuleConfigurations());
+        buildSpecialRules();
     }
     
     /**
@@ -131,6 +140,7 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final DataSourceChangedEvent event) {
         contextManager.alterDataSourceConfiguration(event.getSchemaName(), event.getDataSourcePropertiesMap());
+        buildSpecialRules();
     }
     
     /**
@@ -197,6 +207,18 @@ public final class ClusterContextManagerCoordinator {
         }
     }
     
+    /**
+     * Renew instance labels.
+     * 
+     * @param event label event
+     */
+    @Subscribe
+    public synchronized void renew(final LabelsEvent event) {
+        if (contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId().equals(event.getInstanceId())) {
+            contextManager.getInstanceContext().updateLabel(event.getLabels());
+        }
+    }
+    
     private void persistSchema(final String schemaName) {
         if (!metaDataPersistService.getDataSourceService().isExisted(schemaName)) {
             metaDataPersistService.getDataSourceService().persist(schemaName, new LinkedHashMap<>());
@@ -204,5 +226,24 @@ public final class ClusterContextManagerCoordinator {
         if (!metaDataPersistService.getSchemaRuleService().isExisted(schemaName)) {
             metaDataPersistService.getSchemaRuleService().persist(schemaName, new LinkedList<>());
         }
+    }
+    
+    private void buildSpecialRules() {
+        contextManager.getMetaDataContexts().getMetaDataMap().forEach((key, value) -> value.getRuleMetaData().getRules().forEach(each -> {
+            if (each instanceof StatusContainedRule) {
+                disableDataSources(key, (StatusContainedRule) each);
+            } else if (each instanceof InstanceAwareRule) {
+                ((InstanceAwareRule) each).setInstanceContext(contextManager.getInstanceContext());
+            }
+        }));
+    }
+    
+    private void disableDataSources(final String schemaName, final StatusContainedRule rule) {
+        Collection<String> disabledDataSources = registryCenter.getStorageNodeStatusService().loadStorageNodes(schemaName, StorageNodeStatus.DISABLE);
+        disabledDataSources.stream().map(this::getDataSourceName).forEach(each -> rule.updateStatus(new DataSourceNameDisabledEvent(each, true)));
+    }
+    
+    private String getDataSourceName(final String disabledDataSource) {
+        return new QualifiedSchema(disabledDataSource).getDataSourceName();
     }
 }

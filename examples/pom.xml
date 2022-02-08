@@ -31,6 +31,7 @@
         <module>other-example</module>
         <module>shardingsphere-jdbc-example</module>
         <module>shardingsphere-proxy-example</module>
+        
         <module>shardingsphere-sample</module>
     </modules>
     
@@ -41,7 +42,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locale>zh_CN</project.build.locale>
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
-        <spring-framework.version>5.0.13.RELEASE</spring-framework.version>
+        <spring-framework.version>5.2.19.RELEASE</spring-framework.version>
         <spring-boot.version>2.0.9.RELEASE</spring-boot.version>
         <hikari-cp.version>3.4.2</hikari-cp.version>
         <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
@@ -199,6 +200,11 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context-support</artifactId>
+                <version>${spring-framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
                 <version>${spring-framework.version}</version>
             </dependency>
             <dependency>

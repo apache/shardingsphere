@@ -18,23 +18,23 @@
 package org.apache.shardingsphere.readwritesplitting.rule;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
-import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadwriteSplittingType;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -45,11 +45,7 @@ public final class ReadwriteSplittingDataSourceRule {
     
     private final String name;
     
-    private final String autoAwareDataSourceName;
-    
-    private final String writeDataSourceName;
-    
-    private final List<String> readDataSourceNames;
+    private final ReadwriteSplittingType readwriteSplittingType;
     
     private final ReplicaLoadBalanceAlgorithm loadBalancer;
     
@@ -57,20 +53,19 @@ public final class ReadwriteSplittingDataSourceRule {
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
     public ReadwriteSplittingDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration config, final ReplicaLoadBalanceAlgorithm loadBalancer) {
-        checkConfiguration(config);
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getName()), "Name is required.");
         name = config.getName();
-        autoAwareDataSourceName = config.getAutoAwareDataSourceName();
-        writeDataSourceName = config.getWriteDataSourceName();
-        readDataSourceNames = config.getReadDataSourceNames();
+        readwriteSplittingType = ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration(config.getType(), config.getProps()), ReadwriteSplittingType.class);
         this.loadBalancer = loadBalancer;
     }
     
-    private void checkConfiguration(final ReadwriteSplittingDataSourceRuleConfiguration config) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getName()), "Name is required.");
-        if (Strings.isNullOrEmpty(config.getAutoAwareDataSourceName())) {
-            Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getWriteDataSourceName()), "Write data source name is required.");
-            Preconditions.checkArgument(null != config.getReadDataSourceNames() && !config.getReadDataSourceNames().isEmpty(), "Read data source names are required.");
-        }
+    /**
+     * Get write data source name.
+     *
+     * @return write data source name
+     */
+    public String getWriteDataSource() {
+        return readwriteSplittingType.getWriteDataSource();
     }
     
     /**
@@ -79,7 +74,7 @@ public final class ReadwriteSplittingDataSourceRule {
      * @return available read data source names
      */
     public List<String> getReadDataSourceNames() {
-        return readDataSourceNames.stream().filter(each -> !disabledDataSourceNames.contains(each)).collect(Collectors.toList());
+        return readwriteSplittingType.getReadDataSources().stream().filter(each -> !disabledDataSourceNames.contains(each)).collect(Collectors.toList());
     }
     
     /**
@@ -102,36 +97,7 @@ public final class ReadwriteSplittingDataSourceRule {
      * @return data source mapper
      */
     public Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>(1, 1);
-        Collection<String> actualDataSourceNames = new LinkedList<>();
-        if (Strings.isNullOrEmpty(autoAwareDataSourceName)) {
-            actualDataSourceNames.add(writeDataSourceName);
-            actualDataSourceNames.addAll(readDataSourceNames);
-        } else {
-            Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.getInstance().getDataSourceNameAware();
-            if (dataSourceNameAware.isPresent()) {
-                actualDataSourceNames.add(dataSourceNameAware.get().getPrimaryDataSourceName(autoAwareDataSourceName));
-                actualDataSourceNames.addAll(dataSourceNameAware.get().getReplicaDataSourceNames(autoAwareDataSourceName));
-            }
-        }
-        result.put(name, actualDataSourceNames);
-        return result;
-    }
-    
-    /**
-     * Get auto aware data sources.
-     *
-     * @return auto aware data sources
-     */
-    public Map<String, String> getAutoAwareDataSources() {
-        Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.getInstance().getDataSourceNameAware();
-        Map<String, String> result = new HashMap<>(2, 1);
-        if (!Strings.isNullOrEmpty(autoAwareDataSourceName) && dataSourceNameAware.isPresent() && dataSourceNameAware.get().getRule().isPresent()) {
-            result.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, dataSourceNameAware.get().getPrimaryDataSourceName(autoAwareDataSourceName));
-            result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", dataSourceNameAware.get().getReplicaDataSourceNames(autoAwareDataSourceName)));
-            return result;
-        }
-        return result;
+        return readwriteSplittingType.getDataSourceMapper(name);
     }
     
     /**
@@ -140,13 +106,17 @@ public final class ReadwriteSplittingDataSourceRule {
      * @return data sources
      */
     public Map<String, String> getDataSources() {
-        Map<String, String> result = new HashMap<>(2, 1);
-        if (Strings.isNullOrEmpty(autoAwareDataSourceName)) {
-            result.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, writeDataSourceName);
-            result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",",
-                    readDataSourceNames.stream().filter(each -> !disabledDataSourceNames.contains(each)).collect(Collectors.toCollection(LinkedHashSet::new))));
-        }
-        return result;
+        return readwriteSplittingType.getDataSources().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey,
+                    each -> ExportableConstants.REPLICA_DATA_SOURCE_NAMES.equals(each.getKey()) ? removeDisabledDataSources(each.getValue()) : each.getValue()));
     }
     
+    private String removeDisabledDataSources(final String readDataSources) {
+        if (disabledDataSourceNames.isEmpty()) {
+            return readDataSources;
+        }
+        Collection<String> dataSources = new LinkedList<>(Splitter.on(",").trimResults().splitToList(readDataSources));
+        dataSources.removeIf(disabledDataSourceNames::contains);
+        return String.join(",", dataSources);
+    }
 }

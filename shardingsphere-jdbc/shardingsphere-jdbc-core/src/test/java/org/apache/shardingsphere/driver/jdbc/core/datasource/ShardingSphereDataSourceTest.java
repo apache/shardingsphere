@@ -23,17 +23,14 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.state.StateType;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.junit.After;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
@@ -66,49 +63,25 @@ public final class ShardingSphereDataSourceTest {
     
     @Test
     public void assertNewConstructorWithAllArguments() throws SQLException {
-        ShardingSphereDataSource actual = createShardingSphereDataSource(mockDataSource());
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
+        ShardingSphereDataSource actual = createShardingSphereDataSource(new MockedDataSource(connection));
         assertThat(actual.getSchemaName(), is(DefaultSchema.LOGIC_NAME));
         assertNotNull(actual.getContextManager());
         assertTrue(actual.getContextManager().getMetaDataContexts().getMetaDataMap().containsKey(DefaultSchema.LOGIC_NAME));
         assertTrue(actual.getContextManager().getTransactionContexts().getEngines().containsKey(DefaultSchema.LOGIC_NAME));
         assertThat(actual.getContextManager().getInstanceContext().getState().getCurrentState(), is(StateType.OK));
         assertThat(actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).size(), is(1));
-        DataSource ds = actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).get("ds");
-        assertNotNull(ds);
-        assertThat(ds.getConnection().getMetaData().getURL(), is("jdbc:h2:mem:demo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
+        assertThat(actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).get("ds").getConnection().getMetaData().getURL(), is("jdbc:mock://127.0.0.1/foo_ds"));
     }
     
     @Test
     public void assertGetConnectionWithUsernameAndPassword() throws SQLException {
-        DataSource dataSource = mockDataSource();
-        assertThat(((ShardingSphereConnection) createShardingSphereDataSource(dataSource).getConnection("", "")).getConnectionManager().getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY).get(0),
-                is(dataSource.getConnection()));
-    }
-    
-    private DataSource mockDataSource() throws SQLException {
-        DataSource result = mock(DataSource.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
-        DatabaseMetaData databaseMetaData = mockDatabaseMetaData();
-        Statement statement = mock(Statement.class);
-        ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.next()).thenReturn(false);
-        when(statement.getResultSet()).thenReturn(resultSet);
-        when(result.getConnection()).thenReturn(connection);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        when(statement.getConnection()).thenReturn(connection);
-        when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery(ArgumentMatchers.any())).thenReturn(resultSet);
-        when(statement.getConnection().getMetaData().getTables(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(resultSet);
-        when(result.getConnection().getMetaData().getURL()).thenReturn("jdbc:h2:mem:demo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        return result;
-    }
-    
-    private DatabaseMetaData mockDatabaseMetaData() throws SQLException {
-        DatabaseMetaData result = mock(DatabaseMetaData.class, RETURNS_DEEP_STUBS);
-        when(result.getColumns(null, null, "table_0", "%")).thenReturn(mock(ResultSet.class));
-        when(result.getPrimaryKeys(null, null, "table_0")).thenReturn(mock(ResultSet.class));
-        when(result.getIndexInfo(null, null, "table_0", false, false)).thenReturn(mock(ResultSet.class));
-        return result;
+        when(connection.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
+        assertThat(((ShardingSphereConnection) createShardingSphereDataSource(
+                new MockedDataSource(connection)).getConnection("", "")).getConnectionManager().getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY).get(0),
+                is(connection));
     }
     
     private ShardingSphereDataSource createShardingSphereDataSource(final DataSource dataSource) throws SQLException {

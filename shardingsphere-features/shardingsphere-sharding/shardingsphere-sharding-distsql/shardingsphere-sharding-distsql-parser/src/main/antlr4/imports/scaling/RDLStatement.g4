@@ -19,40 +19,28 @@ grammar RDLStatement;
 
 import Keyword, Literals, Symbol, BaseRule;
 
-createShardingScaling
-    : CREATE SHARDING SCALING scalingName scalingDefinition?
+createShardingScalingRule
+    : CREATE SHARDING SCALING RULE scalingName scalingRuleDefinition?
     ;
 
-dropShardingScaling
-    : DROP SHARDING SCALING scalingName
+dropShardingScalingRule
+    : DROP SHARDING SCALING RULE scalingName
     ;
 
-enableShardingScaling
-    : ENABLE SHARDING SCALING scalingName
+enableShardingScalingRule
+    : ENABLE SHARDING SCALING RULE scalingName
     ;
 
-disableShardingScaling
-    : DISABLE SHARDING SCALING scalingName
+disableShardingScalingRule
+    : DISABLE SHARDING SCALING RULE scalingName
     ;
 
 scalingName
     : IDENTIFIER
     ;
 
-scalingDefinition
-    : minimumAutoDefinition | completeAutoDefinition | manualDefinition
-    ;
-
-minimumAutoDefinition
-    : LP completionDetector COMMA dataConsistencyChecker RP
-    ;
-
-completeAutoDefinition
-    : LP inputDefinition COMMA outputDefinition COMMA streamChannel COMMA completionDetector COMMA dataConsistencyChecker RP
-    ;
-
-manualDefinition
-    : LP inputDefinition COMMA outputDefinition COMMA streamChannel RP
+scalingRuleDefinition
+    : LP inputDefinition? (COMMA? outputDefinition)? (COMMA? streamChannel)? (COMMA? completionDetector)? (COMMA? dataConsistencyChecker)? RP
     ;
 
 inputDefinition

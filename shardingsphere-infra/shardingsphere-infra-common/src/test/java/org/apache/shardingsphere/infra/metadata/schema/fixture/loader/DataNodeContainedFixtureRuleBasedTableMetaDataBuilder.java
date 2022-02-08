@@ -43,8 +43,8 @@ public final class DataNodeContainedFixtureRuleBasedTableMetaDataBuilder impleme
     }
     
     @Override
-    public TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final DataNodeContainedFixtureRule rule) {
-        return tableMetaData;
+    public Map<String, TableMetaData> decorate(final Map<String, TableMetaData> tableMetaDataMap, final DataNodeContainedFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+        return tableMetaDataMap;
     }
     
     @Override

@@ -39,7 +39,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDB
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPortal;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.After;
 import org.junit.Before;
@@ -66,7 +66,6 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.nullable;
@@ -125,7 +124,7 @@ public final class PostgreSQLComDescribeExecutorTest {
     public void assertDescribePortal() throws SQLException {
         when(packet.getType()).thenReturn('P');
         when(packet.getName()).thenReturn("P_1");
-        PostgreSQLPortal portal = mock(PostgreSQLPortal.class);
+        Portal<?> portal = mock(Portal.class);
         PostgreSQLRowDescriptionPacket expected = mock(PostgreSQLRowDescriptionPacket.class);
         when(portal.describe()).thenReturn(expected);
         when(connectionContext.getPortal("P_1")).thenReturn(portal);
@@ -158,7 +157,7 @@ public final class PostgreSQLComDescribeExecutorTest {
         verify(mockPayload).writeInt2(4);
         verify(mockPayload, times(2)).writeInt4(23);
         verify(mockPayload, times(2)).writeInt4(18);
-        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLNoDataPacket);
+        assertThat(actualPacketsIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
     }
     
     @Test
@@ -185,7 +184,7 @@ public final class PostgreSQLComDescribeExecutorTest {
         verify(mockPayload).writeInt2(5);
         verify(mockPayload, times(2)).writeInt4(23);
         verify(mockPayload, times(3)).writeInt4(18);
-        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLNoDataPacket);
+        assertThat(actualPacketsIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
     }
     
     @Test

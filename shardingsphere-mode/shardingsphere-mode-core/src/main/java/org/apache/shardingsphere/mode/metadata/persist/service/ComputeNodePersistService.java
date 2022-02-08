@@ -46,9 +46,16 @@ public final class ComputeNodePersistService {
      * 
      * @param instanceId instance id
      * @param labels collection of label
+     * @param isOverwrite whether overwrite registry center's configuration if existed              
      */
-    public void persistInstanceLabels(final String instanceId, final Collection<String> labels) {
-        repository.persist(ComputeNode.getInstanceLabelNodePath(instanceId), YamlEngine.marshal(labels));
+    public void persistInstanceLabels(final String instanceId, final Collection<String> labels, final boolean isOverwrite) {
+        if (null != labels && !labels.isEmpty() && (isOverwrite || !isExisted(instanceId))) {
+            repository.persist(ComputeNode.getInstanceLabelsNodePath(instanceId), YamlEngine.marshal(labels));
+        }
+    }
+    
+    private boolean isExisted(final String instanceId) {
+        return !Strings.isNullOrEmpty(repository.get(ComputeNode.getInstanceLabelsNodePath(instanceId)));
     }
     
     /**
@@ -65,10 +72,10 @@ public final class ComputeNodePersistService {
      * Load instance labels.
      * 
      * @param instanceId instance id
-     * @return collection of label
+     * @return labels
      */
     public Collection<String> loadInstanceLabels(final String instanceId) {
-        String yamlContent = repository.get(ComputeNode.getInstanceLabelNodePath(instanceId));
+        String yamlContent = repository.get(ComputeNode.getInstanceLabelsNodePath(instanceId));
         return Strings.isNullOrEmpty(yamlContent) ? new ArrayList<>() : YamlEngine.unmarshal(yamlContent, Collection.class);
     }
     
@@ -76,7 +83,7 @@ public final class ComputeNodePersistService {
      * Load instance status.
      * 
      * @param instanceId instance id
-     * @return collection of status
+     * @return status
      */
     public Collection<String> loadInstanceStatus(final String instanceId) {
         String yamlContent = repository.get(ComputeNode.getInstanceStatusNodePath(instanceId));
@@ -91,7 +98,8 @@ public final class ComputeNodePersistService {
      */
     public Long loadInstanceWorkerId(final String instanceId) {
         try {
-            return Long.valueOf(repository.get(ComputeNode.getInstanceWorkerIdNodePath(instanceId)));
+            String workerId = repository.get(ComputeNode.getInstanceWorkerIdNodePath(instanceId));
+            return Strings.isNullOrEmpty(workerId) ? null : Long.valueOf(workerId);
         } catch (final NumberFormatException ex) {
             log.error("Invalid worker id for instance: {}", instanceId);
         }
@@ -102,8 +110,8 @@ public final class ComputeNodePersistService {
      * Load compute node instances by instance type and labels.
      *
      * @param instanceType instance type
-     * @param labels collection of contained label                     
-     * @return collection of compute node instance
+     * @param labels collection of contained label
+     * @return compute node instances
      */
     public Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType instanceType, final Collection<String> labels) {
         Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
@@ -125,7 +133,7 @@ public final class ComputeNodePersistService {
     /**
      * Load all compute node instances.
      *
-     * @return collection of compute node instance
+     * @return compute node instances
      */
     public Collection<ComputeNodeInstance> loadAllComputeNodeInstances() {
         Collection<ComputeNodeInstance> result = new ArrayList<>();

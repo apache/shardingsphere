@@ -23,7 +23,7 @@ import java.util.Properties;
  * Properties tool class.
  */
 public final class PropertiesUtil {
-
+    
     /**
      * Get the value according to the key and verify whether the value exists. If it does not exist, an {@link IllegalArgumentException} will be thrown.
      *
@@ -34,6 +34,6 @@ public final class PropertiesUtil {
      */
     public static String getRequiredValue(final Properties properties, final String key) {
         Preconditions.checkArgument(properties.containsKey(key), "%s can not be null.", key);
-        return properties.get(key).toString();
+        return properties.getProperty(key);
     }
 }

@@ -65,6 +65,6 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
     
     @Override
     public String getType() {
-        return CreateShardingTableRuleStatement.class.getCanonicalName();
+        return CreateShardingTableRuleStatement.class.getName();
     }
 }

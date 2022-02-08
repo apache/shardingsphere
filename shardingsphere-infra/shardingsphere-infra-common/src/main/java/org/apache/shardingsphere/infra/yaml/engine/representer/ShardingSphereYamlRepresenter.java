@@ -22,9 +22,15 @@ import org.apache.shardingsphere.infra.yaml.engine.representer.processor.Default
 import org.apache.shardingsphere.infra.yaml.engine.representer.processor.ShardingSphereYamlTupleProcessor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.yaml.snakeyaml.introspector.Property;
+import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
+
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * ShardingSphere YAML representer.
@@ -48,5 +54,21 @@ public final class ShardingSphereYamlRepresenter extends Representer {
             }
         }
         return new DefaultYamlTupleProcessor().process(nodeTuple);
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @Override
+    protected Node representMapping(final Tag tag, final Map<?, ?> mapping, final Boolean flowStyle) {
+        Map skippedEmptyValuesMapping = new LinkedHashMap<>(mapping.size(), 1);
+        for (Entry<?, ?> entry : mapping.entrySet()) {
+            if (entry.getValue() instanceof Collection && ((Collection) entry.getValue()).isEmpty()) {
+                continue;
+            }
+            if (entry.getValue() instanceof Map && ((Map) entry.getValue()).isEmpty()) {
+                continue;
+            }
+            skippedEmptyValuesMapping.put(entry.getKey(), entry.getValue());
+        }
+        return super.representMapping(tag, skippedEmptyValuesMapping, flowStyle);
     }
 }
