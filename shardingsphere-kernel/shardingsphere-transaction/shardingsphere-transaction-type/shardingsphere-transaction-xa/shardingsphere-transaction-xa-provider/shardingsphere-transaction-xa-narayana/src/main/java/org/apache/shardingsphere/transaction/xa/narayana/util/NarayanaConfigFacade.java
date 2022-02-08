@@ -93,7 +93,7 @@ public class NarayanaConfigFacade implements TransactionConfigFacade {
     }
 
     private static Map<Object, Object> generateDefaultNarayanaConfig(final String instanceId) {
-        Map<Object, Object> result = new LinkedHashMap<>();
+        Map<Object, Object> result = new LinkedHashMap<>(32, 1);
         result.put("CoordinatorEnvironmentBean.commitOnePhase", "YES");
         result.put("ObjectStoreEnvironmentBean.transactionSync", "ON");
         result.put("CoreEnvironmentBean.nodeIdentifier", null == instanceId ? 1 : instanceId);
