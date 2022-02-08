@@ -19,9 +19,9 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.meta
 
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationCachedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -100,13 +100,19 @@ public final class MetaDataChangedWatcherTest {
         assertThat(event.getCacheId(), is("cacheId"));
     }
     
-    // TODO fix it
     @Test
-    @Ignore
-    public void assertCreateSchemaChangedEvent() {
-        String key = "/metadata/sharding_db/schema";
+    public void assertCreateTableSchemaChangedEvent() {
+        String key = "/metadata/sharding_db/tables/t_order";
         Optional<GovernanceEvent> actual = createEvent(key, "{}", Type.UPDATED);
         assertTrue(actual.isPresent());
+    }
+    
+    @Test
+    public void assertCreateTableSchemaDeletedEvent() {
+        String key = "/metadata/sharding_db/tables/t_order";
+        Optional<GovernanceEvent> actual = createEvent(key, "{}", Type.DELETED);
+        assertTrue(actual.isPresent());
+        assertThat(((SchemaChangedEvent) actual.get()).getDeletedTable(), is("t_order"));
     }
     
     private Optional<GovernanceEvent> createEvent(final String key, final String value, final Type type) {
