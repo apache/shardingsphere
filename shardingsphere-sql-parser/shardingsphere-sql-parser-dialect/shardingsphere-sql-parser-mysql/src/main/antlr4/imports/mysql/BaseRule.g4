@@ -162,6 +162,7 @@ identifierKeywordsUnambiguous
     | CONSTRAINT_SCHEMA
     | CONTEXT
     | CPU
+    | CREATE
     | CURRENT
     | CURSOR_NAME
     | DATAFILE
