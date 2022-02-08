@@ -22,7 +22,7 @@ import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Transaction config factory
+ * Transaction config factory.
  */
 public class TransactionConfigFactory {
 
@@ -35,7 +35,7 @@ public class TransactionConfigFactory {
     }
 
     /**
-     * Get transaction config facade instance
+     * Get transaction config facade instance.
      *
      * @param transactionProviderType transaction provider type
      * @return transaction config facade

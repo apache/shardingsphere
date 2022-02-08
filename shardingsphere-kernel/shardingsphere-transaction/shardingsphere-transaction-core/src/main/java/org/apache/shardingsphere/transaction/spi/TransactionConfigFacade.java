@@ -20,12 +20,12 @@ package org.apache.shardingsphere.transaction.spi;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 /**
- * Transaction config facade
+ * Transaction config facade.
  */
 public interface TransactionConfigFacade {
 
     /**
-     * Generate transaction config
+     * Generate transaction config.
      *
      * @param transactionRule transaction rule
      * @param instanceId instance id
@@ -33,7 +33,7 @@ public interface TransactionConfigFacade {
     void generate(TransactionRule transactionRule, String instanceId);
 
     /**
-     * Get transaction type
+     * Get transaction type.
      *
      * @return transaction type
      */
