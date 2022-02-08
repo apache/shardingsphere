@@ -22,8 +22,8 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.container.ShardingSphereContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.testcontainers.containers.BindMode;
@@ -31,9 +31,10 @@ import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap.Builder;
 
 import javax.sql.DataSource;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -42,19 +43,14 @@ import java.util.Optional;
 public abstract class ShardingSphereStorageContainer extends ShardingSphereContainer {
     
     @Getter
-    private final Collection<String> databases;
-    
-    private ImmutableMap<String, DataSource> dataSourceMap;
-    
-    @Getter
     private final DatabaseType databaseType;
     
-    @SneakyThrows
-    public ShardingSphereStorageContainer(final String dockerName, final String dockerImageName, final DatabaseType databaseType,
-                                          final boolean isFakeContainer, final ParameterizedArray parameterizedArray) {
-        super(dockerName, dockerImageName, isFakeContainer, parameterizedArray);
+    private Map<String, DataSource> dataSourceMap;
+    
+    public ShardingSphereStorageContainer(final String name, final String dockerImageName, 
+                                          final DatabaseType databaseType, final boolean isFakedContainer, final ParameterizedArray parameterizedArray) {
+        super(name, dockerImageName, isFakedContainer, parameterizedArray);
         this.databaseType = databaseType;
-        this.databases = DatabaseEnvironmentManager.getDatabaseNames(getParameterizedArray().getScenario());
     }
     
     /**
@@ -68,30 +64,32 @@ public abstract class ShardingSphereStorageContainer extends ShardingSphereConta
         return this;
     }
     
-    protected DataSource createDataSource(final String dataSourceName) {
+    /**
+     * Get data source map.
+     *
+     * @return database name and data source map
+     */
+    @SneakyThrows({IOException.class, JAXBException.class})
+    public synchronized Map<String, DataSource> getDataSourceMap() {
+        if (null == dataSourceMap) {
+            Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDatabaseNames(getParameterizedArray().getScenario());
+            Builder<String, DataSource> builder = ImmutableMap.builder();
+            dataSourceNames.forEach(each -> builder.put(each, createDataSource(each)));
+            dataSourceMap = builder.build();
+        }
+        return dataSourceMap;
+    }
+    
+    private DataSource createDataSource(final String dataSourceName) {
         HikariConfig config = new HikariConfig();
-        config.setUsername(getUsername());
-        config.setPassword(getPassword());
         config.setDriverClassName(getDriverClassName());
         config.setJdbcUrl(getUrl(dataSourceName));
+        config.setUsername(getUsername());
+        config.setPassword(getPassword());
         config.setMaximumPoolSize(4);
         config.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         getConnectionInitSQL().ifPresent(config::setConnectionInitSql);
         return new HikariDataSource(config);
-    }
-    
-    /**
-     * Get DataSource Map.
-     *
-     * @return DatabaseName and DataSource Map
-     */
-    public synchronized Map<String, DataSource> getDataSourceMap() {
-        if (Objects.isNull(dataSourceMap)) {
-            Builder<String, DataSource> builder = ImmutableMap.builder();
-            databases.forEach(e -> builder.put(e, createDataSource(e)));
-            dataSourceMap = builder.build();
-        }
-        return dataSourceMap;
     }
     
     protected Optional<String> getConnectionInitSQL() {

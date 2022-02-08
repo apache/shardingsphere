@@ -47,8 +47,8 @@ public abstract class ShardingSphereAdapterContainer extends ShardingSphereConta
     }
     
     @SneakyThrows
-    public ShardingSphereAdapterContainer(final String dockerName, final String dockerImageName, final boolean isFakeContainer, final ParameterizedArray parameterizedArray) {
-        super(dockerName, dockerImageName, isFakeContainer, parameterizedArray);
+    public ShardingSphereAdapterContainer(final String name, final String dockerImageName, final boolean isFakedContainer, final ParameterizedArray parameterizedArray) {
+        super(name, dockerImageName, isFakedContainer, parameterizedArray);
         this.authentication = loadAuthentication(parameterizedArray);
     }
     
