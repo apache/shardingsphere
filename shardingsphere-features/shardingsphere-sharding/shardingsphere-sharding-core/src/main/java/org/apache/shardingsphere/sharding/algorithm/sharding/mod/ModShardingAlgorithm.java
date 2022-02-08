@@ -86,7 +86,7 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     }
     
     private long getLongValue(final Comparable<?> value) {
-        return Long.parseLong(value.toString());
+        return value instanceof Number ? ((Number) value).longValue() : Long.parseLong(value.toString());
     }
     
     @Override
