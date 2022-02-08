@@ -45,6 +45,9 @@ public final class ReadwriteSplittingDataSourceRouter {
         if (isPrimaryRoute(sqlStatementContext)) {
             return rule.getReadwriteSplittingType().getWriteDataSource();
         }
+        if (1 == rule.getReadDataSourceNames().size()) {
+            return rule.getReadDataSourceNames().get(0);
+        }
         return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), rule.getReadDataSourceNames());
     }
     

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.job.check;
 
+import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.DataSourcePreparer;
 
 /**
  * Environment checker.

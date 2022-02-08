@@ -93,7 +93,7 @@ public final class JDBCDatabaseCommunicationEngineTest {
         when(backendConnection.getConnectionSession().getSchemaName()).thenReturn("schema");
         MetaDataContexts metaDataContexts = new MetaDataContexts(
                 mock(MetaDataPersistService.class), mockMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class),
-                new ConfigurationProperties(new Properties()), mock(OptimizerContext.class, RETURNS_DEEP_STUBS));
+                mock(OptimizerContext.class, RETURNS_DEEP_STUBS), new ConfigurationProperties(new Properties()));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);

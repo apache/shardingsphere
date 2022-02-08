@@ -23,8 +23,8 @@
     </rewrite-assertion>
 
     <rewrite-assertion id="change_column_for_cipher" db-types="MySQL">
-        <input sql="ALTER TABLE t_account CHANGE COLUMN amount amountA text"/>
-        <output sql="ALTER TABLE t_account CHANGE COLUMN cipher_amount amountA_cipher text"/>
+        <input sql="ALTER TABLE t_account CHANGE COLUMN amount amount_new text"/>
+        <output sql="ALTER TABLE t_account CHANGE COLUMN cipher_amount amount_new_cipher text"/>
     </rewrite-assertion>
 
     <rewrite-assertion id="add_column_with_position_cipher" db-types="MySQL">

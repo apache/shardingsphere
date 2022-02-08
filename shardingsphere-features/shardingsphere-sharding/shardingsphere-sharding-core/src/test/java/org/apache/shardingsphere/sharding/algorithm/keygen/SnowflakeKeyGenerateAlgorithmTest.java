@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.keygen;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.sharding.algorithm.keygen.fixture.FixedTimeService;
@@ -175,7 +176,8 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSetWorkerIdFailureWhenNegative() {
-        keyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(), new WorkerIdGeneratorFixture(-1L)));
+        keyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(), new WorkerIdGeneratorFixture(-1L), 
+                new ModeConfiguration("Memory", null, false)));
         keyGenerateAlgorithm.init();
         keyGenerateAlgorithm.generateKey();
         clearInstanceContext();
@@ -192,7 +194,8 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSetWorkerIdFailureWhenOutOfRange() {
-        keyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(), new WorkerIdGeneratorFixture(Long.MIN_VALUE)));
+        keyGenerateAlgorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(), new WorkerIdGeneratorFixture(Long.MIN_VALUE), 
+                new ModeConfiguration("Memory", null, false)));
         keyGenerateAlgorithm.init();
         keyGenerateAlgorithm.generateKey();
         clearInstanceContext();

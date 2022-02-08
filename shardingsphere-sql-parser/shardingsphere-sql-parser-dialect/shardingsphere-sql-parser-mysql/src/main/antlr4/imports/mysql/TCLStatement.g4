@@ -52,7 +52,7 @@ begin
     ;
 
 lock
-    : LOCK (INSTANCE FOR BACKUP | (TABLE | TABLES) tableLock (COMMA_ tableLock)* )
+    : LOCK (INSTANCE FOR BACKUP | (TABLES tableLock (COMMA_ tableLock)*))
     ;
 
 unlock

@@ -18,7 +18,7 @@ Apache ShardingSphere facilitates the distributed feature development of openGau
 
 openGauss integrates many open source components to optimize its full stack & open source distributed solution for horizontal scaling, distributed transactions, and distributed governance. Its framework is shown in Fig.1
 
-![](../../static/img/Blog_23_img_1_The_Structure_of_the_ShardingSphere_openGauss_Distribution_Solution.en.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_23_img_1_The_Structure_of_the_ShardingSphere_openGauss_Distribution_Solution.en.png)
 
 ShardingSphere-Proxy is the open source distributed database solution. ShardingSphere’s well-known features include but are not limited to data sharding, distributed transaction, elastic scaling, and read-write splitting.
 

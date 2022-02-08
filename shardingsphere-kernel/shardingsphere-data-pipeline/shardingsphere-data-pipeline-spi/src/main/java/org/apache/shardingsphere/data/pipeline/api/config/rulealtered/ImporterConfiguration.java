@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
@@ -28,14 +29,17 @@ import java.util.Set;
 /**
  * Importer configuration.
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
 @ToString(exclude = "dataSourceConfig")
 public final class ImporterConfiguration {
     
-    private PipelineDataSourceConfiguration dataSourceConfig;
+    private final PipelineDataSourceConfiguration dataSourceConfig;
     
-    private Map<String, Set<String>> shardingColumnsMap;
+    private final Map<String, Set<String>> shardingColumnsMap;
     
-    private int retryTimes;
+    private final int batchSize;
+    
+    private final int retryTimes;
 }

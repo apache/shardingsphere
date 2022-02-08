@@ -24,7 +24,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
@@ -63,9 +62,6 @@ public final class FrontendChannelInboundHandlerTest {
     private FrontendChannelInboundHandler frontendChannelInboundHandler;
     
     private ConnectionSession connectionSession;
-    
-    @Mock
-    private BackendConnection backendConnection;
     
     @Before
     public void setup() {

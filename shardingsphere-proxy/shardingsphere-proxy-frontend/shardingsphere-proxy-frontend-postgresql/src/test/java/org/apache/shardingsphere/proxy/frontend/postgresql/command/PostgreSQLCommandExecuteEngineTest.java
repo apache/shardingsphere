@@ -50,9 +50,6 @@ import static org.mockito.Mockito.when;
 public final class PostgreSQLCommandExecuteEngineTest {
     
     @Mock
-    private PostgreSQLConnectionContext connectionContext;
-    
-    @Mock
     private ChannelHandlerContext channelHandlerContext;
     
     @Mock

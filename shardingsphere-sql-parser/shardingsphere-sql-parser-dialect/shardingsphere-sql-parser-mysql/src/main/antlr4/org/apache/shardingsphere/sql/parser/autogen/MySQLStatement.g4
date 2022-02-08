@@ -52,7 +52,7 @@ execute
     | alterResourceGroup
     | createResourceGroup
     | dropResourceGroup
-    | preparedStatement
+    | prepare
     | setTransaction
     | beginTransaction
     | setAutoCommit

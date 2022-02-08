@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.algorithm;
 
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
@@ -30,6 +31,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class RC4EncryptAlgorithmTest {
     
@@ -48,12 +50,12 @@ public final class RC4EncryptAlgorithmTest {
     
     @Test
     public void assertEncode() {
-        assertThat(encryptAlgorithm.encrypt("test"), is("qn36NQ=="));
+        assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("qn36NQ=="));
     }
     
     @Test
     public void assertEncryptWithNullPlaintext() {
-        assertNull(encryptAlgorithm.encrypt(null));
+        assertNull(encryptAlgorithm.encrypt(null, mock(EncryptContext.class)));
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -70,12 +72,12 @@ public final class RC4EncryptAlgorithmTest {
     
     @Test
     public void assertDecode() {
-        assertThat(encryptAlgorithm.decrypt("qn36NQ==").toString(), is("test"));
+        assertThat(encryptAlgorithm.decrypt("qn36NQ==", mock(EncryptContext.class)).toString(), is("test"));
     }
     
     @Test
     public void assertDecryptWithNullCiphertext() {
-        assertNull(encryptAlgorithm.decrypt(null));
+        assertNull(encryptAlgorithm.decrypt(null, mock(EncryptContext.class)));
     }
     
     @Test

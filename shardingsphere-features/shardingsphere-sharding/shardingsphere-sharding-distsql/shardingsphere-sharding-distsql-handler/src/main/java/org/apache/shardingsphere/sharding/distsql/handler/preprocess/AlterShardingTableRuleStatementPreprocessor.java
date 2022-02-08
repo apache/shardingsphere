@@ -28,7 +28,7 @@ public final class AlterShardingTableRuleStatementPreprocessor implements RuleDe
     
     @Override
     public String getType() {
-        return AlterShardingTableRuleStatement.class.getCanonicalName();
+        return AlterShardingTableRuleStatement.class.getName();
     }
     
     @Override

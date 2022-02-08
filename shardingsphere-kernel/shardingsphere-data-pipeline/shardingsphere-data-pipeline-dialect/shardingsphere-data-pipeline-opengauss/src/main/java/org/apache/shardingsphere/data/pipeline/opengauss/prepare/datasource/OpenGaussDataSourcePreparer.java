@@ -23,11 +23,11 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSource
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.ActualTableDefinition;
-import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.TableDefinitionSQLType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.AbstractDataSourcePreparer;
+import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 
 import java.sql.Connection;
@@ -60,8 +60,7 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
             throw new PipelineJobPrepareFailedException("get table definitions failed.", ex);
         }
         Map<String, Collection<String>> createLogicTableSQLs = getCreateLogicTableSQLs(actualTableDefinitions);
-        try (PipelineDataSourceWrapper targetDataSource = getTargetDataSource(parameter.getPipelineConfiguration());
-             Connection targetConnection = targetDataSource.getConnection()) {
+        try (Connection targetConnection = getTargetCachedDataSource(parameter.getPipelineConfiguration(), parameter.getDataSourceManager()).getConnection()) {
             for (Entry<String, Collection<String>> entry : createLogicTableSQLs.entrySet()) {
                 for (String each : entry.getValue()) {
                     executeTargetTableSQL(targetConnection, each);
@@ -77,6 +76,7 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
         Collection<ActualTableDefinition> result = new ArrayList<>();
         ShardingSpherePipelineDataSourceConfiguration sourceDataSourceConfig = (ShardingSpherePipelineDataSourceConfiguration) PipelineDataSourceConfigurationFactory.newInstance(
                 parameter.getPipelineConfiguration().getSource().getType(), parameter.getPipelineConfiguration().getSource().getParameter());
+        // TODO reuse PipelineDataSourceManager
         try (PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager()) {
             for (JobDataNodeEntry each : parameter.getTablesFirstDataNodes().getEntries()) {
                 DataNode dataNode = each.getDataNodes().get(0);

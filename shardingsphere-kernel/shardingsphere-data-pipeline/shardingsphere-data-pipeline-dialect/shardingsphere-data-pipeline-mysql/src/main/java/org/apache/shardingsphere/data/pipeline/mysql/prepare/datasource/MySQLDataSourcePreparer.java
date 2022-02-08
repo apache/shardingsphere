@@ -20,10 +20,11 @@ package org.apache.shardingsphere.data.pipeline.mysql.prepare.datasource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.PrepareTargetTablesParameter;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.AbstractDataSourcePreparer;
+import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.mysql.sqlbuilder.MySQLPipelineSQLBuilder;
 
 import java.sql.Connection;
@@ -31,7 +32,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -40,15 +40,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
     
-    private final MySQLPipelineSQLBuilder scalingSQLBuilder = new MySQLPipelineSQLBuilder(Collections.emptyMap());
+    private static final MySQLPipelineSQLBuilder SQL_BUILDER = (MySQLPipelineSQLBuilder) PipelineSQLBuilderFactory.getSQLBuilder("MySQL");
     
     @Override
     public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
         PipelineConfiguration pipelineConfig = parameter.getPipelineConfiguration();
-        try (PipelineDataSourceWrapper sourceDataSource = getSourceDataSource(pipelineConfig);
-             Connection sourceConnection = sourceDataSource.getConnection();
-             PipelineDataSourceWrapper targetDataSource = getTargetDataSource(pipelineConfig);
-             Connection targetConnection = targetDataSource.getConnection()) {
+        PipelineDataSourceManager dataSourceManager = parameter.getDataSourceManager();
+        try (Connection sourceConnection = getSourceCachedDataSource(pipelineConfig, dataSourceManager).getConnection();
+             Connection targetConnection = getTargetCachedDataSource(pipelineConfig, dataSourceManager).getConnection()) {
             Collection<String> logicTableNames = parameter.getTablesFirstDataNodes().getEntries().stream().map(JobDataNodeEntry::getLogicTableName).collect(Collectors.toList());
             for (String each : logicTableNames) {
                 String createTableSQL = getCreateTableSQL(sourceConnection, each);
@@ -62,7 +61,7 @@ public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
     }
     
     private String getCreateTableSQL(final Connection sourceConnection, final String logicTableName) throws SQLException {
-        String showCreateTableSQL = "SHOW CREATE TABLE " + scalingSQLBuilder.quote(logicTableName);
+        String showCreateTableSQL = "SHOW CREATE TABLE " + SQL_BUILDER.quote(logicTableName);
         try (Statement statement = sourceConnection.createStatement(); ResultSet resultSet = statement.executeQuery(showCreateTableSQL)) {
             if (!resultSet.next()) {
                 throw new PipelineJobPrepareFailedException("show create table has no result, sql: " + showCreateTableSQL);

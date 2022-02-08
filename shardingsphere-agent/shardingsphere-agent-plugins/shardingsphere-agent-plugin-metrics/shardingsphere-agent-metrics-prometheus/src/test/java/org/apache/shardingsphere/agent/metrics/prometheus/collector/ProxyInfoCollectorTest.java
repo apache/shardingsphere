@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.agent.metrics.prometheus.collector;
 
 import io.prometheus.client.Collector;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.manager.memory.workerid.generator.MemoryWorkerIdGenerator;
@@ -36,7 +37,7 @@ public final class ProxyInfoCollectorTest {
     @Test
     public void assertCollect() {
         ProxyContext.getInstance().getContextManager().init(mock(MetaDataContexts.class), mock(TransactionContexts.class), new InstanceContext(new ComputeNodeInstance(), 
-                new MemoryWorkerIdGenerator()));
+                new MemoryWorkerIdGenerator(), new ModeConfiguration("Memory", null, false)));
         ProxyInfoCollector proxyInfoCollector = new ProxyInfoCollector();
         List<Collector.MetricFamilySamples> metricFamilySamples = proxyInfoCollector.collect();
         assertFalse(metricFamilySamples.isEmpty());

@@ -162,6 +162,7 @@ identifierKeywordsUnambiguous
     | CONSTRAINT_SCHEMA
     | CONTEXT
     | CPU
+    | CREATE
     | CURRENT
     | CURSOR_NAME
     | DATAFILE
@@ -565,6 +566,7 @@ variable
     
 userVariable
     : AT_ textOrIdentifier
+    | textOrIdentifier
     ;
     
 systemVariable

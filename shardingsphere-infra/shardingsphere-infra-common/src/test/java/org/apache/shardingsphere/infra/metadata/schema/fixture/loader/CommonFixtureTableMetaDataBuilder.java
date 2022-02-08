@@ -35,8 +35,8 @@ public final class CommonFixtureTableMetaDataBuilder implements RuleBasedTableMe
     }
     
     @Override
-    public TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final CommonFixtureRule rule) {
-        return tableMetaData;
+    public Map<String, TableMetaData> decorate(final Map<String, TableMetaData> tableMetaDataMap, final CommonFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+        return tableMetaDataMap;
     }
     
     @Override

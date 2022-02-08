@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
@@ -39,7 +38,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class SingleTableRuleBuilderTest {
     
@@ -51,29 +49,25 @@ public final class SingleTableRuleBuilderTest {
     public void assertBuild() {
         Collection<SchemaRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class);
         SchemaRuleBuilder builder = builders.iterator().next();
-        SchemaRulesBuilderMaterials materials = mock(SchemaRulesBuilderMaterials.class);
-        Properties properties = new Properties();
-        properties.setProperty(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED.getKey(), Boolean.FALSE.toString());
-        when(materials.getProps()).thenReturn(new ConfigurationProperties(properties));
-        SingleTableRuleConfiguration configuration = mock(SingleTableRuleConfiguration.class);
+        Properties props = new Properties();
+        props.setProperty(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED.getKey(), Boolean.FALSE.toString());
+        SingleTableRuleConfiguration config = mock(SingleTableRuleConfiguration.class);
         ShardingSphereRule shardingSphereRule = mock(ShardingSphereRule.class);
-        SchemaRule schemaRule = builder.build(materials, configuration, Collections.singletonList(shardingSphereRule));
+        SchemaRule schemaRule = builder.build(config, "", Collections.emptyMap(), Collections.singletonList(shardingSphereRule), new ConfigurationProperties(props));
         assertThat(schemaRule, instanceOf(SingleTableRule.class));
         assertFalse(((SingleTableRule) schemaRule).getDefaultDataSource().isPresent());
     }
     
     @Test
     public void assertBuildWithDefaultDataSource() {
-        Properties properties = new Properties();
-        properties.setProperty(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED.getKey(), Boolean.FALSE.toString());
-        SchemaRulesBuilderMaterials materials = mock(SchemaRulesBuilderMaterials.class);
-        when(materials.getProps()).thenReturn(new ConfigurationProperties(properties));
+        Properties props = new Properties();
+        props.setProperty(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED.getKey(), Boolean.FALSE.toString());
         ShardingSphereRule shardingSphereRule = mock(ShardingSphereRule.class);
         Collection<SchemaRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class);
         SchemaRuleBuilder builder = builders.iterator().next();
-        SingleTableRuleConfiguration configuration = new SingleTableRuleConfiguration();
-        configuration.setDefaultDataSource("ds_0");
-        SchemaRule schemaRule = builder.build(materials, configuration, Collections.singletonList(shardingSphereRule));
+        SingleTableRuleConfiguration config = new SingleTableRuleConfiguration();
+        config.setDefaultDataSource("ds_0");
+        SchemaRule schemaRule = builder.build(config, "", Collections.emptyMap(), Collections.singletonList(shardingSphereRule), new ConfigurationProperties(props));
         assertThat(schemaRule, instanceOf(SingleTableRule.class));
         assertTrue(((SingleTableRule) schemaRule).getDefaultDataSource().isPresent());
         assertThat(((SingleTableRule) schemaRule).getDefaultDataSource().get(), is("ds_0"));

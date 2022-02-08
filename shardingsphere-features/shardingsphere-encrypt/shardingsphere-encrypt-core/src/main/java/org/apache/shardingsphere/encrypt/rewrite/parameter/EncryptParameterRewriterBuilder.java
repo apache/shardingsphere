@@ -18,11 +18,14 @@
 package org.apache.shardingsphere.encrypt.rewrite.parameter;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
-import org.apache.shardingsphere.encrypt.rewrite.parameter.impl.EncryptAssignmentParameterRewriter;
-import org.apache.shardingsphere.encrypt.rewrite.parameter.impl.EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter;
-import org.apache.shardingsphere.encrypt.rewrite.parameter.impl.EncryptInsertValueParameterRewriter;
-import org.apache.shardingsphere.encrypt.rewrite.parameter.impl.EncryptPredicateParameterRewriter;
+import org.apache.shardingsphere.encrypt.rewrite.aware.SchemaNameAware;
+import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
+import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptAssignmentParameterRewriter;
+import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter;
+import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptInsertValueParameterRewriter;
+import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptPredicateParameterRewriter;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -32,6 +35,7 @@ import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewri
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -42,13 +46,22 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
     
     private final EncryptRule encryptRule;
     
+    private final String schemaName;
+    
     private final ShardingSphereSchema schema;
     
     private final SQLStatementContext<?> sqlStatementContext;
     
+    private final Collection<EncryptCondition> encryptConditions;
+    
+    private final boolean containsEncryptTable;
+    
     @SuppressWarnings("rawtypes")
     @Override
     public Collection<ParameterRewriter> getParameterRewriters() {
+        if (!containsEncryptTable) {
+            return Collections.emptyList();
+        }
         Collection<ParameterRewriter> result = new LinkedList<>();
         addParameterRewriter(result, new EncryptAssignmentParameterRewriter());
         addParameterRewriter(result, new EncryptPredicateParameterRewriter());
@@ -67,6 +80,12 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
         }
         if (toBeAddedParameterRewriter instanceof QueryWithCipherColumnAware) {
             ((QueryWithCipherColumnAware) toBeAddedParameterRewriter).setQueryWithCipherColumn(encryptRule.isQueryWithCipherColumn());
+        }
+        if (toBeAddedParameterRewriter instanceof EncryptConditionsAware) {
+            ((EncryptConditionsAware) toBeAddedParameterRewriter).setEncryptConditions(encryptConditions);
+        }
+        if (toBeAddedParameterRewriter instanceof SchemaNameAware) {
+            ((SchemaNameAware) toBeAddedParameterRewriter).setSchemaName(schemaName);
         }
         if (toBeAddedParameterRewriter.isNeedRewrite(sqlStatementContext)) {
             parameterRewriters.add(toBeAddedParameterRewriter);

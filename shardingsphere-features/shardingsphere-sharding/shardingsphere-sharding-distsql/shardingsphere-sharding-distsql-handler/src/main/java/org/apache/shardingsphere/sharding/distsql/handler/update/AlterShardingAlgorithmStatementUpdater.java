@@ -93,6 +93,6 @@ public final class AlterShardingAlgorithmStatementUpdater implements RuleDefinit
     
     @Override
     public String getType() {
-        return AlterShardingAlgorithmStatement.class.getCanonicalName();
+        return AlterShardingAlgorithmStatement.class.getName();
     }
 }

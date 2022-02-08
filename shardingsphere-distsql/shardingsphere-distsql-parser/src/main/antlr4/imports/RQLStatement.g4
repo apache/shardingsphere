@@ -28,13 +28,21 @@ showSingleTableRules
     ;
 
 showSingleTable
-    : SHOW SINGLE (table | TABLES)  (FROM schemaName)?
+    : SHOW SINGLE (table | TABLES) (FROM schemaName)?
     ;
-   
+
 countSchemaRules
     : COUNT SCHEMA RULES (FROM schemaName)?
     ;
-    
+
+showRulesUsedResource
+    : SHOW RULES USED RESOURCE resourceName (FROM schemaName)?
+    ;
+
+resourceName
+    : IDENTIFIER | STRING
+    ;
+
 schemaName
     : IDENTIFIER
     ;

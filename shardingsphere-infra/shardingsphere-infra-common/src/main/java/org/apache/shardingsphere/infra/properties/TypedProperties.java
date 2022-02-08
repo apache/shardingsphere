@@ -38,7 +38,7 @@ public abstract class TypedProperties<E extends Enum<?> & TypedPropertyKey> {
     private final Map<E, TypedPropertyValue> cache;
     
     protected TypedProperties(final Class<E> keyClass, final Properties props) {
-        this.props = props;
+        this.props = null == props ? new Properties() : props;
         cache = preload(keyClass);
     }
     

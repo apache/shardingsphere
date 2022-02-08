@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
@@ -54,7 +55,7 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     }
     
     @Override
-    public String encrypt(final Object plainValue) {
+    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         if (null == plainValue) {
             return null;
         }
@@ -63,7 +64,7 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     }
     
     @Override
-    public Object decrypt(final String cipherValue) {
+    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
         if (null == cipherValue) {
             return null;
         }

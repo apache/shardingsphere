@@ -20,7 +20,7 @@ grammar RDLStatement;
 import Keyword, Literals, Symbol;
 
 createShadowRule
-    : CREATE SHADOW RULE shadowRuleDefinition  (COMMA shadowRuleDefinition)*
+    : CREATE SHADOW RULE shadowRuleDefinition (COMMA shadowRuleDefinition)*
     ;
 
 alterShadowRule

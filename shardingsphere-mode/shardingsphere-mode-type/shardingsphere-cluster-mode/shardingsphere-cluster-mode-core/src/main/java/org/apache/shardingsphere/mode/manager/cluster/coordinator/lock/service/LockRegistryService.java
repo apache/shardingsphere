@@ -99,7 +99,7 @@ public final class LockRegistryService {
      * Check lock ack.
      * 
      * @param lockName lock name
-     * @param timeoutMilliseconds the maximum time in milliseconds to ack                
+     * @param timeoutMilliseconds the maximum time in milliseconds to ack
      * @return true if all instances ack lock, false if not
      */
     public boolean checkLockAck(final String lockName, final long timeoutMilliseconds) {

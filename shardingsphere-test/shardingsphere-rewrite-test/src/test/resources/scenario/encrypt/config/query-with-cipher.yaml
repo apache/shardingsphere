@@ -39,6 +39,9 @@ rules:
         amount:
           cipherColumn: cipher_amount
           encryptorName: normal
+        amount_new:
+          cipherColumn: amount_new_cipher
+          encryptorName: normal
     t_account_bak:
       columns:
         certificate_number:
