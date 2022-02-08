@@ -4709,7 +4709,6 @@
     <sql-case id="set_by_mysql_source_test_case36" value="SET @b := _latin1 &apos;a&apos;" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case37" value="SET @before:= (SELECT MAX_DATA_LENGTH FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME=&apos;t1&apos; AND TABLE_SCHEMA=&apos;test&apos;)" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case38" value="SET @c := FROM_UNIXTIME(1537002029)" db-types="MySQL"/>
-    <sql-case id="set_by_mysql_source_test_case39" value="SET @create = IF(@have_ndb = 0, @create_cmd, &apos;SET @dummy = 0&apos;)" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case40" value="SET @d:=&apos; &apos;" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case41" value="SET @decimal= 1.1" db-types="MySQL"/>
     <sql-case id="set_by_mysql_source_test_case42" value="SET @drop = IF(@have_ndb = 0, @drop_cmd, &apos;SET @dummy = 0&apos;)" db-types="MySQL"/>
