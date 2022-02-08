@@ -24,6 +24,7 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDataba
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryTypesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSchemaRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesUsedResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableStatement;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRulesStatement;
@@ -46,6 +47,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowDefaultShardingStrategyStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowEncryptRulesStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowReadwriteSplittingRulesStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowRulesUsedResourceStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowShadowAlgorithmsStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowShadowRulesStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowShardingAlgorithmsStatementAssert;
@@ -65,6 +67,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowDefaultShardingStrategyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowEncryptRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowReadwriteSplittingRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowRulesUsedResourceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShadowAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShadowRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingAlgorithmsStatementTestCase;
@@ -129,6 +132,8 @@ public final class ShowRulesStatementAssert {
             ShowUnusedShardingKeyGeneratorsStatementAssert.assertIs(assertContext, (ShowUnusedShardingKeyGeneratorsStatement) actual, (ShowUnusedShardingKeyGeneratorsStatementTestCase) expected);
         } else if (actual instanceof CountSchemaRulesStatement) {
             CountSchemaRulesStatementAssert.assertIs(assertContext, (CountSchemaRulesStatement) actual, (CountSchemaRulesStatementTestCase) expected);
+        } else if (actual instanceof ShowRulesUsedResourceStatement) {
+            ShowRulesUsedResourceStatementAssert.assertIs(assertContext, (ShowRulesUsedResourceStatement) actual, (ShowRulesUsedResourceStatementTestCase) expected);
         }
     }
 }
