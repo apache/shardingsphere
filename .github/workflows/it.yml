@@ -32,7 +32,7 @@ env:
 
 jobs:
   it-empty-rule:
-    name: IT empty rule
+    name: empty rule
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
@@ -61,9 +61,9 @@ jobs:
         run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
       - name: Run Integration Test
         run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.adapters=${{ matrix.adapter }} -Dit.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }} -Dit.env.type=DOCKER
-
+  
   it-single-rule:
-    name: IT single rule
+    name: single rule
     needs: it-empty-rule
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -93,9 +93,9 @@ jobs:
         run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
       - name: Run Integration Test
         run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.adapters=${{ matrix.adapter }} -Dit.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }} -Dit.env.type=DOCKER
-
+  
   it-mixture-rule:
-    name: IT mixture rule
+    name: mixture rule
     needs: [ it-empty-rule, it-single-rule ]
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -125,7 +125,7 @@ jobs:
         run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
       - name: Run Integration Test
         run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.adapters=${{ matrix.adapter }} -Dit.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }} -Dit.env.type=DOCKER
-
+  
   mysql-proxy-agent-metrics:
     name: MySQL-Proxy with Agent Metrics
     runs-on: ubuntu-latest
@@ -150,7 +150,7 @@ jobs:
         run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests
       - name: Run Integration Test
         run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-agent-test/shardingsphere-integration-agent-test-plugins/shardingsphere-integration-agent-test-metrics/pom.xml -Pit.env.metrics
-
+  
   mysql-proxy-agent-tracing-opentelemetry:
     name: MySQL-Proxy with Agent Tracing OpenTelemetry
     runs-on: ubuntu-latest
