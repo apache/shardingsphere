@@ -23,10 +23,13 @@ import org.apache.shardingsphere.test.integration.junit.runner.parallel.Parallel
 import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
 import org.junit.runners.Parameterized;
 
-public final class ShardingSphereRunner extends Parameterized {
+/**
+ * ShardingSphere integration test parameterized.
+ */
+public final class ShardingSphereIntegrationTestParameterized extends Parameterized {
     
     // CHECKSTYLE:OFF
-    public ShardingSphereRunner(final Class<?> clazz) throws Throwable {
+    public ShardingSphereIntegrationTestParameterized(final Class<?> clazz) throws Throwable {
         // CHECKSTYLE:ON
         super(clazz);
         if (EnvironmentType.DOCKER != IntegrationTestEnvironment.getInstance().getEnvType()) {

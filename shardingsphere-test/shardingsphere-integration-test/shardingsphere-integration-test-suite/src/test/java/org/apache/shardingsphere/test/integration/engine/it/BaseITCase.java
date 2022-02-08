@@ -28,7 +28,7 @@ import org.apache.shardingsphere.test.integration.junit.compose.GovernanceContai
 import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
 import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
-import org.apache.shardingsphere.test.integration.junit.runner.ShardingSphereRunner;
+import org.apache.shardingsphere.test.integration.junit.runner.ShardingSphereIntegrationTestParameterized;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,8 +42,8 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Map;
 
+@RunWith(ShardingSphereIntegrationTestParameterized.class)
 @Getter(AccessLevel.PROTECTED)
-@RunWith(ShardingSphereRunner.class)
 public abstract class BaseITCase {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
@@ -93,7 +93,7 @@ public abstract class BaseITCase {
                 try (Connection connection = targetDataSource.getConnection()) {
                     return;
                 } catch (NullPointerException ignored) {
-                    Thread.sleep(2000);
+                    Thread.sleep(2000L);
                 }
             }
         }
@@ -110,11 +110,6 @@ public abstract class BaseITCase {
 //        }
     }
     
-    /**
-     * Ensure to close shardingsphere datasource.
-     * @param dataSource shardingsphere datasource
-     * @throws Exception sql execute exception.
-     */
     private void closeDataSource(final ShardingSphereDataSource dataSource) throws Exception {
         try (Connection connection = dataSource.getConnection()) {
             connection.createStatement().execute("SELECT 1");
@@ -124,48 +119,24 @@ public abstract class BaseITCase {
     
     protected abstract String getSQL() throws ParseException;
     
-    /**
-     * execute sql update for statement.
-     * @param connection datasource connection
-     * @param sql SQL statement executed
-     * @throws SQLException sql execute exception.
-     */
     protected void executeUpdateForStatement(final Connection connection, final String sql) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
         }
     }
     
-    /**
-     * execute sql update for prepareStatement.
-     * @param connection datasource connection
-     * @param sql SQL statement executed
-     * @throws SQLException sql execute exception.
-     */
     protected void executeUpdateForPrepareStatement(final Connection connection, final String sql) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.executeUpdate();
         }
     }
     
-    /**
-     * execute sql for statement.
-     * @param connection datasource connection
-     * @param sql SQL statement executed
-     * @throws SQLException sql execute exception.
-     */
     protected void executeForStatement(final Connection connection, final String sql) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             statement.execute(sql);
         }
     }
     
-    /**
-     * execute sql for prepare statement.
-     * @param connection datasource connection
-     * @param sql SQL statement executed
-     * @throws SQLException sql execute exception.
-     */
     protected void executeForPrepareStatement(final Connection connection, final String sql) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.execute();
