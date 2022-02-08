@@ -66,7 +66,6 @@ import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -162,8 +161,6 @@ public final class ClusterContextManagerCoordinatorTest {
     }
     
     @Test
-    // TODO Fix me.
-    @Ignore
     public void assertSchemaChanged() {
         TableMetaData changedTableMetaData = new TableMetaData("t_order");
         SchemaChangedEvent event = new SchemaChangedEvent("schema", changedTableMetaData, null);
@@ -248,8 +245,8 @@ public final class ClusterContextManagerCoordinatorTest {
         when(metaData.getResource()).thenReturn(resource);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(metaData.getSchema()).thenReturn(schema);
-        when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
+        when(metaData.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
+        when(metaData.getRuleMetaData().getConfigurations()).thenReturn(new LinkedList<>());
         return new HashMap<>(Collections.singletonMap("schema", metaData));
     }
     
