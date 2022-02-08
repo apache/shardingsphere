@@ -46,8 +46,8 @@ public final class ClusterComposedContainer extends ComposedContainer {
     @Getter(AccessLevel.NONE)
     private final ZookeeperContainer zookeeperContainer;
     
-    public ClusterComposedContainer(final String clusterName, final ParameterizedArray parameterizedArray) {
-        super(clusterName, parameterizedArray);
+    public ClusterComposedContainer(final String name, final ParameterizedArray parameterizedArray) {
+        super(name, parameterizedArray);
         this.storageContainer = createStorageContainer();
         this.adapterContainer = createAdapterContainer();
         this.storageContainer.setNetworkAliases(Collections.singletonList(parameterizedArray.getDatabaseType().getName().toLowerCase() + ".sharding_governance.host"));

@@ -52,7 +52,8 @@ import java.util.function.Supplier;
 @Getter(AccessLevel.PROTECTED)
 public abstract class ComposedContainer extends ExternalResource implements Closeable {
     
-    private final String clusterName;
+    @Getter(AccessLevel.NONE)
+    private final String name;
     
     private final ParameterizedArray parameterizedArray;
     
@@ -63,21 +64,6 @@ public abstract class ComposedContainer extends ExternalResource implements Clos
     private volatile boolean started;
     
     private volatile boolean executed;
-    
-    protected ShardingSphereAdapterContainer createAdapterContainer() {
-        Supplier<ShardingSphereAdapterContainer> supplier = () -> {
-            switch (parameterizedArray.getAdapter()) {
-                case "proxy":
-                    return new ShardingSphereProxyContainer(parameterizedArray);
-                case "jdbc":
-                    return new ShardingSphereJDBCContainer(parameterizedArray);
-                default:
-                    throw new RuntimeException(String.format("Adapter[%s] is unknown.", parameterizedArray.getAdapter()));
-                
-            }
-        };
-        return createContainer(supplier, "adapter");
-    }
     
     protected ShardingSphereStorageContainer createStorageContainer() {
         Supplier<ShardingSphereStorageContainer> supplier = () -> {
@@ -95,12 +81,27 @@ public abstract class ComposedContainer extends ExternalResource implements Clos
         return createContainer(supplier, parameterizedArray.getDatabaseType().getName().toLowerCase() + "." + parameterizedArray.getScenario() + ".host");
     }
     
+    protected ShardingSphereAdapterContainer createAdapterContainer() {
+        Supplier<ShardingSphereAdapterContainer> supplier = () -> {
+            switch (parameterizedArray.getAdapter()) {
+                case "proxy":
+                    return new ShardingSphereProxyContainer(parameterizedArray);
+                case "jdbc":
+                    return new ShardingSphereJDBCContainer(parameterizedArray);
+                default:
+                    throw new RuntimeException(String.format("Adapter[%s] is unknown.", parameterizedArray.getAdapter()));
+                
+            }
+        };
+        return createContainer(supplier, "adapter");
+    }
+    
     protected final <T extends ShardingSphereContainer> T createContainer(final Supplier<T> supplier, final String hostname) {
         T result = supplier.get();
         containers.add(result);
         result.setNetwork(network);
         result.setNetworkAliases(Collections.singletonList(hostname));
-        result.withLogConsumer(ContainerLogs.newConsumer(String.join("-", clusterName, result.getDockerName())));
+        result.withLogConsumer(ContainerLogs.newConsumer(String.join("-", name, result.getName())));
         return result;
     }
     

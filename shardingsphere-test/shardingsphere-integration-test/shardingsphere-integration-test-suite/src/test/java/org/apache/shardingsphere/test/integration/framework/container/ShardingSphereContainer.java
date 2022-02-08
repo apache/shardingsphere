@@ -37,33 +37,30 @@ import java.util.stream.Collectors;
 public abstract class ShardingSphereContainer extends GenericContainer<ShardingSphereContainer> {
     
     @Getter
-    private final boolean isFakeContainer;
+    private final String name;
+    
+    private final boolean isFakedContainer;
     
     @Getter
     private final ParameterizedArray parameterizedArray;
     
-    @Getter
-    private final String dockerName;
-    
-    public ShardingSphereContainer(final String dockerName, final String dockerImageName, final boolean isFakeContainer, final ParameterizedArray parameterizedArray) {
-        super(convertToDockerImage(dockerImageName, isFakeContainer));
-        this.dockerName = dockerName;
-        this.isFakeContainer = isFakeContainer;
+    public ShardingSphereContainer(final String name, final String dockerImageName, final boolean isFakedContainer, final ParameterizedArray parameterizedArray) {
+        super(getDockerImage(dockerImageName, isFakedContainer));
+        this.name = name;
+        this.isFakedContainer = isFakedContainer;
         this.parameterizedArray = parameterizedArray;
     }
     
-    private static RemoteDockerImage convertToDockerImage(final String dockerImageName, final boolean isFakeContainer) {
-        if (isFakeContainer) {
-            return new RemoteDockerImage(DockerImageName.parse(dockerImageName)).withImagePullPolicy(dockerName -> false);
-        }
-        return new RemoteDockerImage(DockerImageName.parse(dockerImageName));
+    private static RemoteDockerImage getDockerImage(final String imageName, final boolean isFakedContainer) {
+        RemoteDockerImage result = new RemoteDockerImage(DockerImageName.parse(imageName));
+        return isFakedContainer ? result.withImagePullPolicy(dockerName -> false) : result;
     }
     
     @Override
     public void start() {
         configure();
         startDependencies();
-        if (!isFakeContainer) {
+        if (!isFakedContainer) {
             super.start();
         }
         execute();
@@ -83,7 +80,7 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
                         // CHECKSTYLE:OFF
                     } catch (final Exception ex) {
                         // CHECKSTYLE:ON
-                        log.info("Failed to check container {} healthy.", c.getDockerName(), ex);
+                        log.info("Failed to check container {} healthy.", c.getName(), ex);
                         return false;
                     }
                 })

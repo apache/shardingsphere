@@ -33,8 +33,8 @@ public final class MemoryComposedContainer extends ComposedContainer {
     
     private final ShardingSphereAdapterContainer adapterContainer;
     
-    public MemoryComposedContainer(final String clusterName, final ParameterizedArray parameterizedArray) {
-        super(clusterName, parameterizedArray);
+    public MemoryComposedContainer(final String name, final ParameterizedArray parameterizedArray) {
+        super(name, parameterizedArray);
         this.storageContainer = createStorageContainer();
         this.adapterContainer = createAdapterContainer();
         adapterContainer.dependsOn(storageContainer);
