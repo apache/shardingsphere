@@ -30,7 +30,7 @@ import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseConte
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCasesLoader;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.param.model.CaseParameterizedArray;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.common;
+package org.apache.shardingsphere.test.integration.cases;
 
 /**
  * SQL execute type.
