@@ -23,8 +23,8 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
-import org.apache.shardingsphere.test.integration.framework.compose.ContainerCompose;
-import org.apache.shardingsphere.test.integration.framework.compose.GovernanceContainerCompose;
+import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainer;
+import org.apache.shardingsphere.test.integration.framework.compose.mode.ClusterComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.ShardingSphereAdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.storage.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
@@ -49,7 +49,7 @@ public abstract class BaseITCase {
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
     @Rule
-    public final ContainerCompose compose;
+    public final ComposedContainer compose;
     
     private final String adapter;
     
@@ -86,7 +86,7 @@ public abstract class BaseITCase {
     public void init() throws Exception {
         dataSourceMap = compose.getDataSourceMap();
         targetDataSource = dataSourceMap.get("adapterForWriter");
-        if (compose instanceof GovernanceContainerCompose) {
+        if (compose instanceof ClusterComposedContainer) {
             dataSourceForReader = dataSourceMap.get("adapterForReader");
             int waitForGov = 10;
             while (waitForGov-- > 0) {

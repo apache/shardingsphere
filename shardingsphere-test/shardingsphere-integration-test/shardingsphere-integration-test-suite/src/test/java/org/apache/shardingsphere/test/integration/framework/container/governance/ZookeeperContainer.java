@@ -22,12 +22,12 @@ import org.apache.shardingsphere.test.integration.framework.param.model.Paramete
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
 public final class ZookeeperContainer extends ShardingSphereContainer {
-
+    
     public ZookeeperContainer(final ParameterizedArray parameterizedArray) {
         super("zookeeper", "zookeeper:3.6.2", false, parameterizedArray);
         setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*PrepRequestProcessor \\(sid:[0-9]+\\) started.*"));
     }
-
+    
     /**
      * Get server list.
      *

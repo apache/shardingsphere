@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.test.integration.framework.compose.GovernanceContainerCompose;
+import org.apache.shardingsphere.test.integration.framework.compose.mode.ClusterComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 
 import javax.sql.DataSource;
@@ -74,7 +74,7 @@ public abstract class BaseDMLIT extends SingleITCase {
         DataSetMetaData expectedDataSetMetaData = getDataSet().getMetaDataList().get(0);
         for (String each : new InlineExpressionParser(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
-            DataSource dataSource = getCompose() instanceof GovernanceContainerCompose
+            DataSource dataSource = getCompose() instanceof ClusterComposedContainer
                     ? getDataSourceForReader() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName());
             try (
                     Connection connection = dataSource.getConnection();
@@ -102,7 +102,7 @@ public abstract class BaseDMLIT extends SingleITCase {
     private String getPrimaryKeyColumnNameForPostgreSQL(final DataNode dataNode) throws SQLException {
         String sql = String.format("SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS data_type "
                 + "FROM pg_index i JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey) WHERE i.indrelid = '%s'::regclass AND i.indisprimary", dataNode.getTableName());
-        DataSource dataSource = getCompose() instanceof GovernanceContainerCompose
+        DataSource dataSource = getCompose() instanceof ClusterComposedContainer
                 ? getDataSourceForReader() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName());
         try (
                 Connection connection = dataSource.getConnection();

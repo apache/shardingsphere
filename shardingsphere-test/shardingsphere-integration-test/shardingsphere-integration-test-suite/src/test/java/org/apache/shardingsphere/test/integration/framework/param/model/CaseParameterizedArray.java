@@ -23,7 +23,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.framework.compose.ContainerCompose;
+import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainer;
 
 /**
  * Parameterized array of case based integration test.
@@ -43,7 +43,7 @@ public final class CaseParameterizedArray implements ParameterizedArray {
     private final SQLCommandType sqlCommandType;
     
     @Setter
-    private ContainerCompose compose;
+    private ComposedContainer compose;
     
     @Override
     public String toString() {

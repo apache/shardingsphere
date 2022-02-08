@@ -29,7 +29,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.test.integration.framework.compose.GovernanceContainerCompose;
+import org.apache.shardingsphere.test.integration.framework.compose.mode.ClusterComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.CaseParameterizedArray;
 
 import javax.sql.DataSource;
@@ -92,7 +92,7 @@ public abstract class BatchITCase extends BaseITCase {
         DataSetMetaData expectedDataSetMetaData = expected.getMetaDataList().get(0);
         for (String each : new InlineExpressionParser(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
-            DataSource dataSource = getCompose() instanceof GovernanceContainerCompose
+            DataSource dataSource = getCompose() instanceof ClusterComposedContainer
                     ? getDataSourceForReader() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName());
             try (Connection connection = dataSource.getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s ORDER BY 1", dataNode.getTableName()))) {

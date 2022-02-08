@@ -46,11 +46,11 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * Container compose.
+ * Composed container.
  */
 @RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
-public abstract class ContainerCompose extends ExternalResource implements Closeable {
+public abstract class ComposedContainer extends ExternalResource implements Closeable {
     
     private final String clusterName;
     
@@ -176,7 +176,7 @@ public abstract class ContainerCompose extends ExternalResource implements Close
      *
      * @param consumer initializer
      */
-    public final void executeOnStarted(final Consumer<ContainerCompose> consumer) {
+    public final void executeOnStarted(final Consumer<ComposedContainer> consumer) {
         if (!executed) {
             synchronized (this) {
                 if (!executed) {

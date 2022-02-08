@@ -20,16 +20,21 @@ package org.apache.shardingsphere.test.integration.framework.compose;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.integration.env.EnvironmentType;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.integration.framework.compose.mode.ClusterComposedContainer;
+import org.apache.shardingsphere.test.integration.framework.compose.mode.MemoryComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.junit.rules.ExternalResource;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Composed container manager.
+ */
 @RequiredArgsConstructor
-public final class ComposeManager extends ExternalResource {
+public final class ComposedContainerManager extends ExternalResource {
     
-    private final Map<String, ContainerCompose> composeMap = new HashMap<>();
+    private final Map<String, ComposedContainer> composeMap = new HashMap<>();
     
     private final String suiteName;
     
@@ -39,17 +44,17 @@ public final class ComposeManager extends ExternalResource {
      * @param parameterizedArray parameterized array
      * @return container compose
      */
-    public ContainerCompose getOrCreateCompose(final ParameterizedArray parameterizedArray) {
+    public ComposedContainer getOrCreateCompose(final ParameterizedArray parameterizedArray) {
         String key = generateKey(parameterizedArray);
         if (composeMap.containsKey(key)) {
             return composeMap.get(key);
         }
-        ContainerCompose result;
+        ComposedContainer result;
         // TODO fix sharding_governance
         if ("sharding_governance".equals(parameterizedArray.getScenario())) {
-            result = new GovernanceContainerCompose(suiteName, parameterizedArray);
+            result = new ClusterComposedContainer(suiteName, parameterizedArray);
         } else {
-            result = new SimpleContainerCompose(suiteName, parameterizedArray);
+            result = new MemoryComposedContainer(suiteName, parameterizedArray);
         }
         composeMap.put(key, result);
         return result;
@@ -71,6 +76,6 @@ public final class ComposeManager extends ExternalResource {
     
     @Override
     protected void after() {
-        composeMap.values().forEach(ContainerCompose::close);
+        composeMap.values().forEach(ComposedContainer::close);
     }
 }

@@ -15,31 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.compose;
+package org.apache.shardingsphere.test.integration.framework.compose.mode;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.ShardingSphereAdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.storage.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 /**
- * Container compose.
+ * Memory composed container.
  */
-@Slf4j
-public final class SimpleContainerCompose extends ContainerCompose {
+@Getter
+public final class MemoryComposedContainer extends ComposedContainer {
     
-    @Getter
     private final ShardingSphereStorageContainer storageContainer;
     
-    @Getter
     private final ShardingSphereAdapterContainer adapterContainer;
     
-    public SimpleContainerCompose(final String clusterName, final ParameterizedArray parameterizedArray) {
+    public MemoryComposedContainer(final String clusterName, final ParameterizedArray parameterizedArray) {
         super(clusterName, parameterizedArray);
         this.storageContainer = createStorageContainer();
         this.adapterContainer = createAdapterContainer();
         adapterContainer.dependsOn(storageContainer);
     }
-    
 }
