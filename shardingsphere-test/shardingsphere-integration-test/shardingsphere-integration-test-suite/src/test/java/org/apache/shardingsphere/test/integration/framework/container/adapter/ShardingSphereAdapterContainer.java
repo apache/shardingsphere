@@ -37,9 +37,9 @@ import java.util.Collections;
 /**
  * ShardingSphere adapter container.
  */
+@Getter
 public abstract class ShardingSphereAdapterContainer extends ShardingSphereContainer {
     
-    @Getter
     private final YamlUserConfiguration authentication;
     
     public ShardingSphereAdapterContainer(final String dockerName, final String dockerImageName, final ParameterizedArray parameterizedArray) {
@@ -81,10 +81,9 @@ public abstract class ShardingSphereAdapterContainer extends ShardingSphereConta
     public abstract DataSource getDataSourceForReader(String serverLists);
     
     private Collection<String> getUsersFromConfiguration(final YamlProxyServerConfiguration serverConfig) {
-        for (YamlRuleConfiguration config : serverConfig.getRules()) {
-            if (config instanceof YamlAuthorityRuleConfiguration) {
-                YamlAuthorityRuleConfiguration authorityRuleConfig = (YamlAuthorityRuleConfiguration) config;
-                return authorityRuleConfig.getUsers();
+        for (YamlRuleConfiguration each : serverConfig.getRules()) {
+            if (each instanceof YamlAuthorityRuleConfiguration) {
+                return ((YamlAuthorityRuleConfiguration) each).getUsers();
             }
         }
         return Collections.emptyList();

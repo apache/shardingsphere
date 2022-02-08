@@ -44,7 +44,7 @@ public final class ITWatcher extends TestWatcher {
              PrintStream printStream = new PrintStream(out)) {
             cause.printStackTrace(printStream);
             printStream.flush();
-            return new String(out.toByteArray());
+            return out.toString();
             //CHECKSTYLE:OFF
         } catch (final Exception ignored) {
             //CHECKSTYLE:ON
