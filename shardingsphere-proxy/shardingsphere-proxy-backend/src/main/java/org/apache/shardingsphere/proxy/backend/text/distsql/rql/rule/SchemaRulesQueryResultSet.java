@@ -90,7 +90,7 @@ public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
         } else {
             addDefaultData(dataMap);
         }
-        this.data = dataMap.values().iterator();
+        data = dataMap.values().iterator();
     }
     
     private void addSingleTableData(final Map<String, Collection<Object>> dataMap, final Collection<SingleTableRule> rules) {
