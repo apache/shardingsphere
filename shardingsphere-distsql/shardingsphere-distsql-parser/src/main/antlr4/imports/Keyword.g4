@@ -266,3 +266,7 @@ CONFIG
 FILE
     : F I L E
     ;
+
+USED
+    : U S E D
+    ;

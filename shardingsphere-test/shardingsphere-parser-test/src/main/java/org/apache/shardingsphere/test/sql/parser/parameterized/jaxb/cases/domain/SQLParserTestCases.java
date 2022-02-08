@@ -250,6 +250,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowDefaultShardingStrategyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowEncryptRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowReadwriteSplittingRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowRulesUsedResourceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShadowAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShadowRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShadowTableRulesStatementTestCase;
@@ -1082,7 +1083,10 @@ public final class SQLParserTestCases {
     private final List<UnlockStatementTestCase> unlockStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "export-schema-config")
-    private final List<ExportSchemaConfigurationStatementTestCase> exportSchemaStatementTestCases = new LinkedList<>();
+    private final List<ExportSchemaConfigurationStatementTestCase> exportSchemaConfigurationStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-rules-used-resource")
+    private final List<ShowRulesUsedResourceStatementTestCase> showRulesUsedResourceStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -1353,7 +1357,8 @@ public final class SQLParserTestCases {
         putAll(dropExtensionStatementTestCase, result);
         putAll(lockStatementTestCases, result);
         putAll(unlockStatementTestCases, result);
-        putAll(exportSchemaStatementTestCases, result);
+        putAll(exportSchemaConfigurationStatementTestCases, result);
+        putAll(showRulesUsedResourceStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

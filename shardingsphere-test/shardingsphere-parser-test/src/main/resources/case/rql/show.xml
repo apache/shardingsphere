@@ -114,4 +114,8 @@
     <count-schema-rules sql-case-id="count-schema-rules">
         <schema name="schemaName" start-index="24" stop-index="33"/>
     </count-schema-rules>
+
+    <show-rules-used-resource sql-case-id="show-rules-used-resource" resource-name="ds_0">
+        <schema name="schemaName" start-index="35" stop-index="44"/>
+    </show-rules-used-resource>
 </sql-parser-test-cases>

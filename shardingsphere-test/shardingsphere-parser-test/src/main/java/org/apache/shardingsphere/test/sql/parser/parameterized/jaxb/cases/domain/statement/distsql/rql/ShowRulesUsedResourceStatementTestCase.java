@@ -15,42 +15,26 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
 
-import Keyword, Literals, Symbol;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-showResources
-    : SHOW SCHEMA RESOURCES (FROM schemaName)?
-    ;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
-showSingleTableRules
-    : SHOW SINGLE TABLE RULES (FROM schemaName)?
-    ;
-
-showSingleTable
-    : SHOW SINGLE (table | TABLES) (FROM schemaName)?
-    ;
-
-countSchemaRules
-    : COUNT SCHEMA RULES (FROM schemaName)?
-    ;
-
-showRulesUsedResource
-    : SHOW RULES USED RESOURCE resourceName (FROM schemaName)?
-    ;
-
-resourceName
-    : IDENTIFIER | STRING
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
-
-table
-    : TABLE tableName
-    ;
-
-tableName
-    : IDENTIFIER
-    ;
+/**
+ * Show rules used resource statement test case.
+ */
+@Getter
+@Setter
+public final class ShowRulesUsedResourceStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute(name = "resource-name")
+    private String resourceName;
+    
+    @XmlElement
+    private ExpectedSchema schema;
+}
