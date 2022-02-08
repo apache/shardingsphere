@@ -41,11 +41,9 @@ public final class InstanceContextTest {
         InstanceContext context = new InstanceContext(new ComputeNodeInstance(), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfiguration);
         StateType actual = context.getState().getCurrentState();
         assertThat(actual, is(StateType.OK));
-        //circuit break
         context.updateInstanceStatus(Lists.newArrayList(StateType.CIRCUIT_BREAK.name()));
         actual = context.getState().getCurrentState();
         assertThat(actual, is(StateType.CIRCUIT_BREAK));
-        //online
         context.updateInstanceStatus(Lists.newArrayList());
         actual = context.getState().getCurrentState();
         assertThat(actual, is(StateType.OK));
