@@ -40,8 +40,8 @@ import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
@@ -158,27 +158,38 @@ public final class ContextManager implements AutoCloseable {
      * @param deletedTable deleted table
      */
     public void alterSchema(final String schemaName, final TableMetaData changedTableMetaData, final String deletedTable) {
+        Optional.ofNullable(changedTableMetaData).ifPresent(optional -> alterTableSchema(schemaName, optional));
+        Optional.ofNullable(deletedTable).ifPresent(optional -> deleteTableSchema(schemaName, optional));
+    }
+    
+    private void alterTableSchema(final String schemaName, final TableMetaData changedTableMetaData) {
         ShardingSphereMetaData metaData = metaDataContexts.getMetaData(schemaName);
-        alterSingleTableDataNodes(metaData, changedTableMetaData);
+        alterSingleTableDataNodes(schemaName, metaData, changedTableMetaData);
         FederationSchemaMetaData schemaMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName);
         metaData.getSchema().put(changedTableMetaData.getName(), changedTableMetaData);
         schemaMetaData.put(changedTableMetaData);
         metaDataContexts.getOptimizerContext().getPlannerContexts().put(schemaName, OptimizerPlannerContextFactory.create(schemaMetaData));
-        if (null != deletedTable) {
-            metaData.getSchema().remove(deletedTable);
-            schemaMetaData.remove(deletedTable);
-            metaDataContexts.getOptimizerContext().getPlannerContexts().put(schemaName, OptimizerPlannerContextFactory.create(schemaMetaData));
+    }
+    
+    private void alterSingleTableDataNodes(final String schemaName, final ShardingSphereMetaData metaData, final TableMetaData changedTableMetaData) {
+        if (!containsInDataNodeContainedRule(changedTableMetaData.getName(), metaData)) {
+            refreshRules(schemaName, metaData);
         }
     }
     
-    private void alterSingleTableDataNodes(final ShardingSphereMetaData metaData, final TableMetaData changedTableMetaData) {
-        if (!containsInDataNodeContainedRule(changedTableMetaData.getName(), metaData)) {
-            metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> {
-                if (each.findSingleTableDataNode(changedTableMetaData.getName()).isPresent()) {
-                    each.put(changedTableMetaData.getName(), each.findSingleTableDataNode(changedTableMetaData.getName()).get().getDataSourceName());
-                }
-            });
-        }
+    private void refreshRules(final String schemaName, final ShardingSphereMetaData metaData) {
+        Collection<ShardingSphereRule> rules = SchemaRulesBuilder.buildRules(schemaName, new DataSourceProvidedSchemaConfiguration(metaData.getResource().getDataSources(),
+                metaData.getRuleMetaData().getConfigurations()), new ConfigurationProperties(metaDataContexts.getProps().getProps()));
+        metaData.getRuleMetaData().getRules().clear();
+        metaData.getRuleMetaData().getRules().addAll(rules);
+    }
+    
+    private void deleteTableSchema(final String schemaName, final String deletedTable) {
+        ShardingSphereMetaData metaData = metaDataContexts.getMetaData(schemaName);
+        FederationSchemaMetaData schemaMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().get(schemaName);
+        metaData.getSchema().remove(deletedTable);
+        schemaMetaData.remove(deletedTable);
+        metaDataContexts.getOptimizerContext().getPlannerContexts().put(schemaName, OptimizerPlannerContextFactory.create(schemaMetaData));
     }
     
     private boolean containsInDataNodeContainedRule(final String tableName, final ShardingSphereMetaData schemaMetaData) {

@@ -74,7 +74,7 @@ jobs:
         run: ./mvnw -B -f examples/pom.xml clean package -DskipTests
   
   unix:
-    name: CI Tests - JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
+    name: JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
@@ -113,7 +113,7 @@ jobs:
         run: echo y | ./mvnw -B -f examples/pom.xml clean package -DskipTests
   
   macos:
-    name: CI Tests - JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
+    name: JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
     needs: check-license
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
