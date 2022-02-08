@@ -827,5 +827,5 @@ signalInformationItem
     ;
     
 prepare
-    : PREPARE identifier FROM string_
+    : PREPARE identifier FROM (stringLiterals | userVariable)
     ;
