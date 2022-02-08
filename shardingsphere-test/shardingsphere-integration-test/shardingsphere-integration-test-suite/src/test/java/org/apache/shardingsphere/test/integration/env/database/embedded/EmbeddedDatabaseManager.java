@@ -58,13 +58,12 @@ public final class EmbeddedDatabaseManager {
         if (databaseTypeImpl instanceof H2DatabaseType) {
             return;
         }
-        String embeddedDatabaseKey = databaseType;
-        if (EMBEDDED_DATABASES_CACHE.containsKey(embeddedDatabaseKey)) {
+        if (EMBEDDED_DATABASES_CACHE.containsKey(databaseType)) {
             return;
         }
         DATABASE_RESOURCE_LOCK.lock();
         try {
-            startUpSafely(embeddedDatabaseKey, databaseType, embeddedDatabaseProps, port);
+            startUpSafely(databaseType, databaseType, embeddedDatabaseProps, port);
         } finally {
             DATABASE_RESOURCE_LOCK.unlock();
         }
