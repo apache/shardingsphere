@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.engine.dal;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.framework.compose.ComposeManager;
+import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainerManager;
 import org.apache.shardingsphere.test.integration.framework.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 public final class GeneralDALIT extends BaseDALIT {
     
     @ClassRule
-    public static ComposeManager composeManager = new ComposeManager("GeneralDALIT");
+    public static ComposedContainerManager composedContainerManager = new ComposedContainerManager("GeneralDALIT");
     
     public GeneralDALIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
@@ -53,7 +53,7 @@ public final class GeneralDALIT extends BaseDALIT {
                 .stream()
                 .filter(each -> SQLExecuteType.Literal == each.getSqlExecuteType())
                 .filter(each -> "proxy".equals(each.getAdapter()))
-                .peek(each -> each.setCompose(composeManager.getOrCreateCompose(each)))
+                .peek(each -> each.setCompose(composedContainerManager.getOrCreateCompose(each)))
                 .collect(Collectors.toList());
     }
     

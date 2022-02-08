@@ -21,7 +21,7 @@ import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.test.integration.framework.compose.ComposeManager;
+import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainerManager;
 import org.apache.shardingsphere.test.integration.framework.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
@@ -46,7 +46,7 @@ import static org.junit.Assert.assertTrue;
 public final class AdditionalDQLIT extends BaseDQLIT {
     
     @ClassRule
-    public static ComposeManager composeManager = new ComposeManager("AdditionalDQLIT");
+    public static ComposedContainerManager composedContainerManager = new ComposedContainerManager("AdditionalDQLIT");
     
     public AdditionalDQLIT(final AssertionParameterizedArray parameter) {
         super(parameter);
@@ -57,7 +57,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
         if (IntegrationTestEnvironment.getInstance().isRunAdditionalTestCases()) {
             return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DQL)
                     .stream()
-                    .peek(each -> each.setCompose(composeManager.getOrCreateCompose(each)))
+                    .peek(each -> each.setCompose(composedContainerManager.getOrCreateCompose(each)))
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();

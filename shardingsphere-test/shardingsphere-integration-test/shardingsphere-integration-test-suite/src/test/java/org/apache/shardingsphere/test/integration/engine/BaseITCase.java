@@ -23,8 +23,8 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
-import org.apache.shardingsphere.test.integration.framework.compose.ContainerCompose;
-import org.apache.shardingsphere.test.integration.framework.compose.GovernanceContainerCompose;
+import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainer;
+import org.apache.shardingsphere.test.integration.framework.compose.mode.ClusterComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.ShardingSphereAdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.storage.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
@@ -49,7 +49,7 @@ public abstract class BaseITCase {
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
     @Rule
-    public final ContainerCompose compose;
+    public final ComposedContainer composedContainer;
     
     private final String adapter;
     
@@ -73,20 +73,20 @@ public abstract class BaseITCase {
     
     public BaseITCase(final ParameterizedArray parameterizedArray) {
         adapter = parameterizedArray.getAdapter();
-        compose = parameterizedArray.getCompose();
+        composedContainer = parameterizedArray.getCompose();
         scenario = parameterizedArray.getScenario();
         databaseType = parameterizedArray.getDatabaseType();
         sqlCommandType = parameterizedArray.getSqlCommandType();
-        storageContainer = compose.getStorageContainer();
-        adapterContainer = compose.getAdapterContainer();
+        storageContainer = composedContainer.getStorageContainer();
+        adapterContainer = composedContainer.getAdapterContainer();
         integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
     }
     
     @Before
     public void init() throws Exception {
-        dataSourceMap = compose.getDataSourceMap();
+        dataSourceMap = composedContainer.getDataSourceMap();
         targetDataSource = dataSourceMap.get("adapterForWriter");
-        if (compose instanceof GovernanceContainerCompose) {
+        if (composedContainer instanceof ClusterComposedContainer) {
             dataSourceForReader = dataSourceMap.get("adapterForReader");
             int waitForGov = 10;
             while (waitForGov-- > 0) {

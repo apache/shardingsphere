@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.engine.dcl;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.framework.compose.ComposeManager;
+import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainerManager;
 import org.apache.shardingsphere.test.integration.framework.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 public final class GeneralDCLIT extends BaseDCLIT {
     
     @ClassRule
-    public static ComposeManager composeManager = new ComposeManager("GeneralDCLIT");
+    public static ComposedContainerManager composedContainerManager = new ComposedContainerManager("GeneralDCLIT");
     
     public GeneralDCLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
@@ -49,7 +49,7 @@ public final class GeneralDCLIT extends BaseDCLIT {
     public static Collection<ParameterizedArray> getParameters() {
         return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DCL)
                 .stream()
-                .peek(each -> each.setCompose(composeManager.getOrCreateCompose(each)))
+                .peek(each -> each.setCompose(composedContainerManager.getOrCreateCompose(each)))
                 .collect(Collectors.toList());
     }
     

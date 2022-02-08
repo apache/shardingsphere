@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.compose;
+package org.apache.shardingsphere.test.integration.framework.compose.mode;
 
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.ShardingSphereAdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.impl.ShardingSphereProxyContainer;
 import org.apache.shardingsphere.test.integration.framework.container.governance.ZookeeperContainer;
@@ -30,21 +31,22 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-@Slf4j
-public final class GovernanceContainerCompose extends ContainerCompose {
+/**
+ * Cluster composed container.
+ */
+@Getter
+public final class ClusterComposedContainer extends ComposedContainer {
     
-    @Getter
     private final ShardingSphereStorageContainer storageContainer;
     
-    @Getter
     private final ShardingSphereAdapterContainer adapterContainer;
-
-    @Getter
+    
     private final ShardingSphereAdapterContainer adapterContainerForReader;
-
+    
+    @Getter(AccessLevel.NONE)
     private final ZookeeperContainer zookeeperContainer;
-
-    public GovernanceContainerCompose(final String clusterName, final ParameterizedArray parameterizedArray) {
+    
+    public ClusterComposedContainer(final String clusterName, final ParameterizedArray parameterizedArray) {
         super(clusterName, parameterizedArray);
         this.storageContainer = createStorageContainer();
         this.adapterContainer = createAdapterContainer();

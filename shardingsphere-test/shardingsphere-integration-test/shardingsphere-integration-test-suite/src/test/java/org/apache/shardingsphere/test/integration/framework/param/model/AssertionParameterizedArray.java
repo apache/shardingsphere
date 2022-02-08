@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseConte
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.framework.compose.ContainerCompose;
+import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainer;
 
 /**
  * Parameterized array of assertion based integration test.
@@ -49,7 +49,7 @@ public final class AssertionParameterizedArray implements ParameterizedArray {
     private final SQLCommandType sqlCommandType;
     
     @Setter
-    private ContainerCompose compose;
+    private ComposedContainer compose;
     
     @Override
     public String toString() {
