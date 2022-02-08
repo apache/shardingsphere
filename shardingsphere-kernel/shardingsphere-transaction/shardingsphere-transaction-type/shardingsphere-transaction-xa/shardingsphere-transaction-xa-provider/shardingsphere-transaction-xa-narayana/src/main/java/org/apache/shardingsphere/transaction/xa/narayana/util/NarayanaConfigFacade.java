@@ -15,52 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.utils;
+package org.apache.shardingsphere.transaction.xa.narayana.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import com.arjuna.ats.internal.arjuna.objectstore.jdbc.JDBCStore;
+import com.arjuna.ats.internal.arjuna.objectstore.jdbc.accessors.DynamicDataSourceJDBCAccess;
+import com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule;
+import com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner;
+import com.arjuna.ats.internal.jta.recovery.arjunacore.JTAActionStatusServiceXAResourceOrphanFilter;
+import com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter;
+import com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter;
+import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.apache.shardingsphere.transaction.spi.TransactionConfigFacade;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Narayana config utils.
- */
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class NarayanaConfigUtil {
+public class NarayanaConfigFacade implements TransactionConfigFacade {
 
-    /**
-     * generate narayana config file.
-     * @param metaDataContexts metadata contexts.
-     * @param instanceId instance id.
-     */
-    public static void generateNarayanaConfig(final MetaDataContexts metaDataContexts, final String instanceId) {
-        TransactionRule transactionRule = metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst()
-                .get();
+    @Override
+    public void generate(final TransactionRule transactionRule, final String instanceId) {
         if (null == transactionRule) {
             return;
         }
-        Map<Object, Object> result;
-        if (transactionRule.getDefaultType() == TransactionType.XA && transactionRule.getProviderType().equalsIgnoreCase("Narayana")) {
-            result = generateDefaultNarayanaConfig(instanceId);
-            if (null != transactionRule.getProps()) {
-                swapJdbcStore(transactionRule, result);
-            }
-        } else {
-            return;
+        Map<Object, Object> content;
+        content = generateDefaultNarayanaConfig(instanceId);
+        if (null != transactionRule.getProps()) {
+            swapJdbcStore(transactionRule, content);
         }
-        String value = narayanaConfigMapToXml(result);
+        String value = narayanaConfigMapToXml(content);
         String path = ClassLoader.getSystemResource("").getPath();
         try (BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(path, "jbossts-properties.xml"))) {
             bufferedWriter.write(value);
@@ -70,6 +62,11 @@ public final class NarayanaConfigUtil {
         }
     }
 
+    @Override
+    public String getTransactionType() {
+        return "Narayana";
+    }
+
     private static void swapJdbcStore(final TransactionRule transactionRule, final Map<Object, Object> config) {
         Object host = transactionRule.getProps().get("host");
         Object port = transactionRule.getProps().get("port");
@@ -77,18 +74,18 @@ public final class NarayanaConfigUtil {
         Object password = transactionRule.getProps().getProperty("password");
         Object databaseName = transactionRule.getProps().getProperty("databaseName");
         if (null != host && null != port && null != user && null != password && null != databaseName) {
-            String jdbcAccessPatten = "com.arjuna.ats.internal.arjuna.objectstore.jdbc.accessors.DynamicDataSourceJDBCAccess;"
-                    + "ClassName=com.mysql.cj.jdbc.MysqlDataSource;URL=jdbc:mysql://%s:%d/%s;User=%s;Password=%s";
+            String jdbcAccessPatten = DynamicDataSourceJDBCAccess.class.getName()
+                    + ";ClassName=com.mysql.cj.jdbc.MysqlDataSource;URL=jdbc:mysql://%s:%d/%s;User=%s;Password=%s";
             String jdbcAccess = String.format(jdbcAccessPatten, host, port, databaseName, user, password);
-            config.put("ObjectStoreEnvironmentBean.objectStoreType", "com.arjuna.ats.internal.arjuna.objectstore.jdbc.JDBCStore");
+            config.put("ObjectStoreEnvironmentBean.objectStoreType", JDBCStore.class.getName());
             config.put("ObjectStoreEnvironmentBean.jdbcAccess", jdbcAccess);
             config.put("ObjectStoreEnvironmentBean.tablePrefix", "Action");
             config.put("ObjectStoreEnvironmentBean.dropTable", true);
-            config.put("ObjectStoreEnvironmentBean.stateStore.objectStoreType", "com.arjuna.ats.internal.arjuna.objectstore.jdbc.JDBCStore");
+            config.put("ObjectStoreEnvironmentBean.stateStore.objectStoreType", JDBCStore.class.getName());
             config.put("ObjectStoreEnvironmentBean.stateStore.jdbcAccess", jdbcAccess);
             config.put("ObjectStoreEnvironmentBean.stateStore.tablePrefix", "stateStore");
             config.put("ObjectStoreEnvironmentBean.stateStore.dropTable", true);
-            config.put("ObjectStoreEnvironmentBean.communicationStore.objectStoreType", "com.arjuna.ats.internal.arjuna.objectstore.jdbc.JDBCStore");
+            config.put("ObjectStoreEnvironmentBean.communicationStore.objectStoreType", JDBCStore.class.getName());
             config.put("ObjectStoreEnvironmentBean.communicationStore.jdbcAccess", jdbcAccess);
             config.put("ObjectStoreEnvironmentBean.communicationStore.tablePrefix", "Communication");
             config.put("ObjectStoreEnvironmentBean.communicationStore.dropTable", true);
@@ -101,17 +98,17 @@ public final class NarayanaConfigUtil {
         result.put("ObjectStoreEnvironmentBean.transactionSync", "ON");
         result.put("CoreEnvironmentBean.nodeIdentifier", null == instanceId ? 1 : instanceId);
         result.put("JTAEnvironmentBean.xaRecoveryNodes", null == instanceId ? 1 : instanceId);
-        List<String> xaResourceOrphanFilterClassNames = new LinkedList<>();
-        xaResourceOrphanFilterClassNames.add("com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter");
-        xaResourceOrphanFilterClassNames.add("com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter");
-        xaResourceOrphanFilterClassNames.add("com.arjuna.ats.internal.jta.recovery.arjunacore.JTAActionStatusServiceXAResourceOrphanFilter");
+        Collection<String> xaResourceOrphanFilterClassNames = new LinkedList<>();
+        xaResourceOrphanFilterClassNames.add(JTATransactionLogXAResourceOrphanFilter.class.getName());
+        xaResourceOrphanFilterClassNames.add(JTANodeNameXAResourceOrphanFilter.class.getName());
+        xaResourceOrphanFilterClassNames.add(JTAActionStatusServiceXAResourceOrphanFilter.class.getName());
         result.put("JTAEnvironmentBean.xaResourceOrphanFilterClassNames", xaResourceOrphanFilterClassNames);
         result.put("CoreEnvironmentBean.socketProcessIdPort", 0);
-        List<String> recoveryModuleClassNames = new LinkedList<>();
-        recoveryModuleClassNames.add("com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule");
-        recoveryModuleClassNames.add("com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule");
+        Collection<String> recoveryModuleClassNames = new LinkedList<>();
+        recoveryModuleClassNames.add(AtomicActionRecoveryModule.class.getName());
+        recoveryModuleClassNames.add(XARecoveryModule.class.getName());
         result.put("RecoveryEnvironmentBean.recoveryModuleClassNames", recoveryModuleClassNames);
-        result.put("RecoveryEnvironmentBean.expiryScannerClassNames", "com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner");
+        result.put("RecoveryEnvironmentBean.expiryScannerClassNames", ExpiredTransactionStatusManagerScanner.class.getName());
         result.put("RecoveryEnvironmentBean.recoveryPort", 4712);
         result.put("RecoveryEnvironmentBean.recoveryAddress", null);
         result.put("RecoveryEnvironmentBean.transactionStatusManagerPort", 0);

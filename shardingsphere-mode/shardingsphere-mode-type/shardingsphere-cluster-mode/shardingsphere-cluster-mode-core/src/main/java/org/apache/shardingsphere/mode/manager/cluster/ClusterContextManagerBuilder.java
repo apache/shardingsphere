@@ -35,17 +35,20 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.utils.NarayanaConfigUtil;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryFactory;
 import org.apache.shardingsphere.schedule.core.api.ModeScheduleContextFactory;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.TransactionContextsBuilder;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.apache.shardingsphere.transaction.spi.TransactionConfigFacade;
+import org.apache.shardingsphere.transaction.spi.TransactionConfigFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -62,8 +65,15 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         MetaDataContextsBuilder metaDataContextsBuilder = createMetaDataContextsBuilder(metaDataPersistService, parameter);
         persistMetaData(metaDataPersistService, metaDataContextsBuilder.getSchemaMap());
         MetaDataContexts metaDataContexts = metaDataContextsBuilder.build(metaDataPersistService);
-        NarayanaConfigUtil.generateNarayanaConfig(metaDataContexts, parameter.getInstanceDefinition().getInstanceId().getId());
-        ContextManager result = createContextManager(repository, metaDataPersistService, 
+        Optional<TransactionRule> transactionRule = metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each)
+                .findFirst();
+        if (transactionRule.isPresent()) {
+            TransactionConfigFacade transactionConfigFacade = TransactionConfigFactory.newInstance(transactionRule.get().getProviderType());
+            if (null != transactionConfigFacade) {
+                transactionConfigFacade.generate(transactionRule.get(), parameter.getInstanceDefinition().getInstanceId().getId());
+            }
+        }
+        ContextManager result = createContextManager(repository, metaDataPersistService,
                 parameter.getInstanceDefinition(), metaDataContexts, parameter.getModeConfig());
         registerOnline(repository, metaDataPersistService, parameter.getInstanceDefinition(), result);
         return result;

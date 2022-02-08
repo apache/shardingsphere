@@ -28,9 +28,11 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.memory.workerid.generator.MemoryWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
-import org.apache.shardingsphere.mode.utils.NarayanaConfigUtil;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.TransactionContextsBuilder;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.apache.shardingsphere.transaction.spi.TransactionConfigFacade;
+import org.apache.shardingsphere.transaction.spi.TransactionConfigFactory;
 
 import java.sql.SQLException;
 import java.util.Map.Entry;
@@ -48,7 +50,14 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
             metaDataContextsBuilder.addSchema(entry.getKey(), entry.getValue(), parameter.getProps());
         }
         MetaDataContexts metaDataContexts = metaDataContextsBuilder.build(null);
-        NarayanaConfigUtil.generateNarayanaConfig(metaDataContexts, parameter.getInstanceDefinition().getInstanceId().getId());
+        Optional<TransactionRule> transactionRule = metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each)
+                .findFirst();
+        if (transactionRule.isPresent()) {
+            TransactionConfigFacade transactionConfigFacade = TransactionConfigFactory.newInstance(transactionRule.get().getProviderType());
+            if (null != transactionConfigFacade) {
+                transactionConfigFacade.generate(transactionRule.get(), parameter.getInstanceDefinition().getInstanceId().getId());
+            }
+        }
         TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
         ContextManager result = new ContextManager();
         result.init(metaDataContexts, transactionContexts, buildInstanceContext(parameter));

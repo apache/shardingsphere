@@ -29,15 +29,18 @@ import org.apache.shardingsphere.mode.manager.standalone.workerid.generator.Stan
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.utils.NarayanaConfigUtil;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryFactory;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.TransactionContextsBuilder;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.apache.shardingsphere.transaction.spi.TransactionConfigFacade;
+import org.apache.shardingsphere.transaction.spi.TransactionConfigFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -50,7 +53,14 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(StandalonePersistRepositoryFactory.newInstance(parameter.getModeConfig().getRepository()));
         persistConfigurations(metaDataPersistService, parameter);
         MetaDataContexts metaDataContexts = createMetaDataContexts(metaDataPersistService, parameter);
-        NarayanaConfigUtil.generateNarayanaConfig(metaDataContexts, parameter.getInstanceDefinition().getInstanceId().getId());
+        Optional<TransactionRule> transactionRule = metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each)
+                .findFirst();
+        if (transactionRule.isPresent()) {
+            TransactionConfigFacade transactionConfigFacade = TransactionConfigFactory.newInstance(transactionRule.get().getProviderType());
+            if (null != transactionConfigFacade) {
+                transactionConfigFacade.generate(transactionRule.get(), parameter.getInstanceDefinition().getInstanceId().getId());
+            }
+        }
         return createContextManager(metaDataPersistService, parameter, metaDataContexts);
     }
     
