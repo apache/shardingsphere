@@ -98,7 +98,7 @@ public abstract class BaseDDLIT extends SingleITCase {
     
     private void assertNotContainsTable(final Collection<DataNode> dataNodes) throws SQLException {
         for (DataNode each : dataNodes) {
-            try (Connection connection = getCompose() instanceof ClusterComposedContainer
+            try (Connection connection = getComposedContainer() instanceof ClusterComposedContainer
                     ? getDataSourceForReader().getConnection() : getStorageContainer().getDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 assertNotContainsTable(connection, each.getTableName());
             }
@@ -112,7 +112,7 @@ public abstract class BaseDDLIT extends SingleITCase {
     private List<DataSetColumn> getActualColumns(final Collection<DataNode> dataNodes) throws SQLException {
         Set<DataSetColumn> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
-            DataSource dataSource = getCompose() instanceof ClusterComposedContainer
+            DataSource dataSource = getComposedContainer() instanceof ClusterComposedContainer
                     ? getDataSourceForReader() : getStorageContainer().getDataSourceMap().get(each.getDataSourceName());
             try (Connection connection = dataSource.getConnection()) {
                 result.addAll(getActualColumns(connection, each.getTableName()));
@@ -138,7 +138,7 @@ public abstract class BaseDDLIT extends SingleITCase {
     private List<DataSetIndex> getActualIndexes(final Collection<DataNode> dataNodes) throws SQLException {
         Set<DataSetIndex> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
-            DataSource dataSource = getCompose() instanceof ClusterComposedContainer
+            DataSource dataSource = getComposedContainer() instanceof ClusterComposedContainer
                     ? getDataSourceForReader() : getStorageContainer().getDataSourceMap().get(each.getDataSourceName());
             try (Connection connection = dataSource.getConnection()) {
                 result.addAll(getActualIndexes(connection, each.getTableName()));

@@ -50,7 +50,7 @@ public abstract class BaseDQLIT extends SingleITCase {
     @Override
     public void init() throws Exception {
         super.init();
-        compose.executeOnStarted(compose -> {
+        composedContainer.executeOnStarted(compose -> {
             try {
                 new DataSetEnvironmentManager(
                         EnvironmentPath.getDataSetFile(getScenario()),

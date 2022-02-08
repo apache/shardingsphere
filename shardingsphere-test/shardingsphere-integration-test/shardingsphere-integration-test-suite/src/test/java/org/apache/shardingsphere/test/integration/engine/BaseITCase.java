@@ -49,7 +49,7 @@ public abstract class BaseITCase {
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
     @Rule
-    public final ComposedContainer compose;
+    public final ComposedContainer composedContainer;
     
     private final String adapter;
     
@@ -73,20 +73,20 @@ public abstract class BaseITCase {
     
     public BaseITCase(final ParameterizedArray parameterizedArray) {
         adapter = parameterizedArray.getAdapter();
-        compose = parameterizedArray.getCompose();
+        composedContainer = parameterizedArray.getCompose();
         scenario = parameterizedArray.getScenario();
         databaseType = parameterizedArray.getDatabaseType();
         sqlCommandType = parameterizedArray.getSqlCommandType();
-        storageContainer = compose.getStorageContainer();
-        adapterContainer = compose.getAdapterContainer();
+        storageContainer = composedContainer.getStorageContainer();
+        adapterContainer = composedContainer.getAdapterContainer();
         integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
     }
     
     @Before
     public void init() throws Exception {
-        dataSourceMap = compose.getDataSourceMap();
+        dataSourceMap = composedContainer.getDataSourceMap();
         targetDataSource = dataSourceMap.get("adapterForWriter");
-        if (compose instanceof ClusterComposedContainer) {
+        if (composedContainer instanceof ClusterComposedContainer) {
             dataSourceForReader = dataSourceMap.get("adapterForReader");
             int waitForGov = 10;
             while (waitForGov-- > 0) {
