@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.integration.framework.compose;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.integration.framework.container.ShardingSphereContainer;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.ShardingSphereAdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.impl.ShardingSphereJDBCContainer;
@@ -36,9 +37,9 @@ import org.testcontainers.lifecycle.Startable;
 
 import javax.sql.DataSource;
 import java.io.Closeable;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -47,25 +48,21 @@ import java.util.function.Supplier;
 /**
  * Container compose.
  */
+@RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class ContainerCompose extends ExternalResource implements Closeable {
-    
-    private final Network network = Network.newNetwork();
     
     private final String clusterName;
     
     private final ParameterizedArray parameterizedArray;
     
-    private final List<ShardingSphereContainer> containers = new ArrayList<>();
+    private final Network network = Network.newNetwork();
+    
+    private final Collection<ShardingSphereContainer> containers = new LinkedList<>();
     
     private volatile boolean started;
     
     private volatile boolean executed;
-    
-    public ContainerCompose(final String clusterName, final ParameterizedArray parameterizedArray) {
-        this.clusterName = clusterName;
-        this.parameterizedArray = parameterizedArray;
-    }
     
     protected ShardingSphereAdapterContainer createAdapterContainer() {
         Supplier<ShardingSphereAdapterContainer> supplier = () -> {
@@ -154,7 +151,7 @@ public abstract class ContainerCompose extends ExternalResource implements Close
     public abstract ShardingSphereStorageContainer getStorageContainer();
 
     /**
-     * Get all target datasources.
+     * Get all target data sources.
      *
      * @return datasource map
      */

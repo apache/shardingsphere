@@ -71,15 +71,15 @@ public abstract class BaseITCase {
     
     private DataSource dataSourceForReader;
     
-    BaseITCase(final ParameterizedArray parameterizedArray) {
-        this.adapter = parameterizedArray.getAdapter();
-        this.compose = parameterizedArray.getCompose();
-        this.scenario = parameterizedArray.getScenario();
-        this.databaseType = parameterizedArray.getDatabaseType();
-        this.sqlCommandType = parameterizedArray.getSqlCommandType();
-        this.storageContainer = compose.getStorageContainer();
-        this.adapterContainer = compose.getAdapterContainer();
-        this.integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
+    public BaseITCase(final ParameterizedArray parameterizedArray) {
+        adapter = parameterizedArray.getAdapter();
+        compose = parameterizedArray.getCompose();
+        scenario = parameterizedArray.getScenario();
+        databaseType = parameterizedArray.getDatabaseType();
+        sqlCommandType = parameterizedArray.getSqlCommandType();
+        storageContainer = compose.getStorageContainer();
+        adapterContainer = compose.getAdapterContainer();
+        integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
     }
     
     @Before
@@ -90,7 +90,7 @@ public abstract class BaseITCase {
             dataSourceForReader = dataSourceMap.get("adapterForReader");
             int waitForGov = 10;
             while (waitForGov-- > 0) {
-                try (Connection connection = targetDataSource.getConnection()) {
+                try (Connection ignored = targetDataSource.getConnection()) {
                     return;
                 } catch (NullPointerException ignored) {
                     Thread.sleep(2000L);
