@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
+import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrl;
+import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
@@ -36,7 +39,9 @@ import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -69,10 +74,18 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void checkSQLStatement(final String schemaName, final AlterResourceStatement sqlStatement) throws DuplicateResourceException, RequiredResourceMissedException {
+    private void checkSQLStatement(final String schemaName, final AlterResourceStatement sqlStatement) throws DistSQLException {
         Collection<String> toBeAlteredResourceNames = getToBeAlteredResourceNames(sqlStatement);
         checkToBeAlteredDuplicateResourceNames(toBeAlteredResourceNames);
         checkResourceNameExisted(schemaName, toBeAlteredResourceNames);
+        checkModifyDatabase(schemaName, sqlStatement);
+    }
+    
+    private void checkModifyDatabase(final String schemaName, final AlterResourceStatement sqlStatement) throws DistSQLException {
+        Map<String, DataSource> resources = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources();
+        Set<String> invalid = sqlStatement.getDataSources().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> getDatabase(each))).entrySet().stream()
+                .filter(each -> !getDatabase((HikariDataSource) resources.get(each.getKey())).equals(each.getValue())).map(each -> each.getKey()).collect(Collectors.toSet());
+        DistSQLException.predictionThrow(invalid.isEmpty(), new InvalidResourcesException(Collections.singleton(String.format("Cannot modify the database of %s", invalid))));
     }
     
     private Collection<String> getToBeAlteredResourceNames(final AlterResourceStatement sqlStatement) {
@@ -96,5 +109,21 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
         if (!notExistedResourceNames.isEmpty()) {
             throw new RequiredResourceMissedException(schemaName, notExistedResourceNames);
         }
+    }
+    
+    private String getDatabase(final DataSourceSegment segment) {
+        if (null != segment.getDatabase()) {
+            return segment.getDatabase();
+        }
+        JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(segment.getUrl());
+        return jdbcUrl.getDatabase();
+    }
+    
+    private String getDatabase(final HikariDataSource dataSource) {
+        if (null != dataSource.getSchema()) {
+            return dataSource.getSchema();
+        }
+        JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(dataSource.getJdbcUrl());
+        return jdbcUrl.getDatabase();
     }
 }
