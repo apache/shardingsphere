@@ -238,6 +238,7 @@ The text of each license is the standard Apache 2.0 license.
     esri-geometry-api 2.2.0: https://github.com/Esri/geometry-api-java, Apache 2.0
     failsafe 2.3.3: https://github.com/jhalterman/failsafe, Apache 2.0
     failureaccess 1.0.1:https://github.com/google/guava, Apache 2.0 
+    groovy 4.0.0: https://groovy.apache.org/, Apache 2.0
     grpc-api 1.27.1: https://github.com/grpc/grpc, Apache 2.0
     grpc-context 1.27.1: https://github.com/grpc/grpc, Apache 2.0
     grpc-core 1.27.1: https://github.com/grpc/grpc, Apache 2.0
@@ -299,7 +300,6 @@ Apache 2.0 licenses
 The following components are provided under the Apache License. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    groovy 4.0.0: https://github.com/apache/groovy, Apache 2.0
     atomikos-util 5.0.8: https://www.atomikos.com, Apache 2.0
     transactions 5.0.8: https://www.atomikos.com, Apache 2.0
     transactions-api 5.0.8: https://www.atomikos.com, Apache 2.0
