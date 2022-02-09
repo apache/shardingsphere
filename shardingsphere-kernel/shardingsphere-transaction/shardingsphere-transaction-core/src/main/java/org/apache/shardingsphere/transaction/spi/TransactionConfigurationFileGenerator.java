@@ -21,15 +21,15 @@ import org.apache.shardingsphere.spi.typed.TypedSPI;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 /**
- * Transaction config facade.
+ * Transaction configuration file generator.
  */
-public interface TransactionConfigFacade extends TypedSPI {
-
+public interface TransactionConfigurationFileGenerator extends TypedSPI {
+    
     /**
-     * Generate transaction config.
+     * Generate transaction configuration file.
      *
      * @param transactionRule transaction rule
      * @param instanceId instance id
      */
-    void generate(TransactionRule transactionRule, String instanceId);
+    void generateFile(TransactionRule transactionRule, String instanceId);
 }

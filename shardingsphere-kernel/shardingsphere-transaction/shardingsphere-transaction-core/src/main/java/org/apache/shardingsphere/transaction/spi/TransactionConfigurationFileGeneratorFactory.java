@@ -24,24 +24,21 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Transaction config factory.
+ * Transaction configuration file generator factory.
  */
-public final class TransactionConfigFactory {
-
+public final class TransactionConfigurationFileGeneratorFactory {
+    
     static {
-        ShardingSphereServiceLoader.register(TransactionConfigFacade.class);
+        ShardingSphereServiceLoader.register(TransactionConfigurationFileGenerator.class);
     }
-
+    
     /**
-     * Get transaction config facade instance.
+     * Create new instance of transaction configuration file generator.
      *
      * @param transactionProviderType transaction provider type
-     * @return transaction config facade
+     * @return new instance of transaction configuration file generator
      */
-    public static Optional<TransactionConfigFacade> newInstance(final String transactionProviderType) {
-        if (null != transactionProviderType) {
-            return TypedSPIRegistry.findRegisteredService(TransactionConfigFacade.class, transactionProviderType, new Properties());
-        }
-        return Optional.empty();
+    public static Optional<TransactionConfigurationFileGenerator> newInstance(final String transactionProviderType) {
+        return null == transactionProviderType ? Optional.empty() : TypedSPIRegistry.findRegisteredService(TransactionConfigurationFileGenerator.class, transactionProviderType, new Properties());
     }
 }

@@ -31,8 +31,8 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.TransactionContextsBuilder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.apache.shardingsphere.transaction.spi.TransactionConfigFacade;
-import org.apache.shardingsphere.transaction.spi.TransactionConfigFactory;
+import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGenerator;
+import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGeneratorFactory;
 
 import java.sql.SQLException;
 import java.util.Map.Entry;
@@ -50,17 +50,21 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
             metaDataContextsBuilder.addSchema(entry.getKey(), entry.getValue(), parameter.getProps());
         }
         MetaDataContexts metaDataContexts = metaDataContextsBuilder.build(null);
-        Optional<TransactionRule> transactionRule = metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each)
-                .findFirst();
-        if (transactionRule.isPresent()) {
-            Optional<TransactionConfigFacade> transactionConfigFacade = TransactionConfigFactory.newInstance(transactionRule.get().getProviderType());
-            transactionConfigFacade.ifPresent(configFacade -> configFacade.generate(transactionRule.get(), parameter.getInstanceDefinition().getInstanceId().getId()));
-        }
+        generateTransactionConfigurationFile(parameter.getInstanceDefinition().getInstanceId().getId(), metaDataContexts);
         TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
         ContextManager result = new ContextManager();
         result.init(metaDataContexts, transactionContexts, buildInstanceContext(parameter));
         setInstanceContext(result);
         return result;
+    }
+    
+    private void generateTransactionConfigurationFile(final String instanceId, final MetaDataContexts metaDataContexts) {
+        Optional<TransactionRule> transactionRule =
+                metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
+        if (transactionRule.isPresent()) {
+            Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(transactionRule.get().getProviderType());
+            fileGenerator.ifPresent(optional -> optional.generateFile(transactionRule.get(), instanceId));
+        }
     }
     
     private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter parameter) {

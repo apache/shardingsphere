@@ -27,7 +27,7 @@ import com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResour
 import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.apache.shardingsphere.transaction.spi.TransactionConfigFacade;
+import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGenerator;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -40,18 +40,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Narayana config facade.
+ * Narayana transaction configuration file generator.
  */
 @Slf4j
-public final class NarayanaConfigFacade implements TransactionConfigFacade {
-
+public final class NarayanaConfigurationFileGenerator implements TransactionConfigurationFileGenerator {
+    
     @Override
-    public void generate(final TransactionRule transactionRule, final String instanceId) {
-        if (null == transactionRule) {
-            return;
-        }
-        Map<Object, Object> content;
-        content = generateDefaultNarayanaConfig(instanceId);
+    public void generateFile(final TransactionRule transactionRule, final String instanceId) {
+        Map<Object, Object> content = generateDefaultNarayanaConfig(instanceId);
         if (null != transactionRule.getProps()) {
             swapJdbcStore(transactionRule, content);
         }
@@ -64,32 +60,7 @@ public final class NarayanaConfigFacade implements TransactionConfigFacade {
             log.error("generate narayana config file failed.");
         }
     }
-
-    private static void swapJdbcStore(final TransactionRule transactionRule, final Map<Object, Object> config) {
-        Object host = transactionRule.getProps().get("host");
-        Object port = transactionRule.getProps().get("port");
-        Object user = transactionRule.getProps().getProperty("user");
-        Object password = transactionRule.getProps().getProperty("password");
-        Object databaseName = transactionRule.getProps().getProperty("databaseName");
-        if (null != host && null != port && null != user && null != password && null != databaseName) {
-            String jdbcAccessPatten = DynamicDataSourceJDBCAccess.class.getName()
-                    + ";ClassName=com.mysql.cj.jdbc.MysqlDataSource;URL=jdbc:mysql://%s:%d/%s;User=%s;Password=%s";
-            String jdbcAccess = String.format(jdbcAccessPatten, host, port, databaseName, user, password);
-            config.put("ObjectStoreEnvironmentBean.objectStoreType", JDBCStore.class.getName());
-            config.put("ObjectStoreEnvironmentBean.jdbcAccess", jdbcAccess);
-            config.put("ObjectStoreEnvironmentBean.tablePrefix", "Action");
-            config.put("ObjectStoreEnvironmentBean.dropTable", true);
-            config.put("ObjectStoreEnvironmentBean.stateStore.objectStoreType", JDBCStore.class.getName());
-            config.put("ObjectStoreEnvironmentBean.stateStore.jdbcAccess", jdbcAccess);
-            config.put("ObjectStoreEnvironmentBean.stateStore.tablePrefix", "stateStore");
-            config.put("ObjectStoreEnvironmentBean.stateStore.dropTable", true);
-            config.put("ObjectStoreEnvironmentBean.communicationStore.objectStoreType", JDBCStore.class.getName());
-            config.put("ObjectStoreEnvironmentBean.communicationStore.jdbcAccess", jdbcAccess);
-            config.put("ObjectStoreEnvironmentBean.communicationStore.tablePrefix", "Communication");
-            config.put("ObjectStoreEnvironmentBean.communicationStore.dropTable", true);
-        }
-    }
-
+    
     private static Map<Object, Object> generateDefaultNarayanaConfig(final String instanceId) {
         Map<Object, Object> result = new LinkedHashMap<>(32, 1);
         result.put("CoordinatorEnvironmentBean.commitOnePhase", "YES");
@@ -115,7 +86,32 @@ public final class NarayanaConfigFacade implements TransactionConfigFacade {
         result.put("RecoveryEnvironmentBean.recoveryBackoffPeriod", 1);
         return result;
     }
-
+    
+    private static void swapJdbcStore(final TransactionRule transactionRule, final Map<Object, Object> config) {
+        Object host = transactionRule.getProps().get("host");
+        Object port = transactionRule.getProps().get("port");
+        Object user = transactionRule.getProps().getProperty("user");
+        Object password = transactionRule.getProps().getProperty("password");
+        Object databaseName = transactionRule.getProps().getProperty("databaseName");
+        if (null != host && null != port && null != user && null != password && null != databaseName) {
+            String jdbcAccessPatten = DynamicDataSourceJDBCAccess.class.getName()
+                    + ";ClassName=com.mysql.cj.jdbc.MysqlDataSource;URL=jdbc:mysql://%s:%d/%s;User=%s;Password=%s";
+            String jdbcAccess = String.format(jdbcAccessPatten, host, port, databaseName, user, password);
+            config.put("ObjectStoreEnvironmentBean.objectStoreType", JDBCStore.class.getName());
+            config.put("ObjectStoreEnvironmentBean.jdbcAccess", jdbcAccess);
+            config.put("ObjectStoreEnvironmentBean.tablePrefix", "Action");
+            config.put("ObjectStoreEnvironmentBean.dropTable", true);
+            config.put("ObjectStoreEnvironmentBean.stateStore.objectStoreType", JDBCStore.class.getName());
+            config.put("ObjectStoreEnvironmentBean.stateStore.jdbcAccess", jdbcAccess);
+            config.put("ObjectStoreEnvironmentBean.stateStore.tablePrefix", "stateStore");
+            config.put("ObjectStoreEnvironmentBean.stateStore.dropTable", true);
+            config.put("ObjectStoreEnvironmentBean.communicationStore.objectStoreType", JDBCStore.class.getName());
+            config.put("ObjectStoreEnvironmentBean.communicationStore.jdbcAccess", jdbcAccess);
+            config.put("ObjectStoreEnvironmentBean.communicationStore.tablePrefix", "Communication");
+            config.put("ObjectStoreEnvironmentBean.communicationStore.dropTable", true);
+        }
+    }
+    
     private static String narayanaConfigMapToXml(final Map<Object, Object> config) {
         StringBuilder result = new StringBuilder("<properties>");
         for (Object each : config.keySet()) {
@@ -139,7 +135,7 @@ public final class NarayanaConfigFacade implements TransactionConfigFacade {
         result.append("</properties>");
         return result.toString();
     }
-
+    
     @Override
     public String getType() {
         return "Narayana";
