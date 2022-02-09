@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
 import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.compose.mode.ClusterComposedContainer;
-import org.apache.shardingsphere.test.integration.framework.container.adapter.ShardingSphereAdapterContainer;
+import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.ShardingSphereIntegrationTestParameterized;
@@ -63,7 +63,7 @@ public abstract class BaseITCase {
     
     private final StorageContainer storageContainer;
     
-    private final ShardingSphereAdapterContainer adapterContainer;
+    private final AdapterContainer adapterContainer;
     
     private Map<String, DataSource> dataSourceMap;
     

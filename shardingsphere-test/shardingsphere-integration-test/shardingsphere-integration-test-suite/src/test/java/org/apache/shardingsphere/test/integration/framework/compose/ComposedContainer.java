@@ -21,9 +21,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.integration.framework.container.ShardingSphereContainer;
-import org.apache.shardingsphere.test.integration.framework.container.adapter.ShardingSphereAdapterContainer;
-import org.apache.shardingsphere.test.integration.framework.container.adapter.impl.ShardingSphereJDBCContainer;
-import org.apache.shardingsphere.test.integration.framework.container.adapter.impl.ShardingSphereProxyContainer;
+import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainer;
+import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.logging.ContainerLogs;
@@ -67,19 +66,8 @@ public abstract class ComposedContainer extends ExternalResource implements Clos
         return StorageContainerFactory.newInstance(parameterizedArray, network, suiteName);
     }
     
-    protected ShardingSphereAdapterContainer createAdapterContainer() {
-        Supplier<ShardingSphereAdapterContainer> supplier = () -> {
-            switch (parameterizedArray.getAdapter()) {
-                case "proxy":
-                    return new ShardingSphereProxyContainer(parameterizedArray);
-                case "jdbc":
-                    return new ShardingSphereJDBCContainer(parameterizedArray);
-                default:
-                    throw new RuntimeException(String.format("Adapter[%s] is unknown.", parameterizedArray.getAdapter()));
-                
-            }
-        };
-        return createContainer(supplier, "adapter");
+    protected AdapterContainer createAdapterContainer() {
+        return AdapterContainerFactory.newInstance(parameterizedArray, network, suiteName);
     }
     
     protected final <T extends ShardingSphereContainer> T createContainer(final Supplier<T> supplier, final String hostname) {
@@ -128,7 +116,7 @@ public abstract class ComposedContainer extends ExternalResource implements Clos
      *
      * @return ShardingSphere adapter container
      */
-    public abstract ShardingSphereAdapterContainer getAdapterContainer();
+    public abstract AdapterContainer getAdapterContainer();
     
     /**
      * Get storage container.

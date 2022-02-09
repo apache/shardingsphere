@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.framework.compose.mode;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainer;
-import org.apache.shardingsphere.test.integration.framework.container.adapter.ShardingSphereAdapterContainer;
+import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.impl.ShardingSphereProxyContainer;
 import org.apache.shardingsphere.test.integration.framework.container.governance.ZookeeperContainer;
 import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainer;
@@ -39,9 +39,9 @@ public final class ClusterComposedContainer extends ComposedContainer {
     
     private final StorageContainer storageContainer;
     
-    private final ShardingSphereAdapterContainer adapterContainer;
+    private final AdapterContainer adapterContainer;
     
-    private final ShardingSphereAdapterContainer adapterContainerForReader;
+    private final AdapterContainer adapterContainerForReader;
     
     @Getter(AccessLevel.NONE)
     private final ZookeeperContainer zookeeperContainer;

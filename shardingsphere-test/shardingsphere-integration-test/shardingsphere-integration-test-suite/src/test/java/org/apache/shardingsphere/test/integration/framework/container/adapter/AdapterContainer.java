@@ -35,19 +35,19 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * ShardingSphere adapter container.
+ * Adapter container.
  */
 @Getter
-public abstract class ShardingSphereAdapterContainer extends ShardingSphereContainer {
+public abstract class AdapterContainer extends ShardingSphereContainer {
     
     private final YamlUserConfiguration authentication;
     
-    public ShardingSphereAdapterContainer(final String dockerName, final String dockerImageName, final ParameterizedArray parameterizedArray) {
+    public AdapterContainer(final String dockerName, final String dockerImageName, final ParameterizedArray parameterizedArray) {
         this(dockerName, dockerImageName, false, parameterizedArray);
     }
     
     @SneakyThrows
-    public ShardingSphereAdapterContainer(final String name, final String dockerImageName, final boolean isFakedContainer, final ParameterizedArray parameterizedArray) {
+    public AdapterContainer(final String name, final String dockerImageName, final boolean isFakedContainer, final ParameterizedArray parameterizedArray) {
         super(name, dockerImageName, isFakedContainer, parameterizedArray);
         this.authentication = loadAuthentication(parameterizedArray);
     }
