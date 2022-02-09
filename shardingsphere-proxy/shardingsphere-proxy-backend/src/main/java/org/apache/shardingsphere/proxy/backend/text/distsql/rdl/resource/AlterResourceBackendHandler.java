@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
@@ -119,11 +120,10 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
         return jdbcUrl.getDatabase();
     }
     
-    private String getDatabase(final HikariDataSource dataSource) {
-        if (null != dataSource.getSchema()) {
-            return dataSource.getSchema();
-        }
-        JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(dataSource.getJdbcUrl());
+    private String getDatabase(final DataSource dataSource) {
+        DataSourceProperties dataSourceProperties = DataSourcePropertiesCreator.create(dataSource);
+        String url = String.valueOf(dataSourceProperties.getConnectionPropertySynonyms().getStandardProperties().get("url"));
+        JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
         return jdbcUrl.getDatabase();
     }
 }
