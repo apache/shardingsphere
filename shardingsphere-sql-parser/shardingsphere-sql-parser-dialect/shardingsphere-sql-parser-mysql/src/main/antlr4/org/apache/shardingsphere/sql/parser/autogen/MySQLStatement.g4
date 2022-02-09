@@ -53,6 +53,8 @@ execute
     | createResourceGroup
     | dropResourceGroup
     | prepare
+    | executeStmt
+    | deallocate
     | setTransaction
     | beginTransaction
     | setAutoCommit

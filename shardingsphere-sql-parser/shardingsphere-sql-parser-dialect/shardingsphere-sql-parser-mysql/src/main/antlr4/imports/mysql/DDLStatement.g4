@@ -829,3 +829,15 @@ signalInformationItem
 prepare
     : PREPARE identifier FROM (stringLiterals | userVariable)
     ;
+    
+executeStmt
+    : EXECUTE identifier (USING executeVarList)?
+    ;
+    
+executeVarList
+    : userVariable (COMMA_ userVariable)*
+    ;
+    
+deallocate
+    : (DEALLOCATE | DROP) PREPARE identifier
+    ;
