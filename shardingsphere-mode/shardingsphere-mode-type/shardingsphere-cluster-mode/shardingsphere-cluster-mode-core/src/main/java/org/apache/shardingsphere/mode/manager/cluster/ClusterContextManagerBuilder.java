@@ -39,12 +39,16 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.schedule.core.api.ModeScheduleContextFactory;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.TransactionContextsBuilder;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.apache.shardingsphere.transaction.spi.TransactionConfigFacade;
+import org.apache.shardingsphere.transaction.spi.TransactionConfigFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -60,8 +64,15 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         persistConfigurations(metaDataPersistService, parameter);
         MetaDataContextsBuilder metaDataContextsBuilder = createMetaDataContextsBuilder(metaDataPersistService, parameter);
         persistMetaData(metaDataPersistService, metaDataContextsBuilder.getSchemaMap());
-        ContextManager result = createContextManager(repository, metaDataPersistService, 
-                parameter.getInstanceDefinition(), metaDataContextsBuilder.build(metaDataPersistService), parameter.getModeConfig());
+        MetaDataContexts metaDataContexts = metaDataContextsBuilder.build(metaDataPersistService);
+        Optional<TransactionRule> transactionRule = metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each)
+                .findFirst();
+        if (transactionRule.isPresent()) {
+            Optional<TransactionConfigFacade> transactionConfigFacade = TransactionConfigFactory.newInstance(transactionRule.get().getProviderType());
+            transactionConfigFacade.ifPresent(configFacade -> configFacade.generate(transactionRule.get(), parameter.getInstanceDefinition().getInstanceId().getId()));
+        }
+        ContextManager result = createContextManager(repository, metaDataPersistService,
+                parameter.getInstanceDefinition(), metaDataContexts, parameter.getModeConfig());
         registerOnline(repository, metaDataPersistService, parameter.getInstanceDefinition(), result);
         return result;
     }
