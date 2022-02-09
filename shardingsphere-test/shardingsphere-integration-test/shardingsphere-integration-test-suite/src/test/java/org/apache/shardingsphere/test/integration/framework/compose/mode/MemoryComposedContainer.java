@@ -25,6 +25,10 @@ import org.apache.shardingsphere.test.integration.framework.container.storage.St
 import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
+import javax.sql.DataSource;
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * Memory composed container.
  */
@@ -35,11 +39,16 @@ public final class MemoryComposedContainer extends ComposedContainer {
     
     private final AdapterContainer adapterContainer;
     
-    public MemoryComposedContainer(final String suiteName, final ParameterizedArray parameterizedArray) {
-        super(suiteName);
-        this.storageContainer = getContainers().registerContainer(
+    public MemoryComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
+        super(testSuiteName);
+        storageContainer = getContainers().registerContainer(
                 StorageContainerFactory.newInstance(parameterizedArray), parameterizedArray.getDatabaseType().getName().toLowerCase() + "." + parameterizedArray.getScenario() + ".host");
-        this.adapterContainer = getContainers().registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), "adapter");
+        adapterContainer = getContainers().registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), "adapter");
         adapterContainer.dependsOn(storageContainer);
+    }
+    
+    @Override
+    public Map<String, DataSource> getDataSourceMap() {
+        return Collections.singletonMap("adapterForWriter", getAdapterContainer().getDataSource(null));
     }
 }

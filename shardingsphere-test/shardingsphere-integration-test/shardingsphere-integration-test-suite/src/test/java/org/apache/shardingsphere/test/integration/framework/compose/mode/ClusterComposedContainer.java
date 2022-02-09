@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.framework.compose.mode;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainer;
@@ -36,24 +35,24 @@ import java.util.Map;
 /**
  * Cluster composed container.
  */
-@Getter
 public final class ClusterComposedContainer extends ComposedContainer {
     
+    @Getter
     private final StorageContainer storageContainer;
     
+    @Getter
     private final AdapterContainer adapterContainer;
     
     private final AdapterContainer adapterContainerForReader;
     
-    @Getter(AccessLevel.NONE)
     private final ZookeeperContainer zookeeperContainer;
     
-    public ClusterComposedContainer(final String suiteName, final ParameterizedArray parameterizedArray) {
-        super(suiteName);
-        this.storageContainer = getContainers().registerContainer(
+    public ClusterComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
+        super(testSuiteName);
+        storageContainer = getContainers().registerContainer(
                 StorageContainerFactory.newInstance(parameterizedArray), parameterizedArray.getDatabaseType().getName().toLowerCase() + "." + parameterizedArray.getScenario() + ".host");
-        this.adapterContainer = getContainers().registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), "adapter");
-        this.storageContainer.setNetworkAliases(Collections.singletonList(parameterizedArray.getDatabaseType().getName().toLowerCase() + ".sharding_governance.host"));
+        adapterContainer = getContainers().registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), "adapter");
+        storageContainer.setNetworkAliases(Collections.singletonList(parameterizedArray.getDatabaseType().getName().toLowerCase() + ".sharding_governance.host"));
         // TODO support other types of governance
         zookeeperContainer = getContainers().registerContainer(new ZookeeperContainer(parameterizedArray), "zk");
         if ("proxy".equals(parameterizedArray.getAdapter())) {

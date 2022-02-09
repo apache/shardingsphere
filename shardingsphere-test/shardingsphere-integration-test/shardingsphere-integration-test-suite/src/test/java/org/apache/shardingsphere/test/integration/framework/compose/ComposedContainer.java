@@ -26,7 +26,6 @@ import org.junit.rules.ExternalResource;
 
 import javax.sql.DataSource;
 import java.io.Closeable;
-import java.util.Collections;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -40,32 +39,30 @@ public abstract class ComposedContainer extends ExternalResource implements Clos
     
     private volatile boolean executed;
     
-    public ComposedContainer(final String suiteName) {
-        containers = new ShardingSphereContainers(suiteName);
+    public ComposedContainer(final String testSuiteName) {
+        containers = new ShardingSphereContainers(testSuiteName);
     }
     
     /**
      * Get adapter container.
      *
-     * @return ShardingSphere adapter container
+     * @return adapter container
      */
     public abstract AdapterContainer getAdapterContainer();
     
     /**
      * Get storage container.
      *
-     * @return ShardingSphere storage container
+     * @return storage container
      */
     public abstract StorageContainer getStorageContainer();
-
+    
     /**
      * Get all target data sources.
      *
      * @return datasource map
      */
-    public Map<String, DataSource> getDataSourceMap() {
-        return Collections.singletonMap("adapterForWriter", getAdapterContainer().getDataSource(null));
-    }
+    public abstract Map<String, DataSource> getDataSourceMap();
     
     /**
      * Execution initializer one time after container started.
