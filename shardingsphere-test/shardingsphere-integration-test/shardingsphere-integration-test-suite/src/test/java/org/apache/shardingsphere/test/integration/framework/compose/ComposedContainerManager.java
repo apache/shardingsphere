@@ -42,7 +42,7 @@ public final class ComposedContainerManager extends ExternalResource {
      * Create or get container compose.
      *
      * @param parameterizedArray parameterized array
-     * @return container compose
+     * @return composed container
      */
     public ComposedContainer getOrCreateCompose(final ParameterizedArray parameterizedArray) {
         String key = generateKey(parameterizedArray);
