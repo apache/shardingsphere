@@ -21,9 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.test.integration.framework.container.ShardingSphereContainers;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainer;
-import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainer;
-import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.junit.rules.ExternalResource;
 
@@ -48,18 +46,6 @@ public abstract class ComposedContainer extends ExternalResource implements Clos
     public ComposedContainer(final String suiteName, final ParameterizedArray parameterizedArray) {
         this.parameterizedArray = parameterizedArray;
         containers = new ShardingSphereContainers(suiteName);
-    }
-    
-    protected final StorageContainer createStorageContainer() {
-        StorageContainer result = StorageContainerFactory.newInstance(parameterizedArray);
-        containers.registerContainer(result, parameterizedArray.getDatabaseType().getName().toLowerCase() + "." + parameterizedArray.getScenario() + ".host");
-        return result;
-    }
-    
-    protected final AdapterContainer createAdapterContainer() {
-        AdapterContainer result = AdapterContainerFactory.newInstance(parameterizedArray);
-        containers.registerContainer(result, "adapter");
-        return result;
     }
     
     /**
