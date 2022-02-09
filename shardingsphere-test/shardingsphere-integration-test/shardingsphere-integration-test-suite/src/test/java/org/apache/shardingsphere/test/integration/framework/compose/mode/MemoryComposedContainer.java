@@ -41,9 +41,9 @@ public final class MemoryComposedContainer extends ComposedContainer {
     
     public MemoryComposedContainer(final String suiteName, final ParameterizedArray parameterizedArray) {
         super(suiteName);
-        this.storageContainer = getContainers().registerContainer(
+        storageContainer = getContainers().registerContainer(
                 StorageContainerFactory.newInstance(parameterizedArray), parameterizedArray.getDatabaseType().getName().toLowerCase() + "." + parameterizedArray.getScenario() + ".host");
-        this.adapterContainer = getContainers().registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), "adapter");
+        adapterContainer = getContainers().registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), "adapter");
         adapterContainer.dependsOn(storageContainer);
     }
     

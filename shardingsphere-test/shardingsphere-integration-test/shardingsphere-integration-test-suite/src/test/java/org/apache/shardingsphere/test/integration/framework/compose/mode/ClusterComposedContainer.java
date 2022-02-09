@@ -49,10 +49,10 @@ public final class ClusterComposedContainer extends ComposedContainer {
     
     public ClusterComposedContainer(final String suiteName, final ParameterizedArray parameterizedArray) {
         super(suiteName);
-        this.storageContainer = getContainers().registerContainer(
+        storageContainer = getContainers().registerContainer(
                 StorageContainerFactory.newInstance(parameterizedArray), parameterizedArray.getDatabaseType().getName().toLowerCase() + "." + parameterizedArray.getScenario() + ".host");
-        this.adapterContainer = getContainers().registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), "adapter");
-        this.storageContainer.setNetworkAliases(Collections.singletonList(parameterizedArray.getDatabaseType().getName().toLowerCase() + ".sharding_governance.host"));
+        adapterContainer = getContainers().registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), "adapter");
+        storageContainer.setNetworkAliases(Collections.singletonList(parameterizedArray.getDatabaseType().getName().toLowerCase() + ".sharding_governance.host"));
         // TODO support other types of governance
         zookeeperContainer = getContainers().registerContainer(new ZookeeperContainer(parameterizedArray), "zk");
         if ("proxy".equals(parameterizedArray.getAdapter())) {
