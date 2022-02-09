@@ -18,46 +18,46 @@
 package org.apache.shardingsphere.sharding.route.engine.condition;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ShardingConditionsTest {
 
-    @Mock
-    private List<ShardingCondition> conditions;
-
-    private ShardingConditions shardingConditions = new ShardingConditions(conditions, mock(SQLStatementContext.class), mock(ShardingRule.class));
-
     @Test
     public void assertIsAlwaysFalse() {
+        ShardingConditions shardingConditions = new ShardingConditions(Collections.emptyList(), mock(SQLStatementContext.class), mock(ShardingRule.class));
         assertFalse(shardingConditions.isAlwaysFalse());
-        when(shardingConditions.isAlwaysFalse()).thenReturn(true);
+    }
+
+    @Test
+    public void assertIsAlwaysFalseTrue() {
+        ShardingConditions shardingConditions = createShardingConditions("t_order");
         assertTrue(shardingConditions.isAlwaysFalse());
     }
 
     @Test
     public void assertIsNeedMerge() {
-        assertTrue(shardingConditions.isNeedMerge());
+        assertFalse(createShardingConditions("t_order").isNeedMerge());
     }
 
     @Test
     public void isSameShardingCondition() {
-        assertFalse(shardingConditions.isSameShardingCondition());
+        ShardingConditions shardingConditions = createShardingConditions("t_order");
+        assertTrue(shardingConditions.isSameShardingCondition());
     }
 
     @Test
@@ -68,9 +68,10 @@ public final class ShardingConditionsTest {
     private ShardingConditions createShardingConditions(final String tableName) {
         LinkedList<ShardingCondition> result = new LinkedList<>();
         ShardingConditionValue shardingConditionValue = new ListShardingConditionValue<>("order_id", tableName, Collections.singleton(1L));
-        ShardingCondition shardingCondition = new ShardingCondition();
+        AlwaysFalseShardingCondition shardingCondition = new AlwaysFalseShardingCondition();
         shardingCondition.getValues().add(shardingConditionValue);
         result.add(shardingCondition);
-        return new ShardingConditions(result, mock(SQLStatementContext.class), mock(ShardingRule.class));
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        return new ShardingConditions(result, sqlStatementContext, mock(ShardingRule.class));
     }
 }
