@@ -63,11 +63,15 @@ public abstract class ComposedContainer extends ExternalResource implements Clos
     private volatile boolean executed;
     
     protected StorageContainer createStorageContainer() {
-        return StorageContainerFactory.newInstance(parameterizedArray, network, suiteName);
+        StorageContainer result = StorageContainerFactory.newInstance(parameterizedArray, network, suiteName);
+        containers.add(result);
+        return result;
     }
     
     protected AdapterContainer createAdapterContainer() {
-        return AdapterContainerFactory.newInstance(parameterizedArray, network, suiteName);
+        AdapterContainer result = AdapterContainerFactory.newInstance(parameterizedArray, network, suiteName);
+        containers.add(result);
+        return result;
     }
     
     protected final <T extends ShardingSphereContainer> T createContainer(final Supplier<T> supplier, final String hostname) {
