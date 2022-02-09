@@ -78,10 +78,10 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
         Collection<String> toBeAlteredResourceNames = getToBeAlteredResourceNames(sqlStatement);
         checkToBeAlteredDuplicateResourceNames(toBeAlteredResourceNames);
         checkResourceNameExisted(schemaName, toBeAlteredResourceNames);
-        checkModifyDatabase(schemaName, sqlStatement);
+        checkDatabase(schemaName, sqlStatement);
     }
     
-    private void checkModifyDatabase(final String schemaName, final AlterResourceStatement sqlStatement) throws DistSQLException {
+    private void checkDatabase(final String schemaName, final AlterResourceStatement sqlStatement) throws DistSQLException {
         Map<String, DataSource> resources = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources();
         Set<String> invalid = sqlStatement.getDataSources().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> getDatabase(each))).entrySet().stream()
                 .filter(each -> !getDatabase(resources.get(each.getKey())).equals(each.getValue())).map(each -> each.getKey()).collect(Collectors.toSet());
