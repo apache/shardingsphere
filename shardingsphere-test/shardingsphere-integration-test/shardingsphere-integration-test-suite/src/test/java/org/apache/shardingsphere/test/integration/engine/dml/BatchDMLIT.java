@@ -61,9 +61,11 @@ public final class BatchDMLIT extends BatchITCase {
     
     @Test
     public void assertExecuteBatch() throws SQLException, ParseException {
+        if ("shadow".equals(getScenario()) && "PostgreSQL".equals(getDatabaseType().getName())) {
+            return;
+        }
         switch (getScenario()) {
             case "replica_query":
-            case "shadow":
             case "encrypt":
                 return;
             default:
@@ -94,9 +96,11 @@ public final class BatchDMLIT extends BatchITCase {
     @Test
     public void assertClearBatch() throws SQLException, ParseException {
         // TODO fix replica_query
+        if ("shadow".equals(getScenario()) && "PostgreSQL".equals(getDatabaseType().getName())) {
+            return;
+        }
         switch (getScenario()) {
             case "replica_query":
-            case "shadow":
             case "encrypt":
                 return;
             default:

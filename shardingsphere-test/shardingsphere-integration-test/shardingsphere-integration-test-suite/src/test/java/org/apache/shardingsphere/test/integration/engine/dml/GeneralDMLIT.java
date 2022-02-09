@@ -61,7 +61,6 @@ public final class GeneralDMLIT extends BaseDMLIT {
     public void assertExecuteUpdate() throws SQLException, ParseException {
         switch (getScenario()) {
             case "replica_query":
-            case "shadow":
             case "encrypt":
                 return;
             default:
@@ -92,7 +91,6 @@ public final class GeneralDMLIT extends BaseDMLIT {
     public void assertExecute() throws SQLException, ParseException {
         switch (getScenario()) {
             case "replica_query":
-            case "shadow":
             case "encrypt":
                 return;
             default:
