@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.framework.compose.mode;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainer;
@@ -36,16 +35,16 @@ import java.util.Map;
 /**
  * Cluster composed container.
  */
-@Getter
 public final class ClusterComposedContainer extends ComposedContainer {
     
+    @Getter
     private final StorageContainer storageContainer;
     
+    @Getter
     private final AdapterContainer adapterContainer;
     
     private final AdapterContainer adapterContainerForReader;
     
-    @Getter(AccessLevel.NONE)
     private final ZookeeperContainer zookeeperContainer;
     
     public ClusterComposedContainer(final String suiteName, final ParameterizedArray parameterizedArray) {
