@@ -299,7 +299,7 @@ Apache 2.0 licenses
 The following components are provided under the Apache License. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    groovy 2.4.19-indy: https://github.com/apache/groovy, Apache 2.0
+    groovy 4.0.0: https://github.com/apache/groovy, Apache 2.0
     atomikos-util 5.0.8: https://www.atomikos.com, Apache 2.0
     transactions 5.0.8: https://www.atomikos.com, Apache 2.0
     transactions-api 5.0.8: https://www.atomikos.com, Apache 2.0
