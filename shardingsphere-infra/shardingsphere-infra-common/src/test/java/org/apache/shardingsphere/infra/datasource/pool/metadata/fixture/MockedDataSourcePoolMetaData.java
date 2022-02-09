@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaData<MockedDataSource> {
     
@@ -52,27 +51,13 @@ public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaDat
     }
     
     @Override
-    public String getJdbcUrl(final MockedDataSource targetDataSource) {
-        return targetDataSource.getUrl();
-    }
-    
-    @Override
-    public String getJdbcUrlPropertiesFieldName() {
-        return null;
-    }
-    
-    @Override
-    public Properties getJdbcUrlProperties(final MockedDataSource targetDataSource) {
-        return new Properties();
-    }
-    
-    @Override
-    public void appendJdbcUrlProperties(final String key, final String value, final MockedDataSource targetDataSource) {
-    }
-    
-    @Override
     public Collection<String> getTransientFieldNames() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    public MockedDataSourceJdbcUrlMetaData getJdbcUrlMetaData() {
+        return new MockedDataSourceJdbcUrlMetaData();
     }
     
     @Override

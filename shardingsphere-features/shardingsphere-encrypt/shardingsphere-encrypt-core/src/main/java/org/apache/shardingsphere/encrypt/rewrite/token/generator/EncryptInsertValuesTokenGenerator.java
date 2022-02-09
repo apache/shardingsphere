@@ -157,7 +157,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
             insertValueToken.getValues().add(columnIndex + 1, derivedExpressionSegment);
         }
     }
-
+    
     private boolean isAddLiteralExpressionSegment(final InsertValueContext insertValueContext, final int columnIndex) {
         return insertValueContext.getParameters().isEmpty()
                || insertValueContext.getValueExpressions().get(columnIndex) instanceof LiteralExpressionSegment;

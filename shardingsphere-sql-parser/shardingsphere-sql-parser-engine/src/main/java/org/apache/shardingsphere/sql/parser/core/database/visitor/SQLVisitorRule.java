@@ -60,6 +60,8 @@ public enum SQLVisitorRule {
     
     ALTER_FOREIGN_TABLE("AlterForeignTable", SQLStatementType.DDL),
     
+    ALTER_GROUP("AlterGroup", SQLStatementType.DDL),
+    
     DROP_TABLE("DropTable", SQLStatementType.DDL),
     
     TRUNCATE_TABLE("TruncateTable", SQLStatementType.DDL),

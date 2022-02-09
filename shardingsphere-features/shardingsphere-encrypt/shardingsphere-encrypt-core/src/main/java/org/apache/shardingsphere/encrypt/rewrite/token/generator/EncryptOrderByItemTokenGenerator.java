@@ -68,7 +68,7 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
         }
         return result;
     }
-
+    
     private Collection<SubstitutableColumnNameToken> generateSQLTokensWithColumnSegments(final Collection<ColumnSegment> columnSegments, final Map<String, String> columnTableNames) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (ColumnSegment column : columnSegments) {

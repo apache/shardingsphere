@@ -245,8 +245,8 @@ public final class ClusterContextManagerCoordinatorTest {
         when(metaData.getResource()).thenReturn(resource);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(metaData.getSchema()).thenReturn(schema);
-        when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
+        when(metaData.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
+        when(metaData.getRuleMetaData().getConfigurations()).thenReturn(new LinkedList<>());
         return new HashMap<>(Collections.singletonMap("schema", metaData));
     }
     

@@ -39,11 +39,13 @@ public final class DataSourceMapSetterTest {
         mockEnvironment.setProperty("spring.shardingsphere.datasource.ds0.username", "sa");
         mockEnvironment.setProperty("spring.shardingsphere.datasource.ds0.max-total", "50");
         mockEnvironment.setProperty("spring.shardingsphere.datasource.ds0.password", "");
+        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds0.connection-properties.useServerPrepStmts", Boolean.TRUE.toString());
         mockEnvironment.setProperty("spring.shardingsphere.datasource.ds1.url", "jdbc:h2:mem:ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
         mockEnvironment.setProperty("spring.shardingsphere.datasource.ds1.type", "org.apache.commons.dbcp2.BasicDataSource");
         mockEnvironment.setProperty("spring.shardingsphere.datasource.ds1.username", "sa");
         mockEnvironment.setProperty("spring.shardingsphere.datasource.ds1.max-total", "150");
         mockEnvironment.setProperty("spring.shardingsphere.datasource.ds1.password", "");
+        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds1.connection-properties.useServerPrepStmts", Boolean.TRUE.toString());
         StandardEnvironment standardEnvironment = new StandardEnvironment();
         standardEnvironment.merge(mockEnvironment);
         Map<String, DataSource> dataSourceMap = DataSourceMapSetter.getDataSourceMap(standardEnvironment);
@@ -52,4 +54,3 @@ public final class DataSourceMapSetterTest {
         assertThat(dataSourceMap.get("ds1").getConnection().getMetaData().getUserName(), is("SA"));
     }
 }
-
