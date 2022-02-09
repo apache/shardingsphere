@@ -20,9 +20,7 @@ package org.apache.shardingsphere.mode.manager;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -37,7 +35,6 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class ContextManagerBuilderParameterTest {
 
     @Test
@@ -48,8 +45,7 @@ public final class ContextManagerBuilderParameterTest {
                 .props(new Properties())
                 .schemaConfigs(mockSchemaConfigs)
                 .build();
-        boolean actualIsEmpty = contextManagerBuilderParameter.isEmpty();
-        assertTrue(actualIsEmpty);
+        assertTrue(contextManagerBuilderParameter.isEmpty());
     }
 
     @Test
@@ -59,15 +55,14 @@ public final class ContextManagerBuilderParameterTest {
                 .props(new Properties())
                 .schemaConfigs(Collections.emptyMap())
                 .build();
-        boolean actualIsEmpty = contextManagerBuilderParameter.isEmpty();
-        assertTrue(actualIsEmpty);
+        assertTrue(contextManagerBuilderParameter.isEmpty());
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void assertIsEmptyWhenAllFieldIsNotEmpty() {
         Properties mockProperties = mock(Properties.class);
-        lenient().when(mockProperties.isEmpty()).thenReturn(false);
+        when(mockProperties.isEmpty()).thenReturn(false);
         Collection<RuleConfiguration> mockGlobalRuleConfigs = mock(Collection.class);
         lenient().when(mockGlobalRuleConfigs.isEmpty()).thenReturn(false);
         Map<String, SchemaConfiguration> mockSchemaConfigs = getMockSchemaConfiguration(false, false);
@@ -76,8 +71,7 @@ public final class ContextManagerBuilderParameterTest {
                 .props(mockProperties)
                 .schemaConfigs(mockSchemaConfigs)
                 .build();
-        boolean actualIsEmpty = contextManagerBuilderParameter.isEmpty();
-        assertFalse(actualIsEmpty);
+        assertFalse(contextManagerBuilderParameter.isEmpty());
     }
 
     @Test
@@ -89,8 +83,7 @@ public final class ContextManagerBuilderParameterTest {
                 .props(mockProperties)
                 .schemaConfigs(Collections.emptyMap())
                 .build();
-        boolean actualIsEmpty = contextManagerBuilderParameter.isEmpty();
-        assertFalse(actualIsEmpty);
+        assertFalse(contextManagerBuilderParameter.isEmpty());
     }
 
     @Test
@@ -103,8 +96,7 @@ public final class ContextManagerBuilderParameterTest {
                 .props(new Properties())
                 .schemaConfigs(Collections.emptyMap())
                 .build();
-        boolean actualIsEmpty = contextManagerBuilderParameter.isEmpty();
-        assertFalse(actualIsEmpty);
+        assertFalse(contextManagerBuilderParameter.isEmpty());
     }
 
     @Test
@@ -115,8 +107,7 @@ public final class ContextManagerBuilderParameterTest {
                 .props(new Properties())
                 .schemaConfigs(mockSchemaConfigs)
                 .build();
-        boolean actualIsEmpty = contextManagerBuilderParameter.isEmpty();
-        assertFalse(actualIsEmpty);
+        assertFalse(contextManagerBuilderParameter.isEmpty());
     }
 
     @Test
@@ -127,8 +118,7 @@ public final class ContextManagerBuilderParameterTest {
                 .props(new Properties())
                 .schemaConfigs(mockSchemaConfigs)
                 .build();
-        boolean actualIsEmpty = contextManagerBuilderParameter.isEmpty();
-        assertFalse(actualIsEmpty);
+        assertFalse(contextManagerBuilderParameter.isEmpty());
     }
 
     @Test
@@ -139,8 +129,7 @@ public final class ContextManagerBuilderParameterTest {
                 .props(new Properties())
                 .schemaConfigs(mockSchemaConfigs)
                 .build();
-        boolean actualIsEmpty = contextManagerBuilderParameter.isEmpty();
-        assertFalse(actualIsEmpty);
+        assertFalse(contextManagerBuilderParameter.isEmpty());
     }
 
     @Test
@@ -154,8 +143,7 @@ public final class ContextManagerBuilderParameterTest {
                 .props(new Properties())
                 .schemaConfigs(mockSchemaConfigs)
                 .build();
-        boolean actualIsEmpty = contextManagerBuilderParameter.isEmpty();
-        assertFalse(actualIsEmpty);
+        assertFalse(contextManagerBuilderParameter.isEmpty());
     }
 
     @Test
@@ -168,8 +156,7 @@ public final class ContextManagerBuilderParameterTest {
                 .props(mockProperties)
                 .schemaConfigs(mockSchemaConfigs)
                 .build();
-        boolean actualIsEmpty = contextManagerBuilderParameter.isEmpty();
-        assertFalse(actualIsEmpty);
+        assertFalse(contextManagerBuilderParameter.isEmpty());
     }
 
     @Test
@@ -184,8 +171,7 @@ public final class ContextManagerBuilderParameterTest {
                 .props(mockProperties)
                 .schemaConfigs(Collections.emptyMap())
                 .build();
-        boolean actualIsEmpty = contextManagerBuilderParameter.isEmpty();
-        assertFalse(actualIsEmpty);
+        assertFalse(contextManagerBuilderParameter.isEmpty());
     }
 
     private Map<String, SchemaConfiguration> getMockSchemaConfiguration(final boolean dataSourcesIsEmpty, final boolean ruleConfigurationsIsEmpty) {
@@ -196,5 +182,4 @@ public final class ContextManagerBuilderParameterTest {
         schemaConfigs.put("logic", mockSchemaConfiguration);
         return schemaConfigs;
     }
-
 }
