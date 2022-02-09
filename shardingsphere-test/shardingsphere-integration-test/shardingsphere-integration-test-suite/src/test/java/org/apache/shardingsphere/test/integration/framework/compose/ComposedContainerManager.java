@@ -68,8 +68,8 @@ public final class ComposedContainerManager extends ExternalResource {
     protected void before() {
         if (EnvironmentType.DOCKER == IntegrationTestEnvironment.getInstance().getEnvType()) {
             composeMap.values().forEach(each -> {
-                each.start();
-                each.waitUntilReady();
+                each.getContainers().start();
+                each.getContainers().waitUntilReady();
             });
         }
     }

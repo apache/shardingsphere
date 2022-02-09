@@ -21,9 +21,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainer;
+import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.impl.ShardingSphereProxyContainer;
 import org.apache.shardingsphere.test.integration.framework.container.governance.ZookeeperContainer;
 import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainer;
+import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 import javax.sql.DataSource;
@@ -48,23 +50,20 @@ public final class ClusterComposedContainer extends ComposedContainer {
     
     public ClusterComposedContainer(final String suiteName, final ParameterizedArray parameterizedArray) {
         super(suiteName, parameterizedArray);
-        this.storageContainer = createStorageContainer();
-        this.adapterContainer = createAdapterContainer();
+        this.storageContainer = getContainers().registerContainer(
+                StorageContainerFactory.newInstance(parameterizedArray), parameterizedArray.getDatabaseType().getName().toLowerCase() + "." + parameterizedArray.getScenario() + ".host");
+        this.adapterContainer = getContainers().registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), "adapter");
         this.storageContainer.setNetworkAliases(Collections.singletonList(parameterizedArray.getDatabaseType().getName().toLowerCase() + ".sharding_governance.host"));
         // TODO support other types of governance
-        zookeeperContainer = createZookeeperContainer();
+        zookeeperContainer = getContainers().registerContainer(new ZookeeperContainer(getParameterizedArray()), "zk");
         if ("proxy".equals(parameterizedArray.getAdapter())) {
-            adapterContainerForReader = createContainer(() -> new ShardingSphereProxyContainer("ShardingSphere-Proxy-1", parameterizedArray), "ShardingSphere-Proxy-1");
+            adapterContainerForReader = getContainers().registerContainer(new ShardingSphereProxyContainer("ShardingSphere-Proxy-1", parameterizedArray), "ShardingSphere-Proxy-1");
             adapterContainerForReader.dependsOn(storageContainer, zookeeperContainer);
         } else {
-            adapterContainerForReader = createAdapterContainer();
+            adapterContainerForReader = getContainers().registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), "adapter");
             adapterContainerForReader.dependsOn(storageContainer, zookeeperContainer);
         }
         adapterContainer.dependsOn(storageContainer, zookeeperContainer);
-    }
-    
-    private ZookeeperContainer createZookeeperContainer() {
-        return createContainer(() -> new ZookeeperContainer(getParameterizedArray()), "zk");
     }
     
     @Override

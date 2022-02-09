@@ -21,11 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.impl.ShardingSphereJDBCContainer;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.impl.ShardingSphereProxyContainer;
-import org.apache.shardingsphere.test.integration.framework.logging.ContainerLogs;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
-import org.testcontainers.containers.Network;
-
-import java.util.Collections;
 
 /**
  * Adapter container factory.
@@ -37,25 +33,16 @@ public final class AdapterContainerFactory {
      * Create new instance of adapter container.
      *
      * @param parameterizedArray parameterized array
-     * @param network network
-     * @param suiteName suite name
      * @return new instance of adapter container
      */
-    public static AdapterContainer newInstance(final ParameterizedArray parameterizedArray, final Network network, final String suiteName) {
-        AdapterContainer result;
+    public static AdapterContainer newInstance(final ParameterizedArray parameterizedArray) {
         switch (parameterizedArray.getAdapter()) {
             case "proxy":
-                result = new ShardingSphereProxyContainer(parameterizedArray);
-                break;
+                return new ShardingSphereProxyContainer(parameterizedArray);
             case "jdbc":
-                result = new ShardingSphereJDBCContainer(parameterizedArray);
-                break;
+                return new ShardingSphereJDBCContainer(parameterizedArray);
             default:
                 throw new RuntimeException(String.format("Adapter [%s] is unknown.", parameterizedArray.getAdapter()));
         }
-        result.setNetwork(network);
-        result.setNetworkAliases(Collections.singletonList("adapter"));
-        result.withLogConsumer(ContainerLogs.newConsumer(String.join("-", suiteName, result.getName())));
-        return result;
     }
 }
