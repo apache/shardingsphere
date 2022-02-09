@@ -39,8 +39,8 @@ public abstract class ComposedContainer extends ExternalResource implements Clos
     
     private volatile boolean executed;
     
-    public ComposedContainer(final String suiteName) {
-        containers = new ShardingSphereContainers(suiteName);
+    public ComposedContainer(final String testSuiteName) {
+        containers = new ShardingSphereContainers(testSuiteName);
     }
     
     /**

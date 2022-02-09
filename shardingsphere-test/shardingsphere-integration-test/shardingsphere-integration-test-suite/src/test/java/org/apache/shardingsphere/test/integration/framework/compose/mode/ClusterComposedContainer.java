@@ -47,8 +47,8 @@ public final class ClusterComposedContainer extends ComposedContainer {
     
     private final ZookeeperContainer zookeeperContainer;
     
-    public ClusterComposedContainer(final String suiteName, final ParameterizedArray parameterizedArray) {
-        super(suiteName);
+    public ClusterComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
+        super(testSuiteName);
         storageContainer = getContainers().registerContainer(
                 StorageContainerFactory.newInstance(parameterizedArray), parameterizedArray.getDatabaseType().getName().toLowerCase() + "." + parameterizedArray.getScenario() + ".host");
         adapterContainer = getContainers().registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), "adapter");

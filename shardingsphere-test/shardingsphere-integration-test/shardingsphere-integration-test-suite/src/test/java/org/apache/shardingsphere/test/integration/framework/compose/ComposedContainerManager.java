@@ -36,7 +36,7 @@ public final class ComposedContainerManager extends ExternalResource {
     
     private final Map<String, ComposedContainer> composeMap = new HashMap<>();
     
-    private final String suiteName;
+    private final String testSuiteName;
     
     /**
      * Create or get container compose.
@@ -52,16 +52,16 @@ public final class ComposedContainerManager extends ExternalResource {
         ComposedContainer result;
         // TODO fix sharding_governance
         if ("sharding_governance".equals(parameterizedArray.getScenario())) {
-            result = new ClusterComposedContainer(suiteName, parameterizedArray);
+            result = new ClusterComposedContainer(testSuiteName, parameterizedArray);
         } else {
-            result = new MemoryComposedContainer(suiteName, parameterizedArray);
+            result = new MemoryComposedContainer(testSuiteName, parameterizedArray);
         }
         composeMap.put(key, result);
         return result;
     }
     
     private String generateKey(final ParameterizedArray parameter) {
-        return String.join("-", suiteName, parameter.getScenario(), parameter.getAdapter(), parameter.getDatabaseType().getName());
+        return String.join("-", testSuiteName, parameter.getScenario(), parameter.getAdapter(), parameter.getDatabaseType().getName());
     }
     
     @Override
