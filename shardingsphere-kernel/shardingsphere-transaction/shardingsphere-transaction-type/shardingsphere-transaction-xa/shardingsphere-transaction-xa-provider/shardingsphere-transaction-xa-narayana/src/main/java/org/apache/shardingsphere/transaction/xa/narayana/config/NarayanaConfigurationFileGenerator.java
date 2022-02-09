@@ -101,7 +101,7 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         String password = transactionRule.getProps().getProperty("password");
         String databaseName = transactionRule.getProps().getProperty("databaseName");
         if (null != host && null != port && null != user && null != password && null != databaseName) {
-            String jdbcAccessPatten =  DynamicDataSourceJDBCAccess.class.getName() + "ClassName=com.mysql.cj.jdbc.MysqlDataSource;URL=jdbc:mysql://%s:%d/%s;User=%s;Password=%s";
+            String jdbcAccessPatten = DynamicDataSourceJDBCAccess.class.getName() + "ClassName=com.mysql.cj.jdbc.MysqlDataSource;URL=jdbc:mysql://%s:%d/%s;User=%s;Password=%s";
             String jdbcAccess = String.format(jdbcAccessPatten, host, port, databaseName, user, password);
             config.put("ObjectStoreEnvironmentBean.objectStoreType", JDBCStore.class.getName());
             config.put("ObjectStoreEnvironmentBean.jdbcAccess", jdbcAccess);
