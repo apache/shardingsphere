@@ -34,9 +34,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class ComposedContainerManager extends ExternalResource {
     
-    private final Map<String, ComposedContainer> composeMap = new HashMap<>();
-    
     private final String testSuiteName;
+    
+    private final Map<String, ComposedContainer> composedContainers = new HashMap<>();
     
     /**
      * Create or get container compose.
@@ -46,8 +46,8 @@ public final class ComposedContainerManager extends ExternalResource {
      */
     public ComposedContainer getOrCreateCompose(final ParameterizedArray parameterizedArray) {
         String key = generateKey(parameterizedArray);
-        if (composeMap.containsKey(key)) {
-            return composeMap.get(key);
+        if (composedContainers.containsKey(key)) {
+            return composedContainers.get(key);
         }
         ComposedContainer result;
         // TODO fix sharding_governance
@@ -56,7 +56,7 @@ public final class ComposedContainerManager extends ExternalResource {
         } else {
             result = new MemoryComposedContainer(testSuiteName, parameterizedArray);
         }
-        composeMap.put(key, result);
+        composedContainers.put(key, result);
         return result;
     }
     
@@ -67,7 +67,7 @@ public final class ComposedContainerManager extends ExternalResource {
     @Override
     protected void before() {
         if (EnvironmentType.DOCKER == IntegrationTestEnvironment.getInstance().getEnvType()) {
-            composeMap.values().forEach(each -> {
+            composedContainers.values().forEach(each -> {
                 each.getContainers().start();
                 each.getContainers().waitUntilReady();
             });
@@ -76,6 +76,6 @@ public final class ComposedContainerManager extends ExternalResource {
     
     @Override
     protected void after() {
-        composeMap.values().forEach(ComposedContainer::close);
+        composedContainers.values().forEach(ComposedContainer::close);
     }
 }
