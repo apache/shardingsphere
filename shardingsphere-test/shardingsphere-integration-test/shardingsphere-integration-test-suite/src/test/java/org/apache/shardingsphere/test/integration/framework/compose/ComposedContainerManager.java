@@ -49,15 +49,15 @@ public final class ComposedContainerManager extends ExternalResource {
         if (composedContainers.containsKey(key)) {
             return composedContainers.get(key);
         }
-        ComposedContainer result;
-        // TODO fix sharding_governance
-        if ("sharding_governance".equals(parameterizedArray.getScenario())) {
-            result = new ClusterComposedContainer(testSuiteName, parameterizedArray);
-        } else {
-            result = new MemoryComposedContainer(testSuiteName, parameterizedArray);
-        }
+        ComposedContainer result = createComposedContainer(parameterizedArray);
         composedContainers.put(key, result);
         return result;
+    }
+    
+    private ComposedContainer createComposedContainer(final ParameterizedArray parameterizedArray) {
+        // TODO fix sharding_governance
+        return "sharding_governance".equals(parameterizedArray.getScenario())
+                ? new ClusterComposedContainer(testSuiteName, parameterizedArray) : new MemoryComposedContainer(testSuiteName, parameterizedArray);
     }
     
     private String generateKey(final ParameterizedArray parameter) {
