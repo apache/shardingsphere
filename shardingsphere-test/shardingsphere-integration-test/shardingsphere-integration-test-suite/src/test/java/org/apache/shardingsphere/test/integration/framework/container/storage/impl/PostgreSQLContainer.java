@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.framework.container.storage.i
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.framework.container.storage.ShardingSphereStorageContainer;
+import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.postgresql.util.PSQLException;
 
@@ -30,7 +30,7 @@ import java.sql.DriverManager;
 /**
  * PostgreSQL container.
  */
-public final class PostgreSQLContainer extends ShardingSphereStorageContainer {
+public final class PostgreSQLContainer extends StorageContainer {
     
     public PostgreSQLContainer(final ParameterizedArray parameterizedArray) {
         super("postgres", "postgres:12.6", new PostgreSQLDatabaseType(), false, parameterizedArray);

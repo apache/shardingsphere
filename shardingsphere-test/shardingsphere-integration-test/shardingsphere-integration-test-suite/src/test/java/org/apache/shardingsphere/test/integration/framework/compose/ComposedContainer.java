@@ -24,10 +24,8 @@ import org.apache.shardingsphere.test.integration.framework.container.ShardingSp
 import org.apache.shardingsphere.test.integration.framework.container.adapter.ShardingSphereAdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.impl.ShardingSphereJDBCContainer;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.impl.ShardingSphereProxyContainer;
-import org.apache.shardingsphere.test.integration.framework.container.storage.ShardingSphereStorageContainer;
-import org.apache.shardingsphere.test.integration.framework.container.storage.impl.H2Container;
-import org.apache.shardingsphere.test.integration.framework.container.storage.impl.MySQLContainer;
-import org.apache.shardingsphere.test.integration.framework.container.storage.impl.PostgreSQLContainer;
+import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainer;
+import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.logging.ContainerLogs;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.junit.rules.ExternalResource;
@@ -53,7 +51,7 @@ import java.util.function.Supplier;
 public abstract class ComposedContainer extends ExternalResource implements Closeable {
     
     @Getter(AccessLevel.NONE)
-    private final String name;
+    private final String suiteName;
     
     private final ParameterizedArray parameterizedArray;
     
@@ -65,20 +63,8 @@ public abstract class ComposedContainer extends ExternalResource implements Clos
     
     private volatile boolean executed;
     
-    protected ShardingSphereStorageContainer createStorageContainer() {
-        Supplier<ShardingSphereStorageContainer> supplier = () -> {
-            switch (parameterizedArray.getDatabaseType().getName()) {
-                case "MySQL":
-                    return new MySQLContainer(parameterizedArray);
-                case "H2":
-                    return new H2Container(parameterizedArray);
-                case "PostgreSQL" :
-                    return new PostgreSQLContainer(parameterizedArray);
-                default:
-                    throw new RuntimeException("Unknown storage type " + parameterizedArray.getDatabaseType());
-            }
-        };
-        return createContainer(supplier, parameterizedArray.getDatabaseType().getName().toLowerCase() + "." + parameterizedArray.getScenario() + ".host");
+    protected StorageContainer createStorageContainer() {
+        return StorageContainerFactory.newInstance(parameterizedArray, network, suiteName);
     }
     
     protected ShardingSphereAdapterContainer createAdapterContainer() {
@@ -101,7 +87,7 @@ public abstract class ComposedContainer extends ExternalResource implements Clos
         containers.add(result);
         result.setNetwork(network);
         result.setNetworkAliases(Collections.singletonList(hostname));
-        result.withLogConsumer(ContainerLogs.newConsumer(String.join("-", name, result.getName())));
+        result.withLogConsumer(ContainerLogs.newConsumer(String.join("-", suiteName, result.getName())));
         return result;
     }
     
@@ -149,7 +135,7 @@ public abstract class ComposedContainer extends ExternalResource implements Clos
      *
      * @return ShardingSphere storage container
      */
-    public abstract ShardingSphereStorageContainer getStorageContainer();
+    public abstract StorageContainer getStorageContainer();
 
     /**
      * Get all target data sources.
