@@ -41,6 +41,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -83,8 +84,8 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
     
     private void checkDatabase(final String schemaName, final AlterResourceStatement sqlStatement) throws DistSQLException {
         Map<String, DataSource> resources = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources();
-        Set<String> invalid = sqlStatement.getDataSources().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> getDatabase(each))).entrySet().stream()
-                .filter(each -> !getDatabase(resources.get(each.getKey())).equals(each.getValue())).map(each -> each.getKey()).collect(Collectors.toSet());
+        Set<String> invalid = sqlStatement.getDataSources().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> each)).entrySet().stream()
+                .filter(each -> !isIdenticalDatabase(each.getValue(), resources.get(each.getKey()))).map(Entry::getKey).collect(Collectors.toSet());
         DistSQLException.predictionThrow(invalid.isEmpty(), new InvalidResourcesException(Collections.singleton(String.format("Cannot alter the database of %s", invalid))));
     }
     
@@ -111,18 +112,19 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
         }
     }
     
-    private String getDatabase(final DataSourceSegment segment) {
-        if (null != segment.getDatabase()) {
-            return segment.getDatabase();
+    private boolean isIdenticalDatabase(final DataSourceSegment segment, final DataSource dataSource) {
+        String hostName = segment.getHostname();
+        String port = segment.getPort();
+        String database = segment.getDatabase();
+        if (null != segment.getUrl() && (null == hostName || null == port || null == database)) {
+            JdbcUrl segmentJdbcUrl = new StandardJdbcUrlParser().parse(segment.getUrl());
+            hostName = segmentJdbcUrl.getHostname();
+            port = String.valueOf(segmentJdbcUrl.getPort());
+            database = segmentJdbcUrl.getDatabase();
         }
-        JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(segment.getUrl());
-        return jdbcUrl.getDatabase();
-    }
-    
-    private String getDatabase(final DataSource dataSource) {
         DataSourceProperties dataSourceProperties = DataSourcePropertiesCreator.create(dataSource);
         String url = String.valueOf(dataSourceProperties.getConnectionPropertySynonyms().getStandardProperties().get("url"));
-        JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
-        return jdbcUrl.getDatabase();
+        JdbcUrl dataSourceJdbcUrl = new StandardJdbcUrlParser().parse(url);
+        return hostName.equals(dataSourceJdbcUrl.getHostname()) && port.equals(String.valueOf(dataSourceJdbcUrl.getPort())) && database.equals(dataSourceJdbcUrl.getDatabase());
     }
 }

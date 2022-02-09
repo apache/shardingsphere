@@ -118,7 +118,7 @@ public final class AlterResourceBackendHandlerTest {
     }
     
     @Test(expected = InvalidResourcesException.class)
-    public void assertExecuteWithModifyDatabase() throws Exception {
+    public void assertExecuteWithAlterDatabase() throws Exception {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
