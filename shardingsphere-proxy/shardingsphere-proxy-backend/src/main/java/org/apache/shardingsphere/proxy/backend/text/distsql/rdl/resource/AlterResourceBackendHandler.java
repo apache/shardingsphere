@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
@@ -85,8 +84,8 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
     private void checkModifyDatabase(final String schemaName, final AlterResourceStatement sqlStatement) throws DistSQLException {
         Map<String, DataSource> resources = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources();
         Set<String> invalid = sqlStatement.getDataSources().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> getDatabase(each))).entrySet().stream()
-                .filter(each -> !getDatabase((HikariDataSource) resources.get(each.getKey())).equals(each.getValue())).map(each -> each.getKey()).collect(Collectors.toSet());
-        DistSQLException.predictionThrow(invalid.isEmpty(), new InvalidResourcesException(Collections.singleton(String.format("Cannot modify the database of %s", invalid))));
+                .filter(each -> !getDatabase(resources.get(each.getKey())).equals(each.getValue())).map(each -> each.getKey()).collect(Collectors.toSet());
+        DistSQLException.predictionThrow(invalid.isEmpty(), new InvalidResourcesException(Collections.singleton(String.format("Cannot alter the database of %s", invalid))));
     }
     
     private Collection<String> getToBeAlteredResourceNames(final AlterResourceStatement sqlStatement) {
