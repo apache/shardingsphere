@@ -51,11 +51,11 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     
     private static final String STATUS = "status";
     
-    private static final String DISABLE = "disable";
+    private static final String DISABLED = "disabled";
     
     private static final String LABELS = "labels";
     
-    private static final String ENABLE = "enable";
+    private static final String ENABLED = "enabled";
     
     @Override
     protected List<QueryHeader> createQueryHeaders() {
@@ -80,7 +80,7 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     private Collection<List<Object>> buildInstanceRows() {
         List<List<Object>> result = new LinkedList<>();
         InstanceId instanceId = ProxyContext.getInstance().getContextManager().getInstanceContext().getInstance().getInstanceDefinition().getInstanceId();
-        result.add(buildRow(instanceId.getId(), ENABLE, Collections.emptyList()));
+        result.add(buildRow(instanceId.getId(), ENABLED, Collections.emptyList()));
         return result;
     }
     
@@ -103,6 +103,6 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     }
     
     private String getStatus(final Collection<String> computeNodeStatus) {
-        return computeNodeStatus.isEmpty() || !computeNodeStatus.contains(ComputeNodeStatus.CIRCUIT_BREAK.name()) ? ENABLE : DISABLE;
+        return computeNodeStatus.isEmpty() || !computeNodeStatus.contains(ComputeNodeStatus.CIRCUIT_BREAK.name()) ? ENABLED : DISABLED;
     }
 }
