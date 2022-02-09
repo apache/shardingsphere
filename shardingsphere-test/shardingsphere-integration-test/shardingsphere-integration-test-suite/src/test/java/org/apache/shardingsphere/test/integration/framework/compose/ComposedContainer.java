@@ -22,7 +22,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.test.integration.framework.container.ShardingSphereContainers;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainer;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.junit.rules.ExternalResource;
 
 import javax.sql.DataSource;
@@ -37,15 +36,11 @@ import java.util.function.Consumer;
 public abstract class ComposedContainer extends ExternalResource implements Closeable {
     
     @Getter(AccessLevel.PROTECTED)
-    private final ParameterizedArray parameterizedArray;
-    
-    @Getter(AccessLevel.PROTECTED)
     private final ShardingSphereContainers containers;
     
     private volatile boolean executed;
     
-    public ComposedContainer(final String suiteName, final ParameterizedArray parameterizedArray) {
-        this.parameterizedArray = parameterizedArray;
+    public ComposedContainer(final String suiteName) {
         containers = new ShardingSphereContainers(suiteName);
     }
     

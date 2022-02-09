@@ -49,13 +49,13 @@ public final class ClusterComposedContainer extends ComposedContainer {
     private final ZookeeperContainer zookeeperContainer;
     
     public ClusterComposedContainer(final String suiteName, final ParameterizedArray parameterizedArray) {
-        super(suiteName, parameterizedArray);
+        super(suiteName);
         this.storageContainer = getContainers().registerContainer(
                 StorageContainerFactory.newInstance(parameterizedArray), parameterizedArray.getDatabaseType().getName().toLowerCase() + "." + parameterizedArray.getScenario() + ".host");
         this.adapterContainer = getContainers().registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), "adapter");
         this.storageContainer.setNetworkAliases(Collections.singletonList(parameterizedArray.getDatabaseType().getName().toLowerCase() + ".sharding_governance.host"));
         // TODO support other types of governance
-        zookeeperContainer = getContainers().registerContainer(new ZookeeperContainer(getParameterizedArray()), "zk");
+        zookeeperContainer = getContainers().registerContainer(new ZookeeperContainer(parameterizedArray), "zk");
         if ("proxy".equals(parameterizedArray.getAdapter())) {
             adapterContainerForReader = getContainers().registerContainer(new ShardingSphereProxyContainer("ShardingSphere-Proxy-1", parameterizedArray), "ShardingSphere-Proxy-1");
             adapterContainerForReader.dependsOn(storageContainer, zookeeperContainer);
