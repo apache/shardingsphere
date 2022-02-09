@@ -22,11 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.integration.framework.container.storage.impl.H2Container;
 import org.apache.shardingsphere.test.integration.framework.container.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.integration.framework.container.storage.impl.PostgreSQLContainer;
-import org.apache.shardingsphere.test.integration.framework.logging.ContainerLogs;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
-import org.testcontainers.containers.Network;
-
-import java.util.Collections;
 
 /**
  * Storage container factory.
@@ -38,29 +34,18 @@ public final class StorageContainerFactory {
      * Create new instance of storage container.
      * 
      * @param parameterizedArray parameterized array
-     * @param network network
-     * @param suiteName suite name
      * @return new instance of storage container
      */
-    public static StorageContainer newInstance(final ParameterizedArray parameterizedArray, final Network network, final String suiteName) {
-        StorageContainer result;
-        String databaseType = parameterizedArray.getDatabaseType().getName();
-        switch (databaseType) {
+    public static StorageContainer newInstance(final ParameterizedArray parameterizedArray) {
+        switch (parameterizedArray.getDatabaseType().getName()) {
             case "MySQL":
-                result = new MySQLContainer(parameterizedArray);
-                break;
+                return new MySQLContainer(parameterizedArray);
             case "PostgreSQL" :
-                result = new PostgreSQLContainer(parameterizedArray);
-                break;
+                return new PostgreSQLContainer(parameterizedArray);
             case "H2":
-                result = new H2Container(parameterizedArray);
-                break;
+                return new H2Container(parameterizedArray);
             default:
-                throw new RuntimeException(String.format("Database [%s] is unknown.", databaseType));
+                throw new RuntimeException(String.format("Database [%s] is unknown.", parameterizedArray.getDatabaseType()));
         }
-        result.setNetwork(network);
-        result.setNetworkAliases(Collections.singletonList(databaseType.toLowerCase() + "." + parameterizedArray.getScenario() + ".host"));
-        result.withLogConsumer(ContainerLogs.newConsumer(String.join("-", suiteName, result.getName())));
-        return result;
     }
 }

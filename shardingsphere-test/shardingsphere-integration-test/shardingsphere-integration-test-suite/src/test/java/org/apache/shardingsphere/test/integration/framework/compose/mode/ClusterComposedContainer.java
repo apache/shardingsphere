@@ -54,7 +54,8 @@ public final class ClusterComposedContainer extends ComposedContainer {
         // TODO support other types of governance
         zookeeperContainer = createZookeeperContainer();
         if ("proxy".equals(parameterizedArray.getAdapter())) {
-            adapterContainerForReader = createContainer(() -> new ShardingSphereProxyContainer("ShardingSphere-Proxy-1", parameterizedArray), "ShardingSphere-Proxy-1");
+            adapterContainerForReader = new ShardingSphereProxyContainer("ShardingSphere-Proxy-1", parameterizedArray);
+            getContainers().registerContainer(adapterContainerForReader, "ShardingSphere-Proxy-1");
             adapterContainerForReader.dependsOn(storageContainer, zookeeperContainer);
         } else {
             adapterContainerForReader = createAdapterContainer();
@@ -64,7 +65,9 @@ public final class ClusterComposedContainer extends ComposedContainer {
     }
     
     private ZookeeperContainer createZookeeperContainer() {
-        return createContainer(() -> new ZookeeperContainer(getParameterizedArray()), "zk");
+        ZookeeperContainer result = new ZookeeperContainer(getParameterizedArray());
+        getContainers().registerContainer(adapterContainerForReader, "zk");
+        return result;
     }
     
     @Override

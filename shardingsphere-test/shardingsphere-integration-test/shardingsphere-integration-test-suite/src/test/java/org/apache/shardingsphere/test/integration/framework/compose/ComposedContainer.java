@@ -19,100 +19,47 @@ package org.apache.shardingsphere.test.integration.framework.compose;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.integration.framework.container.ShardingSphereContainer;
+import org.apache.shardingsphere.test.integration.framework.container.ShardingSphereContainers;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainerFactory;
-import org.apache.shardingsphere.test.integration.framework.logging.ContainerLogs;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.junit.rules.ExternalResource;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.Network;
-import org.testcontainers.lifecycle.Startable;
 
 import javax.sql.DataSource;
 import java.io.Closeable;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Composed container.
  */
-@RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class ComposedContainer extends ExternalResource implements Closeable {
     
-    @Getter(AccessLevel.NONE)
-    private final String suiteName;
-    
     private final ParameterizedArray parameterizedArray;
     
-    private final Network network = Network.newNetwork();
-    
-    private final Collection<ShardingSphereContainer> containers = new LinkedList<>();
-    
-    private volatile boolean started;
+    private final ShardingSphereContainers containers;
     
     private volatile boolean executed;
     
-    protected StorageContainer createStorageContainer() {
-        StorageContainer result = StorageContainerFactory.newInstance(parameterizedArray, network, suiteName);
-        containers.add(result);
+    public ComposedContainer(final String suiteName, final ParameterizedArray parameterizedArray) {
+        this.parameterizedArray = parameterizedArray;
+        containers = new ShardingSphereContainers(suiteName);
+    }
+    
+    protected final StorageContainer createStorageContainer() {
+        StorageContainer result = StorageContainerFactory.newInstance(parameterizedArray);
+        containers.registerContainer(result, parameterizedArray.getDatabaseType().getName().toLowerCase() + "." + parameterizedArray.getScenario() + ".host");
         return result;
     }
     
-    protected AdapterContainer createAdapterContainer() {
-        AdapterContainer result = AdapterContainerFactory.newInstance(parameterizedArray, network, suiteName);
-        containers.add(result);
+    protected final AdapterContainer createAdapterContainer() {
+        AdapterContainer result = AdapterContainerFactory.newInstance(parameterizedArray);
+        containers.registerContainer(result, "adapter");
         return result;
-    }
-    
-    protected final <T extends ShardingSphereContainer> T createContainer(final Supplier<T> supplier, final String hostname) {
-        T result = supplier.get();
-        containers.add(result);
-        result.setNetwork(network);
-        result.setNetworkAliases(Collections.singletonList(hostname));
-        result.withLogConsumer(ContainerLogs.newConsumer(String.join("-", suiteName, result.getName())));
-        return result;
-    }
-    
-    /**
-     * Startup.
-     */
-    public void start() {
-        containers.stream().filter(each -> !each.isCreated()).forEach(GenericContainer::start);
-    }
-    
-    /**
-     * Wait until all containers ready.
-     */
-    public void waitUntilReady() {
-        containers.stream()
-                .filter(each -> {
-                    try {
-                        return !each.isHealthy();
-                        // CHECKSTYLE:OFF
-                    } catch (final RuntimeException ex) {
-                        // CHECKSTYLE:ON
-                        return false;
-                    }
-                })
-                .forEach(each -> {
-                    while (!(each.isRunning() && each.isHealthy())) {
-                        try {
-                            TimeUnit.MILLISECONDS.sleep(200L);
-                        } catch (final InterruptedException ignored) {
-                        }
-                    }
-                });
-        started = true;
     }
     
     /**
@@ -140,11 +87,11 @@ public abstract class ComposedContainer extends ExternalResource implements Clos
     
     @Override
     protected void before() {
-        if (!started) {
+        if (!containers.isStarted()) {
             synchronized (this) {
-                if (!started) {
-                    start();
-                    waitUntilReady();
+                if (!containers.isStarted()) {
+                    containers.start();
+                    containers.waitUntilReady();
                 }
             }
         }
@@ -166,8 +113,9 @@ public abstract class ComposedContainer extends ExternalResource implements Clos
         }
     }
     
+    // TODO investigate where to call it
     @Override
     public void close() {
-        containers.forEach(Startable::close);
+        containers.close();
     }
 }
