@@ -34,11 +34,12 @@ import java.util.function.Consumer;
 /**
  * Composed container.
  */
-@Getter(AccessLevel.PROTECTED)
 public abstract class ComposedContainer extends ExternalResource implements Closeable {
     
+    @Getter(AccessLevel.PROTECTED)
     private final ParameterizedArray parameterizedArray;
     
+    @Getter(AccessLevel.PROTECTED)
     private final ShardingSphereContainers containers;
     
     private volatile boolean executed;
@@ -71,18 +72,6 @@ public abstract class ComposedContainer extends ExternalResource implements Clos
         return Collections.singletonMap("adapterForWriter", getAdapterContainer().getDataSource(null));
     }
     
-    @Override
-    protected void before() {
-        if (!containers.isStarted()) {
-            synchronized (this) {
-                if (!containers.isStarted()) {
-                    containers.start();
-                    containers.waitUntilReady();
-                }
-            }
-        }
-    }
-    
     /**
      * Execution initializer one time after container started.
      *
@@ -99,9 +88,21 @@ public abstract class ComposedContainer extends ExternalResource implements Clos
         }
     }
     
+    @Override
+    protected final void before() {
+        if (!containers.isStarted()) {
+            synchronized (this) {
+                if (!containers.isStarted()) {
+                    containers.start();
+                    containers.waitUntilReady();
+                }
+            }
+        }
+    }
+    
     // TODO investigate where to call it
     @Override
-    public void close() {
+    public final void close() {
         containers.close();
     }
 }
