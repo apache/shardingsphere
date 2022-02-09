@@ -24,7 +24,6 @@ import org.apache.shardingsphere.test.integration.framework.param.ParameterizedA
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -41,7 +40,6 @@ import static org.junit.Assert.assertFalse;
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDDLIT extends BaseDDLIT {
     
-    @ClassRule
     public static ComposedContainerManager composedContainerManager = new ComposedContainerManager("GeneralDDLIT");
     
     public GeneralDDLIT(final AssertionParameterizedArray parameterizedArray) {
@@ -52,7 +50,7 @@ public final class GeneralDDLIT extends BaseDDLIT {
     public static Collection<AssertionParameterizedArray> getParameters() {
         return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DDL)
                 .stream()
-                .peek(each -> each.setCompose(composedContainerManager.getOrCreateCompose(each)))
+                .peek(each -> each.setCompose(composedContainerManager.getComposedContainer(each)))
                 .collect(Collectors.toList());
     }
     
