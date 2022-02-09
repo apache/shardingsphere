@@ -43,7 +43,7 @@ import java.util.function.Function;
 /**
  * Result set for count schema rules.
  */
-public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
+public final class SchemaRulesCountResultSet implements DistSQLResultSet {
     
     private static final int DEFAULT_COUNT = 0;
     
