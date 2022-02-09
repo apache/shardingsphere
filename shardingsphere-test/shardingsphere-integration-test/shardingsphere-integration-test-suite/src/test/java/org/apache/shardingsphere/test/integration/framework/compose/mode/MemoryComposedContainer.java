@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.framework.compose.mode;
 import lombok.Getter;
 import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.ShardingSphereAdapterContainer;
-import org.apache.shardingsphere.test.integration.framework.container.storage.ShardingSphereStorageContainer;
+import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 /**
@@ -29,12 +29,12 @@ import org.apache.shardingsphere.test.integration.framework.param.model.Paramete
 @Getter
 public final class MemoryComposedContainer extends ComposedContainer {
     
-    private final ShardingSphereStorageContainer storageContainer;
+    private final StorageContainer storageContainer;
     
     private final ShardingSphereAdapterContainer adapterContainer;
     
-    public MemoryComposedContainer(final String name, final ParameterizedArray parameterizedArray) {
-        super(name, parameterizedArray);
+    public MemoryComposedContainer(final String suiteName, final ParameterizedArray parameterizedArray) {
+        super(suiteName, parameterizedArray);
         this.storageContainer = createStorageContainer();
         this.adapterContainer = createAdapterContainer();
         adapterContainer.dependsOn(storageContainer);

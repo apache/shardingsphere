@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.framework.container.storage.ShardingSphereStorageContainer;
+import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.h2.tools.RunScript;
 
@@ -35,7 +35,7 @@ import java.util.Objects;
 /**
  * H2 container.
  */
-public final class H2Container extends ShardingSphereStorageContainer {
+public final class H2Container extends StorageContainer {
     
     public H2Container(final ParameterizedArray parameterizedArray) {
         super("h2-embedded", "h2:fake", new H2DatabaseType(), true, parameterizedArray);

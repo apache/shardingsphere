@@ -38,17 +38,17 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * The storage container was binding to the single scenario and database type.
+ * Storage container.
  */
-public abstract class ShardingSphereStorageContainer extends ShardingSphereContainer {
+public abstract class StorageContainer extends ShardingSphereContainer {
     
     @Getter
     private final DatabaseType databaseType;
     
     private Map<String, DataSource> dataSourceMap;
     
-    public ShardingSphereStorageContainer(final String name, final String dockerImageName, 
-                                          final DatabaseType databaseType, final boolean isFakedContainer, final ParameterizedArray parameterizedArray) {
+    public StorageContainer(final String name, final String dockerImageName,
+                            final DatabaseType databaseType, final boolean isFakedContainer, final ParameterizedArray parameterizedArray) {
         super(name, dockerImageName, isFakedContainer, parameterizedArray);
         this.databaseType = databaseType;
     }
@@ -59,7 +59,7 @@ public abstract class ShardingSphereStorageContainer extends ShardingSphereConta
      * @param resourcePath resource path
      * @return self
      */
-    public ShardingSphereStorageContainer withInitSQLMapping(final String resourcePath) {
+    public StorageContainer withInitSQLMapping(final String resourcePath) {
         withClasspathResourceMapping(resourcePath, "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
         return this;
     }

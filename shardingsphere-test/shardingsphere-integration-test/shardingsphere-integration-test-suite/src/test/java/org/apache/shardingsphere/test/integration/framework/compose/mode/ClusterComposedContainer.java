@@ -23,7 +23,7 @@ import org.apache.shardingsphere.test.integration.framework.compose.ComposedCont
 import org.apache.shardingsphere.test.integration.framework.container.adapter.ShardingSphereAdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.impl.ShardingSphereProxyContainer;
 import org.apache.shardingsphere.test.integration.framework.container.governance.ZookeeperContainer;
-import org.apache.shardingsphere.test.integration.framework.container.storage.ShardingSphereStorageContainer;
+import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 import javax.sql.DataSource;
@@ -37,7 +37,7 @@ import java.util.Map;
 @Getter
 public final class ClusterComposedContainer extends ComposedContainer {
     
-    private final ShardingSphereStorageContainer storageContainer;
+    private final StorageContainer storageContainer;
     
     private final ShardingSphereAdapterContainer adapterContainer;
     
@@ -46,8 +46,8 @@ public final class ClusterComposedContainer extends ComposedContainer {
     @Getter(AccessLevel.NONE)
     private final ZookeeperContainer zookeeperContainer;
     
-    public ClusterComposedContainer(final String name, final ParameterizedArray parameterizedArray) {
-        super(name, parameterizedArray);
+    public ClusterComposedContainer(final String suiteName, final ParameterizedArray parameterizedArray) {
+        super(suiteName, parameterizedArray);
         this.storageContainer = createStorageContainer();
         this.adapterContainer = createAdapterContainer();
         this.storageContainer.setNetworkAliases(Collections.singletonList(parameterizedArray.getDatabaseType().getName().toLowerCase() + ".sharding_governance.host"));
