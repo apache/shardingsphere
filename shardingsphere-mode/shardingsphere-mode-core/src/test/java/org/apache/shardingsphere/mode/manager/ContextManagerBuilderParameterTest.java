@@ -178,8 +178,8 @@ public final class ContextManagerBuilderParameterTest {
         SchemaConfiguration mockSchemaConfiguration = Mockito.mock(SchemaConfiguration.class, RETURNS_DEEP_STUBS);
         lenient().when(mockSchemaConfiguration.getDataSources().isEmpty()).thenReturn(dataSourcesIsEmpty);
         lenient().when(mockSchemaConfiguration.getRuleConfigurations().isEmpty()).thenReturn(ruleConfigurationsIsEmpty);
-        Map<String, SchemaConfiguration> schemaConfigs = new HashMap<>();
-        schemaConfigs.put("logic", mockSchemaConfiguration);
-        return schemaConfigs;
+        Map<String, SchemaConfiguration> result = new HashMap<>();
+        result.put("logic", mockSchemaConfiguration);
+        return result;
     }
 }
