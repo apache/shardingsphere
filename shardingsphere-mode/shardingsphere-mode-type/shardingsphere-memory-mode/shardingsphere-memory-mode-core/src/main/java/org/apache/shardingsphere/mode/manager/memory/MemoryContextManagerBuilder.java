@@ -53,10 +53,8 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
         Optional<TransactionRule> transactionRule = metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each)
                 .findFirst();
         if (transactionRule.isPresent()) {
-            TransactionConfigFacade transactionConfigFacade = TransactionConfigFactory.newInstance(transactionRule.get().getProviderType());
-            if (null != transactionConfigFacade) {
-                transactionConfigFacade.generate(transactionRule.get(), parameter.getInstanceDefinition().getInstanceId().getId());
-            }
+            Optional<TransactionConfigFacade> transactionConfigFacade = TransactionConfigFactory.newInstance(transactionRule.get().getProviderType());
+            transactionConfigFacade.ifPresent(configFacade -> configFacade.generate(transactionRule.get(), parameter.getInstanceDefinition().getInstanceId().getId()));
         }
         TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
         ContextManager result = new ContextManager();

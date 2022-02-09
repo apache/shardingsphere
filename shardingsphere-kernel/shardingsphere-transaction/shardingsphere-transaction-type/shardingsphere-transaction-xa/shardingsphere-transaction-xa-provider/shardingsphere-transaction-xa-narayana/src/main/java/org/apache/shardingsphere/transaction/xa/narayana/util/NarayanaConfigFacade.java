@@ -39,8 +39,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Narayana config facade.
+ */
 @Slf4j
-public class NarayanaConfigFacade implements TransactionConfigFacade {
+public final class NarayanaConfigFacade implements TransactionConfigFacade {
 
     @Override
     public void generate(final TransactionRule transactionRule, final String instanceId) {
@@ -60,11 +63,6 @@ public class NarayanaConfigFacade implements TransactionConfigFacade {
         } catch (final IOException ex) {
             log.error("generate narayana config file failed.");
         }
-    }
-
-    @Override
-    public String getTransactionType() {
-        return "Narayana";
     }
 
     private static void swapJdbcStore(final TransactionRule transactionRule, final Map<Object, Object> config) {
@@ -140,5 +138,10 @@ public class NarayanaConfigFacade implements TransactionConfigFacade {
         result.append("\n");
         result.append("</properties>");
         return result.toString();
+    }
+
+    @Override
+    public String getType() {
+        return "Narayana";
     }
 }

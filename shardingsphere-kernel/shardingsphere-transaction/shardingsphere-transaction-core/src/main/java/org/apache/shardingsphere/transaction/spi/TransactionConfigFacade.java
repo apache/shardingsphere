@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.transaction.spi;
 
+import org.apache.shardingsphere.spi.typed.TypedSPI;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 /**
  * Transaction config facade.
  */
-public interface TransactionConfigFacade {
+public interface TransactionConfigFacade extends TypedSPI {
 
     /**
      * Generate transaction config.
@@ -31,11 +32,4 @@ public interface TransactionConfigFacade {
      * @param instanceId instance id
      */
     void generate(TransactionRule transactionRule, String instanceId);
-
-    /**
-     * Get transaction type.
-     *
-     * @return transaction type
-     */
-    String getTransactionType();
 }

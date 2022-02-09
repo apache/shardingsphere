@@ -17,21 +17,19 @@
 
 package org.apache.shardingsphere.transaction.spi;
 
-import java.util.Map;
-import java.util.ServiceLoader;
-import java.util.concurrent.ConcurrentHashMap;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+
+import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Transaction config factory.
  */
-public class TransactionConfigFactory {
-
-    private static final Map<String, TransactionConfigFacade> SERVICES = new ConcurrentHashMap<>();
+public final class TransactionConfigFactory {
 
     static {
-        for (TransactionConfigFacade each : ServiceLoader.load(TransactionConfigFacade.class)) {
-            SERVICES.put(each.getTransactionType(), each);
-        }
+        ShardingSphereServiceLoader.register(TransactionConfigFacade.class);
     }
 
     /**
@@ -40,10 +38,10 @@ public class TransactionConfigFactory {
      * @param transactionProviderType transaction provider type
      * @return transaction config facade
      */
-    public static TransactionConfigFacade newInstance(final String transactionProviderType) {
+    public static Optional<TransactionConfigFacade> newInstance(final String transactionProviderType) {
         if (null != transactionProviderType) {
-            return SERVICES.get(transactionProviderType);
+            return TypedSPIRegistry.findRegisteredService(TransactionConfigFacade.class, transactionProviderType, new Properties());
         }
-        return null;
+        return Optional.empty();
     }
 }

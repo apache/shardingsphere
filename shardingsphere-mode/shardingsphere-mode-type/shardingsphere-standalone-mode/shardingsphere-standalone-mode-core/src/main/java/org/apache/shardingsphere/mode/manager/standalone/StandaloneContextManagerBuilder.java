@@ -56,10 +56,8 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         Optional<TransactionRule> transactionRule = metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each)
                 .findFirst();
         if (transactionRule.isPresent()) {
-            TransactionConfigFacade transactionConfigFacade = TransactionConfigFactory.newInstance(transactionRule.get().getProviderType());
-            if (null != transactionConfigFacade) {
-                transactionConfigFacade.generate(transactionRule.get(), parameter.getInstanceDefinition().getInstanceId().getId());
-            }
+            Optional<TransactionConfigFacade> transactionConfigFacade = TransactionConfigFactory.newInstance(transactionRule.get().getProviderType());
+            transactionConfigFacade.ifPresent(configFacade -> configFacade.generate(transactionRule.get(), parameter.getInstanceDefinition().getInstanceId().getId()));
         }
         return createContextManager(metaDataPersistService, parameter, metaDataContexts);
     }
