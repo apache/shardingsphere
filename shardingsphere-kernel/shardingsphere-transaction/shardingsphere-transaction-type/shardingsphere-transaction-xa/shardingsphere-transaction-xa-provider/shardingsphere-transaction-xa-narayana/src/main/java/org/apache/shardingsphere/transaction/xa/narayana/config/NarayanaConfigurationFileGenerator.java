@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.xa.narayana.util;
+package org.apache.shardingsphere.transaction.xa.narayana.config;
 
 import com.arjuna.ats.internal.arjuna.objectstore.jdbc.JDBCStore;
 import com.arjuna.ats.internal.arjuna.objectstore.jdbc.accessors.DynamicDataSourceJDBCAccess;
