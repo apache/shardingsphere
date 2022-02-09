@@ -1285,17 +1285,3 @@ noWriteToBinLog
 channelOption
     : FOR CHANNEL string_
     ;
-    
-preparedStatement
-    : PREPARE identifier FROM (stringLiterals | userVariable)
-    | executeStatement
-    | (DEALLOCATE | DROP) PREPARE identifier
-    ;
-    
-executeStatement
-    : EXECUTE identifier (USING executeVarList)?
-    ;
-    
-executeVarList
-    : userVariable (COMMA_ userVariable)*
-    ;
