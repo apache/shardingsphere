@@ -21,7 +21,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.framework.container.adapter.ShardingSphereAdapterContainer;
+import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * ShardingSphere proxy container.
  */
 @Slf4j
-public final class ShardingSphereProxyContainer extends ShardingSphereAdapterContainer {
+public final class ShardingSphereProxyContainer extends AdapterContainer {
     
     private static final String AGENT_HOME_IN_CONTAINER = "/usr/local/shardingsphere-agent";
     

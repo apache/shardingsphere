@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.container.storage;
+package org.apache.shardingsphere.test.integration.framework.container.adapter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.integration.framework.container.storage.impl.H2Container;
-import org.apache.shardingsphere.test.integration.framework.container.storage.impl.MySQLContainer;
-import org.apache.shardingsphere.test.integration.framework.container.storage.impl.PostgreSQLContainer;
+import org.apache.shardingsphere.test.integration.framework.container.adapter.impl.ShardingSphereJDBCContainer;
+import org.apache.shardingsphere.test.integration.framework.container.adapter.impl.ShardingSphereProxyContainer;
 import org.apache.shardingsphere.test.integration.framework.logging.ContainerLogs;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.testcontainers.containers.Network;
@@ -29,37 +28,33 @@ import org.testcontainers.containers.Network;
 import java.util.Collections;
 
 /**
- * Storage container factory.
+ * Adapter container factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StorageContainerFactory {
+public final class AdapterContainerFactory {
     
     /**
-     * Create new instance of storage container.
-     * 
+     * Create new instance of adapter container.
+     *
      * @param parameterizedArray parameterized array
      * @param network network
      * @param suiteName suite name
-     * @return new instance of storage container
+     * @return new instance of adapter container
      */
-    public static StorageContainer newInstance(final ParameterizedArray parameterizedArray, final Network network, final String suiteName) {
-        StorageContainer result;
-        String databaseType = parameterizedArray.getDatabaseType().getName();
-        switch (databaseType) {
-            case "MySQL":
-                result = new MySQLContainer(parameterizedArray);
+    public static AdapterContainer newInstance(final ParameterizedArray parameterizedArray, final Network network, final String suiteName) {
+        AdapterContainer result;
+        switch (parameterizedArray.getAdapter()) {
+            case "proxy":
+                result = new ShardingSphereProxyContainer(parameterizedArray);
                 break;
-            case "PostgreSQL" :
-                result = new PostgreSQLContainer(parameterizedArray);
-                break;
-            case "H2":
-                result = new H2Container(parameterizedArray);
+            case "jdbc":
+                result = new ShardingSphereJDBCContainer(parameterizedArray);
                 break;
             default:
-                throw new RuntimeException(String.format("Database [%s] is unknown.", databaseType));
+                throw new RuntimeException(String.format("Adapter [%s] is unknown.", parameterizedArray.getAdapter()));
         }
         result.setNetwork(network);
-        result.setNetworkAliases(Collections.singletonList(databaseType.toLowerCase() + "." + parameterizedArray.getScenario() + ".host"));
+        result.setNetworkAliases(Collections.singletonList("adapter"));
         result.withLogConsumer(ContainerLogs.newConsumer(String.join("-", suiteName, result.getName())));
         return result;
     }
