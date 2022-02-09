@@ -55,6 +55,10 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
         ShardingSphereServiceLoader.register(ReadwriteSplittingType.class);
     }
     
+    private static final String DYNAMIC = "DYNAMIC";
+    
+    private static final String STATIC = "STATIC";
+    
     private final Map<String, ReplicaLoadBalanceAlgorithm> loadBalancers = new LinkedHashMap<>();
     
     private final Map<String, ReadwriteSplittingDataSourceRule> dataSourceRules;
@@ -123,9 +127,9 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     @Override
     public Map<String, Supplier<Object>> getExportedMethods() {
         Map<String, Supplier<Object>> result = new HashMap<>(3, 1);
-        result.put(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, () -> exportDataSource("DYNAMIC"));
+        result.put(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, () -> exportDataSource(DYNAMIC));
         result.put(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_NAME, this::exportAutoAwareDataSourceNames);
-        result.put(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE, () -> exportDataSource("STATIC"));
+        result.put(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE, () -> exportDataSource(STATIC));
         return result;
     }
     
