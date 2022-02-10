@@ -96,7 +96,7 @@ dropTrafficRule
     ;
 
 trafficRuleDefinition
-    : ruleName LP labelDefinition COMMA trafficAlgorithmDefinition COMMA loadBanlanceDefinition RP
+    : ruleName LP (labelDefinition COMMA)? trafficAlgorithmDefinition (COMMA loadBalanceDefinition)? RP
     ;
 
 labelDefinition
@@ -107,7 +107,7 @@ trafficAlgorithmDefinition
     : TRAFFIC_ALGORITHM LP algorithmDefinition RP 
     ;
 
-loadBanlanceDefinition
+loadBalanceDefinition
     : LOAD_BALANCER LP algorithmDefinition RP
     ;
 

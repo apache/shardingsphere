@@ -43,6 +43,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.InstanceDefinationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.InstanceIdContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.LabelDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.LoadBalanceDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PasswordContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PropertiesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PropertyContext;
@@ -107,6 +108,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSeg
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -373,8 +375,20 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitTrafficRuleDefinition(final TrafficRuleDefinitionContext ctx) {
+        AlgorithmSegment loadBalancerSegment = null;
+        if (null != ctx.loadBalanceDefinition()) {
+            loadBalancerSegment = (AlgorithmSegment) visit(ctx.loadBalanceDefinition().algorithmDefinition());
+        }
         return new TrafficRuleSegment(getIdentifierValue(ctx.ruleName()), buildLabels(ctx.labelDefinition()),
-                (AlgorithmSegment) visit(ctx.trafficAlgorithmDefinition().algorithmDefinition()), (AlgorithmSegment) visit(ctx.loadBanlanceDefinition().algorithmDefinition()));
+                (AlgorithmSegment) visit(ctx.trafficAlgorithmDefinition().algorithmDefinition()), loadBalancerSegment);
+    }
+    
+    @Override
+    public ASTNode visitLoadBalanceDefinition(final LoadBalanceDefinitionContext ctx) {
+        if (null == ctx) {
+            return null;
+        }
+        return visit(ctx.algorithmDefinition());
     }
     
     @Override
@@ -394,6 +408,9 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     }
     
     private Collection<String> buildLabels(final LabelDefinitionContext labelDefinition) {
+        if (null == labelDefinition) {
+            return Collections.emptyList();
+        }
         return labelDefinition.label().stream().map(this::getIdentifierValue).collect(Collectors.toCollection(LinkedList::new));
     }
     

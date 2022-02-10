@@ -76,7 +76,8 @@ public final class AlterTrafficRuleExecutor implements AlterStatementExecutor {
             if (!TypedSPIRegistry.findRegisteredService(TrafficAlgorithm.class, each.getAlgorithm().getName(), new Properties()).isPresent()) {
                 result.add(each.getAlgorithm().getName());
             }
-            if (!TypedSPIRegistry.findRegisteredService(TrafficLoadBalanceAlgorithm.class, each.getLoadBalancer().getName(), new Properties()).isPresent()) {
+            if (null != each.getLoadBalancer()
+                    && !TypedSPIRegistry.findRegisteredService(TrafficLoadBalanceAlgorithm.class, each.getLoadBalancer().getName(), new Properties()).isPresent()) {
                 result.add(each.getLoadBalancer().getName());
             }
         });
@@ -84,11 +85,19 @@ public final class AlterTrafficRuleExecutor implements AlterStatementExecutor {
     }
     
     private void updateToRepository(final TrafficRuleConfiguration toBeAlteredConfiguration, final TrafficRuleConfiguration currentConfiguration) {
+        Collection<String> toBeAlteredConfigurationNames = toBeAlteredConfiguration.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
+        currentConfiguration.getTrafficStrategies().removeIf(each -> toBeAlteredConfigurationNames.contains(each.getName()));
         currentConfiguration.getTrafficStrategies().addAll(toBeAlteredConfiguration.getTrafficStrategies());
         currentConfiguration.getTrafficAlgorithms().putAll(toBeAlteredConfiguration.getTrafficAlgorithms());
         currentConfiguration.getLoadBalancers().putAll(toBeAlteredConfiguration.getLoadBalancers());
+        getUnusedLoadBalancer(currentConfiguration).forEach(each -> currentConfiguration.getLoadBalancers().remove(each));
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
         metaDataPersistService.ifPresent(op -> op.getGlobalRuleService().persist(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), true));
+    }
+    
+    private Collection<String> getUnusedLoadBalancer(final TrafficRuleConfiguration configuration) {
+        Set<String> currentlyInUse = configuration.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getLoadBalancerName).collect(Collectors.toSet());
+        return configuration.getLoadBalancers().keySet().stream().filter(each -> !currentlyInUse.contains(each)).collect(Collectors.toSet());
     }
 }
