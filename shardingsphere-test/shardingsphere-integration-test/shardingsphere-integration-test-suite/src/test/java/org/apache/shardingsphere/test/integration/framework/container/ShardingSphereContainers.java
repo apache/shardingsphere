@@ -61,7 +61,7 @@ public final class ShardingSphereContainers implements AutoCloseable {
     /**
      * Start containers.
      */
-    public final void start() {
+    public void start() {
         if (!started) {
             synchronized (this) {
                 if (!started) {

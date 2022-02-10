@@ -47,7 +47,7 @@ public abstract class BaseITCase {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
-    public final ComposedContainer composedContainer;
+    private final ComposedContainer composedContainer;
     
     private final String adapter;
     
