@@ -44,7 +44,6 @@ public final class ClusterComposedContainer implements ComposedContainer {
     @Getter
     private final StorageContainer storageContainer;
     
-    @Getter
     private final AdapterContainer adapterContainer;
     
     private final AdapterContainer adapterContainerForReader;
