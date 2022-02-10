@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule.SchemaRulesQueryResultSet;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule.SchemaRulesCountResultSet;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -53,7 +53,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SchemaRulesQueryResultSetTest {
+public final class SchemaRulesCountResultSetTest {
     
     @Mock
     private ShardingSphereMetaData shardingSphereMetaData;
@@ -101,7 +101,7 @@ public final class SchemaRulesQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        DistSQLResultSet resultSet = new SchemaRulesQueryResultSet();
+        DistSQLResultSet resultSet = new SchemaRulesCountResultSet();
         resultSet.init(shardingSphereMetaData, mock(CountSchemaRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(3));
@@ -149,7 +149,7 @@ public final class SchemaRulesQueryResultSetTest {
     
     @Test
     public void assertGetRowDataWithoutConfiguration() {
-        DistSQLResultSet resultSet = new SchemaRulesQueryResultSet();
+        DistSQLResultSet resultSet = new SchemaRulesCountResultSet();
         when(shardingSphereMetaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         resultSet.init(shardingSphereMetaData, mock(CountSchemaRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();

@@ -29,8 +29,8 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfiguratio
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.framework.container.ShardingSphereContainer;
-import org.apache.shardingsphere.test.integration.framework.container.adapter.ShardingSphereAdapterContainer;
-import org.apache.shardingsphere.test.integration.framework.container.storage.ShardingSphereStorageContainer;
+import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainer;
+import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.lifecycle.Startable;
@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 /**
  * ShardingSphere JDBC container.
  */
-public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterContainer {
+public final class ShardingSphereJDBCContainer extends AdapterContainer {
     
     private final AtomicBoolean isHealthy = new AtomicBoolean();
     
@@ -68,9 +68,9 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
     public void start() {
         super.start();
         List<Startable> startables = getDependencies().stream()
-                .filter(e -> e instanceof ShardingSphereStorageContainer)
+                .filter(e -> e instanceof StorageContainer)
                 .collect(Collectors.toList());
-        dataSourceMap = ((ShardingSphereStorageContainer) startables.get(0)).getDataSourceMap();
+        dataSourceMap = ((StorageContainer) startables.get(0)).getDataSourceMap();
         isHealthy.set(true);
     }
 

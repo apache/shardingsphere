@@ -37,16 +37,17 @@ chapter = true
 | H2TableMetaDataLoader         | 使用 H2 方言加载元数据         |
 | OpenGaussTableMetaDataLoader  | 使用 OpenGauss 方言加载元数据  |
 
-## DataSourcePoolCreator
+## DataSourcePoolMetaData
 
-| *SPI 名称*                    | *详细说明*              |
-| ---------------------------- | ---------------------- |
-| DataSourcePoolCreator        | 数据源连接池创建器        |
+| *SPI 名称*                    | *详细说明*    |
+| ---------------------------- |-----------|
+| DataSourcePoolMetaData        | 数据源连接池元数据 |
 
-| *已知实现类*                   | *详细说明*              |
-| ---------------------------- | ---------------------- |
-| DefaultDataSourcePoolCreator | 默认数据源连接池创建器     |
-| HikariDataSourcePoolCreator  | Hikari 数据源连接池创建器 |
+| *已知实现类*                          | *详细说明*                |
+|----------------------------------|-----------------------|
+| DBCPDataSourcePoolMetaData       | DBCP 数据库连接池元数据        |
+| HikariDataSourcePoolMetaData     | Hikari 数据源连接池元数据      |
+| TomcatDBCPDataSourcePoolMetaData | Tomcat DBCP 数据源连接池元数据 |
 
 ## DataSourcePoolDestroyer
 

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.framework.container.storage.i
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.framework.container.storage.ShardingSphereStorageContainer;
+import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 import java.util.Collections;
@@ -29,7 +29,7 @@ import java.util.Optional;
 /**
  * MySQL Container.
  */
-public final class MySQLContainer extends ShardingSphereStorageContainer {
+public final class MySQLContainer extends StorageContainer {
     
     public MySQLContainer(final ParameterizedArray parameterizedArray) {
         super("mysql-server", "mysql/mysql-server:5.7", new MySQLDatabaseType(), false, parameterizedArray);

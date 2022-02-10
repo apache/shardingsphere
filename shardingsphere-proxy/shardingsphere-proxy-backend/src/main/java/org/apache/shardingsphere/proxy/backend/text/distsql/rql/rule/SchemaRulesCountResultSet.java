@@ -43,7 +43,7 @@ import java.util.function.Function;
 /**
  * Result set for count schema rules.
  */
-public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
+public final class SchemaRulesCountResultSet implements DistSQLResultSet {
     
     private static final int DEFAULT_COUNT = 0;
     
@@ -90,7 +90,7 @@ public final class SchemaRulesQueryResultSet implements DistSQLResultSet {
         } else {
             addDefaultData(dataMap);
         }
-        this.data = dataMap.values().iterator();
+        data = dataMap.values().iterator();
     }
     
     private void addSingleTableData(final Map<String, Collection<Object>> dataMap, final Collection<SingleTableRule> rules) {
