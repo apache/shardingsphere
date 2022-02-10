@@ -44,13 +44,16 @@ public final class ShowInstanceModeExecutor extends AbstractShowExecutor {
     
     private static final String PROPS = "props";
     
+    private static final String OVERWRITE = "overwrite";
+    
     @Override
     protected List<QueryHeader> createQueryHeaders() {
         return Arrays.asList(
                 new QueryHeader("", "", ID, ID, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
                 new QueryHeader("", "", TYPE, TYPE, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
                 new QueryHeader("", "", REPOSITORY, REPOSITORY, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
-                new QueryHeader("", "", PROPS, PROPS, Types.VARCHAR, "VARCHAR", 1024, 0, false, false, false, false)
+                new QueryHeader("", "", PROPS, PROPS, Types.VARCHAR, "VARCHAR", 1024, 0, false, false, false, false),
+                new QueryHeader("", "", OVERWRITE, OVERWRITE, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false)
         );
     }
     
@@ -60,11 +63,10 @@ public final class ShowInstanceModeExecutor extends AbstractShowExecutor {
     }
     
     private Collection<List<Object>> buildRows() {
-        // TODO Add display of overwrite after metadata save overwrite.
         InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
         PersistRepositoryConfiguration repositoryConfiguration = instanceContext.getModeConfiguration().getRepository();
         return Collections.singleton(Arrays.asList(instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId(), instanceContext.getModeConfiguration().getType(),
-                null == repositoryConfiguration ? "" : repositoryConfiguration.getType(),
-                null == repositoryConfiguration ? "" : PropertiesConverter.convert(repositoryConfiguration.getProps())));
+                null == repositoryConfiguration ? "" : repositoryConfiguration.getType(), null == repositoryConfiguration ? "" : PropertiesConverter.convert(repositoryConfiguration.getProps()),
+                String.valueOf(instanceContext.getModeConfiguration().isOverwrite())));
     }
 }
