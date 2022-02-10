@@ -15,27 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.rule;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
-import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
-
-import java.util.Collection;
+package org.apache.shardingsphere.traffic.api.traffic.identifier;
 
 /**
- * Traffic strategy rule.
+ * Simplified transaction traffic algorithm.
  */
-@RequiredArgsConstructor
-@Getter
-public final class TrafficStrategyRule {
-    
-    private final String name;
-    
-    private final Collection<String> labels;
-    
-    private final TrafficAlgorithm trafficAlgorithm;
-    
-    private final TrafficLoadBalanceAlgorithm loadBalancer;
+public interface SimplifiedTrafficAlgorithm {
 }

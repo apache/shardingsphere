@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.traffic.algorithm.traffic.transaction;
 
+import org.apache.shardingsphere.traffic.api.traffic.identifier.SimplifiedTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficValue;
 
 /**
  * JDBC traffic algorithm.
  */
-public final class JDBCTrafficAlgorithm implements TransactionTrafficAlgorithm {
+public final class JDBCTrafficAlgorithm implements TransactionTrafficAlgorithm, SimplifiedTrafficAlgorithm {
     
     @Override
     public void init() {
