@@ -31,7 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Result set for show sharding table rules used key generator
+ * Result set for show sharding table rules used key generator.
  */
 public final class ShardingTableRulesUsedKeyGeneratorQueryResultSet implements DistSQLResultSet {
     
