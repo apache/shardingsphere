@@ -566,7 +566,6 @@ columnCompression
     : COMPRESSION colId
     | COMPRESSION DEFAULT
     ;
-    
 
 constraintAttributeSpec
     : constraintAttributeElem*
