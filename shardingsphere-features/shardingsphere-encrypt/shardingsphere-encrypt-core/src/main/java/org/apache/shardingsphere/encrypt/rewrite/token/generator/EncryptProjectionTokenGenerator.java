@@ -121,7 +121,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         previousSQLTokens.removeIf(each -> each.getStartIndex() == startIndex);
         return new SubstitutableColumnNameToken(startIndex, segment.getStopIndex(), projections, databaseType.getQuoteCharacter());
     }
-
+    
     private ColumnProjection buildColumnProjection(final ColumnProjectionSegment segment) {
         String owner = segment.getColumn().getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(null);
         return new ColumnProjection(owner, segment.getColumn().getIdentifier().getValue(), segment.getAlias().orElse(null));
@@ -229,15 +229,5 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
             }
         }
         throw new IllegalStateException(String.format("Can not find shorthand projection segment, owner is: `%s`", owner.orElse(null)));
-    }
-    
-    @Override
-    public void setPreviousSQLTokens(final List<SQLToken> previousSQLTokens) {
-        this.previousSQLTokens = previousSQLTokens;
-    }
-    
-    @Override
-    public void setSchema(final ShardingSphereSchema schema) {
-        this.schema = schema;
     }
 }

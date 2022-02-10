@@ -32,6 +32,7 @@ execute
     | disableInstance
     | showInstance
     | showInstanceMode
+    | labelInstance
     | countSchemaRules
     | showSingleTable
     | showSingleTableRules
@@ -47,5 +48,9 @@ execute
     | alterTransactionRule
     | showTrafficRules
     | dropTrafficRule
+    | createTrafficRule
+    | alterTrafficRule
+    | exportSchemaConfiguration
+    | showRulesUsedResource
     ) SEMI?
     ;

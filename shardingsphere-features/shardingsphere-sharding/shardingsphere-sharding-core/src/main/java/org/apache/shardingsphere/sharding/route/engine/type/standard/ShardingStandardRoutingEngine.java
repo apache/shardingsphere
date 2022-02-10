@@ -44,7 +44,6 @@ import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -204,7 +203,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
         if (databaseShardingValues.isEmpty()) {
             return tableRule.getActualDatasourceNames();
         }
-        Collection<String> result = new LinkedHashSet<>(databaseShardingStrategy.doSharding(tableRule.getActualDatasourceNames(), databaseShardingValues, properties));
+        Collection<String> result = databaseShardingStrategy.doSharding(tableRule.getActualDatasourceNames(), databaseShardingValues, properties);
         Preconditions.checkState(!result.isEmpty(), "no database route info");
         Preconditions.checkState(tableRule.getActualDatasourceNames().containsAll(result), 
                 "Some routed data sources do not belong to configured data sources. routed data sources: `%s`, configured data sources: `%s`", result, tableRule.getActualDatasourceNames());
@@ -214,8 +213,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     private Collection<DataNode> routeTables(final TableRule tableRule, final String routedDataSource, 
                                              final ShardingStrategy tableShardingStrategy, final List<ShardingConditionValue> tableShardingValues) {
         Collection<String> availableTargetTables = tableRule.getActualTableNames(routedDataSource);
-        Collection<String> routedTables = new LinkedHashSet<>(tableShardingValues.isEmpty()
-                ? availableTargetTables : tableShardingStrategy.doSharding(availableTargetTables, tableShardingValues, properties));
+        Collection<String> routedTables = tableShardingValues.isEmpty() ? availableTargetTables : tableShardingStrategy.doSharding(availableTargetTables, tableShardingValues, properties);
         Collection<DataNode> result = new LinkedList<>();
         for (String each : routedTables) {
             result.add(new DataNode(routedDataSource, each));

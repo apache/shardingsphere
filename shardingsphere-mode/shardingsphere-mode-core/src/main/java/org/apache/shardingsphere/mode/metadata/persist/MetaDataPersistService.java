@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mode.metadata.persist;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
+import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyerFactory;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.mode.metadata.persist.service.ComputeNodePersistService;
@@ -31,6 +33,7 @@ import org.apache.shardingsphere.mode.metadata.persist.service.impl.SchemaRulePe
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -95,13 +98,45 @@ public final class MetaDataPersistService {
     }
     
     /**
-     * Persist instance configurations.
+     * Persist instance labels.
      * 
      * @param instanceId instance id
-     * @param labels collection of label
-     * @param isOverwrite whether overwrite registry center's configuration if existed               
+     * @param labels labels
+     * @param isOverwrite whether overwrite registry center's configuration if existed
      */
-    public void persistInstanceConfigurations(final String instanceId, final Collection<String> labels, final boolean isOverwrite) {
+    public void persistInstanceLabels(final String instanceId, final Collection<String> labels, final boolean isOverwrite) {
         computeNodePersistService.persistInstanceLabels(instanceId, labels, isOverwrite);
+    }
+    
+    /**
+     * Get effective data sources.
+     * 
+     * @param schemaName schema name
+     * @param schemaConfigs schema configurations
+     * @return effective data sources
+     * @throws SQLException SQL exception
+     */
+    public Map<String, DataSource> getEffectiveDataSources(final String schemaName, final Map<String, ? extends SchemaConfiguration> schemaConfigs) throws SQLException {
+        Map<String, DataSourceProperties> persistedDataPropsMap = dataSourceService.load(schemaName);
+        return schemaConfigs.containsKey(schemaName)
+                ? mergeEffectiveDataSources(persistedDataPropsMap, schemaConfigs.get(schemaName).getDataSources()) : DataSourcePoolCreator.create(persistedDataPropsMap);
+    }
+    
+    private Map<String, DataSource> mergeEffectiveDataSources(
+            final Map<String, DataSourceProperties> persistedDataSourcePropsMap, final Map<String, DataSource> localConfiguredDataSources) throws SQLException {
+        Map<String, DataSource> result = new LinkedHashMap<>(persistedDataSourcePropsMap.size(), 1);
+        for (Entry<String, DataSourceProperties> entry : persistedDataSourcePropsMap.entrySet()) {
+            String dataSourceName = entry.getKey();
+            DataSourceProperties persistedDataSourceProps = entry.getValue();
+            DataSource localConfiguredDataSource = localConfiguredDataSources.get(dataSourceName);
+            if (null == localConfiguredDataSource) {
+                result.put(dataSourceName, DataSourcePoolCreator.create(persistedDataSourceProps));
+            } else if (DataSourcePropertiesCreator.create(localConfiguredDataSource).equals(persistedDataSourceProps)) {
+                result.put(dataSourceName, localConfiguredDataSource);
+            } else {
+                DataSourcePoolDestroyerFactory.destroy(localConfiguredDataSource);
+            }
+        }
+        return result;
     }
 }

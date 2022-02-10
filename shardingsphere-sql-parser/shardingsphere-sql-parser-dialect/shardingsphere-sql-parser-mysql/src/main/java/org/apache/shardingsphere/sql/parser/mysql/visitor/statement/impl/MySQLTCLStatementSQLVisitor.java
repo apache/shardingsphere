@@ -22,6 +22,8 @@ import org.antlr.v4.runtime.Token;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableLockContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LockContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnlockContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CommitContext;
@@ -33,10 +35,13 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaConte
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OperationScope;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionAccessType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionIsolationLevel;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.tcl.AutoCommitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLBeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLCommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLLockStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLRollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSetAutoCommitStatement;
@@ -44,6 +49,9 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLUnlockStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLXAStatement;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -137,6 +145,27 @@ public final class MySQLTCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.setOp(ctx.getChild(1).getText().toUpperCase());
         if (null != ctx.xid()) {
             result.setXid(ctx.xid().getText());
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitLock(final LockContext ctx) {
+        MySQLLockStatement result = new MySQLLockStatement();
+        if (null != ctx.tableLock()) {
+            result.setTables(getLockTables(ctx.tableLock()));
+        }
+        return result;
+    }
+    
+    private Collection<SimpleTableSegment> getLockTables(final List<TableLockContext> tableLockContexts) {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
+        for (TableLockContext each : tableLockContexts) {
+            SimpleTableSegment simpleTableSegment = (SimpleTableSegment) visit(each.tableName());
+            if (null != each.alias()) {
+                simpleTableSegment.setAlias((AliasSegment) visit(each.alias()));
+            }
+            result.add(simpleTableSegment);
         }
         return result;
     }

@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -33,8 +34,14 @@ public final class CustomDataSourcePropertiesTest {
     public void assertGetProperties() {
         Map<String, Object> actual = new CustomDataSourceProperties(
                 createProperties(), Arrays.asList("username", "password", "closed"), Collections.singletonList("closed"), createPropertySynonyms()).getProperties();
-        assertThat(actual.size(), is(1));
+        assertThat(actual.size(), is(3));
         assertThat(actual.get("foo"), is("bar"));
+        assertThat(((Properties) actual.get("fooProperties")).size(), is(2));
+        assertThat(((Properties) actual.get("fooProperties")).getProperty("foo1"), is("fooValue1"));
+        assertThat(((Properties) actual.get("fooProperties")).getProperty("foo2"), is("fooValue2"));
+        assertThat(((Properties) actual.get("barProperties")).size(), is(2));
+        assertThat(((Properties) actual.get("barProperties")).getProperty("bar1"), is("barValue1"));
+        assertThat(((Properties) actual.get("barProperties")).getProperty("bar2"), is("barValue2"));
     }
     
     private Map<String, Object> createProperties() {
@@ -43,6 +50,10 @@ public final class CustomDataSourcePropertiesTest {
         result.put("password", "root");
         result.put("closed", false);
         result.put("foo", "bar");
+        result.put("fooProperties.foo1", "fooValue1");
+        result.put("fooProperties.foo2", "fooValue2");
+        result.put("barProperties.bar1", "barValue1");
+        result.put("barProperties.bar2", "barValue2");
         return result;
     }
     

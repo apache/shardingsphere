@@ -60,6 +60,10 @@ public enum SQLVisitorRule {
     
     ALTER_FOREIGN_TABLE("AlterForeignTable", SQLStatementType.DDL),
     
+    ALTER_GROUP("AlterGroup", SQLStatementType.DDL),
+    
+    ALTER_MATERIALIZED_VIEW("AlterMaterializedView", SQLStatementType.DDL),
+    
     DROP_TABLE("DropTable", SQLStatementType.DDL),
     
     TRUNCATE_TABLE("TruncateTable", SQLStatementType.DDL),
@@ -209,6 +213,8 @@ public enum SQLVisitorRule {
     RELEASE_SAVEPOINT("ReleaseSavepoint", SQLStatementType.TCL),
     
     ROLLBACK_TO_SAVEPOINT("RollbackToSavepoint", SQLStatementType.TCL),
+    
+    LOCK("Lock", SQLStatementType.TCL),
     
     UNLOCK("Unlock", SQLStatementType.TCL),
     

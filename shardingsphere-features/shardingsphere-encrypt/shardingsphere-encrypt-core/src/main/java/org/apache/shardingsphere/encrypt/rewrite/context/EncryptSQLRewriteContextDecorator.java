@@ -47,13 +47,14 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
         SQLStatementContext<?> sqlStatementContext = sqlRewriteContext.getSqlStatementContext();
         boolean containsEncryptTable = containsEncryptTable(encryptRule, sqlStatementContext);
         if (!sqlRewriteContext.getParameters().isEmpty()) {
-            Collection<ParameterRewriter> parameterRewriters = new EncryptParameterRewriterBuilder(encryptRule, 
-                    sqlRewriteContext.getSchema(), sqlStatementContext, encryptConditions, containsEncryptTable).getParameterRewriters();
+            Collection<ParameterRewriter> parameterRewriters = new EncryptParameterRewriterBuilder(encryptRule,
+                    sqlRewriteContext.getSchemaName(), sqlRewriteContext.getSchema(), sqlStatementContext, encryptConditions, containsEncryptTable).getParameterRewriters();
             rewriteParameters(sqlRewriteContext, parameterRewriters);
         }
         // TODO Optimize logic of statement context init for encryptors
         encryptRule.setUpEncryptorSchema(sqlRewriteContext.getSchema());
-        sqlRewriteContext.addSQLTokenGenerators(new EncryptTokenGenerateBuilder(encryptRule, sqlStatementContext, encryptConditions, containsEncryptTable).getSQLTokenGenerators());
+        sqlRewriteContext.addSQLTokenGenerators(new EncryptTokenGenerateBuilder(
+                encryptRule, sqlStatementContext, encryptConditions, containsEncryptTable, sqlRewriteContext.getSchemaName()).getSQLTokenGenerators());
     }
     
     private Collection<EncryptCondition> getEncryptConditions(final EncryptRule encryptRule, final SQLRewriteContext sqlRewriteContext) {

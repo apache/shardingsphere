@@ -238,6 +238,7 @@ The text of each license is the standard Apache 2.0 license.
     esri-geometry-api 2.2.0: https://github.com/Esri/geometry-api-java, Apache 2.0
     failsafe 2.3.3: https://github.com/jhalterman/failsafe, Apache 2.0
     failureaccess 1.0.1:https://github.com/google/guava, Apache 2.0 
+    groovy 4.0.0: https://groovy.apache.org/, Apache 2.0
     grpc-api 1.27.1: https://github.com/grpc/grpc, Apache 2.0
     grpc-context 1.27.1: https://github.com/grpc/grpc, Apache 2.0
     grpc-core 1.27.1: https://github.com/grpc/grpc, Apache 2.0
@@ -264,22 +265,23 @@ The text of each license is the standard Apache 2.0 license.
     listenablefuture 9999.0-empty-to-avoid-conflict-with-guava:https://github.com/google/guava, Apache 2.0
     log4j 1.2.17: http://logging.apache.org/log4j/1.2/, Apache 2.0
     memory 0.9.0, Apache 2.0
-    netty-buffer 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-codec 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-codec-dns 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-codec-http2 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-codec-http 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-codec-socks 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-common 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-handler 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-handler-proxy 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-resolver 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-resolver-dns 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-transport 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-transport-native-epoll 4.1.69.Final: https://github.com/netty, Apache 2.0
-    netty-transport-native-epoll 4.1.69.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
-    netty-transport-native-epoll 4.1.69.Final-linux-x86_64: https://github.com/netty, Apache 2.0
-    netty-transport-native-unix-common 4.1.69.Final: https://github.com/netty, Apache 2.0
+    netty-buffer 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-codec 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-codec-dns 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-codec-http 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-codec-http2 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-codec-socks 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-common 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-handler 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-handler-proxy 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-resolver 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-resolver-dns 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-tcnative-classes 2.0.46.Final: https://github.com/netty/netty-tcnative, Apache 2.0
+    netty-transport 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-transport-classes-epoll 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-transport-native-epoll 4.1.73.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
+    netty-transport-native-epoll 4.1.73.Final-linux-x86_64: https://github.com/netty, Apache 2.0
+    netty-transport-native-unix-common 4.1.73.Final: https://github.com/netty, Apache 2.0
     perfmark-api 0.19.0: https://github.com/perfmark/perfmark, Apache 2.0
     proto-google-common-protos 1.17.0: https://github.com/googleapis/common-protos-java, Apache 2.0
     quartz 2.3.2: https://github.com/quartz-scheduler/quartz, Apache 2.0
@@ -298,7 +300,6 @@ Apache 2.0 licenses
 The following components are provided under the Apache License. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    groovy 2.4.19-indy: https://github.com/apache/groovy, Apache 2.0
     atomikos-util 5.0.8: https://www.atomikos.com, Apache 2.0
     transactions 5.0.8: https://www.atomikos.com, Apache 2.0
     transactions-api 5.0.8: https://www.atomikos.com, Apache 2.0
@@ -317,7 +318,7 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     asm 5.0.4: https://github.com/llbit/ow2-asm, BSD-3-Clause
     commons-compiler 3.0.11: https://github.com/janino-compiler/janino, New BSD License
     janino 3.0.11: https://github.com/janino-compiler/janino, New BSD License
-    postgresql 42.2.5: https://github.com/pgjdbc/pgjdbc, BSD 2-Clause
+    postgresql 42.3.2: https://github.com/pgjdbc/pgjdbc, BSD 2-Clause
     protobuf-java 3.11.0: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
     protobuf-java-util 3.11.0: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause 
 
@@ -337,8 +338,8 @@ EPL licenses
 The following components are provided under the EPL License. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    logback-classic 1.2.0: https://github.com/qos-ch/logback, EPL 1.0
-    logback-core 1.2.0: https://github.com/qos-ch/logback, EPL 1.0
+    logback-classic 1.2.10: https://github.com/qos-ch/logback, EPL 1.0
+    logback-core 1.2.10: https://github.com/qos-ch/logback, EPL 1.0
     mchange-commons-java 0.2.15: https://github.com/swaldman/mchange-commons-java, EPL 1.0
 
 ========================================================================

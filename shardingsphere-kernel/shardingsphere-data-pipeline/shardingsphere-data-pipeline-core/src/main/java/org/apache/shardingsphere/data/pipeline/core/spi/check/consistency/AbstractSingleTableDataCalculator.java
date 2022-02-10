@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.spi.check.consistency;
 
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.SingleTableDataCalculator;
 
 import java.util.Properties;
@@ -29,13 +26,7 @@ import java.util.Properties;
  */
 public abstract class AbstractSingleTableDataCalculator implements SingleTableDataCalculator {
     
-    private final PipelineDataSourceFactory dataSourceFactory = new PipelineDataSourceFactory();
-    
     private Properties algorithmProps;
-    
-    protected final PipelineDataSourceWrapper getDataSource(final PipelineDataSourceConfiguration dataSourceConfig) {
-        return dataSourceFactory.newInstance(dataSourceConfig);
-    }
     
     @Override
     public Properties getAlgorithmProps() {

@@ -94,9 +94,8 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     }
     
     private Object getTextParameters(final PostgreSQLPacketPayload payload, final int parameterValueLength, final PostgreSQLColumnType parameterType) {
-        byte[] bytes = new byte[parameterValueLength];
-        payload.getByteBuf().readBytes(bytes);
-        return getTextParameters(new String(bytes, payload.getCharset()), parameterType);
+        String value = payload.getByteBuf().readCharSequence(parameterValueLength, payload.getCharset()).toString();
+        return getTextParameters(value, parameterType);
     }
 
     private Object getTextParameters(final String textValue, final PostgreSQLColumnType parameterType) {

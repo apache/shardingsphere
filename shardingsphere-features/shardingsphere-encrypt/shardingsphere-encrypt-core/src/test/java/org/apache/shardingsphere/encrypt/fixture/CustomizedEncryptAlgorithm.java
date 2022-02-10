@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.fixture;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
@@ -46,7 +47,7 @@ public final class CustomizedEncryptAlgorithm implements EncryptAlgorithm<Intege
     }
     
     @Override
-    public Integer encrypt(final Integer plainValue) {
+    public Integer encrypt(final Integer plainValue, final EncryptContext encryptContext) {
         byte[] bytes = toBytes(plainValue);
         for (int index = 0; index < 32; index++) {
             bytes[index % 4] = (byte) (key[index] ^ bytes[index % 4]);
@@ -55,7 +56,7 @@ public final class CustomizedEncryptAlgorithm implements EncryptAlgorithm<Intege
     }
     
     @Override
-    public Integer decrypt(final Integer cipherValue) {
+    public Integer decrypt(final Integer cipherValue, final EncryptContext encryptContext) {
         byte[] bytes = toBytes(cipherValue);
         for (int index = 0; index < 32; index++) {
             bytes[index % 4] = (byte) (key[index] ^ bytes[index % 4]);

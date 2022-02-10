@@ -51,20 +51,20 @@ public final class MemoryLocalShadowJdbcConfiguration {
         Collection<RuleConfiguration> ruleConfigurations = createRuleConfiguration();
         return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, ruleConfigurations, createShardingSphereProps());
     }
-
+    
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>();
         result.put("demo_ds_0", createDataSource("demo_ds_0"));
         result.put("ds_shadow", createDataSource("ds_shadow"));
         return result;
     }
-
+    
     private Properties createShardingSphereProps() {
         Properties result = new Properties();
         result.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
         return result;
     }
-
+    
     private Collection<RuleConfiguration> createRuleConfiguration() {
         Collection<RuleConfiguration> result = new LinkedList<>();
         result.add(createShadowRuleConfiguration());
@@ -79,7 +79,7 @@ public final class MemoryLocalShadowJdbcConfiguration {
         result.setTables(createShadowTables());
         return result;
     } 
-            
+    
     private RuleConfiguration createSQLParserRuleConfiguration() {
         SQLParserRuleConfiguration result = new DefaultSQLParserRuleConfigurationBuilder().build(); 
         result.setSqlCommentParseEnabled(true);
@@ -106,13 +106,13 @@ public final class MemoryLocalShadowJdbcConfiguration {
         result.add("shadow-data-source");
         return result;
     }
-
+    
     private Map<String, ShadowDataSourceConfiguration> createShadowDataSources() {
         Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
         result.put("shadow-data-source", new ShadowDataSourceConfiguration("demo_ds_0", "ds_shadow"));
         return result;
     }
-
+    
     private Map<String, ShardingSphereAlgorithmConfiguration> createShadowAlgorithmConfigurations() {
         Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>();
         Properties userIdInsertProps = new Properties();
@@ -136,6 +136,7 @@ public final class MemoryLocalShadowJdbcConfiguration {
         result.put("simple-hint-algorithm", new ShardingSphereAlgorithmConfiguration("SIMPLE_HINT", noteAlgorithmProps));
         return result;
     }
+    
     private DataSource createDataSource(final String dataSourceName) {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName("com.mysql.jdbc.Driver");

@@ -24,22 +24,17 @@ import org.apache.shardingsphere.infra.config.function.DistributedRuleConfigurat
 import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 
-import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -55,43 +50,26 @@ public final class SchemaRulesBuilder {
     
     /**
      * Build rules.
-     * 
-     * @param schemaConfigs schema configuration map
-     * @param props properties
-     * @return ShardingSphere rules
-     */
-    public static Map<String, Collection<ShardingSphereRule>> buildRules(final Map<String, ? extends SchemaConfiguration> schemaConfigs, final Properties props) {
-        Map<String, Collection<ShardingSphereRule>> result = new HashMap<>(schemaConfigs.size(), 1);
-        for (Entry<String, ? extends SchemaConfiguration> entry : schemaConfigs.entrySet()) {
-            Map<String, DataSource> dataSourceMap = entry.getValue().getDataSources();
-            Collection<RuleConfiguration> ruleConfigs = entry.getValue().getRuleConfigurations();
-            DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
-            result.put(entry.getKey(), 
-                    buildRules(new SchemaRulesBuilderMaterials(entry.getKey(), ruleConfigs, databaseType, dataSourceMap, new ConfigurationProperties(null == props ? new Properties() : props))));
-        }
-        return result;
-    }
-    
-    /**
-     * Build rules.
      *
-     * @param materials rules builder materials
+     * @param schemaName schema name
+     * @param schemaConfig schema configuration
+     * @param props configuration properties
      * @return built rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Collection<ShardingSphereRule> buildRules(final SchemaRulesBuilderMaterials materials) {
+    public static Collection<ShardingSphereRule> buildRules(final String schemaName, final SchemaConfiguration schemaConfig, final ConfigurationProperties props) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        for (Entry<RuleConfiguration, SchemaRuleBuilder> entry : getRuleBuilderMap(materials).entrySet()) {
-            result.add(entry.getValue().build(materials, entry.getKey(), result));
+        for (Entry<RuleConfiguration, SchemaRuleBuilder> entry : getRuleBuilderMap(schemaConfig).entrySet()) {
+            result.add(entry.getValue().build(entry.getKey(), schemaName, schemaConfig.getDataSources(), result, props));
         }
         return result;
     }
     
     @SuppressWarnings("rawtypes")
-    private static Map<RuleConfiguration, SchemaRuleBuilder> getRuleBuilderMap(final SchemaRulesBuilderMaterials materials) {
+    private static Map<RuleConfiguration, SchemaRuleBuilder> getRuleBuilderMap(final SchemaConfiguration schemaConfig) {
         Map<RuleConfiguration, SchemaRuleBuilder> result = new LinkedHashMap<>();
-        result.putAll(getDistributedRuleBuilderMap(materials.getSchemaRuleConfigs()));
-        result.putAll(getEnhancedRuleBuilderMap(materials.getSchemaRuleConfigs()));
+        result.putAll(getDistributedRuleBuilderMap(schemaConfig.getRuleConfigurations()));
+        result.putAll(getEnhancedRuleBuilderMap(schemaConfig.getRuleConfigurations()));
         result.putAll(getMissedDefaultRuleBuilderMap(result.values()));
         return result;
     }

@@ -20,8 +20,9 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.model;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 /**
  * Pipelien table meta data.
  */
+@Slf4j
 @ToString
 public final class PipelineTableMetaData {
     
@@ -40,16 +42,53 @@ public final class PipelineTableMetaData {
     private final Map<String, PipelineColumnMetaData> columnMetaDataMap;
     
     @Getter
-    private final Collection<String> columnNames;
+    private final List<String> columnNames;
     
     @Getter
-    private final List<String> primaryKeys;
+    private final List<String> primaryKeyColumns;
     
     public PipelineTableMetaData(final String name, final Map<String, PipelineColumnMetaData> columnMetaDataMap) {
         this.name = name;
         this.columnMetaDataMap = columnMetaDataMap;
-        columnNames = Collections.unmodifiableCollection(columnMetaDataMap.keySet());
-        primaryKeys = Collections.unmodifiableList(columnMetaDataMap.values().stream().filter(PipelineColumnMetaData::isPrimaryKey).map(PipelineColumnMetaData::getName).collect(Collectors.toList()));
+        List<PipelineColumnMetaData> columnMetaDataList = new ArrayList<>(columnMetaDataMap.values());
+        Collections.sort(columnMetaDataList);
+        columnNames = Collections.unmodifiableList(columnMetaDataList.stream().map(PipelineColumnMetaData::getName).collect(Collectors.toList()));
+        primaryKeyColumns = Collections.unmodifiableList(columnMetaDataList.stream().filter(PipelineColumnMetaData::isPrimaryKey)
+                .map(PipelineColumnMetaData::getName).collect(Collectors.toList()));
+    }
+    
+    /**
+     * Get column metadata.
+     *
+     * @param columnIndex column index
+     * @return column metadata
+     */
+    public PipelineColumnMetaData getColumnMetaData(final int columnIndex) {
+        return getColumnMetaData(columnNames.get(columnIndex));
+    }
+    
+    /**
+     * Get column metadata.
+     *
+     * @param columnName column name
+     * @return column metadata
+     */
+    public PipelineColumnMetaData getColumnMetaData(final String columnName) {
+        PipelineColumnMetaData result = columnMetaDataMap.get(columnName);
+        if (null == result) {
+            log.warn("getColumnMetaData, can not get column metadata for column name '{}', columnNames={}", columnName, columnNames);
+        }
+        return result;
+    }
+    
+    /**
+     * Judge whether column is primary key or not.
+     *
+     * @param columnIndex column index
+     * @return true if the column is primary key, otherwise false
+     */
+    public boolean isPrimaryKey(final int columnIndex) {
+        return columnIndex < columnNames.size() && columnMetaDataMap.get(columnNames.get(columnIndex)).isPrimaryKey();
     }
     
     @Override

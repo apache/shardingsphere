@@ -44,6 +44,13 @@
 #  - !TRANSACTION
 #    defaultType: XA
 #    providerType: Atomikos
+#    # When the provider type is Narayana, the following properties can be configured or not
+#    props:
+#      databaseName: jbossts
+#      host: 127.0.0.1
+#      port: 3306
+#      user: root
+#      password: 12345678
 #  - !SQL_PARSER
 #    sqlCommentParseEnabled: true
 #    sqlStatementCache:

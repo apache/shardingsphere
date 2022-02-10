@@ -55,8 +55,9 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
+        String suffix = String.valueOf(getLongValue(shardingValue.getValue()) % shardingCount);
         for (String each : availableTargetNames) {
-            if (each.endsWith(String.valueOf(getLongValue(shardingValue.getValue()) % shardingCount))) {
+            if (each.endsWith(suffix)) {
                 return each;
             }
         }
@@ -86,7 +87,7 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     }
     
     private long getLongValue(final Comparable<?> value) {
-        return Long.parseLong(value.toString());
+        return value instanceof Number ? ((Number) value).longValue() : Long.parseLong(value.toString());
     }
     
     @Override

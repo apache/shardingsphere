@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.LabelInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetInstanceStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor.LabelInstanceExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor.SetInstanceStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor.SetReadwriteSplittingStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor.SetVariableExecutor;
@@ -50,6 +52,9 @@ public final class SetStatementExecutorFactory {
         }
         if (sqlStatement instanceof SetInstanceStatusStatement) {
             return new SetInstanceStatusExecutor((SetInstanceStatusStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof LabelInstanceStatement) {
+            return new LabelInstanceExecutor((LabelInstanceStatement) sqlStatement);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }

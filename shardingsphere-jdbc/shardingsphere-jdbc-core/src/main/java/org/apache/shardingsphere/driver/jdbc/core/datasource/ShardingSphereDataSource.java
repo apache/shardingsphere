@@ -61,7 +61,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
                                     final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         checkRuleConfiguration(schemaName, ruleConfigs);
         this.schemaName = schemaName;
-        contextManager = createContextManager(schemaName, modeConfig, dataSourceMap, ruleConfigs, props);
+        contextManager = createContextManager(schemaName, modeConfig, dataSourceMap, ruleConfigs, null == props ? new Properties() : props);
     }
     
     @SuppressWarnings("unchecked")
@@ -72,9 +72,12 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     private ContextManager createContextManager(final String schemaName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
                                                 final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
-        ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder().modeConfig(modeConfig)
+        ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder()
+                .modeConfig(modeConfig)
                 .schemaConfigs(Collections.singletonMap(schemaName, new DataSourceProvidedSchemaConfiguration(dataSourceMap, ruleConfigs)))
-                .globalRuleConfigs(globalRuleConfigs).props(props).instanceDefinition(new InstanceDefinition(InstanceType.JDBC)).build();
+                .globalRuleConfigs(globalRuleConfigs)
+                .props(props)
+                .instanceDefinition(new InstanceDefinition(InstanceType.JDBC)).build();
         return ContextManagerBuilderFactory.newInstance(modeConfig).build(parameter);
     }
     

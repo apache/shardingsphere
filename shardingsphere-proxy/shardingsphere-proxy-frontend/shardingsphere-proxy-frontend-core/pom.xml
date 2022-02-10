@@ -49,7 +49,7 @@
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
-            <artifactId>netty-transport-native-epoll</artifactId>
+            <artifactId>netty-transport-classes-epoll</artifactId>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
