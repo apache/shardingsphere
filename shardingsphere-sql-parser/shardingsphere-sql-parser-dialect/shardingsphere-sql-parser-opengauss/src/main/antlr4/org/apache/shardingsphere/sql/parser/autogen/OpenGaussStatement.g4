@@ -60,6 +60,7 @@ execute
     | alterDefaultPrivileges
     | alterForeignTable
     | alterGroup
+    | alterMaterializedView
     | alterProcedure
     | alterServer
     | alterSequence

@@ -95,6 +95,10 @@ dropTrafficRule
     : DROP TRAFFIC RULE ifExists? ruleName (COMMA ruleName)*
     ;
 
+labelInstance
+    : (LABEL | RELABEL) INSTANCE (instanceDefination | instanceId) WITH label (COMMA label)*
+    ;
+    
 trafficRuleDefinition
     : ruleName LP (labelDefinition COMMA)? trafficAlgorithmDefinition (COMMA loadBalanceDefinition)? RP
     ;

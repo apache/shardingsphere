@@ -62,6 +62,8 @@ public enum SQLVisitorRule {
     
     ALTER_GROUP("AlterGroup", SQLStatementType.DDL),
     
+    ALTER_MATERIALIZED_VIEW("AlterMaterializedView", SQLStatementType.DDL),
+    
     DROP_TABLE("DropTable", SQLStatementType.DDL),
     
     TRUNCATE_TABLE("TruncateTable", SQLStatementType.DDL),
