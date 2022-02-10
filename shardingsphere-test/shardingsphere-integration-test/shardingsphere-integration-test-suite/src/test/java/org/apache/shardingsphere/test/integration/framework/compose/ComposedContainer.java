@@ -91,8 +91,9 @@ public abstract class ComposedContainer extends ExternalResource {
         }
     }
     
+    // TODO close on class rule
     @Override
     protected final void after() {
-        containers.close();
+//        containers.close();
     }
 }
