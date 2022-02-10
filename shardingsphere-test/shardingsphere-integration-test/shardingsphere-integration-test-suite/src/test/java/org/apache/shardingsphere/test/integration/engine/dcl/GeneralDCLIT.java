@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDCLIT extends BaseDCLIT {
     
-    private final static ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralDCLIT");
+    private static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralDCLIT");
     
     public GeneralDCLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
