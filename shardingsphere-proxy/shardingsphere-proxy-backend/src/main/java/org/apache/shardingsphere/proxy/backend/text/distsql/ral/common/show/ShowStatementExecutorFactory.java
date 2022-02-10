@@ -24,6 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAu
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceModeStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowSQLParserRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowShardingTableRulesUsedKeyGeneratorStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTableMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTransactionRuleStatement;
@@ -36,6 +37,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.exec
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowInstanceModeExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowReadwriteSplittingReadResourcesExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowSQLParserRuleExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowShardingTableRulesUsedKeyGeneratorExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowTableMetadataExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowTrafficRulesExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowTransactionRuleExecutor;
@@ -87,6 +89,9 @@ public final class ShowStatementExecutorFactory {
         }
         if (sqlStatement instanceof ShowTrafficRulesStatement) {
             return new ShowTrafficRulesExecutor((ShowTrafficRulesStatement) sqlStatement);
+        }
+        if(sqlStatement instanceof ShowShardingTableRulesUsedKeyGeneratorStatement){
+            return new ShowShardingTableRulesUsedKeyGeneratorExecutor();
         }
         if (sqlStatement instanceof ExportSchemaConfigurationStatement) {
             return new ExportSchemaConfigurationExecutor((ExportSchemaConfigurationStatement) sqlStatement, connectionSession);
