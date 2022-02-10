@@ -26,6 +26,7 @@ import org.apache.shardingsphere.test.integration.framework.param.model.Assertio
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -43,7 +44,8 @@ import static org.junit.Assert.assertTrue;
 @ParallelRuntimeStrategy(ParallelLevel.CASE)
 public final class GeneralDQLIT extends BaseDQLIT {
     
-    private static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralDQLIT");
+    @ClassRule
+    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralDQLIT");
     
     public GeneralDQLIT(final AssertionParameterizedArray parameter) {
         super(parameter);

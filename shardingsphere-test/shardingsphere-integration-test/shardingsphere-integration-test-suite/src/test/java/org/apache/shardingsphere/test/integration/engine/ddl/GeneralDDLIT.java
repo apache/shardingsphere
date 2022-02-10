@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.integration.framework.param.ParameterizedA
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -40,7 +41,8 @@ import static org.junit.Assert.assertFalse;
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDDLIT extends BaseDDLIT {
     
-    private static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralDDLIT");
+    @ClassRule
+    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralDDLIT");
     
     public GeneralDDLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);

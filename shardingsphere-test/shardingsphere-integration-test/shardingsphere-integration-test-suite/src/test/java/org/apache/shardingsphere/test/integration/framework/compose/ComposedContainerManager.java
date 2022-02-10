@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.integration.framework.compose.mode.ClusterComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.compose.mode.MemoryComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
+import org.junit.rules.ExternalResource;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +30,7 @@ import java.util.Map;
  * Composed container manager.
  */
 @RequiredArgsConstructor
-public final class ComposedContainerManager {
+public final class ComposedContainerManager extends ExternalResource {
     
     private final String testSuiteName;
     
@@ -59,5 +60,15 @@ public final class ComposedContainerManager {
     
     private String generateKey(final ParameterizedArray parameter) {
         return String.join("-", testSuiteName, parameter.getScenario(), parameter.getAdapter(), parameter.getDatabaseType().getName());
+    }
+    
+    @Override
+    protected void before() {
+        composedContainers.values().forEach(each -> each.getContainers().start());
+    }
+    
+    @Override
+    protected void after() {
+        composedContainers.values().forEach(each -> each.getContainers().close());
     }
 }

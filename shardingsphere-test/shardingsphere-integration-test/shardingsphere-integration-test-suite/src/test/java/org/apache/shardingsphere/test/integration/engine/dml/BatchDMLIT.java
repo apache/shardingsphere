@@ -27,6 +27,7 @@ import org.apache.shardingsphere.test.integration.framework.param.model.CasePara
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -43,7 +44,8 @@ import static org.junit.Assert.assertThat;
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class BatchDMLIT extends BatchITCase {
     
-    private static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("BatchDMLIT");
+    @ClassRule
+    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("BatchDMLIT");
     
     public BatchDMLIT(final CaseParameterizedArray parameterizedArray) {
         super(parameterizedArray);

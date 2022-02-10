@@ -26,6 +26,7 @@ import org.apache.shardingsphere.test.integration.framework.param.model.Assertio
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -41,7 +42,8 @@ import java.util.stream.Collectors;
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralRALIT extends BaseRALIT {
     
-    private static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralRALIT");
+    @ClassRule
+    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralRALIT");
     
     public GeneralRALIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
