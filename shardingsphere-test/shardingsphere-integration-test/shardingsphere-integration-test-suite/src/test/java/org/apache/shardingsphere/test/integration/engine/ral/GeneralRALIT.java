@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralRALIT extends BaseRALIT {
     
-    private final static ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralRALIT");
+    private static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralRALIT");
     
     public GeneralRALIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
