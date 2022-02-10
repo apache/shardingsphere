@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.framework.compose;
 
-import lombok.AccessLevel;
-import lombok.Getter;
 import org.apache.shardingsphere.test.integration.framework.container.ShardingSphereContainers;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainer;
@@ -29,33 +27,33 @@ import java.util.Map;
 /**
  * Composed container.
  */
-public abstract class ComposedContainer {
+public interface ComposedContainer {
     
-    @Getter(AccessLevel.PROTECTED)
-    private final ShardingSphereContainers containers;
-    
-    public ComposedContainer(final String testSuiteName) {
-        containers = new ShardingSphereContainers(testSuiteName);
-    }
+    /**
+     * Get containers.
+     * 
+     * @return containers
+     */
+    ShardingSphereContainers getContainers();
     
     /**
      * Get adapter container.
      *
      * @return adapter container
      */
-    public abstract AdapterContainer getAdapterContainer();
+    AdapterContainer getAdapterContainer();
     
     /**
      * Get storage container.
      *
      * @return storage container
      */
-    public abstract StorageContainer getStorageContainer();
+    StorageContainer getStorageContainer();
     
     /**
      * Get all target data sources.
      *
      * @return datasource map
      */
-    public abstract Map<String, DataSource> getDataSourceMap();
+    Map<String, DataSource> getDataSourceMap();
 }
