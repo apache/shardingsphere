@@ -66,24 +66,21 @@ public final class TrafficRule implements GlobalRule {
     }
     
     private Collection<TrafficStrategyRule> createTrafficStrategyRules(final Map<String, TrafficAlgorithm> trafficAlgorithms, final TrafficRuleConfiguration config) {
-        Optional<TrafficStrategyRule> transactionStrategyRule = Optional.empty();
         Collection<TrafficStrategyRule> noneTransactionStrategyRules = new LinkedList<>();
         Collection<TrafficStrategyRule> result = new LinkedList<>();
         for (TrafficStrategyConfiguration each : config.getTrafficStrategies()) {
             TrafficStrategyRule trafficStrategyRule = new TrafficStrategyRule(each.getName(), each.getLabels(), each.getAlgorithmName(), each.getLoadBalancerName());
-            if (isTransactionTrafficStrategyRule(trafficAlgorithms, each.getAlgorithmName())) {
-                Preconditions.checkState(!transactionStrategyRule.isPresent(), "Transaction traffic strategy rule configuration can only config once.");
-                transactionStrategyRule = Optional.of(trafficStrategyRule);
+            if (isTransactionStrategyRule(trafficAlgorithms, each.getAlgorithmName())) {
+                result.add(trafficStrategyRule);
             } else {
                 noneTransactionStrategyRules.add(trafficStrategyRule);
             }
         }
-        transactionStrategyRule.ifPresent(result::add);
         result.addAll(noneTransactionStrategyRules);
         return result;
     }
     
-    private boolean isTransactionTrafficStrategyRule(final Map<String, TrafficAlgorithm> trafficAlgorithms, final String algorithmName) {
+    private boolean isTransactionStrategyRule(final Map<String, TrafficAlgorithm> trafficAlgorithms, final String algorithmName) {
         TrafficAlgorithm trafficAlgorithm = getTrafficAlgorithm(trafficAlgorithms, algorithmName);
         return trafficAlgorithm instanceof TransactionTrafficAlgorithm;
     }
