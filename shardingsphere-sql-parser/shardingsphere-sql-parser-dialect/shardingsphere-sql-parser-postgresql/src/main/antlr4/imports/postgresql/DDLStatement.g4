@@ -515,6 +515,7 @@ alterTableCmd
     | ALTER COLUMN? colId SET reloptions
     | ALTER COLUMN? colId RESET reloptions
     | ALTER COLUMN? colId SET STORAGE colId
+    | ALTER COLUMN? colId SET columnCompression
     | ALTER COLUMN? colId ADD GENERATED generatedWhen AS IDENTITY parenthesizedSeqOptList?
     | ALTER COLUMN? colId alterIdentityColumnOptionList
     | ALTER COLUMN? colId DROP IDENTITY
@@ -560,6 +561,12 @@ alterTableCmd
     | NO FORCE ROW LEVEL SECURITY
     | alterGenericOptions
     ;
+
+columnCompression
+    : COMPRESSION colId
+    | COMPRESSION DEFAULT
+    ;
+    
 
 constraintAttributeSpec
     : constraintAttributeElem*

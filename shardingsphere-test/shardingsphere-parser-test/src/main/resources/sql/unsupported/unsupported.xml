@@ -6126,8 +6126,6 @@
     <sql-case id="low_with_by_mysql_source_test_case1" value="with qn as (SELECT  MAX(a) FROM t1 WHERE (b) IN ( SELECT MIN(t2.b) FROM (SELECT b from t1) AS t2 GROUP BY t2.b WITH ROLLUP HAVING GROUPING (t2.b)=0)) SELECT * FROM qn" db-types="MySQL"/>
     <sql-case id="low_with_by_mysql_source_test_case2" value="with t1 as (select * from t1 where a=3) delete from t1" db-types="MySQL"/>
     <sql-case id="low_with_by_mysql_source_test_case3" value="with t1 as (select * from t1 where a=3) delete t1.* from t1, t1 as t2" db-types="MySQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case129" value="ALTER MATERIALIZED VIEW compressmv ALTER COLUMN x SET COMPRESSION lz4;" db-types="PostgreSQL"/>
-    <sql-case id="alter_by_postgresql_source_test_case130" value="ALTER MATERIALIZED VIEW mvtest_tvm SET SCHEMA mvtest_mvschema;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case131" value="ALTER OPERATOR &amp; (bit, bit) SET (&quot;Restrict&quot; = _int_contsel, &quot;Join&quot; = _int_contjoinsel);" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case132" value="ALTER OPERATOR === (boolean, boolean) SET (COMMUTATOR = !==);" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case133" value="ALTER OPERATOR === (boolean, boolean) SET (COMMUTATOR = ====);" db-types="PostgreSQL"/>
