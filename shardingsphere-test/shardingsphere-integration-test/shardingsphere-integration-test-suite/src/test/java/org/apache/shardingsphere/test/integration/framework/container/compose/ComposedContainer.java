@@ -51,7 +51,7 @@ public interface ComposedContainer {
     StorageContainer getStorageContainer();
     
     /**
-     * Get data sources map.
+     * Get data source map.
      *
      * @return data source map
      */
