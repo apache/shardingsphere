@@ -67,7 +67,7 @@ public abstract class StorageContainer extends ShardingSphereContainer {
     /**
      * Get data source map.
      *
-     * @return database name and data source map
+     * @return data source map
      */
     @SneakyThrows({IOException.class, JAXBException.class})
     public synchronized Map<String, DataSource> getDataSourceMap() {
