@@ -96,7 +96,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final PropertiesChangedEvent event) {
-        contextManager.alterProps(event.getProps());
+        contextManager.alterProperties(event.getProps());
     }
     
     /**

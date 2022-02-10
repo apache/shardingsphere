@@ -42,10 +42,10 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Encrypt rule.
@@ -188,12 +188,22 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @param originalValues original values
      * @return encrypt values
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("rawtypes")
     public List<Object> getEncryptValues(final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
         Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
         EncryptContext encryptContext = EncryptContextBuilder.build(schemaName, logicTable, logicColumn, this);
         Preconditions.checkArgument(encryptor.isPresent(), "Can not find EncryptAlgorithm by %s.%s.", logicTable, logicColumn);
-        return originalValues.stream().map(input -> null == input ? null : encryptor.get().encrypt(input, encryptContext)).collect(Collectors.toList());
+        return getEncryptValues(encryptor.get(), originalValues, encryptContext);
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private List<Object> getEncryptValues(final EncryptAlgorithm encryptor, final List<Object> originalValues, final EncryptContext encryptContext) {
+        List<Object> result = new LinkedList<>();
+        for (Object each : originalValues) {
+            Object encryptValue = null == each ? null : encryptor.encrypt(each, encryptContext);
+            result.add(encryptValue);
+        }
+        return result;
     }
     
     /**
@@ -247,14 +257,22 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @param originalValues original values
      * @return assisted query values
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("rawtypes")
     public List<Object> getEncryptAssistedQueryValues(final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
         Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
         EncryptContext encryptContext = EncryptContextBuilder.build(schemaName, logicTable, logicColumn, this);
         Preconditions.checkArgument(encryptor.isPresent() && encryptor.get() instanceof QueryAssistedEncryptAlgorithm,
-                String.format("Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn));
-        return originalValues.stream().map(input -> null == input 
-                ? null : ((QueryAssistedEncryptAlgorithm) encryptor.get()).queryAssistedEncrypt(input, encryptContext)).collect(Collectors.toList());
+                "Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn);
+        return getEncryptAssistedQueryValues((QueryAssistedEncryptAlgorithm) encryptor.get(), originalValues, encryptContext);
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private List<Object> getEncryptAssistedQueryValues(final QueryAssistedEncryptAlgorithm encryptor, final List<Object> originalValues, final EncryptContext encryptContext) {
+        List<Object> result = new LinkedList<>();
+        for (Object each : originalValues) {
+            result.add(null == each ? null : encryptor.queryAssistedEncrypt(each, encryptContext));
+        }
+        return result;
     }
     
     /**
@@ -268,7 +286,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         Optional<String> originColumnName = findOriginColumnName(logicTable, logicColumn);
         return originColumnName.isPresent() && tables.containsKey(logicTable) ? tables.get(logicTable).findPlainColumn(originColumnName.get()) : Optional.empty();
     }
-
+    
     /**
      * Judge whether table is support QueryWithCipherColumn or not.
      *

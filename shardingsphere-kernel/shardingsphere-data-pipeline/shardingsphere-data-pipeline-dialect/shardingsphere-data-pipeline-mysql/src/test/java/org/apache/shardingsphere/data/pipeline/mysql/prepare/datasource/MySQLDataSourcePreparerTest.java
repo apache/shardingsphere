@@ -26,7 +26,6 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPi
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
-import org.apache.shardingsphere.driver.config.datasource.ShardingSpherePipelineDataSourceCreator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,7 +43,6 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-// FIX test cases
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLDataSourcePreparerTest {
     
@@ -71,9 +69,6 @@ public final class MySQLDataSourcePreparerTest {
     
     @Mock
     private PipelineDataSourceWrapper targetDataSourceWrapper;
-    
-    @Mock
-    private ShardingSpherePipelineDataSourceCreator mockShardingSpherePipelineDataSourceCreator;
     
     @Before
     public void setUp() throws SQLException {
@@ -116,6 +111,5 @@ public final class MySQLDataSourcePreparerTest {
             MySQLDataSourcePreparer mySQLDataSourcePreparer = new MySQLDataSourcePreparer();
             mySQLDataSourcePreparer.prepareTargetTables(prepareTargetTablesParameter);
         }
-       
     }
 }

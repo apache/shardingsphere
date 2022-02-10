@@ -76,7 +76,7 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         }
         return result;
     }
-
+    
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final Collection<ExpressionSegment> predicates, final Map<String, String> columnTableNames) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (ExpressionSegment each : predicates) {

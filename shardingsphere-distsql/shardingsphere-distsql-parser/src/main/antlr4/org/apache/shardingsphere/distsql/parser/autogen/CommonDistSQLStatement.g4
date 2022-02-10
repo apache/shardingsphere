@@ -50,6 +50,7 @@ execute
     | createTrafficRule
     | alterTrafficRule
     | exportSchemaConfiguration
+    | showRulesUsedResource
     | showShardingTableRulesUsedKeyGenerator
     ) SEMI?
     ;

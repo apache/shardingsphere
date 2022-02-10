@@ -2989,6 +2989,35 @@
         </where>
     </select>
 
+    <select sql-case-id="select_with_json_value_return_type">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="86">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="86">
+                    <left>
+                        <function start-index="28" stop-index="77" function-name="JSON_VALUE" text="JSON_VALUE(items, '$.name' RETURNING VARCHAR(100))">
+                            <parameter>
+                                <column name="items" start-index="39" stop-index="43"/>
+                            </parameter>
+                            <parameter>
+                                <common-expression text="'$.name' RETURNING VARCHAR(100)" start-index="46" stop-index="76" />
+                            </parameter>
+                        </function>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="jack" start-index="81" stop-index="86" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
     <select sql-case-id="select_with_convert_function">
         <from>
             <simple-table name="t_order" start-index="70" stop-index="76" />

@@ -22,6 +22,7 @@ import com.google.common.collect.Sets;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
@@ -153,41 +154,27 @@ public final class DataSourceReflection {
     /**
      * Add default data source properties.
      *
-     * @param dataSourcePropsFieldName data source properties field name
-     * @param jdbcUrlFieldName JDBC URL field name
+     * @param dataSourcePoolMetaData data source pool meta data
      */
-    public void addDefaultDataSourceProperties(final String dataSourcePropsFieldName, final String jdbcUrlFieldName) {
-        if (null == dataSourcePropsFieldName || null == jdbcUrlFieldName) {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public void addDefaultDataSourceProperties(final DataSourcePoolMetaData dataSourcePoolMetaData) {
+        String jdbcUrl = dataSourcePoolMetaData.getJdbcUrlMetaData().getJdbcUrl(dataSource);
+        Properties jdbcUrlProps = dataSourcePoolMetaData.getJdbcUrlMetaData().getJdbcUrlProperties(dataSource);
+        if (null == jdbcUrl || null == jdbcUrlProps) {
             return;
         }
-        Properties targetDataSourceProps = getDataSourceProperties(dataSourcePropsFieldName);
-        String jdbcUrl = getJdbcUrl(jdbcUrlFieldName);
         DataSourceMetaData dataSourceMetaData = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl).getDataSourceMetaData(jdbcUrl, null);
         Properties queryProps = dataSourceMetaData.getQueryProperties();
         for (Entry<Object, Object> entry : dataSourceMetaData.getDefaultQueryProperties().entrySet()) {
             String defaultPropertyKey = entry.getKey().toString();
             String defaultPropertyValue = entry.getValue().toString();
-            if (!containsDefaultProperty(defaultPropertyKey, targetDataSourceProps, queryProps)) {
-                targetDataSourceProps.setProperty(defaultPropertyKey, defaultPropertyValue);
+            if (!containsDefaultProperty(defaultPropertyKey, jdbcUrlProps, queryProps)) {
+                dataSourcePoolMetaData.getJdbcUrlMetaData().appendJdbcUrlProperties(defaultPropertyKey, defaultPropertyValue, dataSource);
             }
         }
     }
     
     private boolean containsDefaultProperty(final String defaultPropertyKey, final Properties targetDataSourceProps, final Properties queryProps) {
         return targetDataSourceProps.containsKey(defaultPropertyKey) || queryProps.containsKey(defaultPropertyKey);
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private Properties getDataSourceProperties(final String dataSourcePropsFieldName) {
-        return (Properties) dataSource.getClass().getMethod(getGetterMethodName(dataSourcePropsFieldName)).invoke(dataSource);
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private String getJdbcUrl(final String jdbcUrlFieldName) {
-        return (String) dataSource.getClass().getMethod(getGetterMethodName(jdbcUrlFieldName)).invoke(dataSource);
-    }
-    
-    private String getGetterMethodName(final String fieldName) {
-        return GETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, fieldName);
     }
 }

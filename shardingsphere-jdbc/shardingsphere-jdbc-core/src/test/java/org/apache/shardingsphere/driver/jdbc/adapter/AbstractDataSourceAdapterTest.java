@@ -22,16 +22,14 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.sql.DataSource;
 import java.io.PrintWriter;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -39,9 +37,6 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class AbstractDataSourceAdapterTest {
     
@@ -49,14 +44,7 @@ public final class AbstractDataSourceAdapterTest {
     
     @Before
     public void setUp() throws SQLException {
-        shardingSphereDataSource = new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, null, getDataSource(), getRuleConfigurations(), new Properties());
-    }
-    
-    private Map<String, DataSource> getDataSource() throws SQLException {
-        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
-        when(dataSource.getConnection().getMetaData()).thenReturn(mock(DatabaseMetaData.class, RETURNS_DEEP_STUBS));
-        when(dataSource.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
-        return Collections.singletonMap("ds", dataSource);
+        shardingSphereDataSource = new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, null, Collections.singletonMap("ds", new MockedDataSource()), getRuleConfigurations(), new Properties());
     }
     
     private Collection<RuleConfiguration> getRuleConfigurations() {

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
  * Query assisted encrypt algorithm for SPI.
  *
  * @param <I> type of plain value
- * @param <O> type of  cipher value
+ * @param <O> type of cipher value
  */
 public interface QueryAssistedEncryptAlgorithm<I, O> extends EncryptAlgorithm<I, O> {
     
