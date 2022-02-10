@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.framework.param.model;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainer;
+import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
 
 /**
  * Parameterized array.
