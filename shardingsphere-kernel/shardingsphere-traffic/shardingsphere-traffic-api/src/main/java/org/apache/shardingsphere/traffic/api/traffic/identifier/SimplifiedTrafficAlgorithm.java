@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.traffic.api.traffic.identifier;
 
 /**
- * Simplified transaction traffic algorithm.
+ * Simplified traffic algorithm.
  */
 public interface SimplifiedTrafficAlgorithm {
 }
