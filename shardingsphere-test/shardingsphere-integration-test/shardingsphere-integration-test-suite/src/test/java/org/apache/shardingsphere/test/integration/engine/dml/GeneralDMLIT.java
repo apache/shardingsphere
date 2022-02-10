@@ -41,7 +41,7 @@ import static org.junit.Assert.assertFalse;
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDMLIT extends BaseDMLIT {
     
-    public static ComposedContainerManager composedContainerManager = new ComposedContainerManager("GeneralDMLIT");
+    private final static ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralDMLIT");
     
     public GeneralDMLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
@@ -51,7 +51,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
     public static Collection<AssertionParameterizedArray> getParameters() {
         return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DML)
                 .stream()
-                .peek(each -> each.setCompose(composedContainerManager.getComposedContainer(each)))
+                .peek(each -> each.setCompose(COMPOSED_CONTAINER_MANAGER.getComposedContainer(each)))
                 .collect(Collectors.toList());
     }
     

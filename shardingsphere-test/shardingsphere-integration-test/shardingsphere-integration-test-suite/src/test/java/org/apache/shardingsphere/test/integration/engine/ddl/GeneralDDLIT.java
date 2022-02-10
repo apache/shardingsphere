@@ -40,7 +40,7 @@ import static org.junit.Assert.assertFalse;
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDDLIT extends BaseDDLIT {
     
-    public static ComposedContainerManager composedContainerManager = new ComposedContainerManager("GeneralDDLIT");
+    private final static ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralDDLIT");
     
     public GeneralDDLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
@@ -50,7 +50,7 @@ public final class GeneralDDLIT extends BaseDDLIT {
     public static Collection<AssertionParameterizedArray> getParameters() {
         return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DDL)
                 .stream()
-                .peek(each -> each.setCompose(composedContainerManager.getComposedContainer(each)))
+                .peek(each -> each.setCompose(COMPOSED_CONTAINER_MANAGER.getComposedContainer(each)))
                 .collect(Collectors.toList());
     }
     

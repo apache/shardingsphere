@@ -43,7 +43,7 @@ import static org.junit.Assert.assertThat;
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class BatchDMLIT extends BatchITCase {
     
-    public static ComposedContainerManager composedContainerManager = new ComposedContainerManager("BatchDMLIT");
+    private final static ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("BatchDMLIT");
     
     public BatchDMLIT(final CaseParameterizedArray parameterizedArray) {
         super(parameterizedArray);
@@ -53,7 +53,7 @@ public final class BatchDMLIT extends BatchITCase {
     public static Collection<ParameterizedArray> getParameters() {
         return ParameterizedArrayFactory.getCaseParameterized(SQLCommandType.DML)
                 .stream()
-                .peek(each -> each.setCompose(composedContainerManager.getComposedContainer(each)))
+                .peek(each -> each.setCompose(COMPOSED_CONTAINER_MANAGER.getComposedContainer(each)))
                 .collect(Collectors.toList());
     }
     

@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralRDLIT extends BaseRDLIT {
     
-    public static ComposedContainerManager composedContainerManager = new ComposedContainerManager("GeneralRDLIT");
+    private final static ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralRDLIT");
     
     public GeneralRDLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
@@ -53,7 +53,7 @@ public final class GeneralRDLIT extends BaseRDLIT {
                 .stream()
                 .filter(each -> SQLExecuteType.Literal == each.getSqlExecuteType())
                 .filter(each -> "proxy".equals(each.getAdapter()))
-                .peek(each -> each.setCompose(composedContainerManager.getComposedContainer(each)))
+                .peek(each -> each.setCompose(COMPOSED_CONTAINER_MANAGER.getComposedContainer(each)))
                 .collect(Collectors.toList());
     }
     
