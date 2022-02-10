@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.logging;
+package org.apache.shardingsphere.test.integration.framework.container.logging;
 
 import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -42,19 +43,27 @@ public final class ContainerLogs {
      */
     public static BaseConsumer<?> newConsumer(final String serviceName) {
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-        PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-        encoder.setContext(context);
-        encoder.setPattern("%d{yyyy-MM-dd HH:mm:ss.SSS} %msg%n");
-        encoder.start();
-        ConsoleAppender<ILoggingEvent> fileAppender = new ConsoleAppender<>();
-        fileAppender.setEncoder(encoder);
-        fileAppender.start();
-        ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(serviceName);
-        logger.addAppender(fileAppender);
+        Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(serviceName);
+        logger.addAppender(createLogAppender(context));
         logger.setLevel(Level.DEBUG);
         logger.setAdditive(false);
-        Slf4jLogConsumer consumer = new Slf4jLogConsumer(logger, true);
-        consumer.withPrefix(serviceName);
-        return consumer;
+        Slf4jLogConsumer result = new Slf4jLogConsumer(logger, true);
+        result.withPrefix(serviceName);
+        return result;
+    }
+    
+    private static ConsoleAppender<ILoggingEvent> createLogAppender(final LoggerContext context) {
+        ConsoleAppender<ILoggingEvent> result = new ConsoleAppender<>();
+        result.setEncoder(createPatternLayoutEncoder(context));
+        result.start();
+        return result;
+    }
+    
+    private static PatternLayoutEncoder createPatternLayoutEncoder(final LoggerContext context) {
+        PatternLayoutEncoder result = new PatternLayoutEncoder();
+        result.setContext(context);
+        result.setPattern("%d{yyyy-MM-dd HH:mm:ss.SSS} %msg%n");
+        result.start();
+        return result;
     }
 }

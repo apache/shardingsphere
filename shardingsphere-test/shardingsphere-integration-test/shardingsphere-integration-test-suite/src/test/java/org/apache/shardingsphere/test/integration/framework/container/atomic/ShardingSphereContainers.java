@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.container;
+package org.apache.shardingsphere.test.integration.framework.container.atomic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.integration.framework.logging.ContainerLogs;
+import org.apache.shardingsphere.test.integration.framework.container.logging.ContainerLogs;
 import org.testcontainers.containers.Network;
 
 import java.util.Collection;

@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.compose;
+package org.apache.shardingsphere.test.integration.framework.container.compose;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.integration.framework.compose.mode.ClusterComposedContainer;
-import org.apache.shardingsphere.test.integration.framework.compose.mode.MemoryComposedContainer;
+import org.apache.shardingsphere.test.integration.framework.container.compose.mode.ClusterComposedContainer;
+import org.apache.shardingsphere.test.integration.framework.container.compose.mode.MemoryComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.junit.rules.ExternalResource;
 

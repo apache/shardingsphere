@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.container.adapter;
+package org.apache.shardingsphere.test.integration.framework.container.atomic.adapter;
 
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfig
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
-import org.apache.shardingsphere.test.integration.framework.container.ShardingSphereContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.ShardingSphereContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 import javax.sql.DataSource;
