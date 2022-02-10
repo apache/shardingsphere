@@ -46,7 +46,7 @@ public final class MemoryLocalShardingJdbcExampleService {
     /**
      * Execute test.
      *
-     * @throws SQLException
+     * @throws SQLException SQL exception
      */
     public void run() throws SQLException {
         try {
@@ -59,7 +59,8 @@ public final class MemoryLocalShardingJdbcExampleService {
     
     /**
      * Initialize the database test environment.
-     * @throws SQLException
+     * 
+     * @throws SQLException SQL exception
      */
     private void initEnvironment() throws SQLException {
         orderRepository.createTableIfNotExists();
@@ -96,7 +97,7 @@ public final class MemoryLocalShardingJdbcExampleService {
             orderItem.setPhone("13800000001");
             orderItem.setStatus("INSERT_TEST");
             orderItemRepository.insert(orderItem);
-
+            
             Address address = new Address();
             address.setAddressId((long) i);
             address.setAddressName("address_test_" + i);
@@ -133,13 +134,13 @@ public final class MemoryLocalShardingJdbcExampleService {
     }
     
     private List<Order> selectAll() throws SQLException {
-        List<Order> result = orderRepository.selectAll();
-        return result;
+        return orderRepository.selectAll();
     }
     
     /**
      * Restore the environment.
-     * @throws SQLException
+     * 
+     * @throws SQLException SQL exception
      */
     private void cleanEnvironment() throws SQLException {
         orderRepository.dropTable();

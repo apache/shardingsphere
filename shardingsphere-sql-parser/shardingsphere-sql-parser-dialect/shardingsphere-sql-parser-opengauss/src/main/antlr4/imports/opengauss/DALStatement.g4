@@ -51,7 +51,7 @@ configurationParameterClause
     ;
 
 resetParameter
-    : RESET (ALL | identifier)
+    : RESET (ALL | identifier) EOF
     ;
 
 explain

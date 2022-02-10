@@ -17,23 +17,19 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.metadata;
 
-import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.impl.DefaultDataSourcePoolMetaData;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.impl.HikariDataSourcePoolMetaData;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.fixture.MockedDataSourcePoolMetaData;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class DataSourcePoolMetaDataFactoryTest {
     
     @Test
-    public void assertNewInstanceForDefault() {
-        assertThat(DataSourcePoolMetaDataFactory.newInstance(""), instanceOf(DefaultDataSourcePoolMetaData.class));
-    }
-    
-    @Test
-    public void assertNewInstanceForHikari() {
-        assertThat(DataSourcePoolMetaDataFactory.newInstance(HikariDataSource.class.getName()), instanceOf(HikariDataSourcePoolMetaData.class));
+    public void assertNewInstance() {
+        assertTrue(DataSourcePoolMetaDataFactory.newInstance(MockedDataSource.class.getName()).isPresent());
+        assertThat(DataSourcePoolMetaDataFactory.newInstance(MockedDataSource.class.getName()).get(), instanceOf(MockedDataSourcePoolMetaData.class));
     }
 }

@@ -267,14 +267,14 @@ FILE
     : F I L E
     ;
 
-SHARDING
-    : S H A R D I N G
-    ;
-
 USED
     : U S E D
     ;
-   
+
+SHARDING
+    : S H A R D I N G
+    ;
+       
 KEY
     : K E Y 
     ;

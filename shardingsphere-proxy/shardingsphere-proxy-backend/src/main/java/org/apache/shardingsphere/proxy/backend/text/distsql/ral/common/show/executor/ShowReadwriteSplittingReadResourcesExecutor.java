@@ -31,6 +31,8 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingReadResourcesStatement;
 import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
 
@@ -44,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -56,15 +59,13 @@ public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractS
     
     private static final String DELIMITER = "\\.";
     
-    private static final String SCHEMA_NAME = "schema_name";
-    
     private static final String RESOURCE = "resource";
     
     private static final String STATUS = "status";
     
-    private static final String DISABLE = "disable";
+    private static final String DISABLED = "disabled";
     
-    private static final String ENABLE = "enable";
+    private static final String ENABLED = "enabled";
     
     private final ShowReadwriteSplittingReadResourcesStatement sqlStatement;
     
@@ -98,16 +99,14 @@ public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractS
         LinkedList<String> configuredResourceRows = getConfiguredResourceRows(metaData);
         Collection<String> autoAwareResourceRows = getAutoAwareResourceRows(metaData, notShownResourceRows);
         return Stream.of(configuredResourceRows, autoAwareResourceRows).flatMap(Collection::stream).distinct()
-                .map(each -> buildRow(each, ENABLE)).collect(Collectors.toCollection(LinkedList::new));
+                .map(each -> buildRow(each, ENABLED)).collect(Collectors.toCollection(LinkedList::new));
     }
     
-    // TODO Fix it.
     private LinkedList<String> getConfiguredResourceRows(final ShardingSphereMetaData metaData) {
-/*        Collection<ReadwriteSplittingRuleConfiguration> ruleConfiguration = metaData.getRuleMetaData().findRuleConfiguration(ReadwriteSplittingRuleConfiguration.class);
+        Collection<ReadwriteSplittingRuleConfiguration> ruleConfiguration = metaData.getRuleMetaData().findRuleConfiguration(ReadwriteSplittingRuleConfiguration.class);
         return ruleConfiguration.stream().map(ReadwriteSplittingRuleConfiguration::getDataSources).flatMap(Collection::stream).filter(Objects::nonNull)
-                .map(ReadwriteSplittingDataSourceRuleConfiguration::getReadDataSourceNames)
-                .flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));*/
-        return new LinkedList<>();
+                .map(ReadwriteSplittingDataSourceRuleConfiguration::getReadDataSourceNames).filter(Optional::isPresent)
+                .map(each -> deconstructString(each.get())).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));
     }
     
     private Collection<String> getAutoAwareResourceRows(final ShardingSphereMetaData metaData, final Collection<Object> notShownResourceRows) {
@@ -132,7 +131,7 @@ public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractS
         List<String> instanceIds = persistService.getRepository().getChildrenKeys(StorageStatusNode.getStatusPath(StorageNodeStatus.DISABLE));
         if (!instanceIds.isEmpty()) {
             return instanceIds.stream().filter(Objects::nonNull).filter(each -> schemaName.equals(each.split(DELIMITER)[0])).map(each -> each.split(DELIMITER)[1])
-                    .map(each -> buildRow(each, DISABLE)).collect(Collectors.toCollection(LinkedList::new));
+                    .map(each -> buildRow(each, DISABLED)).collect(Collectors.toCollection(LinkedList::new));
         }
         return result;
     }

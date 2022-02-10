@@ -49,7 +49,7 @@ public final class MemoryLocalReadwriteSplittingSpringBootStarterJdbcExampleServ
     /**
      * Execute test.
      *
-     * @throws SQLException
+     * @throws SQLException SQL exception
      */
     public void run() throws SQLException {
         try {
@@ -62,7 +62,8 @@ public final class MemoryLocalReadwriteSplittingSpringBootStarterJdbcExampleServ
     
     /**
      * Initialize the database test environment.
-     * @throws SQLException
+     * 
+     * @throws SQLException SQL exception
      */
     private void initEnvironment() throws SQLException {
         orderRepository.createTableIfNotExists();
@@ -136,13 +137,13 @@ public final class MemoryLocalReadwriteSplittingSpringBootStarterJdbcExampleServ
     }
     
     private List<Order> selectAll() throws SQLException {
-        List<Order> result = orderRepository.selectAll();
-        return result;
+        return orderRepository.selectAll();
     }
     
     /**
      * Restore the environment.
-     * @throws SQLException
+     * 
+     * @throws SQLException SQL exception
      */
     private void cleanEnvironment() throws SQLException {
         orderRepository.dropTable();

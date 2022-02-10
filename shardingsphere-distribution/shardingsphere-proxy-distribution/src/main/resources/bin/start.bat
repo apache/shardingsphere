@@ -71,7 +71,8 @@ set VERSION_OPTS=
 if %int_version% == 8 (
     set VERSION_OPTS=-XX:+UseConcMarkSweepGC -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70
 ) else if %int_version% == 11 (
-    set VERSION_OPTS=-XX:+SegmentedCodeCache -XX:+AggressiveHeap -XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler
+    set VERSION_OPTS=-XX:+SegmentedCodeCache -XX:+AggressiveHeap
+    @rem TODO Consider using -XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler in OpenJDK 11 for Performance
 ) else if %int_version% == 17 (
     set VERSION_OPTS=-XX:+SegmentedCodeCache -XX:+AggressiveHeap
 ) else (

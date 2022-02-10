@@ -401,7 +401,7 @@ That's all folks. If you have any questions or suggestions, feel free to comment
 
 Jiang Longtao
 
-![](https://shardingsphere.apache.org/blog/img/Blog_22_img_5_Liang_Longtao_Photo.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_22_img_5_Jiang_Longtao_Photo.png)
 
 >SphereEx Middleware Development Engineer & Apache ShardingSphere Committer. Currently, he is in charge of DistSQL and permission control development.
 
