@@ -138,7 +138,8 @@ public final class ShowRulesStatementAssert {
         } else if (actual instanceof ShowRulesUsedResourceStatement) {
             ShowRulesUsedResourceStatementAssert.assertIs(assertContext, (ShowRulesUsedResourceStatement) actual, (ShowRulesUsedResourceStatementTestCase) expected);
         } else if (actual instanceof ShowShardingTableRulesUsedKeyGeneratorStatement) {
-            ShowShardingTableRulesUsedKeyGeneratorStatementAssert.assertIs(assertContext, (ShowShardingTableRulesUsedKeyGeneratorStatement) actual, (ShowShardingTableRulesUsedKeyGeneratorStatementTestCase) expected);
+            ShowShardingTableRulesUsedKeyGeneratorStatementAssert.assertIs(assertContext, (ShowShardingTableRulesUsedKeyGeneratorStatement) actual,
+                    (ShowShardingTableRulesUsedKeyGeneratorStatementTestCase) expected);
         }
     }
 }

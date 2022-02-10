@@ -31,7 +31,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Show sharding table rules used key generator statement assert
+ * Show sharding table rules used key generator statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowShardingTableRulesUsedKeyGeneratorStatementAssert {
@@ -43,7 +43,8 @@ public final class ShowShardingTableRulesUsedKeyGeneratorStatementAssert {
      * @param actual actual show sharding table rules used key generator statement
      * @param expected expected show sharding table rules used key generator statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShardingTableRulesUsedKeyGeneratorStatement actual, final ShowShardingTableRulesUsedKeyGeneratorStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShardingTableRulesUsedKeyGeneratorStatement actual,
+                                final ShowShardingTableRulesUsedKeyGeneratorStatementTestCase expected) {
         if (null != expected.getSchema()) {
             assertTrue(assertContext.getText("Actual schema should exist."), actual.getSchema().isPresent());
             SchemaAssert.assertIs(assertContext, actual.getSchema().get(), expected.getSchema());

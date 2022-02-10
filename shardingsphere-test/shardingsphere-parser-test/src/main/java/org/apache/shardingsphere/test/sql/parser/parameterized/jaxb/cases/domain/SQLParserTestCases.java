@@ -1094,7 +1094,7 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-rules-used-resource")
     private final List<ShowRulesUsedResourceStatementTestCase> showRulesUsedResourceStatementTestCases = new LinkedList<>();
     
-    @XmlElement(name="show-sharding-table-rules-used-key-generator")
+    @XmlElement(name = "show-sharding-table-rules-used-key-generator")
     private final List<ShowShardingTableRulesUsedKeyGeneratorStatementTestCase> showShardingTableRulesUsedKeyGeneratorStatementTestCases = new LinkedList<>();
 
     @XmlElement(name = "prepared")
