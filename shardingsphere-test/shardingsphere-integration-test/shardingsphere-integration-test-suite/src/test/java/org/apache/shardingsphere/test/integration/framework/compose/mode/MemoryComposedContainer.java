@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.integration.framework.compose.mode;
 
 import lombok.Getter;
 import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainer;
+import org.apache.shardingsphere.test.integration.framework.container.ShardingSphereContainers;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainer;
@@ -33,14 +34,16 @@ import java.util.Map;
  * Memory composed container.
  */
 @Getter
-public final class MemoryComposedContainer extends ComposedContainer {
+public final class MemoryComposedContainer implements ComposedContainer {
+    
+    private final ShardingSphereContainers containers;
     
     private final StorageContainer storageContainer;
     
     private final AdapterContainer adapterContainer;
     
     public MemoryComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
-        super(testSuiteName);
+        containers = new ShardingSphereContainers(testSuiteName);
         storageContainer = getContainers().registerContainer(
                 StorageContainerFactory.newInstance(parameterizedArray), parameterizedArray.getDatabaseType().getName().toLowerCase() + "." + parameterizedArray.getScenario() + ".host");
         adapterContainer = getContainers().registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), "adapter");

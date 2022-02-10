@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.integration.framework.compose.mode;
 
 import lombok.Getter;
 import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainer;
+import org.apache.shardingsphere.test.integration.framework.container.ShardingSphereContainers;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.impl.ShardingSphereProxyContainer;
@@ -35,7 +36,10 @@ import java.util.Map;
 /**
  * Cluster composed container.
  */
-public final class ClusterComposedContainer extends ComposedContainer {
+public final class ClusterComposedContainer implements ComposedContainer {
+    
+    @Getter
+    private final ShardingSphereContainers containers;
     
     @Getter
     private final StorageContainer storageContainer;
@@ -48,7 +52,7 @@ public final class ClusterComposedContainer extends ComposedContainer {
     private final ZookeeperContainer zookeeperContainer;
     
     public ClusterComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
-        super(testSuiteName);
+        containers = new ShardingSphereContainers(testSuiteName);
         storageContainer = getContainers().registerContainer(
                 StorageContainerFactory.newInstance(parameterizedArray), parameterizedArray.getDatabaseType().getName().toLowerCase() + "." + parameterizedArray.getScenario() + ".host");
         adapterContainer = getContainers().registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), "adapter");

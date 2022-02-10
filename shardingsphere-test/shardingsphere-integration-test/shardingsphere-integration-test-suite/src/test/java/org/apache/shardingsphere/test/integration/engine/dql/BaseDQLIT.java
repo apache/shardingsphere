@@ -43,6 +43,8 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseDQLIT extends SingleITCase {
     
+    private static volatile boolean filled;
+    
     public BaseDQLIT(final AssertionParameterizedArray parameter) {
         super(parameter);
     }
@@ -50,16 +52,18 @@ public abstract class BaseDQLIT extends SingleITCase {
     @Override
     public void init() throws Exception {
         super.init();
-        getComposedContainer().executeOnStarted(compose -> {
-            try {
-                new DataSetEnvironmentManager(
-                        EnvironmentPath.getDataSetFile(getScenario()),
-                        getStorageContainer().getDataSourceMap()
-                ).fillData();
-            } catch (IOException | JAXBException | SQLException | ParseException e) {
-                throw new RuntimeException(e);
+        fillDataOnlyOnce();
+    }
+    
+    private void fillDataOnlyOnce() throws SQLException, ParseException, IOException, JAXBException {
+        if (!filled) {
+            synchronized (this) {
+                if (!filled) {
+                    new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getScenario()), getStorageContainer().getDataSourceMap()).fillData();
+                    filled = true;
+                }
             }
-        });
+        }
     }
     
     protected final void assertResultSet(final ResultSet resultSet) throws SQLException {
