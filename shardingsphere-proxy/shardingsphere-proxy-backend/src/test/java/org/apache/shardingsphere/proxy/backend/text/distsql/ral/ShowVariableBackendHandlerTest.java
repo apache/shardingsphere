@@ -99,7 +99,7 @@ public final class ShowVariableBackendHandlerTest {
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(1));
         backendHandler.next();
         Collection<Object> rowData = backendHandler.getRowData();
-        assertThat(rowData.iterator().next(), is(Boolean.FALSE.toString()));
+        assertThat(rowData.iterator().next(), is(Boolean.TRUE.toString()));
     }
     
     @Test
