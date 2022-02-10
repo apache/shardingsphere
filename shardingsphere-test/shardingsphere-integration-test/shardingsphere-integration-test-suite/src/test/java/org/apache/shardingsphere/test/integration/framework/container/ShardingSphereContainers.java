@@ -48,7 +48,7 @@ public final class ShardingSphereContainers implements AutoCloseable {
      * @param container container to be registered
      * @param hostname container hostname
      * @param <T> type of ShardingSphere container
-     * @return register container
+     * @return registered container
      */
     public <T extends ShardingSphereContainer> T registerContainer(final T container, final String hostname) {
         container.setNetwork(network);
@@ -62,13 +62,18 @@ public final class ShardingSphereContainers implements AutoCloseable {
      * Start containers.
      */
     public void start() {
-        containers.stream().filter(each -> !each.isCreated()).forEach(ShardingSphereContainer::start);
+        if (!started) {
+            synchronized (this) {
+                if (!started) {
+                    containers.stream().filter(each -> !each.isCreated()).forEach(ShardingSphereContainer::start);
+                    waitUntilReady();
+                    started = true;
+                }
+            }
+        }
     }
     
-    /**
-     * Wait until all containers ready.
-     */
-    public void waitUntilReady() {
+    private void waitUntilReady() {
         containers.stream()
                 .filter(each -> {
                     try {
@@ -87,7 +92,6 @@ public final class ShardingSphereContainers implements AutoCloseable {
                         }
                     }
                 });
-        started = true;
     }
     
     @Override

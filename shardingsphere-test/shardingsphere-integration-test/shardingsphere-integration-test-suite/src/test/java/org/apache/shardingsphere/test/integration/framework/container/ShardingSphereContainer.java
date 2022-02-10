@@ -67,29 +67,25 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
     }
     
     private void startDependencies() {
-        List<ShardingSphereContainer> dependencies = getDependencies().stream()
-                .map(e -> (ShardingSphereContainer) e)
-                .collect(Collectors.toList());
+        List<ShardingSphereContainer> dependencies = getDependencies().stream().map(each -> (ShardingSphereContainer) each).collect(Collectors.toList());
+        dependencies.stream().filter(each -> !each.isCreated()).forEach(GenericContainer::start);
         dependencies.stream()
-                .filter(c -> !c.isCreated())
-                .forEach(GenericContainer::start);
-        dependencies.stream()
-                .filter(c -> {
+                .filter(each -> {
                     try {
-                        return !c.isHealthy();
+                        return !each.isHealthy();
                         // CHECKSTYLE:OFF
                     } catch (final Exception ex) {
                         // CHECKSTYLE:ON
-                        log.info("Failed to check container {} healthy.", c.getName(), ex);
+                        log.info("Failed to check container {} healthy.", each.getName(), ex);
                         return false;
                     }
                 })
-                .forEach(c -> {
+                .forEach(each -> {
                     DockerHealthcheckWaitStrategy waitStrategy = new DockerHealthcheckWaitStrategy();
-                    log.info("Waiting for container {} healthy.", c.getDockerImageName());
+                    log.info("Waiting for container {} healthy.", each.getDockerImageName());
                     waitStrategy.withStartupTimeout(Duration.of(90, ChronoUnit.SECONDS));
-                    waitStrategy.waitUntilReady(c);
-                    log.info("Container {} is startup.", c.getDockerImageName());
+                    waitStrategy.waitUntilReady(each);
+                    log.info("Container {} is startup.", each.getDockerImageName());
                 });
     }
     
