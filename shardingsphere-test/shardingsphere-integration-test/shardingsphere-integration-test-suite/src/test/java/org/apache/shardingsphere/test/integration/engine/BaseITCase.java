@@ -31,7 +31,6 @@ import org.apache.shardingsphere.test.integration.framework.param.model.Paramete
 import org.apache.shardingsphere.test.integration.framework.runner.ShardingSphereIntegrationTestParameterized;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.runner.RunWith;
 
 import javax.sql.DataSource;
@@ -48,7 +47,6 @@ public abstract class BaseITCase {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
-    @Rule
     public final ComposedContainer composedContainer;
     
     private final String adapter;

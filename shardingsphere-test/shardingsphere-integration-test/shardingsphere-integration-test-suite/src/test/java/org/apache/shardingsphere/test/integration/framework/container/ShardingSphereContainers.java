@@ -61,14 +61,19 @@ public final class ShardingSphereContainers implements AutoCloseable {
     /**
      * Start containers.
      */
-    public void start() {
-        containers.stream().filter(each -> !each.isCreated()).forEach(ShardingSphereContainer::start);
+    public final void start() {
+        if (!started) {
+            synchronized (this) {
+                if (!started) {
+                    containers.stream().filter(each -> !each.isCreated()).forEach(ShardingSphereContainer::start);
+                    waitUntilReady();
+                    started = true;
+                }
+            }
+        }
     }
     
-    /**
-     * Wait until all containers ready.
-     */
-    public void waitUntilReady() {
+    private void waitUntilReady() {
         containers.stream()
                 .filter(each -> {
                     try {
@@ -87,7 +92,6 @@ public final class ShardingSphereContainers implements AutoCloseable {
                         }
                     }
                 });
-        started = true;
     }
     
     @Override
