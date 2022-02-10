@@ -92,19 +92,19 @@ public abstract class StorageContainer extends ShardingSphereContainer {
         return new HikariDataSource(config);
     }
     
-    protected Optional<String> getConnectionInitSQL() {
-        return Optional.empty();
-    }
-    
     protected String getDriverClassName() {
         return DataSourceEnvironment.getDriverClassName(databaseType.getName());
     }
     
     protected abstract String getUrl(String dataSourceName);
     
-    protected abstract int getPort();
-    
     protected abstract String getUsername();
     
     protected abstract String getPassword();
+    
+    protected Optional<String> getConnectionInitSQL() {
+        return Optional.empty();
+    }
+    
+    protected abstract int getPort();
 }
