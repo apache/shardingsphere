@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 public final class GeneralRQLIT extends BaseRQLIT {
     
     @ClassRule
-    public static ComposedContainerManager composedContainerManager = new ComposedContainerManager("GeneralRQLIT");
+    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralRQLIT");
     
     public GeneralRQLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
@@ -53,7 +53,7 @@ public final class GeneralRQLIT extends BaseRQLIT {
                 .stream()
                 .filter(each -> SQLExecuteType.Literal == each.getSqlExecuteType())
                 .filter(each -> "proxy".equals(each.getAdapter()))
-                .peek(each -> each.setCompose(composedContainerManager.getOrCreateCompose(each)))
+                .peek(each -> each.setCompose(COMPOSED_CONTAINER_MANAGER.getComposedContainer(each)))
                 .collect(Collectors.toList());
     }
     

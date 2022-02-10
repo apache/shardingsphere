@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 public final class GeneralRALIT extends BaseRALIT {
     
     @ClassRule
-    public static ComposedContainerManager composedContainerManager = new ComposedContainerManager("GeneralRALIT");
+    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralRALIT");
     
     public GeneralRALIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
@@ -55,7 +55,7 @@ public final class GeneralRALIT extends BaseRALIT {
                 .stream()
                 .filter(each -> SQLExecuteType.Literal == each.getSqlExecuteType())
                 .filter(each -> "proxy".equals(each.getAdapter()))
-                .peek(each -> each.setCompose(composedContainerManager.getOrCreateCompose(each)))
+                .peek(each -> each.setCompose(COMPOSED_CONTAINER_MANAGER.getComposedContainer(each)))
                 .collect(Collectors.toList());
     }
     

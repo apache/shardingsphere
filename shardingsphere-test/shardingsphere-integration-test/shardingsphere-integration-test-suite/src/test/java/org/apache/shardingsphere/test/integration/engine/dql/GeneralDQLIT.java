@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.test.integration.engine.dql;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainerManager;
 import org.apache.shardingsphere.test.integration.framework.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
@@ -45,7 +45,7 @@ import static org.junit.Assert.assertTrue;
 public final class GeneralDQLIT extends BaseDQLIT {
     
     @ClassRule
-    public static ComposedContainerManager composeMaYamlProxyServerConfigurationnager = new ComposedContainerManager("GeneralDQLIT");
+    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralDQLIT");
     
     public GeneralDQLIT(final AssertionParameterizedArray parameter) {
         super(parameter);
@@ -55,7 +55,7 @@ public final class GeneralDQLIT extends BaseDQLIT {
     public static Collection<ParameterizedArray> getParameters() {
         return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DQL)
                 .stream()
-                .peek(each -> each.setCompose(composeMaYamlProxyServerConfigurationnager.getOrCreateCompose(each)))
+                .peek(each -> each.setCompose(COMPOSED_CONTAINER_MANAGER.getComposedContainer(each)))
                 .collect(Collectors.toList());
     }
     

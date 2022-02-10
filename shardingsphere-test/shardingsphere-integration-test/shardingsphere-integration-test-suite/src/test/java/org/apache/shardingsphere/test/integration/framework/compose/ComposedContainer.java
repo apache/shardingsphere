@@ -22,17 +22,15 @@ import lombok.Getter;
 import org.apache.shardingsphere.test.integration.framework.container.ShardingSphereContainers;
 import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainer;
-import org.junit.rules.ExternalResource;
 
 import javax.sql.DataSource;
-import java.io.Closeable;
 import java.util.Map;
 import java.util.function.Consumer;
 
 /**
  * Composed container.
  */
-public abstract class ComposedContainer extends ExternalResource implements Closeable {
+public abstract class ComposedContainer {
     
     @Getter(AccessLevel.PROTECTED)
     private final ShardingSphereContainers containers;
@@ -67,7 +65,7 @@ public abstract class ComposedContainer extends ExternalResource implements Clos
     /**
      * Execution initializer one time after container started.
      *
-     * @param consumer initializer
+     * @param consumer initializer consumer
      */
     public final void executeOnStarted(final Consumer<ComposedContainer> consumer) {
         if (!executed) {
@@ -78,23 +76,5 @@ public abstract class ComposedContainer extends ExternalResource implements Clos
                 }
             }
         }
-    }
-    
-    @Override
-    protected final void before() {
-        if (!containers.isStarted()) {
-            synchronized (this) {
-                if (!containers.isStarted()) {
-                    containers.start();
-                    containers.waitUntilReady();
-                }
-            }
-        }
-    }
-    
-    // TODO investigate where to call it
-    @Override
-    public final void close() {
-        containers.close();
     }
 }

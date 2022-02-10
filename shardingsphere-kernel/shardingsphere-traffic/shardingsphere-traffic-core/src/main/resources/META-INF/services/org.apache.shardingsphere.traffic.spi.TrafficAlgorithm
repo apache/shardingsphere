@@ -18,3 +18,6 @@
 org.apache.shardingsphere.traffic.algorithm.traffic.hint.SQLHintTrafficAlgorithm
 org.apache.shardingsphere.traffic.algorithm.traffic.segment.SQLMatchTrafficAlgorithm
 org.apache.shardingsphere.traffic.algorithm.traffic.segment.SQLRegexTrafficAlgorithm
+org.apache.shardingsphere.traffic.algorithm.traffic.transaction.FirstSQLTrafficAlgorithm
+org.apache.shardingsphere.traffic.algorithm.traffic.transaction.JDBCTrafficAlgorithm
+org.apache.shardingsphere.traffic.algorithm.traffic.transaction.ProxyTrafficAlgorithm
