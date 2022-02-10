@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.opengauss;
+package org.apache.shardingsphere.data.pipeline.opengauss.check.datasource;
 
-import org.apache.shardingsphere.data.pipeline.opengauss.prepare.datasource.OpenGaussDataSourcePreparer;
-import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
+import org.apache.shardingsphere.data.pipeline.postgresql.check.datasource.PostgreSQLDataSourceChecker;
 
 /**
- * Environment checker for openGauss.
+ * openGauss Data source checker.
  */
-public final class OpenGaussEnvironmentChecker implements EnvironmentChecker {
+public final class OpenGaussDataSourceChecker extends PostgreSQLDataSourceChecker {
     
     @Override
-    public Class<OpenGaussDataSourcePreparer> getDataSourcePreparerClass() {
-        return OpenGaussDataSourcePreparer.class;
+    protected String getDatabaseType() {
+        return "openGauss";
     }
 }

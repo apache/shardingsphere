@@ -17,13 +17,16 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.check.datasource;
 
+import org.apache.shardingsphere.spi.singleton.SingletonSPI;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
+
 import javax.sql.DataSource;
 import java.util.Collection;
 
 /**
  * Data source checker.
  */
-public interface DataSourceChecker {
+public interface DataSourceChecker extends TypedSPI, SingletonSPI {
     
     /**
      * Check data source connections.

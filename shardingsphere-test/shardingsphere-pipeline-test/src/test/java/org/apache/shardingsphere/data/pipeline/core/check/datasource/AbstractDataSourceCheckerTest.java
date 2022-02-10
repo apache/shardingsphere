@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.check.datasource;
 
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
-import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,16 +51,16 @@ public final class AbstractDataSourceCheckerTest {
         dataSourceChecker = new AbstractDataSourceChecker() {
             
             @Override
+            protected String getDatabaseType() {
+                return "H2";
+            }
+            
+            @Override
             public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
             }
             
             @Override
             public void checkVariable(final Collection<? extends DataSource> dataSources) {
-            }
-            
-            @Override
-            protected PipelineSQLBuilder getSQLBuilder() {
-                return null;
             }
         };
         dataSources = new LinkedList<>();

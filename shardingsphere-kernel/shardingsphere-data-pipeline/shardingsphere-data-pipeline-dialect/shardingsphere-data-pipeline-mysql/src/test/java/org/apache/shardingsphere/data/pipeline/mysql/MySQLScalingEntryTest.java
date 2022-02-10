@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql;
 
-import org.apache.shardingsphere.data.pipeline.mysql.check.datasource.MySQLDataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.mysql.importer.MySQLImporter;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLIncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLInventoryDumper;
@@ -36,7 +35,6 @@ public final class MySQLScalingEntryTest {
         ScalingEntry scalingEntry = ScalingEntryLoader.getInstance("MySQL");
         assertTrue(scalingEntry instanceof MySQLScalingEntry);
         assertThat(scalingEntry.getEnvironmentCheckerClass(), equalTo(MySQLEnvironmentChecker.class));
-        assertThat(scalingEntry.getEnvironmentCheckerClass().newInstance().getDataSourceCheckerClass(), equalTo(MySQLDataSourceChecker.class));
         assertThat(scalingEntry.getImporterClass(), equalTo(MySQLImporter.class));
         assertThat(scalingEntry.getInventoryDumperClass(), equalTo(MySQLInventoryDumper.class));
         assertThat(scalingEntry.getIncrementalDumperClass(), equalTo(MySQLIncrementalDumper.class));
