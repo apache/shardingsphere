@@ -25,14 +25,13 @@ import org.apache.shardingsphere.test.integration.framework.container.storage.St
 import org.junit.rules.ExternalResource;
 
 import javax.sql.DataSource;
-import java.io.Closeable;
 import java.util.Map;
 import java.util.function.Consumer;
 
 /**
  * Composed container.
  */
-public abstract class ComposedContainer extends ExternalResource implements Closeable {
+public abstract class ComposedContainer extends ExternalResource {
     
     @Getter(AccessLevel.PROTECTED)
     private final ShardingSphereContainers containers;
@@ -92,9 +91,9 @@ public abstract class ComposedContainer extends ExternalResource implements Clos
         }
     }
     
-    // TODO investigate where to call it
+    // TODO close on class rule
     @Override
-    public final void close() {
-        containers.close();
+    protected final void after() {
+//        containers.close();
     }
 }

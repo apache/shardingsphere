@@ -18,12 +18,9 @@
 package org.apache.shardingsphere.test.integration.framework.compose;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.integration.env.EnvironmentType;
-import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.framework.compose.mode.ClusterComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.compose.mode.MemoryComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
-import org.junit.rules.ExternalResource;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,19 +29,19 @@ import java.util.Map;
  * Composed container manager.
  */
 @RequiredArgsConstructor
-public final class ComposedContainerManager extends ExternalResource {
+public final class ComposedContainerManager {
     
     private final String testSuiteName;
     
     private final Map<String, ComposedContainer> composedContainers = new HashMap<>();
     
     /**
-     * Create or get container compose.
+     * Get composed container.
      *
      * @param parameterizedArray parameterized array
      * @return composed container
      */
-    public ComposedContainer getOrCreateCompose(final ParameterizedArray parameterizedArray) {
+    public ComposedContainer getComposedContainer(final ParameterizedArray parameterizedArray) {
         String key = generateKey(parameterizedArray);
         if (composedContainers.containsKey(key)) {
             return composedContainers.get(key);
@@ -62,20 +59,5 @@ public final class ComposedContainerManager extends ExternalResource {
     
     private String generateKey(final ParameterizedArray parameter) {
         return String.join("-", testSuiteName, parameter.getScenario(), parameter.getAdapter(), parameter.getDatabaseType().getName());
-    }
-    
-    @Override
-    protected void before() {
-        if (EnvironmentType.DOCKER == IntegrationTestEnvironment.getInstance().getEnvType()) {
-            composedContainers.values().forEach(each -> {
-                each.getContainers().start();
-                each.getContainers().waitUntilReady();
-            });
-        }
-    }
-    
-    @Override
-    protected void after() {
-        composedContainers.values().forEach(ComposedContainer::close);
     }
 }

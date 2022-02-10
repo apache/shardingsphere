@@ -48,7 +48,7 @@ public final class ShardingSphereContainers implements AutoCloseable {
      * @param container container to be registered
      * @param hostname container hostname
      * @param <T> type of ShardingSphere container
-     * @return register container
+     * @return registered container
      */
     public <T extends ShardingSphereContainer> T registerContainer(final T container, final String hostname) {
         container.setNetwork(network);
