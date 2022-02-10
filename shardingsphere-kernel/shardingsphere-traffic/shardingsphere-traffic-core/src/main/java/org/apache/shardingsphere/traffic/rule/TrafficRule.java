@@ -132,7 +132,7 @@ public final class TrafficRule implements GlobalRule {
     
     private TrafficAlgorithm getTrafficAlgorithm(final Map<String, TrafficAlgorithm> trafficAlgorithms, final String algorithmName) {
         TrafficAlgorithm result = trafficAlgorithms.get(algorithmName);
-        Preconditions.checkState(null != result, "Traffic strategy rule configuration must match traffic algorithm.");
+        Preconditions.checkState(null != result, "Traffic algorithm can not be null.");
         return result;
     }
     
