@@ -44,7 +44,7 @@ import static org.junit.Assert.assertTrue;
 @ParallelRuntimeStrategy(ParallelLevel.CASE)
 public final class AdditionalDQLIT extends BaseDQLIT {
     
-    private final static ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("AdditionalDQLIT");
+    private static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("AdditionalDQLIT");
     
     public AdditionalDQLIT(final AssertionParameterizedArray parameter) {
         super(parameter);
