@@ -15,12 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.show;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+
+import java.util.Optional;
 
 /**
  * Show sharding table rules used key generator statement.
  */
-public final class ShowShardingTableRulesUsedKeyGeneratorStatement extends ShowDistSQLStatement {
+public final class ShowShardingTableRulesUsedKeyGeneratorStatement extends ShowRulesStatement {
+    
+    private final String keyGeneratorName;
+    
+    public ShowShardingTableRulesUsedKeyGeneratorStatement(final String keyGeneratorName, final SchemaSegment schema) {
+        super(schema);
+        this.keyGeneratorName = keyGeneratorName;
+    }
+    
+    /**
+     * Get key generator name.
+     *
+     * @return key generator name.
+     */
+    public Optional<String> getKeyGeneratorName() {
+        return Optional.ofNullable(keyGeneratorName);
+    }
 }

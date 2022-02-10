@@ -60,5 +60,5 @@ tableName
     ;
     
 keyGeneratorName
-    : IDENTIFIER
+    : IDENTIFIER | STRING
     ;
