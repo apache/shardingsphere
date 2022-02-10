@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 @ParallelRuntimeStrategy(ParallelLevel.CASE)
 public final class GeneralRQLIT extends BaseRQLIT {
     
-    private final static ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralRQLIT");
+    private static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralRQLIT");
     
     public GeneralRQLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
