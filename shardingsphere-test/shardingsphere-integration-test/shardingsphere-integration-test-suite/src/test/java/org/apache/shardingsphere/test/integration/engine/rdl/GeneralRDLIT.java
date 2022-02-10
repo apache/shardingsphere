@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralRDLIT extends BaseRDLIT {
     
-    private final static ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralRDLIT");
+    private static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralRDLIT");
     
     public GeneralRDLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
