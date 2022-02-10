@@ -25,7 +25,6 @@ import org.apache.shardingsphere.test.integration.framework.container.storage.St
 
 import javax.sql.DataSource;
 import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * Composed container.
@@ -34,8 +33,6 @@ public abstract class ComposedContainer {
     
     @Getter(AccessLevel.PROTECTED)
     private final ShardingSphereContainers containers;
-    
-    private volatile boolean executed;
     
     public ComposedContainer(final String testSuiteName) {
         containers = new ShardingSphereContainers(testSuiteName);
@@ -61,20 +58,4 @@ public abstract class ComposedContainer {
      * @return datasource map
      */
     public abstract Map<String, DataSource> getDataSourceMap();
-    
-    /**
-     * Execution initializer one time after container started.
-     *
-     * @param consumer initializer consumer
-     */
-    public final void executeOnStarted(final Consumer<ComposedContainer> consumer) {
-        if (!executed) {
-            synchronized (this) {
-                if (!executed) {
-                    consumer.accept(this);
-                    executed = true;
-                }
-            }
-        }
-    }
 }
