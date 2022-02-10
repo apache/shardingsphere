@@ -23,15 +23,14 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
-import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainer;
-import org.apache.shardingsphere.test.integration.framework.compose.mode.ClusterComposedContainer;
-import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainer;
-import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainer;
+import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
+import org.apache.shardingsphere.test.integration.framework.container.compose.mode.ClusterComposedContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.ShardingSphereIntegrationTestParameterized;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.runner.RunWith;
 
 import javax.sql.DataSource;
@@ -48,8 +47,7 @@ public abstract class BaseITCase {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
-    @Rule
-    public final ComposedContainer composedContainer;
+    private final ComposedContainer composedContainer;
     
     private final String adapter;
     
