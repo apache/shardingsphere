@@ -67,6 +67,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.SqlParserRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.TrafficRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.TransactionRuleDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.UnlabelInstanceContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.segment.CacheOptionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
@@ -81,6 +82,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.hint.ClearH
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.LabelInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetInstanceStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.UnlabelInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAllVariablesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceModeStatement;
@@ -193,6 +195,21 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
         }
         LinkedList<String> labels = ctx.label().stream().map(this::getIdentifierValue).collect(Collectors.toCollection(LinkedList::new));
         return new LabelInstanceStatement(ctx.RELABEL() != null, ip, port, labels);
+    }
+    
+    @Override
+    public ASTNode visitUnlabelInstance(final UnlabelInstanceContext ctx) {
+        String ip;
+        String port;
+        if (null != ctx.instanceDefination()) {
+            ip = getIdentifierValue(ctx.instanceDefination().ip());
+            port = getIdentifierValue(ctx.instanceDefination().port());
+        } else {
+            ip = getIdentifierValue(ctx.instanceId().ip());
+            port = getIdentifierValue(ctx.instanceId().port());
+        }
+        LinkedList<String> labels = ctx.label().stream().map(this::getIdentifierValue).collect(Collectors.toCollection(LinkedList::new));
+        return new UnlabelInstanceStatement(ip, port, labels);
     }
     
     private SetInstanceStatusStatement buildSetInstanceStatusStatement(final String status, final InstanceDefinationContext instanceDefinationContext, final InstanceIdContext instanceIdContext) {
