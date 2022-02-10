@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Result set for show sharding table rules used key generator
  */
-public final class ShardingTableRulesUsedKeyGeneratorQueryResult implements DistSQLResultSet {
+public final class ShardingTableRulesUsedKeyGeneratorQueryResultSet implements DistSQLResultSet {
     
     private Iterator<Collection<Object>> data = Collections.emptyIterator();
     
