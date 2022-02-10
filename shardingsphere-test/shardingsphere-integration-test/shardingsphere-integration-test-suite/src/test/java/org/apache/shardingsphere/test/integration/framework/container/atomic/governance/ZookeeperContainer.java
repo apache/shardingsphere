@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.container.governance;
+package org.apache.shardingsphere.test.integration.framework.container.atomic.governance;
 
-import org.apache.shardingsphere.test.integration.framework.container.ShardingSphereContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.ShardingSphereContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 

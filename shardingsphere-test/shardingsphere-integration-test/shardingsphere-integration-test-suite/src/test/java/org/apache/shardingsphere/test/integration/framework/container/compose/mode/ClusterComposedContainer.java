@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.compose.mode;
+package org.apache.shardingsphere.test.integration.framework.container.compose.mode;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainer;
-import org.apache.shardingsphere.test.integration.framework.container.ShardingSphereContainers;
-import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainer;
-import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainerFactory;
-import org.apache.shardingsphere.test.integration.framework.container.adapter.impl.ShardingSphereProxyContainer;
-import org.apache.shardingsphere.test.integration.framework.container.governance.ZookeeperContainer;
-import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainer;
-import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainerFactory;
+import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.ShardingSphereContainers;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainerFactory;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl.ShardingSphereProxyContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.governance.ZookeeperContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 import javax.sql.DataSource;
