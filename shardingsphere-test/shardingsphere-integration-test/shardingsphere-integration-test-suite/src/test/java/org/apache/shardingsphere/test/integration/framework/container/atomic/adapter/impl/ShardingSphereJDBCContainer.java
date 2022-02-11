@@ -71,7 +71,7 @@ public final class ShardingSphereJDBCContainer extends AdapterContainer {
     }
     
     /**
-     * Get data source.
+     * Get client data source.
      *
      * @param serverLists server list
      * @return data source
@@ -87,7 +87,7 @@ public final class ShardingSphereJDBCContainer extends AdapterContainer {
                     throw new RuntimeException(ex);
                 }
             } else {
-                clientDataSourceProvider.set(createAnotherClientDataSource(serverLists));
+                clientDataSourceProvider.set(createGovernanceClientDataSource(serverLists));
             }
         }
         return clientDataSourceProvider.get();
@@ -102,13 +102,13 @@ public final class ShardingSphereJDBCContainer extends AdapterContainer {
     public DataSource getAnotherClientDataSource(final String serverLists) {
         DataSource dataSource = anotherClientDataSourceProvider.get();
         if (Objects.isNull(dataSource)) {
-            anotherClientDataSourceProvider.set(createAnotherClientDataSource(serverLists));
+            anotherClientDataSourceProvider.set(createGovernanceClientDataSource(serverLists));
         }
         return anotherClientDataSourceProvider.get();
     }
     
     @SneakyThrows({SQLException.class, IOException.class})
-    private DataSource createAnotherClientDataSource(final String serverLists) {
+    private DataSource createGovernanceClientDataSource(final String serverLists) {
         YamlRootConfiguration rootConfig = YamlEngine.unmarshal(new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario())), YamlRootConfiguration.class);
         rootConfig.getMode().getRepository().getProps().setProperty("server-lists", serverLists);
         return YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, YamlEngine.marshal(rootConfig).getBytes(StandardCharsets.UTF_8));
