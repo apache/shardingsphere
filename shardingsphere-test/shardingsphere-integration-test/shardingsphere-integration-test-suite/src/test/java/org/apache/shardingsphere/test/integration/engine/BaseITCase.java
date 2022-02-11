@@ -78,14 +78,6 @@ public abstract class BaseITCase {
         targetDataSource = composedContainer.getClientDataSource();
         if (composedContainer instanceof ClusterComposedContainer) {
             anotherClientDataSource = ((ClusterComposedContainer) composedContainer).getAnotherClientDataSource();
-            int waitForGov = 10;
-            while (waitForGov-- > 0) {
-                try (Connection ignored = targetDataSource.getConnection()) {
-                    return;
-                } catch (NullPointerException ignored) {
-                    Thread.sleep(2000L);
-                }
-            }
         }
     }
     
