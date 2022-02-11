@@ -60,8 +60,6 @@ public abstract class BaseITCase {
     
     private final StorageContainer storageContainer;
     
-    private Map<String, DataSource> dataSourceMap;
-    
     private DataSource targetDataSource;
     
     private DataSource dataSourceForReader;
@@ -78,7 +76,7 @@ public abstract class BaseITCase {
     
     @Before
     public void init() throws Exception {
-        dataSourceMap = composedContainer.getDataSourceMap();
+        Map<String, DataSource> dataSourceMap = composedContainer.getDataSourceMap();
         targetDataSource = dataSourceMap.get("adapterForWriter");
         if (composedContainer instanceof ClusterComposedContainer) {
             dataSourceForReader = dataSourceMap.get("adapterForReader");

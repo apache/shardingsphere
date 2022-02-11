@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
@@ -28,24 +29,21 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfiguration
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.ShardingSphereContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
-import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.lifecycle.Startable;
 
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 /**
  * ShardingSphere JDBC container.
@@ -67,13 +65,16 @@ public final class ShardingSphereJDBCContainer extends AdapterContainer {
     @Override
     public void start() {
         super.start();
-        List<Startable> startables = getDependencies().stream()
-                .filter(e -> e instanceof StorageContainer)
-                .collect(Collectors.toList());
-        dataSourceMap = ((StorageContainer) startables.get(0)).getDataSourceMap();
+        dataSourceMap = findStorageContainer().getDataSourceMap();
         isHealthy.set(true);
     }
-
+    
+    private StorageContainer findStorageContainer() {
+        Optional<Startable> result = getDependencies().stream().filter(each -> each instanceof StorageContainer).findFirst();
+        Preconditions.checkState(result.isPresent());
+        return (StorageContainer) result.get();
+    }
+    
     /**
      * Get data source.
      *
@@ -87,9 +88,9 @@ public final class ShardingSphereJDBCContainer extends AdapterContainer {
                 dataSourceProvider.lazySet(createGovernanceDataSource(serverLists));
             } else {
                 try {
-                    dataSourceProvider.lazySet(YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap,
-                            new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario()))));
-                } catch (SQLException | IOException ex) {
+                    dataSourceProvider.lazySet(
+                            YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario()))));
+                } catch (final SQLException | IOException ex) {
                     throw new RuntimeException(ex);
                 }
             }
@@ -139,10 +140,5 @@ public final class ShardingSphereJDBCContainer extends AdapterContainer {
     @Override
     public boolean isHealthy() {
         return isHealthy.get();
-    }
-    
-    @Override
-    public ShardingSphereContainer waitingFor(final WaitStrategy waitStrategy) {
-        return super.waitingFor(waitStrategy);
     }
 }
