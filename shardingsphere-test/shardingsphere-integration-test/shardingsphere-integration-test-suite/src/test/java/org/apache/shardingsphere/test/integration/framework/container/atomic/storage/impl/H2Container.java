@@ -46,7 +46,6 @@ public final class H2Container extends StorageContainer {
     @Override
     @SneakyThrows({IOException.class, SQLException.class})
     protected void execute() {
-        super.execute();
         File file = new File(EnvironmentPath.getInitSQLFile(getDatabaseType(), getParameterizedArray().getScenario()));
         for (Entry<String, DataSource> each : getDataSourceMap().entrySet()) {
             String databaseFileName = "init-" + each.getKey() + ".sql";
