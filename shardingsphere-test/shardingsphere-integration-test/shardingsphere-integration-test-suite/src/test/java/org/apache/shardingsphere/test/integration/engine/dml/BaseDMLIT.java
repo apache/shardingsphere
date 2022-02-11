@@ -102,8 +102,7 @@ public abstract class BaseDMLIT extends SingleITCase {
     private String getPrimaryKeyColumnNameForPostgreSQL(final DataNode dataNode) throws SQLException {
         String sql = String.format("SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS data_type "
                 + "FROM pg_index i JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey) WHERE i.indrelid = '%s'::regclass AND i.indisprimary", dataNode.getTableName());
-        DataSource dataSource = getComposedContainer() instanceof ClusterComposedContainer
-                ? getAnotherClientDataSource() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName());
+        DataSource dataSource = getComposedContainer() instanceof ClusterComposedContainer ? getAnotherClientDataSource() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName());
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
