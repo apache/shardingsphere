@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
@@ -141,7 +140,7 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
         result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), getParameterizedArray().getScenario()));
-        YamlUserConfiguration userConfig = loadAuthentication(getParameterizedArray());
+        YamlUserConfiguration userConfig = loadUserConfiguration(getParameterizedArray());
         result.setUsername(userConfig.getUsername());
         result.setPassword(userConfig.getPassword());
         result.setMaximumPoolSize(2);
@@ -153,19 +152,14 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
     }
     
     @SneakyThrows(IOException.class)
-    private YamlUserConfiguration loadAuthentication(final ParameterizedArray parameterizedArray) {
+    private YamlUserConfiguration loadUserConfiguration(final ParameterizedArray parameterizedArray) {
         YamlProxyServerConfiguration serverConfig = YamlEngine.unmarshal(ByteStreams.toByteArray(Objects.requireNonNull(this.getClass().getResourceAsStream(
                 "/docker/proxy/conf/" + parameterizedArray.getScenario() + "/" + parameterizedArray.getDatabaseType().getName().toLowerCase() + "/server.yaml"))), YamlProxyServerConfiguration.class);
-        return YamlUsersConfigurationConverter.convertYamlUserConfiguration(getUsers(serverConfig))
-                .stream().filter(each -> "root".equals(each.getUsername())).findFirst().orElse(new YamlUserConfiguration());
+        return YamlUsersConfigurationConverter.convertYamlUserConfiguration(getProxyUsers(serverConfig)).stream().findFirst().orElse(new YamlUserConfiguration());
     }
     
-    private Collection<String> getUsers(final YamlProxyServerConfiguration serverConfig) {
-        for (YamlRuleConfiguration each : serverConfig.getRules()) {
-            if (each instanceof YamlAuthorityRuleConfiguration) {
-                return ((YamlAuthorityRuleConfiguration) each).getUsers();
-            }
-        }
-        return Collections.emptyList();
+    private Collection<String> getProxyUsers(final YamlProxyServerConfiguration serverConfig) {
+        return serverConfig.getRules()
+                .stream().filter(each -> each instanceof YamlAuthorityRuleConfiguration).findFirst().map(each -> ((YamlAuthorityRuleConfiguration) each).getUsers()).orElse(Collections.emptyList());
     }
 }
