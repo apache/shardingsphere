@@ -208,7 +208,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
             ip = getIdentifierValue(ctx.instanceId().ip());
             port = getIdentifierValue(ctx.instanceId().port());
         }
-        LinkedList<String> labels = ctx.label().stream().map(this::getIdentifierValue).collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> labels = ctx.label().stream().map(this::getIdentifierValue).collect(Collectors.toCollection(LinkedList::new));
         return new UnlabelInstanceStatement(ip, port, labels);
     }
     
