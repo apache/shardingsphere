@@ -37,5 +37,5 @@ import java.util.LinkedList;
 public final class NarayanaConfiguration {
     
     @XmlElement(name = "entry")
-    private Collection<Entry> entries = new LinkedList<>();
+    private Collection<NarayanaConfigEntry> entries = new LinkedList<>();
 }

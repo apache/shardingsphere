@@ -66,15 +66,15 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         return result;
     }
     
-    private Entry createEntry(final String key, final String value) {
-        Entry result = new Entry();
+    private NarayanaConfigEntry createEntry(final String key, final String value) {
+        NarayanaConfigEntry result = new NarayanaConfigEntry();
         result.setKey(key);
         result.getValue().add(value);
         return result;
     }
     
-    private Entry createEntry(final String key, final Collection<String> values) {
-        Entry result = new Entry();
+    private NarayanaConfigEntry createEntry(final String key, final Collection<String> values) {
+        NarayanaConfigEntry result = new NarayanaConfigEntry();
         result.setKey(key);
         result.getValue().addAll(values);
         return result;

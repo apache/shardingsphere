@@ -33,7 +33,7 @@ import java.util.LinkedList;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class Entry {
+public final class NarayanaConfigEntry {
     
     @XmlAttribute
     private String key;
