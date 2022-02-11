@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.Collection;
 
 /**
- * Label Instance statement test case.
+ * Label instance statement test case.
  */
 @Getter
 @Setter
