@@ -78,7 +78,8 @@ public final class CreateTrafficRuleHandler implements TextProtocolBackendHandle
             if (!TypedSPIRegistry.findRegisteredService(TrafficAlgorithm.class, each.getAlgorithm().getName(), new Properties()).isPresent()) {
                 result.add(each.getAlgorithm().getName());
             }
-            if (!TypedSPIRegistry.findRegisteredService(TrafficLoadBalanceAlgorithm.class, each.getLoadBalancer().getName(), new Properties()).isPresent()) {
+            if (null != each.getLoadBalancer()
+                    && !TypedSPIRegistry.findRegisteredService(TrafficLoadBalanceAlgorithm.class, each.getLoadBalancer().getName(), new Properties()).isPresent()) {
                 result.add(each.getLoadBalancer().getName());
             }
         });

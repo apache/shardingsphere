@@ -104,7 +104,7 @@ unlabelInstance
     ;
     
 trafficRuleDefinition
-    : ruleName LP labelDefinition COMMA trafficAlgorithmDefinition COMMA loadBanlanceDefinition RP
+    : ruleName LP (labelDefinition COMMA)? trafficAlgorithmDefinition (COMMA loadBalancerDefinition)? RP
     ;
 
 labelDefinition
@@ -115,7 +115,7 @@ trafficAlgorithmDefinition
     : TRAFFIC_ALGORITHM LP algorithmDefinition RP 
     ;
 
-loadBanlanceDefinition
+loadBalancerDefinition
     : LOAD_BALANCER LP algorithmDefinition RP
     ;
 

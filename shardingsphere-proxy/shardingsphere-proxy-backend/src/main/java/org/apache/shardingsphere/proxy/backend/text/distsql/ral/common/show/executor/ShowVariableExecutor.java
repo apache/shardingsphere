@@ -63,7 +63,7 @@ public final class ShowVariableExecutor extends AbstractShowExecutor {
         VariableEnum variable = VariableEnum.getValueOf(sqlStatement.getName());
         switch (variable) {
             case AGENT_PLUGINS_ENABLED:
-                return new MultipleLocalDataMergedResult(Collections.singletonList(Collections.singletonList(SystemPropertyUtil.getSystemProperty(variable.name(), Boolean.FALSE.toString()))));
+                return new MultipleLocalDataMergedResult(Collections.singletonList(Collections.singletonList(SystemPropertyUtil.getSystemProperty(variable.name(), Boolean.TRUE.toString()))));
             case CACHED_CONNECTIONS:
                 if (connectionSession.getBackendConnection() instanceof JDBCBackendConnection) {
                     int connectionSize = ((JDBCBackendConnection) connectionSession.getBackendConnection()).getConnectionSize();
