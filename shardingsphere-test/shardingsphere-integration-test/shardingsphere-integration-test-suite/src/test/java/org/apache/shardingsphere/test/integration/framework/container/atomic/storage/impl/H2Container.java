@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.integration.framework.container.atomic.st
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.h2.tools.RunScript;
@@ -28,7 +28,9 @@ import org.h2.tools.RunScript;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map.Entry;
 import java.util.Objects;
 
@@ -42,7 +44,7 @@ public final class H2Container extends StorageContainer {
     }
     
     @Override
-    @SneakyThrows
+    @SneakyThrows({IOException.class, SQLException.class})
     protected void execute() {
         super.execute();
         File file = new File(EnvironmentPath.getInitSQLFile(getDatabaseType(), getParameterizedArray().getScenario()));
@@ -58,8 +60,7 @@ public final class H2Container extends StorageContainer {
         }
     }
     
-    @SneakyThrows
-    private void executeDatabaseFile(final Connection connection, final String databaseFileName) {
+    private void executeDatabaseFile(final Connection connection, final String databaseFileName) throws IOException, SQLException {
         File databaseFile = new File(EnvironmentPath.getInitSQLFile(getDatabaseType(), getParameterizedArray().getScenario(), databaseFileName));
         try (FileReader databaseFileReader = new FileReader(databaseFile)) {
             RunScript.execute(connection, databaseFileReader);

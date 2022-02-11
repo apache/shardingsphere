@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.integration.framework.container.compose;
 
 import org.apache.shardingsphere.test.integration.framework.container.atomic.ShardingSphereContainers;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 
 import javax.sql.DataSource;
@@ -37,13 +36,6 @@ public interface ComposedContainer {
     ShardingSphereContainers getContainers();
     
     /**
-     * Get adapter container.
-     *
-     * @return adapter container
-     */
-    AdapterContainer getAdapterContainer();
-    
-    /**
      * Get storage container.
      *
      * @return storage container
@@ -51,7 +43,7 @@ public interface ComposedContainer {
     StorageContainer getStorageContainer();
     
     /**
-     * Get data sources map.
+     * Get data source map.
      *
      * @return data source map
      */
