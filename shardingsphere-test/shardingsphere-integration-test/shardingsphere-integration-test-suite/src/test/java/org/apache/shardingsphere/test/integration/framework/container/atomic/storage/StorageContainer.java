@@ -21,7 +21,6 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.ShardingSphereContainer;
@@ -42,18 +41,13 @@ import java.util.Optional;
  */
 public abstract class StorageContainer extends ShardingSphereContainer {
     
-    @Getter
-    private final DatabaseType databaseType;
-    
     private Map<String, DataSource> dataSourceMap;
     
     @Getter
     private final ParameterizedArray parameterizedArray;
     
-    public StorageContainer(final String name, final String dockerImageName,
-                            final DatabaseType databaseType, final boolean isFakedContainer, final ParameterizedArray parameterizedArray) {
+    public StorageContainer(final String name, final String dockerImageName, final boolean isFakedContainer, final ParameterizedArray parameterizedArray) {
         super(name, dockerImageName, isFakedContainer);
-        this.databaseType = databaseType;
         this.parameterizedArray = parameterizedArray;
     }
     
@@ -86,8 +80,8 @@ public abstract class StorageContainer extends ShardingSphereContainer {
     
     private DataSource createDataSource(final String dataSourceName) {
         HikariConfig config = new HikariConfig();
-        config.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType.getName()));
-        config.setJdbcUrl(DataSourceEnvironment.getURL(databaseType.getName(), getHost(), getPort(), dataSourceName));
+        config.setDriverClassName(DataSourceEnvironment.getDriverClassName(parameterizedArray.getDatabaseType().getName()));
+        config.setJdbcUrl(DataSourceEnvironment.getURL(parameterizedArray.getDatabaseType().getName(), getHost(), getPort(), dataSourceName));
         config.setUsername(getUsername());
         config.setPassword(getPassword());
         config.setMaximumPoolSize(4);

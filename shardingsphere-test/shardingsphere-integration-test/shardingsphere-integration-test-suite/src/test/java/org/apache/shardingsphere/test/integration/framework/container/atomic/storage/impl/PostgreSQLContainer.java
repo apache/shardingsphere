@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.integration.framework.container.atomic.storage.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
@@ -34,7 +33,7 @@ import java.sql.SQLException;
 public final class PostgreSQLContainer extends StorageContainer {
     
     public PostgreSQLContainer(final ParameterizedArray parameterizedArray) {
-        super("postgres", "postgres:12.6", new PostgreSQLDatabaseType(), false, parameterizedArray);
+        super("postgres", "postgres:12.6", false, parameterizedArray);
     }
     
     @Override

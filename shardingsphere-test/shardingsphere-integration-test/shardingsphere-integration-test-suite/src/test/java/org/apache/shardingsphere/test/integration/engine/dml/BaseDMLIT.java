@@ -92,7 +92,7 @@ public abstract class BaseDMLIT extends SingleITCase {
     }
     
     private String generateFetchActualDataSQL(final DataNode dataNode) throws SQLException {
-        if (getStorageContainer().getDatabaseType() instanceof PostgreSQLDatabaseType) {
+        if (getStorageContainer().getParameterizedArray().getDatabaseType() instanceof PostgreSQLDatabaseType) {
             String primaryKeyColumnName = getPrimaryKeyColumnNameForPostgreSQL(dataNode);
             return String.format("SELECT * FROM %s ORDER BY %s ASC", dataNode.getTableName(), primaryKeyColumnName);
         }
