@@ -27,7 +27,7 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
@@ -66,7 +66,7 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
     }
     
     private void startDependencies() {
-        List<ShardingSphereContainer> dependencies = getDependencies().stream().map(each -> (ShardingSphereContainer) each).collect(Collectors.toList());
+        Collection<ShardingSphereContainer> dependencies = getDependencies().stream().map(each -> (ShardingSphereContainer) each).collect(Collectors.toList());
         dependencies.stream().filter(each -> !each.isCreated()).forEach(GenericContainer::start);
         dependencies.stream()
                 .filter(each -> {
