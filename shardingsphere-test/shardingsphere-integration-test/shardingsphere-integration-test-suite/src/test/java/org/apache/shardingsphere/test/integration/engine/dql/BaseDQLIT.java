@@ -44,7 +44,7 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseDQLIT extends SingleITCase {
     
-    private static final Collection<String> filledScenarios = new HashSet<>();
+    private static final Collection<String> FILLED_SCENARIOS = new HashSet<>();
     
     public BaseDQLIT(final AssertionParameterizedArray parameter) {
         super(parameter);
@@ -57,11 +57,11 @@ public abstract class BaseDQLIT extends SingleITCase {
     }
     
     private void fillDataOnlyOnce() throws SQLException, ParseException, IOException, JAXBException {
-        if (!filledScenarios.contains(getScenario())) {
-            synchronized (filledScenarios) {
-                if (!filledScenarios.contains(getScenario())) {
+        if (!FILLED_SCENARIOS.contains(getScenario())) {
+            synchronized (FILLED_SCENARIOS) {
+                if (!FILLED_SCENARIOS.contains(getScenario())) {
                     new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getScenario()), getStorageContainer().getDataSourceMap()).fillData();
-                    filledScenarios.add(getScenario());
+                    FILLED_SCENARIOS.add(getScenario());
                 }
             }
         }
