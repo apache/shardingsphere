@@ -43,7 +43,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.InstanceDefinationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.InstanceIdContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.LabelDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.LoadBalanceDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.LoadBalancerDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.LabelInstanceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PasswordContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PropertiesDefinitionContext;
@@ -393,15 +393,15 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     @Override
     public ASTNode visitTrafficRuleDefinition(final TrafficRuleDefinitionContext ctx) {
         AlgorithmSegment loadBalancerSegment = null;
-        if (null != ctx.loadBalanceDefinition()) {
-            loadBalancerSegment = (AlgorithmSegment) visit(ctx.loadBalanceDefinition().algorithmDefinition());
+        if (null != ctx.loadBalancerDefinition()) {
+            loadBalancerSegment = (AlgorithmSegment) visit(ctx.loadBalancerDefinition().algorithmDefinition());
         }
         return new TrafficRuleSegment(getIdentifierValue(ctx.ruleName()), buildLabels(ctx.labelDefinition()),
                 (AlgorithmSegment) visit(ctx.trafficAlgorithmDefinition().algorithmDefinition()), loadBalancerSegment);
     }
     
     @Override
-    public ASTNode visitLoadBalanceDefinition(final LoadBalanceDefinitionContext ctx) {
+    public ASTNode visitLoadBalancerDefinition(final LoadBalancerDefinitionContext ctx) {
         if (null == ctx) {
             return null;
         }
