@@ -17,8 +17,16 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl;
 
+import com.google.common.io.ByteStreams;
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
@@ -27,6 +35,9 @@ import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.utility.MountableFile;
 
 import javax.sql.DataSource;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -130,13 +141,31 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
         result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), getParameterizedArray().getScenario()));
-        result.setUsername(getAuthentication().getUsername());
-        result.setPassword(getAuthentication().getPassword());
+        YamlUserConfiguration userConfig = loadAuthentication(getParameterizedArray());
+        result.setUsername(userConfig.getUsername());
+        result.setPassword(userConfig.getPassword());
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         if ("MySQL".equals(databaseType)) {
             result.setConnectionInitSql("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
         }
         return result;
+    }
+    
+    @SneakyThrows(IOException.class)
+    private YamlUserConfiguration loadAuthentication(final ParameterizedArray parameterizedArray) {
+        YamlProxyServerConfiguration serverConfig = YamlEngine.unmarshal(ByteStreams.toByteArray(Objects.requireNonNull(this.getClass().getResourceAsStream(
+                "/docker/proxy/conf/" + parameterizedArray.getScenario() + "/" + parameterizedArray.getDatabaseType().getName().toLowerCase() + "/server.yaml"))), YamlProxyServerConfiguration.class);
+        return YamlUsersConfigurationConverter.convertYamlUserConfiguration(getUsers(serverConfig))
+                .stream().filter(each -> "root".equals(each.getUsername())).findFirst().orElse(new YamlUserConfiguration());
+    }
+    
+    private Collection<String> getUsers(final YamlProxyServerConfiguration serverConfig) {
+        for (YamlRuleConfiguration each : serverConfig.getRules()) {
+            if (each instanceof YamlAuthorityRuleConfiguration) {
+                return ((YamlAuthorityRuleConfiguration) each).getUsers();
+            }
+        }
+        return Collections.emptyList();
     }
 }
