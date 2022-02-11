@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.container;
+package org.apache.shardingsphere.test.integration.framework.container.atomic;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

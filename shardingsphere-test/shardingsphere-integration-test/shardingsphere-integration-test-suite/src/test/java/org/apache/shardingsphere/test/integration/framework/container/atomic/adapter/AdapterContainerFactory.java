@@ -15,37 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.container.storage;
+package org.apache.shardingsphere.test.integration.framework.container.atomic.adapter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.integration.framework.container.storage.impl.H2Container;
-import org.apache.shardingsphere.test.integration.framework.container.storage.impl.MySQLContainer;
-import org.apache.shardingsphere.test.integration.framework.container.storage.impl.PostgreSQLContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl.ShardingSphereJDBCContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl.ShardingSphereProxyContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 /**
- * Storage container factory.
+ * Adapter container factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StorageContainerFactory {
+public final class AdapterContainerFactory {
     
     /**
-     * Create new instance of storage container.
-     * 
+     * Create new instance of adapter container.
+     *
      * @param parameterizedArray parameterized array
-     * @return new instance of storage container
+     * @return new instance of adapter container
      */
-    public static StorageContainer newInstance(final ParameterizedArray parameterizedArray) {
-        switch (parameterizedArray.getDatabaseType().getName()) {
-            case "MySQL":
-                return new MySQLContainer(parameterizedArray);
-            case "PostgreSQL" :
-                return new PostgreSQLContainer(parameterizedArray);
-            case "H2":
-                return new H2Container(parameterizedArray);
+    public static AdapterContainer newInstance(final ParameterizedArray parameterizedArray) {
+        switch (parameterizedArray.getAdapter()) {
+            case "proxy":
+                return new ShardingSphereProxyContainer(parameterizedArray);
+            case "jdbc":
+                return new ShardingSphereJDBCContainer(parameterizedArray);
             default:
-                throw new RuntimeException(String.format("Database [%s] is unknown.", parameterizedArray.getDatabaseType()));
+                throw new RuntimeException(String.format("Adapter [%s] is unknown.", parameterizedArray.getAdapter()));
         }
     }
 }
