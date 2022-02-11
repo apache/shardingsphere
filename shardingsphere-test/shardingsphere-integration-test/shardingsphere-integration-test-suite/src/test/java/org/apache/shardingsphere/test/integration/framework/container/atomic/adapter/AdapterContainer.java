@@ -33,6 +33,7 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 
 /**
  * Adapter container.
@@ -53,15 +54,10 @@ public abstract class AdapterContainer extends ShardingSphereContainer {
     }
     
     private YamlUserConfiguration loadAuthentication(final ParameterizedArray parameterizedArray) throws IOException {
-        YamlProxyServerConfiguration configuration = YamlEngine.unmarshal(
-                ByteStreams.toByteArray(this.getClass().getResourceAsStream(
-                        "/docker/proxy/conf/" + parameterizedArray.getScenario() + "/" + parameterizedArray.getDatabaseType().getName().toLowerCase() + "/server.yaml")),
-                YamlProxyServerConfiguration.class);
-        return YamlUsersConfigurationConverter.convertYamlUserConfiguration(getUsersFromConfiguration(configuration))
-                .stream()
-                .filter(each -> "root".equals(each.getUsername()))
-                .findFirst()
-                .orElse(new YamlUserConfiguration());
+        YamlProxyServerConfiguration config = YamlEngine.unmarshal(ByteStreams.toByteArray(Objects.requireNonNull(this.getClass().getResourceAsStream(
+                "/docker/proxy/conf/" + parameterizedArray.getScenario() + "/" + parameterizedArray.getDatabaseType().getName().toLowerCase() + "/server.yaml"))), YamlProxyServerConfiguration.class);
+        return YamlUsersConfigurationConverter.convertYamlUserConfiguration(getUsersFromConfiguration(config))
+                .stream().filter(each -> "root".equals(each.getUsername())).findFirst().orElse(new YamlUserConfiguration());
     }
     
     /**
