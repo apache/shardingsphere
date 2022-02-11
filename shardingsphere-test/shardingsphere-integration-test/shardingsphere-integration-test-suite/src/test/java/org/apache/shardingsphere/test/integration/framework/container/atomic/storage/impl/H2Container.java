@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * H2 container.
@@ -69,11 +70,6 @@ public final class H2Container extends StorageContainer {
     }
     
     @Override
-    protected int getPort() {
-        return 0;
-    }
-    
-    @Override
     protected String getUsername() {
         return "sa";
     }
@@ -83,4 +79,13 @@ public final class H2Container extends StorageContainer {
         return "";
     }
     
+    @Override
+    protected int getPort() {
+        return 0;
+    }
+    
+    @Override
+    public Optional<String> getPrimaryKeyColumnName(final DataSource dataSource, final String tableName) {
+        return Optional.empty();
+    }
 }

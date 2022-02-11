@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.engine.dml;
 
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
@@ -35,11 +34,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -92,26 +91,9 @@ public abstract class BaseDMLIT extends SingleITCase {
     }
     
     private String generateFetchActualDataSQL(final DataNode dataNode) throws SQLException {
-        if (getStorageContainer().getParameterizedArray().getDatabaseType() instanceof PostgreSQLDatabaseType) {
-            String primaryKeyColumnName = getPrimaryKeyColumnNameForPostgreSQL(dataNode);
-            return String.format("SELECT * FROM %s ORDER BY %s ASC", dataNode.getTableName(), primaryKeyColumnName);
-        }
-        return String.format("SELECT * FROM %s", dataNode.getTableName());
-    }
-    
-    private String getPrimaryKeyColumnNameForPostgreSQL(final DataNode dataNode) throws SQLException {
-        String sql = String.format("SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS data_type "
-                + "FROM pg_index i JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey) WHERE i.indrelid = '%s'::regclass AND i.indisprimary", dataNode.getTableName());
-        DataSource dataSource = getComposedContainer() instanceof ClusterComposedContainer ? getAnotherClientDataSource() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName());
-        try (
-                Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(sql)) {
-            if (resultSet.next()) {
-                return resultSet.getString("attname");
-            }
-            throw new SQLException(String.format("Can not get primary key of `%s`", dataNode.getTableName()));
-        }
+        Optional<String> primaryKeyColumnName = getStorageContainer().getPrimaryKeyColumnName(getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName()), dataNode.getTableName());
+        return primaryKeyColumnName.isPresent()
+                ? String.format("SELECT * FROM %s ORDER BY %s ASC", dataNode.getTableName(), primaryKeyColumnName.get()) : String.format("SELECT * FROM %s", dataNode.getTableName());
     }
     
     private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {

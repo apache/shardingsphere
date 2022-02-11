@@ -32,6 +32,7 @@ import org.testcontainers.shaded.com.google.common.collect.ImmutableMap.Builder;
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -99,4 +100,14 @@ public abstract class StorageContainer extends ShardingSphereContainer {
     }
     
     protected abstract int getPort();
+    
+    /**
+     * Get primary key column name.
+     * 
+     * @param dataSource data source
+     * @param tableName table name
+     * @return primary key column name
+     * @throws SQLException SQL exception
+     */
+    public abstract Optional<String> getPrimaryKeyColumnName(DataSource dataSource, String tableName) throws SQLException;
 }

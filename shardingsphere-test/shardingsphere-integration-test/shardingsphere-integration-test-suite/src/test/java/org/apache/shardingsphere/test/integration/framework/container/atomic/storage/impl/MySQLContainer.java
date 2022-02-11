@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.integration.framework.container.atomic.st
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
+import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -40,6 +41,16 @@ public final class MySQLContainer extends StorageContainer {
     }
     
     @Override
+    protected String getUsername() {
+        return "root";
+    }
+    
+    @Override
+    protected String getPassword() {
+        return "";
+    }
+    
+    @Override
     protected Optional<String> getConnectionInitSQL() {
         return Optional.of("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
     }
@@ -50,12 +61,7 @@ public final class MySQLContainer extends StorageContainer {
     }
     
     @Override
-    protected String getUsername() {
-        return "root";
-    }
-    
-    @Override
-    protected String getPassword() {
-        return "";
+    public Optional<String> getPrimaryKeyColumnName(final DataSource dataSource, final String tableName) {
+        return Optional.empty();
     }
 }
