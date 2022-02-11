@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.integration.framework.container.atomic.ad
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -86,34 +87,31 @@ public final class ShardingSphereJDBCContainer extends AdapterContainer {
                     throw new RuntimeException(ex);
                 }
             } else {
-                clientDataSourceProvider.set(createGovernanceDataSource(serverLists));
+                clientDataSourceProvider.set(createAnotherClientDataSource(serverLists));
             }
         }
         return clientDataSourceProvider.get();
     }
     
     /**
-     * Get governance data source for reader.
+     * Get another client data source.
      *
      * @param serverLists server list
-     * @return data source
+     * @return another client data source
      */
     public DataSource getAnotherClientDataSource(final String serverLists) {
         DataSource dataSource = anotherClientDataSourceProvider.get();
         if (Objects.isNull(dataSource)) {
-            anotherClientDataSourceProvider.set(createGovernanceDataSource(serverLists));
+            anotherClientDataSourceProvider.set(createAnotherClientDataSource(serverLists));
         }
         return anotherClientDataSourceProvider.get();
     }
     
-    private DataSource createGovernanceDataSource(final String serverLists) {
-        try {
-            YamlRootConfiguration rootConfig = YamlEngine.unmarshal(new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario())), YamlRootConfiguration.class);
-            rootConfig.getMode().getRepository().getProps().setProperty("server-lists", serverLists);
-            return YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, YamlEngine.marshal(rootConfig).getBytes(StandardCharsets.UTF_8));
-        } catch (final SQLException | IOException ex) {
-            throw new RuntimeException(ex);
-        }
+    @SneakyThrows({SQLException.class, IOException.class})
+    private DataSource createAnotherClientDataSource(final String serverLists) {
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario())), YamlRootConfiguration.class);
+        rootConfig.getMode().getRepository().getProps().setProperty("server-lists", serverLists);
+        return YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, YamlEngine.marshal(rootConfig).getBytes(StandardCharsets.UTF_8));
     }
     
     @Override
