@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.container;
+package org.apache.shardingsphere.test.integration.framework.container.atomic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.integration.framework.logging.ContainerLogs;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Network;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -53,7 +54,8 @@ public final class ShardingSphereContainers implements AutoCloseable {
     public <T extends ShardingSphereContainer> T registerContainer(final T container, final String hostname) {
         container.setNetwork(network);
         container.setNetworkAliases(Collections.singletonList(hostname));
-        container.withLogConsumer(ContainerLogs.newConsumer(String.join("-", testSuiteName, container.getName())));
+        String loggerName = String.join(":", testSuiteName, container.getName());
+        container.withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger(loggerName), true));
         containers.add(container);
         return container;
     }

@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.compose.mode;
+package org.apache.shardingsphere.test.integration.framework.container.compose.mode;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainer;
-import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainer;
-import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainerFactory;
-import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainer;
-import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainerFactory;
+import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.ShardingSphereContainers;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainerFactory;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 import javax.sql.DataSource;
@@ -33,22 +34,24 @@ import java.util.Map;
  * Memory composed container.
  */
 @Getter
-public final class MemoryComposedContainer extends ComposedContainer {
+public final class MemoryComposedContainer implements ComposedContainer {
+    
+    private final ShardingSphereContainers containers;
     
     private final StorageContainer storageContainer;
     
     private final AdapterContainer adapterContainer;
     
     public MemoryComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
-        super(testSuiteName);
-        storageContainer = getContainers().registerContainer(
+        containers = new ShardingSphereContainers(testSuiteName);
+        storageContainer = containers.registerContainer(
                 StorageContainerFactory.newInstance(parameterizedArray), parameterizedArray.getDatabaseType().getName().toLowerCase() + "." + parameterizedArray.getScenario() + ".host");
-        adapterContainer = getContainers().registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), "adapter");
+        adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), "adapter");
         adapterContainer.dependsOn(storageContainer);
     }
     
     @Override
     public Map<String, DataSource> getDataSourceMap() {
-        return Collections.singletonMap("adapterForWriter", getAdapterContainer().getDataSource(null));
+        return Collections.singletonMap("adapterForWriter", adapterContainer.getDataSource(null));
     }
 }
