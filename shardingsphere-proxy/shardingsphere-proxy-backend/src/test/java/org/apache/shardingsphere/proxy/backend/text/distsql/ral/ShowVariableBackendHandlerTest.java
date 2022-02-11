@@ -30,6 +30,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.ShowDistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
+import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.After;
 import org.junit.Before;
@@ -92,6 +93,7 @@ public final class ShowVariableBackendHandlerTest {
     
     @Test
     public void assertShowAgentPluginsEnabled() throws SQLException {
+        SystemPropertyUtil.setSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString());
         connectionSession.setCurrentSchema("schema");
         ShowDistSQLBackendHandler backendHandler = new ShowDistSQLBackendHandler(new ShowVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name()), connectionSession);
         ResponseHeader actual = backendHandler.execute();
