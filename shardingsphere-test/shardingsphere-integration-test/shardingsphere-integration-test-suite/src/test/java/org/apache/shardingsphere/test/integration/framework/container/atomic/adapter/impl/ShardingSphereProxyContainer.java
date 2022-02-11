@@ -140,7 +140,7 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
         result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), getParameterizedArray().getScenario()));
-        YamlUserConfiguration userConfig = loadUserConfiguration(getParameterizedArray());
+        YamlUserConfiguration userConfig = loadUserConfiguration();
         result.setUsername(userConfig.getUsername());
         result.setPassword(userConfig.getPassword());
         result.setMaximumPoolSize(2);
@@ -152,9 +152,10 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
     }
     
     @SneakyThrows(IOException.class)
-    private YamlUserConfiguration loadUserConfiguration(final ParameterizedArray parameterizedArray) {
-        YamlProxyServerConfiguration serverConfig = YamlEngine.unmarshal(ByteStreams.toByteArray(Objects.requireNonNull(this.getClass().getResourceAsStream(
-                "/docker/proxy/conf/" + parameterizedArray.getScenario() + "/" + parameterizedArray.getDatabaseType().getName().toLowerCase() + "/server.yaml"))), YamlProxyServerConfiguration.class);
+    private YamlUserConfiguration loadUserConfiguration() {
+        String serverFile = "/docker/proxy/conf/" + getParameterizedArray().getScenario() + "/" + getParameterizedArray().getDatabaseType().getName().toLowerCase() + "/server.yaml";
+        YamlProxyServerConfiguration serverConfig = YamlEngine.unmarshal(
+                ByteStreams.toByteArray(Objects.requireNonNull(this.getClass().getResourceAsStream(serverFile))), YamlProxyServerConfiguration.class);
         return YamlUsersConfigurationConverter.convertYamlUserConfiguration(getProxyUsers(serverConfig)).stream().findFirst().orElse(new YamlUserConfiguration());
     }
     
