@@ -17,26 +17,36 @@
 
 package org.apache.shardingsphere.traffic.algorithm.traffic.transaction;
 
-import org.apache.shardingsphere.traffic.api.traffic.identifier.SimplifiedTrafficAlgorithm;
-import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficValue;
+import org.junit.Before;
+import org.junit.Test;
 
-/**
- * JDBC traffic algorithm.
- */
-public final class JDBCTrafficAlgorithm implements TransactionTrafficAlgorithm, SimplifiedTrafficAlgorithm {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+public final class ProxyTrafficAlgorithmTest {
     
-    @Override
-    public void init() {
+    private ProxyTrafficAlgorithm proxyTrafficAlgorithm;
+    
+    @Before
+    public void setUp() {
+        proxyTrafficAlgorithm = new ProxyTrafficAlgorithm();
     }
     
-    @Override
-    public boolean match(final TransactionTrafficValue transactionTrafficValue) {
-        return transactionTrafficValue.isInTransaction();
+    @Test
+    public void assertMatchWhenInTransaction() {
+        assertTrue(proxyTrafficAlgorithm.match(new TransactionTrafficValue(true)));
     }
     
-    @Override
-    public String getType() {
-        return "JDBC";
+    @Test
+    public void assertMatchWhenNotInTransaction() {
+        assertFalse(proxyTrafficAlgorithm.match(new TransactionTrafficValue(false)));
+    }
+    
+    @Test
+    public void assertGetType() {
+        assertThat(proxyTrafficAlgorithm.getType(), is("PROXY"));
     }
 }
