@@ -62,7 +62,7 @@ public final class GeneralRALIT extends BaseRALIT {
     @Test
     public void assertExecute() throws SQLException, ParseException {
         DataSource dataSource = getComposedContainer() instanceof ClusterComposedContainer
-                ? getDataSourceForReader() : getTargetDataSource();
+                ? getAnotherClientDataSource() : getTargetDataSource();
         try (Connection connection = dataSource.getConnection()) {
             assertExecuteForStatement(connection);
         }

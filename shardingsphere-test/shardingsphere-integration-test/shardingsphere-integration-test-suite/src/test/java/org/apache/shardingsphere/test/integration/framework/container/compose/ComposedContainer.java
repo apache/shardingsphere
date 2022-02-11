@@ -21,7 +21,6 @@ import org.apache.shardingsphere.test.integration.framework.container.atomic.Sha
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 
 import javax.sql.DataSource;
-import java.util.Map;
 
 /**
  * Composed container.
@@ -43,9 +42,9 @@ public interface ComposedContainer {
     StorageContainer getStorageContainer();
     
     /**
-     * Get data source map.
-     *
-     * @return data source map
+     * Get client data source.
+     * 
+     * @return client data source
      */
-    Map<String, DataSource> getDataSourceMap();
+    DataSource getClientDataSource();
 }

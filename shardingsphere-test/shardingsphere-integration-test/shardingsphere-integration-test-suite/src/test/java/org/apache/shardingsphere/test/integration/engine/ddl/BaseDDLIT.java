@@ -99,7 +99,7 @@ public abstract class BaseDDLIT extends SingleITCase {
     private void assertNotContainsTable(final Collection<DataNode> dataNodes) throws SQLException {
         for (DataNode each : dataNodes) {
             try (Connection connection = getComposedContainer() instanceof ClusterComposedContainer
-                    ? getDataSourceForReader().getConnection() : getStorageContainer().getDataSourceMap().get(each.getDataSourceName()).getConnection()) {
+                    ? getAnotherClientDataSource().getConnection() : getStorageContainer().getDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 assertNotContainsTable(connection, each.getTableName());
             }
         }
@@ -113,7 +113,7 @@ public abstract class BaseDDLIT extends SingleITCase {
         Set<DataSetColumn> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
             DataSource dataSource = getComposedContainer() instanceof ClusterComposedContainer
-                    ? getDataSourceForReader() : getStorageContainer().getDataSourceMap().get(each.getDataSourceName());
+                    ? getAnotherClientDataSource() : getStorageContainer().getDataSourceMap().get(each.getDataSourceName());
             try (Connection connection = dataSource.getConnection()) {
                 result.addAll(getActualColumns(connection, each.getTableName()));
             }
@@ -139,7 +139,7 @@ public abstract class BaseDDLIT extends SingleITCase {
         Set<DataSetIndex> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
             DataSource dataSource = getComposedContainer() instanceof ClusterComposedContainer
-                    ? getDataSourceForReader() : getStorageContainer().getDataSourceMap().get(each.getDataSourceName());
+                    ? getAnotherClientDataSource() : getStorageContainer().getDataSourceMap().get(each.getDataSourceName());
             try (Connection connection = dataSource.getConnection()) {
                 result.addAll(getActualIndexes(connection, each.getTableName()));
             }

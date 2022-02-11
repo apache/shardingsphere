@@ -48,9 +48,9 @@ public final class ShardingSphereJDBCContainer extends AdapterContainer {
     
     private Map<String, DataSource> dataSourceMap;
     
-    private final AtomicReference<DataSource> dataSourceProvider = new AtomicReference<>();
+    private final AtomicReference<DataSource> clientDataSourceProvider = new AtomicReference<>();
     
-    private final AtomicReference<DataSource> dataSourceForReaderProvider = new AtomicReference<>();
+    private final AtomicReference<DataSource> anotherClientDataSourceProvider = new AtomicReference<>();
     
     public ShardingSphereJDBCContainer(final ParameterizedArray parameterizedArray) {
         super("ShardingSphere-JDBC", "ShardingSphere-JDBC", true, parameterizedArray);
@@ -75,21 +75,21 @@ public final class ShardingSphereJDBCContainer extends AdapterContainer {
      * @param serverLists server list
      * @return data source
      */
-    public DataSource getDataSource(final String serverLists) {
-        DataSource dataSource = dataSourceProvider.get();
+    public DataSource getClientDataSource(final String serverLists) {
+        DataSource dataSource = clientDataSourceProvider.get();
         if (Objects.isNull(dataSource)) {
             if (Strings.isNullOrEmpty(serverLists)) {
                 try {
-                    dataSourceProvider.set(
+                    clientDataSourceProvider.set(
                             YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario()))));
                 } catch (final SQLException | IOException ex) {
                     throw new RuntimeException(ex);
                 }
             } else {
-                dataSourceProvider.set(createGovernanceDataSource(serverLists));
+                clientDataSourceProvider.set(createGovernanceDataSource(serverLists));
             }
         }
-        return dataSourceProvider.get();
+        return clientDataSourceProvider.get();
     }
     
     /**
@@ -98,12 +98,12 @@ public final class ShardingSphereJDBCContainer extends AdapterContainer {
      * @param serverLists server list
      * @return data source
      */
-    public DataSource getDataSourceForReader(final String serverLists) {
-        DataSource dataSource = dataSourceForReaderProvider.get();
+    public DataSource getAnotherClientDataSource(final String serverLists) {
+        DataSource dataSource = anotherClientDataSourceProvider.get();
         if (Objects.isNull(dataSource)) {
-            dataSourceForReaderProvider.set(createGovernanceDataSource(serverLists));
+            anotherClientDataSourceProvider.set(createGovernanceDataSource(serverLists));
         }
-        return dataSourceForReaderProvider.get();
+        return anotherClientDataSourceProvider.get();
     }
     
     private DataSource createGovernanceDataSource(final String serverLists) {

@@ -29,8 +29,6 @@ import org.apache.shardingsphere.test.integration.framework.container.compose.Co
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Cluster composed container.
@@ -66,11 +64,16 @@ public final class ClusterComposedContainer implements ComposedContainer {
     }
     
     @Override
-    public Map<String, DataSource> getDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(2, 1);
-        String serverLists = zookeeperContainer.getServerLists();
-        result.put("adapterForWriter", adapterContainer.getDataSource(serverLists));
-        result.put("adapterForReader", adapterContainerForReader.getDataSourceForReader(serverLists));
-        return result;
+    public DataSource getClientDataSource() {
+        return adapterContainer.getClientDataSource(zookeeperContainer.getServerLists());
+    }
+    
+    /**
+     * Get another client data source.
+     * 
+     * @return another client data source
+     */
+    public DataSource getAnotherClientDataSource() {
+        return adapterContainerForReader.getAnotherClientDataSource(zookeeperContainer.getServerLists());
     }
 }
