@@ -42,6 +42,7 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -74,7 +75,7 @@ public final class TrafficEngineTest {
         TrafficEngine trafficEngine = new TrafficEngine(trafficRule, metaDataContexts);
         when(trafficRule.findMatchedStrategyRule(logicSQL)).thenReturn(Optional.empty());
         TrafficContext actual = trafficEngine.dispatch(logicSQL);
-        assertThat(actual.getExecutionUnits().size(), is(0));
+        assertNull(actual.getInstanceId());
     }
     
     @Test
@@ -84,7 +85,7 @@ public final class TrafficEngineTest {
         when(strategyRule.getLabels()).thenReturn(Collections.emptyList());
         when(trafficRule.findMatchedStrategyRule(logicSQL)).thenReturn(Optional.of(strategyRule));
         TrafficContext actual = trafficEngine.dispatch(logicSQL);
-        assertThat(actual.getExecutionUnits().size(), is(0));
+        assertNull(actual.getInstanceId());
     }
     
     @Test
@@ -93,7 +94,7 @@ public final class TrafficEngineTest {
         when(trafficRule.findMatchedStrategyRule(logicSQL)).thenReturn(Optional.of(strategyRule));
         when(strategyRule.getLabels()).thenReturn(Arrays.asList("OLTP", "OLAP"));
         TrafficContext actual = trafficEngine.dispatch(logicSQL);
-        assertThat(actual.getExecutionUnits().size(), is(0));
+        assertNull(actual.getInstanceId());
     }
     
     @Test
@@ -108,8 +109,7 @@ public final class TrafficEngineTest {
         when(metaDataContexts.getMetaDataPersistService()).thenReturn(Optional.of(metaDataPersistService));
         when(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(mockComputeNodeInstances());
         TrafficContext actual = trafficEngine.dispatch(logicSQL);
-        assertThat(actual.getExecutionUnits().size(), is(1));
-        assertThat(actual.getExecutionUnits().iterator().next().getDataSourceName(), is("127.0.0.1@3307"));
+        assertThat(actual.getInstanceId(), is("127.0.0.1@3307"));
     }
     
     private Collection<ComputeNodeInstance> mockComputeNodeInstances() {
