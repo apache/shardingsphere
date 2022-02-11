@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
@@ -53,20 +54,35 @@ public final class ShowShardingTableRulesUsedKeyGeneratorQueryResultSetTest {
         when(statement.getKeyGeneratorName()).thenReturn(Optional.of("snowflake"));
         resultSet.init(metaData, statement);
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
-        assertThat(actual.size(), is(2));
+        assertThat(actual.size(), is(3));
         assertThat(actual.get(0), is("sharding_db"));
-        assertThat(actual.get(1), is("t_order"));
+        assertThat(actual.get(1), is("table"));
+        assertThat(actual.get(2), is("t_order"));
+        actual = new ArrayList<>(resultSet.getRowData());
+        assertThat(actual.size(), is(3));
+        assertThat(actual.get(0), is("sharding_db"));
+        assertThat(actual.get(1), is("autoTable"));
+        assertThat(actual.get(2), is("t_order_auto"));
     }
     
     private ShardingRuleConfiguration createRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(createShardingTableRuleConfiguration());
+        result.getAutoTables().add(createShardingAutoTableRuleConfiguration());
         result.getBindingTableGroups().add("t_order,t_order_item");
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "database_inline"));
         result.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
         result.getShardingAlgorithms().put("database_inline", createShardingInlineAlgorithmConfiguration("ds_${user_id % 2}"));
         result.getShardingAlgorithms().put("t_order_inline", createShardingInlineAlgorithmConfiguration("t_order_${order_id % 2}"));
+        result.getShardingAlgorithms().put("auto_mod", createShardingAutoModAlgorithmConfiguration());
         result.getKeyGenerators().put("snowflake", createKeyGeneratorConfiguration());
+        return result;
+    }
+    
+    private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {
+        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("t_order_auto", "ds_0, ds_1");
+        result.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "auto_mod"));
+        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
         return result;
     }
     
@@ -81,6 +97,12 @@ public final class ShowShardingTableRulesUsedKeyGeneratorQueryResultSetTest {
         Properties props = new Properties();
         props.put("algorithm-expression", algorithmExpression);
         return new ShardingSphereAlgorithmConfiguration("INLINE", props);
+    }
+    
+    private ShardingSphereAlgorithmConfiguration createShardingAutoModAlgorithmConfiguration() {
+        Properties props = new Properties();
+        props.put("sharding-count", 4);
+        return new ShardingSphereAlgorithmConfiguration("MOD", props);
     }
     
     private ShardingSphereAlgorithmConfiguration createKeyGeneratorConfiguration() {

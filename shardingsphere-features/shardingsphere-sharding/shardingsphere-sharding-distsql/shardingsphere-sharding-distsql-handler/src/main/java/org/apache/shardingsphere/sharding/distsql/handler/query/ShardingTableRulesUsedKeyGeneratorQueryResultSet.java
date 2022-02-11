@@ -53,14 +53,19 @@ public final class ShardingTableRulesUsedKeyGeneratorQueryResultSet implements D
         }
         shardingRuleConfiguration.getTables().forEach(each -> {
             if (null != each.getKeyGenerateStrategy() && statement.getKeyGeneratorName().get().equals(each.getKeyGenerateStrategy().getKeyGeneratorName())) {
-                result.add(Arrays.asList(schemaName, each.getLogicTable()));
+                result.add(Arrays.asList(schemaName, "table", each.getLogicTable()));
+            }
+        });
+        shardingRuleConfiguration.getAutoTables().forEach(each -> {
+            if (null != each.getKeyGenerateStrategy() && statement.getKeyGeneratorName().get().equals(each.getKeyGenerateStrategy().getKeyGeneratorName())) {
+                result.add(Arrays.asList(schemaName, "autoTable", each.getLogicTable()));
             }
         });
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("schema", "name");
+        return Arrays.asList("schema", "type", "name");
     }
     
     @Override
