@@ -44,7 +44,8 @@ public final class MemoryComposedContainer implements ComposedContainer {
         containers = new ShardingSphereContainers(testSuiteName, parameterizedArray.getScenario());
         storageContainer = containers.registerContainer(
                 StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getDatabaseType().getName());
-        adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), parameterizedArray.getAdapter());
+        adapterContainer = containers.registerContainer(
+                AdapterContainerFactory.newInstance(parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getAdapter());
         adapterContainer.dependsOn(storageContainer);
     }
     

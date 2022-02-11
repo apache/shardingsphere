@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.testcontainers.lifecycle.Startable;
 
 import javax.sql.DataSource;
@@ -45,7 +44,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public final class ShardingSphereJDBCContainer extends AdapterContainer {
     
-    private final ParameterizedArray parameterizedArray;
+    private final String scenario;
     
     private final AtomicBoolean isHealthy = new AtomicBoolean();
     
@@ -55,9 +54,9 @@ public final class ShardingSphereJDBCContainer extends AdapterContainer {
     
     private final AtomicReference<DataSource> anotherClientDataSourceProvider = new AtomicReference<>();
     
-    public ShardingSphereJDBCContainer(final ParameterizedArray parameterizedArray) {
+    public ShardingSphereJDBCContainer(final String scenario) {
         super("ShardingSphere-JDBC", "ShardingSphere-JDBC", true);
-        this.parameterizedArray = parameterizedArray;
+        this.scenario = scenario;
     }
     
     @Override
@@ -84,8 +83,7 @@ public final class ShardingSphereJDBCContainer extends AdapterContainer {
         if (Objects.isNull(dataSource)) {
             if (Strings.isNullOrEmpty(serverLists)) {
                 try {
-                    clientDataSourceProvider.set(
-                            YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(parameterizedArray.getScenario()))));
+                    clientDataSourceProvider.set(YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(scenario))));
                 } catch (final SQLException | IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -112,7 +110,7 @@ public final class ShardingSphereJDBCContainer extends AdapterContainer {
     
     @SneakyThrows({SQLException.class, IOException.class})
     private DataSource createGovernanceClientDataSource(final String serverLists) {
-        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(new File(EnvironmentPath.getRulesConfigurationFile(parameterizedArray.getScenario())), YamlRootConfiguration.class);
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(new File(EnvironmentPath.getRulesConfigurationFile(scenario)), YamlRootConfiguration.class);
         rootConfig.getMode().getRepository().getProps().setProperty("server-lists", serverLists);
         return YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, YamlEngine.marshal(rootConfig).getBytes(StandardCharsets.UTF_8));
     }
