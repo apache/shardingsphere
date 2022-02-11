@@ -19,7 +19,6 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ex
 
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -36,7 +35,7 @@ public final class PostgreSQLNumericBinaryProtocolValue implements PostgreSQLBin
     public Object read(final PostgreSQLPacketPayload payload, final int parameterValueLength) {
         byte[] bytes = new byte[parameterValueLength];
         payload.getByteBuf().readBytes(bytes);
-        return new BigDecimal(new String(bytes));
+        return PostgreSQLByteConverter.numeric(bytes);
     }
     
     @Override

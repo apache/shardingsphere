@@ -44,14 +44,12 @@ public final class PostgreSQLNumericBinaryProtocolValueTest {
         PostgreSQLNumericBinaryProtocolValue binaryProtocolValue = new PostgreSQLNumericBinaryProtocolValue();
         String decimalText = "1234567890.12";
         BigDecimal expectedDecimal = new BigDecimal(decimalText);
-        int columnLength = binaryProtocolValue.getColumnLength(expectedDecimal);
-        int expectedLength = 4 + columnLength;
+        byte[] numericBytes = ByteConverterUtil.numeric(expectedDecimal);
+        int expectedLength = numericBytes.length;
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(expectedLength);
-        byteBuf.writeInt(columnLength);
-        byteBuf.writeBytes(decimalText.getBytes(StandardCharsets.UTF_8));
-        byteBuf.readInt();
+        byteBuf.writeBytes(numericBytes);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
-        Object result = binaryProtocolValue.read(payload, columnLength);
+        Object result = binaryProtocolValue.read(payload, expectedLength);
         assertNotNull(result);
         assertTrue(result instanceof BigDecimal);
         assertThat(result, is(expectedDecimal));
