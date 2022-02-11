@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.integration.framework.container.atomic.storage.impl;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
@@ -47,12 +48,13 @@ public final class PostgreSQLContainer extends StorageContainer {
         addEnv("POSTGRES_PASSWORD", "root");
         withInitSQLMapping("/env/" + getScenario() + "/init-sql/postgresql");
     }
-
+    
     @Override
     @SneakyThrows({ClassNotFoundException.class, SQLException.class, InterruptedException.class})
     protected void execute() {
-        Class.forName(DataSourceEnvironment.getDriverClassName("PostgreSQL"));
-        String url = DataSourceEnvironment.getURL("PostgreSQL", getHost(), getPort());
+        DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL");
+        Class.forName(DataSourceEnvironment.getDriverClassName(databaseType));
+        String url = DataSourceEnvironment.getURL(databaseType, getHost(), getPort());
         boolean connected = false;
         while (!connected) {
             try (Connection ignored = DriverManager.getConnection(url, getUsername(), getPassword())) {

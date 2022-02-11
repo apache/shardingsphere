@@ -84,8 +84,8 @@ public abstract class StorageContainer extends ShardingSphereContainer {
     
     private DataSource createDataSource(final String dataSourceName) {
         HikariConfig config = new HikariConfig();
-        config.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType.getName()));
-        config.setJdbcUrl(DataSourceEnvironment.getURL(databaseType.getName(), getHost(), getPort(), dataSourceName));
+        config.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
+        config.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getPort(), dataSourceName));
         config.setUsername(getUsername());
         config.setPassword(getPassword());
         config.setMaximumPoolSize(4);

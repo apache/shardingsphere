@@ -143,8 +143,8 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
     
     private DataSource createProxyDataSource() {
         HikariDataSource result = new HikariDataSource();
-        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType.getName()));
-        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType.getName(), getHost(), getMappedPort(3307), scenario));
+        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
+        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), scenario));
         YamlUserConfiguration userConfig = loadUserConfiguration();
         result.setUsername(userConfig.getUsername());
         result.setPassword(userConfig.getPassword());
