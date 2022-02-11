@@ -102,35 +102,35 @@ public final class NarayanaConfigurationFileGeneratorTest {
     }
     
     private void assertCommitOnePhase(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("CoordinatorEnvironmentBean.commitOnePhase")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "CoordinatorEnvironmentBean.commitOnePhase".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(1, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains("YES"));
     }
     
     private void assertTransactionSync(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("ObjectStoreEnvironmentBean.transactionSync")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.transactionSync".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(1, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains("NO"));
     }
     
     private void assertNodeIdentifier(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("CoreEnvironmentBean.nodeIdentifier")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "CoreEnvironmentBean.nodeIdentifier".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(1, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains("1"));
     }
     
     private void assertXaRecoveryNodes(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("JTAEnvironmentBean.xaRecoveryNodes")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "JTAEnvironmentBean.xaRecoveryNodes".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(1, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains("1"));
     }
     
     private void assertXaResourceOrphanFilterClassNames(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("JTAEnvironmentBean.xaResourceOrphanFilterClassNames")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "JTAEnvironmentBean.xaResourceOrphanFilterClassNames".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(3, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains(JTATransactionLogXAResourceOrphanFilter.class.getName()));
@@ -139,14 +139,14 @@ public final class NarayanaConfigurationFileGeneratorTest {
     }
     
     private void assertSocketProcessIdPort(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("CoreEnvironmentBean.socketProcessIdPort")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "CoreEnvironmentBean.socketProcessIdPort".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(1, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains("0"));
     }
     
     private void assertRecoveryModuleClassNames(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("RecoveryEnvironmentBean.recoveryModuleClassNames")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "RecoveryEnvironmentBean.recoveryModuleClassNames".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(2, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains(AtomicActionRecoveryModule.class.getName()));
@@ -154,119 +154,119 @@ public final class NarayanaConfigurationFileGeneratorTest {
     }
     
     private void assertExpiryScannerClassNames(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("RecoveryEnvironmentBean.expiryScannerClassNames")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "RecoveryEnvironmentBean.expiryScannerClassNames".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(1, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains(ExpiredTransactionStatusManagerScanner.class.getName()));
     }
     
     private void assertRecoveryPort(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("RecoveryEnvironmentBean.recoveryPort")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "RecoveryEnvironmentBean.recoveryPort".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(1, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains("4712"));
     }
     
     private void assertTransactionStatusManagerPort(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("RecoveryEnvironmentBean.transactionStatusManagerPort")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "RecoveryEnvironmentBean.transactionStatusManagerPort".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(1, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains("0"));
     }
     
     private void assertRecoveryListener(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("RecoveryEnvironmentBean.recoveryListener")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "RecoveryEnvironmentBean.recoveryListener".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(1, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains("NO"));
     }
     
     private void assertRecoveryBackoffPeriod(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("RecoveryEnvironmentBean.recoveryBackoffPeriod")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "RecoveryEnvironmentBean.recoveryBackoffPeriod".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(1, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains("1"));
     }
     
     private void assertObjectStoreType(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("ObjectStoreEnvironmentBean.objectStoreType")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.objectStoreType".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(1, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains(JDBCStore.class.getName()));
     }
     
     private void assertJdbcAccess(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("ObjectStoreEnvironmentBean.jdbcAccess")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.jdbcAccess".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(1, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains(jdbcAccess));
     }
     
     private void assertTablePrefix(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("ObjectStoreEnvironmentBean.tablePrefix")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.tablePrefix".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(1, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains("Action"));
     }
     
     private void assertDropTable(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("ObjectStoreEnvironmentBean.dropTable")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.dropTable".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(1, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains("true"));
     }
     
     private void assertStateStoreJdbcAccess(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("ObjectStoreEnvironmentBean.stateStore.jdbcAccess")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.stateStore.jdbcAccess".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(1, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains(jdbcAccess));
     }
     
     private void assertStateStoreObjectStoreType(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("ObjectStoreEnvironmentBean.stateStore.objectStoreType")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.stateStore.objectStoreType".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(1, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains(JDBCStore.class.getName()));
     }
     
     private void assertStateStoreTablePrefix(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("ObjectStoreEnvironmentBean.stateStore.tablePrefix")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.stateStore.tablePrefix".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(1, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains("stateStore"));
     }
     
     private void assertStateStoreDropTable(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("ObjectStoreEnvironmentBean.stateStore.dropTable")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.stateStore.dropTable".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(1, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains("true"));
     }
     
     private void assertCommunicationStoreObjectStoreType(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("ObjectStoreEnvironmentBean.communicationStore.objectStoreType")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.communicationStore.objectStoreType".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(1, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains(JDBCStore.class.getName()));
     }
     
     private void assertCommunicationStoreJdbcAccess(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("ObjectStoreEnvironmentBean.communicationStore.jdbcAccess")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.communicationStore.jdbcAccess".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(1, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains(jdbcAccess));
     }
     
     private void assertCommunicationStoreTablePrefix(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("ObjectStoreEnvironmentBean.communicationStore.tablePrefix")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.communicationStore.tablePrefix".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(1, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains("Communication"));
     }
     
     private void assertCommunicationStoreDropTable(final NarayanaConfiguration configuration) {
-        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> each.getKey().equals("ObjectStoreEnvironmentBean.communicationStore.dropTable")).findFirst();
+        Optional<Entry> entry = configuration.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.communicationStore.dropTable".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertEquals(1, entry.get().getValue().size());
         assertTrue(entry.get().getValue().contains("true"));
