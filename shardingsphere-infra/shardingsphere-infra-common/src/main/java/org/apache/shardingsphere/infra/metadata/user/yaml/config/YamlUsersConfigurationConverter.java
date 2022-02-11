@@ -38,7 +38,7 @@ public final class YamlUsersConfigurationConverter {
     /**
      * Convert to users YAML content.
      *
-     * @param users sharding sphere users
+     * @param users ShardingSphere users
      * @return users YAML content
      */
     public static Collection<String> convertYamlUserConfigurations(final Collection<ShardingSphereUser> users) {
