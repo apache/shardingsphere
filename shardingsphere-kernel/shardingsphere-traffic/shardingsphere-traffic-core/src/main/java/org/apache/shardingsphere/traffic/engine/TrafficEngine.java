@@ -53,7 +53,7 @@ public final class TrafficEngine {
     public TrafficContext dispatch(final LogicSQL logicSQL) {
         Optional<TrafficStrategyRule> strategyRule = trafficRule.findMatchedStrategyRule(logicSQL);
         TrafficContext result = new TrafficContext();
-        if (!strategyRule.isPresent()) {
+        if (!strategyRule.isPresent() || strategyRule.get().getLabels().isEmpty()) {
             return result;
         }
         List<String> instanceIds = getInstanceIdsByLabels(strategyRule.get().getLabels());

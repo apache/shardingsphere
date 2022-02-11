@@ -102,6 +102,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterLanguageStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterMaterializedViewStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterProcedureStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSchemaStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSequenceStatementTestCase;
@@ -156,6 +157,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.FlashbackDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.FlashbackTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.NoAuditStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.PreparedStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.PurgeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RenameStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RenameTableStatementTestCase;
@@ -1046,6 +1048,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "alter-group")
     private final List<AlterGroupStatementTestCase> alterGroupStatementTestCase = new LinkedList<>();
     
+    @XmlElement(name = "alter-materialized-view")
+    private final List<AlterMaterializedViewStatementTestCase> alterMaterializedViewStatementTestCase = new LinkedList<>();
+    
     @XmlElement(name = "create-text-search")
     private final List<CreateTextSearchStatementTestCase> createTextSearchStatementTestCases = new LinkedList<>();
     
@@ -1087,6 +1092,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-rules-used-resource")
     private final List<ShowRulesUsedResourceStatementTestCase> showRulesUsedResourceStatementTestCases = new LinkedList<>();
+
+    @XmlElement(name = "prepared")
+    private final List<PreparedStatementTestCase> preparedStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -1339,6 +1347,7 @@ public final class SQLParserTestCases {
         putAll(alterForeignDataWrapperTestCase, result);
         putAll(alterForeignTableTestCase, result);
         putAll(alterGroupStatementTestCase, result);
+        putAll(alterMaterializedViewStatementTestCase, result);
         putAll(createTextSearchStatementTestCases, result);
         putAll(alterTextSearchStatementTestCases, result);
         putAll(createLanguageStatementTestCases, result);
@@ -1359,6 +1368,7 @@ public final class SQLParserTestCases {
         putAll(unlockStatementTestCases, result);
         putAll(exportSchemaConfigurationStatementTestCases, result);
         putAll(showRulesUsedResourceStatementTestCases, result);
+        putAll(preparedStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

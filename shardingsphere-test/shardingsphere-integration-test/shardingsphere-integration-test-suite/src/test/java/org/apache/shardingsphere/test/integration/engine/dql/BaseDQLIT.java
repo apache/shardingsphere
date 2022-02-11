@@ -34,6 +34,7 @@ import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,6 +44,8 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseDQLIT extends SingleITCase {
     
+    private static final Collection<String> FILLED_SCENARIOS = new HashSet<>();
+    
     public BaseDQLIT(final AssertionParameterizedArray parameter) {
         super(parameter);
     }
@@ -50,16 +53,18 @@ public abstract class BaseDQLIT extends SingleITCase {
     @Override
     public void init() throws Exception {
         super.init();
-        composedContainer.executeOnStarted(compose -> {
-            try {
-                new DataSetEnvironmentManager(
-                        EnvironmentPath.getDataSetFile(getScenario()),
-                        getStorageContainer().getDataSourceMap()
-                ).fillData();
-            } catch (IOException | JAXBException | SQLException | ParseException e) {
-                throw new RuntimeException(e);
+        fillDataOnlyOnce();
+    }
+    
+    private void fillDataOnlyOnce() throws SQLException, ParseException, IOException, JAXBException {
+        if (!FILLED_SCENARIOS.contains(getScenario())) {
+            synchronized (FILLED_SCENARIOS) {
+                if (!FILLED_SCENARIOS.contains(getScenario())) {
+                    new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getScenario()), getStorageContainer().getDataSourceMap()).fillData();
+                    FILLED_SCENARIOS.add(getScenario());
+                }
             }
-        });
+        }
     }
     
     protected final void assertResultSet(final ResultSet resultSet) throws SQLException {

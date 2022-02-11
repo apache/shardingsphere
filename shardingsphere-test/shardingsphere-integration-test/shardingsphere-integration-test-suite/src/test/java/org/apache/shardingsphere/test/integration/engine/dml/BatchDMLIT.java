@@ -21,7 +21,7 @@ import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.engine.BatchITCase;
-import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainerManager;
+import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerManager;
 import org.apache.shardingsphere.test.integration.framework.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.CaseParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
@@ -45,7 +45,7 @@ import static org.junit.Assert.assertThat;
 public final class BatchDMLIT extends BatchITCase {
     
     @ClassRule
-    public static ComposedContainerManager composedContainerManager = new ComposedContainerManager("BatchDMLIT");
+    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("BatchDMLIT");
     
     public BatchDMLIT(final CaseParameterizedArray parameterizedArray) {
         super(parameterizedArray);
@@ -55,15 +55,17 @@ public final class BatchDMLIT extends BatchITCase {
     public static Collection<ParameterizedArray> getParameters() {
         return ParameterizedArrayFactory.getCaseParameterized(SQLCommandType.DML)
                 .stream()
-                .peek(each -> each.setCompose(composedContainerManager.getOrCreateCompose(each)))
+                .peek(each -> each.setCompose(COMPOSED_CONTAINER_MANAGER.getComposedContainer(each)))
                 .collect(Collectors.toList());
     }
     
     @Test
     public void assertExecuteBatch() throws SQLException, ParseException {
+        if ("shadow".equals(getScenario()) && "PostgreSQL".equals(getDatabaseType().getName())) {
+            return;
+        }
         switch (getScenario()) {
             case "replica_query":
-            case "shadow":
             case "encrypt":
                 return;
             default:
@@ -94,9 +96,11 @@ public final class BatchDMLIT extends BatchITCase {
     @Test
     public void assertClearBatch() throws SQLException, ParseException {
         // TODO fix replica_query
+        if ("shadow".equals(getScenario()) && "PostgreSQL".equals(getDatabaseType().getName())) {
+            return;
+        }
         switch (getScenario()) {
             case "replica_query":
-            case "shadow":
             case "encrypt":
                 return;
             default:

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.integration.engine.rdl;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainerManager;
-import org.apache.shardingsphere.test.integration.framework.compose.mode.ClusterComposedContainer;
+import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerManager;
+import org.apache.shardingsphere.test.integration.framework.container.compose.mode.ClusterComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 public final class GeneralRDLIT extends BaseRDLIT {
     
     @ClassRule
-    public static ComposedContainerManager composedContainerManager = new ComposedContainerManager("GeneralRDLIT");
+    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralRDLIT");
     
     public GeneralRDLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
@@ -55,7 +55,7 @@ public final class GeneralRDLIT extends BaseRDLIT {
                 .stream()
                 .filter(each -> SQLExecuteType.Literal == each.getSqlExecuteType())
                 .filter(each -> "proxy".equals(each.getAdapter()))
-                .peek(each -> each.setCompose(composedContainerManager.getOrCreateCompose(each)))
+                .peek(each -> each.setCompose(COMPOSED_CONTAINER_MANAGER.getComposedContainer(each)))
                 .collect(Collectors.toList());
     }
     

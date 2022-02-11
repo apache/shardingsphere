@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.test.integration.engine.dml;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainerManager;
+import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerManager;
 import org.apache.shardingsphere.test.integration.framework.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
@@ -45,7 +45,7 @@ import static org.junit.Assert.assertFalse;
 public final class AdditionalDMLIT extends BaseDMLIT {
     
     @ClassRule
-    public static ComposedContainerManager composedContainerManager = new ComposedContainerManager("AdditionalDMLIT");
+    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("AdditionalDMLIT");
     
     public AdditionalDMLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
@@ -56,7 +56,7 @@ public final class AdditionalDMLIT extends BaseDMLIT {
         if (IntegrationTestEnvironment.getInstance().isRunAdditionalTestCases()) {
             return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DML)
                     .stream()
-                    .peek(each -> each.setCompose(composedContainerManager.getOrCreateCompose(each)))
+                    .peek(each -> each.setCompose(COMPOSED_CONTAINER_MANAGER.getComposedContainer(each)))
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();
