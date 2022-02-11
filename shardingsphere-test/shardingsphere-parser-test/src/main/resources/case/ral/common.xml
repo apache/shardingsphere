@@ -84,4 +84,17 @@
             </load-balancer>
         </rule>
     </alter-traffic-rule>
+    <label-instance sql-case-id="label-instance" ip="127.0.0.1" port="3309" overwrite="false">
+        <label>OLAP_1</label>
+        <label>OLAP_2</label>
+    </label-instance>
+    <label-instance sql-case-id="relabel-instance" ip="127.0.0.1" port="3309" overwrite="true">
+        <label>OLAP_1</label>
+        <label>OLAP_2</label>
+    </label-instance>
+    <unlabel-instance sql-case-id="unlabel-instance" ip="127.0.0.1" port="3309">
+        <label>OLAP_1</label>
+    </unlabel-instance>
+    <unlabel-instance sql-case-id="unlabel-instance-without-label" ip="127.0.0.1" port="3309">
+    </unlabel-instance>
 </sql-parser-test-cases>
