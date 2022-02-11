@@ -18,17 +18,15 @@
 package org.apache.shardingsphere.test.integration.framework.container.compose.mode;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.ShardingSphereContainers;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainerFactory;
+import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 import javax.sql.DataSource;
-import java.util.Collections;
-import java.util.Map;
 
 /**
  * Memory composed container.
@@ -50,7 +48,7 @@ public final class MemoryComposedContainer implements ComposedContainer {
     }
     
     @Override
-    public Map<String, DataSource> getClientDataSourceMap() {
-        return Collections.singletonMap("adapterForWriter", adapterContainer.getDataSource(null));
+    public DataSource getClientDataSource() {
+        return adapterContainer.getClientDataSource(null);
     }
 }

@@ -38,18 +38,18 @@ public abstract class AdapterContainer extends ShardingSphereContainer {
     }
     
     /**
-     * Get data source.
+     * Get client data source.
      *
-     * @param serverLists server list
-     * @return data source
+     * @param serverLists server lists
+     * @return client data source
      */
-    public abstract DataSource getDataSource(String serverLists);
+    public abstract DataSource getClientDataSource(String serverLists);
     
     /**
-     * Get governance data source.
+     * Get another client data source.
      *
-     * @param serverLists server list
-     * @return data source
+     * @param serverLists server lists
+     * @return another client data source
      */
-    public abstract DataSource getDataSourceForReader(String serverLists);
+    public abstract DataSource getAnotherClientDataSource(String serverLists);
 }

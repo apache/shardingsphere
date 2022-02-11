@@ -75,7 +75,7 @@ public abstract class BaseDMLIT extends SingleITCase {
         for (String each : new InlineExpressionParser(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
             DataSource dataSource = getComposedContainer() instanceof ClusterComposedContainer
-                    ? getDataSourceForReader() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName());
+                    ? getAnotherClientDataSource() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName());
             try (
                     Connection connection = dataSource.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(generateFetchActualDataSQL(dataNode))) {
@@ -103,7 +103,7 @@ public abstract class BaseDMLIT extends SingleITCase {
         String sql = String.format("SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS data_type "
                 + "FROM pg_index i JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey) WHERE i.indrelid = '%s'::regclass AND i.indisprimary", dataNode.getTableName());
         DataSource dataSource = getComposedContainer() instanceof ClusterComposedContainer
-                ? getDataSourceForReader() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName());
+                ? getAnotherClientDataSource() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName());
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();

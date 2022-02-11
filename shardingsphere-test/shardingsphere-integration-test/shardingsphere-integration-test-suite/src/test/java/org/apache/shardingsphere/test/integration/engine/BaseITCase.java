@@ -38,7 +38,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
-import java.util.Map;
 
 @RunWith(ShardingSphereIntegrationTestParameterized.class)
 @Getter(AccessLevel.PROTECTED)
@@ -62,7 +61,7 @@ public abstract class BaseITCase {
     
     private DataSource targetDataSource;
     
-    private DataSource dataSourceForReader;
+    private DataSource anotherClientDataSource;
     
     public BaseITCase(final ParameterizedArray parameterizedArray) {
         adapter = parameterizedArray.getAdapter();
@@ -76,10 +75,9 @@ public abstract class BaseITCase {
     
     @Before
     public void init() throws Exception {
-        Map<String, DataSource> dataSourceMap = composedContainer.getClientDataSourceMap();
-        targetDataSource = dataSourceMap.get("adapterForWriter");
+        targetDataSource = composedContainer.getClientDataSource();
         if (composedContainer instanceof ClusterComposedContainer) {
-            dataSourceForReader = dataSourceMap.get("adapterForReader");
+            anotherClientDataSource = ((ClusterComposedContainer) composedContainer).getAnotherClientDataSource();
             int waitForGov = 10;
             while (waitForGov-- > 0) {
                 try (Connection ignored = targetDataSource.getConnection()) {
