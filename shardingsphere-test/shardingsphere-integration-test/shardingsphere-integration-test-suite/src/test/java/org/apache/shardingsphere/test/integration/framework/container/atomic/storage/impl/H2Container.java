@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.integration.framework.container.atomic.st
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
@@ -68,11 +67,6 @@ public final class H2Container extends StorageContainer {
     @Override
     public boolean isHealthy() {
         return true;
-    }
-    
-    @Override
-    protected String getUrl(final String dataSourceName) {
-        return DataSourceEnvironment.getURL("H2", null, 0, dataSourceName);
     }
     
     @Override

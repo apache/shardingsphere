@@ -42,11 +42,6 @@ public final class MySQLContainer extends StorageContainer {
     }
     
     @Override
-    protected String getUrl(final String dataSourceName) {
-        return DataSourceEnvironment.getURL("MySQL", getHost(), getPort(), dataSourceName);
-    }
-    
-    @Override
     protected Optional<String> getConnectionInitSQL() {
         return Optional.of("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
     }

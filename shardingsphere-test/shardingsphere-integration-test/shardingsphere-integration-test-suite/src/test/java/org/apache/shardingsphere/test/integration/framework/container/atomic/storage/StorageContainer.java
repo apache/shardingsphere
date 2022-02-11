@@ -83,7 +83,7 @@ public abstract class StorageContainer extends ShardingSphereContainer {
     private DataSource createDataSource(final String dataSourceName) {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType.getName()));
-        config.setJdbcUrl(getUrl(dataSourceName));
+        config.setJdbcUrl(DataSourceEnvironment.getURL(databaseType.getName(), getHost(), getPort(), dataSourceName));
         config.setUsername(getUsername());
         config.setPassword(getPassword());
         config.setMaximumPoolSize(4);
@@ -91,8 +91,6 @@ public abstract class StorageContainer extends ShardingSphereContainer {
         getConnectionInitSQL().ifPresent(config::setConnectionInitSql);
         return new HikariDataSource(config);
     }
-    
-    protected abstract String getUrl(String dataSourceName);
     
     protected abstract String getUsername();
     

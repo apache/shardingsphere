@@ -60,11 +60,6 @@ public final class PostgreSQLContainer extends StorageContainer {
             }
         }
     }
-
-    @Override
-    protected String getUrl(final String dataSourceName) {
-        return DataSourceEnvironment.getURL("PostgreSQL", getHost(), getPort(), dataSourceName);
-    }
     
     @Override
     protected int getPort() {
