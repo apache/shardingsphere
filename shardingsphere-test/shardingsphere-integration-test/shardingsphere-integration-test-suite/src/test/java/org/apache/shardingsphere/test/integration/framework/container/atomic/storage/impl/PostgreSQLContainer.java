@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.container.storage.impl;
+package org.apache.shardingsphere.test.integration.framework.container.atomic.storage.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.postgresql.util.PSQLException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 /**
  * PostgreSQL container.
@@ -45,7 +46,7 @@ public final class PostgreSQLContainer extends StorageContainer {
     }
 
     @Override
-    @SneakyThrows
+    @SneakyThrows({ClassNotFoundException.class, SQLException.class, InterruptedException.class})
     protected void execute() {
         int time = 0;
         Class.forName(getDriverClassName());
