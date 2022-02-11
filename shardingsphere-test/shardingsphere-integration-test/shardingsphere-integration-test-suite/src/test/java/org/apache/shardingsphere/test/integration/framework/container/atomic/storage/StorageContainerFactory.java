@@ -19,10 +19,10 @@ package org.apache.shardingsphere.test.integration.framework.container.atomic.st
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.impl.H2Container;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.impl.PostgreSQLContainer;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 /**
  * Storage container factory.
@@ -33,19 +33,20 @@ public final class StorageContainerFactory {
     /**
      * Create new instance of storage container.
      * 
-     * @param parameterizedArray parameterized array
+     * @param databaseType database type
+     * @param scenario scenario
      * @return new instance of storage container
      */
-    public static StorageContainer newInstance(final ParameterizedArray parameterizedArray) {
-        switch (parameterizedArray.getDatabaseType().getName()) {
+    public static StorageContainer newInstance(final DatabaseType databaseType, final String scenario) {
+        switch (databaseType.getName()) {
             case "MySQL":
-                return new MySQLContainer(parameterizedArray);
+                return new MySQLContainer(scenario);
             case "PostgreSQL" :
-                return new PostgreSQLContainer(parameterizedArray);
+                return new PostgreSQLContainer(scenario);
             case "H2":
-                return new H2Container(parameterizedArray);
+                return new H2Container(scenario);
             default:
-                throw new RuntimeException(String.format("Database [%s] is unknown.", parameterizedArray.getDatabaseType()));
+                throw new RuntimeException(String.format("Database [%s] is unknown.", databaseType.getName()));
         }
     }
 }

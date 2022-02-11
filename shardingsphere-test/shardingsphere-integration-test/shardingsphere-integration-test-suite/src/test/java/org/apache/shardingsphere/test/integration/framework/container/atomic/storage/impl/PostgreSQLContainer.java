@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.test.integration.framework.container.atomic.storage.impl;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.postgresql.util.PSQLException;
 
 import javax.sql.DataSource;
@@ -36,8 +36,8 @@ import java.util.Optional;
  */
 public final class PostgreSQLContainer extends StorageContainer {
     
-    public PostgreSQLContainer(final ParameterizedArray parameterizedArray) {
-        super("postgres", "postgres:12.6", false, parameterizedArray);
+    public PostgreSQLContainer(final String scenario) {
+        super(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), "postgres:12.6", false, scenario);
     }
     
     @Override
@@ -45,7 +45,7 @@ public final class PostgreSQLContainer extends StorageContainer {
         withCommand("--max_connections=200");
         addEnv("POSTGRES_USER", "root");
         addEnv("POSTGRES_PASSWORD", "root");
-        withInitSQLMapping("/env/" + getParameterizedArray().getScenario() + "/init-sql/postgresql");
+        withInitSQLMapping("/env/" + getScenario() + "/init-sql/postgresql");
     }
 
     @Override

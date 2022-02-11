@@ -49,7 +49,8 @@ public final class ClusterComposedContainer implements ComposedContainer {
     
     public ClusterComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
         containers = new ShardingSphereContainers(testSuiteName, parameterizedArray.getScenario());
-        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(parameterizedArray), parameterizedArray.getDatabaseType().getName());
+        storageContainer = containers.registerContainer(
+                StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getDatabaseType().getName());
         adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), parameterizedArray.getAdapter());
         // TODO support other types of governance
         zookeeperContainer = containers.registerContainer(new ZookeeperContainer(), "zk");

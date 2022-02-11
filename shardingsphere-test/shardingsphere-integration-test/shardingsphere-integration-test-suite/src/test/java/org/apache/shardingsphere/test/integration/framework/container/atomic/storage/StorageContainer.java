@@ -21,10 +21,10 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.ShardingSphereContainer;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap.Builder;
@@ -44,12 +44,15 @@ public abstract class StorageContainer extends ShardingSphereContainer {
     
     private Map<String, DataSource> dataSourceMap;
     
-    @Getter
-    private final ParameterizedArray parameterizedArray;
+    private final DatabaseType databaseType;
     
-    public StorageContainer(final String name, final String dockerImageName, final boolean isFakedContainer, final ParameterizedArray parameterizedArray) {
-        super(name, dockerImageName, isFakedContainer);
-        this.parameterizedArray = parameterizedArray;
+    @Getter
+    private final String scenario;
+    
+    public StorageContainer(final DatabaseType databaseType, final String dockerImageName, final boolean isFakedContainer, final String scenario) {
+        super(databaseType.getName().toLowerCase(), dockerImageName, isFakedContainer);
+        this.databaseType = databaseType;
+        this.scenario = scenario;
     }
     
     /**
@@ -71,7 +74,7 @@ public abstract class StorageContainer extends ShardingSphereContainer {
     @SneakyThrows({IOException.class, JAXBException.class})
     public synchronized Map<String, DataSource> getDataSourceMap() {
         if (null == dataSourceMap) {
-            Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDatabaseNames(parameterizedArray.getScenario());
+            Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDatabaseNames(scenario);
             Builder<String, DataSource> builder = ImmutableMap.builder();
             dataSourceNames.forEach(each -> builder.put(each, createDataSource(each)));
             dataSourceMap = builder.build();
@@ -81,8 +84,8 @@ public abstract class StorageContainer extends ShardingSphereContainer {
     
     private DataSource createDataSource(final String dataSourceName) {
         HikariConfig config = new HikariConfig();
-        config.setDriverClassName(DataSourceEnvironment.getDriverClassName(parameterizedArray.getDatabaseType().getName()));
-        config.setJdbcUrl(DataSourceEnvironment.getURL(parameterizedArray.getDatabaseType().getName(), getHost(), getPort(), dataSourceName));
+        config.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType.getName()));
+        config.setJdbcUrl(DataSourceEnvironment.getURL(databaseType.getName(), getHost(), getPort(), dataSourceName));
         config.setUsername(getUsername());
         config.setPassword(getPassword());
         config.setMaximumPoolSize(4);

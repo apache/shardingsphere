@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.atomic.storage.impl;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 import javax.sql.DataSource;
 import java.util.Collections;
@@ -29,14 +29,14 @@ import java.util.Optional;
  */
 public final class MySQLContainer extends StorageContainer {
     
-    public MySQLContainer(final ParameterizedArray parameterizedArray) {
-        super("mysql-server", "mysql/mysql-server:5.7", false, parameterizedArray);
+    public MySQLContainer(final String scenario) {
+        super(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), "mysql/mysql-server:5.7", false, scenario);
     }
     
     @Override
     protected void configure() {
         withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password");
-        withInitSQLMapping("/env/" + getParameterizedArray().getScenario() + "/init-sql/mysql");
+        withInitSQLMapping("/env/" + getScenario() + "/init-sql/mysql");
         setEnv(Collections.singletonList("LANG=C.UTF-8"));
     }
     
