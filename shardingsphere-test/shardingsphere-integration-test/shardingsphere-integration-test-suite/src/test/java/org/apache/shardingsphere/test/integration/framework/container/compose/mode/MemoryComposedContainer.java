@@ -50,7 +50,7 @@ public final class MemoryComposedContainer implements ComposedContainer {
     }
     
     @Override
-    public Map<String, DataSource> getDataSourceMap() {
+    public Map<String, DataSource> getClientDataSourceMap() {
         return Collections.singletonMap("adapterForWriter", adapterContainer.getDataSource(null));
     }
 }

@@ -43,9 +43,9 @@ public interface ComposedContainer {
     StorageContainer getStorageContainer();
     
     /**
-     * Get data source map.
+     * Get client data source map.
      *
-     * @return data source map
+     * @return client data source map
      */
-    Map<String, DataSource> getDataSourceMap();
+    Map<String, DataSource> getClientDataSourceMap();
 }

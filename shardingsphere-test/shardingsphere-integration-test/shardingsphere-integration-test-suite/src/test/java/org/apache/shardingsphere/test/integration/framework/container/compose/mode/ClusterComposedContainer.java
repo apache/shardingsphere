@@ -66,7 +66,7 @@ public final class ClusterComposedContainer implements ComposedContainer {
     }
     
     @Override
-    public Map<String, DataSource> getDataSourceMap() {
+    public Map<String, DataSource> getClientDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>(2, 1);
         String serverLists = zookeeperContainer.getServerLists();
         result.put("adapterForWriter", adapterContainer.getDataSource(serverLists));
