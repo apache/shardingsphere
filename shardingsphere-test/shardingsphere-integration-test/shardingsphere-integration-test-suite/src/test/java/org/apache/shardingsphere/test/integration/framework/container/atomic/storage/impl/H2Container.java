@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map.Entry;
-import java.util.Objects;
 
 /**
  * H2 container.
@@ -73,7 +72,7 @@ public final class H2Container extends StorageContainer {
     
     @Override
     protected String getUrl(final String dataSourceName) {
-        return DataSourceEnvironment.getURL("H2", null, 0, Objects.isNull(dataSourceName) ? "test_db" : dataSourceName);
+        return DataSourceEnvironment.getURL("H2", null, 0, dataSourceName);
     }
     
     @Override
