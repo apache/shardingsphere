@@ -71,7 +71,7 @@ Answer:
    - DataGrip：2020.1、2021.1 (turn on "introspect using jdbc metadata" in idea or datagrip).
    - WorkBench：8.0.25.
 
-## [Proxy] When using a client such as Navicat to connect to Sharding Sphere-Proxy, if Sharding Sphere-Proxy does not create a Schema or does not add a Resource, the client connection will fail?
+## [Proxy] When using a client such as Navicat to connect to ShardingSphere-Proxy, if ShardingSphere-Proxy does not create a Schema or does not add a Resource, the client connection will fail?
 
 Answer:
 
