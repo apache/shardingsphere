@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl;
 
-import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
@@ -99,28 +98,15 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
     }
     
     /**
-     * Get DataSource.
-     *
-     * @return data source
-     */
-    private DataSource getDataSource() {
-        DataSource dataSource = dataSourceProvider.get();
-        if (Objects.isNull(dataSource)) {
-            dataSourceProvider.lazySet(createDataSource());
-        }
-        return dataSourceProvider.get();
-    }
-
-    /**
      * Get data source.
      *
      * @param serverLists server list
      * @return data source
      */
     public DataSource getDataSource(final String serverLists) {
-        return getDataSource();
+        return getProxyDataSource();
     }
-
+    
     /**
      * Get governance data source.
      *
@@ -128,12 +114,20 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
      * @return data source
      */
     public DataSource getDataSourceForReader(final String serverLists) {
-        return getDataSource();
+        return getProxyDataSource();
     }
-
-    private DataSource createDataSource() {
+    
+    private DataSource getProxyDataSource() {
+        DataSource dataSource = dataSourceProvider.get();
+        if (Objects.isNull(dataSource)) {
+            dataSourceProvider.set(createProxyDataSource());
+        }
+        return dataSourceProvider.get();
+    }
+    
+    private DataSource createProxyDataSource() {
         String databaseType = getParameterizedArray().getDatabaseType().getName();
-        HikariConfig result = new HikariConfig();
+        HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
         result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), getParameterizedArray().getScenario()));
         result.setUsername(getAuthentication().getUsername());
@@ -143,6 +137,6 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
         if ("MySQL".equals(databaseType)) {
             result.setConnectionInitSql("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
         }
-        return new HikariDataSource(result);
+        return result;
     }
 }
