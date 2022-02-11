@@ -92,7 +92,7 @@ Answer:
 The division result of Java integers is also integer, but in Groovy syntax of inline expression, the division result of integers is float number. 
 To obtain integer division result, A/B needs to be modified as A.intdiv(B).
 
-## [Sharding] If sharding database is partial, should tables without sharding database & table be configured in sharding rules?
+## [Sharding] If sharding database is partial, should tables without sharding database & table configured in sharding rules?
 
 Answer:
 
