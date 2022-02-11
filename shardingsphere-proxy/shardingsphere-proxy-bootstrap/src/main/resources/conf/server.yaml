@@ -43,7 +43,7 @@
 #      type: ALL_PRIVILEGES_PERMITTED
 #  - !TRANSACTION
 #    defaultType: XA
-#    providerType: Narayana
+#    providerType: Atomikos
 #    # When the provider type is Narayana, the following properties can be configured or not
 #    props:
 #      recoveryStoreUrl: jdbc:mysql://127.0.0.1:3306/jbossts
