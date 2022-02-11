@@ -36,6 +36,8 @@ public final class ShardingSphereContainers implements AutoCloseable {
     
     private final String testSuiteName;
     
+    private final String scenario;
+    
     private final Network network = Network.newNetwork();
     
     private final Collection<ShardingSphereContainer> containers = new LinkedList<>();
@@ -47,13 +49,13 @@ public final class ShardingSphereContainers implements AutoCloseable {
      * Register container.
      * 
      * @param container container to be registered
-     * @param hostname container hostname
+     * @param containerType container type
      * @param <T> type of ShardingSphere container
      * @return registered container
      */
-    public <T extends ShardingSphereContainer> T registerContainer(final T container, final String hostname) {
+    public <T extends ShardingSphereContainer> T registerContainer(final T container, final String containerType) {
         container.setNetwork(network);
-        container.setNetworkAliases(Collections.singletonList(hostname));
+        container.setNetworkAliases(Collections.singletonList(String.join(".", containerType.toLowerCase(), scenario, "host")));
         String loggerName = String.join(":", testSuiteName, container.getName());
         container.withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger(loggerName), true));
         containers.add(container);

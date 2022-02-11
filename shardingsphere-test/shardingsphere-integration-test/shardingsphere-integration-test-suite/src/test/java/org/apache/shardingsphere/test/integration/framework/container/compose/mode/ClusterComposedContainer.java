@@ -50,17 +50,16 @@ public final class ClusterComposedContainer implements ComposedContainer {
     private final ZookeeperContainer zookeeperContainer;
     
     public ClusterComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
-        containers = new ShardingSphereContainers(testSuiteName);
-        storageContainer = containers.registerContainer(
-                StorageContainerFactory.newInstance(parameterizedArray), parameterizedArray.getDatabaseType().getName().toLowerCase() + "." + parameterizedArray.getScenario() + ".host");
-        adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), "adapter");
+        containers = new ShardingSphereContainers(testSuiteName, parameterizedArray.getScenario());
+        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(parameterizedArray), parameterizedArray.getDatabaseType().getName());
+        adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), parameterizedArray.getAdapter());
         // TODO support other types of governance
         zookeeperContainer = containers.registerContainer(new ZookeeperContainer(parameterizedArray), "zk");
         if ("proxy".equals(parameterizedArray.getAdapter())) {
             adapterContainerForReader = containers.registerContainer(new ShardingSphereProxyContainer("ShardingSphere-Proxy-1", parameterizedArray), "ShardingSphere-Proxy-1");
             adapterContainerForReader.dependsOn(storageContainer, zookeeperContainer);
         } else {
-            adapterContainerForReader = containers.registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), "adapter");
+            adapterContainerForReader = containers.registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), parameterizedArray.getAdapter());
             adapterContainerForReader.dependsOn(storageContainer, zookeeperContainer);
         }
         adapterContainer.dependsOn(storageContainer, zookeeperContainer);
