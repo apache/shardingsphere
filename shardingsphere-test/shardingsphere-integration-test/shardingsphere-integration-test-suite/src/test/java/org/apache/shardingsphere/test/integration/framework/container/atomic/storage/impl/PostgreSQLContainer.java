@@ -48,15 +48,15 @@ public final class PostgreSQLContainer extends StorageContainer {
     @Override
     @SneakyThrows({ClassNotFoundException.class, SQLException.class, InterruptedException.class})
     protected void execute() {
-        int time = 0;
         Class.forName(getDriverClassName());
         String url = DataSourceEnvironment.getURL("PostgreSQL", getHost(), getPort());
-        // TODO logic need prefect
-        while (time++ < 20) {
+        boolean connected = false;
+        while (!connected) {
             try (Connection ignored = DriverManager.getConnection(url, getUsername(), getPassword())) {
+                connected = true;
                 break;
-            } catch (PSQLException ex) {
-                Thread.sleep(1000L);
+            } catch (final PSQLException ex) {
+                Thread.sleep(500L);
             }
         }
     }
