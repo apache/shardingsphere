@@ -49,7 +49,7 @@ public abstract class AdapterContainer extends ShardingSphereContainer {
     @SneakyThrows
     public AdapterContainer(final String name, final String dockerImageName, final boolean isFakedContainer, final ParameterizedArray parameterizedArray) {
         super(name, dockerImageName, isFakedContainer, parameterizedArray);
-        this.authentication = loadAuthentication(parameterizedArray);
+        authentication = loadAuthentication(parameterizedArray);
     }
     
     private YamlUserConfiguration loadAuthentication(final ParameterizedArray parameterizedArray) throws IOException {
@@ -71,7 +71,7 @@ public abstract class AdapterContainer extends ShardingSphereContainer {
      * @return data source
      */
     public abstract DataSource getDataSource(String serverLists);
-
+    
     /**
      * Get governance data source.
      *

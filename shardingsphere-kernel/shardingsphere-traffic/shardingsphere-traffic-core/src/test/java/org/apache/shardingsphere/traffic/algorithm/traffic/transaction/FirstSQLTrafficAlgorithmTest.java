@@ -17,26 +17,35 @@
 
 package org.apache.shardingsphere.traffic.algorithm.traffic.transaction;
 
-import org.apache.shardingsphere.traffic.api.traffic.identifier.SimplifiedTrafficAlgorithm;
-import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficValue;
+import org.junit.Before;
+import org.junit.Test;
 
-/**
- * JDBC traffic algorithm.
- */
-public final class JDBCTrafficAlgorithm implements TransactionTrafficAlgorithm, SimplifiedTrafficAlgorithm {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+
+public final class FirstSQLTrafficAlgorithmTest {
     
-    @Override
-    public void init() {
+    private FirstSQLTrafficAlgorithm firstSQLTrafficAlgorithm;
+    
+    @Before
+    public void setUp() {
+        firstSQLTrafficAlgorithm = new FirstSQLTrafficAlgorithm();
     }
     
-    @Override
-    public boolean match(final TransactionTrafficValue transactionTrafficValue) {
-        return transactionTrafficValue.isInTransaction();
+    @Test
+    public void assertMatchWhenInTransaction() {
+        assertFalse(firstSQLTrafficAlgorithm.match(new TransactionTrafficValue(true)));
     }
     
-    @Override
-    public String getType() {
-        return "JDBC";
+    @Test
+    public void assertMatchWhenNotInTransaction() {
+        assertFalse(firstSQLTrafficAlgorithm.match(new TransactionTrafficValue(false)));
+    }
+    
+    @Test
+    public void assertGetType() {
+        assertThat(firstSQLTrafficAlgorithm.getType(), is("FIRST_SQL"));
     }
 }

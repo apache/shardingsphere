@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.rule;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.set;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
-import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
 
 import java.util.Collection;
 
 /**
- * Traffic strategy rule.
+ * Unlabel instance statement.
  */
-@RequiredArgsConstructor
 @Getter
-public final class TrafficStrategyRule {
+@RequiredArgsConstructor
+public class UnlabelInstanceStatement extends SetDistSQLStatement {
     
-    private final String name;
+    private final String ip;
+    
+    private final String port;
     
     private final Collection<String> labels;
-    
-    private final TrafficAlgorithm trafficAlgorithm;
-    
-    private final TrafficLoadBalanceAlgorithm loadBalancer;
 }
