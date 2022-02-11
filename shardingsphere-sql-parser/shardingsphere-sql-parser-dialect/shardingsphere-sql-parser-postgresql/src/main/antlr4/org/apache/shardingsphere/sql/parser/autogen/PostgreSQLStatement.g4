@@ -62,6 +62,7 @@ execute
     | alterForeignDataWrapper
     | alterForeignTable
     | alterGroup
+    | alterMaterializedView
     | alterProcedure
     | alterServer
     | alterSequence

@@ -53,16 +53,20 @@ public final class TrafficEngine {
     public TrafficContext dispatch(final LogicSQL logicSQL) {
         Optional<TrafficStrategyRule> strategyRule = trafficRule.findMatchedStrategyRule(logicSQL);
         TrafficContext result = new TrafficContext();
-        if (!strategyRule.isPresent()) {
+        if (!strategyRule.isPresent() || isInvalidStrategyRule(strategyRule.get())) {
             return result;
         }
         List<String> instanceIds = getInstanceIdsByLabels(strategyRule.get().getLabels());
         if (!instanceIds.isEmpty()) {
-            TrafficLoadBalanceAlgorithm loadBalancer = trafficRule.findLoadBalancer(strategyRule.get().getLoadBalancerName());
+            TrafficLoadBalanceAlgorithm loadBalancer = strategyRule.get().getLoadBalancer();
             String instanceId = loadBalancer.getInstanceId(strategyRule.get().getName(), instanceIds);
             result.getExecutionUnits().add(createExecutionUnit(logicSQL, instanceId));
         }
         return result;
+    }
+    
+    private boolean isInvalidStrategyRule(final TrafficStrategyRule strategyRule) {
+        return strategyRule.getLabels().isEmpty() || null == strategyRule.getLoadBalancer();
     }
     
     private ExecutionUnit createExecutionUnit(final LogicSQL logicSQL, final String instanceId) {

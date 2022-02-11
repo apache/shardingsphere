@@ -43,6 +43,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.InstanceDefinationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.InstanceIdContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.LabelDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.LabelInstanceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PasswordContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PropertiesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PropertyContext;
@@ -77,6 +78,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.Alter
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterTransactionRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.drop.DropTrafficRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.hint.ClearHintStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.LabelInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetInstanceStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAllVariablesStatement;
@@ -169,11 +171,6 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     }
     
     @Override
-    public ASTNode visitCountSchemaRules(final CountSchemaRulesContext ctx) {
-        return new CountSchemaRulesStatement(null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
-    }
-    
-    @Override
     public ASTNode visitEnableInstance(final EnableInstanceContext ctx) {
         return buildSetInstanceStatusStatement(ctx.ENABLE().getText().toUpperCase(), ctx.instanceDefination(), ctx.instanceId());
     }
@@ -181,6 +178,21 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     @Override
     public ASTNode visitDisableInstance(final DisableInstanceContext ctx) {
         return buildSetInstanceStatusStatement(ctx.DISABLE().getText().toUpperCase(), ctx.instanceDefination(), ctx.instanceId());
+    }
+    
+    @Override
+    public ASTNode visitLabelInstance(final LabelInstanceContext ctx) {
+        String ip;
+        String port;
+        if (null != ctx.instanceDefination()) {
+            ip = getIdentifierValue(ctx.instanceDefination().ip());
+            port = getIdentifierValue(ctx.instanceDefination().port());
+        } else {
+            ip = getIdentifierValue(ctx.instanceId().ip());
+            port = getIdentifierValue(ctx.instanceId().port());
+        }
+        LinkedList<String> labels = ctx.label().stream().map(this::getIdentifierValue).collect(Collectors.toCollection(LinkedList::new));
+        return new LabelInstanceStatement(ctx.RELABEL() != null, ip, port, labels);
     }
     
     private SetInstanceStatusStatement buildSetInstanceStatusStatement(final String status, final InstanceDefinationContext instanceDefinationContext, final InstanceIdContext instanceIdContext) {
@@ -194,6 +206,11 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
             port = getIdentifierValue(instanceIdContext.port());
         }
         return new SetInstanceStatusStatement(status, ip, port);
+    }
+    
+    @Override
+    public ASTNode visitCountSchemaRules(final CountSchemaRulesContext ctx) {
+        return new CountSchemaRulesStatement(null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
     }
     
     @Override
