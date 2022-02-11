@@ -21,6 +21,9 @@ import org.apache.shardingsphere.test.integration.framework.container.atomic.Sha
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
+/**
+ * Zookeeper container.
+ */
 public final class ZookeeperContainer extends ShardingSphereContainer {
     
     public ZookeeperContainer(final ParameterizedArray parameterizedArray) {
@@ -34,6 +37,6 @@ public final class ZookeeperContainer extends ShardingSphereContainer {
      * @return server list
      */
     public String getServerLists() {
-        return this.getHost() + ":" + getMappedPort(2181);
+        return getHost() + ":" + getMappedPort(2181);
     }
 }
