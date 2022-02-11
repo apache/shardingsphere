@@ -58,7 +58,6 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
     
     @Override
     public void start() {
-        configure();
         startDependencies();
         if (!isFakedContainer) {
             super.start();

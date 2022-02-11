@@ -42,10 +42,6 @@ public final class MySQLContainer extends StorageContainer {
     }
     
     @Override
-    protected void execute() {
-    }
-    
-    @Override
     protected String getUrl(final String dataSourceName) {
         return DataSourceEnvironment.getURL("MySQL", getHost(), getPort(), dataSourceName);
     }
