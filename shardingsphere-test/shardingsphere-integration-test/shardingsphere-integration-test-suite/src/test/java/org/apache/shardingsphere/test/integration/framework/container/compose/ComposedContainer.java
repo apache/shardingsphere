@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.compose;
+package org.apache.shardingsphere.test.integration.framework.container.compose;
 
-import org.apache.shardingsphere.test.integration.framework.container.ShardingSphereContainers;
-import org.apache.shardingsphere.test.integration.framework.container.adapter.AdapterContainer;
-import org.apache.shardingsphere.test.integration.framework.container.storage.StorageContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.ShardingSphereContainers;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -37,13 +36,6 @@ public interface ComposedContainer {
     ShardingSphereContainers getContainers();
     
     /**
-     * Get adapter container.
-     *
-     * @return adapter container
-     */
-    AdapterContainer getAdapterContainer();
-    
-    /**
      * Get storage container.
      *
      * @return storage container
@@ -51,9 +43,9 @@ public interface ComposedContainer {
     StorageContainer getStorageContainer();
     
     /**
-     * Get all target data sources.
+     * Get data source map.
      *
-     * @return datasource map
+     * @return data source map
      */
     Map<String, DataSource> getDataSourceMap();
 }
