@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -64,7 +63,6 @@ public final class ShowInstanceModeExecutor extends AbstractShowExecutor {
         // TODO Add display of overwrite after metadata save overwrite.
         InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
         PersistRepositoryConfiguration repositoryConfiguration = instanceContext.getModeConfiguration().getRepository();
-        ObjectUtils.defaultIfNull(repositoryConfiguration.getType(),"");
         return Collections.singleton(Arrays.asList(instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId(), instanceContext.getModeConfiguration().getType(),
                 null == repositoryConfiguration ? "" : repositoryConfiguration.getType(),
                 null == repositoryConfiguration ? "" : PropertiesConverter.convert(repositoryConfiguration.getProps())));
