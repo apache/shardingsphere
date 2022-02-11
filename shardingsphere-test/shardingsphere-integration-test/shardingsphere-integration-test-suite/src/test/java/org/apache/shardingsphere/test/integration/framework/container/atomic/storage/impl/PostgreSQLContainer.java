@@ -52,9 +52,8 @@ public final class PostgreSQLContainer extends StorageContainer {
     @Override
     @SneakyThrows({ClassNotFoundException.class, SQLException.class, InterruptedException.class})
     protected void execute() {
-        DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL");
-        Class.forName(DataSourceEnvironment.getDriverClassName(databaseType));
-        String url = DataSourceEnvironment.getURL(databaseType, getHost(), getPort());
+        Class.forName(DataSourceEnvironment.getDriverClassName(getDatabaseType()));
+        String url = DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getPort());
         boolean connected = false;
         while (!connected) {
             try (Connection ignored = DriverManager.getConnection(url, getUsername(), getPassword())) {

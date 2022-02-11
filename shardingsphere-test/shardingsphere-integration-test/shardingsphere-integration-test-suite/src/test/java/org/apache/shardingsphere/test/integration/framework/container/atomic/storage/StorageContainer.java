@@ -44,6 +44,7 @@ public abstract class StorageContainer extends ShardingSphereContainer {
     
     private Map<String, DataSource> dataSourceMap;
     
+    @Getter
     private final DatabaseType databaseType;
     
     @Getter
