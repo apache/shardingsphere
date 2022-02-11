@@ -26,6 +26,7 @@ import org.postgresql.util.PSQLException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 /**
  * PostgreSQL container.
@@ -45,7 +46,7 @@ public final class PostgreSQLContainer extends StorageContainer {
     }
 
     @Override
-    @SneakyThrows
+    @SneakyThrows({ClassNotFoundException.class, SQLException.class, InterruptedException.class})
     protected void execute() {
         int time = 0;
         Class.forName(getDriverClassName());

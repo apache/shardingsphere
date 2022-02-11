@@ -23,10 +23,9 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.container.compose.mode.ClusterComposedContainer;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.ShardingSphereIntegrationTestParameterized;
 import org.junit.After;
@@ -61,10 +60,6 @@ public abstract class BaseITCase {
     
     private final StorageContainer storageContainer;
     
-    private final AdapterContainer adapterContainer;
-    
-    private Map<String, DataSource> dataSourceMap;
-    
     private DataSource targetDataSource;
     
     private DataSource dataSourceForReader;
@@ -76,13 +71,12 @@ public abstract class BaseITCase {
         databaseType = parameterizedArray.getDatabaseType();
         sqlCommandType = parameterizedArray.getSqlCommandType();
         storageContainer = composedContainer.getStorageContainer();
-        adapterContainer = composedContainer.getAdapterContainer();
         integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
     }
     
     @Before
     public void init() throws Exception {
-        dataSourceMap = composedContainer.getDataSourceMap();
+        Map<String, DataSource> dataSourceMap = composedContainer.getDataSourceMap();
         targetDataSource = dataSourceMap.get("adapterForWriter");
         if (composedContainer instanceof ClusterComposedContainer) {
             dataSourceForReader = dataSourceMap.get("adapterForReader");

@@ -44,14 +44,14 @@ public final class MemoryComposedContainer implements ComposedContainer {
     
     public MemoryComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
         containers = new ShardingSphereContainers(testSuiteName);
-        storageContainer = getContainers().registerContainer(
+        storageContainer = containers.registerContainer(
                 StorageContainerFactory.newInstance(parameterizedArray), parameterizedArray.getDatabaseType().getName().toLowerCase() + "." + parameterizedArray.getScenario() + ".host");
-        adapterContainer = getContainers().registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), "adapter");
+        adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), "adapter");
         adapterContainer.dependsOn(storageContainer);
     }
     
     @Override
     public Map<String, DataSource> getDataSourceMap() {
-        return Collections.singletonMap("adapterForWriter", getAdapterContainer().getDataSource(null));
+        return Collections.singletonMap("adapterForWriter", adapterContainer.getDataSource(null));
     }
 }
