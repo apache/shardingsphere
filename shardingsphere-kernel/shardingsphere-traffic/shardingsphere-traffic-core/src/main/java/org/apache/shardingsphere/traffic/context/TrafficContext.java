@@ -19,11 +19,7 @@ package org.apache.shardingsphere.traffic.context;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Traffic context.
@@ -32,9 +28,9 @@ import java.util.LinkedList;
 @Setter
 public final class TrafficContext {
     
+    private String instanceId;
+    
     private RouteContext routeContext = new RouteContext();
-
-    private Collection<ExecutionUnit> executionUnits = new LinkedList<>();
     
     /**
      * Judge whether statement is match traffic or not.
@@ -42,6 +38,6 @@ public final class TrafficContext {
      * @return whether statement is match traffic or not
      */
     public boolean isMatchTraffic() {
-        return executionUnits.size() > 0;
+        return null != instanceId;
     }
 }
