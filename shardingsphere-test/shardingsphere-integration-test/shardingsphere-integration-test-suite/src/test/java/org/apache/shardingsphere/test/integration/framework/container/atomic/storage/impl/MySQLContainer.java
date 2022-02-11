@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.atomic.storage.impl;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
@@ -43,7 +42,6 @@ public final class MySQLContainer extends StorageContainer {
     }
     
     @Override
-    @SneakyThrows
     protected void execute() {
     }
     
