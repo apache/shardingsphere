@@ -34,6 +34,7 @@ import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,7 +44,7 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseDQLIT extends SingleITCase {
     
-    private static volatile boolean filled;
+    private static final Collection<String> filledScenarios = new HashSet<>();
     
     public BaseDQLIT(final AssertionParameterizedArray parameter) {
         super(parameter);
@@ -56,11 +57,11 @@ public abstract class BaseDQLIT extends SingleITCase {
     }
     
     private void fillDataOnlyOnce() throws SQLException, ParseException, IOException, JAXBException {
-        if (!filled) {
-            synchronized (this) {
-                if (!filled) {
+        if (!filledScenarios.contains(getScenario())) {
+            synchronized (filledScenarios) {
+                if (!filledScenarios.contains(getScenario())) {
                     new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getScenario()), getStorageContainer().getDataSourceMap()).fillData();
-                    filled = true;
+                    filledScenarios.add(getScenario());
                 }
             }
         }
