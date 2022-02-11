@@ -97,7 +97,7 @@ public final class AlterTrafficRuleExecutor implements AlterStatementExecutor {
     }
     
     private Collection<String> getUnusedLoadBalancer(final TrafficRuleConfiguration configuration) {
-        Set<String> currentlyInUse = configuration.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getLoadBalancerName).collect(Collectors.toSet());
+        Collection<String> currentlyInUse = configuration.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getLoadBalancerName).collect(Collectors.toSet());
         return configuration.getLoadBalancers().keySet().stream().filter(each -> !currentlyInUse.contains(each)).collect(Collectors.toSet());
     }
 }

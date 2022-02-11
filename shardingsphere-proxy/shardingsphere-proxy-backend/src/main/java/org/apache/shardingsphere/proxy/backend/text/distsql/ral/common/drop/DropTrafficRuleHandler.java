@@ -67,12 +67,12 @@ public final class DropTrafficRuleHandler implements TextProtocolBackendHandler 
     }
     
     private Collection<String> getUnusedAlgorithm(final TrafficRuleConfiguration configuration) {
-        Set<String> currentlyInUse = configuration.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getAlgorithmName).collect(Collectors.toSet());
+        Collection<String> currentlyInUse = configuration.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getAlgorithmName).collect(Collectors.toSet());
         return configuration.getTrafficAlgorithms().keySet().stream().filter(each -> !currentlyInUse.contains(each)).collect(Collectors.toSet());
     }
     
     private Collection<String> getUnusedLoadBalancer(final TrafficRuleConfiguration configuration) {
-        Set<String> currentlyInUse = configuration.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getLoadBalancerName).collect(Collectors.toSet());
+        Collection<String> currentlyInUse = configuration.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getLoadBalancerName).collect(Collectors.toSet());
         return configuration.getLoadBalancers().keySet().stream().filter(each -> !currentlyInUse.contains(each)).collect(Collectors.toSet());
     }
     
