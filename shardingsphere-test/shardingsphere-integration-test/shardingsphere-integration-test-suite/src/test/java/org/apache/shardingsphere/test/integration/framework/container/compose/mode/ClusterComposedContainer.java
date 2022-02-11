@@ -52,7 +52,7 @@ public final class ClusterComposedContainer implements ComposedContainer {
         storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(parameterizedArray), parameterizedArray.getDatabaseType().getName());
         adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), parameterizedArray.getAdapter());
         // TODO support other types of governance
-        zookeeperContainer = containers.registerContainer(new ZookeeperContainer(parameterizedArray), "zk");
+        zookeeperContainer = containers.registerContainer(new ZookeeperContainer(), "zk");
         if ("proxy".equals(parameterizedArray.getAdapter())) {
             adapterContainerForReader = containers.registerContainer(new ShardingSphereProxyContainer("ShardingSphere-Proxy-1", parameterizedArray), "ShardingSphere-Proxy-1");
             adapterContainerForReader.dependsOn(storageContainer, zookeeperContainer);

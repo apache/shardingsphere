@@ -47,10 +47,14 @@ public abstract class StorageContainer extends ShardingSphereContainer {
     
     private Map<String, DataSource> dataSourceMap;
     
+    @Getter
+    private final ParameterizedArray parameterizedArray;
+    
     public StorageContainer(final String name, final String dockerImageName,
                             final DatabaseType databaseType, final boolean isFakedContainer, final ParameterizedArray parameterizedArray) {
-        super(name, dockerImageName, isFakedContainer, parameterizedArray);
+        super(name, dockerImageName, isFakedContainer);
         this.databaseType = databaseType;
+        this.parameterizedArray = parameterizedArray;
     }
     
     /**
@@ -72,7 +76,7 @@ public abstract class StorageContainer extends ShardingSphereContainer {
     @SneakyThrows({IOException.class, JAXBException.class})
     public synchronized Map<String, DataSource> getDataSourceMap() {
         if (null == dataSourceMap) {
-            Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDatabaseNames(getParameterizedArray().getScenario());
+            Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDatabaseNames(parameterizedArray.getScenario());
             Builder<String, DataSource> builder = ImmutableMap.builder();
             dataSourceNames.forEach(each -> builder.put(each, createDataSource(each)));
             dataSourceMap = builder.build();

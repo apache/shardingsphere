@@ -45,6 +45,8 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public final class ShardingSphereJDBCContainer extends AdapterContainer {
     
+    private final ParameterizedArray parameterizedArray;
+    
     private final AtomicBoolean isHealthy = new AtomicBoolean();
     
     private Map<String, DataSource> dataSourceMap;
@@ -54,7 +56,8 @@ public final class ShardingSphereJDBCContainer extends AdapterContainer {
     private final AtomicReference<DataSource> anotherClientDataSourceProvider = new AtomicReference<>();
     
     public ShardingSphereJDBCContainer(final ParameterizedArray parameterizedArray) {
-        super("ShardingSphere-JDBC", "ShardingSphere-JDBC", true, parameterizedArray);
+        super("ShardingSphere-JDBC", "ShardingSphere-JDBC", true);
+        this.parameterizedArray = parameterizedArray;
     }
     
     @Override
@@ -82,7 +85,7 @@ public final class ShardingSphereJDBCContainer extends AdapterContainer {
             if (Strings.isNullOrEmpty(serverLists)) {
                 try {
                     clientDataSourceProvider.set(
-                            YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario()))));
+                            YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(parameterizedArray.getScenario()))));
                 } catch (final SQLException | IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -109,7 +112,7 @@ public final class ShardingSphereJDBCContainer extends AdapterContainer {
     
     @SneakyThrows({SQLException.class, IOException.class})
     private DataSource createGovernanceClientDataSource(final String serverLists) {
-        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario())), YamlRootConfiguration.class);
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(new File(EnvironmentPath.getRulesConfigurationFile(parameterizedArray.getScenario())), YamlRootConfiguration.class);
         rootConfig.getMode().getRepository().getProps().setProperty("server-lists", serverLists);
         return YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, YamlEngine.marshal(rootConfig).getBytes(StandardCharsets.UTF_8));
     }

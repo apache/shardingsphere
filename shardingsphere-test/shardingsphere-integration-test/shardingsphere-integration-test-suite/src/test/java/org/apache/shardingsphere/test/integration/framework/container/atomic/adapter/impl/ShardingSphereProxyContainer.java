@@ -50,6 +50,8 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
     
     private static final String PROPERTY_AGENT_HOME = "AGENT_HOME";
     
+    private final ParameterizedArray parameterizedArray;
+    
     private final AtomicReference<DataSource> dataSourceProvider = new AtomicReference<>();
     
     public ShardingSphereProxyContainer(final ParameterizedArray parameterizedArray) {
@@ -57,7 +59,8 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
     }
     
     public ShardingSphereProxyContainer(final String dockerName, final ParameterizedArray parameterizedArray) {
-        super(Objects.isNull(dockerName) ? "ShardingSphere-Proxy" : dockerName, "apache/shardingsphere-proxy-test", parameterizedArray);
+        super(Objects.isNull(dockerName) ? "ShardingSphere-Proxy" : dockerName, "apache/shardingsphere-proxy-test");
+        this.parameterizedArray = parameterizedArray;
     }
     
     /**
@@ -96,7 +99,7 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
     
     @Override
     protected void configure() {
-        withConfMapping("/docker/proxy/conf/" + getParameterizedArray().getScenario() + "/" + getParameterizedArray().getDatabaseType().getName().toLowerCase());
+        withConfMapping("/docker/proxy/conf/" + parameterizedArray.getScenario() + "/" + parameterizedArray.getDatabaseType().getName().toLowerCase());
         setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*ShardingSphere-Proxy .* mode started successfully.*"));
         super.configure();
     }
@@ -136,10 +139,10 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
     }
     
     private DataSource createProxyDataSource() {
-        String databaseType = getParameterizedArray().getDatabaseType().getName();
+        String databaseType = parameterizedArray.getDatabaseType().getName();
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
-        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), getParameterizedArray().getScenario()));
+        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), parameterizedArray.getScenario()));
         YamlUserConfiguration userConfig = loadUserConfiguration();
         result.setUsername(userConfig.getUsername());
         result.setPassword(userConfig.getPassword());
@@ -153,7 +156,7 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
     
     @SneakyThrows(IOException.class)
     private YamlUserConfiguration loadUserConfiguration() {
-        String serverFile = "/docker/proxy/conf/" + getParameterizedArray().getScenario() + "/" + getParameterizedArray().getDatabaseType().getName().toLowerCase() + "/server.yaml";
+        String serverFile = "/docker/proxy/conf/" + parameterizedArray.getScenario() + "/" + parameterizedArray.getDatabaseType().getName().toLowerCase() + "/server.yaml";
         YamlProxyServerConfiguration serverConfig = YamlEngine.unmarshal(
                 ByteStreams.toByteArray(Objects.requireNonNull(this.getClass().getResourceAsStream(serverFile))), YamlProxyServerConfiguration.class);
         return YamlUsersConfigurationConverter.convertYamlUserConfiguration(getProxyUsers(serverConfig)).stream().findFirst().orElse(new YamlUserConfiguration());
