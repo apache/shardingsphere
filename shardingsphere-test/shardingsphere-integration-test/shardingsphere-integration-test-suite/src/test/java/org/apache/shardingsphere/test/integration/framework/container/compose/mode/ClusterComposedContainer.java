@@ -52,20 +52,19 @@ public final class ClusterComposedContainer implements ComposedContainer {
         containers = new AtomicContainers(testSuiteName, parameterizedArray.getScenario());
         storageContainer = containers.registerContainer(
                 StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getDatabaseType().getName());
-        adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(
-                parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getAdapter());
+        adapterContainer = containers.registerContainer(
+                AdapterContainerFactory.newInstance(parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getAdapter());
         // TODO support other types of governance
         governanceContainer = containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper"), "zk");
+        adapterContainer.dependsOn(storageContainer, governanceContainer);
         if ("proxy".equals(parameterizedArray.getAdapter())) {
             adapterContainerForReader = containers.registerContainer(
                     new ShardingSphereProxyContainer("ShardingSphere-Proxy-1", parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), "ShardingSphere-Proxy-1");
-            adapterContainerForReader.dependsOn(storageContainer, governanceContainer);
         } else {
             adapterContainerForReader = containers.registerContainer(
                     AdapterContainerFactory.newInstance(parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getAdapter());
-            adapterContainerForReader.dependsOn(storageContainer, governanceContainer);
         }
-        adapterContainer.dependsOn(storageContainer, governanceContainer);
+        adapterContainerForReader.dependsOn(storageContainer, governanceContainer);
     }
     
     @Override
