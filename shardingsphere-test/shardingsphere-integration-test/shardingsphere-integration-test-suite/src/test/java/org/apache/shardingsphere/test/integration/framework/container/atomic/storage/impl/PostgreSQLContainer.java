@@ -23,13 +23,9 @@ import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 import org.postgresql.util.PSQLException;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Optional;
 
 /**
  * PostgreSQL container.
@@ -77,20 +73,5 @@ public final class PostgreSQLContainer extends StorageContainer {
     @Override
     protected int getPort() {
         return getMappedPort(5432);
-    }
-    
-    @Override
-    public Optional<String> getPrimaryKeyColumnName(final DataSource dataSource, final String tableName) throws SQLException {
-        String sql = String.format("SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS data_type "
-                + "FROM pg_index i JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey) WHERE i.indrelid = '%s'::regclass AND i.indisprimary", tableName);
-        try (
-                Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(sql)) {
-            if (resultSet.next()) {
-                return Optional.of(resultSet.getString("attname"));
-            }
-            throw new SQLException(String.format("Can not get primary key of `%s`", tableName));
-        }
     }
 }

@@ -26,6 +26,8 @@ import org.apache.shardingsphere.test.integration.engine.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.container.compose.mode.ClusterComposedContainer;
+import org.apache.shardingsphere.test.integration.framework.database.DatabaseAssertionMetaData;
+import org.apache.shardingsphere.test.integration.framework.database.DatabaseAssertionMetaDataFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.junit.Before;
 
@@ -88,9 +90,12 @@ public abstract class BaseDMLIT extends SingleITCase {
     }
     
     private String generateFetchActualDataSQL(final DataNode dataNode) throws SQLException {
-        Optional<String> primaryKeyColumnName = getStorageContainer().getPrimaryKeyColumnName(getActualDataSourceMap().get(dataNode.getDataSourceName()), dataNode.getTableName());
-        return primaryKeyColumnName.isPresent()
-                ? String.format("SELECT * FROM %s ORDER BY %s ASC", dataNode.getTableName(), primaryKeyColumnName.get()) : String.format("SELECT * FROM %s", dataNode.getTableName());
+        Optional<DatabaseAssertionMetaData> databaseAssertionMetaData = DatabaseAssertionMetaDataFactory.newInstance(getDatabaseType());
+        if (databaseAssertionMetaData.isPresent()) {
+            String primaryKeyColumnName = databaseAssertionMetaData.get().getPrimaryKeyColumnName(getActualDataSourceMap().get(dataNode.getDataSourceName()), dataNode.getTableName());
+            return String.format("SELECT * FROM %s ORDER BY %s ASC", dataNode.getTableName(), primaryKeyColumnName);
+        }
+        return String.format("SELECT * FROM %s", dataNode.getTableName());
     }
     
     private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {
