@@ -19,7 +19,7 @@ schemaName: sharding_governance
 
 dataSources:
   governance_db:
-    url: jdbc:mysql://mysql.sharding_governance.host:3306/governance_db?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:h2://h2.sharding_governance.host:3306/governance_db?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
