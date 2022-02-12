@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.integration.framework.container.atomic.st
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 
-import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -58,10 +57,5 @@ public final class MySQLContainer extends StorageContainer {
     @Override
     protected int getPort() {
         return getMappedPort(3306);
-    }
-    
-    @Override
-    public Optional<String> getPrimaryKeyColumnName(final DataSource dataSource, final String tableName) {
-        return Optional.empty();
     }
 }

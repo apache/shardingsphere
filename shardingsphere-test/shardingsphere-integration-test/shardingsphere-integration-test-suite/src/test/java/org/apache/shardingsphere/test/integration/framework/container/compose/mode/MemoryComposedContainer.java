@@ -27,6 +27,7 @@ import org.apache.shardingsphere.test.integration.framework.container.compose.Co
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 import javax.sql.DataSource;
+import java.util.Map;
 
 /**
  * Memory composed container.
@@ -50,12 +51,12 @@ public final class MemoryComposedContainer implements ComposedContainer {
     }
     
     @Override
-    public DataSource getOperationDataSource() {
-        return adapterContainer.getOperationDataSource(null);
+    public Map<String, DataSource> getActualDataSourceMap() {
+        return storageContainer.getActualDataSourceMap();
     }
     
     @Override
-    public DataSource getVerificationDataSource() {
-        return adapterContainer.getOperationDataSource(null);
+    public DataSource getTargetDataSource() {
+        return adapterContainer.getTargetDataSource(null);
     }
 }

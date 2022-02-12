@@ -15,30 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.container.atomic.adapter;
-
-import org.apache.shardingsphere.test.integration.framework.container.atomic.AtomicContainer;
+package org.apache.shardingsphere.test.integration.framework.database;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
- * Adapter container.
+ * Database assertion meta data.
  */
-public abstract class AdapterContainer extends AtomicContainer {
-    
-    public AdapterContainer(final String dockerName, final String dockerImageName) {
-        this(dockerName, dockerImageName, false);
-    }
-    
-    public AdapterContainer(final String name, final String dockerImageName, final boolean isFakedContainer) {
-        super(name, dockerImageName, isFakedContainer);
-    }
+public interface DatabaseAssertionMetaData {
     
     /**
-     * Get target data source.
+     * Get primary key column name.
      *
-     * @param serverLists server lists
-     * @return target data source
+     * @param dataSource data source
+     * @param tableName table name
+     * @return primary key column name
+     * @throws SQLException SQL exception
      */
-    public abstract DataSource getTargetDataSource(String serverLists);
+    String getPrimaryKeyColumnName(DataSource dataSource, String tableName) throws SQLException;
 }

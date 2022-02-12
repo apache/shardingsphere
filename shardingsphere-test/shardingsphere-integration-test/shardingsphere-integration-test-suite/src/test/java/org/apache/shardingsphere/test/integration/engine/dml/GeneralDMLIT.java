@@ -66,7 +66,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
             default:
         }
         int actualUpdateCount;
-        try (Connection connection = getOperationDataSource().getConnection()) {
+        try (Connection connection = getTargetDataSource().getConnection()) {
             actualUpdateCount = SQLExecuteType.Literal == getSqlExecuteType() ? executeUpdateForStatement(connection) : executeUpdateForPreparedStatement(connection);
         }
         assertDataSet(actualUpdateCount);
@@ -96,7 +96,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
             default:
         }
         int actualUpdateCount;
-        try (Connection connection = getOperationDataSource().getConnection()) {
+        try (Connection connection = getTargetDataSource().getConnection()) {
             actualUpdateCount = SQLExecuteType.Literal == getSqlExecuteType() ? executeForStatement(connection) : executeForPreparedStatement(connection);
         }
         assertDataSet(actualUpdateCount);

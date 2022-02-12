@@ -21,7 +21,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.AtomicContainers;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainerFactory;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl.ShardingSphereProxyContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.governance.GovernanceContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
@@ -30,6 +29,7 @@ import org.apache.shardingsphere.test.integration.framework.container.compose.Co
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 import javax.sql.DataSource;
+import java.util.Map;
 
 /**
  * Cluster composed container.
@@ -44,9 +44,7 @@ public final class ClusterComposedContainer implements ComposedContainer {
     @Getter
     private final StorageContainer storageContainer;
     
-    private final AdapterContainer operationAdapterContainer;
-    
-    private final AdapterContainer verificationAdapterContainer;
+    private final AdapterContainer adapterContainer;
     
     public ClusterComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
         containers = new AtomicContainers(testSuiteName, parameterizedArray.getScenario());
@@ -54,26 +52,18 @@ public final class ClusterComposedContainer implements ComposedContainer {
         governanceContainer = containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper"), "zk");
         storageContainer = containers.registerContainer(
                 StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getDatabaseType().getName());
-        operationAdapterContainer = containers.registerContainer(
+        adapterContainer = containers.registerContainer(
                 AdapterContainerFactory.newInstance(parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getAdapter());
-        operationAdapterContainer.dependsOn(governanceContainer, storageContainer);
-        if ("proxy".equals(parameterizedArray.getAdapter())) {
-            verificationAdapterContainer = containers.registerContainer(
-                    new ShardingSphereProxyContainer("ShardingSphere-Proxy-1", parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), "ShardingSphere-Proxy-1");
-        } else {
-            verificationAdapterContainer = containers.registerContainer(
-                    AdapterContainerFactory.newInstance(parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getAdapter());
-        }
-        verificationAdapterContainer.dependsOn(governanceContainer, storageContainer);
+        adapterContainer.dependsOn(governanceContainer, storageContainer);
     }
     
     @Override
-    public DataSource getOperationDataSource() {
-        return operationAdapterContainer.getOperationDataSource(governanceContainer.getServerLists());
+    public Map<String, DataSource> getActualDataSourceMap() {
+        return storageContainer.getActualDataSourceMap();
     }
     
     @Override
-    public DataSource getVerificationDataSource() {
-        return verificationAdapterContainer.getVerificationDataSource(governanceContainer.getServerLists());
+    public DataSource getTargetDataSource() {
+        return adapterContainer.getTargetDataSource(governanceContainer.getServerLists());
     }
 }

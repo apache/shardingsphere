@@ -54,7 +54,7 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
     
     private final String scenario;
     
-    private final AtomicReference<DataSource> dataSourceProvider = new AtomicReference<>();
+    private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
     public ShardingSphereProxyContainer(final DatabaseType databaseType, final String scenario) {
         this(null, databaseType, scenario);
@@ -114,17 +114,12 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
     }
     
     @Override
-    public DataSource getOperationDataSource(final String serverLists) {
-        DataSource dataSource = dataSourceProvider.get();
+    public DataSource getTargetDataSource(final String serverLists) {
+        DataSource dataSource = targetDataSourceProvider.get();
         if (Objects.isNull(dataSource)) {
-            dataSourceProvider.set(createProxyDataSource());
+            targetDataSourceProvider.set(createProxyDataSource());
         }
-        return dataSourceProvider.get();
-    }
-    
-    @Override
-    public DataSource getVerificationDataSource(final String serverLists) {
-        return getOperationDataSource(serverLists);
+        return targetDataSourceProvider.get();
     }
     
     private DataSource createProxyDataSource() {
