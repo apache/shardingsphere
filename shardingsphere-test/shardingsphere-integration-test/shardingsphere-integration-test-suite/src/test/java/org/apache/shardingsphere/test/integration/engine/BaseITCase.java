@@ -36,6 +36,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
+import java.util.Map;
 
 @RunWith(ShardingSphereIntegrationTestParameterized.class)
 @Getter(AccessLevel.PROTECTED)
@@ -57,6 +58,8 @@ public abstract class BaseITCase {
     
     private final StorageContainer storageContainer;
     
+    private final Map<String, DataSource> actualDataSourceMap;
+    
     private final DataSource operationDataSource;
     
     private final DataSource verificationDataSource;
@@ -69,6 +72,7 @@ public abstract class BaseITCase {
         sqlCommandType = parameterizedArray.getSqlCommandType();
         integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
         storageContainer = composedContainer.getStorageContainer();
+        actualDataSourceMap = composedContainer.getStorageContainer().getActualDataSourceMap();
         operationDataSource = composedContainer.getOperationDataSource();
         verificationDataSource = composedContainer.getVerificationDataSource();
     }
