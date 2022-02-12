@@ -21,6 +21,7 @@ import org.apache.shardingsphere.test.integration.engine.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.authority.AuthorityEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.junit.Before;
 
 public abstract class BaseDCLIT extends SingleITCase {
     
@@ -30,14 +31,9 @@ public abstract class BaseDCLIT extends SingleITCase {
         super(parameterizedArray);
     }
     
-    @Override
+    @Before
     public final void init() throws Exception {
-        super.init();
-        authorityEnvironmentManager = new AuthorityEnvironmentManager(
-                EnvironmentPath.getAuthorityFile(getScenario()),
-                getStorageContainer().getDataSourceMap(),
-                getDatabaseType()
-        );
+        authorityEnvironmentManager = new AuthorityEnvironmentManager(EnvironmentPath.getAuthorityFile(getScenario()), getStorageContainer().getDataSourceMap(), getDatabaseType());
         authorityEnvironmentManager.initialize();
     }
     

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.container.compose.mode.ClusterComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.junit.Before;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -51,13 +52,9 @@ public abstract class BaseDMLIT extends SingleITCase {
         super(parameterizedArray);
     }
     
-    @Override
+    @Before
     public final void init() throws Exception {
-        super.init();
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(
-                EnvironmentPath.getDataSetFile(getScenario()),
-                getStorageContainer().getDataSourceMap()
-        );
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getScenario()), getStorageContainer().getDataSourceMap());
         dataSetEnvironmentManager.fillData();
     }
     

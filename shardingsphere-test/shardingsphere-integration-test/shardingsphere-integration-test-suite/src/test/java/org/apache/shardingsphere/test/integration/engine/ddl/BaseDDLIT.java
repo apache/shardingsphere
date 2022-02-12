@@ -27,6 +27,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
 import org.apache.shardingsphere.test.integration.framework.container.compose.mode.ClusterComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.junit.Before;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -51,9 +52,8 @@ public abstract class BaseDDLIT extends SingleITCase {
         super(parameterizedArray);
     }
     
-    @Override
+    @Before
     public final void init() throws Exception {
-        super.init();
         assertNotNull("Expected affected table is required", getAssertion().getInitialSQL());
         assertNotNull("Init SQL is required", getAssertion().getInitialSQL().getAffectedTable());
         try (Connection connection = getOperationDataSource().getConnection()) {

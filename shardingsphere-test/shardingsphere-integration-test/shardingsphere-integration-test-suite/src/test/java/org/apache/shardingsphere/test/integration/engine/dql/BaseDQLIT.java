@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.integration.engine.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.junit.Before;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -50,9 +51,8 @@ public abstract class BaseDQLIT extends SingleITCase {
         super(parameter);
     }
     
-    @Override
-    public void init() throws Exception {
-        super.init();
+    @Before
+    public final void init() throws Exception {
         fillDataOnlyOnce();
     }
     

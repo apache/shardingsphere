@@ -23,6 +23,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.junit.Before;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -43,9 +44,8 @@ public abstract class BaseRDLIT extends SingleITCase {
         super(parameter);
     }
     
-    @Override
+    @Before
     public final void init() throws Exception {
-        super.init();
         assertNotNull("Init SQL is required", getAssertion().getInitialSQL());
         try (Connection connection = getOperationDataSource().getConnection()) {
             executeInitSQLs(connection);
