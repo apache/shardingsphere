@@ -59,7 +59,7 @@ public final class GeneralRALIT extends BaseRALIT {
     
     @Test
     public void assertExecute() throws SQLException, ParseException {
-        try (Connection connection = getOperationDataSource().getConnection()) {
+        try (Connection connection = getTargetDataSource().getConnection()) {
             assertExecuteForStatement(connection);
         }
     }

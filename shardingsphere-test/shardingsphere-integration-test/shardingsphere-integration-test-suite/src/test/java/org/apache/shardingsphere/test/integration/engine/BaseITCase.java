@@ -57,7 +57,7 @@ public abstract class BaseITCase {
     
     private final Map<String, DataSource> actualDataSourceMap;
     
-    private final DataSource operationDataSource;
+    private final DataSource targetDataSource;
     
     public BaseITCase(final ParameterizedArray parameterizedArray) {
         adapter = parameterizedArray.getAdapter();
@@ -66,8 +66,8 @@ public abstract class BaseITCase {
         databaseType = parameterizedArray.getDatabaseType();
         sqlCommandType = parameterizedArray.getSqlCommandType();
         integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
-        actualDataSourceMap = composedContainer.getStorageContainer().getActualDataSourceMap();
-        operationDataSource = composedContainer.getTargetDataSource();
+        actualDataSourceMap = composedContainer.getActualDataSourceMap();
+        targetDataSource = composedContainer.getTargetDataSource();
     }
     
     @After

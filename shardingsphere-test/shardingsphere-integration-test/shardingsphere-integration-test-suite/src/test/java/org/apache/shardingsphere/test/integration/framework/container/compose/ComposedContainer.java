@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.test.integration.framework.container.compose;
 
 import org.apache.shardingsphere.test.integration.framework.container.atomic.AtomicContainers;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 
 import javax.sql.DataSource;
+import java.util.Map;
 
 /**
  * Composed container.
@@ -35,11 +35,11 @@ public interface ComposedContainer {
     AtomicContainers getContainers();
     
     /**
-     * Get storage container.
+     * Get actual data source map.
      *
-     * @return storage container
+     * @return actual data source map
      */
-    StorageContainer getStorageContainer();
+    Map<String, DataSource> getActualDataSourceMap();
     
     /**
      * Get target data source.

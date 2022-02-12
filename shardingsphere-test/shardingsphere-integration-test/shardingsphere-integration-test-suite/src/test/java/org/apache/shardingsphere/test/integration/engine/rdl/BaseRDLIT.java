@@ -47,7 +47,7 @@ public abstract class BaseRDLIT extends SingleITCase {
     @Before
     public final void init() throws Exception {
         assertNotNull("Init SQL is required", getAssertion().getInitialSQL());
-        try (Connection connection = getOperationDataSource().getConnection()) {
+        try (Connection connection = getTargetDataSource().getConnection()) {
             executeInitSQLs(connection);
         }
     }
@@ -55,7 +55,7 @@ public abstract class BaseRDLIT extends SingleITCase {
     @Override
     public final void tearDown() throws Exception {
         if (getAssertion().getDestroySQL() != null) {
-            try (Connection connection = getOperationDataSource().getConnection()) {
+            try (Connection connection = getTargetDataSource().getConnection()) {
                 executeDestroySQLs(connection);
             }
         }

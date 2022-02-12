@@ -29,6 +29,7 @@ import org.apache.shardingsphere.test.integration.framework.container.compose.Co
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 import javax.sql.DataSource;
+import java.util.Map;
 
 /**
  * Cluster composed container.
@@ -54,6 +55,11 @@ public final class ClusterComposedContainer implements ComposedContainer {
         adapterContainer = containers.registerContainer(
                 AdapterContainerFactory.newInstance(parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getAdapter());
         adapterContainer.dependsOn(governanceContainer, storageContainer);
+    }
+    
+    @Override
+    public Map<String, DataSource> getActualDataSourceMap() {
+        return storageContainer.getActualDataSourceMap();
     }
     
     @Override

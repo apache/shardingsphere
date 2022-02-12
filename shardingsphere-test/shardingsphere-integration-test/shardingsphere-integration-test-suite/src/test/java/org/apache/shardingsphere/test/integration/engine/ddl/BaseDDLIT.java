@@ -54,14 +54,14 @@ public abstract class BaseDDLIT extends SingleITCase {
     public final void init() throws Exception {
         assertNotNull("Expected affected table is required", getAssertion().getInitialSQL());
         assertNotNull("Init SQL is required", getAssertion().getInitialSQL().getAffectedTable());
-        try (Connection connection = getOperationDataSource().getConnection()) {
+        try (Connection connection = getTargetDataSource().getConnection()) {
             executeInitSQLs(connection);
         }
     }
     
     @Override
     public final void tearDown() throws Exception {
-        try (Connection connection = getOperationDataSource().getConnection()) {
+        try (Connection connection = getTargetDataSource().getConnection()) {
             String dropSql = String.format("DROP TABLE %s", getAssertion().getInitialSQL().getAffectedTable());
             executeUpdateForPrepareStatement(connection, dropSql);
         } catch (final SQLException | NoSuchTableException ignored) {
