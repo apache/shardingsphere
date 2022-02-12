@@ -33,9 +33,9 @@ import java.util.stream.Collectors;
  * Atomic container.
  */
 @Slf4j
+@Getter
 public abstract class AtomicContainer extends GenericContainer<AtomicContainer> {
     
-    @Getter
     private final String name;
     
     private final boolean isFakedContainer;
