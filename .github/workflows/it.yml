@@ -52,8 +52,9 @@ jobs:
             ${{ runner.os }}-maven-
       - uses: actions/checkout@v2
       - name: Set up JDK 8
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
+          distribution: 'temurin'
           java-version: 8
       - name: Build Project
         run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
@@ -82,8 +83,9 @@ jobs:
             ${{ runner.os }}-maven-
       - uses: actions/checkout@v2
       - name: Set up JDK 8
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
+          distribution: 'temurin'
           java-version: 8
       - name: Build Project
         run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
@@ -112,8 +114,9 @@ jobs:
             ${{ runner.os }}-maven-
       - uses: actions/checkout@v2
       - name: Set up JDK 8
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
+          distribution: 'temurin'
           java-version: 8
       - name: Build Project
         run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
@@ -137,8 +140,9 @@ jobs:
           CON_GROUP: ${{ github.workflow }}-${{ github.ref }}
         run: echo "$CON_GROUP"
       - name: Set up JDK 8
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
+          distribution: 'temurin'
           java-version: 8
       - name: Build Project
         run: ./mvnw -B clean install -DskipITs -DskipTests
@@ -158,8 +162,9 @@ jobs:
             ${{ runner.os }}-maven-
       - uses: actions/checkout@v2
       - name: Set up JDK 8
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
+          distribution: 'temurin'
           java-version: 8
       - name: Build Project
         run: ./mvnw -B clean install -DskipITs -DskipTests
