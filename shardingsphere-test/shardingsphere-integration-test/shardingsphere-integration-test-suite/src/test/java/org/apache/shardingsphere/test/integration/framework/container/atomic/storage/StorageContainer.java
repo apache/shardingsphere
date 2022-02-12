@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.AtomicContainer;
 import org.testcontainers.containers.BindMode;
@@ -56,15 +57,9 @@ public abstract class StorageContainer extends AtomicContainer {
         this.scenario = scenario;
     }
     
-    /**
-     * Mount a source path into container.
-     *
-     * @param resourcePath resource path
-     * @return self
-     */
-    public StorageContainer withInitSQLMapping(final String resourcePath) {
-        withClasspathResourceMapping(resourcePath, "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
-        return this;
+    @Override
+    protected void configure() {
+        withClasspathResourceMapping(EnvironmentPath.getInitSQLResourcePath(databaseType, scenario), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
     }
     
     /**
