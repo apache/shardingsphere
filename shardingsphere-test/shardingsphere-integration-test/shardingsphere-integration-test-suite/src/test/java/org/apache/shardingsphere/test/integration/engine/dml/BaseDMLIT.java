@@ -25,7 +25,6 @@ import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.test.integration.framework.container.compose.mode.ClusterComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.database.DatabaseAssertionMetaData;
 import org.apache.shardingsphere.test.integration.framework.database.DatabaseAssertionMetaDataFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
@@ -72,8 +71,7 @@ public abstract class BaseDMLIT extends SingleITCase {
         DataSetMetaData expectedDataSetMetaData = getDataSet().getMetaDataList().get(0);
         for (String each : new InlineExpressionParser(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
-            DataSource dataSource = getComposedContainer() instanceof ClusterComposedContainer
-                    ? getVerificationDataSource() : getActualDataSourceMap().get(dataNode.getDataSourceName());
+            DataSource dataSource = getActualDataSourceMap().get(dataNode.getDataSourceName());
             try (
                     Connection connection = dataSource.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(generateFetchActualDataSQL(dataNode))) {
