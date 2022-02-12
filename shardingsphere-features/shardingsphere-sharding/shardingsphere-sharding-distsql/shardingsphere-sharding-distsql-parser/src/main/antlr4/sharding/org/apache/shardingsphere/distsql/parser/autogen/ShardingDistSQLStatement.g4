@@ -31,6 +31,7 @@ execute
     | dropShardingBindingTableRules
     | dropShardingBroadcastTableRules
     | dropShardingAlgorithm
+    | showShardingTableRulesUsedKeyGenerator
     | showShardingTableRules
     | showShardingBindingTableRules
     | showShardingBroadcastTableRules

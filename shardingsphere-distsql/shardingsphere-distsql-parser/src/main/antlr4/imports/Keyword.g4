@@ -279,17 +279,6 @@ USED
     : U S E D
     ;
 
-SHARDING
-    : S H A R D I N G
-    ;
-       
-KEY
-    : K E Y 
-    ;
-   
-GENERATOR
-    : G E N E R A T O R
-    ;
 WITH
     : W I T H
     ;
