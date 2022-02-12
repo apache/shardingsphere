@@ -43,7 +43,7 @@ import java.util.Optional;
  */
 public abstract class StorageContainer extends AtomicContainer {
     
-    private Map<String, DataSource> dataSourceMap;
+    private Map<String, DataSource> actualDataSourceMap;
     
     @Getter
     private final DatabaseType databaseType;
@@ -69,13 +69,13 @@ public abstract class StorageContainer extends AtomicContainer {
      */
     @SneakyThrows({IOException.class, JAXBException.class})
     public synchronized Map<String, DataSource> getActualDataSourceMap() {
-        if (null == dataSourceMap) {
+        if (null == actualDataSourceMap) {
             Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDatabaseNames(scenario);
             Builder<String, DataSource> builder = ImmutableMap.builder();
             dataSourceNames.forEach(each -> builder.put(each, createDataSource(each)));
-            dataSourceMap = builder.build();
+            actualDataSourceMap = builder.build();
         }
-        return dataSourceMap;
+        return actualDataSourceMap;
     }
     
     private DataSource createDataSource(final String dataSourceName) {

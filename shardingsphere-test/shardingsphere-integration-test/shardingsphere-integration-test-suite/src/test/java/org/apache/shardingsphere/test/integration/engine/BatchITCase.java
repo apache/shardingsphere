@@ -71,7 +71,7 @@ public abstract class BatchITCase extends BaseITCase {
         for (IntegrationTestCaseAssertion each : getIntegrationTestCase().getAssertions()) {
             dataSets.add(DataSetLoader.load(getParentPath(), getScenario(), getDatabaseType(), each.getExpectedDataFile()));
         }
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getScenario()), getStorageContainer().getActualDataSourceMap());
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getScenario()), getActualDataSourceMap());
         dataSetEnvironmentManager.fillData();
     }
     
@@ -92,8 +92,7 @@ public abstract class BatchITCase extends BaseITCase {
         DataSetMetaData expectedDataSetMetaData = expected.getMetaDataList().get(0);
         for (String each : new InlineExpressionParser(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
-            DataSource dataSource = getComposedContainer() instanceof ClusterComposedContainer
-                    ? getVerificationDataSource() : getStorageContainer().getActualDataSourceMap().get(dataNode.getDataSourceName());
+            DataSource dataSource = getComposedContainer() instanceof ClusterComposedContainer ? getVerificationDataSource() : getActualDataSourceMap().get(dataNode.getDataSourceName());
             try (Connection connection = dataSource.getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s ORDER BY 1", dataNode.getTableName()))) {
                 assertDataSet(preparedStatement, expected.findRows(dataNode), expectedDataSetMetaData);
