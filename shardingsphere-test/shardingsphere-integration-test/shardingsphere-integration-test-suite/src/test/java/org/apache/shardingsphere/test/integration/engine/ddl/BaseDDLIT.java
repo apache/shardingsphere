@@ -25,11 +25,9 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
-import org.apache.shardingsphere.test.integration.framework.container.compose.mode.ClusterComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.junit.Before;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -98,8 +96,7 @@ public abstract class BaseDDLIT extends SingleITCase {
     
     private void assertNotContainsTable(final Collection<DataNode> dataNodes) throws SQLException {
         for (DataNode each : dataNodes) {
-            try (Connection connection = getComposedContainer() instanceof ClusterComposedContainer
-                    ? getVerificationDataSource().getConnection() : getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
+            try (Connection connection = getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 assertNotContainsTable(connection, each.getTableName());
             }
         }
@@ -112,8 +109,7 @@ public abstract class BaseDDLIT extends SingleITCase {
     private List<DataSetColumn> getActualColumns(final Collection<DataNode> dataNodes) throws SQLException {
         Set<DataSetColumn> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
-            DataSource dataSource = getComposedContainer() instanceof ClusterComposedContainer ? getVerificationDataSource() : getActualDataSourceMap().get(each.getDataSourceName());
-            try (Connection connection = dataSource.getConnection()) {
+            try (Connection connection = getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 result.addAll(getActualColumns(connection, each.getTableName()));
             }
         }
@@ -137,8 +133,7 @@ public abstract class BaseDDLIT extends SingleITCase {
     private List<DataSetIndex> getActualIndexes(final Collection<DataNode> dataNodes) throws SQLException {
         Set<DataSetIndex> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
-            DataSource dataSource = getComposedContainer() instanceof ClusterComposedContainer ? getVerificationDataSource() : getActualDataSourceMap().get(each.getDataSourceName());
-            try (Connection connection = dataSource.getConnection()) {
+            try (Connection connection = getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 result.addAll(getActualIndexes(connection, each.getTableName()));
             }
         }
