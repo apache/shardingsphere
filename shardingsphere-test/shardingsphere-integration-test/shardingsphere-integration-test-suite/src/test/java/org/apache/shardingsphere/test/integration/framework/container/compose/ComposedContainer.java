@@ -42,9 +42,9 @@ public interface ComposedContainer {
     StorageContainer getStorageContainer();
     
     /**
-     * Get operation data source.
+     * Get target data source.
      * 
-     * @return operation data source
+     * @return target data source
      */
-    DataSource getOperationDataSource();
+    DataSource getTargetDataSource();
 }

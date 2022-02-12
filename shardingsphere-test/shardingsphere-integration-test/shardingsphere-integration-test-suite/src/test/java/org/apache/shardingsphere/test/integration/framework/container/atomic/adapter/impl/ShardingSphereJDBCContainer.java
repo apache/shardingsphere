@@ -50,9 +50,7 @@ public final class ShardingSphereJDBCContainer extends AdapterContainer {
     
     private Map<String, DataSource> dataSourceMap;
     
-    private final AtomicReference<DataSource> clientDataSourceProvider = new AtomicReference<>();
-    
-    private final AtomicReference<DataSource> anotherClientDataSourceProvider = new AtomicReference<>();
+    private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
     public ShardingSphereJDBCContainer(final String scenario) {
         super("ShardingSphere-JDBC", "ShardingSphere-JDBC", true);
@@ -73,29 +71,20 @@ public final class ShardingSphereJDBCContainer extends AdapterContainer {
     }
     
     @Override
-    public DataSource getOperationDataSource(final String serverLists) {
-        DataSource dataSource = clientDataSourceProvider.get();
+    public DataSource getTargetDataSource(final String serverLists) {
+        DataSource dataSource = targetDataSourceProvider.get();
         if (Objects.isNull(dataSource)) {
             if (Strings.isNullOrEmpty(serverLists)) {
                 try {
-                    clientDataSourceProvider.set(YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(scenario))));
+                    targetDataSourceProvider.set(YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(scenario))));
                 } catch (final SQLException | IOException ex) {
                     throw new RuntimeException(ex);
                 }
             } else {
-                clientDataSourceProvider.set(createGovernanceClientDataSource(serverLists));
+                targetDataSourceProvider.set(createGovernanceClientDataSource(serverLists));
             }
         }
-        return clientDataSourceProvider.get();
-    }
-    
-    @Override
-    public DataSource getVerificationDataSource(final String serverLists) {
-        DataSource dataSource = anotherClientDataSourceProvider.get();
-        if (Objects.isNull(dataSource)) {
-            anotherClientDataSourceProvider.set(createGovernanceClientDataSource(serverLists));
-        }
-        return anotherClientDataSourceProvider.get();
+        return targetDataSourceProvider.get();
     }
     
     @SneakyThrows({SQLException.class, IOException.class})

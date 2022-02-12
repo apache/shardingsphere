@@ -67,7 +67,7 @@ public abstract class BaseITCase {
         sqlCommandType = parameterizedArray.getSqlCommandType();
         integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
         actualDataSourceMap = composedContainer.getStorageContainer().getActualDataSourceMap();
-        operationDataSource = composedContainer.getOperationDataSource();
+        operationDataSource = composedContainer.getTargetDataSource();
     }
     
     @After

@@ -43,7 +43,7 @@ public final class ClusterComposedContainer implements ComposedContainer {
     @Getter
     private final StorageContainer storageContainer;
     
-    private final AdapterContainer operationAdapterContainer;
+    private final AdapterContainer adapterContainer;
     
     public ClusterComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
         containers = new AtomicContainers(testSuiteName, parameterizedArray.getScenario());
@@ -51,13 +51,13 @@ public final class ClusterComposedContainer implements ComposedContainer {
         governanceContainer = containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper"), "zk");
         storageContainer = containers.registerContainer(
                 StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getDatabaseType().getName());
-        operationAdapterContainer = containers.registerContainer(
+        adapterContainer = containers.registerContainer(
                 AdapterContainerFactory.newInstance(parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getAdapter());
-        operationAdapterContainer.dependsOn(governanceContainer, storageContainer);
+        adapterContainer.dependsOn(governanceContainer, storageContainer);
     }
     
     @Override
-    public DataSource getOperationDataSource() {
-        return operationAdapterContainer.getOperationDataSource(governanceContainer.getServerLists());
+    public DataSource getTargetDataSource() {
+        return adapterContainer.getTargetDataSource(governanceContainer.getServerLists());
     }
 }
