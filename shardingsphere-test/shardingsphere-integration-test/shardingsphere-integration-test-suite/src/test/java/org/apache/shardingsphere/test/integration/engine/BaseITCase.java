@@ -67,10 +67,10 @@ public abstract class BaseITCase {
         scenario = parameterizedArray.getScenario();
         databaseType = parameterizedArray.getDatabaseType();
         sqlCommandType = parameterizedArray.getSqlCommandType();
+        integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
         storageContainer = composedContainer.getStorageContainer();
         operationDataSource = composedContainer.getOperationDataSource();
         verificationDataSource = composedContainer.getVerificationDataSource();
-        integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
     }
     
     @After
