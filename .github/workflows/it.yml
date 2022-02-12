@@ -28,7 +28,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -Dcheckstyle.skip=true
 
 jobs:
   it-empty-rule:
@@ -55,8 +55,6 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 8
-      - name: set environment
-        run: export MAVEN_OPTS=' -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true ${MAVEN_OPTS}'
       - name: Build Project
         run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
       - name: Run Integration Test
@@ -87,8 +85,6 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 8
-      - name: set environment
-        run: export MAVEN_OPTS=' -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true ${MAVEN_OPTS}'
       - name: Build Project
         run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
       - name: Run Integration Test
@@ -119,8 +115,6 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 8
-      - name: set environment
-        run: export MAVEN_OPTS=' -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true ${MAVEN_OPTS}'
       - name: Build Project
         run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
       - name: Run Integration Test
@@ -147,7 +141,7 @@ jobs:
         with:
           java-version: 8
       - name: Build Project
-        run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests
+        run: ./mvnw -B clean install -DskipITs -DskipTests
       - name: Run Integration Test
         run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-agent-test/shardingsphere-integration-agent-test-plugins/shardingsphere-integration-agent-test-metrics/pom.xml -Pit.env.metrics
   
@@ -168,6 +162,6 @@ jobs:
         with:
           java-version: 8
       - name: Build Project
-        run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests
+        run: ./mvnw -B clean install -DskipITs -DskipTests
       - name: Run Integration Test
         run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-agent-test/shardingsphere-integration-agent-test-plugins/shardingsphere-integration-agent-test-opentelemetry/pom.xml -Pit.env.opentelemetry
