@@ -22,7 +22,8 @@ import org.apache.shardingsphere.test.integration.framework.container.atomic.Sha
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl.ShardingSphereProxyContainer;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.governance.ZookeeperContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.governance.GovernanceContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.governance.GovernanceContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
@@ -45,7 +46,7 @@ public final class ClusterComposedContainer implements ComposedContainer {
     
     private final AdapterContainer adapterContainerForReader;
     
-    private final ZookeeperContainer zookeeperContainer;
+    private final GovernanceContainer governanceContainer;
     
     public ClusterComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
         containers = new ShardingSphereContainers(testSuiteName, parameterizedArray.getScenario());
@@ -54,22 +55,22 @@ public final class ClusterComposedContainer implements ComposedContainer {
         adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(
                 parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getAdapter());
         // TODO support other types of governance
-        zookeeperContainer = containers.registerContainer(new ZookeeperContainer(), "zk");
+        governanceContainer = containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper"), "zk");
         if ("proxy".equals(parameterizedArray.getAdapter())) {
             adapterContainerForReader = containers.registerContainer(
                     new ShardingSphereProxyContainer("ShardingSphere-Proxy-1", parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), "ShardingSphere-Proxy-1");
-            adapterContainerForReader.dependsOn(storageContainer, zookeeperContainer);
+            adapterContainerForReader.dependsOn(storageContainer, governanceContainer);
         } else {
             adapterContainerForReader = containers.registerContainer(
                     AdapterContainerFactory.newInstance(parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getAdapter());
-            adapterContainerForReader.dependsOn(storageContainer, zookeeperContainer);
+            adapterContainerForReader.dependsOn(storageContainer, governanceContainer);
         }
-        adapterContainer.dependsOn(storageContainer, zookeeperContainer);
+        adapterContainer.dependsOn(storageContainer, governanceContainer);
     }
     
     @Override
     public DataSource getClientDataSource() {
-        return adapterContainer.getClientDataSource(zookeeperContainer.getServerLists());
+        return adapterContainer.getClientDataSource(governanceContainer.getServerLists());
     }
     
     /**
@@ -78,6 +79,6 @@ public final class ClusterComposedContainer implements ComposedContainer {
      * @return another client data source
      */
     public DataSource getAnotherClientDataSource() {
-        return adapterContainerForReader.getAnotherClientDataSource(zookeeperContainer.getServerLists());
+        return adapterContainerForReader.getAnotherClientDataSource(governanceContainer.getServerLists());
     }
 }
