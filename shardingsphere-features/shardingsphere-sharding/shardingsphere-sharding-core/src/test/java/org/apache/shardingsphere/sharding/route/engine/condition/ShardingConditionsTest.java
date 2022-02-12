@@ -29,62 +29,66 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ShardingConditionsTest {
-
+    
     @Test
     public void assertIsAlwaysFalse() {
         ShardingConditions shardingConditions = new ShardingConditions(Collections.emptyList(), mock(SQLStatementContext.class), mock(ShardingRule.class));
         assertFalse(shardingConditions.isAlwaysFalse());
     }
-
+    
     @Test
     public void assertIsAlwaysFalseTrue() {
-        ShardingConditions shardingConditions = createSingleShardingConditions("t_order");
+        ShardingConditions shardingConditions = createSingleShardingConditions();
         assertTrue(shardingConditions.isAlwaysFalse());
     }
-
+    
     @Test
     public void assertIsNeedMerge() {
-        assertFalse(createSingleShardingConditions("t_order").isNeedMerge());
+        assertFalse(createSingleShardingConditions().isNeedMerge());
     }
-
+    
     @Test
     public void isSameShardingConditionTrue() {
-        ShardingConditions shardingConditions = createSingleShardingConditions("t_order");
+        ShardingConditions shardingConditions = createSingleShardingConditions();
         assertTrue(shardingConditions.isSameShardingCondition());
     }
-
+    
     @Test
     public void isSameShardingConditionFalse() {
-        ShardingConditions shardingConditions = createMultipleShardingConditions("t_order");
+        ShardingConditions shardingConditions = createMultipleShardingConditions();
         assertFalse(shardingConditions.isSameShardingCondition());
     }
-
+    
     @Test
     public void assertMerge() {
-        createSingleShardingConditions("t_order").merge();
+        ShardingConditions multipleShardingConditions = createMultipleShardingConditions();
+        multipleShardingConditions.merge();
+        assertThat(multipleShardingConditions.getConditions().size(), is(2));
     }
-
-    private ShardingConditions createSingleShardingConditions(final String tableName) {
+    
+    private ShardingConditions createSingleShardingConditions() {
         LinkedList<ShardingCondition> result = new LinkedList<>();
-        ShardingConditionValue shardingConditionValue = new ListShardingConditionValue<>("order_id", tableName, Collections.singleton(1L));
+        ShardingConditionValue shardingConditionValue = new ListShardingConditionValue<>("order_id", "t_order", Collections.singleton(1L));
         AlwaysFalseShardingCondition shardingCondition = new AlwaysFalseShardingCondition();
         shardingCondition.getValues().add(shardingConditionValue);
         result.add(shardingCondition);
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         return new ShardingConditions(result, sqlStatementContext, mock(ShardingRule.class));
     }
-
-    private ShardingConditions createMultipleShardingConditions(final String tableName) {
+    
+    private ShardingConditions createMultipleShardingConditions() {
         LinkedList<ShardingCondition> result = new LinkedList<>();
-        ShardingConditionValue shardingConditionValue1 = new ListShardingConditionValue<>("user_id", tableName, Collections.singleton(1L));
-        ShardingConditionValue shardingConditionValue2 = new ListShardingConditionValue<>("order_id", tableName, Collections.singleton(1L));
+        ShardingConditionValue shardingConditionValue1 = new ListShardingConditionValue<>("user_id", "t_order", Collections.singleton(1L));
+        ShardingConditionValue shardingConditionValue2 = new ListShardingConditionValue<>("order_id", "t_order", Collections.singleton(1L));
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getValues().add(shardingConditionValue1);
         ShardingCondition shardingCondition2 = new ShardingCondition();
