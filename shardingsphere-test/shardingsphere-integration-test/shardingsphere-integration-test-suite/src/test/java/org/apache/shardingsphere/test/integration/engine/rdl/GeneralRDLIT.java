@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.integration.engine.rdl;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerManager;
-import org.apache.shardingsphere.test.integration.framework.container.compose.mode.ClusterComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
@@ -30,7 +29,6 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -61,9 +59,7 @@ public final class GeneralRDLIT extends BaseRDLIT {
     
     @Test
     public void assertExecute() throws SQLException, ParseException {
-        DataSource dataSource = getComposedContainer() instanceof ClusterComposedContainer
-                ? getVerificationDataSource() : getOperationDataSource();
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = getOperationDataSource().getConnection()) {
             assertExecuteForStatement(connection);
         }
     }
