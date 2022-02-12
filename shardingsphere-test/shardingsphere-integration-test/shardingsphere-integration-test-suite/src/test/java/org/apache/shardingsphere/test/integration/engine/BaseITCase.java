@@ -59,8 +59,6 @@ public abstract class BaseITCase {
     
     private final DataSource operationDataSource;
     
-    private final DataSource verificationDataSource;
-    
     public BaseITCase(final ParameterizedArray parameterizedArray) {
         adapter = parameterizedArray.getAdapter();
         composedContainer = parameterizedArray.getCompose();
@@ -70,7 +68,6 @@ public abstract class BaseITCase {
         integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
         actualDataSourceMap = composedContainer.getStorageContainer().getActualDataSourceMap();
         operationDataSource = composedContainer.getOperationDataSource();
-        verificationDataSource = composedContainer.getVerificationDataSource();
     }
     
     @After
