@@ -36,8 +36,8 @@ public final class MySQLContainer extends StorageContainer {
     @Override
     protected void configure() {
         withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password");
-        withInitSQLMapping("/env/" + getScenario() + "/init-sql/mysql");
         setEnv(Collections.singletonList("LANG=C.UTF-8"));
+        super.configure();
     }
     
     @Override

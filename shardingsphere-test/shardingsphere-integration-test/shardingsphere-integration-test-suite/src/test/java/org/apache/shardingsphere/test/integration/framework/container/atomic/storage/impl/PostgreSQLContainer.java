@@ -45,7 +45,7 @@ public final class PostgreSQLContainer extends StorageContainer {
         withCommand("--max_connections=200");
         addEnv("POSTGRES_USER", "root");
         addEnv("POSTGRES_PASSWORD", "root");
-        withInitSQLMapping("/env/" + getScenario() + "/init-sql/postgresql");
+        super.configure();
     }
     
     @Override
