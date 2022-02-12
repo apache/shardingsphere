@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.integration.framework.container.atomic.storage.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
