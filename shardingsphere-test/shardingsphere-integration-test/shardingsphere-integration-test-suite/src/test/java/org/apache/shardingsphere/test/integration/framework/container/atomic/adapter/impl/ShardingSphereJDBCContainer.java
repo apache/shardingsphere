@@ -72,13 +72,8 @@ public final class ShardingSphereJDBCContainer extends AdapterContainer {
         return (StorageContainer) result.get();
     }
     
-    /**
-     * Get client data source.
-     *
-     * @param serverLists server list
-     * @return data source
-     */
-    public DataSource getClientDataSource(final String serverLists) {
+    @Override
+    public DataSource getOperationDataSource(final String serverLists) {
         DataSource dataSource = clientDataSourceProvider.get();
         if (Objects.isNull(dataSource)) {
             if (Strings.isNullOrEmpty(serverLists)) {
@@ -94,13 +89,8 @@ public final class ShardingSphereJDBCContainer extends AdapterContainer {
         return clientDataSourceProvider.get();
     }
     
-    /**
-     * Get another client data source.
-     *
-     * @param serverLists server list
-     * @return another client data source
-     */
-    public DataSource getAnotherClientDataSource(final String serverLists) {
+    @Override
+    public DataSource getVerificationDataSource(final String serverLists) {
         DataSource dataSource = anotherClientDataSourceProvider.get();
         if (Objects.isNull(dataSource)) {
             anotherClientDataSourceProvider.set(createGovernanceClientDataSource(serverLists));

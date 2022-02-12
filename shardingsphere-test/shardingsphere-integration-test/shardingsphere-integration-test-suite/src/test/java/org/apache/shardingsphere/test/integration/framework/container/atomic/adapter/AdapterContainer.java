@@ -35,18 +35,18 @@ public abstract class AdapterContainer extends AtomicContainer {
     }
     
     /**
-     * Get client data source.
+     * Get operation data source.
      *
      * @param serverLists server lists
-     * @return client data source
+     * @return operation data source
      */
-    public abstract DataSource getClientDataSource(String serverLists);
+    public abstract DataSource getOperationDataSource(String serverLists);
     
     /**
-     * Get another client data source.
+     * Get verification data source.
      *
      * @param serverLists server lists
-     * @return another client data source
+     * @return verification data source
      */
-    public abstract DataSource getAnotherClientDataSource(String serverLists);
+    public abstract DataSource getVerificationDataSource(String serverLists);
 }

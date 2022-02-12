@@ -51,11 +51,11 @@ public final class MemoryComposedContainer implements ComposedContainer {
     
     @Override
     public DataSource getOperationDataSource() {
-        return adapterContainer.getClientDataSource(null);
+        return adapterContainer.getOperationDataSource(null);
     }
     
     @Override
     public DataSource getVerificationDataSource() {
-        return adapterContainer.getClientDataSource(null);
+        return adapterContainer.getOperationDataSource(null);
     }
 }

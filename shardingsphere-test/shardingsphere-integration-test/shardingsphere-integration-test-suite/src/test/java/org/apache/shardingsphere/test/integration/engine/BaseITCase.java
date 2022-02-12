@@ -28,7 +28,6 @@ import org.apache.shardingsphere.test.integration.framework.container.compose.Co
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.ShardingSphereIntegrationTestParameterized;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.runner.RunWith;
 
 import javax.sql.DataSource;
@@ -58,9 +57,9 @@ public abstract class BaseITCase {
     
     private final StorageContainer storageContainer;
     
-    private DataSource operationDataSource;
+    private final DataSource operationDataSource;
     
-    private DataSource verificationDataSource;
+    private final DataSource verificationDataSource;
     
     public BaseITCase(final ParameterizedArray parameterizedArray) {
         adapter = parameterizedArray.getAdapter();
@@ -69,13 +68,9 @@ public abstract class BaseITCase {
         databaseType = parameterizedArray.getDatabaseType();
         sqlCommandType = parameterizedArray.getSqlCommandType();
         storageContainer = composedContainer.getStorageContainer();
-        integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
-    }
-    
-    @Before
-    public void init() throws Exception {
         operationDataSource = composedContainer.getOperationDataSource();
         verificationDataSource = composedContainer.getVerificationDataSource();
+        integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
     }
     
     @After
