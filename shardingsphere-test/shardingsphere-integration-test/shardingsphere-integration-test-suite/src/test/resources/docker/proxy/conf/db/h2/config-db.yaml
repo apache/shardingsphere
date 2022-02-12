@@ -19,7 +19,7 @@ schemaName: db
 
 dataSources:
   ds_0:
-    url: jdbc:h2://h2.db.host:3306/db_0?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:h2:mem:db_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -28,7 +28,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_1:
-    url: jdbc:h2://h2.db.host:3306/db_1?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:h2:mem:db_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -37,7 +37,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_2:
-    url: jdbc:h2://h2.db.host:3306/db_2?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:h2:mem:db_2;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -46,7 +46,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_3:
-    url: jdbc:h2://h2.db.host:3306/db_3?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:h2:mem:db_3;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -55,7 +55,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_4:
-    url: jdbc:h2://h2.db.host:3306/db_4?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:h2:mem:db_4;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -64,7 +64,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_5:
-    url: jdbc:h2://h2.db.host:3306/db_5?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:h2:mem:db_5;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -73,7 +73,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_6:
-    url: jdbc:h2://h2.db.host:3306/db_6?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:h2:mem:db_6;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -82,7 +82,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_7:
-    url: jdbc:h2://h2.db.host:3306/db_7?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:h2:mem:db_7;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -91,7 +91,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_8:
-    url: jdbc:h2://h2.db.host:3306/db_8?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:h2:mem:db_8;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -100,7 +100,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_9:
-    url: jdbc:h2://h2.db.host:3306/db_9?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:h2:mem:db_9;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
