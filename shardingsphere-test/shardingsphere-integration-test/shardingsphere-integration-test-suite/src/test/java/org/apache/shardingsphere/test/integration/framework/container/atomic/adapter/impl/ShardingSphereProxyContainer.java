@@ -113,32 +113,18 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
         log.info("Mapped port 3308: {}", getMappedPort(3308));
     }
     
-    /**
-     * Get data source.
-     *
-     * @param serverLists server list
-     * @return data source
-     */
-    public DataSource getClientDataSource(final String serverLists) {
-        return getProxyDataSource();
-    }
-    
-    /**
-     * Get governance data source.
-     *
-     * @param serverLists server list
-     * @return data source
-     */
-    public DataSource getAnotherClientDataSource(final String serverLists) {
-        return getProxyDataSource();
-    }
-    
-    private DataSource getProxyDataSource() {
+    @Override
+    public DataSource getOperationDataSource(final String serverLists) {
         DataSource dataSource = dataSourceProvider.get();
         if (Objects.isNull(dataSource)) {
             dataSourceProvider.set(createProxyDataSource());
         }
         return dataSourceProvider.get();
+    }
+    
+    @Override
+    public DataSource getVerificationDataSource(final String serverLists) {
+        return getOperationDataSource(serverLists);
     }
     
     private DataSource createProxyDataSource() {
