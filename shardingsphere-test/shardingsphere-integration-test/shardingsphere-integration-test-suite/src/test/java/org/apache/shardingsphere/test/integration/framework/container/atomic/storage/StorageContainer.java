@@ -24,7 +24,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.ShardingSphereContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.AtomicContainer;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap.Builder;
@@ -40,7 +40,7 @@ import java.util.Optional;
 /**
  * Storage container.
  */
-public abstract class StorageContainer extends ShardingSphereContainer {
+public abstract class StorageContainer extends AtomicContainer {
     
     private Map<String, DataSource> dataSourceMap;
     

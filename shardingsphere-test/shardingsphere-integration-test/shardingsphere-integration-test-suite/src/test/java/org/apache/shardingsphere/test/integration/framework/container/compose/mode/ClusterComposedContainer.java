@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.integration.framework.container.compose.mode;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.ShardingSphereContainers;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.AtomicContainers;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl.ShardingSphereProxyContainer;
@@ -37,7 +37,7 @@ import javax.sql.DataSource;
 public final class ClusterComposedContainer implements ComposedContainer {
     
     @Getter
-    private final ShardingSphereContainers containers;
+    private final AtomicContainers containers;
     
     @Getter
     private final StorageContainer storageContainer;
@@ -49,7 +49,7 @@ public final class ClusterComposedContainer implements ComposedContainer {
     private final GovernanceContainer governanceContainer;
     
     public ClusterComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
-        containers = new ShardingSphereContainers(testSuiteName, parameterizedArray.getScenario());
+        containers = new AtomicContainers(testSuiteName, parameterizedArray.getScenario());
         storageContainer = containers.registerContainer(
                 StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getDatabaseType().getName());
         adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(

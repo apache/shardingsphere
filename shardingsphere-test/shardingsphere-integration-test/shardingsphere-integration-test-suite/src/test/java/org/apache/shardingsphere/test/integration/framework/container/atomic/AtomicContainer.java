@@ -30,17 +30,17 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * ShardingSphere container.
+ * Atomic container.
  */
 @Slf4j
-public abstract class ShardingSphereContainer extends GenericContainer<ShardingSphereContainer> {
+public abstract class AtomicContainer extends GenericContainer<AtomicContainer> {
     
     @Getter
     private final String name;
     
     private final boolean isFakedContainer;
     
-    public ShardingSphereContainer(final String name, final String dockerImageName, final boolean isFakedContainer) {
+    public AtomicContainer(final String name, final String dockerImageName, final boolean isFakedContainer) {
         super(getDockerImage(dockerImageName, isFakedContainer));
         this.name = name;
         this.isFakedContainer = isFakedContainer;
@@ -61,7 +61,7 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
     }
     
     private void startDependencies() {
-        Collection<ShardingSphereContainer> dependencies = getDependencies().stream().map(each -> (ShardingSphereContainer) each).collect(Collectors.toList());
+        Collection<AtomicContainer> dependencies = getDependencies().stream().map(each -> (AtomicContainer) each).collect(Collectors.toList());
         dependencies.stream().filter(each -> !each.isCreated()).forEach(GenericContainer::start);
         dependencies.stream()
                 .filter(each -> {

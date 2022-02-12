@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.integration.framework.container.compose.mode;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.ShardingSphereContainers;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.AtomicContainers;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
@@ -34,14 +34,14 @@ import javax.sql.DataSource;
 @Getter
 public final class MemoryComposedContainer implements ComposedContainer {
     
-    private final ShardingSphereContainers containers;
+    private final AtomicContainers containers;
     
     private final StorageContainer storageContainer;
     
     private final AdapterContainer adapterContainer;
     
     public MemoryComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
-        containers = new ShardingSphereContainers(testSuiteName, parameterizedArray.getScenario());
+        containers = new AtomicContainers(testSuiteName, parameterizedArray.getScenario());
         storageContainer = containers.registerContainer(
                 StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getDatabaseType().getName());
         adapterContainer = containers.registerContainer(

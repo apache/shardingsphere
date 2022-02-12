@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.atomic;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Network;
@@ -29,10 +28,10 @@ import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
 /**
- * ShardingSphere containers.
+ * Atomic containers.
  */
 @RequiredArgsConstructor
-public final class ShardingSphereContainers implements AutoCloseable {
+public final class AtomicContainers implements AutoCloseable {
     
     private final String testSuiteName;
     
@@ -40,9 +39,8 @@ public final class ShardingSphereContainers implements AutoCloseable {
     
     private final Network network = Network.newNetwork();
     
-    private final Collection<ShardingSphereContainer> containers = new LinkedList<>();
+    private final Collection<AtomicContainer> containers = new LinkedList<>();
     
-    @Getter
     private volatile boolean started;
     
     /**
@@ -53,7 +51,7 @@ public final class ShardingSphereContainers implements AutoCloseable {
      * @param <T> type of ShardingSphere container
      * @return registered container
      */
-    public <T extends ShardingSphereContainer> T registerContainer(final T container, final String containerType) {
+    public <T extends AtomicContainer> T registerContainer(final T container, final String containerType) {
         container.setNetwork(network);
         container.setNetworkAliases(Collections.singletonList(String.join(".", containerType.toLowerCase(), scenario, "host")));
         String loggerName = String.join(":", testSuiteName, container.getName());
@@ -69,7 +67,7 @@ public final class ShardingSphereContainers implements AutoCloseable {
         if (!started) {
             synchronized (this) {
                 if (!started) {
-                    containers.stream().filter(each -> !each.isCreated()).forEach(ShardingSphereContainer::start);
+                    containers.stream().filter(each -> !each.isCreated()).forEach(AtomicContainer::start);
                     waitUntilReady();
                     started = true;
                 }
@@ -100,6 +98,6 @@ public final class ShardingSphereContainers implements AutoCloseable {
     
     @Override
     public void close() {
-        containers.forEach(ShardingSphereContainer::close);
+        containers.forEach(AtomicContainer::close);
     }
 }

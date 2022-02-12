@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.atomic.governance;
 
-import org.apache.shardingsphere.test.integration.framework.container.atomic.ShardingSphereContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.AtomicContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
 /**
  * Governance container.
  */
-public abstract class GovernanceContainer extends ShardingSphereContainer {
+public abstract class GovernanceContainer extends AtomicContainer {
     
     public GovernanceContainer(final String name, final String dockerImageName, final boolean isFakedContainer) {
         super(name, dockerImageName, isFakedContainer);
