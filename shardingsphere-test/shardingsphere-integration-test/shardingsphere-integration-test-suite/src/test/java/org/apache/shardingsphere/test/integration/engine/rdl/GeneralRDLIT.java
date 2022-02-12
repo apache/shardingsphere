@@ -62,7 +62,7 @@ public final class GeneralRDLIT extends BaseRDLIT {
     @Test
     public void assertExecute() throws SQLException, ParseException {
         DataSource dataSource = getComposedContainer() instanceof ClusterComposedContainer
-                ? getAnotherClientDataSource() : getTargetDataSource();
+                ? getVerificationDataSource() : getOperationDataSource();
         try (Connection connection = dataSource.getConnection()) {
             assertExecuteForStatement(connection);
         }

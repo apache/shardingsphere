@@ -56,7 +56,7 @@ public final class GeneralDCLIT extends BaseDCLIT {
     @Test
     public void assertExecuteUpdate() throws SQLException, ParseException {
         String sql = getSQL();
-        try (Connection connection = getTargetDataSource().getConnection()) {
+        try (Connection connection = getOperationDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 executeUpdateForStatement(connection, sql);
             } else {
@@ -68,7 +68,7 @@ public final class GeneralDCLIT extends BaseDCLIT {
     @Test
     public void assertExecute() throws SQLException, ParseException {
         String sql = getSQL();
-        try (Connection connection = getTargetDataSource().getConnection()) {
+        try (Connection connection = getOperationDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 executeForStatement(connection, sql);
             } else {

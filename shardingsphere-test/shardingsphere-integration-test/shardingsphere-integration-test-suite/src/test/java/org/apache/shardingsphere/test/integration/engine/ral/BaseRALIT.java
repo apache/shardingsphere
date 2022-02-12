@@ -46,7 +46,7 @@ public abstract class BaseRALIT extends SingleITCase {
     public final void init() throws Exception {
         super.init();
         if (getAssertion().getInitialSQL() != null) {
-            try (Connection connection = getTargetDataSource().getConnection()) {
+            try (Connection connection = getOperationDataSource().getConnection()) {
                 executeInitSQLs(connection);
             }
         }
@@ -55,7 +55,7 @@ public abstract class BaseRALIT extends SingleITCase {
     @Override
     public final void tearDown() throws Exception {
         if (getAssertion().getDestroySQL() != null) {
-            try (Connection connection = getTargetDataSource().getConnection()) {
+            try (Connection connection = getOperationDataSource().getConnection()) {
                 executeDestroySQLs(connection);
             }
         }

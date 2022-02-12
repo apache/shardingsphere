@@ -25,7 +25,6 @@ import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
-import org.apache.shardingsphere.test.integration.framework.container.compose.mode.ClusterComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.ShardingSphereIntegrationTestParameterized;
 import org.junit.After;
@@ -59,9 +58,9 @@ public abstract class BaseITCase {
     
     private final StorageContainer storageContainer;
     
-    private DataSource targetDataSource;
+    private DataSource operationDataSource;
     
-    private DataSource anotherClientDataSource;
+    private DataSource verificationDataSource;
     
     public BaseITCase(final ParameterizedArray parameterizedArray) {
         adapter = parameterizedArray.getAdapter();
@@ -75,10 +74,8 @@ public abstract class BaseITCase {
     
     @Before
     public void init() throws Exception {
-        targetDataSource = composedContainer.getClientDataSource();
-        if (composedContainer instanceof ClusterComposedContainer) {
-            anotherClientDataSource = ((ClusterComposedContainer) composedContainer).getAnotherClientDataSource();
-        }
+        operationDataSource = composedContainer.getOperationDataSource();
+        verificationDataSource = composedContainer.getVerificationDataSource();
     }
     
     @After

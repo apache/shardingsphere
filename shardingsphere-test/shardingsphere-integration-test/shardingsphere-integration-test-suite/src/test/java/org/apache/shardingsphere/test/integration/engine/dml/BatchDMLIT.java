@@ -71,7 +71,7 @@ public final class BatchDMLIT extends BatchITCase {
             default:
         }
         int[] actualUpdateCounts;
-        try (Connection connection = getTargetDataSource().getConnection()) {
+        try (Connection connection = getOperationDataSource().getConnection()) {
             actualUpdateCounts = executeBatchForPreparedStatement(connection);
         }
         assertDataSets(actualUpdateCounts);
@@ -105,7 +105,7 @@ public final class BatchDMLIT extends BatchITCase {
                 return;
             default:
         }
-        try (Connection connection = getTargetDataSource().getConnection();
+        try (Connection connection = getOperationDataSource().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
             for (IntegrationTestCaseAssertion each : getIntegrationTestCase().getAssertions()) {
                 addBatch(preparedStatement, each);

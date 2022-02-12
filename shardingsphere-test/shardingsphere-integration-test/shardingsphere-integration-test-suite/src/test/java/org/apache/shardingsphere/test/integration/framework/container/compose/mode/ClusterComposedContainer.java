@@ -36,48 +36,44 @@ import javax.sql.DataSource;
  */
 public final class ClusterComposedContainer implements ComposedContainer {
     
+    private final GovernanceContainer governanceContainer;
+    
     @Getter
     private final AtomicContainers containers;
     
     @Getter
     private final StorageContainer storageContainer;
     
-    private final AdapterContainer adapterContainer;
+    private final AdapterContainer operationAdapterContainer;
     
-    private final AdapterContainer adapterContainerForReader;
-    
-    private final GovernanceContainer governanceContainer;
+    private final AdapterContainer verificationAdapterContainer;
     
     public ClusterComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
         containers = new AtomicContainers(testSuiteName, parameterizedArray.getScenario());
-        storageContainer = containers.registerContainer(
-                StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getDatabaseType().getName());
-        adapterContainer = containers.registerContainer(
-                AdapterContainerFactory.newInstance(parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getAdapter());
         // TODO support other types of governance
         governanceContainer = containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper"), "zk");
-        adapterContainer.dependsOn(storageContainer, governanceContainer);
+        storageContainer = containers.registerContainer(
+                StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getDatabaseType().getName());
+        operationAdapterContainer = containers.registerContainer(
+                AdapterContainerFactory.newInstance(parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getAdapter());
+        operationAdapterContainer.dependsOn(governanceContainer, storageContainer);
         if ("proxy".equals(parameterizedArray.getAdapter())) {
-            adapterContainerForReader = containers.registerContainer(
+            verificationAdapterContainer = containers.registerContainer(
                     new ShardingSphereProxyContainer("ShardingSphere-Proxy-1", parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), "ShardingSphere-Proxy-1");
         } else {
-            adapterContainerForReader = containers.registerContainer(
+            verificationAdapterContainer = containers.registerContainer(
                     AdapterContainerFactory.newInstance(parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getAdapter());
         }
-        adapterContainerForReader.dependsOn(storageContainer, governanceContainer);
+        verificationAdapterContainer.dependsOn(governanceContainer, storageContainer);
     }
     
     @Override
-    public DataSource getClientDataSource() {
-        return adapterContainer.getClientDataSource(governanceContainer.getServerLists());
+    public DataSource getOperationDataSource() {
+        return operationAdapterContainer.getClientDataSource(governanceContainer.getServerLists());
     }
     
-    /**
-     * Get another client data source.
-     * 
-     * @return another client data source
-     */
-    public DataSource getAnotherClientDataSource() {
-        return adapterContainerForReader.getAnotherClientDataSource(governanceContainer.getServerLists());
+    @Override
+    public DataSource getVerificationDataSource() {
+        return verificationAdapterContainer.getAnotherClientDataSource(governanceContainer.getServerLists());
     }
 }
