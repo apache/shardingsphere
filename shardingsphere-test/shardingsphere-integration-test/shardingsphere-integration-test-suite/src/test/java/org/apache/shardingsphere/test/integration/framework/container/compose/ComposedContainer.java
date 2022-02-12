@@ -42,9 +42,16 @@ public interface ComposedContainer {
     StorageContainer getStorageContainer();
     
     /**
-     * Get client data source.
+     * Get operation data source.
      * 
-     * @return client data source
+     * @return operation data source
      */
-    DataSource getClientDataSource();
+    DataSource getOperationDataSource();
+    
+    /**
+     * Get verification data source.
+     *
+     * @return verification data source
+     */
+    DataSource getVerificationDataSource();
 }

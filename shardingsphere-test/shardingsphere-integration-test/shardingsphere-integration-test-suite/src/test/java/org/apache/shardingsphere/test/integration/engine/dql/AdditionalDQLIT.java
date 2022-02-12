@@ -65,7 +65,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     
     @Test
     public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrency() throws SQLException, ParseException {
-        try (Connection connection = getTargetDataSource().getConnection()) {
+        try (Connection connection = getOperationDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrency(connection);
             } else {
@@ -95,7 +95,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     
     @Test
     public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws SQLException, ParseException {
-        try (Connection connection = getTargetDataSource().getConnection()) {
+        try (Connection connection = getOperationDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(connection);
             } else {
@@ -127,7 +127,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     
     @Test
     public void assertExecuteWithResultSetTypeAndResultSetConcurrency() throws SQLException, ParseException {
-        try (Connection connection = getTargetDataSource().getConnection()) {
+        try (Connection connection = getOperationDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 assertExecuteForStatementWithResultSetTypeAndResultSetConcurrency(connection);
             } else {
@@ -159,7 +159,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     
     @Test
     public void assertExecuteWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws SQLException, ParseException {
-        try (Connection connection = getTargetDataSource().getConnection()) {
+        try (Connection connection = getOperationDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 assertExecuteForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(connection);
             } else {

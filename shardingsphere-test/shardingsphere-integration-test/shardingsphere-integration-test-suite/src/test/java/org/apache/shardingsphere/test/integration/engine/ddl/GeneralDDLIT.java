@@ -58,7 +58,7 @@ public final class GeneralDDLIT extends BaseDDLIT {
     
     @Test
     public void assertExecuteUpdate() throws SQLException, ParseException {
-        try (Connection connection = getTargetDataSource().getConnection()) {
+        try (Connection connection = getOperationDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 executeUpdateForStatement(connection);
             } else {
@@ -82,7 +82,7 @@ public final class GeneralDDLIT extends BaseDDLIT {
     
     @Test
     public void assertExecute() throws SQLException, ParseException {
-        try (Connection connection = getTargetDataSource().getConnection()) {
+        try (Connection connection = getOperationDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 executeForStatement(connection);
             } else {

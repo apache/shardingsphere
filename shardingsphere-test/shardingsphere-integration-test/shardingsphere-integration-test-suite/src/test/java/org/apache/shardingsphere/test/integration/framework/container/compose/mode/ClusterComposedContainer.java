@@ -68,16 +68,12 @@ public final class ClusterComposedContainer implements ComposedContainer {
     }
     
     @Override
-    public DataSource getClientDataSource() {
+    public DataSource getOperationDataSource() {
         return adapterContainer.getClientDataSource(governanceContainer.getServerLists());
     }
     
-    /**
-     * Get another client data source.
-     * 
-     * @return another client data source
-     */
-    public DataSource getAnotherClientDataSource() {
+    @Override
+    public DataSource getVerificationDataSource() {
         return adapterContainerForReader.getAnotherClientDataSource(governanceContainer.getServerLists());
     }
 }
