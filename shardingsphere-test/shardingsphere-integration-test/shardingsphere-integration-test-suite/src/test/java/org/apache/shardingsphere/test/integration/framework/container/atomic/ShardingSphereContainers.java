@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.atomic;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Network;
@@ -42,7 +41,6 @@ public final class ShardingSphereContainers implements AutoCloseable {
     
     private final Collection<ShardingSphereContainer> containers = new LinkedList<>();
     
-    @Getter
     private volatile boolean started;
     
     /**
