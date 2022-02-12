@@ -23,7 +23,6 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.ShardingSphereIntegrationTestParameterized;
@@ -56,8 +55,6 @@ public abstract class BaseITCase {
     
     private final IntegrationTestCase integrationTestCase;
     
-    private final StorageContainer storageContainer;
-    
     private final Map<String, DataSource> actualDataSourceMap;
     
     private final DataSource operationDataSource;
@@ -71,7 +68,6 @@ public abstract class BaseITCase {
         databaseType = parameterizedArray.getDatabaseType();
         sqlCommandType = parameterizedArray.getSqlCommandType();
         integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
-        storageContainer = composedContainer.getStorageContainer();
         actualDataSourceMap = composedContainer.getStorageContainer().getActualDataSourceMap();
         operationDataSource = composedContainer.getOperationDataSource();
         verificationDataSource = composedContainer.getVerificationDataSource();
