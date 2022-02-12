@@ -49,15 +49,19 @@ public final class ClusterComposedContainer implements ComposedContainer {
     
     public ClusterComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
         containers = new ShardingSphereContainers(testSuiteName, parameterizedArray.getScenario());
-        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(parameterizedArray), parameterizedArray.getDatabaseType().getName());
-        adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), parameterizedArray.getAdapter());
+        storageContainer = containers.registerContainer(
+                StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getDatabaseType().getName());
+        adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(
+                parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getAdapter());
         // TODO support other types of governance
-        zookeeperContainer = containers.registerContainer(new ZookeeperContainer(parameterizedArray), "zk");
+        zookeeperContainer = containers.registerContainer(new ZookeeperContainer(), "zk");
         if ("proxy".equals(parameterizedArray.getAdapter())) {
-            adapterContainerForReader = containers.registerContainer(new ShardingSphereProxyContainer("ShardingSphere-Proxy-1", parameterizedArray), "ShardingSphere-Proxy-1");
+            adapterContainerForReader = containers.registerContainer(
+                    new ShardingSphereProxyContainer("ShardingSphere-Proxy-1", parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), "ShardingSphere-Proxy-1");
             adapterContainerForReader.dependsOn(storageContainer, zookeeperContainer);
         } else {
-            adapterContainerForReader = containers.registerContainer(AdapterContainerFactory.newInstance(parameterizedArray), parameterizedArray.getAdapter());
+            adapterContainerForReader = containers.registerContainer(
+                    AdapterContainerFactory.newInstance(parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getAdapter());
             adapterContainerForReader.dependsOn(storageContainer, zookeeperContainer);
         }
         adapterContainer.dependsOn(storageContainer, zookeeperContainer);

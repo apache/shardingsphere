@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.ShardingSphereContainer;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap.Builder;
@@ -33,6 +32,7 @@ import org.testcontainers.shaded.com.google.common.collect.ImmutableMap.Builder;
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -42,15 +42,18 @@ import java.util.Optional;
  */
 public abstract class StorageContainer extends ShardingSphereContainer {
     
+    private Map<String, DataSource> dataSourceMap;
+    
     @Getter
     private final DatabaseType databaseType;
     
-    private Map<String, DataSource> dataSourceMap;
+    @Getter
+    private final String scenario;
     
-    public StorageContainer(final String name, final String dockerImageName,
-                            final DatabaseType databaseType, final boolean isFakedContainer, final ParameterizedArray parameterizedArray) {
-        super(name, dockerImageName, isFakedContainer, parameterizedArray);
+    public StorageContainer(final DatabaseType databaseType, final String dockerImageName, final boolean isFakedContainer, final String scenario) {
+        super(databaseType.getName().toLowerCase(), dockerImageName, isFakedContainer);
         this.databaseType = databaseType;
+        this.scenario = scenario;
     }
     
     /**
@@ -72,7 +75,7 @@ public abstract class StorageContainer extends ShardingSphereContainer {
     @SneakyThrows({IOException.class, JAXBException.class})
     public synchronized Map<String, DataSource> getDataSourceMap() {
         if (null == dataSourceMap) {
-            Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDatabaseNames(getParameterizedArray().getScenario());
+            Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDatabaseNames(scenario);
             Builder<String, DataSource> builder = ImmutableMap.builder();
             dataSourceNames.forEach(each -> builder.put(each, createDataSource(each)));
             dataSourceMap = builder.build();
@@ -82,8 +85,8 @@ public abstract class StorageContainer extends ShardingSphereContainer {
     
     private DataSource createDataSource(final String dataSourceName) {
         HikariConfig config = new HikariConfig();
-        config.setDriverClassName(getDriverClassName());
-        config.setJdbcUrl(getUrl(dataSourceName));
+        config.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
+        config.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getPort(), dataSourceName));
         config.setUsername(getUsername());
         config.setPassword(getPassword());
         config.setMaximumPoolSize(4);
@@ -91,12 +94,6 @@ public abstract class StorageContainer extends ShardingSphereContainer {
         getConnectionInitSQL().ifPresent(config::setConnectionInitSql);
         return new HikariDataSource(config);
     }
-    
-    protected String getDriverClassName() {
-        return DataSourceEnvironment.getDriverClassName(databaseType.getName());
-    }
-    
-    protected abstract String getUrl(String dataSourceName);
     
     protected abstract String getUsername();
     
@@ -107,4 +104,14 @@ public abstract class StorageContainer extends ShardingSphereContainer {
     }
     
     protected abstract int getPort();
+    
+    /**
+     * Get primary key column name.
+     * 
+     * @param dataSource data source
+     * @param tableName table name
+     * @return primary key column name
+     * @throws SQLException SQL exception
+     */
+    public abstract Optional<String> getPrimaryKeyColumnName(DataSource dataSource, String tableName) throws SQLException;
 }

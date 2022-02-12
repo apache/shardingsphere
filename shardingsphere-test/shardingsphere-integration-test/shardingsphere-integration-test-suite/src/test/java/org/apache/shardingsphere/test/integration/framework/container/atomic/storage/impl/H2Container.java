@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.test.integration.framework.container.atomic.storage.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.h2.tools.RunScript;
 
 import javax.sql.DataSource;
@@ -32,36 +31,35 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map.Entry;
-import java.util.Objects;
+import java.util.Optional;
 
 /**
  * H2 container.
  */
 public final class H2Container extends StorageContainer {
     
-    public H2Container(final ParameterizedArray parameterizedArray) {
-        super("h2-embedded", "h2:fake", new H2DatabaseType(), true, parameterizedArray);
+    public H2Container(final String scenario) {
+        super(DatabaseTypeRegistry.getActualDatabaseType("H2"), "h2:fake", true, scenario);
     }
     
     @Override
     @SneakyThrows({IOException.class, SQLException.class})
     protected void execute() {
-        super.execute();
-        File file = new File(EnvironmentPath.getInitSQLFile(getDatabaseType(), getParameterizedArray().getScenario()));
+        File file = new File(EnvironmentPath.getInitSQLFile(getDatabaseType(), getScenario()));
         for (Entry<String, DataSource> each : getDataSourceMap().entrySet()) {
             String databaseFileName = "init-" + each.getKey() + ".sql";
-            boolean sqlFileExist = EnvironmentPath.checkSQLFileExist(getDatabaseType(), getParameterizedArray().getScenario(), databaseFileName);
+            boolean sqlFileExist = EnvironmentPath.checkSQLFileExist(getDatabaseType(), getScenario(), databaseFileName);
             try (Connection connection = each.getValue().getConnection(); FileReader reader = new FileReader(file)) {
                 RunScript.execute(connection, reader);
                 if (sqlFileExist) {
-                    executeDatabaseFile(connection, databaseFileName);
+                    executeDatabaseFile(getDatabaseType(), connection, databaseFileName);
                 }
             }
         }
     }
     
-    private void executeDatabaseFile(final Connection connection, final String databaseFileName) throws IOException, SQLException {
-        File databaseFile = new File(EnvironmentPath.getInitSQLFile(getDatabaseType(), getParameterizedArray().getScenario(), databaseFileName));
+    private void executeDatabaseFile(final DatabaseType databaseType, final Connection connection, final String databaseFileName) throws IOException, SQLException {
+        File databaseFile = new File(EnvironmentPath.getInitSQLFile(databaseType, getScenario(), databaseFileName));
         try (FileReader databaseFileReader = new FileReader(databaseFile)) {
             RunScript.execute(connection, databaseFileReader);
         }
@@ -70,16 +68,6 @@ public final class H2Container extends StorageContainer {
     @Override
     public boolean isHealthy() {
         return true;
-    }
-    
-    @Override
-    protected String getUrl(final String dataSourceName) {
-        return DataSourceEnvironment.getURL("H2", null, 0, Objects.isNull(dataSourceName) ? "test_db" : dataSourceName);
-    }
-    
-    @Override
-    protected int getPort() {
-        return 0;
     }
     
     @Override
@@ -92,4 +80,13 @@ public final class H2Container extends StorageContainer {
         return "";
     }
     
+    @Override
+    protected int getPort() {
+        return 0;
+    }
+    
+    @Override
+    public Optional<String> getPrimaryKeyColumnName(final DataSource dataSource, final String tableName) {
+        return Optional.empty();
+    }
 }

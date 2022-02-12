@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.integration.framework.container.atomic.ad
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl.ShardingSphereJDBCContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl.ShardingSphereProxyContainer;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 /**
  * Adapter container factory.
@@ -32,17 +32,19 @@ public final class AdapterContainerFactory {
     /**
      * Create new instance of adapter container.
      *
-     * @param parameterizedArray parameterized array
+     * @param adapter adapter
+     * @param databaseType database type
+     * @param scenario scenario
      * @return new instance of adapter container
      */
-    public static AdapterContainer newInstance(final ParameterizedArray parameterizedArray) {
-        switch (parameterizedArray.getAdapter()) {
+    public static AdapterContainer newInstance(final String adapter, final DatabaseType databaseType, final String scenario) {
+        switch (adapter) {
             case "proxy":
-                return new ShardingSphereProxyContainer(parameterizedArray);
+                return new ShardingSphereProxyContainer(databaseType, scenario);
             case "jdbc":
-                return new ShardingSphereJDBCContainer(parameterizedArray);
+                return new ShardingSphereJDBCContainer(scenario);
             default:
-                throw new RuntimeException(String.format("Adapter [%s] is unknown.", parameterizedArray.getAdapter()));
+                throw new RuntimeException(String.format("Adapter [%s] is unknown.", adapter));
         }
     }
 }

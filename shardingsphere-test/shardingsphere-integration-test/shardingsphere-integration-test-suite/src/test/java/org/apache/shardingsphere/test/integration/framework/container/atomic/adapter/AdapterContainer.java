@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.integration.framework.container.atomic.ad
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.ShardingSphereContainer;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 import javax.sql.DataSource;
 
@@ -28,13 +27,13 @@ import javax.sql.DataSource;
  */
 public abstract class AdapterContainer extends ShardingSphereContainer {
     
-    public AdapterContainer(final String dockerName, final String dockerImageName, final ParameterizedArray parameterizedArray) {
-        this(dockerName, dockerImageName, false, parameterizedArray);
+    public AdapterContainer(final String dockerName, final String dockerImageName) {
+        this(dockerName, dockerImageName, false);
     }
     
     @SneakyThrows
-    public AdapterContainer(final String name, final String dockerImageName, final boolean isFakedContainer, final ParameterizedArray parameterizedArray) {
-        super(name, dockerImageName, isFakedContainer, parameterizedArray);
+    public AdapterContainer(final String name, final String dockerImageName, final boolean isFakedContainer) {
+        super(name, dockerImageName, isFakedContainer);
     }
     
     /**

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.integration.framework.container.atomic.governance;
 
 import org.apache.shardingsphere.test.integration.framework.container.atomic.ShardingSphereContainer;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
 /**
@@ -26,8 +25,8 @@ import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
  */
 public final class ZookeeperContainer extends ShardingSphereContainer {
     
-    public ZookeeperContainer(final ParameterizedArray parameterizedArray) {
-        super("zookeeper", "zookeeper:3.6.2", false, parameterizedArray);
+    public ZookeeperContainer() {
+        super("zookeeper", "zookeeper:3.6.2", false);
         setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*PrepRequestProcessor \\(sid:[0-9]+\\) started.*"));
     }
     

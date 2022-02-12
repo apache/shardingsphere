@@ -18,23 +18,26 @@
 package org.apache.shardingsphere.test.integration.framework.container.atomic.storage.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.postgresql.util.PSQLException;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Optional;
 
 /**
  * PostgreSQL container.
  */
 public final class PostgreSQLContainer extends StorageContainer {
     
-    public PostgreSQLContainer(final ParameterizedArray parameterizedArray) {
-        super("postgres", "postgres:12.6", new PostgreSQLDatabaseType(), false, parameterizedArray);
+    public PostgreSQLContainer(final String scenario) {
+        super(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), "postgres:12.6", false, scenario);
     }
     
     @Override
@@ -42,33 +45,23 @@ public final class PostgreSQLContainer extends StorageContainer {
         withCommand("--max_connections=200");
         addEnv("POSTGRES_USER", "root");
         addEnv("POSTGRES_PASSWORD", "root");
-        withInitSQLMapping("/env/" + getParameterizedArray().getScenario() + "/init-sql/postgresql");
-    }
-
-    @Override
-    @SneakyThrows({ClassNotFoundException.class, SQLException.class, InterruptedException.class})
-    protected void execute() {
-        int time = 0;
-        Class.forName(getDriverClassName());
-        String url = DataSourceEnvironment.getURL("PostgreSQL", getHost(), getPort());
-        // TODO logic need prefect
-        while (time++ < 20) {
-            try (Connection ignored = DriverManager.getConnection(url, getUsername(), getPassword())) {
-                break;
-            } catch (PSQLException ex) {
-                Thread.sleep(1000L);
-            }
-        }
-    }
-
-    @Override
-    protected String getUrl(final String dataSourceName) {
-        return DataSourceEnvironment.getURL("PostgreSQL", getHost(), getPort(), dataSourceName);
+        withInitSQLMapping("/env/" + getScenario() + "/init-sql/postgresql");
     }
     
     @Override
-    protected int getPort() {
-        return getMappedPort(5432);
+    @SneakyThrows({ClassNotFoundException.class, SQLException.class, InterruptedException.class})
+    protected void execute() {
+        Class.forName(DataSourceEnvironment.getDriverClassName(getDatabaseType()));
+        String url = DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getPort());
+        boolean connected = false;
+        while (!connected) {
+            try (Connection ignored = DriverManager.getConnection(url, getUsername(), getPassword())) {
+                connected = true;
+                break;
+            } catch (final PSQLException ex) {
+                Thread.sleep(500L);
+            }
+        }
     }
     
     @Override
@@ -79,5 +72,25 @@ public final class PostgreSQLContainer extends StorageContainer {
     @Override
     protected String getPassword() {
         return "root";
+    }
+    
+    @Override
+    protected int getPort() {
+        return getMappedPort(5432);
+    }
+    
+    @Override
+    public Optional<String> getPrimaryKeyColumnName(final DataSource dataSource, final String tableName) throws SQLException {
+        String sql = String.format("SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS data_type "
+                + "FROM pg_index i JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey) WHERE i.indrelid = '%s'::regclass AND i.indisprimary", tableName);
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(sql)) {
+            if (resultSet.next()) {
+                return Optional.of(resultSet.getString("attname"));
+            }
+            throw new SQLException(String.format("Can not get primary key of `%s`", tableName));
+        }
     }
 }

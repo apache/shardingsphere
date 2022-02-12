@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.integration.framework.container.atomic;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.DockerHealthcheckWaitStrategy;
 import org.testcontainers.images.RemoteDockerImage;
@@ -27,7 +26,7 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
@@ -41,14 +40,10 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
     
     private final boolean isFakedContainer;
     
-    @Getter
-    private final ParameterizedArray parameterizedArray;
-    
-    public ShardingSphereContainer(final String name, final String dockerImageName, final boolean isFakedContainer, final ParameterizedArray parameterizedArray) {
+    public ShardingSphereContainer(final String name, final String dockerImageName, final boolean isFakedContainer) {
         super(getDockerImage(dockerImageName, isFakedContainer));
         this.name = name;
         this.isFakedContainer = isFakedContainer;
-        this.parameterizedArray = parameterizedArray;
     }
     
     private static RemoteDockerImage getDockerImage(final String imageName, final boolean isFakedContainer) {
@@ -58,7 +53,6 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
     
     @Override
     public void start() {
-        configure();
         startDependencies();
         if (!isFakedContainer) {
             super.start();
@@ -67,7 +61,7 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
     }
     
     private void startDependencies() {
-        List<ShardingSphereContainer> dependencies = getDependencies().stream().map(each -> (ShardingSphereContainer) each).collect(Collectors.toList());
+        Collection<ShardingSphereContainer> dependencies = getDependencies().stream().map(each -> (ShardingSphereContainer) each).collect(Collectors.toList());
         dependencies.stream().filter(each -> !each.isCreated()).forEach(GenericContainer::start);
         dependencies.stream()
                 .filter(each -> {

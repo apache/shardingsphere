@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.integration.env;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+
 /**
  * Data source environment.
  */
@@ -28,8 +30,8 @@ public final class DataSourceEnvironment {
      * @param databaseType database type
      * @return driver class name
      */
-    public static String getDriverClassName(final String databaseType) {
-        switch (databaseType) {
+    public static String getDriverClassName(final DatabaseType databaseType) {
+        switch (databaseType.getName()) {
             case "H2":
                 return "org.h2.Driver";
             case "MySQL":
@@ -41,7 +43,7 @@ public final class DataSourceEnvironment {
             case "Oracle":
                 return "oracle.jdbc.driver.OracleDriver";
             default:
-                throw new UnsupportedOperationException(databaseType);
+                throw new UnsupportedOperationException(databaseType.getName());
         }
     }
 
@@ -53,8 +55,8 @@ public final class DataSourceEnvironment {
      * @param port database port
      * @return URL
      */
-    public static String getURL(final String databaseType, final String host, final int port) {
-        switch (databaseType) {
+    public static String getURL(final DatabaseType databaseType, final String host, final int port) {
+        switch (databaseType.getName()) {
             case "H2":
                 return "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
             case "MySQL":
@@ -66,7 +68,7 @@ public final class DataSourceEnvironment {
             case "Oracle":
                 return String.format("jdbc:oracle:thin:@%s:%s", host, port);
             default:
-                throw new UnsupportedOperationException(databaseType);
+                throw new UnsupportedOperationException(databaseType.getName());
         }
     }
 
@@ -79,8 +81,8 @@ public final class DataSourceEnvironment {
      * @param dataSourceName data source name
      * @return URL
      */
-    public static String getURL(final String databaseType, final String host, final int port, final String dataSourceName) {
-        switch (databaseType) {
+    public static String getURL(final DatabaseType databaseType, final String host, final int port, final String dataSourceName) {
+        switch (databaseType.getName()) {
             case "H2":
                 return String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", dataSourceName);
             case "MySQL":
@@ -92,7 +94,7 @@ public final class DataSourceEnvironment {
             case "Oracle":
                 return String.format("jdbc:oracle:thin:@%s:%s/%s", host, port, dataSourceName);
             default:
-                throw new UnsupportedOperationException(databaseType);
+                throw new UnsupportedOperationException(databaseType.getName());
         }
     }
 }
