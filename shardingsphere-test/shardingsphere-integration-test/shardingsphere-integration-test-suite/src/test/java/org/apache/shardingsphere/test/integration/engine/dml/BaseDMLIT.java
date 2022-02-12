@@ -88,7 +88,8 @@ public abstract class BaseDMLIT extends SingleITCase {
     }
     
     private String generateFetchActualDataSQL(final DataNode dataNode) throws SQLException {
-        Optional<String> primaryKeyColumnName = getStorageContainer().getPrimaryKeyColumnName(getStorageContainer().getActualDataSourceMap().get(dataNode.getDataSourceName()), dataNode.getTableName());
+        Optional<String> primaryKeyColumnName = getStorageContainer().getPrimaryKeyColumnName(
+                getStorageContainer().getActualDataSourceMap().get(dataNode.getDataSourceName()), dataNode.getTableName());
         return primaryKeyColumnName.isPresent()
                 ? String.format("SELECT * FROM %s ORDER BY %s ASC", dataNode.getTableName(), primaryKeyColumnName.get()) : String.format("SELECT * FROM %s", dataNode.getTableName());
     }
