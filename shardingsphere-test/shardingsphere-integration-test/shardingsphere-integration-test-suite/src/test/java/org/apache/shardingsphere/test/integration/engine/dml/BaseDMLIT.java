@@ -54,7 +54,7 @@ public abstract class BaseDMLIT extends SingleITCase {
     
     @Before
     public final void init() throws Exception {
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getScenario()), getStorageContainer().getDataSourceMap());
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getScenario()), getStorageContainer().getActualDataSourceMap());
         dataSetEnvironmentManager.fillData();
     }
     
@@ -71,7 +71,7 @@ public abstract class BaseDMLIT extends SingleITCase {
         for (String each : new InlineExpressionParser(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
             DataSource dataSource = getComposedContainer() instanceof ClusterComposedContainer
-                    ? getVerificationDataSource() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName());
+                    ? getVerificationDataSource() : getStorageContainer().getActualDataSourceMap().get(dataNode.getDataSourceName());
             try (
                     Connection connection = dataSource.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(generateFetchActualDataSQL(dataNode))) {
@@ -88,7 +88,7 @@ public abstract class BaseDMLIT extends SingleITCase {
     }
     
     private String generateFetchActualDataSQL(final DataNode dataNode) throws SQLException {
-        Optional<String> primaryKeyColumnName = getStorageContainer().getPrimaryKeyColumnName(getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName()), dataNode.getTableName());
+        Optional<String> primaryKeyColumnName = getStorageContainer().getPrimaryKeyColumnName(getStorageContainer().getActualDataSourceMap().get(dataNode.getDataSourceName()), dataNode.getTableName());
         return primaryKeyColumnName.isPresent()
                 ? String.format("SELECT * FROM %s ORDER BY %s ASC", dataNode.getTableName(), primaryKeyColumnName.get()) : String.format("SELECT * FROM %s", dataNode.getTableName());
     }

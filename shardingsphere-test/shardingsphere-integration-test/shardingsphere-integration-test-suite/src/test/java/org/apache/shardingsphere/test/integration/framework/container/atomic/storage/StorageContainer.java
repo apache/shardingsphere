@@ -63,12 +63,12 @@ public abstract class StorageContainer extends AtomicContainer {
     }
     
     /**
-     * Get data source map.
+     * Get actual data source map.
      *
-     * @return data source map
+     * @return actual data source map
      */
     @SneakyThrows({IOException.class, JAXBException.class})
-    public synchronized Map<String, DataSource> getDataSourceMap() {
+    public synchronized Map<String, DataSource> getActualDataSourceMap() {
         if (null == dataSourceMap) {
             Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDatabaseNames(scenario);
             Builder<String, DataSource> builder = ImmutableMap.builder();
