@@ -21,7 +21,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.AtomicContainers;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainerFactory;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl.ShardingSphereProxyContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.governance.GovernanceContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
@@ -46,8 +45,6 @@ public final class ClusterComposedContainer implements ComposedContainer {
     
     private final AdapterContainer operationAdapterContainer;
     
-    private final AdapterContainer verificationAdapterContainer;
-    
     public ClusterComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
         containers = new AtomicContainers(testSuiteName, parameterizedArray.getScenario());
         // TODO support other types of governance
@@ -57,23 +54,10 @@ public final class ClusterComposedContainer implements ComposedContainer {
         operationAdapterContainer = containers.registerContainer(
                 AdapterContainerFactory.newInstance(parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getAdapter());
         operationAdapterContainer.dependsOn(governanceContainer, storageContainer);
-        if ("proxy".equals(parameterizedArray.getAdapter())) {
-            verificationAdapterContainer = containers.registerContainer(
-                    new ShardingSphereProxyContainer("ShardingSphere-Proxy-1", parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), "ShardingSphere-Proxy-1");
-        } else {
-            verificationAdapterContainer = containers.registerContainer(
-                    AdapterContainerFactory.newInstance(parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getAdapter());
-        }
-        verificationAdapterContainer.dependsOn(governanceContainer, storageContainer);
     }
     
     @Override
     public DataSource getOperationDataSource() {
         return operationAdapterContainer.getOperationDataSource(governanceContainer.getServerLists());
-    }
-    
-    @Override
-    public DataSource getVerificationDataSource() {
-        return verificationAdapterContainer.getVerificationDataSource(governanceContainer.getServerLists());
     }
 }

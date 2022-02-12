@@ -47,11 +47,4 @@ public interface ComposedContainer {
      * @return operation data source
      */
     DataSource getOperationDataSource();
-    
-    /**
-     * Get verification data source.
-     *
-     * @return verification data source
-     */
-    DataSource getVerificationDataSource();
 }
