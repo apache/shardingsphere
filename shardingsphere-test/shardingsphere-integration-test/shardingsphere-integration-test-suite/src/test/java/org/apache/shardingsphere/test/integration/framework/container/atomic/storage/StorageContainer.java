@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.atomic.storage;
 
-import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -79,15 +78,15 @@ public abstract class StorageContainer extends AtomicContainer {
     }
     
     private DataSource createDataSource(final String dataSourceName) {
-        HikariConfig config = new HikariConfig();
-        config.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
-        config.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, isFakedContainer() ? null : getHost(), getPort(), dataSourceName));
-        config.setUsername(getUsername());
-        config.setPassword(getPassword());
-        config.setMaximumPoolSize(4);
-        config.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        getConnectionInitSQL().ifPresent(config::setConnectionInitSql);
-        return new HikariDataSource(config);
+        HikariDataSource result = new HikariDataSource();
+        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
+        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, isFakedContainer() ? null : getHost(), getPort(), dataSourceName));
+        result.setUsername(getUsername());
+        result.setPassword(getPassword());
+        result.setMaximumPoolSize(4);
+        result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
+        getConnectionInitSQL().ifPresent(result::setConnectionInitSql);
+        return result;
     }
     
     protected abstract String getUsername();
