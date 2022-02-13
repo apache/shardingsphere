@@ -41,8 +41,8 @@ public final class MemoryComposedContainer implements ComposedContainer {
     
     private final AdapterContainer adapterContainer;
     
-    public MemoryComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
-        containers = new AtomicContainers(testSuiteName, parameterizedArray.getScenario());
+    public MemoryComposedContainer(final ParameterizedArray parameterizedArray) {
+        containers = new AtomicContainers(parameterizedArray.getScenario());
         storageContainer = containers.registerContainer(
                 StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getDatabaseType().getName());
         adapterContainer = containers.registerContainer(

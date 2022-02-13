@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 public final class GeneralRQLIT extends BaseRQLIT {
     
     @ClassRule
-    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralRQLIT");
+    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager();
     
     public GeneralRQLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);

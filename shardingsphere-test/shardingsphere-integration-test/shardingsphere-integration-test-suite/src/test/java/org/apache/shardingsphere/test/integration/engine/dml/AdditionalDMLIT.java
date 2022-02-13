@@ -45,7 +45,7 @@ import static org.junit.Assert.assertFalse;
 public final class AdditionalDMLIT extends BaseDMLIT {
     
     @ClassRule
-    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("AdditionalDMLIT");
+    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager();
     
     public AdditionalDMLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);

@@ -33,8 +33,6 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public final class AtomicContainers implements AutoCloseable {
     
-    private final String testSuiteName;
-    
     private final String scenario;
     
     private final Network network = Network.newNetwork();
@@ -54,7 +52,7 @@ public final class AtomicContainers implements AutoCloseable {
     public <T extends AtomicContainer> T registerContainer(final T container, final String containerType) {
         container.setNetwork(network);
         container.setNetworkAliases(Collections.singletonList(String.join(".", containerType.toLowerCase(), scenario, "host")));
-        String loggerName = String.join(":", testSuiteName, container.getName());
+        String loggerName = String.join(":", container.getName(), container.getContainerId());
         container.withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger(loggerName), true));
         containers.add(container);
         return container;

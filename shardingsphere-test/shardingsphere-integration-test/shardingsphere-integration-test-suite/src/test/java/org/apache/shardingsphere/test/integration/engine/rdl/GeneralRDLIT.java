@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 public final class GeneralRDLIT extends BaseRDLIT {
     
     @ClassRule
-    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralRDLIT");
+    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager();
     
     public GeneralRDLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
