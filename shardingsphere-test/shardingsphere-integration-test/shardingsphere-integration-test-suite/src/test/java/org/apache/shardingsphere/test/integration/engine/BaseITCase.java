@@ -22,9 +22,13 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
+import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRegistry;
+import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRule;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.ShardingSphereIntegrationTestParameterized;
 import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Rule;
 import org.junit.runner.RunWith;
 
 import javax.sql.DataSource;
@@ -41,6 +45,8 @@ public abstract class BaseITCase {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
+    public static final ComposedContainerRegistry COMPOSED_CONTAINER_REGISTRY = new ComposedContainerRegistry();
+    
     private final String scenario;
     
     private final String adapter;
@@ -51,9 +57,8 @@ public abstract class BaseITCase {
     
     private final IntegrationTestCase integrationTestCase;
     
-    private final Map<String, DataSource> actualDataSourceMap;
-    
-    private final DataSource targetDataSource;
+    @Rule
+    public final ComposedContainerRule composedContainerRule;
     
     public BaseITCase(final ParameterizedArray parameterizedArray) {
         adapter = parameterizedArray.getAdapter();
@@ -61,16 +66,29 @@ public abstract class BaseITCase {
         databaseType = parameterizedArray.getDatabaseType();
         sqlCommandType = parameterizedArray.getSqlCommandType();
         integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
-        actualDataSourceMap = parameterizedArray.getCompose().getActualDataSourceMap();
-        targetDataSource = parameterizedArray.getCompose().getTargetDataSource();
+        composedContainerRule = new ComposedContainerRule(COMPOSED_CONTAINER_REGISTRY.getComposedContainer(getClass().getSimpleName(), parameterizedArray));
     }
     
     @After
     public void tearDown() throws Exception {
-        // TODO Closing data sources gracefully.
+        // TODO Close data sources gracefully.
 //        if (targetDataSource instanceof AutoCloseable) {
 //            ((AutoCloseable) targetDataSource).close();
 //        }
+    }
+    
+    @AfterClass
+    public static void releaseResources() {
+        // TODO Close current test suite only
+        COMPOSED_CONTAINER_REGISTRY.close();
+    }
+    
+    protected final Map<String, DataSource> getActualDataSourceMap() {
+        return composedContainerRule.getComposedContainer().getActualDataSourceMap();
+    }
+    
+    protected DataSource getTargetDataSource() {
+        return composedContainerRule.getComposedContainer().getTargetDataSource();
     }
     
     protected abstract String getSQL() throws ParseException;

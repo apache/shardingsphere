@@ -19,12 +19,10 @@ package org.apache.shardingsphere.test.integration.engine.ral;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerManager;
 import org.apache.shardingsphere.test.integration.framework.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -39,20 +37,15 @@ import java.util.stream.Collectors;
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralRALIT extends BaseRALIT {
     
-    @ClassRule
-    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager();
-    
     public GeneralRALIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
     }
     
     @Parameters(name = "{0}")
     public static Collection<AssertionParameterizedArray> getParameters() {
-        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.RAL)
-                .stream()
+        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.RAL).stream()
                 .filter(each -> SQLExecuteType.Literal == each.getSqlExecuteType())
                 .filter(each -> "proxy".equals(each.getAdapter()))
-                .peek(each -> each.setCompose(COMPOSED_CONTAINER_MANAGER.getComposedContainer(each)))
                 .collect(Collectors.toList());
     }
     

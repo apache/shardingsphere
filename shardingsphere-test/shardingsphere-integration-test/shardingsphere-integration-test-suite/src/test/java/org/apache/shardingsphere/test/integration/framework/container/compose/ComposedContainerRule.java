@@ -15,33 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.param.model;
+package org.apache.shardingsphere.test.integration.framework.container.compose;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
-import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
+import org.junit.rules.ExternalResource;
 
 /**
- * Parameterized array of case based integration test.
+ * Composed container manager.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CaseParameterizedArray implements ParameterizedArray {
+public final class ComposedContainerRule extends ExternalResource {
     
-    private final IntegrationTestCaseContext testCaseContext;
-    
-    private final String adapter;
-    
-    private final String scenario;
-    
-    private final DatabaseType databaseType;
-    
-    private final SQLCommandType sqlCommandType;
+    private final ComposedContainer composedContainer;
     
     @Override
-    public String toString() {
-        return String.format("%s: %s -> %s -> %s", adapter, scenario, databaseType.getName(), testCaseContext.getTestCase().getSql());
+    protected void before() { 
+        composedContainer.getContainers().start();
     }
 }
