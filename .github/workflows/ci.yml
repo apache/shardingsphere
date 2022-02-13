@@ -69,7 +69,7 @@ jobs:
       - name: Build with Maven
         shell: cmd
         run: |
-          .\mvnw -B clean cobertura:cobertura -D"maven.javadoc.skip"=true -D"rat.skip"=true -D"checkstyle.skip"=true install < nul
+          .\mvnw -B clean cobertura:cobertura -D"maven.javadoc.skip"=true -D"rat.skip"=true install < nul
           echo "mvnw exited"
       - name: Build examples with Maven
         run: ./mvnw -B -f examples/pom.xml clean package -DskipTests
