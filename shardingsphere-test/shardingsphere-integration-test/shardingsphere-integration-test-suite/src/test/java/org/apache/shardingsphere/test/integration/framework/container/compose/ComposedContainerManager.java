@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.compose;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.integration.framework.container.compose.mode.ClusterComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.container.compose.mode.MemoryComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
@@ -29,10 +28,7 @@ import java.util.Map;
 /**
  * Composed container manager.
  */
-@RequiredArgsConstructor
 public final class ComposedContainerManager extends ExternalResource {
-    
-    private final String testSuiteName;
     
     private final Map<String, ComposedContainer> composedContainers = new HashMap<>();
     
@@ -54,12 +50,11 @@ public final class ComposedContainerManager extends ExternalResource {
     
     private ComposedContainer createComposedContainer(final ParameterizedArray parameterizedArray) {
         // TODO fix sharding_governance
-        return "sharding_governance".equals(parameterizedArray.getScenario())
-                ? new ClusterComposedContainer(testSuiteName, parameterizedArray) : new MemoryComposedContainer(testSuiteName, parameterizedArray);
+        return "sharding_governance".equals(parameterizedArray.getScenario()) ? new ClusterComposedContainer(parameterizedArray) : new MemoryComposedContainer(parameterizedArray);
     }
     
-    private String generateKey(final ParameterizedArray parameter) {
-        return String.join("-", parameter.getScenario(), parameter.getAdapter(), parameter.getDatabaseType().getName());
+    private String generateKey(final ParameterizedArray parameterizedArray) {
+        return String.join("-", parameterizedArray.getScenario(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType().getName());
     }
     
     @Override

@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 public final class GeneralDALIT extends BaseDALIT {
     
     @ClassRule
-    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralDALIT");
+    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager();
     
     public GeneralDALIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);

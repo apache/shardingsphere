@@ -46,7 +46,7 @@ import static org.junit.Assert.assertTrue;
 public final class AdditionalDQLIT extends BaseDQLIT {
     
     @ClassRule
-    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("AdditionalDQLIT");
+    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager();
     
     public AdditionalDQLIT(final AssertionParameterizedArray parameter) {
         super(parameter);
