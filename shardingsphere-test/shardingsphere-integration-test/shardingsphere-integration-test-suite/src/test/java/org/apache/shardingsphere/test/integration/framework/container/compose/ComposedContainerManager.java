@@ -59,7 +59,7 @@ public final class ComposedContainerManager extends ExternalResource {
     }
     
     private String generateKey(final ParameterizedArray parameter) {
-        return String.join("-", testSuiteName, parameter.getScenario(), parameter.getAdapter(), parameter.getDatabaseType().getName());
+        return String.join("-", parameter.getScenario(), parameter.getAdapter(), parameter.getDatabaseType().getName());
     }
     
     @Override
