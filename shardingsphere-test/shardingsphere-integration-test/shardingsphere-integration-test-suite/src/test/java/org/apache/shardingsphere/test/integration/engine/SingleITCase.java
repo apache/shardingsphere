@@ -45,11 +45,11 @@ public abstract class SingleITCase extends BaseITCase {
     
     private final DataSet dataSet;
     
-    public SingleITCase(final AssertionParameterizedArray parameter) {
-        super(parameter);
-        this.sqlExecuteType = parameter.getSqlExecuteType();
-        this.assertion = parameter.getAssertion();
-        this.dataSet = null == assertion ? null : DataSetLoader.load(parameter.getTestCaseContext().getParentPath(), getScenario(), getDatabaseType(), assertion.getExpectedDataFile());
+    public SingleITCase(final AssertionParameterizedArray parameterizedArray) {
+        super(parameterizedArray);
+        this.sqlExecuteType = parameterizedArray.getSqlExecuteType();
+        this.assertion = parameterizedArray.getAssertion();
+        this.dataSet = null == assertion ? null : DataSetLoader.load(parameterizedArray.getTestCaseContext().getParentPath(), getScenario(), getDatabaseType(), assertion.getExpectedDataFile());
     }
     
     protected final String getSQL() throws ParseException {
