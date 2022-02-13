@@ -27,9 +27,14 @@ import java.util.Map;
  * Example generator.
  */
 public interface ExampleGenerator {
-
+    
     /**
      * Generate file.
+     * 
+     * @param templateConfig template configuration
+     * @param dataModel data model
+     * @throws IOException IO exception
+     * @throws TemplateException template exception
      */
     void generate(Configuration templateConfig, Map<String, String> dataModel) throws IOException, TemplateException;
     
