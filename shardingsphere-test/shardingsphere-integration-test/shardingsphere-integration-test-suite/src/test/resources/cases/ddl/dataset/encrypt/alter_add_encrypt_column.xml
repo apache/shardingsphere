@@ -16,15 +16,11 @@
   -->
 
 <dataset>
-    <metadata>
-        <column name="table" />
-        <column name="logic_column" />
-        <column name="cipher_column" />
-        <column name="plain_column" />
-        <column name="encryptor_type" />
-        <column name="encryptor_props" />
+    <metadata table-name="t_user_details" data-nodes="encrypt.t_user_details">
+        <column name="user_id" type="integer" />
+        <column name="address_id" type="integer" />
+        <column name="number_plain" type="varchar" />
+        <column name="number_cipher" type="varchar" />
+        <column name="description" type="varchar" />
     </metadata>
-    <row values="t_user| pwd| pwd_cipher| pwd_plain| AES| aes-key-value=123456abc" />
-    <row values="t_user_details| number| number_cipher| number_plain| AES| aes-key-value=123456abc" />
-    <row values="t_user_details| number_new| number_new_cipher| number_new_plain| AES| aes-key-value=123456abc" />
 </dataset>
