@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.ShardingSphereIntegrationTestParameterized;
+import org.junit.After;
 import org.junit.runner.RunWith;
 
 import javax.sql.DataSource;
@@ -64,13 +65,13 @@ public abstract class BaseITCase {
         targetDataSource = parameterizedArray.getCompose().getTargetDataSource();
     }
     
-    // TODO Closing data sources gracefully.
-//    @After
-//    public void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
+        // TODO Closing data sources gracefully.
 //        if (targetDataSource instanceof AutoCloseable) {
 //            ((AutoCloseable) targetDataSource).close();
 //        }
-//    }
+    }
     
     protected abstract String getSQL() throws ParseException;
     
