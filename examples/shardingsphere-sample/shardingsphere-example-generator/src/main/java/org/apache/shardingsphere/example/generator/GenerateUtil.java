@@ -29,16 +29,17 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
- * Freemarker generate util
+ * Freemarker generate util.
  */
 public final class GenerateUtil {
     
     /**
-     * Generate dirs.
+     * Generate directories.
      * 
-     * @param templateConfig template config
+     * @param templateConfig template configuration
      * @param dataModel data model
      * @param paths paths
      * @param outputPath output path
@@ -59,7 +60,7 @@ public final class GenerateUtil {
     /**
      * Generate file.
      * 
-     * @param templateConfig template config
+     * @param templateConfig template configuration
      * @param dataModel data model
      * @param path paths
      * @throws IOException IO exception
@@ -67,7 +68,7 @@ public final class GenerateUtil {
      */
     public static void generateFile(final Configuration templateConfig, final Map<String, String> dataModel, final Map<String, String> templateMap, final String path) throws IOException, TemplateException {
         String outputPath = generatePath(templateConfig, dataModel, path);
-        for (Map.Entry<String, String> entry : templateMap.entrySet()) {
+        for (Entry<String, String> entry : templateMap.entrySet()) {
             processFile(templateConfig, dataModel, entry.getKey(), outputPath + "/" + entry.getValue());
         }
     }
@@ -75,7 +76,7 @@ public final class GenerateUtil {
     /**
      * Generate path.
      *
-     * @param templateConfig template config
+     * @param templateConfig template configuration
      * @param model model
      * @param relativePath relative path
      * @return Path generated from the model
@@ -92,7 +93,7 @@ public final class GenerateUtil {
     /**
      * Generate file.
      *
-     * @param templateConfig template config
+     * @param templateConfig template configuration
      * @param model data model
      * @param templateFile template file
      * @param outputFile output file
@@ -108,22 +109,22 @@ public final class GenerateUtil {
     /**
      * Combination generator.
      * 
-     * @param combs combs
+     * @param combs combinations
      * @return All combination
      */
     public static Collection<String> generateCombination(String[] combs) {
         int len = combs.length;
         Collection<String> result = new HashSet<>();
         for (int i = 0, size = 1 << len; i < size; i++) {
-            StringBuilder tmp = new StringBuilder();
+            StringBuilder eachCombBuilder = new StringBuilder();
             for (int j = 0; j < len; j++) {
                 if (((1 << j) & i) != 0) {
-                    tmp.append(combs[j]).append(",");
+                    eachCombBuilder.append(combs[j]).append(",");
                 }
             }
-            if (0 != tmp.length()) {
-                tmp.deleteCharAt(tmp.lastIndexOf(","));
-                result.add(tmp.toString());
+            if (0 != eachCombBuilder.length()) {
+                eachCombBuilder.deleteCharAt(eachCombBuilder.lastIndexOf(","));
+                result.add(eachCombBuilder.toString());
             }
         }
         return result;

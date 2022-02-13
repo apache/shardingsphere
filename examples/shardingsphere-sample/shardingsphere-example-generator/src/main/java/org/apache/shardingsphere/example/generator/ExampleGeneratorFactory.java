@@ -49,7 +49,7 @@ public final class ExampleGeneratorFactory {
     }
     
     /**
-     * Generate dirs and files by template.
+     * Generate directories and files by template.
      * 
      * @throws TemplateException Template Exception
      * @throws IOException IO Exception
