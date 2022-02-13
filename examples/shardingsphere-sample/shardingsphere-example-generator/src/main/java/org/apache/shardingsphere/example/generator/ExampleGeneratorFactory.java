@@ -51,8 +51,8 @@ public final class ExampleGeneratorFactory {
     /**
      * Generate directories and files by template.
      * 
-     * @throws TemplateException Template Exception
-     * @throws IOException IO Exception
+     * @throws TemplateException template exception
+     * @throws IOException IO exception
      */
     @SuppressWarnings("unchecked")
     public void generate() throws TemplateException, IOException {

@@ -20,6 +20,8 @@ package org.apache.shardingsphere.example.generator;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -34,6 +36,7 @@ import java.util.Map.Entry;
 /**
  * Freemarker generate util.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GenerateUtil {
     
     /**
@@ -109,17 +112,17 @@ public final class GenerateUtil {
     /**
      * Combination generator.
      * 
-     * @param combs combinations
+     * @param combinations combinations
      * @return All combination
      */
-    public static Collection<String> generateCombination(String[] combs) {
-        int len = combs.length;
+    public static Collection<String> generateCombination(String[] combinations) {
+        int len = combinations.length;
         Collection<String> result = new HashSet<>();
         for (int i = 0, size = 1 << len; i < size; i++) {
             StringBuilder eachCombBuilder = new StringBuilder();
             for (int j = 0; j < len; j++) {
                 if (((1 << j) & i) != 0) {
-                    eachCombBuilder.append(combs[j]).append(",");
+                    eachCombBuilder.append(combinations[j]).append(",");
                 }
             }
             if (0 != eachCombBuilder.length()) {
