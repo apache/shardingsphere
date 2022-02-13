@@ -23,7 +23,6 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
-import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.ShardingSphereIntegrationTestParameterized;
 import org.junit.After;
@@ -43,11 +42,9 @@ public abstract class BaseITCase {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
-    private final ComposedContainer composedContainer;
+    private final String scenario;
     
     private final String adapter;
-    
-    private final String scenario;
     
     private final DatabaseType databaseType;
     
@@ -61,13 +58,12 @@ public abstract class BaseITCase {
     
     public BaseITCase(final ParameterizedArray parameterizedArray) {
         adapter = parameterizedArray.getAdapter();
-        composedContainer = parameterizedArray.getCompose();
         scenario = parameterizedArray.getScenario();
         databaseType = parameterizedArray.getDatabaseType();
         sqlCommandType = parameterizedArray.getSqlCommandType();
         integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
-        actualDataSourceMap = composedContainer.getActualDataSourceMap();
-        targetDataSource = composedContainer.getTargetDataSource();
+        actualDataSourceMap = parameterizedArray.getCompose().getActualDataSourceMap();
+        targetDataSource = parameterizedArray.getCompose().getTargetDataSource();
     }
     
     @After
