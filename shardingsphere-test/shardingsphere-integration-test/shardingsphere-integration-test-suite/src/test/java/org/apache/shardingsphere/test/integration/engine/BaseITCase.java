@@ -22,13 +22,13 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
+import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRegistry;
-import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRule;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.ShardingSphereIntegrationTestParameterized;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Rule;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 
 import javax.sql.DataSource;
@@ -57,8 +57,11 @@ public abstract class BaseITCase {
     
     private final IntegrationTestCase integrationTestCase;
     
-    @Rule
-    public final ComposedContainerRule composedContainerRule;
+    private final ComposedContainer composedContainer;
+    
+    private Map<String, DataSource> actualDataSourceMap;
+    
+    private DataSource targetDataSource;
     
     public BaseITCase(final ParameterizedArray parameterizedArray) {
         adapter = parameterizedArray.getAdapter();
@@ -66,7 +69,14 @@ public abstract class BaseITCase {
         databaseType = parameterizedArray.getDatabaseType();
         sqlCommandType = parameterizedArray.getSqlCommandType();
         integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
-        composedContainerRule = new ComposedContainerRule(COMPOSED_CONTAINER_REGISTRY.getComposedContainer(getClass().getSimpleName(), parameterizedArray));
+        composedContainer = COMPOSED_CONTAINER_REGISTRY.getComposedContainer(getClass().getSimpleName(), parameterizedArray);
+    }
+    
+    @Before
+    public void setUp() {
+        composedContainer.getContainers().start();
+        actualDataSourceMap = composedContainer.getActualDataSourceMap();
+        targetDataSource = composedContainer.getTargetDataSource();
     }
     
     @After
@@ -81,14 +91,6 @@ public abstract class BaseITCase {
     public static void releaseResources() {
         // TODO Close current test suite only
         COMPOSED_CONTAINER_REGISTRY.close();
-    }
-    
-    protected final Map<String, DataSource> getActualDataSourceMap() {
-        return composedContainerRule.getComposedContainer().getActualDataSourceMap();
-    }
-    
-    protected DataSource getTargetDataSource() {
-        return composedContainerRule.getComposedContainer().getTargetDataSource();
     }
     
     protected abstract String getSQL() throws ParseException;
