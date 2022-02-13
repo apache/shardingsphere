@@ -19,13 +19,11 @@ package org.apache.shardingsphere.test.integration.engine;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.ShardingSphereIntegrationTestParameterized;
-import org.junit.After;
 import org.junit.runner.RunWith;
 
 import javax.sql.DataSource;
@@ -66,20 +64,13 @@ public abstract class BaseITCase {
         targetDataSource = parameterizedArray.getCompose().getTargetDataSource();
     }
     
-    @After
-    public void tearDown() throws Exception {
-        // TODO Closing data sources gracefully.
-//        if (targetDataSource instanceof ShardingSphereDataSource) {
-//            closeDataSource(((ShardingSphereDataSource) targetDataSource));
+    // TODO Closing data sources gracefully.
+//    @After
+//    public void tearDown() throws Exception {
+//        if (targetDataSource instanceof AutoCloseable) {
+//            ((AutoCloseable) targetDataSource).close();
 //        }
-    }
-    
-    private void closeDataSource(final ShardingSphereDataSource dataSource) throws Exception {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.createStatement().execute("SELECT 1");
-        }
-        dataSource.getContextManager().close();
-    }
+//    }
     
     protected abstract String getSQL() throws ParseException;
     
