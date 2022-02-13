@@ -22,7 +22,6 @@ import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerManager;
 import org.apache.shardingsphere.test.integration.framework.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
 import org.junit.ClassRule;
@@ -48,7 +47,7 @@ public final class GeneralRALIT extends BaseRALIT {
     }
     
     @Parameters(name = "{0}")
-    public static Collection<ParameterizedArray> getParameters() {
+    public static Collection<AssertionParameterizedArray> getParameters() {
         return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.RAL)
                 .stream()
                 .filter(each -> SQLExecuteType.Literal == each.getSqlExecuteType())
