@@ -72,9 +72,6 @@ public abstract class BaseITCase {
 //        if (targetDataSource instanceof ShardingSphereDataSource) {
 //            closeDataSource(((ShardingSphereDataSource) targetDataSource));
 //        }
-//        if (null != dataSourceForReader && dataSourceForReader instanceof ShardingSphereDataSource) {
-//            closeDataSource(((ShardingSphereDataSource) dataSourceForReader));
-//        }
     }
     
     private void closeDataSource(final ShardingSphereDataSource dataSource) throws Exception {
