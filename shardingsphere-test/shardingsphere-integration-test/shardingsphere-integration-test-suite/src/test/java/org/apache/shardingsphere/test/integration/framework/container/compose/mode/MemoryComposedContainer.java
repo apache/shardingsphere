@@ -32,9 +32,9 @@ import java.util.Map;
 /**
  * Memory composed container.
  */
-@Getter
 public final class MemoryComposedContainer implements ComposedContainer {
     
+    @Getter
     private final AtomicContainers containers;
     
     private final StorageContainer storageContainer;

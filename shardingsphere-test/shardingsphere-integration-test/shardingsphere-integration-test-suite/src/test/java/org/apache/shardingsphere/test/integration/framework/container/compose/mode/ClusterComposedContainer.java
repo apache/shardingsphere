@@ -36,12 +36,11 @@ import java.util.Map;
  */
 public final class ClusterComposedContainer implements ComposedContainer {
     
-    private final GovernanceContainer governanceContainer;
-    
     @Getter
     private final AtomicContainers containers;
     
-    @Getter
+    private final GovernanceContainer governanceContainer;
+    
     private final StorageContainer storageContainer;
     
     private final AdapterContainer adapterContainer;
