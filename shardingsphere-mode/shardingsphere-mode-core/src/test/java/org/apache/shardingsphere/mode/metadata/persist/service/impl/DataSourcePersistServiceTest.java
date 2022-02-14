@@ -97,7 +97,6 @@ public final class DataSourcePersistServiceTest {
     
     private DataSource createDataSource(final String name) {
         MockedDataSource result = new MockedDataSource();
-        result.setDriverClassName("com.mysql.jdbc.Driver");
         result.setUrl("jdbc:mysql://localhost:3306/" + name);
         result.setUsername("root");
         result.setPassword("root");

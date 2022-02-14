@@ -43,7 +43,7 @@ public final class DataSourceReflection {
     
     static {
         GENERAL_CLASS_TYPES = Sets.newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class, Collection.class, List.class, Properties.class);
-        SKIPPED_PROPERTY_KEYS = Sets.newHashSet("loginTimeout");
+        SKIPPED_PROPERTY_KEYS = Sets.newHashSet("loginTimeout", "driverClassName");
     }
     
     private static final Collection<Class<?>> GENERAL_CLASS_TYPES;
