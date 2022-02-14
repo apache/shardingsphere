@@ -44,9 +44,12 @@ public final class ComposedContainerRegistry implements AutoCloseable {
         if (composedContainers.containsKey(key)) {
             return composedContainers.get(key);
         }
-        ComposedContainer result = createComposedContainer(testSuiteName, parameterizedArray);
-        composedContainers.put(key, result);
-        return result;
+        synchronized (composedContainers) {
+            if (!composedContainers.containsKey(key)) {
+                composedContainers.put(key, createComposedContainer(testSuiteName, parameterizedArray));
+            }
+            return composedContainers.get(key);
+        }
     }
     
     private ComposedContainer createComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
