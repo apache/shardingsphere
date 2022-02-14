@@ -70,7 +70,7 @@ public abstract class BaseITCase {
     
     @Before
     public void setUp() {
-        composedContainer.getContainers().start();
+        composedContainer.start();
         actualDataSourceMap = composedContainer.getActualDataSourceMap();
         targetDataSource = composedContainer.getTargetDataSource();
     }

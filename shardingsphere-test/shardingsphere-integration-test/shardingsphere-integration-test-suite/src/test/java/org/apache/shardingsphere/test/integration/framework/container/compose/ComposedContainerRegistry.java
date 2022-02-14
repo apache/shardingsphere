@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.compose;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.integration.framework.container.compose.mode.ClusterComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.container.compose.mode.MemoryComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
@@ -59,7 +60,10 @@ public final class ComposedContainerRegistry implements AutoCloseable {
     }
     
     @Override
+    @SneakyThrows
     public void close() {
-        composedContainers.values().forEach(each -> each.getContainers().close());
+        for (ComposedContainer each : composedContainers.values()) {
+            each.close();
+        }
     }
 }

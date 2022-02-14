@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.compose.mode;
 
-import lombok.Getter;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.AtomicContainers;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainerFactory;
@@ -34,7 +33,6 @@ import java.util.Map;
  */
 public final class MemoryComposedContainer implements ComposedContainer {
     
-    @Getter
     private final AtomicContainers containers;
     
     private final StorageContainer storageContainer;
@@ -51,6 +49,11 @@ public final class MemoryComposedContainer implements ComposedContainer {
     }
     
     @Override
+    public void start() {
+        containers.start();
+    }
+    
+    @Override
     public Map<String, DataSource> getActualDataSourceMap() {
         return storageContainer.getActualDataSourceMap();
     }
@@ -58,5 +61,10 @@ public final class MemoryComposedContainer implements ComposedContainer {
     @Override
     public DataSource getTargetDataSource() {
         return adapterContainer.getTargetDataSource(null);
+    }
+    
+    @Override
+    public void close() {
+        containers.close();
     }
 }
