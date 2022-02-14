@@ -34,7 +34,6 @@ public final class YamlTupleProcessorFixture implements ShardingSphereYamlTupleP
     @Override
     public NodeTuple process(final NodeTuple nodeTuple) {
         String value = ((ScalarNode) nodeTuple.getValueNode()).getValue();
-        return "null".equals(value) ? null : new NodeTuple(nodeTuple.getKeyNode(),
-                new ScalarNode(Tag.STR, String.join("_", "converted", value), null, null, DumperOptions.ScalarStyle.PLAIN));
+        return "null".equals(value) ? null : new NodeTuple(nodeTuple.getKeyNode(), new ScalarNode(Tag.STR, String.join("_", "converted", value), null, null, DumperOptions.ScalarStyle.PLAIN));
     }
 }

@@ -44,7 +44,6 @@ public final class NoneYamlTupleProcessor implements ShardingSphereYamlTupleProc
     }
     
     private NodeTuple processNoneTuple(final NodeTuple noneTuple) {
-        return new NodeTuple(noneTuple.getKeyNode(),
-                new ScalarNode(Tag.STR, "", null, null, DumperOptions.ScalarStyle.PLAIN));
+        return new NodeTuple(noneTuple.getKeyNode(), new ScalarNode(Tag.STR, "", null, null, DumperOptions.ScalarStyle.PLAIN));
     }
 }
