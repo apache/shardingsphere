@@ -83,6 +83,6 @@ public final class AlterShadowAlgorithmStatementUpdater implements RuleDefinitio
     
     @Override
     public String getType() {
-        return AlterShadowAlgorithmStatement.class.getCanonicalName();
+        return AlterShadowAlgorithmStatement.class.getName();
     }
 }

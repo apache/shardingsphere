@@ -24,29 +24,32 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
-import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.TreeSet;
 
 /**
  * Standard sharding strategy.
  */
+@Getter
 public final class StandardShardingStrategy implements ShardingStrategy {
     
-    private final String shardingColumn;
+    private final Collection<String> shardingColumns;
     
-    @Getter
     private final StandardShardingAlgorithm<?> shardingAlgorithm;
     
     public StandardShardingStrategy(final String shardingColumn, final StandardShardingAlgorithm<?> shardingAlgorithm) {
         Preconditions.checkNotNull(shardingColumn, "Sharding column cannot be null.");
         Preconditions.checkNotNull(shardingAlgorithm, "sharding algorithm cannot be null.");
-        this.shardingColumn = shardingColumn;
+        Collection<String> shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        shardingColumns.add(shardingColumn);
+        this.shardingColumns = Collections.unmodifiableCollection(shardingColumns);
         this.shardingAlgorithm = shardingAlgorithm;
     }
     
@@ -79,12 +82,5 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingConditionValue<?> shardingValue) {
         return shardingAlgorithm.doSharding(availableTargetNames,
                 new RangeShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), shardingValue.getValueRange()));
-    }
-    
-    @Override
-    public Collection<String> getShardingColumns() {
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.add(shardingColumn);
-        return result;
     }
 }

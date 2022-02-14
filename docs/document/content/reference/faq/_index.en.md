@@ -71,7 +71,7 @@ Answer:
    - DataGrip：2020.1、2021.1 (turn on "introspect using jdbc metadata" in idea or datagrip).
    - WorkBench：8.0.25.
 
-## [Proxy] When using a client such as Navicat to connect to Sharding Sphere-Proxy, if Sharding Sphere-Proxy does not create a Schema or does not add a Resource, the client connection will fail?
+## [Proxy] When using a client such as Navicat to connect to ShardingSphere-Proxy, if ShardingSphere-Proxy does not create a Schema or does not add a Resource, the client connection will fail?
 
 Answer:
 
@@ -92,7 +92,7 @@ Answer:
 The division result of Java integers is also integer, but in Groovy syntax of inline expression, the division result of integers is float number. 
 To obtain integer division result, A/B needs to be modified as A.intdiv(B).
 
-## [Sharding] If sharding database is partial, should tables without sharding database & table be configured in sharding rules?
+## [Sharding] If sharding database is partial, should tables without sharding database & table configured in sharding rules?
 
 Answer:
 

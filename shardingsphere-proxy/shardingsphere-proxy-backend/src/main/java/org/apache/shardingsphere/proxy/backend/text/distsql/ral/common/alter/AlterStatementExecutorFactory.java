@@ -20,8 +20,10 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.alter;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.AlterDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterTransactionRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AlterTrafficRuleStatement;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.alter.excutor.AlterSQLParserRuleExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.alter.excutor.AlterTrafficRuleExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.alter.excutor.AlterTransactionRuleExecutor;
 
 import java.sql.SQLException;
@@ -45,6 +47,9 @@ public final class AlterStatementExecutorFactory {
         }
         if (sqlStatement instanceof AlterSQLParserRuleStatement) {
             return new AlterSQLParserRuleExecutor((AlterSQLParserRuleStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof AlterTrafficRuleStatement) {
+            return new AlterTrafficRuleExecutor((AlterTrafficRuleStatement) sqlStatement);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }

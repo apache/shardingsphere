@@ -33,13 +33,6 @@ public interface EncryptCondition {
     String getColumnName();
     
     /**
-     * Is sortable.
-     *
-     * @return sortable
-     */
-    boolean isSortable();
-    
-    /**
      * Get table name.
      * 
      * @return table name

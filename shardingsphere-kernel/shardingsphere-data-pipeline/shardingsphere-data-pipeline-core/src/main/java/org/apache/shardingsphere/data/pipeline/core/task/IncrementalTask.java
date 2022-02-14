@@ -32,6 +32,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.Dumper;
@@ -47,15 +48,13 @@ import java.util.concurrent.Future;
  * Incremental task.
  */
 @Slf4j
-@ToString(exclude = {"incrementalDumperExecuteEngine", "dataSourceManager", "dumper", "progress"})
-public final class IncrementalTask extends AbstractLifecycleExecutor implements PipelineTask {
+@ToString(exclude = {"incrementalDumperExecuteEngine", "channel", "dumper", "importers", "progress"})
+public final class IncrementalTask extends AbstractLifecycleExecutor implements PipelineTask, AutoCloseable {
     
     @Getter
     private final String taskId;
     
     private final ExecuteEngine incrementalDumperExecuteEngine;
-    
-    private final PipelineDataSourceManager dataSourceManager;
     
     private final PipelineChannel channel;
     
@@ -68,20 +67,19 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     
     public IncrementalTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig,
                            final PipelineChannelFactory pipelineChannelFactory, final PipelineDataSourceManager dataSourceManager,
-                           final ExecuteEngine incrementalDumperExecuteEngine) {
+                           final PipelineTableMetaDataLoader sourceMetaDataLoader, final ExecuteEngine incrementalDumperExecuteEngine) {
         this.incrementalDumperExecuteEngine = incrementalDumperExecuteEngine;
-        this.dataSourceManager = dataSourceManager;
         taskId = dumperConfig.getDataSourceName();
         progress = new IncrementalTaskProgress();
         IngestPosition<?> position = dumperConfig.getPosition();
         progress.setPosition(position);
         channel = createChannel(concurrency, pipelineChannelFactory, progress);
-        dumper = DumperFactory.createIncrementalDumper(dumperConfig, position, channel);
+        dumper = DumperFactory.createIncrementalDumper(dumperConfig, position, channel, sourceMetaDataLoader);
         importers = createImporters(concurrency, importerConfig, dataSourceManager, channel);
     }
     
     @Override
-    public void start() {
+    protected void doStart() {
         progress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
         Future<?> future = incrementalDumperExecuteEngine.submitAll(importers, getExecuteCallback());
         dumper.start();
@@ -133,11 +131,15 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     }
     
     @Override
-    public void stop() {
+    protected void doStop() {
         dumper.stop();
         for (Importer each : importers) {
             each.stop();
         }
+    }
+    
+    @Override
+    public void close() {
         channel.close();
     }
 }

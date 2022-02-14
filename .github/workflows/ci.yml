@@ -42,9 +42,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Check License Header
         uses: apache/skywalking-eyes@main
-        
+  
   windows:
-    needs: check-license
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
@@ -63,20 +62,20 @@ jobs:
           CON_GROUP: ${{ github.workflow }}-${{ github.ref }}
         run: echo "$CON_GROUP"
       - name: Set up JDK 8
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
+          distribution: 'temurin'
           java-version: 8
       - name: Build with Maven
         shell: cmd
         run: |
-          .\mvnw -B clean cobertura:cobertura -D"maven.javadoc.skip"=true install < nul
+          .\mvnw -B clean cobertura:cobertura -D"maven.javadoc.skip"=true -D"rat.skip"=true install < nul
           echo "mvnw exited"
       - name: Build examples with Maven
         run: ./mvnw -B -f examples/pom.xml clean package -DskipTests
   
   unix:
-    name: CI Tests - JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
-    needs: check-license
+    name: JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
@@ -86,15 +85,15 @@ jobs:
         java:
           - {
             version: 8,
-            maven_args: "cobertura:cobertura -Dmaven.javadoc.skip=true"
+            maven_args: "cobertura:cobertura -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true"
           }
           - {
             version: 11,
-            maven_args: "-Dmaven.javadoc.skip=true"
+            maven_args: "-Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true"
           }
           - {
             version: 17,
-            maven_args: "-Dmaven.javadoc.skip=true"
+            maven_args: "-Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true"
           }
     steps:
       - name: Cache Maven Repos
@@ -106,16 +105,17 @@ jobs:
             ${{ runner.os }}-maven-
       - uses: actions/checkout@v2
       - name: Set up JDK ${{ matrix.java.version }}
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
+          distribution: 'temurin'
           java-version: ${{ matrix.java.version }}
       - name: Build with Maven
         run: echo y | ./mvnw -B clean install ${{ matrix.java.maven_args }}
       - name: Build examples with Maven
         run: echo y | ./mvnw -B -f examples/pom.xml clean package -DskipTests
-
+  
   macos:
-    name: CI Tests - JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
+    name: JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
     needs: check-license
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
@@ -126,7 +126,7 @@ jobs:
         java:
           - {
             version: 8,
-            maven_args: "cobertura:cobertura -Dmaven.javadoc.skip=true"
+            maven_args: "cobertura:cobertura -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true"
           }
     steps:
       - name: Cache Maven Repos
@@ -138,8 +138,9 @@ jobs:
             ${{ runner.os }}-maven-
       - uses: actions/checkout@v2
       - name: Set up JDK ${{ matrix.java.version }}
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
+          distribution: 'temurin'
           java-version: ${{ matrix.java.version }}
       - name: Build with Maven
         run: echo y | ./mvnw -B clean install ${{ matrix.java.maven_args }}

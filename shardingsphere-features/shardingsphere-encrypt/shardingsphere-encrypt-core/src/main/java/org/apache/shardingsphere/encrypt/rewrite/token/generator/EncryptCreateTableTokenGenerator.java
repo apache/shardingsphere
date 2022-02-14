@@ -88,8 +88,8 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
     
     private Optional<EncryptConfigDataTypeToken> findEncryptConfigDataTypeToken(final String tableName, final String columnName, final ColumnDefinitionSegment column, final int stopIndex) {
         Optional<EncryptColumn> encryptColumn = encryptRule.findEncryptTable(tableName).flatMap(encryptTable -> encryptTable.findEncryptColumn(columnName));
-        if (encryptColumn.isPresent() && null != encryptColumn.get().getCipherDataType() && !encryptColumn.get().getCipherDataType().isEmpty()) {
-            return Optional.of(new EncryptConfigDataTypeToken(stopIndex + 1, column.getStopIndex(), encryptColumn.get().getCipherColumn(), encryptColumn.get().getCipherDataType()));
+        if (encryptColumn.isPresent() && null != encryptColumn.get().getCipherDataType()) {
+            return Optional.of(new EncryptConfigDataTypeToken(stopIndex + 1, column.getStopIndex(), encryptColumn.get().getCipherColumn(), encryptColumn.get().getCipherDataType().getTypeName()));
         }
         return Optional.empty();
     }
@@ -109,9 +109,9 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
         Optional<EncryptColumn> encryptColumn = encryptRule.findEncryptTable(tableName).flatMap(encryptTable -> encryptTable.findEncryptColumn(columnName));
         Optional<String> assistedQueryColumn = encryptColumn.flatMap(EncryptColumn::getAssistedQueryColumn);
         if (assistedQueryColumn.isPresent()) {
-            if (null != encryptColumn.get().getAssistedQueryDataType() && !encryptColumn.get().getAssistedQueryDataType().isEmpty()) {
+            if (null != encryptColumn.get().getAssistedQueryDataType()) {
                 return Optional.of(new EncryptConfigDataTypeToken(stopIndex + 1, column.getStopIndex(), assistedQueryColumn.get(), 
-                        encryptColumn.get().getAssistedQueryDataType(), lastColumn));
+                        encryptColumn.get().getAssistedQueryDataType().getTypeName(), lastColumn));
             }
         }
         return Optional.empty();
@@ -132,9 +132,9 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
         Optional<EncryptColumn> encryptColumn = encryptRule.findEncryptTable(tableName).flatMap(encryptTable -> encryptTable.findEncryptColumn(columnName));
         Optional<String> plainColumn = encryptColumn.flatMap(EncryptColumn::getPlainColumn);
         if (plainColumn.isPresent()) {
-            if (null != encryptColumn.get().getPlainDataType() && !encryptColumn.get().getPlainDataType().isEmpty()) {
+            if (null != encryptColumn.get().getPlainDataType()) {
                 return Optional.of(new EncryptConfigDataTypeToken(stopIndex + 1, column.getStopIndex(), plainColumn.get(),
-                        encryptColumn.get().getPlainDataType(), lastColumn));
+                        encryptColumn.get().getPlainDataType().getTypeName(), lastColumn));
             }
         }
         return Optional.empty();

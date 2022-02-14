@@ -46,7 +46,7 @@ public final class MemoryLocalShadowJdbcExampleService {
     /**
      * Execute test.
      *
-     * @throws SQLException
+     * @throws SQLException SQL exception
      */
     public void run() throws SQLException {
         try {
@@ -59,7 +59,8 @@ public final class MemoryLocalShadowJdbcExampleService {
     
     /**
      * Initialize the database test environment.
-     * @throws SQLException
+     * 
+     * @throws SQLException SQL exception
      */
     private void initEnvironment() throws SQLException {
         orderRepository.createTableIfNotExists();
@@ -98,7 +99,7 @@ public final class MemoryLocalShadowJdbcExampleService {
             orderItem.setPhone("13800000001");
             orderItem.setStatus("INSERT_TEST");
             orderItemRepository.insert(orderItem);
-
+            
             Address address = new Address();
             address.setAddressId((long) i);
             address.setAddressName("address_test_" + i);
@@ -143,7 +144,8 @@ public final class MemoryLocalShadowJdbcExampleService {
     
     /**
      * Restore the environment.
-     * @throws SQLException
+     * 
+     * @throws SQLException SQL exception
      */
     private void cleanEnvironment() throws SQLException {
         orderRepository.dropTableShadow();

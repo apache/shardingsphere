@@ -64,7 +64,7 @@ public final class PostgreSQLComBindExecutorTest {
     @Before
     public void setup() {
         PostgreSQLPreparedStatementRegistry.getInstance().register(1);
-        PostgreSQLPreparedStatementRegistry.getInstance().register(1, "2", "", new EmptyStatement(), Collections.emptyList());
+        PostgreSQLPreparedStatementRegistry.getInstance().register(1, "1", "", new EmptyStatement(), Collections.emptyList());
         when(bindPacket.getStatementId()).thenReturn("1");
         when(bindPacket.getPortal()).thenReturn("C_1");
         when(bindPacket.readParameters(anyList())).thenReturn(Collections.emptyList());

@@ -99,6 +99,6 @@ public final class CreateShardingKeyGeneratorStatementUpdater implements RuleDef
     
     @Override
     public String getType() {
-        return CreateShardingKeyGeneratorStatement.class.getCanonicalName();
+        return CreateShardingKeyGeneratorStatement.class.getName();
     }
 }

@@ -17,13 +17,10 @@
 
 package org.apache.shardingsphere.mode.manager.memory;
 
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
@@ -33,12 +30,13 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.TransactionContextsBuilder;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGenerator;
+import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGeneratorFactory;
 
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Memory context manager builder.
@@ -47,36 +45,43 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
     
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
-        Map<String, Collection<ShardingSphereRule>> rules = SchemaRulesBuilder.buildRules(parameter.getSchemaConfigs(), parameter.getProps());
-        Map<String, ShardingSphereSchema> schemas = getShardingSphereSchemas(parameter.getSchemaConfigs(), rules, parameter.getProps());
-        MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(parameter.getSchemaConfigs(), parameter.getGlobalRuleConfigs(), schemas, rules, parameter.getProps()).build(null);
+        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(parameter.getGlobalRuleConfigs(), parameter.getProps());
+        for (Entry<String, ? extends SchemaConfiguration> entry : parameter.getSchemaConfigs().entrySet()) {
+            metaDataContextsBuilder.addSchema(entry.getKey(), entry.getValue(), parameter.getProps());
+        }
+        MetaDataContexts metaDataContexts = metaDataContextsBuilder.build(null);
+        generateTransactionConfigurationFile(parameter.getInstanceDefinition().getInstanceId().getId(), metaDataContexts);
         TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
         ContextManager result = new ContextManager();
         result.init(metaDataContexts, transactionContexts, buildInstanceContext(parameter));
-        buildSpecialRules(result);
+        setInstanceContext(result);
         return result;
     }
     
-    private Map<String, ShardingSphereSchema> getShardingSphereSchemas(final Map<String, ? extends SchemaConfiguration> schemaConfigs, final Map<String, Collection<ShardingSphereRule>> rules,
-                                                                       final Properties props) throws SQLException {
-        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(schemaConfigs.size(), 1);
-        for (String each : schemaConfigs.keySet()) {
-            result.put(each, SchemaLoader.load(schemaConfigs.get(each).getDataSources(), rules.get(each), props));
+    private void generateTransactionConfigurationFile(final String instanceId, final MetaDataContexts metaDataContexts) {
+        Optional<TransactionRule> transactionRule =
+                metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
+        if (transactionRule.isPresent()) {
+            Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(transactionRule.get().getProviderType());
+            fileGenerator.ifPresent(optional -> optional.generateFile(transactionRule.get(), instanceId));
         }
-        return result;
     }
     
     private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter parameter) {
         ComputeNodeInstance instance = new ComputeNodeInstance();
         instance.setInstanceDefinition(parameter.getInstanceDefinition());
         instance.setLabels(parameter.getLabels());
-        return new InstanceContext(instance, new MemoryWorkerIdGenerator());
+        return new InstanceContext(instance, new MemoryWorkerIdGenerator(), buildMemoryModeConfiguration(parameter.getModeConfig()));
     }
     
-    private void buildSpecialRules(final ContextManager contextManager) {
-        contextManager.getMetaDataContexts().getMetaDataMap().forEach((key, value)
-            -> value.getRuleMetaData().getRules().stream().filter(each -> each instanceof InstanceAwareRule)
+    private void setInstanceContext(final ContextManager contextManager) {
+        contextManager.getMetaDataContexts().getMetaDataMap()
+            .forEach((key, value) -> value.getRuleMetaData().getRules().stream().filter(each -> each instanceof InstanceAwareRule)
             .forEach(each -> ((InstanceAwareRule) each).setInstanceContext(contextManager.getInstanceContext())));
+    }
+    
+    private ModeConfiguration buildMemoryModeConfiguration(final ModeConfiguration modeConfiguration) {
+        return Optional.ofNullable(modeConfiguration).orElseGet(() -> new ModeConfiguration(getType(), null, false));
     }
     
     @Override

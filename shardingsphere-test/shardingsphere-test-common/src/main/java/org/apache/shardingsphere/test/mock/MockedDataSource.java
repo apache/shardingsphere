@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.test.mock;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.sql.DataSource;
@@ -36,17 +38,18 @@ import static org.mockito.Mockito.when;
 /**
  * Mocked data source.
  */
+@NoArgsConstructor
 @Getter
 @Setter
 public final class MockedDataSource implements DataSource {
     
     private String driverClassName;
     
-    private String url;
+    private String url = "jdbc:mock://127.0.0.1/foo_ds";
     
-    private String username;
+    private String username = "root";
     
-    private String password;
+    private String password = "root";
     
     private Integer maxPoolSize;
     
@@ -56,11 +59,22 @@ public final class MockedDataSource implements DataSource {
     
     private Properties jdbcUrlProperties;
     
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private Connection connection;
+    
+    public MockedDataSource(final Connection connection) {
+        this.connection = connection;
+    }
+    
     @SuppressWarnings("MagicConstant")
     @Override
     public Connection getConnection() throws SQLException {
+        if (null != connection) {
+            return connection;
+        }
         Connection result = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
+        when(result.getMetaData().getURL()).thenReturn(url);
         when(result.createStatement(anyInt(), anyInt(), anyInt()).getConnection()).thenReturn(result);
         return result;
     }

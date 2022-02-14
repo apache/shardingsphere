@@ -52,7 +52,9 @@ execute
     | alterResourceGroup
     | createResourceGroup
     | dropResourceGroup
-    | preparedStatement
+    | prepare
+    | executeStmt
+    | deallocate
     | setTransaction
     | beginTransaction
     | setAutoCommit

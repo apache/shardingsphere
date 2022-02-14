@@ -52,7 +52,6 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -114,9 +113,9 @@ public final class MetaDataPersistServiceTest {
     }
     
     @Test
-    public void assertPersistInstanceConfigurations() {
-        metaDataPersistService.persistInstanceConfigurations("127.0.0.1@3307", Collections.singletonList("foo_label"), false);
-        verify(computeNodePersistService).persistInstanceLabels(eq("127.0.0.1@3307"), eq(Collections.singletonList("foo_label")), eq(false));
+    public void assertPersistInstanceLabels() {
+        metaDataPersistService.persistInstanceLabels("127.0.0.1@3307", Collections.singletonList("foo_label"), false);
+        verify(computeNodePersistService).persistInstanceLabels("127.0.0.1@3307", Collections.singletonList("foo_label"), false);
     }
     
     private Map<String, DataSource> createDataSourceMap() {

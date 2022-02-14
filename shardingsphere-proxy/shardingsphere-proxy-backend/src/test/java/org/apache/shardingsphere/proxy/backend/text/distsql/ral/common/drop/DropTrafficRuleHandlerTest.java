@@ -37,7 +37,6 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -81,9 +80,9 @@ public class DropTrafficRuleHandlerTest {
         Optional<TrafficRuleConfiguration> ruleConfiguration = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
         assertTrue(ruleConfiguration.isPresent());
         TrafficRuleConfiguration configuration = ruleConfiguration.get();
-        assertEquals(1, configuration.getTrafficStrategies().size());
-        assertEquals(1, configuration.getLoadBalancers().size());
-        assertEquals(1, configuration.getTrafficAlgorithms().size());
+        assertThat(configuration.getTrafficStrategies().size(), is(1));
+        assertThat(configuration.getLoadBalancers().size(), is(1));
+        assertThat(configuration.getTrafficAlgorithms().size(), is(1));
         assertThat(new ArrayList<>(configuration.getTrafficStrategies()).get(0).getName(), is("rule_name_2"));
         assertNotNull(configuration.getTrafficAlgorithms().get("algorithm_2"));
         assertNotNull(configuration.getLoadBalancers().get("load_balancer_2"));
@@ -98,9 +97,9 @@ public class DropTrafficRuleHandlerTest {
         Optional<TrafficRuleConfiguration> ruleConfiguration = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
         assertTrue(ruleConfiguration.isPresent());
         TrafficRuleConfiguration configuration = ruleConfiguration.get();
-        assertEquals(1, configuration.getTrafficStrategies().size());
-        assertEquals(1, configuration.getLoadBalancers().size());
-        assertEquals(1, configuration.getTrafficAlgorithms().size());
+        assertThat(configuration.getTrafficStrategies().size(), is(1));
+        assertThat(configuration.getLoadBalancers().size(), is(1));
+        assertThat(configuration.getTrafficAlgorithms().size(), is(1));
         assertThat(new ArrayList<>(configuration.getTrafficStrategies()).get(0).getName(), is("rule_name_2"));
         assertNotNull(configuration.getTrafficAlgorithms().get("algorithm_2"));
         assertNotNull(configuration.getLoadBalancers().get("load_balancer_2"));
@@ -115,9 +114,9 @@ public class DropTrafficRuleHandlerTest {
         Optional<TrafficRuleConfiguration> ruleConfiguration = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
         assertTrue(ruleConfiguration.isPresent());
         TrafficRuleConfiguration configuration = ruleConfiguration.get();
-        assertEquals(2, configuration.getTrafficStrategies().size());
-        assertEquals(2, configuration.getLoadBalancers().size());
-        assertEquals(2, configuration.getTrafficAlgorithms().size());
+        assertThat(configuration.getTrafficStrategies().size(), is(2));
+        assertThat(configuration.getLoadBalancers().size(), is(2));
+        assertThat(configuration.getTrafficAlgorithms().size(), is(2));
     }
     
     private Collection<RuleConfiguration> createTrafficRule() {

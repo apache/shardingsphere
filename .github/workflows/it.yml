@@ -28,11 +28,11 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -Dcheckstyle.skip=true
 
 jobs:
   it-empty-rule:
-    name: IT empty rule
+    name: empty rule
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
@@ -52,18 +52,17 @@ jobs:
             ${{ runner.os }}-maven-
       - uses: actions/checkout@v2
       - name: Set up JDK 8
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
+          distribution: 'temurin'
           java-version: 8
-      - name: set environment
-        run: export MAVEN_OPTS=' -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true ${MAVEN_OPTS}'
       - name: Build Project
         run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
       - name: Run Integration Test
         run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.adapters=${{ matrix.adapter }} -Dit.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }} -Dit.env.type=DOCKER
-
+  
   it-single-rule:
-    name: IT single rule
+    name: single rule
     needs: it-empty-rule
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -84,18 +83,17 @@ jobs:
             ${{ runner.os }}-maven-
       - uses: actions/checkout@v2
       - name: Set up JDK 8
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
+          distribution: 'temurin'
           java-version: 8
-      - name: set environment
-        run: export MAVEN_OPTS=' -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true ${MAVEN_OPTS}'
       - name: Build Project
         run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
       - name: Run Integration Test
         run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.adapters=${{ matrix.adapter }} -Dit.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }} -Dit.env.type=DOCKER
-
+  
   it-mixture-rule:
-    name: IT mixture rule
+    name: mixture rule
     needs: [ it-empty-rule, it-single-rule ]
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -116,16 +114,15 @@ jobs:
             ${{ runner.os }}-maven-
       - uses: actions/checkout@v2
       - name: Set up JDK 8
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
+          distribution: 'temurin'
           java-version: 8
-      - name: set environment
-        run: export MAVEN_OPTS=' -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true ${MAVEN_OPTS}'
       - name: Build Project
         run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
       - name: Run Integration Test
         run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.adapters=${{ matrix.adapter }} -Dit.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }} -Dit.env.type=DOCKER
-
+  
   mysql-proxy-agent-metrics:
     name: MySQL-Proxy with Agent Metrics
     runs-on: ubuntu-latest
@@ -143,14 +140,15 @@ jobs:
           CON_GROUP: ${{ github.workflow }}-${{ github.ref }}
         run: echo "$CON_GROUP"
       - name: Set up JDK 8
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
+          distribution: 'temurin'
           java-version: 8
       - name: Build Project
-        run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests
+        run: ./mvnw -B clean install -DskipITs -DskipTests
       - name: Run Integration Test
         run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-agent-test/shardingsphere-integration-agent-test-plugins/shardingsphere-integration-agent-test-metrics/pom.xml -Pit.env.metrics
-
+  
   mysql-proxy-agent-tracing-opentelemetry:
     name: MySQL-Proxy with Agent Tracing OpenTelemetry
     runs-on: ubuntu-latest
@@ -164,10 +162,11 @@ jobs:
             ${{ runner.os }}-maven-
       - uses: actions/checkout@v2
       - name: Set up JDK 8
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
+          distribution: 'temurin'
           java-version: 8
       - name: Build Project
-        run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests
+        run: ./mvnw -B clean install -DskipITs -DskipTests
       - name: Run Integration Test
         run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-agent-test/shardingsphere-integration-agent-test-plugins/shardingsphere-integration-agent-test-opentelemetry/pom.xml -Pit.env.opentelemetry

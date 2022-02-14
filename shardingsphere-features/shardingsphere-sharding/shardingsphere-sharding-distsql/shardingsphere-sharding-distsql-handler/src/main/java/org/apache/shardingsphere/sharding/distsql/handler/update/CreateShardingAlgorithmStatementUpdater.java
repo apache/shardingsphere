@@ -100,6 +100,6 @@ public final class CreateShardingAlgorithmStatementUpdater implements RuleDefini
     
     @Override
     public String getType() {
-        return CreateShardingAlgorithmStatement.class.getCanonicalName();
+        return CreateShardingAlgorithmStatement.class.getName();
     }
 }

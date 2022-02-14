@@ -49,11 +49,24 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
     
     @Test
     public void assertShardingSphereDataSource() {
-        assertDataSources();
-        Collection<ShardingSphereRule> rules = dataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules();
-        Collection<ShardingSphereRule> globalRules = dataSource.getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules();
-        assertThat(rules.size(), is(4));
-        for (ShardingSphereRule each : rules) {
+        assertDataSources(dataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources());
+        assertSchemaRules(dataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules());
+        assertGlobalRules(dataSource.getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules());
+    }
+    
+    private void assertDataSources(final Map<String, DataSource> actual) {
+        assertThat(actual.size(), is(6));
+        assertTrue(actual.containsKey("ds_0_write"));
+        assertTrue(actual.containsKey("ds_0_read_0"));
+        assertTrue(actual.containsKey("ds_0_read_1"));
+        assertTrue(actual.containsKey("ds_1_write"));
+        assertTrue(actual.containsKey("ds_1_read_0"));
+        assertTrue(actual.containsKey("ds_1_read_1"));
+    }
+    
+    private void assertSchemaRules(final Collection<ShardingSphereRule> actual) {
+        assertThat(actual.size(), is(4));
+        for (ShardingSphereRule each : actual) {
             if (each instanceof ShardingRule) {
                 assertShardingRule((ShardingRule) each);
             } else if (each instanceof ReadwriteSplittingRule) {
@@ -62,53 +75,45 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
                 assertEncryptRule((EncryptRule) each);
             }
         }
-        assertThat(globalRules.size(), is(4));
-        for (ShardingSphereRule each : globalRules) {
+    }
+    
+    private void assertShardingRule(final ShardingRule actual) {
+        assertThat(actual.getTableRules().size(), is(1));
+        assertThat(actual.getTableRule("t_order").getActualDataNodes(), is(Arrays.asList(
+                new DataNode("ds_0.t_order_0"), new DataNode("ds_0.t_order_1"), new DataNode("ds_0.t_order_2"), new DataNode("ds_0.t_order_3"),
+                new DataNode("ds_1.t_order_0"), new DataNode("ds_1.t_order_1"), new DataNode("ds_1.t_order_2"), new DataNode("ds_1.t_order_3"))));
+    }
+    
+    private void assertReadwriteSplittingRule(final ReadwriteSplittingRule actual) {
+        assertTrue(actual.findDataSourceRule("ds_0").isPresent());
+        Properties props = actual.findDataSourceRule("ds_0").get().getReadwriteSplittingType().getProps();
+        assertNotNull(props);
+        assertThat(props.getProperty("read-data-source-names"), is("ds_0_read_0, ds_0_read_1"));
+        assertTrue(actual.findDataSourceRule("ds_1").isPresent());
+        props = actual.findDataSourceRule("ds_1").get().getReadwriteSplittingType().getProps();
+        assertNotNull(props);
+        assertThat(props.getProperty("read-data-source-names"), is("ds_1_read_0, ds_1_read_1"));
+    }
+    
+    private void assertEncryptRule(final EncryptRule actual) {
+        assertThat(actual.getCipherColumn("t_order", "pwd"), is("pwd_cipher"));
+        assertTrue(actual.findEncryptor("t_order", "pwd").isPresent());
+        assertThat(actual.findEncryptor("t_order", "pwd").get().getProps().getProperty("aes-key-value"), is("123456"));
+    }
+    
+    private void assertGlobalRules(final Collection<ShardingSphereRule> actual) {
+        assertThat(actual.size(), is(4));
+        for (ShardingSphereRule each : actual) {
             if (each instanceof SQLParserRule) {
                 assertSQLParserRule((SQLParserRule) each);
             }
         }
     }
     
-    private void assertDataSources() {
-        Map<String, DataSource> dataSources = dataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources();
-        assertThat(dataSources.size(), is(6));
-        assertTrue(dataSources.containsKey("ds_0_write"));
-        assertTrue(dataSources.containsKey("ds_0_read_0"));
-        assertTrue(dataSources.containsKey("ds_0_read_1"));
-        assertTrue(dataSources.containsKey("ds_1_write"));
-        assertTrue(dataSources.containsKey("ds_1_read_0"));
-        assertTrue(dataSources.containsKey("ds_1_read_1"));
-    }
-    
-    private void assertShardingRule(final ShardingRule rule) {
-        assertThat(rule.getTableRules().size(), is(1));
-        assertThat(rule.getTableRule("t_order").getActualDataNodes(), is(Arrays.asList(
-                new DataNode("ds_0.t_order_0"), new DataNode("ds_0.t_order_1"), new DataNode("ds_0.t_order_2"), new DataNode("ds_0.t_order_3"),
-                new DataNode("ds_1.t_order_0"), new DataNode("ds_1.t_order_1"), new DataNode("ds_1.t_order_2"), new DataNode("ds_1.t_order_3"))));
-    }
-    
-    private void assertReadwriteSplittingRule(final ReadwriteSplittingRule rule) {
-        assertTrue(rule.findDataSourceRule("ds_0").isPresent());
-        Properties props = rule.findDataSourceRule("ds_0").get().getReadwriteSplittingType().getProps();
-        assertNotNull(props);
-        assertThat(props.getProperty("read-data-source-names"), is("ds_0_read_0, ds_0_read_1"));
-        assertTrue(rule.findDataSourceRule("ds_1").isPresent());
-        props = rule.findDataSourceRule("ds_1").get().getReadwriteSplittingType().getProps();
-        assertNotNull(props);
-        assertThat(props.getProperty("read-data-source-names"), is("ds_1_read_0, ds_1_read_1"));
-    }
-    
-    private void assertEncryptRule(final EncryptRule rule) {
-        assertThat(rule.getCipherColumn("t_order", "pwd"), is("pwd_cipher"));
-        assertTrue(rule.findEncryptor(DefaultSchema.LOGIC_NAME, "t_order", "pwd").isPresent());
-        assertThat(rule.findEncryptor(DefaultSchema.LOGIC_NAME, "t_order", "pwd").get().getProps().getProperty("aes-key-value"), is("123456"));
-    }
-    
-    private void assertSQLParserRule(final SQLParserRule sqlParserRule) {
-        assertThat(sqlParserRule.isSqlCommentParseEnabled(), is(true));
-        assertCacheOption(sqlParserRule.getSqlStatementCache());
-        assertCacheOption(sqlParserRule.getParseTreeCache());
+    private void assertSQLParserRule(final SQLParserRule actual) {
+        assertTrue(actual.isSqlCommentParseEnabled());
+        assertCacheOption(actual.getSqlStatementCache());
+        assertCacheOption(actual.getParseTreeCache());
     }
     
     private void assertCacheOption(final CacheOption cacheOption) {

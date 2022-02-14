@@ -1,27 +1,35 @@
 Welcome to Apache ShardingSphere
 ===============================================================================
 
-ShardingSphere is an open-source ecosystem consisting of a set of distributed database solutions, including 2 independent products, ShardingSphere-JDBC & ShardingSphere-Proxy. 
-They both provide functions of data scale out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism and heterogeneous language. 
+Apache ShardingSphere is positioned as a Database Plus, and aims at building a standard layer and ecosystem above heterogeneous databases. 
+It focuses on how to reuse existing databases and their respective upper layer, rather than creating a new database. The goal is to minimize or eliminate the challenges caused by underlying databases fragmentation.
 
-Apache ShardingSphere aiming at reasonably making full use of the computation and storage capacity of existed database in distributed system, rather than a totally new database.
-As the cornerstone of enterprises, relational database still takes a huge market share.
-Therefore, we prefer to focus on its increment instead of a total overturn.
+The concepts at the core of the project are Connect, Enhance and Pluggable.
 
-ShardingSphere-JDBC defines itself as a lightweight Java framework that provides extra service at Java JDBC layer. 
-With client end connecting directly to the database, it provides service in the form of jar and requires no extra deployment and dependence. 
+- `Connect:` Flexible adaptation of database protocol, SQL dialect and database storage. It can quickly connect applications and heterogeneous databases quickly.
+- `Enhance:` Capture database access entry to provide additional features transparently, such as: redirect (sharding, readwrite-splitting and shadow), transform (data encrypt and mask), authentication (security, audit and authority), governance (circuit breaker and access limitation and analyze, QoS and observability).
+- `Pluggable:` Leveraging the micro kernel and 3 layers pluggable mode, features and database ecosystem can be embedded flexibily. Developers can customize their ShardingSphere just like building with LEGO blocks.
+
+Apache ShardingSphere including 3 independent products: JDBC, Proxy & Sidecar (Planning).
+They all provide functions of data scale-out, distributed transaction and distributed governance,
+applicable in a variety of situations such as Java isomorphism, heterogeneous language and Cloud-Native.
+
+As the cornerstone of enterprises, the relational database has a huge market share. Therefore, we prefer to focus on its incrementation instead of a total overturn.
+
+ShardingSphere-JDBC defines itself as a lightweight Java framework that provides extra services at the Java JDBC layer.
+With the client end connecting directly to the database, it provides services in the form of a jar and requires no extra deployment and dependence.
 It can be considered as an enhanced JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
 
-* Applicable in any ORM framework based on Java, such as JPA, Hibernate, Mybatis, Spring JDBC Template or direct use of JDBC.
-* Based on any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
-* Support any kind of database that conforms to JDBC standard: MySQL, Oracle, SQLServer and PostgreSQL for now.
+* Applicable in any ORM framework based on JDBC, such as JPA, Hibernate, Mybatis, Spring JDBC Template or direct use of JDBC;
+* Supports any third-party database connection pool, such as DBCP, C3P0, BoneCP, HikariCP;
+* Support any kind of JDBC standard database: MySQL, PostgreSQL, Oracle, SQLServer and any JDBC adapted databases.
 
 Getting Started
 ===============================================================================
 To help you get started, try the following links:
 
 Getting Started
-    https://shardingsphere.apache.org/document/current/en/quick-start/sharding-jdbc-quick-start/
+    https://shardingsphere.apache.org/document/current/en/quick-start/shardingsphere-jdbc-quick-start/
 
 We welcome contributions of all kinds, for details of how you can help
     https://shardingsphere.apache.org/community/en/contribute/

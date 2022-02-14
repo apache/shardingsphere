@@ -17,7 +17,7 @@
 
 grammar RDLStatement;
 
-import Keyword, Literals, Symbol, BaseRule;
+import BaseRule;
 
 createShardingScalingRule
     : CREATE SHARDING SCALING RULE scalingName scalingRuleDefinition?
@@ -40,19 +40,7 @@ scalingName
     ;
 
 scalingRuleDefinition
-    : minimumAutoDefinition | completeAutoDefinition | manualDefinition
-    ;
-
-minimumAutoDefinition
-    : LP completionDetector COMMA dataConsistencyChecker RP
-    ;
-
-completeAutoDefinition
-    : LP inputDefinition COMMA outputDefinition COMMA streamChannel COMMA completionDetector COMMA dataConsistencyChecker RP
-    ;
-
-manualDefinition
-    : LP inputDefinition COMMA outputDefinition COMMA streamChannel RP
+    : LP inputDefinition? (COMMA? outputDefinition)? (COMMA? streamChannel)? (COMMA? completionDetector)? (COMMA? dataConsistencyChecker)? RP
     ;
 
 inputDefinition

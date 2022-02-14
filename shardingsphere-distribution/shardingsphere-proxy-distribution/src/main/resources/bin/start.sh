@@ -32,6 +32,7 @@ EXT_LIB=${DEPLOY_DIR}/ext-lib
 
 CLASS_PATH=.:${DEPLOY_DIR}/lib/*:${EXT_LIB}/*
 
+is_openjdk=$(java -version 2>&1 | tail -1 | awk '{print ($1 == "OpenJDK") ? "true" : "false"}')
 total_version=`java -version 2>&1 | grep version | sed '1!d' | sed -e 's/"//g' | awk '{print $3}'`
 int_version=${total_version%%.*}
 if [ $int_version = '1' ] ; then
@@ -42,18 +43,21 @@ echo "we find java version: java${int_version}, full_version=${total_version}"
 
 VERSION_OPTS=""
 if [ $int_version = '8' ] ; then
-    VERSION_OPTS=" -XX:+UseFastAccessorMethods -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70"
+    VERSION_OPTS="-XX:+UseConcMarkSweepGC -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70"
 elif [ $int_version = '11' ] ; then
-    VERSION_OPTS=" -XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler" 
+    VERSION_OPTS="-XX:+SegmentedCodeCache -XX:+AggressiveHeap"
+    if $is_openjdk; then
+      VERSION_OPTS="$VERSION_OPTS -XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler"
+    fi
 elif [ $int_version = '17' ] ; then
-    VERSION_OPTS=""
+    VERSION_OPTS="-XX:+SegmentedCodeCache -XX:+AggressiveHeap"
 else
     echo "unadapted java version, please notice..."
 fi
 
 JAVA_OPTS=" -Djava.awt.headless=true "
 
-JAVA_MEM_OPTS=" -server -Xmx2g -Xms2g -Xmn1g -Xss1m -XX:+DisableExplicitGC -XX:LargePageSizeInBytes=128m ${VERSION_OPTS} -Dio.netty.leakDetection.level=DISABLED "
+JAVA_MEM_OPTS=" -server -Xmx2g -Xms2g -Xmn1g -Xss1m -XX:AutoBoxCacheMax=4096 -XX:+UseNUMA -XX:+DisableExplicitGC -XX:LargePageSizeInBytes=128m ${VERSION_OPTS} -Dio.netty.leakDetection.level=DISABLED "
 
 MAIN_CLASS=org.apache.shardingsphere.proxy.Bootstrap
 

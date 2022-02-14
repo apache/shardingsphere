@@ -18,107 +18,30 @@
 package org.apache.shardingsphere.example.generator;
 
 import freemarker.template.Configuration;
-import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import org.apache.shardingsphere.example.generator.scenario.ExampleScenarioFactory;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
 
 /**
  * Example generator.
  */
-public final class ExampleGenerator {
-    
-    private static final String DATA_MODEL_PATH = "/data-model/data-model.yaml";
-    
-    private static final String OUTPUT_PATH = "./examples/shardingsphere-sample/shardingsphere-example-generated"
-            + "<#assign package=\"\">"
-            + "<#if feature?split(\",\")?size gt 1>"
-            + "<#assign package=\"mixed\">"
-            + "<#else>"
-            + "<#assign package=feature />"
-            + "</#if>"
-            + "/shardingsphere-${product}-sample/${package}--${framework}--${mode}--${transaction}/";
-    
-    private static final String JAVA_CLASS_PATH = "src/main/java/org/apache/shardingsphere/example/"
-            + "<#assign package=\"\">"
-            + "<#if feature?split(\",\")?size gt 1>"
-            + "<#assign package=\"mixed\">"
-            + "<#else>"
-            + "<#assign package=feature?replace('-', '/') />"
-            + "</#if>"
-            + "${package}/${framework?replace('-', '/')}";
-    
-    private static final String RESOURCES_PATH = "src/main/resources";
-    
-    private final Configuration templateConfig;
-    
-    public ExampleGenerator() throws IOException {
-        templateConfig = createTemplateConfiguration();
-    }
-    
-    private Configuration createTemplateConfiguration() throws IOException {
-        Configuration result = new Configuration(Configuration.VERSION_2_3_31);
-        result.setDirectoryForTemplateLoading(new File(Objects.requireNonNull(ExampleGenerator.class.getClassLoader().getResource("template")).getFile()));
-        result.setDefaultEncoding("UTF-8");
-        return result;
-    }
+public interface ExampleGenerator {
     
     /**
      * Generate file.
      * 
+     * @param templateConfig template configuration
+     * @param dataModel data model
      * @throws IOException IO exception
      * @throws TemplateException template exception
      */
-    @SuppressWarnings("unchecked")
-    public void generate() throws IOException, TemplateException {
-        try (InputStream input = ExampleGenerator.class.getResourceAsStream(DATA_MODEL_PATH)) {
-            Map<String, String> dataModel = new Yaml().loadAs(input, Map.class);
-            String feature = dataModel.get("feature");
-            String framework = dataModel.get("framework");
-            generateDirs(dataModel, new ExampleScenarioFactory(feature, framework).getJavaClassPaths(), JAVA_CLASS_PATH);
-            generateDirs(dataModel, new ExampleScenarioFactory(feature, framework).getResourcePaths(), RESOURCES_PATH);
-            generateFile(dataModel, new ExampleScenarioFactory(feature, framework).getJavaClassTemplateMap(), JAVA_CLASS_PATH);
-            generateFile(dataModel, new ExampleScenarioFactory(feature, framework).getResourceTemplateMap(), RESOURCES_PATH);
-            String outputPath = generatePath(dataModel, OUTPUT_PATH);
-            processFile(dataModel, "pom.ftl", outputPath + "pom.xml");
-        }
-    }
+    void generate(Configuration templateConfig, Map<String, String> dataModel) throws IOException, TemplateException;
     
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void generateDirs(final Map<String, String> dataModel, final Collection<String> paths, final String outputRelativePath) throws IOException, TemplateException {
-        for (String each : paths) {
-            new File(generatePath(dataModel, OUTPUT_PATH + outputRelativePath + "/" + each)).mkdirs();
-        }
-    }
-    
-    private void generateFile(final Map<String, String> dataModel, final Map<String, String> templateMap, final String outputRelativePath) throws IOException, TemplateException {
-        String outputPath = generatePath(dataModel, OUTPUT_PATH + outputRelativePath);
-        for (Entry<String, String> entry : templateMap.entrySet()) {
-            processFile(dataModel, entry.getKey(), outputPath + "/" + entry.getValue());
-        }
-    }
-    
-    private String generatePath(final Object model, final String relativePath) throws IOException, TemplateException {
-        try (StringWriter result = new StringWriter()) {
-            new Template("path", relativePath, templateConfig).process(model, result);
-            return result.toString();
-        }
-    }
-    
-    private void processFile(final Object model, final String templateFile, final String outputFile) throws IOException, TemplateException {
-        try (Writer writer = new FileWriter(outputFile)) {
-            templateConfig.getTemplate(templateFile).process(model, writer);
-        }
-    }
+    /**
+     * Get generator type.
+     *
+     * @return generator type
+     */
+    String getType();
 }

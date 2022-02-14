@@ -112,6 +112,6 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     
     @Override
     public String getType() {
-        return ShowResourcesStatement.class.getCanonicalName();
+        return ShowResourcesStatement.class.getName();
     }
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.metadata;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptColumnDataType;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -345,10 +346,10 @@ public final class EncryptTableMetaDataBuilderTest {
         EncryptRule result = createEncryptRule();
         EncryptTable encryptTable = result.findEncryptTable(TABLE_NAME).get();
         EncryptColumn encryptColumn = mock(EncryptColumn.class);
-        when(encryptColumn.getLogicDataType()).thenReturn("VARCHAR(20)");
-        when(encryptColumn.getDataTypeName()).thenReturn("VARCHAR");
+        EncryptColumnDataType encryptColumnDataType = mock(EncryptColumnDataType.class);
+        when(encryptColumnDataType.getDataType()).thenReturn(12);
+        when(encryptColumn.getLogicDataType()).thenReturn(encryptColumnDataType);
         when(encryptTable.findEncryptColumn("pwd")).thenReturn(Optional.of(encryptColumn));
-        when(result.isContainsConfigDataTypeColumn()).thenReturn(true);
         return result;
     }
     

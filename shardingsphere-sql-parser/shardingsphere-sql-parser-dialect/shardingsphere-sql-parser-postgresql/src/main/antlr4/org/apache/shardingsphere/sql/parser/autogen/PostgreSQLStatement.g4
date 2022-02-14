@@ -61,6 +61,8 @@ execute
     | alterDefaultPrivileges
     | alterForeignDataWrapper
     | alterForeignTable
+    | alterGroup
+    | alterMaterializedView
     | alterProcedure
     | alterServer
     | alterSequence

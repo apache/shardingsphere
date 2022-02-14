@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
@@ -39,10 +40,10 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.Var
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,17 +61,21 @@ public final class SetVariableBackendHandlerTest {
     
     private static final String SCHEMA_PATTERN = "schema_%s";
     
-    private final ConnectionSession connectionSession = new ConnectionSession(TransactionType.LOCAL, new DefaultAttributeMap());
+    private ContextManager contextManagerBefore;
+    
+    private ConnectionSession connectionSession;
     
     @Before
-    public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
-        contextManagerField.setAccessible(true);
+    public void setUp() {
+        Properties properties = new Properties();
+        properties.setProperty(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE.getKey(), ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE.getDefaultValue());
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(), 
-                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContext.class));
+                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(properties));
+        contextManagerBefore = ProxyContext.getInstance().getContextManager();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ProxyContext.getInstance().init(contextManager);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        contextManagerField.set(ProxyContext.getInstance(), contextManager);
+        connectionSession = new ConnectionSession(TransactionType.LOCAL, new DefaultAttributeMap());
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
@@ -150,5 +155,10 @@ public final class SetVariableBackendHandlerTest {
         ResponseHeader actual = setDistSQLBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
+    }
+    
+    @After
+    public void tearDown() {
+        ProxyContext.getInstance().init(contextManagerBefore);
     }
 }

@@ -23,6 +23,7 @@ cobertura.ser
 
 # idea ignore
 .idea/
+!/.idea/icon.png
 *.ipr
 *.iml
 *.iws
