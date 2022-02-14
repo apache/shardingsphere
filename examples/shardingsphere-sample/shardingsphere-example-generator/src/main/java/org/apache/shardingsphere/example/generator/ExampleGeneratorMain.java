@@ -37,6 +37,6 @@ public final class ExampleGeneratorMain {
      * @throws TemplateException template exception
      */
     public static void main(final String[] args) throws IOException, TemplateException {
-        new ExampleGenerator().generate();
+        new ExampleGeneratorFactory().generate();
     }
 }
