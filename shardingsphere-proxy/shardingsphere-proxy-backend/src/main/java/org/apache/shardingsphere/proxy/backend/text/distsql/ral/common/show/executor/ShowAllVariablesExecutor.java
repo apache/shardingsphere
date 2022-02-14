@@ -58,7 +58,7 @@ public final class ShowAllVariablesExecutor extends AbstractShowExecutor {
             String propertyValue = configurationProperties.getValue(ConfigurationPropertyKey.valueOf(each)).toString();
             rows.add(Arrays.asList(each.toLowerCase(), propertyValue));
         });
-        rows.add(Arrays.asList(VariableEnum.AGENT_PLUGINS_ENABLED.name().toLowerCase(), SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString())));
+        rows.add(Arrays.asList(VariableEnum.AGENT_PLUGINS_ENABLED.name().toLowerCase(), SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString())));
         if (connectionSession.getBackendConnection() instanceof JDBCBackendConnection) {
             rows.add(Arrays.asList(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), ((JDBCBackendConnection) connectionSession.getBackendConnection()).getConnectionSize()));
         }
