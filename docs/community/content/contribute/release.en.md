@@ -135,10 +135,10 @@ Among them, 700E6065 is public key ID.
 The command is as follows:
 
 ```shell
-gpg --keyserver hkp://pool.sks-keyservers.net --send-key 700E6065
+gpg --keyserver hkp://keyserver.ubuntu.com --send-key 700E6065
 ```
 
-`pool.sks-keyservers.net` is randomly chosen from [public key server](https://sks-keyservers.net/status/). 
+`keyserver.ubuntu.com` is randomly chosen from public key server. 
 Each server will automatically synchronize with one another, so it would be okay to choose any one.
 
 ## Apache Maven Central Repository Release
