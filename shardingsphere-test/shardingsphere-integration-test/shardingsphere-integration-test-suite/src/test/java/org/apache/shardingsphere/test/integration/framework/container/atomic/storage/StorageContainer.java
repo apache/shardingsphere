@@ -26,13 +26,12 @@ import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.AtomicContainer;
 import org.testcontainers.containers.BindMode;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableMap.Builder;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -41,13 +40,13 @@ import java.util.Optional;
  */
 public abstract class StorageContainer extends AtomicContainer {
     
-    private Map<String, DataSource> actualDataSourceMap;
-    
     @Getter
     private final DatabaseType databaseType;
     
     @Getter
     private final String scenario;
+    
+    private Map<String, DataSource> actualDataSourceMap;
     
     public StorageContainer(final DatabaseType databaseType, final String dockerImageName, final boolean isFakedContainer, final String scenario) {
         super(databaseType.getName().toLowerCase(), dockerImageName, isFakedContainer);
@@ -69,9 +68,8 @@ public abstract class StorageContainer extends AtomicContainer {
     public synchronized Map<String, DataSource> getActualDataSourceMap() {
         if (null == actualDataSourceMap) {
             Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDatabaseNames(scenario);
-            Builder<String, DataSource> builder = ImmutableMap.builder();
-            dataSourceNames.forEach(each -> builder.put(each, createDataSource(each)));
-            actualDataSourceMap = builder.build();
+            actualDataSourceMap = new LinkedHashMap<>(dataSourceNames.size(), 1);
+            dataSourceNames.forEach(each -> actualDataSourceMap.put(each, createDataSource(each)));
         }
         return actualDataSourceMap;
     }

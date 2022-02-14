@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.integration.framework.container.atomic.storage.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
@@ -44,23 +43,24 @@ public final class H2Container extends StorageContainer {
     @Override
     @SneakyThrows({IOException.class, SQLException.class})
     protected void execute() {
-        File file = new File(EnvironmentPath.getInitSQLFile(getDatabaseType(), getScenario()));
-        for (Entry<String, DataSource> each : getActualDataSourceMap().entrySet()) {
-            String databaseFileName = "init-" + each.getKey() + ".sql";
-            boolean sqlFileExist = EnvironmentPath.checkSQLFileExist(getDatabaseType(), getScenario(), databaseFileName);
-            try (Connection connection = each.getValue().getConnection(); FileReader reader = new FileReader(file)) {
+        File initSQLFile = new File(EnvironmentPath.getInitSQLFile(getDatabaseType(), getScenario()));
+        for (Entry<String, DataSource> entry : getActualDataSourceMap().entrySet()) {
+            String dbInitSQLFileName = "init-" + entry.getKey() + ".sql";
+            try (
+                    Connection connection = entry.getValue().getConnection();
+                    FileReader reader = new FileReader(initSQLFile)) {
                 RunScript.execute(connection, reader);
-                if (sqlFileExist) {
-                    executeDatabaseFile(getDatabaseType(), connection, databaseFileName);
+                if (EnvironmentPath.checkSQLFileExist(getDatabaseType(), getScenario(), dbInitSQLFileName)) {
+                    executeDataInitFile(connection, dbInitSQLFileName);
                 }
             }
         }
     }
     
-    private void executeDatabaseFile(final DatabaseType databaseType, final Connection connection, final String databaseFileName) throws IOException, SQLException {
-        File databaseFile = new File(EnvironmentPath.getInitSQLFile(databaseType, getScenario(), databaseFileName));
-        try (FileReader databaseFileReader = new FileReader(databaseFile)) {
-            RunScript.execute(connection, databaseFileReader);
+    private void executeDataInitFile(final Connection connection, final String dataInitFileName) throws IOException, SQLException {
+        File dataInitFile = new File(EnvironmentPath.getInitSQLFile(getDatabaseType(), getScenario(), dataInitFileName));
+        try (FileReader reader = new FileReader(dataInitFile)) {
+            RunScript.execute(connection, reader);
         }
     }
     
