@@ -134,10 +134,10 @@ sub   4096R/0B7EF5B2 2019-03-20
 命令如下：
 
 ```shell
-gpg --keyserver hkp://pool.sks-keyservers.net --send-key 700E6065
+gpg --keyserver hkp://keyserver.ubuntu.com --send-key 700E6065
 ```
 
-`pool.sks-keyservers.net`为随意挑选的[公钥服务器](https://sks-keyservers.net/status/)，每个服务器之间是自动同步的，选任意一个即可。
+`keyserver.ubuntu.com` 为随意挑选的公钥服务器，每个服务器之间是自动同步的，选任意一个即可。
 
 ## 发布 Apache Maven 中央仓库
 
