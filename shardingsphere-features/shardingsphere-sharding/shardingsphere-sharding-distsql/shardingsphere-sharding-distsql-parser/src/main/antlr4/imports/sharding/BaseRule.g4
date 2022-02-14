@@ -26,4 +26,3 @@ tableName
 keyGeneratorName
     : IDENTIFIER
     ;
-    

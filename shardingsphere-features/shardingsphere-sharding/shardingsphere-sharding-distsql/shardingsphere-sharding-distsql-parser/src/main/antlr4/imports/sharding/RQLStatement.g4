@@ -66,4 +66,3 @@ tableRule
 schemaName
     : IDENTIFIER
     ;
-
