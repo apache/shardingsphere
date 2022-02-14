@@ -14,15 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
+grammar BaseRule;
 
-grammar RQLStatement;
+import Symbol, Keyword, Literals;
 
-import BaseRule;
-
-showShardingScalingRules
-    : SHOW SHARDING SCALING RULES (FROM schemaName)?
-    ;
-
-schemaName
+tableName
     : IDENTIFIER
     ;
+    
+keyGeneratorName
+    : IDENTIFIER
+    ;
+    

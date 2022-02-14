@@ -17,7 +17,7 @@
 
 grammar RALStatement;
 
-import Keyword, Literals, Symbol, BaseRule;
+import BaseRule;
 
 showScalingList
     : SHOW SCALING LIST
