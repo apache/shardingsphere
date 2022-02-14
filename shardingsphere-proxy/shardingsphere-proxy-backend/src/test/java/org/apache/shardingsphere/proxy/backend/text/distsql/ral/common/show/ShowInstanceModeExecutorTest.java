@@ -49,11 +49,12 @@ public final class ShowInstanceModeExecutorTest {
         executor.next();
         QueryResponseRow queryResponseRow = executor.getQueryResponseRow();
         ArrayList<Object> data = new ArrayList<>(queryResponseRow.getData());
-        assertThat(data.size(), is(4));
+        assertThat(data.size(), is(5));
         assertThat(data.get(0), is("127.0.0.1@3309"));
         assertThat(data.get(1), is("Cluster"));
         assertThat(data.get(2), is("ZooKeeper"));
         assertThat(data.get(3), is("key=value"));
+        assertThat(data.get(4), is("false"));
     }
     
     private InstanceContext createInstanceContext() {

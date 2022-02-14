@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.test.integration.engine.dml;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainerManager;
+import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
+import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRegistry;
 import org.apache.shardingsphere.test.integration.framework.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
-import org.junit.ClassRule;
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -35,33 +35,32 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertFalse;
 
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDMLIT extends BaseDMLIT {
     
-    @ClassRule
-    public static ComposedContainerManager composedContainerManager = new ComposedContainerManager("GeneralDMLIT");
+    private static final ComposedContainerRegistry COMPOSED_CONTAINER_REGISTRY = new ComposedContainerRegistry();
     
     public GeneralDMLIT(final AssertionParameterizedArray parameterizedArray) {
-        super(parameterizedArray);
+        super(parameterizedArray, COMPOSED_CONTAINER_REGISTRY.getComposedContainer(GeneralDMLIT.class.getSimpleName(), parameterizedArray));
     }
     
     @Parameters(name = "{0}")
     public static Collection<AssertionParameterizedArray> getParameters() {
-        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DML)
-                .stream()
-                .peek(each -> each.setCompose(composedContainerManager.getOrCreateCompose(each)))
-                .collect(Collectors.toList());
+        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DML);
+    }
+    
+    @AfterClass
+    public static void closeContainers() {
+        COMPOSED_CONTAINER_REGISTRY.close();
     }
     
     @Test
     public void assertExecuteUpdate() throws SQLException, ParseException {
         switch (getScenario()) {
             case "replica_query":
-            case "shadow":
             case "encrypt":
                 return;
             default:
@@ -92,7 +91,6 @@ public final class GeneralDMLIT extends BaseDMLIT {
     public void assertExecute() throws SQLException, ParseException {
         switch (getScenario()) {
             case "replica_query":
-            case "shadow":
             case "encrypt":
                 return;
             default:

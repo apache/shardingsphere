@@ -843,7 +843,11 @@
                 </assignment-value>
                 <assignment-value>
                     <common-expression text="ST_GeographyFromText('SRID=4326;POINT(100 200)')" start-index="71" stop-index="118" literal-start-index="73" literal-stop-index="120" />
-                    <function function-name="ST_GeographyFromText" text="ST_GeographyFromText('SRID=4326;POINT(100 200)')" start-index="71" stop-index="118" literal-start-index="73" literal-stop-index="120" />
+                    <function function-name="ST_GeographyFromText" text="ST_GeographyFromText('SRID=4326;POINT(100 200)')" start-index="71" stop-index="118" literal-start-index="73" literal-stop-index="120">
+                        <parameter>
+                            <literal-expression value="SRID=4326;POINT(100 200)" literal-start-index="94" start-index="92" literal-stop-index="119" stop-index="117" />
+                        </parameter>
+                    </function>
                 </assignment-value>
                 <assignment-value>
                     <parameter-marker-expression parameter-index="2" start-index="121" stop-index="128" />

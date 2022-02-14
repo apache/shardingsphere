@@ -21,13 +21,13 @@ import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.engine.BatchITCase;
-import org.apache.shardingsphere.test.integration.framework.compose.ComposedContainerManager;
+import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRegistry;
 import org.apache.shardingsphere.test.integration.framework.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.CaseParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
-import org.junit.ClassRule;
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -36,7 +36,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -44,26 +43,29 @@ import static org.junit.Assert.assertThat;
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class BatchDMLIT extends BatchITCase {
     
-    @ClassRule
-    public static ComposedContainerManager composedContainerManager = new ComposedContainerManager("BatchDMLIT");
+    private static final ComposedContainerRegistry COMPOSED_CONTAINER_REGISTRY = new ComposedContainerRegistry();
     
     public BatchDMLIT(final CaseParameterizedArray parameterizedArray) {
-        super(parameterizedArray);
+        super(parameterizedArray, COMPOSED_CONTAINER_REGISTRY.getComposedContainer(BatchDMLIT.class.getSimpleName(), parameterizedArray));
     }
     
     @Parameters(name = "{0}")
     public static Collection<ParameterizedArray> getParameters() {
-        return ParameterizedArrayFactory.getCaseParameterized(SQLCommandType.DML)
-                .stream()
-                .peek(each -> each.setCompose(composedContainerManager.getOrCreateCompose(each)))
-                .collect(Collectors.toList());
+        return ParameterizedArrayFactory.getCaseParameterized(SQLCommandType.DML);
+    }
+    
+    @AfterClass
+    public static void closeContainers() {
+        COMPOSED_CONTAINER_REGISTRY.close();
     }
     
     @Test
     public void assertExecuteBatch() throws SQLException, ParseException {
+        if ("shadow".equals(getScenario()) && "PostgreSQL".equals(getDatabaseType().getName())) {
+            return;
+        }
         switch (getScenario()) {
             case "replica_query":
-            case "shadow":
             case "encrypt":
                 return;
             default:
@@ -94,9 +96,11 @@ public final class BatchDMLIT extends BatchITCase {
     @Test
     public void assertClearBatch() throws SQLException, ParseException {
         // TODO fix replica_query
+        if ("shadow".equals(getScenario()) && "PostgreSQL".equals(getDatabaseType().getName())) {
+            return;
+        }
         switch (getScenario()) {
             case "replica_query":
-            case "shadow":
             case "encrypt":
                 return;
             default:

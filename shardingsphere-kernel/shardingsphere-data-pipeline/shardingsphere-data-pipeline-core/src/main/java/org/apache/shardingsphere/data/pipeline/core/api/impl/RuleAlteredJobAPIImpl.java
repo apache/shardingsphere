@@ -197,6 +197,19 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     }
     
     @Override
+    public void restoreClusterWriteDB(final String jobId) {
+        checkModeConfig();
+        log.info("restoreClusterWriteDB for job {}", jobId);
+        JobConfiguration jobConfig = getJobConfig(jobId);
+        restoreClusterWriteDB(jobConfig);
+    }
+    
+    @Override
+    public void restoreClusterWriteDB(final JobConfiguration jobConfig) {
+        // TODO restoreClusterWriteDB
+    }
+    
+    @Override
     public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
         checkModeConfig();
         return DATA_CONSISTENCY_CHECK_ALGORITHM_MAP.values()

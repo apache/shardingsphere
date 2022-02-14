@@ -17,7 +17,7 @@
 
 grammar RQLStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 showResources
     : SHOW SCHEMA RESOURCES (FROM schemaName)?
@@ -39,18 +39,6 @@ showRulesUsedResource
     : SHOW RULES USED RESOURCE resourceName (FROM schemaName)?
     ;
 
-resourceName
-    : IDENTIFIER | STRING
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
-
 table
     : TABLE tableName
-    ;
-
-tableName
-    : IDENTIFIER
     ;

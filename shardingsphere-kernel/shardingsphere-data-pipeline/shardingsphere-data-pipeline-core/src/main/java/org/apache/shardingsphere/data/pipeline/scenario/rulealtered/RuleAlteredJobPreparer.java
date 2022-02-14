@@ -39,12 +39,14 @@ import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceCh
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
+import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -52,6 +54,8 @@ import java.util.Optional;
  */
 @Slf4j
 public final class RuleAlteredJobPreparer {
+    
+    private static final Map<String, DataSourceChecker> DATA_SOURCE_CHECKER_MAP = SingletonSPIRegistry.getTypedSingletonInstancesMap(DataSourceChecker.class);
     
     private final InventoryTaskSplitter inventoryTaskSplitter = new InventoryTaskSplitter();
     
@@ -99,7 +103,7 @@ public final class RuleAlteredJobPreparer {
     }
     
     private void checkSourceDataSource(final RuleAlteredJobContext jobContext, final PipelineDataSourceWrapper sourceDataSource) {
-        DataSourceChecker dataSourceChecker = EnvironmentCheckerFactory.newInstance(jobContext.getJobConfig().getHandleConfig().getSourceDatabaseType());
+        DataSourceChecker dataSourceChecker = DATA_SOURCE_CHECKER_MAP.get(jobContext.getJobConfig().getHandleConfig().getSourceDatabaseType());
         Collection<PipelineDataSourceWrapper> sourceDataSources = Collections.singleton(sourceDataSource);
         dataSourceChecker.checkConnection(sourceDataSources);
         dataSourceChecker.checkPrivilege(sourceDataSources);
@@ -107,7 +111,7 @@ public final class RuleAlteredJobPreparer {
     }
     
     private void checkTargetDataSource(final RuleAlteredJobContext jobContext, final PipelineDataSourceWrapper targetDataSource) {
-        DataSourceChecker dataSourceChecker = EnvironmentCheckerFactory.newInstance(jobContext.getJobConfig().getHandleConfig().getTargetDatabaseType());
+        DataSourceChecker dataSourceChecker = DATA_SOURCE_CHECKER_MAP.get(jobContext.getJobConfig().getHandleConfig().getTargetDatabaseType());
         Collection<PipelineDataSourceWrapper> targetDataSources = Collections.singletonList(targetDataSource);
         dataSourceChecker.checkConnection(targetDataSources);
         dataSourceChecker.checkTargetTable(targetDataSources, jobContext.getTaskConfig().getImporterConfig().getShardingColumnsMap().keySet());

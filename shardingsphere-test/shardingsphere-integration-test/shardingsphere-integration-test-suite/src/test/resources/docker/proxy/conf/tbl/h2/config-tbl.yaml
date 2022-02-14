@@ -19,7 +19,7 @@ schemaName: tbl
 
 dataSources:
   tbl:
-    url: jdbc:mysql://mysql.tbl.host:3306/tbl?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:h2:mem:tbl;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: root
     password:
     connectionTimeoutMilliseconds: 30000

@@ -55,6 +55,10 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
         ShardingSphereServiceLoader.register(ReadwriteSplittingType.class);
     }
     
+    private static final String DYNAMIC = "DYNAMIC";
+    
+    private static final String STATIC = "STATIC";
+    
     private final Map<String, ReplicaLoadBalanceAlgorithm> loadBalancers = new LinkedHashMap<>();
     
     private final Map<String, ReadwriteSplittingDataSourceRule> dataSourceRules;
@@ -123,18 +127,20 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     @Override
     public Map<String, Supplier<Object>> getExportedMethods() {
         Map<String, Supplier<Object>> result = new HashMap<>(3, 1);
-        result.put(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, this::exportDataSourceNames);
+        result.put(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, () -> exportDataSource(DYNAMIC));
         result.put(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_NAME, this::exportAutoAwareDataSourceNames);
-        result.put(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE, this::exportDataSourceNames);
+        result.put(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE, () -> exportDataSource(STATIC));
         return result;
     }
     
-    private Map<String, Map<String, String>> exportDataSourceNames() {
+    private Map<String, Map<String, String>> exportDataSource(final String readwriteSplittingType) {
         Map<String, Map<String, String>> result = new HashMap<>(dataSourceRules.size(), 1);
         dataSourceRules.forEach((name, dataSourceRule) -> {
-            Map<String, String> dataSources = dataSourceRule.getDataSources();
-            if (!dataSources.isEmpty()) {
-                result.put(dataSourceRule.getName(), dataSources);
+            if (readwriteSplittingType.equalsIgnoreCase(dataSourceRule.getReadwriteSplittingType().getType())) {
+                Map<String, String> dataSources = dataSourceRule.getDataSources();
+                if (!dataSources.isEmpty()) {
+                    result.put(dataSourceRule.getName(), dataSources);
+                }
             }
         });
         return result;

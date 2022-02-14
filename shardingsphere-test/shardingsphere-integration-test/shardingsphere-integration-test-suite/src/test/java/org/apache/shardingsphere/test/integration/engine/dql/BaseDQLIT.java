@@ -23,7 +23,9 @@ import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
+import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.junit.Before;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -34,6 +36,7 @@ import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,23 +46,26 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseDQLIT extends SingleITCase {
     
-    public BaseDQLIT(final AssertionParameterizedArray parameter) {
-        super(parameter);
+    private static final Collection<String> FILLED_SCENARIOS = new HashSet<>();
+    
+    public BaseDQLIT(final AssertionParameterizedArray parameterizedArray, final ComposedContainer composedContainer) {
+        super(parameterizedArray, composedContainer);
     }
     
-    @Override
-    public void init() throws Exception {
-        super.init();
-        composedContainer.executeOnStarted(compose -> {
-            try {
-                new DataSetEnvironmentManager(
-                        EnvironmentPath.getDataSetFile(getScenario()),
-                        getStorageContainer().getDataSourceMap()
-                ).fillData();
-            } catch (IOException | JAXBException | SQLException | ParseException e) {
-                throw new RuntimeException(e);
+    @Before
+    public final void init() throws Exception {
+        fillDataOnlyOnce();
+    }
+    
+    private void fillDataOnlyOnce() throws SQLException, ParseException, IOException, JAXBException {
+        if (!FILLED_SCENARIOS.contains(getScenario())) {
+            synchronized (FILLED_SCENARIOS) {
+                if (!FILLED_SCENARIOS.contains(getScenario())) {
+                    new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getScenario()), getActualDataSourceMap()).fillData();
+                    FILLED_SCENARIOS.add(getScenario());
+                }
             }
-        });
+        }
     }
     
     protected final void assertResultSet(final ResultSet resultSet) throws SQLException {

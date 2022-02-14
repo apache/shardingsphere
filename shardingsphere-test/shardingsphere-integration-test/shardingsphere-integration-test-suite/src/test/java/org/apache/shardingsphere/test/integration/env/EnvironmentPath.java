@@ -65,6 +65,17 @@ public final class EnvironmentPath {
     }
     
     /**
+     * Get init SQL resource path.
+     *
+     * @param databaseType database type
+     * @param scenario scenario
+     * @return init SQL resource path
+     */
+    public static String getInitSQLResourcePath(final DatabaseType databaseType, final String scenario) {
+        return String.join("/", "", ROOT_PATH, scenario, "init-sql", databaseType.getName().toLowerCase());
+    }
+    
+    /**
      * Get init SQL file.
      *
      * @param databaseType database type

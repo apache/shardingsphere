@@ -44,4 +44,8 @@
     <distsql-case id="export-schema-config" value="EXPORT SCHEMA CONFIG FROM schema_name" />
     <distsql-case id="create-traffic-rule" value="CREATE TRAFFIC RULE sql_match_traffic (LABELS(OLTP),TRAFFIC_ALGORITHM(TYPE(NAME=SQL_MATCH,PROPERTIES('sql' = 'SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;'))), LOAD_BALANCER(TYPE(NAME=RANDOM, PROPERTIES('key'='value'))) )" />
     <distsql-case id="alter-traffic-rule" value="ALTER TRAFFIC RULE sql_match_traffic (LABELS(OLTP),TRAFFIC_ALGORITHM(TYPE(NAME=SQL_MATCH,PROPERTIES('sql' = 'SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;'))), LOAD_BALANCER(TYPE(NAME=RANDOM, PROPERTIES('key'='value'))) )" />
+    <distsql-case id="label-instance" value="LABEL INSTANCE 127.0.0.1@3309 WITH OLAP_1,OLAP_2" />
+    <distsql-case id="relabel-instance" value="RELABEL INSTANCE 127.0.0.1@3309 WITH OLAP_1,OLAP_2" />
+    <distsql-case id="unlabel-instance" value="UNLABEL INSTANCE 127.0.0.1@3309 WITH OLAP_1" />
+    <distsql-case id="unlabel-instance-without-label" value="UNLABEL INSTANCE 127.0.0.1@3309" />
 </sql-cases>

@@ -15,7 +15,7 @@
 -- limitations under the License.
 --
 
-CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY '';
+CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY 'root';
 GRANT All privileges ON *.* TO 'root'@'%';
 
 SET character_set_database='utf8';
@@ -25,14 +25,14 @@ DROP DATABASE IF EXISTS db;
 
 CREATE DATABASE db;
 
-CREATE TABLE db.t_order (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name VARCHAR(32) NOT NULL, type_decimal DECIMAL(18,2) NOT NULL, type_char char(1) NOT NULL, type_date DATE NOT NULL,
-                        type_enum ENUM('spring', 'summer', 'autumn', 'winter'), type_boolean BOOLEAN NOT NULL, type_smallint SMALLINT NOT NULL, type_time time NOT NULL,
-                        type_timestamp timestamp NOT NULL, PRIMARY KEY (order_id));
+CREATE TABLE db.t_order (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name VARCHAR(32) NOT NULL, type_char CHAR(1) NOT NULL, type_boolean BOOLEAN NOT NULL, type_smallint SMALLINT NOT NULL,
+                         type_enum ENUM('spring', 'summer', 'autumn', 'winter'), type_decimal DECIMAL(18,2) NOT NULL, type_date DATE NOT NULL, type_time TIME NOT NULL, type_timestamp TIMESTAMP NOT NULL,
+                         PRIMARY KEY (order_id));
 
 DROP DATABASE IF EXISTS shadow_db;
 
 CREATE DATABASE shadow_db;
 
-CREATE TABLE shadow_db.t_order (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name VARCHAR(32) NOT NULL, type_decimal DECIMAL(18,2) NOT NULL, type_char char(1) NOT NULL, type_date DATE NOT NULL,
-                                type_enum ENUM('spring', 'summer', 'autumn', 'winter'), type_boolean BOOLEAN NOT NULL, type_smallint SMALLINT NOT NULL, type_time time NOT NULL,
-                                type_timestamp timestamp NOT NULL, PRIMARY KEY (order_id));
+CREATE TABLE shadow_db.t_order (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name VARCHAR(32) NOT NULL, type_char CHAR(1) NOT NULL, type_boolean BOOLEAN NOT NULL, type_smallint SMALLINT NOT NULL,
+                                type_enum ENUM('spring', 'summer', 'autumn', 'winter'), type_decimal DECIMAL(18,2) NOT NULL, type_date DATE NOT NULL, type_time TIME NOT NULL, type_timestamp TIMESTAMP NOT NULL,
+                                PRIMARY KEY (order_id));

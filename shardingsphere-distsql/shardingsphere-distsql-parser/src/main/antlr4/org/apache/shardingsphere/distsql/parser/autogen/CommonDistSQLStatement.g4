@@ -32,6 +32,8 @@ execute
     | disableInstance
     | showInstance
     | showInstanceMode
+    | labelInstance
+    | unlabelInstance
     | countSchemaRules
     | showSingleTable
     | showSingleTableRules

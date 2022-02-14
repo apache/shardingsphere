@@ -18,12 +18,16 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.LabelInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetInstanceStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.UnlabelInstanceStatement;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor.LabelInstanceExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor.SetInstanceStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor.SetReadwriteSplittingStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor.SetVariableExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor.UnlabelInstanceExecutor;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.status.SetReadwriteSplittingStatusStatement;
 
 import java.sql.SQLException;
@@ -50,6 +54,12 @@ public final class SetStatementExecutorFactory {
         }
         if (sqlStatement instanceof SetInstanceStatusStatement) {
             return new SetInstanceStatusExecutor((SetInstanceStatusStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof LabelInstanceStatement) {
+            return new LabelInstanceExecutor((LabelInstanceStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof UnlabelInstanceStatement) {
+            return new UnlabelInstanceExecutor((UnlabelInstanceStatement) sqlStatement);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }

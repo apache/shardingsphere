@@ -17,7 +17,7 @@
 
 grammar RQLStatement;
 
-import Keyword, Literals;
+import BaseRule;
 
 showShardingScalingRules
     : SHOW SHARDING SCALING RULES (FROM schemaName)?
