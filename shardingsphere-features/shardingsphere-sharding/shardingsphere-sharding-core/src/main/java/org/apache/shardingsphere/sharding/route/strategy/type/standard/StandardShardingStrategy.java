@@ -32,7 +32,6 @@ import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Set;
 import java.util.TreeSet;
 
 /**
@@ -48,9 +47,9 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     public StandardShardingStrategy(final String shardingColumn, final StandardShardingAlgorithm<?> shardingAlgorithm) {
         Preconditions.checkNotNull(shardingColumn, "Sharding column cannot be null.");
         Preconditions.checkNotNull(shardingAlgorithm, "sharding algorithm cannot be null.");
-        Set<String> shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        Collection<String> shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         shardingColumns.add(shardingColumn);
-        this.shardingColumns = Collections.unmodifiableSet(shardingColumns);
+        this.shardingColumns = Collections.unmodifiableCollection(shardingColumns);
         this.shardingAlgorithm = shardingAlgorithm;
     }
     
