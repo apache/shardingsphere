@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
@@ -36,10 +37,9 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsis
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.JobProgressYamlSwapper;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobSchedulerCenter;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
@@ -79,6 +79,8 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     
     private static final Map<String, DataConsistencyCheckAlgorithm> DATA_CONSISTENCY_CHECK_ALGORITHM_MAP = new TreeMap<>(
             SingletonSPIRegistry.getTypedSingletonInstancesMap(DataConsistencyCheckAlgorithm.class));
+    
+    private static final JobProgressYamlSwapper JOB_PROGRESS_YAML_SWAPPER = new JobProgressYamlSwapper();
     
     @Override
     public boolean isDefault() {
@@ -301,18 +303,20 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
                 throw new PipelineDataConsistencyCheckFailedException("Data consistency check not finished or failed.");
             }
         }
-        Optional<Collection<RuleAlteredJobContext>> optionalJobContexts = RuleAlteredJobSchedulerCenter.getJobContexts(jobId);
-        optionalJobContexts.ifPresent(jobContexts -> jobContexts.forEach(each -> each.setStatus(JobStatus.ALMOST_FINISHED)));
+        List<String> offsetKeys = PipelineAPIFactory.getGovernanceRepositoryAPI().getChildrenKeys(String.format("%s/%s/offset", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId));
+        Map<Integer, JobProgress> progressMap = Maps.newHashMap();
+        offsetKeys.forEach(each -> progressMap.put(Integer.parseInt(each), PipelineAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobId, Integer.parseInt(each))));
+        progressMap.values().forEach(each -> each.setStatus(JobStatus.ALMOST_FINISHED));
         YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(jobConfig.getPipelineConfig().getTarget().getParameter(), YamlRootConfiguration.class, true);
         WorkflowConfiguration workflowConfig = jobConfig.getWorkflowConfig();
         String schemaName = workflowConfig.getSchemaName();
         String ruleCacheId = workflowConfig.getRuleCacheId();
         ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(schemaName, yamlRootConfig, ruleCacheId);
         ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
-        optionalJobContexts.ifPresent(jobContexts -> jobContexts.forEach(each -> {
-            each.setStatus(JobStatus.FINISHED);
-            RuleAlteredJobSchedulerCenter.persistJobProgress(each);
-        }));
+        progressMap.forEach((key, value) -> {
+            value.setStatus(JobStatus.FINISHED);
+            PipelineAPIFactory.getGovernanceRepositoryAPI().persist(getOffsetPath(jobId, key), YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(value)));
+        });
         stop(jobId);
     }
     
@@ -343,5 +347,9 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
             throw new PipelineJobNotFoundException(String.format("Can not find scaling job %s", jobId), jobId);
         }
         return result;
+    }
+    
+    private String getOffsetPath(final String jobId, final int shardingItem) {
+        return String.format("%s/%s/offset/%d", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, shardingItem);
     }
 }
