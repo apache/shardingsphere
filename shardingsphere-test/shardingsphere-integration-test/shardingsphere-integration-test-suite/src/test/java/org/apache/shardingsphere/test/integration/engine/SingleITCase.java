@@ -19,11 +19,12 @@ package org.apache.shardingsphere.test.integration.engine;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
-import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.watcher.ITWatcher;
 import org.junit.Rule;
@@ -45,8 +46,8 @@ public abstract class SingleITCase extends BaseITCase {
     
     private final DataSet dataSet;
     
-    public SingleITCase(final AssertionParameterizedArray parameterizedArray) {
-        super(parameterizedArray);
+    public SingleITCase(final AssertionParameterizedArray parameterizedArray, final ComposedContainer composedContainer) {
+        super(parameterizedArray, composedContainer);
         this.sqlExecuteType = parameterizedArray.getSqlExecuteType();
         this.assertion = parameterizedArray.getAssertion();
         this.dataSet = null == assertion ? null : DataSetLoader.load(parameterizedArray.getTestCaseContext().getParentPath(), getScenario(), getDatabaseType(), assertion.getExpectedDataFile());

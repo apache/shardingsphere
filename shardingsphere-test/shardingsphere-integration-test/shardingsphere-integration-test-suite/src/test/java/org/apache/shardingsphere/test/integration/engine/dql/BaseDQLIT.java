@@ -23,6 +23,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
+import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.junit.Before;
 
@@ -47,8 +48,8 @@ public abstract class BaseDQLIT extends SingleITCase {
     
     private static final Collection<String> FILLED_SCENARIOS = new HashSet<>();
     
-    public BaseDQLIT(final AssertionParameterizedArray parameter) {
-        super(parameter);
+    public BaseDQLIT(final AssertionParameterizedArray parameterizedArray, final ComposedContainer composedContainer) {
+        super(parameterizedArray, composedContainer);
     }
     
     @Before

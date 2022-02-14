@@ -23,11 +23,9 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
-import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRegistry;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.ShardingSphereIntegrationTestParameterized;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 
@@ -45,8 +43,6 @@ public abstract class BaseITCase {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
-    public static final ComposedContainerRegistry COMPOSED_CONTAINER_REGISTRY = new ComposedContainerRegistry();
-    
     private final String scenario;
     
     private final String adapter;
@@ -63,13 +59,13 @@ public abstract class BaseITCase {
     
     private DataSource targetDataSource;
     
-    public BaseITCase(final ParameterizedArray parameterizedArray) {
+    public BaseITCase(final ParameterizedArray parameterizedArray, final ComposedContainer composedContainer) {
         adapter = parameterizedArray.getAdapter();
         scenario = parameterizedArray.getScenario();
         databaseType = parameterizedArray.getDatabaseType();
         sqlCommandType = parameterizedArray.getSqlCommandType();
         integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
-        composedContainer = COMPOSED_CONTAINER_REGISTRY.getComposedContainer(getClass().getSimpleName(), parameterizedArray);
+        this.composedContainer = composedContainer;
     }
     
     @Before
@@ -85,12 +81,6 @@ public abstract class BaseITCase {
 //        if (targetDataSource instanceof AutoCloseable) {
 //            ((AutoCloseable) targetDataSource).close();
 //        }
-    }
-    
-    @AfterClass
-    public static void releaseResources() {
-        // TODO Close current test suite only
-        COMPOSED_CONTAINER_REGISTRY.close();
     }
     
     protected abstract String getSQL() throws ParseException;

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.integration.framework.container.compose;
 import org.apache.shardingsphere.test.integration.framework.container.compose.mode.ClusterComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.container.compose.mode.MemoryComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
-import org.junit.rules.ExternalResource;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,19 +27,18 @@ import java.util.Map;
 /**
  * Composed container registry.
  */
-public final class ComposedContainerRegistry extends ExternalResource implements AutoCloseable {
+public final class ComposedContainerRegistry implements AutoCloseable {
     
     private final Map<String, ComposedContainer> composedContainers = new HashMap<>();
     
     /**
      * Get composed container.
      *
-     * @param testSuiteName test suite name
      * @param parameterizedArray parameterized array
      * @return composed container
      */
-    public ComposedContainer getComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
-        String key = generateKey(testSuiteName, parameterizedArray);
+    public ComposedContainer getComposedContainer(final ParameterizedArray parameterizedArray) {
+        String key = generateKey(parameterizedArray);
         if (composedContainers.containsKey(key)) {
             return composedContainers.get(key);
         }
@@ -54,8 +52,8 @@ public final class ComposedContainerRegistry extends ExternalResource implements
         return "sharding_governance".equals(parameterizedArray.getScenario()) ? new ClusterComposedContainer(parameterizedArray) : new MemoryComposedContainer(parameterizedArray);
     }
     
-    private String generateKey(final String testSuiteName, final ParameterizedArray parameterizedArray) {
-        return String.join("-", testSuiteName, parameterizedArray.getScenario(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType().getName());
+    private String generateKey(final ParameterizedArray parameterizedArray) {
+        return String.join("-", parameterizedArray.getScenario(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType().getName());
     }
     
     @Override
