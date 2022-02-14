@@ -20,50 +20,46 @@ package org.apache.shardingsphere.test.integration.framework.container.compose;
 import org.apache.shardingsphere.test.integration.framework.container.compose.mode.ClusterComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.container.compose.mode.MemoryComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
-import org.junit.rules.ExternalResource;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Composed container manager.
+ * Composed container registry.
  */
-public final class ComposedContainerManager extends ExternalResource {
+public final class ComposedContainerRegistry implements AutoCloseable {
     
     private final Map<String, ComposedContainer> composedContainers = new HashMap<>();
     
     /**
      * Get composed container.
      *
+     * @param testSuiteName test suite name
      * @param parameterizedArray parameterized array
      * @return composed container
      */
-    public ComposedContainer getComposedContainer(final ParameterizedArray parameterizedArray) {
-        String key = generateKey(parameterizedArray);
+    public ComposedContainer getComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
+        String key = generateKey(testSuiteName, parameterizedArray);
         if (composedContainers.containsKey(key)) {
             return composedContainers.get(key);
         }
-        ComposedContainer result = createComposedContainer(parameterizedArray);
+        ComposedContainer result = createComposedContainer(testSuiteName, parameterizedArray);
         composedContainers.put(key, result);
         return result;
     }
     
-    private ComposedContainer createComposedContainer(final ParameterizedArray parameterizedArray) {
+    private ComposedContainer createComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
         // TODO fix sharding_governance
-        return "sharding_governance".equals(parameterizedArray.getScenario()) ? new ClusterComposedContainer(parameterizedArray) : new MemoryComposedContainer(parameterizedArray);
+        return "sharding_governance".equals(parameterizedArray.getScenario())
+                ? new ClusterComposedContainer(testSuiteName, parameterizedArray) : new MemoryComposedContainer(testSuiteName, parameterizedArray);
     }
     
-    private String generateKey(final ParameterizedArray parameterizedArray) {
-        return String.join("-", parameterizedArray.getScenario(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType().getName());
-    }
-    
-    @Override
-    protected void before() {
-        composedContainers.values().forEach(each -> each.getContainers().start());
+    private String generateKey(final String testSuiteName, final ParameterizedArray parameterizedArray) {
+        return String.join("-", testSuiteName, parameterizedArray.getScenario(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType().getName());
     }
     
     @Override
-    protected void after() {
+    public void close() {
         composedContainers.values().forEach(each -> each.getContainers().close());
     }
 }

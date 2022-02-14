@@ -22,9 +22,11 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
+import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.ShardingSphereIntegrationTestParameterized;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 
 import javax.sql.DataSource;
@@ -51,23 +53,31 @@ public abstract class BaseITCase {
     
     private final IntegrationTestCase integrationTestCase;
     
-    private final Map<String, DataSource> actualDataSourceMap;
+    private final ComposedContainer composedContainer;
     
-    private final DataSource targetDataSource;
+    private Map<String, DataSource> actualDataSourceMap;
     
-    public BaseITCase(final ParameterizedArray parameterizedArray) {
+    private DataSource targetDataSource;
+    
+    public BaseITCase(final ParameterizedArray parameterizedArray, final ComposedContainer composedContainer) {
         adapter = parameterizedArray.getAdapter();
         scenario = parameterizedArray.getScenario();
         databaseType = parameterizedArray.getDatabaseType();
         sqlCommandType = parameterizedArray.getSqlCommandType();
         integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
-        actualDataSourceMap = parameterizedArray.getCompose().getActualDataSourceMap();
-        targetDataSource = parameterizedArray.getCompose().getTargetDataSource();
+        this.composedContainer = composedContainer;
+    }
+    
+    @Before
+    public void setUp() {
+        composedContainer.getContainers().start();
+        actualDataSourceMap = composedContainer.getActualDataSourceMap();
+        targetDataSource = composedContainer.getTargetDataSource();
     }
     
     @After
     public void tearDown() throws Exception {
-        // TODO Closing data sources gracefully.
+        // TODO Close data sources gracefully.
 //        if (targetDataSource instanceof AutoCloseable) {
 //            ((AutoCloseable) targetDataSource).close();
 //        }

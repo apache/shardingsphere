@@ -32,20 +32,20 @@ import java.util.Map;
 /**
  * Memory composed container.
  */
-@Getter
 public final class MemoryComposedContainer implements ComposedContainer {
     
+    @Getter
     private final AtomicContainers containers;
     
     private final StorageContainer storageContainer;
     
     private final AdapterContainer adapterContainer;
     
-    public MemoryComposedContainer(final ParameterizedArray parameterizedArray) {
+    public MemoryComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
         containers = new AtomicContainers(parameterizedArray.getScenario());
-        storageContainer = containers.registerContainer(
+        storageContainer = containers.registerContainer(testSuiteName, 
                 StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getDatabaseType().getName());
-        adapterContainer = containers.registerContainer(
+        adapterContainer = containers.registerContainer(testSuiteName, 
                 AdapterContainerFactory.newInstance(parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getAdapter());
         adapterContainer.dependsOn(storageContainer);
     }

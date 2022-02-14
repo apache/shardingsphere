@@ -44,15 +44,16 @@ public final class AtomicContainers implements AutoCloseable {
     /**
      * Register container.
      * 
+     * @param testSuiteName test suite name
      * @param container container to be registered
      * @param containerType container type
      * @param <T> type of ShardingSphere container
      * @return registered container
      */
-    public <T extends AtomicContainer> T registerContainer(final T container, final String containerType) {
+    public <T extends AtomicContainer> T registerContainer(final String testSuiteName, final T container, final String containerType) {
         container.setNetwork(network);
         container.setNetworkAliases(Collections.singletonList(String.join(".", containerType.toLowerCase(), scenario, "host")));
-        String loggerName = String.join(":", container.getName(), container.getContainerId());
+        String loggerName = String.join(":", testSuiteName, container.getName());
         container.withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger(loggerName), true));
         containers.add(container);
         return container;

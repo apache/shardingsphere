@@ -21,12 +21,12 @@ import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerManager;
+import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRegistry;
 import org.apache.shardingsphere.test.integration.framework.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
-import org.junit.ClassRule;
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -38,29 +38,29 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertTrue;
 
 @ParallelRuntimeStrategy(ParallelLevel.CASE)
 public final class AdditionalDQLIT extends BaseDQLIT {
     
-    @ClassRule
-    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager();
+    private static final ComposedContainerRegistry COMPOSED_CONTAINER_REGISTRY = new ComposedContainerRegistry();
     
-    public AdditionalDQLIT(final AssertionParameterizedArray parameter) {
-        super(parameter);
+    public AdditionalDQLIT(final AssertionParameterizedArray parameterizedArray) {
+        super(parameterizedArray, COMPOSED_CONTAINER_REGISTRY.getComposedContainer(AdditionalDQLIT.class.getSimpleName(), parameterizedArray));
     }
     
     @Parameters(name = "{0}")
     public static Collection<AssertionParameterizedArray> getParameters() {
         if (IntegrationTestEnvironment.getInstance().isRunAdditionalTestCases()) {
-            return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DQL)
-                    .stream()
-                    .peek(each -> each.setCompose(COMPOSED_CONTAINER_MANAGER.getComposedContainer(each)))
-                    .collect(Collectors.toList());
+            return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DQL);
         }
         return Collections.emptyList();
+    }
+    
+    @AfterClass
+    public static void closeContainers() {
+        COMPOSED_CONTAINER_REGISTRY.close();
     }
     
     @Test
