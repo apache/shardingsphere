@@ -46,7 +46,7 @@ public final class MySQLContainer extends StorageContainer {
     
     @Override
     protected String getPassword() {
-        return "";
+        return "root";
     }
     
     @Override
