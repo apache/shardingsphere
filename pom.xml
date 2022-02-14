@@ -97,7 +97,7 @@
         <tomcat.version>10.0.16</tomcat.version>
         <commons-pool.version>1.6</commons-pool.version>
         <h2.version>1.4.196</h2.version>
-        <mysql-connector-java.version>8.0.28</mysql-connector-java.version>
+        <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
         <postgresql.version>42.3.2</postgresql.version>
         <opengauss.version>2.0.1-compatibility</opengauss.version>
         <mssql.version>6.1.7.jre8-preview</mssql.version>
