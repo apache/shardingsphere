@@ -19,26 +19,26 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.AdvancedDistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.AdvancedDistSQLBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.query.QueryableRALBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.CommonDistSQLBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.update.UpdatableRALBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
 
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * RAL backend handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RALBackendHandlerFactory {
+    
+    private static Map<String, Class<? extends RALBackendHandler>> handlerClz = new LinkedHashMap<>();
+    
+    static {
+    }
     
     /**
      * Create new instance of RAL backend handler.
@@ -50,18 +50,22 @@ public final class RALBackendHandlerFactory {
      * @throws SQLException SQL exception
      */
     public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final RALStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
-        if (sqlStatement instanceof QueryableRALStatement) {
-            return QueryableRALBackendHandlerFactory.newInstance((QueryableRALStatement) sqlStatement, connectionSession);
+        HandlerParameter<RALStatement> parameter = new HandlerParameter.HandlerParameterBuilder<>()
+                .statement(sqlStatement).connectionSession(connectionSession).databaseType(databaseType).build();
+        RALBackendHandler handler = getHandler(sqlStatement, parameter);
+        return handler;
+    }
+    
+    private static RALBackendHandler newInstance(final Class<? extends RALBackendHandler> clazz) {
+        try {
+            return clazz.newInstance();
+        } catch (final InstantiationException | IllegalAccessException ex) {
+            throw new UnsupportedOperationException(String.format("Can not find public constructor for class `%s`", clazz.getName()));
         }
-        if (sqlStatement instanceof UpdatableRALStatement) {
-            return UpdatableRALBackendHandlerFactory.newInstance((UpdatableRALStatement) sqlStatement);
-        }
-        if (sqlStatement instanceof CommonDistSQLStatement) {
-            return CommonDistSQLBackendHandlerFactory.newInstance((CommonDistSQLStatement) sqlStatement, connectionSession);
-        }
-        if (sqlStatement instanceof AdvancedDistSQLStatement) {
-            return AdvancedDistSQLBackendHandlerFactory.newInstance(databaseType, (AdvancedDistSQLStatement) sqlStatement, connectionSession);
-        }
-        throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
+    }
+    
+    private static RALBackendHandler getHandler(final RALStatement sqlStatement, final HandlerParameter<RALStatement> parameter) {
+        Class<? extends RALBackendHandler> clz = handlerClz.get(sqlStatement.getClass().getName());
+        return newInstance(clz).init(parameter);
     }
 }
