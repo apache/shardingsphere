@@ -44,7 +44,7 @@ public final class PostgreSQLNumericBinaryProtocolValueTest {
         PostgreSQLNumericBinaryProtocolValue binaryProtocolValue = new PostgreSQLNumericBinaryProtocolValue();
         String decimalText = "1234567890.12";
         BigDecimal expectedDecimal = new BigDecimal(decimalText);
-        byte[] numericBytes = ByteConverterUtil.numeric(expectedDecimal);
+        byte[] numericBytes = PostgreSQLByteConverter.numeric(expectedDecimal);
         int expectedLength = numericBytes.length;
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(expectedLength);
         byteBuf.writeBytes(numericBytes);

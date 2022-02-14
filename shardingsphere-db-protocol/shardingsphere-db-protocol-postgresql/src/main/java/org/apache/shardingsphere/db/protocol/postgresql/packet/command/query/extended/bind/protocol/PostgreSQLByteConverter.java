@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Arrays;
 
 /**
  * Refer to
@@ -31,6 +32,8 @@ import java.math.BigInteger;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLByteConverter {
+    
+    private static final short NUMERIC_POS = 0x0000;
     
     private static final short NUMERIC_NEG = 0x4000;
     
@@ -90,94 +93,117 @@ public final class PostgreSQLByteConverter {
         }
     }
     
-    private static Number initBigDecimal(final byte[] bytes, final int pos, final short len, final short weight, final short sign, final short scale) {
-        int idx = pos + 8;
-        short d = readShort2(bytes, idx);
-        BigInteger unscaledBI = null;
-        long unscaledInt = d;
-        int effectiveWeight = weight;
-        int effectiveScale = scale;
-        for (int i = 1; i < len; ++i) {
-            if (i == 4) {
-                unscaledBI = BigInteger.valueOf(unscaledInt);
-            }
-            idx += 2;
-            d = readShort2(bytes, idx);
-            if (effectiveWeight > 0) {
-                --effectiveWeight;
-                if (unscaledBI == null) {
-                    unscaledInt *= 10000;
-                } else {
-                    unscaledBI = unscaledBI.multiply(BI_TEN_THOUSAND);
-                }
-            } else if (effectiveScale >= 4) {
-                effectiveScale -= 4;
-                if (unscaledBI == null) {
-                    unscaledInt *= 10000;
-                } else {
-                    unscaledBI = unscaledBI.multiply(BI_TEN_THOUSAND);
-                }
-            } else {
-                if (unscaledBI == null) {
-                    unscaledInt *= INT_TEN_POWERS[effectiveScale];
-                } else {
-                    unscaledBI = unscaledBI.multiply(tenPower(effectiveScale));
-                }
-                d = (short) (d / INT_TEN_POWERS[4 - effectiveScale]);
-                effectiveScale = 0;
-            }
-            if (unscaledBI == null) {
-                unscaledInt += d;
-            } else {
-                if (d != 0) {
-                    unscaledBI = unscaledBI.add(BigInteger.valueOf(d));
-                }
-            }
+    /**
+     * Converts a non-null {@link BigDecimal} to binary.
+     *
+     * @param number number to represent in binary.
+     * @return The binary representation of <i>input</i>.
+     */
+    public static byte[] numeric(final BigDecimal number) {
+        BigInteger unscaled = number.unscaledValue().abs();
+        int scale = number.scale();
+        if (BigInteger.ZERO.equals(unscaled)) {
+            return initBytesZeroCase(scale);
         }
-        if (unscaledBI == null) {
-            unscaledBI = BigInteger.valueOf(unscaledInt);
+        final PositiveShortStack shortStacks = new PositiveShortStack();
+        int weight = -1;
+        if (scale < 0) {
+            scale = Math.abs(scale);
+            weight += scale / 4;
+            int mod = scale % 4;
+            unscaled = unscaled.multiply(tenPower(mod));
+            scale = 0;
         }
-        if (effectiveWeight > 0) {
-            unscaledBI = unscaledBI.multiply(tenPower(effectiveWeight * 4));
+        if (scale == 0) {
+            weight = initShortValuesNoneScaled(shortStacks, unscaled, weight);
+        } else {
+            weight = initShortValuesScaled(shortStacks, unscaled, scale);
         }
-        if (effectiveScale > 0) {
-            unscaledBI = unscaledBI.multiply(tenPower(effectiveScale));
-        }
-        if (sign == NUMERIC_NEG) {
-            unscaledBI = unscaledBI.negate();
-        }
-        return new BigDecimal(unscaledBI, scale);
+        return initBytes(number, shortStacks, scale, weight);
     }
     
-    private static Number initBigDecimalNoneScale(final byte[] bytes, final int pos, final short len, final short weight, final short sign) {
-        int idx = pos + 8;
-        short d = readShort2(bytes, idx);
-        BigInteger unscaledBI = null;
-        long unscaledInt = d;
-        for (int i = 1; i < len; ++i) {
-            if (i == 4) {
-                unscaledBI = BigInteger.valueOf(unscaledInt);
+    private static byte[] initBytesZeroCase(final int scale) {
+        final byte[] bytes = new byte[] {0, 0, -1, -1, 0, 0, 0, 0};
+        int2(bytes, 6, Math.max(0, scale));
+        return bytes;
+    }
+    
+    private static int initShortValuesNoneScaled(final PositiveShortStack shortStacks, final BigInteger unscaled, final int weight) {
+        int result = weight;
+        BigInteger tempUnscaled = unscaled;
+        BigInteger maxInteger = BigInteger.valueOf(Long.MAX_VALUE);
+        while (unscaled.compareTo(maxInteger) > 0) {
+            final BigInteger[] pair = unscaled.divideAndRemainder(BI_TEN_THOUSAND);
+            tempUnscaled = pair[0];
+            shortStacks.push(pair[1].shortValue());
+            ++result;
+        }
+        long unscaledLong = tempUnscaled.longValueExact();
+        do {
+            shortStacks.push((short) (unscaledLong % 10000));
+            unscaledLong = unscaledLong / 10000L;
+            ++result;
+        } while (unscaledLong != 0);
+        return result;
+    }
+    
+    private static int initShortValuesScaled(final PositiveShortStack shortStacks, final BigInteger unscaled, final int scale) {
+        int weight = -1;
+        final BigInteger[] split = unscaled.divideAndRemainder(tenPower(scale));
+        BigInteger decimal = split[1];
+        BigInteger wholes = split[0];
+        if (!BigInteger.ZERO.equals(decimal)) {
+            int mod = scale % 4;
+            int segments = scale / 4;
+            if (mod != 0) {
+                decimal = decimal.multiply(tenPower(4 - mod));
+                ++segments;
             }
-            idx += 2;
-            d = readShort2(bytes, idx);
-            if (unscaledBI == null) {
-                unscaledInt *= 10000;
-                unscaledInt += d;
+            do {
+                final BigInteger[] pair = decimal.divideAndRemainder(BI_TEN_THOUSAND);
+                decimal = pair[0];
+                shortStacks.push(pair[1].shortValue());
+                --segments;
+            } while (!BigInteger.ZERO.equals(decimal));
+            if (BigInteger.ZERO.equals(wholes)) {
+                weight -= segments;
             } else {
-                unscaledBI = unscaledBI.multiply(BI_TEN_THOUSAND);
-                if (d != 0) {
-                    unscaledBI = unscaledBI.add(BigInteger.valueOf(d));
+                for (int i = 0; i < segments; ++i) {
+                    shortStacks.push((short) 0);
                 }
             }
         }
-        if (unscaledBI == null) {
-            unscaledBI = BigInteger.valueOf(unscaledInt);
+        while (!BigInteger.ZERO.equals(wholes)) {
+            ++weight;
+            final BigInteger[] pair = wholes.divideAndRemainder(BI_TEN_THOUSAND);
+            wholes = pair[0];
+            shortStacks.push(pair[1].shortValue());
         }
-        if (sign == NUMERIC_NEG) {
-            unscaledBI = unscaledBI.negate();
+        return weight;
+    }
+    
+    private static byte[] initBytes(final BigDecimal number, final PositiveShortStack shortStacks, final int scale, final int weight) {
+        final byte[] result = new byte[8 + (2 * shortStacks.size())];
+        int idx = 0;
+        int2(result, idx, shortStacks.size());
+        idx += 2;
+        int2(result, idx, weight);
+        idx += 2;
+        int2(result, idx, number.signum() == -1 ? NUMERIC_NEG : NUMERIC_POS);
+        idx += 2;
+        int2(result, idx, Math.max(0, scale));
+        idx += 2;
+        short s;
+        while ((s = shortStacks.pop()) != -1) {
+            int2(result, idx, s);
+            idx += 2;
         }
-        final int bigDecScale = (len - (weight + 1)) * 4;
-        return bigDecScale == 0 ? new BigDecimal(unscaledBI) : new BigDecimal(unscaledBI, bigDecScale);
+        return result;
+    }
+    
+    private static void int2(final byte[] target, final int idx, final int value) {
+        target[idx] = (byte) (value >>> 8);
+        target[idx + 1] = (byte) value;
     }
     
     private static Number initBigDecimalNoneWeight(final byte[] bytes, final int pos, final short len, final short weight, final short sign, final short scale) {
@@ -244,6 +270,96 @@ public final class PostgreSQLByteConverter {
         return new BigDecimal(unscaledBI, scale);
     }
     
+    private static Number initBigDecimalNoneScale(final byte[] bytes, final int pos, final short len, final short weight, final short sign) {
+        int idx = pos + 8;
+        short d = readShort2(bytes, idx);
+        BigInteger unscaledBI = null;
+        long unscaledInt = d;
+        for (int i = 1; i < len; ++i) {
+            if (i == 4) {
+                unscaledBI = BigInteger.valueOf(unscaledInt);
+            }
+            idx += 2;
+            d = readShort2(bytes, idx);
+            if (unscaledBI == null) {
+                unscaledInt *= 10000;
+                unscaledInt += d;
+            } else {
+                unscaledBI = unscaledBI.multiply(BI_TEN_THOUSAND);
+                if (d != 0) {
+                    unscaledBI = unscaledBI.add(BigInteger.valueOf(d));
+                }
+            }
+        }
+        if (unscaledBI == null) {
+            unscaledBI = BigInteger.valueOf(unscaledInt);
+        }
+        if (sign == NUMERIC_NEG) {
+            unscaledBI = unscaledBI.negate();
+        }
+        final int bigDecScale = (len - (weight + 1)) * 4;
+        return bigDecScale == 0 ? new BigDecimal(unscaledBI) : new BigDecimal(unscaledBI, bigDecScale);
+    }
+    
+    private static Number initBigDecimal(final byte[] bytes, final int pos, final short len, final short weight, final short sign, final short scale) {
+        int idx = pos + 8;
+        short d = readShort2(bytes, idx);
+        BigInteger unscaledBI = null;
+        long unscaledInt = d;
+        int effectiveWeight = weight;
+        int effectiveScale = scale;
+        for (int i = 1; i < len; ++i) {
+            if (i == 4) {
+                unscaledBI = BigInteger.valueOf(unscaledInt);
+            }
+            idx += 2;
+            d = readShort2(bytes, idx);
+            if (effectiveWeight > 0) {
+                --effectiveWeight;
+                if (unscaledBI == null) {
+                    unscaledInt *= 10000;
+                } else {
+                    unscaledBI = unscaledBI.multiply(BI_TEN_THOUSAND);
+                }
+            } else if (effectiveScale >= 4) {
+                effectiveScale -= 4;
+                if (unscaledBI == null) {
+                    unscaledInt *= 10000;
+                } else {
+                    unscaledBI = unscaledBI.multiply(BI_TEN_THOUSAND);
+                }
+            } else {
+                if (unscaledBI == null) {
+                    unscaledInt *= INT_TEN_POWERS[effectiveScale];
+                } else {
+                    unscaledBI = unscaledBI.multiply(tenPower(effectiveScale));
+                }
+                d = (short) (d / INT_TEN_POWERS[4 - effectiveScale]);
+                effectiveScale = 0;
+            }
+            if (unscaledBI == null) {
+                unscaledInt += d;
+            } else {
+                if (d != 0) {
+                    unscaledBI = unscaledBI.add(BigInteger.valueOf(d));
+                }
+            }
+        }
+        if (unscaledBI == null) {
+            unscaledBI = BigInteger.valueOf(unscaledInt);
+        }
+        if (effectiveWeight > 0) {
+            unscaledBI = unscaledBI.multiply(tenPower(effectiveWeight * 4));
+        }
+        if (effectiveScale > 0) {
+            unscaledBI = unscaledBI.multiply(tenPower(effectiveScale));
+        }
+        if (sign == NUMERIC_NEG) {
+            unscaledBI = unscaledBI.negate();
+        }
+        return new BigDecimal(unscaledBI, scale);
+    }
+    
     private static void validator(final short sign, final short scale) {
         if (!(sign == 0x0000 || NUMERIC_NEG == sign || NUMERIC_NAN == sign)) {
             throw new IllegalArgumentException("invalid sign in \"numeric\" value");
@@ -259,5 +375,44 @@ public final class PostgreSQLByteConverter {
     
     private static short readShort2(final byte[] bytes, final int index) {
         return (short) (((bytes[index] & 255) << 8) + ((bytes[index + 1] & 255)));
+    }
+    
+    /**
+     * Simple stack structure for non-negative {@code short} values.
+     */
+    private static final class PositiveShortStack {
+        
+        private short[] shorts = new short[8];
+        
+        private int index;
+        
+        public void push(final short value) {
+            if (value != 0 || index != 0) {
+                if (value < 0) {
+                    throw new IllegalArgumentException("only non-negative values accepted: " + value);
+                }
+                if (index == shorts.length) {
+                    grow();
+                }
+                shorts[index++] = value;
+            }
+        }
+        
+        public int size() {
+            return index;
+        }
+        
+        public boolean isEmpty() {
+            return index == 0;
+        }
+        
+        public short pop() {
+            return index > 0 ? shorts[--index] : -1;
+        }
+        
+        private void grow() {
+            final int newSize = shorts.length <= 1024 ? shorts.length << 1 : (int) (shorts.length * 1.5);
+            shorts = Arrays.copyOf(shorts, newSize);
+        }
     }
 }
