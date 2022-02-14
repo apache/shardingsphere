@@ -17,7 +17,7 @@
 
 grammar RALStatement;
 
-import Keyword, Literals, Symbol, BaseRule;
+import BaseRule;
 
 setVariable
     : SET VARIABLE variableName EQ variableValue
@@ -171,24 +171,8 @@ instanceId
     : ip AT port
     ;
 
-ip
-    : IDENTIFIER | NUMBER+
-    ;
-
-port
-    : INT
-    ;
-
 refreshScope
     : tableName | tableName FROM RESOURCE resourceName
-    ;
-
-resourceName
-    : IDENTIFIER | STRING
-    ;
-
-tableName
-    : IDENTIFIER
     ;
 
 sqlCommentParseEnable
@@ -217,10 +201,6 @@ maximumSize
 
 concurrencyLevel
     : INT
-    ;
-
-schemaName
-    : IDENTIFIER
     ;
 
 ruleName

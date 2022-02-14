@@ -17,7 +17,7 @@
 
 grammar RQLStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 showDatabaseDiscoveryRules
     : SHOW DB_DISCOVERY RULES (FROM schemaName)?
