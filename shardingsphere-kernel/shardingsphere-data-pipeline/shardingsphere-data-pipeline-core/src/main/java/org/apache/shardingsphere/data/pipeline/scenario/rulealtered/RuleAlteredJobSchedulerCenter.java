@@ -87,29 +87,6 @@ public final class RuleAlteredJobSchedulerCenter {
         }
     }
     
-    /**
-     * Get job contexts.
-     *
-     * @param jobId job id
-     * @return job context
-     */
-    public static Optional<Collection<RuleAlteredJobContext>> getJobContexts(final String jobId) {
-        Map<Integer, RuleAlteredJobScheduler> schedulerMap = JOB_SCHEDULER_MAP.get(jobId);
-        if (null == schedulerMap) {
-            return Optional.empty();
-        }
-        return Optional.of(schedulerMap.values().stream().map(RuleAlteredJobScheduler::getJobContext).collect(Collectors.toList()));
-    }
-    
-    /**
-     * Persist job progress.
-     *
-     * @param jobContext job context
-     */
-    public static void persistJobProgress(final RuleAlteredJobContext jobContext) {
-        REGISTRY_REPOSITORY_API.persistJobProgress(jobContext);
-    }
-    
     private static final class PersistJobContextRunnable implements Runnable {
         
         @Override
