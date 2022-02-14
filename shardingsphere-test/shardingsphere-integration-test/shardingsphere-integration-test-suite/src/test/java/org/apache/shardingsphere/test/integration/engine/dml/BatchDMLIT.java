@@ -45,7 +45,7 @@ import static org.junit.Assert.assertThat;
 public final class BatchDMLIT extends BatchITCase {
     
     @ClassRule
-    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("BatchDMLIT");
+    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager();
     
     public BatchDMLIT(final CaseParameterizedArray parameterizedArray) {
         super(parameterizedArray);

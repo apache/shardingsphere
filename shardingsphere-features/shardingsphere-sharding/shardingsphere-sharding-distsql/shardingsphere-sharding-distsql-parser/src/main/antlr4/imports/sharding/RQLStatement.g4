@@ -55,6 +55,10 @@ showUnusedShardingKeyGenerators
     : SHOW UNUSED SHARDING KEY GENERATORS (FROM schemaName)?
     ;
 
+showShardingTableRulesUsedKeyGenerator
+    : SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName (FROM schemaName)?
+    ;
+ 
 tableRule
     : RULE tableName
     ;
@@ -64,5 +68,9 @@ tableName
     ;
 
 schemaName
+    : IDENTIFIER
+    ;
+
+keyGeneratorName
     : IDENTIFIER
     ;

@@ -46,8 +46,8 @@ public final class ClusterComposedContainer implements ComposedContainer {
     
     private final AdapterContainer adapterContainer;
     
-    public ClusterComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
-        containers = new AtomicContainers(testSuiteName, parameterizedArray.getScenario());
+    public ClusterComposedContainer(final ParameterizedArray parameterizedArray) {
+        containers = new AtomicContainers(parameterizedArray.getScenario());
         // TODO support other types of governance
         governanceContainer = containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper"), "zk");
         storageContainer = containers.registerContainer(
