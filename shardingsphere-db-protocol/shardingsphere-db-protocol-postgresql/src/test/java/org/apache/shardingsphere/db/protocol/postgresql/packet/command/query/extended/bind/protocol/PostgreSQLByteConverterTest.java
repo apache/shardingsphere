@@ -17,31 +17,39 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+@RunWith(Parameterized.class)
+@RequiredArgsConstructor
 public final class PostgreSQLByteConverterTest {
+    
+    private final BigDecimal input;
+    
+    private final byte[] expected;
+    
+    @Parameterized.Parameters(name = "{0}")
+    public static Iterable<Object[]> textValues() {
+        return Arrays.asList(
+                new Object[]{new BigDecimal("0"), PostgreSQLByteConverter.numeric(new BigDecimal("0"))},
+                new Object[]{new BigDecimal("0.00"), PostgreSQLByteConverter.numeric(new BigDecimal("0.00"))},
+                new Object[]{new BigDecimal("0.0001"), PostgreSQLByteConverter.numeric(new BigDecimal("0.0001"))},
+                new Object[]{new BigDecimal("9999"), PostgreSQLByteConverter.numeric(new BigDecimal("9999"))},
+                new Object[]{new BigDecimal("9999.0"), PostgreSQLByteConverter.numeric(new BigDecimal("9999.0"))},
+                new Object[]{new BigDecimal("9999.9999"), PostgreSQLByteConverter.numeric(new BigDecimal("9999.9999"))}
+        );
+    }
     
     @Test
     public void assertNumeric() {
-        Collection<BigDecimal> bigDecimals = initBigDecimals();
-        bigDecimals.forEach(each -> assertThat(each.equals(PostgreSQLByteConverter.numeric(PostgreSQLByteConverter.numeric(each))), is(true)));
-    }
-    
-    private Collection<BigDecimal> initBigDecimals() {
-        final Collection<BigDecimal> result = new LinkedList<>();
-        result.add(new BigDecimal("0"));
-        result.add(new BigDecimal("0.00"));
-        result.add(new BigDecimal("0.0001"));
-        result.add(new BigDecimal("9999"));
-        result.add(new BigDecimal("9999.0"));
-        result.add(new BigDecimal("9999.9999"));
-        return result;
+        assertThat(PostgreSQLByteConverter.numeric(input), is(expected));
     }
 }
