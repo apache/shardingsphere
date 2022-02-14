@@ -46,7 +46,7 @@ public final class BatchDMLIT extends BatchITCase {
     private static final ComposedContainerRegistry COMPOSED_CONTAINER_REGISTRY = new ComposedContainerRegistry();
     
     public BatchDMLIT(final CaseParameterizedArray parameterizedArray) {
-        super(parameterizedArray, COMPOSED_CONTAINER_REGISTRY.getComposedContainer(parameterizedArray));
+        super(parameterizedArray, COMPOSED_CONTAINER_REGISTRY.getComposedContainer(BatchDMLIT.class.getSimpleName(), parameterizedArray));
     }
     
     @Parameters(name = "{0}")

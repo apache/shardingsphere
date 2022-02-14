@@ -45,7 +45,7 @@ public final class GeneralDQLIT extends BaseDQLIT {
     private static final ComposedContainerRegistry COMPOSED_CONTAINER_REGISTRY = new ComposedContainerRegistry();
     
     public GeneralDQLIT(final AssertionParameterizedArray parameterizedArray) {
-        super(parameterizedArray, COMPOSED_CONTAINER_REGISTRY.getComposedContainer(parameterizedArray));
+        super(parameterizedArray, COMPOSED_CONTAINER_REGISTRY.getComposedContainer(GeneralDQLIT.class.getSimpleName(), parameterizedArray));
     }
     
     @Parameters(name = "{0}")

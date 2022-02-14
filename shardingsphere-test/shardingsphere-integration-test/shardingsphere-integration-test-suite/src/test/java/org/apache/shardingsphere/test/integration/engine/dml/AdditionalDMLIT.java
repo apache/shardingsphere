@@ -46,7 +46,7 @@ public final class AdditionalDMLIT extends BaseDMLIT {
     private static final ComposedContainerRegistry COMPOSED_CONTAINER_REGISTRY = new ComposedContainerRegistry();
     
     public AdditionalDMLIT(final AssertionParameterizedArray parameterizedArray) {
-        super(parameterizedArray, COMPOSED_CONTAINER_REGISTRY.getComposedContainer(parameterizedArray));
+        super(parameterizedArray, COMPOSED_CONTAINER_REGISTRY.getComposedContainer(AdditionalDMLIT.class.getSimpleName(), parameterizedArray));
     }
     
     @Parameters(name = "{0}")

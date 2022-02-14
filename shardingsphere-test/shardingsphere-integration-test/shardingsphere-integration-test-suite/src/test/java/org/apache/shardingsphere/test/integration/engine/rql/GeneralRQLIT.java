@@ -42,7 +42,7 @@ public final class GeneralRQLIT extends BaseRQLIT {
     private static final ComposedContainerRegistry COMPOSED_CONTAINER_REGISTRY = new ComposedContainerRegistry();
     
     public GeneralRQLIT(final AssertionParameterizedArray parameterizedArray) {
-        super(parameterizedArray, COMPOSED_CONTAINER_REGISTRY.getComposedContainer(parameterizedArray));
+        super(parameterizedArray, COMPOSED_CONTAINER_REGISTRY.getComposedContainer(GeneralRQLIT.class.getSimpleName(), parameterizedArray));
     }
     
     @Parameters(name = "{0}")
