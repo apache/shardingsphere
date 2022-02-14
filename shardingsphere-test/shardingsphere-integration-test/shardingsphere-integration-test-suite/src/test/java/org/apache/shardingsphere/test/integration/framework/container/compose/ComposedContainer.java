@@ -17,22 +17,18 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.compose;
 
-import org.apache.shardingsphere.test.integration.framework.container.atomic.AtomicContainers;
-
 import javax.sql.DataSource;
 import java.util.Map;
 
 /**
  * Composed container.
  */
-public interface ComposedContainer {
+public interface ComposedContainer extends AutoCloseable {
     
     /**
-     * Get containers.
-     * 
-     * @return containers
+     * Start composed container.
      */
-    AtomicContainers getContainers();
+    void start();
     
     /**
      * Get actual data source map.
