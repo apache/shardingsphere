@@ -17,34 +17,30 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.compose;
 
-import org.apache.shardingsphere.test.integration.framework.container.atomic.ShardingSphereContainers;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
-
 import javax.sql.DataSource;
+import java.util.Map;
 
 /**
  * Composed container.
  */
-public interface ComposedContainer {
+public interface ComposedContainer extends AutoCloseable {
     
     /**
-     * Get containers.
-     * 
-     * @return containers
+     * Start composed container.
      */
-    ShardingSphereContainers getContainers();
+    void start();
     
     /**
-     * Get storage container.
+     * Get actual data source map.
      *
-     * @return storage container
+     * @return actual data source map
      */
-    StorageContainer getStorageContainer();
+    Map<String, DataSource> getActualDataSourceMap();
     
     /**
-     * Get client data source.
+     * Get target data source.
      * 
-     * @return client data source
+     * @return target data source
      */
-    DataSource getClientDataSource();
+    DataSource getTargetDataSource();
 }

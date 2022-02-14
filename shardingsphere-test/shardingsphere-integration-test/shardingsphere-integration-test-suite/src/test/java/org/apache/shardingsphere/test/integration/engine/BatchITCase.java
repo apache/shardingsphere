@@ -29,8 +29,9 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.test.integration.framework.container.compose.mode.ClusterComposedContainer;
+import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.CaseParameterizedArray;
+import org.junit.Before;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -60,18 +61,17 @@ public abstract class BatchITCase extends BaseITCase {
     
     private DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    public BatchITCase(final CaseParameterizedArray parameterizedArray) {
-        super(parameterizedArray);
+    public BatchITCase(final CaseParameterizedArray parameterizedArray, final ComposedContainer composedContainer) {
+        super(parameterizedArray, composedContainer);
         this.parentPath = parameterizedArray.getTestCaseContext().getParentPath();
     }
     
-    @Override
+    @Before
     public void init() throws Exception {
-        super.init();
         for (IntegrationTestCaseAssertion each : getIntegrationTestCase().getAssertions()) {
             dataSets.add(DataSetLoader.load(getParentPath(), getScenario(), getDatabaseType(), each.getExpectedDataFile()));
         }
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getScenario()), getStorageContainer().getDataSourceMap());
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getScenario()), getActualDataSourceMap());
         dataSetEnvironmentManager.fillData();
     }
     
@@ -92,8 +92,7 @@ public abstract class BatchITCase extends BaseITCase {
         DataSetMetaData expectedDataSetMetaData = expected.getMetaDataList().get(0);
         for (String each : new InlineExpressionParser(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
-            DataSource dataSource = getComposedContainer() instanceof ClusterComposedContainer
-                    ? getAnotherClientDataSource() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName());
+            DataSource dataSource = getActualDataSourceMap().get(dataNode.getDataSourceName());
             try (Connection connection = dataSource.getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s ORDER BY 1", dataNode.getTableName()))) {
                 assertDataSet(preparedStatement, expected.findRows(dataNode), expectedDataSetMetaData);

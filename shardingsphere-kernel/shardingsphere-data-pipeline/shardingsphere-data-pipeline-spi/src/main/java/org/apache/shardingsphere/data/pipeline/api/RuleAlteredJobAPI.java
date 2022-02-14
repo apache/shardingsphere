@@ -82,6 +82,20 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI, Singleto
     void stopClusterWriteDB(String jobId);
     
     /**
+     * Restore cluster write to job source schema's underlying DB.
+     *
+     * @param jobId job id
+     */
+    void restoreClusterWriteDB(String jobId);
+    
+    /**
+     * Restore cluster write to job source schema's underlying DB.
+     *
+     * @param jobConfig job configuration
+     */
+    void restoreClusterWriteDB(JobConfiguration jobConfig);
+    
+    /**
      * List all data consistency check algorithms from SPI.
      *
      * @return data consistency check algorithms

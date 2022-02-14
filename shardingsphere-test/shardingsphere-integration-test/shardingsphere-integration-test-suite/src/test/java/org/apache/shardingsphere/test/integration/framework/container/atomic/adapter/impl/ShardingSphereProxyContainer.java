@@ -22,13 +22,13 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.utility.MountableFile;
@@ -50,14 +50,20 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
     
     private static final String PROPERTY_AGENT_HOME = "AGENT_HOME";
     
-    private final AtomicReference<DataSource> dataSourceProvider = new AtomicReference<>();
+    private final DatabaseType databaseType;
     
-    public ShardingSphereProxyContainer(final ParameterizedArray parameterizedArray) {
-        this(null, parameterizedArray);
+    private final String scenario;
+    
+    private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
+    
+    public ShardingSphereProxyContainer(final DatabaseType databaseType, final String scenario) {
+        this(null, databaseType, scenario);
     }
     
-    public ShardingSphereProxyContainer(final String dockerName, final ParameterizedArray parameterizedArray) {
-        super(Objects.isNull(dockerName) ? "ShardingSphere-Proxy" : dockerName, "apache/shardingsphere-proxy-test", parameterizedArray);
+    public ShardingSphereProxyContainer(final String dockerName, final DatabaseType databaseType, final String scenario) {
+        super(Objects.isNull(dockerName) ? "ShardingSphere-Proxy" : dockerName, "apache/shardingsphere-proxy-test");
+        this.databaseType = databaseType;
+        this.scenario = scenario;
     }
     
     /**
@@ -96,7 +102,7 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
     
     @Override
     protected void configure() {
-        withConfMapping("/docker/proxy/conf/" + getParameterizedArray().getScenario() + "/" + getParameterizedArray().getDatabaseType().getName().toLowerCase());
+        withConfMapping("/docker/proxy/conf/" + scenario + "/" + databaseType.getName().toLowerCase());
         setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*ShardingSphere-Proxy .* mode started successfully.*"));
         super.configure();
     }
@@ -107,54 +113,35 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
         log.info("Mapped port 3308: {}", getMappedPort(3308));
     }
     
-    /**
-     * Get data source.
-     *
-     * @param serverLists server list
-     * @return data source
-     */
-    public DataSource getClientDataSource(final String serverLists) {
-        return getProxyDataSource();
-    }
-    
-    /**
-     * Get governance data source.
-     *
-     * @param serverLists server list
-     * @return data source
-     */
-    public DataSource getAnotherClientDataSource(final String serverLists) {
-        return getProxyDataSource();
-    }
-    
-    private DataSource getProxyDataSource() {
-        DataSource dataSource = dataSourceProvider.get();
+    @Override
+    public DataSource getTargetDataSource(final String serverLists) {
+        DataSource dataSource = targetDataSourceProvider.get();
         if (Objects.isNull(dataSource)) {
-            dataSourceProvider.set(createProxyDataSource());
+            targetDataSourceProvider.set(createProxyDataSource());
         }
-        return dataSourceProvider.get();
+        return targetDataSourceProvider.get();
     }
     
     private DataSource createProxyDataSource() {
-        String databaseType = getParameterizedArray().getDatabaseType().getName();
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
-        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), getParameterizedArray().getScenario()));
-        YamlUserConfiguration userConfig = loadUserConfiguration(getParameterizedArray());
+        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), scenario));
+        YamlUserConfiguration userConfig = loadUserConfiguration();
         result.setUsername(userConfig.getUsername());
         result.setPassword(userConfig.getPassword());
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        if ("MySQL".equals(databaseType)) {
+        if ("MySQL".equals(databaseType.getName())) {
             result.setConnectionInitSql("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
         }
         return result;
     }
     
     @SneakyThrows(IOException.class)
-    private YamlUserConfiguration loadUserConfiguration(final ParameterizedArray parameterizedArray) {
-        YamlProxyServerConfiguration serverConfig = YamlEngine.unmarshal(ByteStreams.toByteArray(Objects.requireNonNull(this.getClass().getResourceAsStream(
-                "/docker/proxy/conf/" + parameterizedArray.getScenario() + "/" + parameterizedArray.getDatabaseType().getName().toLowerCase() + "/server.yaml"))), YamlProxyServerConfiguration.class);
+    private YamlUserConfiguration loadUserConfiguration() {
+        String serverFile = "/docker/proxy/conf/" + scenario + "/" + databaseType.getName().toLowerCase() + "/server.yaml";
+        YamlProxyServerConfiguration serverConfig = YamlEngine.unmarshal(
+                ByteStreams.toByteArray(Objects.requireNonNull(this.getClass().getResourceAsStream(serverFile))), YamlProxyServerConfiguration.class);
         return YamlUsersConfigurationConverter.convertYamlUserConfiguration(getProxyUsers(serverConfig)).stream().findFirst().orElse(new YamlUserConfiguration());
     }
     

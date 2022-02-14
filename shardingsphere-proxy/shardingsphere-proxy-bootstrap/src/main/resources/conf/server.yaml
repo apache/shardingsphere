@@ -46,11 +46,10 @@
 #    providerType: Atomikos
 #    # When the provider type is Narayana, the following properties can be configured or not
 #    props:
-#      databaseName: jbossts
-#      host: 127.0.0.1
-#      port: 3306
-#      user: root
-#      password: 12345678
+#      recoveryStoreUrl: jdbc:mysql://127.0.0.1:3306/jbossts
+#      recoveryStoreDataSource: com.mysql.jdbc.jdbc2.optional.MysqlDataSource
+#      recoveryStoreUser: root
+#      recoveryStorePassword: 12345678
 #  - !SQL_PARSER
 #    sqlCommentParseEnabled: true
 #    sqlStatementCache:

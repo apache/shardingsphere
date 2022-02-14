@@ -19,13 +19,12 @@ package org.apache.shardingsphere.test.integration.engine.rql;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerManager;
+import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRegistry;
 import org.apache.shardingsphere.test.integration.framework.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
-import org.junit.ClassRule;
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -40,21 +39,23 @@ import java.util.stream.Collectors;
 @ParallelRuntimeStrategy(ParallelLevel.CASE)
 public final class GeneralRQLIT extends BaseRQLIT {
     
-    @ClassRule
-    public static final ComposedContainerManager COMPOSED_CONTAINER_MANAGER = new ComposedContainerManager("GeneralRQLIT");
+    private static final ComposedContainerRegistry COMPOSED_CONTAINER_REGISTRY = new ComposedContainerRegistry();
     
     public GeneralRQLIT(final AssertionParameterizedArray parameterizedArray) {
-        super(parameterizedArray);
+        super(parameterizedArray, COMPOSED_CONTAINER_REGISTRY.getComposedContainer(GeneralRQLIT.class.getSimpleName(), parameterizedArray));
     }
     
     @Parameters(name = "{0}")
-    public static Collection<ParameterizedArray> getParameters() {
-        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.RQL)
-                .stream()
+    public static Collection<AssertionParameterizedArray> getParameters() {
+        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.RQL).stream()
                 .filter(each -> SQLExecuteType.Literal == each.getSqlExecuteType())
                 .filter(each -> "proxy".equals(each.getAdapter()))
-                .peek(each -> each.setCompose(COMPOSED_CONTAINER_MANAGER.getComposedContainer(each)))
                 .collect(Collectors.toList());
+    }
+    
+    @AfterClass
+    public static void closeContainers() {
+        COMPOSED_CONTAINER_REGISTRY.close();
     }
     
     @Test

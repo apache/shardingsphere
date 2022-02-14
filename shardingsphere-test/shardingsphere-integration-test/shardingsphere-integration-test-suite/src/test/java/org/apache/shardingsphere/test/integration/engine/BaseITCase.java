@@ -19,13 +19,10 @@ package org.apache.shardingsphere.test.integration.engine;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
-import org.apache.shardingsphere.test.integration.framework.container.compose.mode.ClusterComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.ShardingSphereIntegrationTestParameterized;
 import org.junit.After;
@@ -38,6 +35,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
+import java.util.Map;
 
 @RunWith(ShardingSphereIntegrationTestParameterized.class)
 @Getter(AccessLevel.PROTECTED)
@@ -45,11 +43,9 @@ public abstract class BaseITCase {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
-    private final ComposedContainer composedContainer;
+    private final String scenario;
     
     private final String adapter;
-    
-    private final String scenario;
     
     private final DatabaseType databaseType;
     
@@ -57,54 +53,34 @@ public abstract class BaseITCase {
     
     private final IntegrationTestCase integrationTestCase;
     
-    private final StorageContainer storageContainer;
+    private final ComposedContainer composedContainer;
+    
+    private Map<String, DataSource> actualDataSourceMap;
     
     private DataSource targetDataSource;
     
-    private DataSource anotherClientDataSource;
-    
-    public BaseITCase(final ParameterizedArray parameterizedArray) {
+    public BaseITCase(final ParameterizedArray parameterizedArray, final ComposedContainer composedContainer) {
         adapter = parameterizedArray.getAdapter();
-        composedContainer = parameterizedArray.getCompose();
         scenario = parameterizedArray.getScenario();
         databaseType = parameterizedArray.getDatabaseType();
         sqlCommandType = parameterizedArray.getSqlCommandType();
-        storageContainer = composedContainer.getStorageContainer();
         integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
+        this.composedContainer = composedContainer;
     }
     
     @Before
-    public void init() throws Exception {
-        targetDataSource = composedContainer.getClientDataSource();
-        if (composedContainer instanceof ClusterComposedContainer) {
-            anotherClientDataSource = ((ClusterComposedContainer) composedContainer).getAnotherClientDataSource();
-            int waitForGov = 10;
-            while (waitForGov-- > 0) {
-                try (Connection ignored = targetDataSource.getConnection()) {
-                    return;
-                } catch (NullPointerException ignored) {
-                    Thread.sleep(2000L);
-                }
-            }
-        }
+    public void setUp() {
+        composedContainer.start();
+        actualDataSourceMap = composedContainer.getActualDataSourceMap();
+        targetDataSource = composedContainer.getTargetDataSource();
     }
     
     @After
     public void tearDown() throws Exception {
-        // TODO Closing data sources gracefully.
-//        if (targetDataSource instanceof ShardingSphereDataSource) {
-//            closeDataSource(((ShardingSphereDataSource) targetDataSource));
+        // TODO Close data sources gracefully.
+//        if (targetDataSource instanceof AutoCloseable) {
+//            ((AutoCloseable) targetDataSource).close();
 //        }
-//        if (null != dataSourceForReader && dataSourceForReader instanceof ShardingSphereDataSource) {
-//            closeDataSource(((ShardingSphereDataSource) dataSourceForReader));
-//        }
-    }
-    
-    private void closeDataSource(final ShardingSphereDataSource dataSource) throws Exception {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.createStatement().execute("SELECT 1");
-        }
-        dataSource.getContextManager().close();
     }
     
     protected abstract String getSQL() throws ParseException;

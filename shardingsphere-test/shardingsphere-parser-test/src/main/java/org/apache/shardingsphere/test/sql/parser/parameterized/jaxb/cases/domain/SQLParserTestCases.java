@@ -172,6 +172,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.CreateTrafficRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.DropTrafficRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ExportSchemaConfigurationStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.LabelInstanceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ParseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.PreviewStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.RefreshTableMetadataStatementTestCase;
@@ -190,6 +191,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowTrafficRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowTransactionRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowVariableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.UnlabelInstanceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ApplyScalingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.CheckScalingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ShowScalingCheckAlgorithmsStatementTestCase;
@@ -263,6 +265,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingScalingRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableNodesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableRulesUsedKeyGeneratorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowSingleTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowSingleTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowUnusedShardingAlgorithmsStatementTestCase;
@@ -1015,6 +1018,12 @@ public final class SQLParserTestCases {
     @XmlElement(name = "drop-traffic-rule")
     private final List<DropTrafficRuleStatementTestCase> dropTrafficRuleStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "label-instance")
+    private final List<LabelInstanceStatementTestCase> labelStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "unlabel-instance")
+    private final List<UnlabelInstanceStatementTestCase> unlabelStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "show-table-metadata")
     private final List<ShowTableMetadataStatementTestCase> showTableMetadataStatementTestCases = new LinkedList<>();
     
@@ -1092,6 +1101,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-rules-used-resource")
     private final List<ShowRulesUsedResourceStatementTestCase> showRulesUsedResourceStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-sharding-table-rules-used-key-generator")
+    private final List<ShowShardingTableRulesUsedKeyGeneratorStatementTestCase> showShardingTableRulesUsedKeyGeneratorStatementTestCases = new LinkedList<>();
 
     @XmlElement(name = "prepared")
     private final List<PreparedStatementTestCase> preparedStatementTestCases = new LinkedList<>();
@@ -1355,6 +1367,8 @@ public final class SQLParserTestCases {
         putAll(dropLanguageStatementTestCases, result);
         putAll(showTableMetadataStatementTestCases, result);
         putAll(dropTrafficRuleStatementTestCases, result);
+        putAll(labelStatementTestCases, result);
+        putAll(unlabelStatementTestCases, result);
         putAll(helpStatementTestCases, result);
         putAll(showUnusedShardingAlgorithmsStatementTestCases, result);
         putAll(showUnusedShardingKeyGeneratorsStatementTestCases, result);
@@ -1369,6 +1383,7 @@ public final class SQLParserTestCases {
         putAll(exportSchemaConfigurationStatementTestCases, result);
         putAll(showRulesUsedResourceStatementTestCases, result);
         putAll(preparedStatementTestCases, result);
+        putAll(showShardingTableRulesUsedKeyGeneratorStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

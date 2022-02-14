@@ -17,39 +17,28 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.atomic.adapter;
 
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.ShardingSphereContainer;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.AtomicContainer;
 
 import javax.sql.DataSource;
 
 /**
  * Adapter container.
  */
-public abstract class AdapterContainer extends ShardingSphereContainer {
+public abstract class AdapterContainer extends AtomicContainer {
     
-    public AdapterContainer(final String dockerName, final String dockerImageName, final ParameterizedArray parameterizedArray) {
-        this(dockerName, dockerImageName, false, parameterizedArray);
+    public AdapterContainer(final String dockerName, final String dockerImageName) {
+        this(dockerName, dockerImageName, false);
     }
     
-    @SneakyThrows
-    public AdapterContainer(final String name, final String dockerImageName, final boolean isFakedContainer, final ParameterizedArray parameterizedArray) {
-        super(name, dockerImageName, isFakedContainer, parameterizedArray);
+    public AdapterContainer(final String name, final String dockerImageName, final boolean isFakedContainer) {
+        super(name, dockerImageName, isFakedContainer);
     }
     
     /**
-     * Get client data source.
+     * Get target data source.
      *
      * @param serverLists server lists
-     * @return client data source
+     * @return target data source
      */
-    public abstract DataSource getClientDataSource(String serverLists);
-    
-    /**
-     * Get another client data source.
-     *
-     * @param serverLists server lists
-     * @return another client data source
-     */
-    public abstract DataSource getAnotherClientDataSource(String serverLists);
+    public abstract DataSource getTargetDataSource(String serverLists);
 }

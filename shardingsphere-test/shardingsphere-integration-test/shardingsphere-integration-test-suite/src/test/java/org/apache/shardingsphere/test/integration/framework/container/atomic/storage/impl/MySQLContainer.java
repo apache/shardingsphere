@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.atomic.storage.impl;
 
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -30,24 +28,25 @@ import java.util.Optional;
  */
 public final class MySQLContainer extends StorageContainer {
     
-    public MySQLContainer(final ParameterizedArray parameterizedArray) {
-        super("mysql-server", "mysql/mysql-server:5.7", new MySQLDatabaseType(), false, parameterizedArray);
+    public MySQLContainer(final String scenario) {
+        super(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), "mysql/mysql-server:5.7", false, scenario);
     }
     
     @Override
     protected void configure() {
         withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password");
-        withInitSQLMapping("/env/" + getParameterizedArray().getScenario() + "/init-sql/mysql");
         setEnv(Collections.singletonList("LANG=C.UTF-8"));
+        super.configure();
     }
     
     @Override
-    protected void execute() {
+    protected String getUsername() {
+        return "root";
     }
     
     @Override
-    protected String getUrl(final String dataSourceName) {
-        return DataSourceEnvironment.getURL("MySQL", getHost(), getPort(), dataSourceName);
+    protected String getPassword() {
+        return "root";
     }
     
     @Override
@@ -58,15 +57,5 @@ public final class MySQLContainer extends StorageContainer {
     @Override
     protected int getPort() {
         return getMappedPort(3306);
-    }
-    
-    @Override
-    protected String getUsername() {
-        return "root";
-    }
-    
-    @Override
-    protected String getPassword() {
-        return "";
     }
 }

@@ -17,7 +17,7 @@
 
 grammar RDLStatement;
 
-import Keyword, Literals, Symbol, BaseRule;
+import BaseRule;
 
 createShardingScalingRule
     : CREATE SHARDING SCALING RULE scalingName scalingRuleDefinition?

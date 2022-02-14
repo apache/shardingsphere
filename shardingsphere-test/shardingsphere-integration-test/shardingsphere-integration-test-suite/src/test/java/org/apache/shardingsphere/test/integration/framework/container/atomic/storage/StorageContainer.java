@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.atomic.storage;
 
-import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.ShardingSphereContainer;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.AtomicContainer;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap.Builder;
@@ -40,63 +39,54 @@ import java.util.Optional;
 /**
  * Storage container.
  */
-public abstract class StorageContainer extends ShardingSphereContainer {
+public abstract class StorageContainer extends AtomicContainer {
+    
+    private Map<String, DataSource> actualDataSourceMap;
     
     @Getter
     private final DatabaseType databaseType;
     
-    private Map<String, DataSource> dataSourceMap;
+    @Getter
+    private final String scenario;
     
-    public StorageContainer(final String name, final String dockerImageName,
-                            final DatabaseType databaseType, final boolean isFakedContainer, final ParameterizedArray parameterizedArray) {
-        super(name, dockerImageName, isFakedContainer, parameterizedArray);
+    public StorageContainer(final DatabaseType databaseType, final String dockerImageName, final boolean isFakedContainer, final String scenario) {
+        super(databaseType.getName().toLowerCase(), dockerImageName, isFakedContainer);
         this.databaseType = databaseType;
+        this.scenario = scenario;
+    }
+    
+    @Override
+    protected void configure() {
+        withClasspathResourceMapping(EnvironmentPath.getInitSQLResourcePath(databaseType, scenario), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
     }
     
     /**
-     * Mount a source path into container.
+     * Get actual data source map.
      *
-     * @param resourcePath resource path
-     * @return self
-     */
-    public StorageContainer withInitSQLMapping(final String resourcePath) {
-        withClasspathResourceMapping(resourcePath, "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
-        return this;
-    }
-    
-    /**
-     * Get data source map.
-     *
-     * @return data source map
+     * @return actual data source map
      */
     @SneakyThrows({IOException.class, JAXBException.class})
-    public synchronized Map<String, DataSource> getDataSourceMap() {
-        if (null == dataSourceMap) {
-            Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDatabaseNames(getParameterizedArray().getScenario());
+    public synchronized Map<String, DataSource> getActualDataSourceMap() {
+        if (null == actualDataSourceMap) {
+            Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDatabaseNames(scenario);
             Builder<String, DataSource> builder = ImmutableMap.builder();
             dataSourceNames.forEach(each -> builder.put(each, createDataSource(each)));
-            dataSourceMap = builder.build();
+            actualDataSourceMap = builder.build();
         }
-        return dataSourceMap;
+        return actualDataSourceMap;
     }
     
     private DataSource createDataSource(final String dataSourceName) {
-        HikariConfig config = new HikariConfig();
-        config.setDriverClassName(getDriverClassName());
-        config.setJdbcUrl(getUrl(dataSourceName));
-        config.setUsername(getUsername());
-        config.setPassword(getPassword());
-        config.setMaximumPoolSize(4);
-        config.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        getConnectionInitSQL().ifPresent(config::setConnectionInitSql);
-        return new HikariDataSource(config);
+        HikariDataSource result = new HikariDataSource();
+        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
+        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, isFakedContainer() ? null : getHost(), getPort(), dataSourceName));
+        result.setUsername(getUsername());
+        result.setPassword(getPassword());
+        result.setMaximumPoolSize(4);
+        result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
+        getConnectionInitSQL().ifPresent(result::setConnectionInitSql);
+        return result;
     }
-    
-    protected String getDriverClassName() {
-        return DataSourceEnvironment.getDriverClassName(databaseType.getName());
-    }
-    
-    protected abstract String getUrl(String dataSourceName);
     
     protected abstract String getUsername();
     

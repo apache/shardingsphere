@@ -85,7 +85,7 @@ jobs:
         java:
           - {
             version: 8,
-            maven_args: "cobertura:cobertura -Dmaven.javadoc.skip=true -Drat.skip=true"
+            maven_args: "cobertura:cobertura -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true"
           }
           - {
             version: 11,
@@ -126,7 +126,7 @@ jobs:
         java:
           - {
             version: 8,
-            maven_args: "cobertura:cobertura -Dmaven.javadoc.skip=true -Drat.skip=true"
+            maven_args: "cobertura:cobertura -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true"
           }
     steps:
       - name: Cache Maven Repos

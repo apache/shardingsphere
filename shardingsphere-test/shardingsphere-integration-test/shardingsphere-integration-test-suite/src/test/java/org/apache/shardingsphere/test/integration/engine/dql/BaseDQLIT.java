@@ -23,7 +23,9 @@ import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
+import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.junit.Before;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -46,13 +48,12 @@ public abstract class BaseDQLIT extends SingleITCase {
     
     private static final Collection<String> FILLED_SCENARIOS = new HashSet<>();
     
-    public BaseDQLIT(final AssertionParameterizedArray parameter) {
-        super(parameter);
+    public BaseDQLIT(final AssertionParameterizedArray parameterizedArray, final ComposedContainer composedContainer) {
+        super(parameterizedArray, composedContainer);
     }
     
-    @Override
-    public void init() throws Exception {
-        super.init();
+    @Before
+    public final void init() throws Exception {
         fillDataOnlyOnce();
     }
     
@@ -60,7 +61,7 @@ public abstract class BaseDQLIT extends SingleITCase {
         if (!FILLED_SCENARIOS.contains(getScenario())) {
             synchronized (FILLED_SCENARIOS) {
                 if (!FILLED_SCENARIOS.contains(getScenario())) {
-                    new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getScenario()), getStorageContainer().getDataSourceMap()).fillData();
+                    new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getScenario()), getActualDataSourceMap()).fillData();
                     FILLED_SCENARIOS.add(getScenario());
                 }
             }
