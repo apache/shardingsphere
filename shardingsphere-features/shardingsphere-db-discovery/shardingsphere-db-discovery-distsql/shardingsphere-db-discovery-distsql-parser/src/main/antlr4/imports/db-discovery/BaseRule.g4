@@ -14,23 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
+grammar BaseRule;
 
-grammar RQLStatement;
-
-import BaseRule;
-
-showDatabaseDiscoveryRules
-    : SHOW DB_DISCOVERY RULES (FROM schemaName)?
-    ;
-
-showDatabaseDiscoveryTypes
-    : SHOW DB_DISCOVERY TYPES (FROM schemaName)?
-    ;
-
-showDatabaseDiscoveryHeartbeats
-    : SHOW DB_DISCOVERY HEARTBEATS (FROM schemaName)?
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
+import Symbol, Keyword, Literals;
