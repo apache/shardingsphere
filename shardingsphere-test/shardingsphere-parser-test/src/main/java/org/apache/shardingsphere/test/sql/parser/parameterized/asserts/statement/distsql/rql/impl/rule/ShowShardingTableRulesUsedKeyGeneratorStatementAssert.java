@@ -53,7 +53,7 @@ public final class ShowShardingTableRulesUsedKeyGeneratorStatementAssert {
         }
         if (!Strings.isNullOrEmpty(expected.getKeyGenerator())) {
             assertTrue(assertContext.getText("Actual keyGenerator should exist."), actual.getKeyGeneratorName().isPresent());
-            assertThat(assertContext.getText("keyGenerator assertion error:"), actual.getKeyGeneratorName().get(), is(expected.getKeyGenerator()));
+            assertThat(assertContext.getText("KeyGenerator assertion error:"), actual.getKeyGeneratorName().get(), is(expected.getKeyGenerator()));
         } else {
             assertFalse(assertContext.getText("Actual keyGenerator should not exist."), actual.getKeyGeneratorName().isPresent());
         }
