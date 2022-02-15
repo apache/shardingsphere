@@ -48,10 +48,10 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     @SneakyThrows({ClassNotFoundException.class, SQLException.class, InterruptedException.class})
     protected void execute() {
         Class.forName(DataSourceEnvironment.getDriverClassName(getDatabaseType()));
-        String url = DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getPort());
+        String url = DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getMappedPort(getPort()));
         boolean connected = false;
         while (!connected) {
-            try (Connection ignored = DriverManager.getConnection(url, getUsername(), getPassword())) {
+            try (Connection ignored = DriverManager.getConnection(url, "root", "root")) {
                 connected = true;
                 break;
             } catch (final PSQLException ex) {
@@ -61,17 +61,7 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     }
     
     @Override
-    public String getUsername() {
-        return "root";
-    }
-    
-    @Override
-    public String getPassword() {
-        return "root";
-    }
-    
-    @Override
-    public int getPort() {
-        return getMappedPort(5432);
+    protected int getPort() {
+        return 5432;
     }
 }
