@@ -38,13 +38,6 @@ public interface StorageContainer extends ITContainer {
     }
     
     /**
-     * Get port.
-     * 
-     * @return port
-     */
-    int getPort();
-    
-    /**
      * Get actual data source map.
      *
      * @return actual data source map

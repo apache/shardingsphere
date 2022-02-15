@@ -80,4 +80,6 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
         getConnectionInitSQL().ifPresent(result::setConnectionInitSql);
         return result;
     }
+    
+    protected abstract int getPort();
 }

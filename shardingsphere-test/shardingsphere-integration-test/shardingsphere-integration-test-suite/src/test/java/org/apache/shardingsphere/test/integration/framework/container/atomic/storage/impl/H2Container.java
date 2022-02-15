@@ -63,9 +63,4 @@ public final class H2Container extends EmbeddedStorageContainer {
             RunScript.execute(connection, reader);
         }
     }
-    
-    @Override
-    public int getPort() {
-        return 0;
-    }
 }
