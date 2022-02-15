@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.alter.excutor;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
@@ -23,12 +23,11 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AlterTraffi
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.alter.AlterStatementExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.convert.TrafficRuleConverter;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
@@ -47,18 +46,15 @@ import java.util.stream.Collectors;
  * Alter traffic rule handler.
  */
 @RequiredArgsConstructor
-public final class AlterTrafficRuleExecutor implements AlterStatementExecutor {
-    
-    private final AlterTrafficRuleStatement sqlStatement;
+public final class AlterTrafficRuleHandler extends UpdatableBackendHandler<AlterTrafficRuleStatement, AlterTrafficRuleHandler> {
     
     @Override
-    public ResponseHeader execute() throws DistSQLException {
+    protected void doHandle(final ContextManager contextManager, final AlterTrafficRuleStatement sqlStatement) throws DistSQLException {
         Optional<TrafficRuleConfiguration> currentConfiguration = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData()
                 .findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
         check(sqlStatement, currentConfiguration);
         TrafficRuleConfiguration toBeAlteredConfiguration = TrafficRuleConverter.convert(sqlStatement.getSegments());
         updateToRepository(toBeAlteredConfiguration, currentConfiguration.get());
-        return new UpdateResponseHeader(sqlStatement);
     }
     
     private void check(final AlterTrafficRuleStatement sqlStatement, final Optional<TrafficRuleConfiguration> currentConfiguration) throws DistSQLException {

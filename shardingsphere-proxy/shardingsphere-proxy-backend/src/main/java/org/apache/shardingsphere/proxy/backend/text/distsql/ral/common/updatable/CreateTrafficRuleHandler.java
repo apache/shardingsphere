@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.create;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
@@ -24,12 +24,11 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.convert.TrafficRuleConverter;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
@@ -48,18 +47,15 @@ import java.util.stream.Collectors;
  * Create traffic rule handler.
  */
 @RequiredArgsConstructor
-public final class CreateTrafficRuleHandler implements TextProtocolBackendHandler {
-    
-    private final CreateTrafficRuleStatement sqlStatement;
+public final class CreateTrafficRuleHandler extends UpdatableBackendHandler<CreateTrafficRuleStatement, CreateTrafficRuleHandler> {
     
     @Override
-    public ResponseHeader execute() throws DistSQLException {
+    protected void doHandle(final ContextManager contextManager, final CreateTrafficRuleStatement sqlStatement) throws DistSQLException {
         Optional<TrafficRuleConfiguration> trafficRuleConfiguration = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData()
                 .findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
         check(sqlStatement, trafficRuleConfiguration);
         TrafficRuleConfiguration toBeCreatedConfiguration = TrafficRuleConverter.convert(sqlStatement.getSegments());
         updateToRepository(toBeCreatedConfiguration, trafficRuleConfiguration);
-        return new UpdateResponseHeader(sqlStatement);
     }
     
     private void check(final CreateTrafficRuleStatement sqlStatement, final Optional<TrafficRuleConfiguration> trafficRuleConfiguration) throws DistSQLException {
