@@ -51,23 +51,13 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
         String url = DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getPort());
         boolean connected = false;
         while (!connected) {
-            try (Connection ignored = DriverManager.getConnection(url, getUsername(), getPassword())) {
+            try (Connection ignored = DriverManager.getConnection(url, "root", "root")) {
                 connected = true;
                 break;
             } catch (final PSQLException ex) {
                 Thread.sleep(500L);
             }
         }
-    }
-    
-    @Override
-    public String getUsername() {
-        return "root";
-    }
-    
-    @Override
-    public String getPassword() {
-        return "root";
     }
     
     @Override

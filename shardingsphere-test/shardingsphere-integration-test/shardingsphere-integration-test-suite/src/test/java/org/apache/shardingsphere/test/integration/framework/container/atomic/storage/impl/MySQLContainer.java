@@ -40,16 +40,6 @@ public final class MySQLContainer extends DockerStorageContainer {
     }
     
     @Override
-    public String getUsername() {
-        return "root";
-    }
-    
-    @Override
-    public String getPassword() {
-        return "root";
-    }
-    
-    @Override
     public Optional<String> getConnectionInitSQL() {
         return Optional.of("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
     }

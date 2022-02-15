@@ -65,16 +65,6 @@ public final class H2Container extends EmbeddedStorageContainer {
     }
     
     @Override
-    public String getUsername() {
-        return "sa";
-    }
-    
-    @Override
-    public String getPassword() {
-        return "";
-    }
-    
-    @Override
     public int getPort() {
         return 0;
     }

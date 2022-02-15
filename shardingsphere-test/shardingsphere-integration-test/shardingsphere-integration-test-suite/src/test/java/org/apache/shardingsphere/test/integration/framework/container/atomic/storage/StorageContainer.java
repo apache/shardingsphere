@@ -29,20 +29,6 @@ import java.util.Optional;
 public interface StorageContainer extends ITContainer {
     
     /**
-     * Get username.
-     * 
-     * @return username
-     */
-    String getUsername();
-    
-    /**
-     * Get password.
-     * 
-     * @return password
-     */
-    String getPassword();
-    
-    /**
      * Get connection init SQL.
      * 
      * @return connection init SQL
