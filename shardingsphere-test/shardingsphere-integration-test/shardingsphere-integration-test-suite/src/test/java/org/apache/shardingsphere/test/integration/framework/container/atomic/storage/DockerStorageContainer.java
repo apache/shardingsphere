@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.AtomicContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
 import org.testcontainers.containers.BindMode;
 
 import javax.sql.DataSource;
@@ -37,7 +37,7 @@ import java.util.Map;
 /**
  * Docker storage container.
  */
-public abstract class DockerStorageContainer extends AtomicContainer implements StorageContainer {
+public abstract class DockerStorageContainer extends DockerITContainer implements StorageContainer {
     
     @Getter
     private final DatabaseType databaseType;

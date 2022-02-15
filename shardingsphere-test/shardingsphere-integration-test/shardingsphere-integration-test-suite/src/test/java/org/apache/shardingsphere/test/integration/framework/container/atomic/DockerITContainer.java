@@ -17,8 +17,72 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.atomic;
 
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.DockerHealthcheckWaitStrategy;
+import org.testcontainers.images.RemoteDockerImage;
+import org.testcontainers.utility.DockerImageName;
+
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 /**
  * Docker IT container.
  */
-public interface DockerITContainer extends ITContainer {
+@Slf4j
+@Getter
+public abstract class DockerITContainer extends GenericContainer<DockerITContainer> implements ITContainer {
+    
+    private final String name;
+    
+    private final boolean isFakedContainer;
+    
+    public DockerITContainer(final String name, final String dockerImageName, final boolean isFakedContainer) {
+        super(getDockerImage(dockerImageName, isFakedContainer));
+        this.name = name;
+        this.isFakedContainer = isFakedContainer;
+    }
+    
+    private static RemoteDockerImage getDockerImage(final String imageName, final boolean isFakedContainer) {
+        RemoteDockerImage result = new RemoteDockerImage(DockerImageName.parse(imageName));
+        return isFakedContainer ? result.withImagePullPolicy(dockerName -> false) : result;
+    }
+    
+    @Override
+    public void start() {
+        startDependencies();
+        if (!isFakedContainer) {
+            super.start();
+        }
+        execute();
+    }
+    
+    private void startDependencies() {
+        Collection<DockerITContainer> dependencies = getDependencies().stream().filter(each -> each instanceof DockerITContainer).map(each -> (DockerITContainer) each).collect(Collectors.toList());
+        dependencies.stream().filter(each -> !each.isCreated()).forEach(GenericContainer::start);
+        dependencies.stream()
+                .filter(each -> {
+                    try {
+                        return !each.isHealthy();
+                        // CHECKSTYLE:OFF
+                    } catch (final Exception ex) {
+                        // CHECKSTYLE:ON
+                        log.info("Failed to check container {} healthy.", each.getName(), ex);
+                        return false;
+                    }
+                })
+                .forEach(each -> {
+                    DockerHealthcheckWaitStrategy waitStrategy = new DockerHealthcheckWaitStrategy();
+                    log.info("Waiting for container {} healthy.", each.getDockerImageName());
+                    waitStrategy.withStartupTimeout(Duration.of(90, ChronoUnit.SECONDS));
+                    waitStrategy.waitUntilReady(each);
+                    log.info("Container {} is startup.", each.getDockerImageName());
+                });
+    }
+    
+    protected void execute() {
+    }
 }

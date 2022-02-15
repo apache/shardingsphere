@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.atomic.adapter;
 
-import org.apache.shardingsphere.test.integration.framework.container.atomic.AtomicContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
 
 import javax.sql.DataSource;
 
 /**
  * Adapter container.
  */
-public abstract class AdapterContainer extends AtomicContainer {
+public abstract class AdapterContainer extends DockerITContainer {
     
     public AdapterContainer(final String dockerName, final String dockerImageName) {
         this(dockerName, dockerImageName, false);

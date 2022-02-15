@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.integration.framework.container.atomic.st
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.DockerStorageContainer;
 import org.postgresql.util.PSQLException;
 
@@ -31,7 +30,7 @@ import java.sql.SQLException;
 /**
  * PostgreSQL container.
  */
-public final class PostgreSQLContainer extends DockerStorageContainer implements DockerITContainer {
+public final class PostgreSQLContainer extends DockerStorageContainer {
     
     public PostgreSQLContainer(final String scenario) {
         super(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), "postgres:12.6", scenario);
