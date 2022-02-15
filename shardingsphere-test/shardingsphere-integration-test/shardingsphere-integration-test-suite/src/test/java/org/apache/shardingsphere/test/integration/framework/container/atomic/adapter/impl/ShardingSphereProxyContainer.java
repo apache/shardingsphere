@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfig
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
@@ -44,7 +45,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * ShardingSphere proxy container.
  */
 @Slf4j
-public final class ShardingSphereProxyContainer extends AdapterContainer {
+public final class ShardingSphereProxyContainer extends DockerITContainer implements AdapterContainer {
     
     private static final String AGENT_HOME_IN_CONTAINER = "/usr/local/shardingsphere-agent";
     
@@ -57,7 +58,7 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
     public ShardingSphereProxyContainer(final DatabaseType databaseType, final String scenario) {
-        super("ShardingSphere-Proxy", "apache/shardingsphere-proxy-test");
+        super("ShardingSphere-Proxy", "apache/shardingsphere-proxy-test", false);
         this.databaseType = databaseType;
         this.scenario = scenario;
     }

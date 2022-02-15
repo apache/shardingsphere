@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.compose.mode;
 
+import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.ITContainers;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainerFactory;
@@ -47,11 +48,13 @@ public final class ClusterComposedContainer implements ComposedContainer {
         containers = new ITContainers(parameterizedArray.getScenario());
         // TODO support other types of governance
         governanceContainer = containers.registerContainer(testSuiteName, GovernanceContainerFactory.newInstance("ZooKeeper"), "zk");
-        storageContainer = containers.registerContainer(testSuiteName, 
-                StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getDatabaseType().getName());
-        adapterContainer = containers.registerContainer(testSuiteName, 
-                AdapterContainerFactory.newInstance(parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getAdapter());
-        adapterContainer.dependsOn(governanceContainer, storageContainer);
+        storageContainer = containers.registerContainer(testSuiteName, StorageContainerFactory.newInstance(
+                parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getDatabaseType().getName());
+        adapterContainer = containers.registerContainer(testSuiteName, AdapterContainerFactory.newInstance(
+                parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), storageContainer, parameterizedArray.getScenario()), parameterizedArray.getAdapter());
+        if (adapterContainer instanceof DockerITContainer) {
+            ((DockerITContainer) adapterContainer).dependsOn(governanceContainer, storageContainer);
+        }
     }
     
     @Override
