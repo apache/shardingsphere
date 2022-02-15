@@ -57,11 +57,7 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
     public ShardingSphereProxyContainer(final DatabaseType databaseType, final String scenario) {
-        this(null, databaseType, scenario);
-    }
-    
-    public ShardingSphereProxyContainer(final String dockerName, final DatabaseType databaseType, final String scenario) {
-        super(Objects.isNull(dockerName) ? "ShardingSphere-Proxy" : dockerName, "apache/shardingsphere-proxy-test");
+        super("ShardingSphere-Proxy", "apache/shardingsphere-proxy-test");
         this.databaseType = databaseType;
         this.scenario = scenario;
     }
@@ -105,12 +101,6 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
         withConfMapping("/docker/proxy/conf/" + scenario + "/" + databaseType.getName().toLowerCase());
         setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*ShardingSphere-Proxy .* mode started successfully.*"));
         super.configure();
-    }
-    
-    @Override
-    protected void execute() {
-        log.info("Mapped port 3307: {}", getMappedPort(3307));
-        log.info("Mapped port 3308: {}", getMappedPort(3308));
     }
     
     @Override
