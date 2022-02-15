@@ -20,7 +20,8 @@ package org.apache.shardingsphere.test.integration.framework.container.atomic.st
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.DockerStorageContainer;
 import org.postgresql.util.PSQLException;
 
 import java.sql.Connection;
@@ -30,10 +31,10 @@ import java.sql.SQLException;
 /**
  * PostgreSQL container.
  */
-public final class PostgreSQLContainer extends StorageContainer {
+public final class PostgreSQLContainer extends DockerStorageContainer implements DockerITContainer {
     
     public PostgreSQLContainer(final String scenario) {
-        super(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), "postgres:12.6", false, scenario);
+        super(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), "postgres:12.6", scenario);
     }
     
     @Override
@@ -61,17 +62,17 @@ public final class PostgreSQLContainer extends StorageContainer {
     }
     
     @Override
-    protected String getUsername() {
+    public String getUsername() {
         return "root";
     }
     
     @Override
-    protected String getPassword() {
+    public String getPassword() {
         return "root";
     }
     
     @Override
-    protected int getPort() {
+    public int getPort() {
         return getMappedPort(5432);
     }
 }

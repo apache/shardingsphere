@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Getter
-public abstract class AtomicContainer extends GenericContainer<AtomicContainer> {
+public abstract class AtomicContainer extends GenericContainer<AtomicContainer> implements DockerITContainer {
     
     private final String name;
     
@@ -61,7 +61,7 @@ public abstract class AtomicContainer extends GenericContainer<AtomicContainer> 
     }
     
     private void startDependencies() {
-        Collection<AtomicContainer> dependencies = getDependencies().stream().map(each -> (AtomicContainer) each).collect(Collectors.toList());
+        Collection<AtomicContainer> dependencies = getDependencies().stream().filter(each -> each instanceof AtomicContainer).map(each -> (AtomicContainer) each).collect(Collectors.toList());
         dependencies.stream().filter(each -> !each.isCreated()).forEach(GenericContainer::start);
         dependencies.stream()
                 .filter(each -> {

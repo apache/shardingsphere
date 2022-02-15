@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
+import org.testcontainers.lifecycle.Startable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -37,7 +38,9 @@ public final class AtomicContainers implements AutoCloseable {
     
     private final Network network = Network.newNetwork();
     
-    private final Collection<AtomicContainer> containers = new LinkedList<>();
+    private final Collection<AtomicContainer> dockerContainers = new LinkedList<>();
+    
+    private final Collection<EmbeddedITContainer> embeddedContainers = new LinkedList<>();
     
     private volatile boolean started;
     
@@ -50,12 +53,17 @@ public final class AtomicContainers implements AutoCloseable {
      * @param <T> type of ShardingSphere container
      * @return registered container
      */
-    public <T extends AtomicContainer> T registerContainer(final String testSuiteName, final T container, final String containerType) {
-        container.setNetwork(network);
-        container.setNetworkAliases(Collections.singletonList(String.join(".", containerType.toLowerCase(), scenario, "host")));
-        String loggerName = String.join(":", testSuiteName, container.getName());
-        container.withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger(loggerName), true));
-        containers.add(container);
+    public <T extends ITContainer> T registerContainer(final String testSuiteName, final T container, final String containerType) {
+        if (container instanceof AtomicContainer) {
+            AtomicContainer atomicContainer = (AtomicContainer) container;
+            atomicContainer.setNetwork(network);
+            atomicContainer.setNetworkAliases(Collections.singletonList(String.join(".", containerType.toLowerCase(), scenario, "host")));
+            String loggerName = String.join(":", testSuiteName, atomicContainer.getName());
+            atomicContainer.withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger(loggerName), true));
+            dockerContainers.add(atomicContainer);
+        } else {
+            embeddedContainers.add((EmbeddedITContainer) container);
+        }
         return container;
     }
     
@@ -66,7 +74,8 @@ public final class AtomicContainers implements AutoCloseable {
         if (!started) {
             synchronized (this) {
                 if (!started) {
-                    containers.stream().filter(each -> !each.isCreated()).forEach(AtomicContainer::start);
+                    embeddedContainers.forEach(EmbeddedITContainer::start);
+                    dockerContainers.stream().filter(each -> !each.isCreated()).forEach(AtomicContainer::start);
                     waitUntilReady();
                     started = true;
                 }
@@ -75,7 +84,7 @@ public final class AtomicContainers implements AutoCloseable {
     }
     
     private void waitUntilReady() {
-        containers.stream()
+        dockerContainers.stream()
                 .filter(each -> {
                     try {
                         return !each.isHealthy();
@@ -97,6 +106,7 @@ public final class AtomicContainers implements AutoCloseable {
     
     @Override
     public void close() {
-        containers.forEach(AtomicContainer::close);
+        embeddedContainers.forEach(Startable::close);
+        dockerContainers.forEach(Startable::close);
     }
 }
