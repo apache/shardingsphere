@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 
 import java.util.Collection;
@@ -35,7 +35,7 @@ import java.util.Optional;
 /**
  * Alter SQL parser rule statement executor.
  */
-public final class AlterSQLParserRuleHandler extends UpdatableBackendHandler<AlterSQLParserRuleStatement, AlterSQLParserRuleHandler> {
+public final class AlterSQLParserRuleHandler extends UpdatableRALBackendHandler<AlterSQLParserRuleStatement, AlterSQLParserRuleHandler> {
     
     @Override
     protected void doHandle(final ContextManager contextManager, final AlterSQLParserRuleStatement sqlStatement) {

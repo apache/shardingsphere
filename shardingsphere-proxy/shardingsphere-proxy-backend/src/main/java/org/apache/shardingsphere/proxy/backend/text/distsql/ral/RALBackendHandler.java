@@ -33,7 +33,7 @@ import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import java.sql.SQLException;
 
 /**
- * RAL backend handler .
+ * RAL backend handler.
  */
 public abstract class RALBackendHandler<E extends RALStatement, R extends RALBackendHandler> implements TextProtocolBackendHandler {
     

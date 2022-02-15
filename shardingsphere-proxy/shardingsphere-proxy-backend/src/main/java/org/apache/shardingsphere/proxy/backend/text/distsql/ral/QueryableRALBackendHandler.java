@@ -35,9 +35,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * RAL backend handler.
+ * Queryable RAL backend handler.
  */
-public abstract class QueryableBackendHandler<E extends RALStatement, R extends QueryableBackendHandler> extends RALBackendHandler<E, R> {
+public abstract class QueryableRALBackendHandler<E extends RALStatement, R extends QueryableRALBackendHandler> extends RALBackendHandler<E, R> {
     
     private List<QueryHeader> queryHeaders;
     
