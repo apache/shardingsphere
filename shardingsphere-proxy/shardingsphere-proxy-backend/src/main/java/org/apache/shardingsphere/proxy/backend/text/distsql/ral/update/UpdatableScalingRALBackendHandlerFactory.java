@@ -25,10 +25,10 @@ import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 /**
- * Scaling updatable RAL backend handler factory.
+ *  Updatable scaling RAL backend handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ScalingUpdatableRALBackendHandlerFactory {
+public final class UpdatableScalingRALBackendHandlerFactory {
     
     static {
         ShardingSphereServiceLoader.register(RALUpdater.class);
@@ -41,7 +41,7 @@ public final class ScalingUpdatableRALBackendHandlerFactory {
      * @return queryable RAL backend handler
      */
     public static TextProtocolBackendHandler newInstance(final UpdatableRALStatement sqlStatement) {
-        ScalingUpdatableRALBackendHandler result = new ScalingUpdatableRALBackendHandler();
+        UpdatableScalingRALBackendHandler result = new UpdatableScalingRALBackendHandler();
         result.setSqlStatement(sqlStatement);
         return result;
     }

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
 import com.google.common.base.Preconditions;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
@@ -73,7 +73,7 @@ public abstract class RALBackendHandler<E extends RALStatement, R extends RALBac
     
     @Getter
     @Setter
-    @Accessors(chain = true)
+    @AllArgsConstructor
     public static class HandlerParameter<E extends RALStatement> {
         
         private E statement;
