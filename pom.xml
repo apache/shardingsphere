@@ -62,7 +62,9 @@
         
         <groovy.version>4.0.0</groovy.version>
         <snakeyaml.version>1.30</snakeyaml.version>
-
+        
+        <bcprov-jdk15on.version>1.70</bcprov-jdk15on.version>
+        
         <netty.version>4.1.73.Final</netty.version>
         <commons-lang3.version>3.8</commons-lang3.version>
         <commons-codec.version>1.10</commons-codec.version>
@@ -148,7 +150,6 @@
         <checksum-maven-plugin.version>1.10</checksum-maven-plugin.version>
         <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
         <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
-        <bcprov-jdk15on.version>1.70</bcprov-jdk15on.version>
         <maven.deploy.skip>false</maven.deploy.skip>
     </properties>
     
@@ -205,6 +206,12 @@
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${snakeyaml.version}</version>
+            </dependency>
+            
+        <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk15on</artifactId>
+                <version>${bcprov-jdk15on.version}</version>
             </dependency>
             
             <dependency>
@@ -1083,11 +1090,6 @@
                     <groupId>javax.activation</groupId>
                     <artifactId>javax.activation-api</artifactId>
                     <version>${activation-api.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.bouncycastle</groupId>
-                    <artifactId>bcprov-jdk15on</artifactId>
-                    <version>${bcprov-jdk15on.version}</version>
                 </dependency>
             </dependencies>
             <build>
