@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.integration.framework.container.atomic.storage;
 
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -37,12 +38,11 @@ import java.util.Map;
 /**
  * Docker storage container.
  */
+@Getter(AccessLevel.PROTECTED)
 public abstract class DockerStorageContainer extends DockerITContainer implements StorageContainer {
     
-    @Getter
     private final DatabaseType databaseType;
     
-    @Getter
     private final String scenario;
     
     private Map<String, DataSource> actualDataSourceMap;
