@@ -32,8 +32,8 @@ import java.util.stream.Collectors;
 /**
  * Docker IT container.
  */
-@Slf4j
 @Getter
+@Slf4j
 public abstract class DockerITContainer extends GenericContainer<DockerITContainer> implements ITContainer {
     
     private final String name;
