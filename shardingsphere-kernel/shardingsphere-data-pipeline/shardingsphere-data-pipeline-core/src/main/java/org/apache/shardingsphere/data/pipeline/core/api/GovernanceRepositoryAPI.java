@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.api;
 
+import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
@@ -98,4 +99,11 @@ public interface GovernanceRepositoryAPI {
      * @param value value of data
      */
     void persist(String key, String value);
+    
+    /**
+     * renew job status.
+     * @param status status
+     * @param jobId job id
+     */
+    void renewJobStatus(JobStatus status, String jobId);
 }
