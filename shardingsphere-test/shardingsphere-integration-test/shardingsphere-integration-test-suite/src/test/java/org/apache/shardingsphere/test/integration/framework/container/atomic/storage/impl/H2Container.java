@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.framework.container.atomic.st
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.EmbeddedStorageContainer;
 import org.h2.tools.RunScript;
 
 import javax.sql.DataSource;
@@ -34,15 +34,15 @@ import java.util.Map.Entry;
 /**
  * H2 container.
  */
-public final class H2Container extends StorageContainer {
+public final class H2Container extends EmbeddedStorageContainer {
     
     public H2Container(final String scenario) {
-        super(DatabaseTypeRegistry.getActualDatabaseType("H2"), "h2:fake", true, scenario);
+        super(DatabaseTypeRegistry.getActualDatabaseType("H2"), scenario);
     }
     
     @Override
     @SneakyThrows({IOException.class, SQLException.class})
-    protected void execute() {
+    public void start() {
         File initSQLFile = new File(EnvironmentPath.getInitSQLFile(getDatabaseType(), getScenario()));
         for (Entry<String, DataSource> entry : getActualDataSourceMap().entrySet()) {
             String dbInitSQLFileName = "init-" + entry.getKey() + ".sql";
@@ -65,22 +65,17 @@ public final class H2Container extends StorageContainer {
     }
     
     @Override
-    public boolean isHealthy() {
-        return true;
-    }
-    
-    @Override
-    protected String getUsername() {
+    public String getUsername() {
         return "sa";
     }
     
     @Override
-    protected String getPassword() {
+    public String getPassword() {
         return "";
     }
     
     @Override
-    protected int getPort() {
+    public int getPort() {
         return 0;
     }
 }

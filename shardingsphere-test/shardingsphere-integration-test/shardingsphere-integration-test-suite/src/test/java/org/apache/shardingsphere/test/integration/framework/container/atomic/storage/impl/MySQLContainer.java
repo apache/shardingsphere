@@ -18,18 +18,18 @@
 package org.apache.shardingsphere.test.integration.framework.container.atomic.storage.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.DockerStorageContainer;
 
 import java.util.Collections;
 import java.util.Optional;
 
 /**
- * MySQL Container.
+ * MySQL container.
  */
-public final class MySQLContainer extends StorageContainer {
+public final class MySQLContainer extends DockerStorageContainer {
     
     public MySQLContainer(final String scenario) {
-        super(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), "mysql/mysql-server:5.7", false, scenario);
+        super(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), "mysql/mysql-server:5.7", scenario);
     }
     
     @Override
@@ -40,22 +40,22 @@ public final class MySQLContainer extends StorageContainer {
     }
     
     @Override
-    protected String getUsername() {
+    public String getUsername() {
         return "root";
     }
     
     @Override
-    protected String getPassword() {
+    public String getPassword() {
         return "root";
     }
     
     @Override
-    protected Optional<String> getConnectionInitSQL() {
+    public Optional<String> getConnectionInitSQL() {
         return Optional.of("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
     }
     
     @Override
-    protected int getPort() {
+    public int getPort() {
         return getMappedPort(3306);
     }
 }

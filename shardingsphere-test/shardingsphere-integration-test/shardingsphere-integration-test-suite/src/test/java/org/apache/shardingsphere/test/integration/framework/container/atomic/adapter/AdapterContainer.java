@@ -17,22 +17,14 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.atomic.adapter;
 
-import org.apache.shardingsphere.test.integration.framework.container.atomic.AtomicContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.ITContainer;
 
 import javax.sql.DataSource;
 
 /**
  * Adapter container.
  */
-public abstract class AdapterContainer extends AtomicContainer {
-    
-    public AdapterContainer(final String dockerName, final String dockerImageName) {
-        this(dockerName, dockerImageName, false);
-    }
-    
-    public AdapterContainer(final String name, final String dockerImageName, final boolean isFakedContainer) {
-        super(name, dockerImageName, isFakedContainer);
-    }
+public interface AdapterContainer extends ITContainer {
     
     /**
      * Get target data source.
@@ -40,5 +32,5 @@ public abstract class AdapterContainer extends AtomicContainer {
      * @param serverLists server lists
      * @return target data source
      */
-    public abstract DataSource getTargetDataSource(String serverLists);
+    DataSource getTargetDataSource(String serverLists);
 }

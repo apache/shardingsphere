@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.atomic.governance;
 
-import org.apache.shardingsphere.test.integration.framework.container.atomic.AtomicContainer;
-import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
 
 /**
  * Governance container.
  */
-public abstract class GovernanceContainer extends AtomicContainer {
+public abstract class GovernanceContainer extends DockerITContainer {
     
-    public GovernanceContainer(final String name, final String dockerImageName, final boolean isFakedContainer) {
-        super(name, dockerImageName, isFakedContainer);
-        setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*PrepRequestProcessor \\(sid:[0-9]+\\) started.*"));
+    public GovernanceContainer(final String name, final String dockerImageName) {
+        super(name, dockerImageName);
     }
     
     /**
