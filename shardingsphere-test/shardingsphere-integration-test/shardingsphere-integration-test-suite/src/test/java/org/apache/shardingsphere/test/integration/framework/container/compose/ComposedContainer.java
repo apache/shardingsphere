@@ -17,18 +17,15 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.compose;
 
+import org.testcontainers.lifecycle.Startable;
+
 import javax.sql.DataSource;
 import java.util.Map;
 
 /**
  * Composed container.
  */
-public interface ComposedContainer extends AutoCloseable {
-    
-    /**
-     * Start composed container.
-     */
-    void start();
+public interface ComposedContainer extends Startable {
     
     /**
      * Get actual data source map.

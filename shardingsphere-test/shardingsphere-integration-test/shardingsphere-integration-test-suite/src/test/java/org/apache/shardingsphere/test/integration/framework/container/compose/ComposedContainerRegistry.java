@@ -52,14 +52,14 @@ public final class ComposedContainerRegistry implements AutoCloseable {
         }
     }
     
+    private String generateKey(final String testSuiteName, final ParameterizedArray parameterizedArray) {
+        return String.join("-", testSuiteName, parameterizedArray.getScenario(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType().getName());
+    }
+    
     private ComposedContainer createComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
         // TODO fix sharding_governance
         return "sharding_governance".equals(parameterizedArray.getScenario())
                 ? new ClusterComposedContainer(testSuiteName, parameterizedArray) : new MemoryComposedContainer(testSuiteName, parameterizedArray);
-    }
-    
-    private String generateKey(final String testSuiteName, final ParameterizedArray parameterizedArray) {
-        return String.join("-", testSuiteName, parameterizedArray.getScenario(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType().getName());
     }
     
     @Override

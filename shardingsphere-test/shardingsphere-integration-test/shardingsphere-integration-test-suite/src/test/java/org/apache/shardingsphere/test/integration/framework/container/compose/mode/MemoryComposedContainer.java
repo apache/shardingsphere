@@ -64,7 +64,7 @@ public final class MemoryComposedContainer implements ComposedContainer {
     }
     
     @Override
-    public void close() {
-        containers.close();
+    public void stop() {
+        containers.stop();
     }
 }

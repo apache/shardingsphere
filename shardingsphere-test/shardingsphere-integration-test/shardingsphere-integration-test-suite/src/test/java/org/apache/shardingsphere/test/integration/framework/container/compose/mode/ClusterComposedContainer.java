@@ -70,7 +70,7 @@ public final class ClusterComposedContainer implements ComposedContainer {
     }
     
     @Override
-    public void close() {
-        containers.close();
+    public void stop() {
+        containers.stop();
     }
 }
