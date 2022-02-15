@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule;
 
 import com.google.common.collect.Sets;
-import com.sun.javafx.runtime.SystemProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
@@ -83,7 +82,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
             if (RULE_ALTERED_ACTION_LIST.contains(sqlStatement.getClass().getCanonicalName())) {
                 throw new RuntimeException("scaling is not enabled");
             }
-        } else if (RuleAlteredJobWorker.isOnRuleAlteredActionEnabled(currentRuleConfig) && preprocessor.isPresent()) {
+        } else if (preprocessor.isPresent()) {
             processCache(shardingSphereMetaData, sqlStatement, (RuleDefinitionAlterUpdater) ruleDefinitionUpdater, currentRuleConfig, preprocessor.get());
             return new UpdateResponseHeader(sqlStatement);
         }
