@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * MySQL Container.
+ * MySQL container.
  */
 public final class MySQLContainer extends DockerStorageContainer {
     
