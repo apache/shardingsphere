@@ -19,7 +19,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
 import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -29,7 +30,10 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.ShowDistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
+import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -39,12 +43,23 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShowVariableBackendHandlerTest {
     
-    private final ConnectionSession connectionSession = new ConnectionSession(TransactionType.LOCAL, new DefaultAttributeMap());
+    private ContextManager contextManagerBefore;
+    
+    private ConnectionSession connectionSession;
+    
+    @Before
+    public void setup() {
+        contextManagerBefore = ProxyContext.getInstance().getContextManager();
+        ProxyContext.getInstance().init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE)).thenReturn("JDBC");
+        connectionSession = new ConnectionSession(TransactionType.LOCAL, new DefaultAttributeMap());
+    }
     
     @Test
     public void assertShowTransactionType() throws SQLException {
@@ -78,6 +93,7 @@ public final class ShowVariableBackendHandlerTest {
     
     @Test
     public void assertShowAgentPluginsEnabled() throws SQLException {
+        SystemPropertyUtil.setSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString());
         connectionSession.setCurrentSchema("schema");
         ShowDistSQLBackendHandler backendHandler = new ShowDistSQLBackendHandler(new ShowVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name()), connectionSession);
         ResponseHeader actual = backendHandler.execute();
@@ -85,7 +101,7 @@ public final class ShowVariableBackendHandlerTest {
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(1));
         backendHandler.next();
         Collection<Object> rowData = backendHandler.getRowData();
-        assertThat(rowData.iterator().next(), is(Boolean.FALSE.toString()));
+        assertThat(rowData.iterator().next(), is(Boolean.TRUE.toString()));
     }
     
     @Test
@@ -106,5 +122,10 @@ public final class ShowVariableBackendHandlerTest {
         backendHandler.next();
         Collection<Object> rowData = backendHandler.getRowData();
         assertThat(rowData.iterator().next(), is("true"));
+    }
+    
+    @After
+    public void tearDown() {
+        ProxyContext.getInstance().init(contextManagerBefore);
     }
 }

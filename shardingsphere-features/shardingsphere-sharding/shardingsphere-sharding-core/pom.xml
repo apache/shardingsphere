@@ -73,7 +73,11 @@
             <artifactId>shardingsphere-system-datetime</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-mode-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-single-table-core</artifactId>
@@ -112,9 +116,8 @@
         </dependency>
         
         <dependency>
-            <groupId>org.codehaus.groovy</groupId>
+            <groupId>org.apache.groovy</groupId>
             <artifactId>groovy</artifactId>
-            <classifier>indy</classifier>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>

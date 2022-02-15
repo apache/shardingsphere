@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.alter;
 
-import com.mchange.v1.db.sql.UnsupportedTypeException;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.AlterDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterSQLParserRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterTransactionRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AlterTrafficRuleStatement;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.alter.excutor.AlterSQLParserRuleExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.alter.excutor.AlterTrafficRuleExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.alter.excutor.AlterTransactionRuleExecutor;
 
 import java.sql.SQLException;
 
@@ -33,15 +36,21 @@ public final class AlterStatementExecutorFactory {
     /**
      * Alter statement executor instance.
      *
-     * @param sqlStatement alter distsql statement
+     * @param sqlStatement alter dist SQL statement
      * @param connectionSession connection session
      * @return alter command executor
      * @throws SQLException SQL exception
      */
     public static AlterStatementExecutor newInstance(final AlterDistSQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
+        if (sqlStatement instanceof AlterTransactionRuleStatement) {
+            return new AlterTransactionRuleExecutor((AlterTransactionRuleStatement) sqlStatement);
+        }
         if (sqlStatement instanceof AlterSQLParserRuleStatement) {
             return new AlterSQLParserRuleExecutor((AlterSQLParserRuleStatement) sqlStatement);
         }
-        throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
+        if (sqlStatement instanceof AlterTrafficRuleStatement) {
+            return new AlterTrafficRuleExecutor((AlterTrafficRuleStatement) sqlStatement);
+        }
+        throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }
 }

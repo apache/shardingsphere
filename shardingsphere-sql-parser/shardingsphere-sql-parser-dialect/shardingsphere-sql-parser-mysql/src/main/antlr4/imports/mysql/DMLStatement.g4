@@ -125,10 +125,6 @@ select
     | queryExpressionParens
     | selectWithInto
     ;
-    
-table
-    : TABLE tableName (ORDER BY columnName)? limitClause?
-    ;
 
 selectWithInto
     : LP_ selectWithInto RP_
@@ -157,7 +153,7 @@ queryExpressionParens
 queryPrimary
     : querySpecification
     | tableValueConstructor
-    | explicitTable
+    | tableStatement
     ;
 
 querySpecification
@@ -229,7 +225,7 @@ loadXmlStatement
       (setAssignmentsClause)?
     ;
 
-explicitTable
+tableStatement
     : TABLE tableName
     ;
 
@@ -270,7 +266,7 @@ unqualifiedShorthand
     ;
 
 qualifiedShorthand
-    : identifier DOT_ASTERISK_
+    : (identifier DOT_)? identifier DOT_ASTERISK_
     ;
 
 fromClause

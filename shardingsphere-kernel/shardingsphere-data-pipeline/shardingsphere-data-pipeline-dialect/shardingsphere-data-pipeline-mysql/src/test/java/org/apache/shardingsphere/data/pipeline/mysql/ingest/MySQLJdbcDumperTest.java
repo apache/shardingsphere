@@ -20,12 +20,14 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.SimpleMemoryPipelineChannel;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
@@ -44,22 +46,20 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLJdbcDumperTest {
     
-    private PipelineDataSourceManager dataSourceManager;
-    
     private MySQLInventoryDumper mysqlJdbcDumper;
-    
-    @Mock
-    private Connection connection;
     
     @Before
     public void setUp() {
-        dataSourceManager = new PipelineDataSourceManager();
-        mysqlJdbcDumper = new MySQLInventoryDumper(mockInventoryDumperConfiguration(), dataSourceManager);
+        PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
+        InventoryDumperConfiguration dumperConfig = mockInventoryDumperConfiguration();
+        PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
+        mysqlJdbcDumper = new MySQLInventoryDumper(mockInventoryDumperConfiguration(), new SimpleMemoryPipelineChannel(100),
+                dataSource, new PipelineTableMetaDataLoader(dataSource));
+        initTableData(dataSource);
     }
     
     private InventoryDumperConfiguration mockInventoryDumperConfiguration() {
         DumperConfiguration dumperConfig = mockDumperConfiguration();
-        initTableData(dumperConfig);
         InventoryDumperConfiguration result = new InventoryDumperConfiguration(dumperConfig);
         result.setTableName("t_order");
         return result;
@@ -72,8 +72,7 @@ public final class MySQLJdbcDumperTest {
     }
     
     @SneakyThrows(SQLException.class)
-    private void initTableData(final DumperConfiguration dumperConfig) {
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
+    private void initTableData(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -97,6 +96,7 @@ public final class MySQLJdbcDumperTest {
     
     @Test
     public void assertCreatePreparedStatement() throws SQLException {
+        Connection connection = mock(Connection.class);
         when(connection.prepareStatement("", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)).thenReturn(mock(PreparedStatement.class));
         PreparedStatement preparedStatement = mysqlJdbcDumper.createPreparedStatement(connection, "");
         verify(preparedStatement).setFetchSize(Integer.MIN_VALUE);

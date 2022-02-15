@@ -45,6 +45,7 @@ public final class OpenTelemetryCollector extends ExternalResource implements Co
 
     /**
      * Get a List of the finished Spans, represented by SpanData.
+     * 
      * @return a List of the finished Spans.
      */
     public List<SpanData> getSpanItems() {

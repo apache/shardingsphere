@@ -17,100 +17,71 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatement;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPortal;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.JDBCPortal;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
+import org.junit.Before;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.Map;
-
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public final class PostgreSQLConnectionContextTest {
     
-    @Test
-    public void assertCreatePortal() throws SQLException {
-        PostgreSQLConnectionContext context = new PostgreSQLConnectionContext();
-        PostgreSQLPreparedStatement statement = mock(PostgreSQLPreparedStatement.class);
-        when(statement.getSql()).thenReturn("");
-        when(statement.getSqlStatement()).thenReturn(new EmptyStatement());
-        PostgreSQLPortal actual = context.createPortal("P_1", statement, Collections.emptyList(), Collections.emptyList(), mock(JDBCBackendConnection.class));
-        assertThat(actual, is(getPortals(context).get("P_1")));
+    private PostgreSQLConnectionContext connectionContext;
+    
+    @Before
+    public void setup() {
+        connectionContext = new PostgreSQLConnectionContext();
     }
     
     @Test
-    public void assertGetPortal() {
-        PostgreSQLConnectionContext actual = new PostgreSQLConnectionContext();
-        Map<String, PostgreSQLPortal> portals = getPortals(actual);
-        PostgreSQLPortal expected = mock(PostgreSQLPortal.class);
-        portals.put("P_1", expected);
-        assertThat(actual.getPortal("P_1"), is(expected));
+    public void assertAddAndGetUnnamedPortal() {
+        assertAddAndGetPortal("");
     }
     
     @Test
-    public void assertClosePortal() throws SQLException {
-        PostgreSQLConnectionContext actual = new PostgreSQLConnectionContext();
-        Map<String, PostgreSQLPortal> portals = getPortals(actual);
-        PostgreSQLPortal actualPortal = mock(PostgreSQLPortal.class);
-        portals.put("P_1", actualPortal);
-        actual.closePortal("P_1");
-        verify(actualPortal).close();
-        assertFalse(portals.containsKey("P_1"));
+    public void assertAddAndGetNamedPortal() {
+        assertAddAndGetPortal("P_1");
+    }
+    
+    private void assertAddAndGetPortal(final String portalName) {
+        Portal<?> portal = mock(Portal.class);
+        when(portal.getName()).thenReturn(portalName);
+        connectionContext.addPortal(portal);
+        assertThat(connectionContext.getPortal(portalName), is(portal));
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertAddDuplicateNamedPortal() {
+        Portal<?> portal = mock(Portal.class);
+        when(portal.getName()).thenReturn("P_1");
+        connectionContext.addPortal(portal);
+        connectionContext.addPortal(portal);
     }
     
     @Test
-    public void assertCloseAllPortals() throws SQLException {
-        PostgreSQLConnectionContext actual = new PostgreSQLConnectionContext();
-        Map<String, PostgreSQLPortal> portals = getPortals(actual);
-        PostgreSQLPortal portal1 = mock(PostgreSQLPortal.class);
-        PostgreSQLPortal portal2 = mock(PostgreSQLPortal.class);
-        portals.put("P_1", portal1);
-        portals.put("P_2", portal2);
-        actual.closeAllPortals();
+    public void assertCloseSinglePortal() {
+        Portal<?> portal = mock(Portal.class);
+        String portalName = "P_1";
+        when(portal.getName()).thenReturn(portalName);
+        connectionContext.addPortal(portal);
+        connectionContext.closePortal(portalName);
+        verify(portal).close();
+    }
+    
+    @Test
+    public void assertCloseAllPortals() {
+        Portal<?> portal1 = mock(JDBCPortal.class);
+        when(portal1.getName()).thenReturn("P_1");
+        Portal<?> portal2 = mock(JDBCPortal.class);
+        when(portal2.getName()).thenReturn("P_2");
+        connectionContext.addPortal(portal1);
+        connectionContext.addPortal(portal2);
+        connectionContext.closeAllPortals();
         verify(portal1).close();
         verify(portal2).close();
-        assertTrue(portals.isEmpty());
-    }
-    
-    @Test(expected = SQLException.class)
-    public void assertCloseAllPortalsOccursException() throws SQLException {
-        PostgreSQLConnectionContext actual = new PostgreSQLConnectionContext();
-        Map<String, PostgreSQLPortal> portals = getPortals(actual);
-        PostgreSQLPortal portal = mock(PostgreSQLPortal.class);
-        doThrow(mock(SQLException.class)).when(portal).close();
-        portals.put("P_1", portal);
-        actual.closeAllPortals();
-    }
-    
-    @Test
-    public void assertClearContext() {
-        PostgreSQLConnectionContext actual = new PostgreSQLConnectionContext();
-        actual.setErrorOccurred(true);
-        actual.setCurrentPacketType(mock(PostgreSQLCommandPacketType.class));
-        actual.clearContext();
-        assertNull(actual.getCurrentPacketType());
-        assertFalse(actual.isErrorOccurred());
-    }
-    
-    @SuppressWarnings("unchecked")
-    @SneakyThrows
-    private Map<String, PostgreSQLPortal> getPortals(final PostgreSQLConnectionContext target) {
-        Field portalsField = PostgreSQLConnectionContext.class.getDeclaredField("portals");
-        portalsField.setAccessible(true);
-        return (Map<String, PostgreSQLPortal>) portalsField.get(target);
     }
 }

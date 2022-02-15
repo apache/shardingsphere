@@ -153,8 +153,6 @@ rules:
       none:
     keyGenerators:
       snowflake:
-        props:
-          worker-id: 123
         type: SNOWFLAKE
     tables:
       bmsql_config:

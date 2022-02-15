@@ -24,7 +24,6 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStatus;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -69,9 +68,6 @@ public final class CommandExecutorTaskTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ChannelHandlerContext handlerContext;
-    
-    @Mock
-    private ConnectionStatus connectionStatus;
     
     @Mock
     private ByteBuf message;
@@ -152,7 +148,7 @@ public final class CommandExecutorTaskTest {
         RuntimeException mockException = new RuntimeException("mock");
         doThrow(mockException).when(backendConnection).prepareForTaskExecution();
         when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
-        when(engine.getCommandExecuteEngine().getErrorPacket(mockException, connectionSession)).thenReturn(databasePacket);
+        when(engine.getCommandExecuteEngine().getErrorPacket(mockException)).thenReturn(databasePacket);
         when(engine.getCommandExecuteEngine().getOtherPacket(connectionSession)).thenReturn(Optional.of(databasePacket));
         CommandExecutorTask actual = new CommandExecutorTask(engine, connectionSession, handlerContext, message);
         actual.run();

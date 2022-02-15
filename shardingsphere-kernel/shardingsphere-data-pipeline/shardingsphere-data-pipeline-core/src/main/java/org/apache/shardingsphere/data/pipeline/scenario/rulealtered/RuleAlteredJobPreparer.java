@@ -21,27 +21,32 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
-import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
-import org.apache.shardingsphere.data.pipeline.core.prepare.InventoryTaskSplitter;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializerFactory;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
+import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.prepare.InventoryTaskSplitter;
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.DataSourcePreparer;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
-import org.apache.shardingsphere.scaling.core.job.position.PositionInitializerFactory;
+import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -49,6 +54,8 @@ import java.util.Optional;
  */
 @Slf4j
 public final class RuleAlteredJobPreparer {
+    
+    private static final Map<String, DataSourceChecker> DATA_SOURCE_CHECKER_MAP = SingletonSPIRegistry.getTypedSingletonInstancesMap(DataSourceChecker.class);
     
     private final InventoryTaskSplitter inventoryTaskSplitter = new InventoryTaskSplitter();
     
@@ -58,12 +65,12 @@ public final class RuleAlteredJobPreparer {
      * @param jobContext job context
      */
     public void prepare(final RuleAlteredJobContext jobContext) {
-        prepareTarget(jobContext.getJobConfig());
-        try (PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager()) {
-            initDataSourceManager(dataSourceManager, jobContext.getTaskConfigs());
-            checkDataSource(jobContext, dataSourceManager);
-            initIncrementalTasks(jobContext, dataSourceManager);
-            initInventoryTasks(jobContext, dataSourceManager);
+        PipelineDataSourceManager dataSourceManager = jobContext.getDataSourceManager();
+        prepareTarget(jobContext.getJobConfig(), dataSourceManager);
+        initAndCheckDataSource(jobContext);
+        try {
+            initIncrementalTasks(jobContext);
+            initInventoryTasks(jobContext);
             log.info("prepare, jobId={}, shardingItem={}, inventoryTasks={}, incrementalTasks={}",
                     jobContext.getJobId(), jobContext.getShardingItem(), jobContext.getInventoryTasks(), jobContext.getIncrementalTasks());
         } catch (final SQLException ex) {
@@ -72,62 +79,59 @@ public final class RuleAlteredJobPreparer {
         }
     }
     
-    private void prepareTarget(final JobConfiguration jobConfig) {
+    private void prepareTarget(final JobConfiguration jobConfig, final PipelineDataSourceManager dataSourceManager) {
         DataSourcePreparer dataSourcePreparer = EnvironmentCheckerFactory.getDataSourcePreparer(jobConfig.getHandleConfig().getTargetDatabaseType());
         if (null == dataSourcePreparer) {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
         JobDataNodeLine tablesFirstDataNodes = JobDataNodeLine.unmarshal(jobConfig.getHandleConfig().getTablesFirstDataNodes());
-        PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(tablesFirstDataNodes, jobConfig.getPipelineConfig());
+        PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(tablesFirstDataNodes, jobConfig.getPipelineConfig(), dataSourceManager);
         dataSourcePreparer.prepareTargetTables(prepareTargetTablesParameter);
     }
     
-    private void initDataSourceManager(final PipelineDataSourceManager dataSourceManager, final Collection<TaskConfiguration> taskConfigs) {
-        for (TaskConfiguration each : taskConfigs) {
-            dataSourceManager.createSourceDataSource(each.getDumperConfig().getDataSourceConfig());
-        }
-        dataSourceManager.createTargetDataSource(taskConfigs.iterator().next().getImporterConfig().getDataSourceConfig());
-    }
-    
-    private void checkDataSource(final RuleAlteredJobContext jobContext, final PipelineDataSourceManager dataSourceManager) {
-        checkSourceDataSources(jobContext, dataSourceManager);
+    private void initAndCheckDataSource(final RuleAlteredJobContext jobContext) {
+        PipelineDataSourceManager dataSourceManager = jobContext.getDataSourceManager();
+        TaskConfiguration taskConfig = jobContext.getTaskConfig();
+        PipelineDataSourceWrapper sourceDataSource = dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig());
+        PipelineDataSourceWrapper targetDataSource = dataSourceManager.getDataSource(taskConfig.getImporterConfig().getDataSourceConfig());
+        checkSourceDataSource(jobContext, sourceDataSource);
         JobProgress initProgress = jobContext.getInitProgress();
         if (null == initProgress || initProgress.getStatus() == JobStatus.PREPARING_FAILURE) {
-            checkTargetDataSources(jobContext, dataSourceManager);
+            checkTargetDataSource(jobContext, targetDataSource);
         }
     }
     
-    private void checkSourceDataSources(final RuleAlteredJobContext jobContext, final PipelineDataSourceManager dataSourceManager) {
-        DataSourceChecker dataSourceChecker = EnvironmentCheckerFactory.newInstance(jobContext.getJobConfig().getHandleConfig().getSourceDatabaseType());
-        dataSourceChecker.checkConnection(dataSourceManager.getCachedDataSources().values());
-        dataSourceChecker.checkPrivilege(dataSourceManager.getSourceDataSources().values());
-        dataSourceChecker.checkVariable(dataSourceManager.getSourceDataSources().values());
+    private void checkSourceDataSource(final RuleAlteredJobContext jobContext, final PipelineDataSourceWrapper sourceDataSource) {
+        DataSourceChecker dataSourceChecker = DATA_SOURCE_CHECKER_MAP.get(jobContext.getJobConfig().getHandleConfig().getSourceDatabaseType());
+        Collection<PipelineDataSourceWrapper> sourceDataSources = Collections.singleton(sourceDataSource);
+        dataSourceChecker.checkConnection(sourceDataSources);
+        dataSourceChecker.checkPrivilege(sourceDataSources);
+        dataSourceChecker.checkVariable(sourceDataSources);
     }
     
-    private void checkTargetDataSources(final RuleAlteredJobContext jobContext, final PipelineDataSourceManager dataSourceManager) {
-        DataSourceChecker dataSourceChecker = EnvironmentCheckerFactory.newInstance(jobContext.getJobConfig().getHandleConfig().getTargetDatabaseType());
-        dataSourceChecker.checkTargetTable(dataSourceManager.getTargetDataSources().values(), jobContext.getTaskConfigs().iterator().next().getImporterConfig().getShardingColumnsMap().keySet());
+    private void checkTargetDataSource(final RuleAlteredJobContext jobContext, final PipelineDataSourceWrapper targetDataSource) {
+        DataSourceChecker dataSourceChecker = DATA_SOURCE_CHECKER_MAP.get(jobContext.getJobConfig().getHandleConfig().getTargetDatabaseType());
+        Collection<PipelineDataSourceWrapper> targetDataSources = Collections.singletonList(targetDataSource);
+        dataSourceChecker.checkConnection(targetDataSources);
+        dataSourceChecker.checkTargetTable(targetDataSources, jobContext.getTaskConfig().getImporterConfig().getShardingColumnsMap().keySet());
     }
     
-    private void initInventoryTasks(final RuleAlteredJobContext jobContext, final PipelineDataSourceManager dataSourceManager) {
-        PipelineChannelFactory pipelineChannelFactory = jobContext.getRuleAlteredContext().getPipelineChannelFactory();
-        ExecuteEngine importerExecuteEngine = jobContext.getRuleAlteredContext().getImporterExecuteEngine();
-        List<InventoryTask> allInventoryTasks = new LinkedList<>();
-        for (TaskConfiguration each : jobContext.getTaskConfigs()) {
-            allInventoryTasks.addAll(inventoryTaskSplitter.splitInventoryData(jobContext, each, dataSourceManager, pipelineChannelFactory, importerExecuteEngine));
-        }
+    private void initInventoryTasks(final RuleAlteredJobContext jobContext) {
+        List<InventoryTask> allInventoryTasks = inventoryTaskSplitter.splitInventoryData(jobContext);
         jobContext.getInventoryTasks().addAll(allInventoryTasks);
     }
     
-    private void initIncrementalTasks(final RuleAlteredJobContext jobContext, final PipelineDataSourceManager dataSourceManager) throws SQLException {
+    private void initIncrementalTasks(final RuleAlteredJobContext jobContext) throws SQLException {
         PipelineChannelFactory pipelineChannelFactory = jobContext.getRuleAlteredContext().getPipelineChannelFactory();
         ExecuteEngine incrementalDumperExecuteEngine = jobContext.getRuleAlteredContext().getIncrementalDumperExecuteEngine();
-        for (TaskConfiguration each : jobContext.getTaskConfigs()) {
-            each.getDumperConfig().setPosition(getIncrementalPosition(jobContext, each, dataSourceManager));
-            jobContext.getIncrementalTasks().add(new IncrementalTask(each.getHandleConfig().getConcurrency(),
-                    each.getDumperConfig(), each.getImporterConfig(), pipelineChannelFactory, incrementalDumperExecuteEngine));
-        }
+        TaskConfiguration taskConfig = jobContext.getTaskConfig();
+        PipelineDataSourceManager dataSourceManager = jobContext.getDataSourceManager();
+        taskConfig.getDumperConfig().setPosition(getIncrementalPosition(jobContext, taskConfig, dataSourceManager));
+        PipelineTableMetaDataLoader sourceMetaDataLoader = jobContext.getSourceMetaDataLoader();
+        IncrementalTask incrementalTask = new IncrementalTask(taskConfig.getHandleConfig().getConcurrency(), taskConfig.getDumperConfig(), taskConfig.getImporterConfig(),
+            pipelineChannelFactory, dataSourceManager, sourceMetaDataLoader, incrementalDumperExecuteEngine);
+        jobContext.getIncrementalTasks().add(incrementalTask);
     }
     
     private IngestPosition<?> getIncrementalPosition(
@@ -138,7 +142,9 @@ public final class RuleAlteredJobPreparer {
                 return positionOptional.get();
             }
         }
-        return PositionInitializerFactory.newInstance(taskConfig.getHandleConfig().getSourceDatabaseType()).init(dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig()));
+        String databaseType = taskConfig.getHandleConfig().getSourceDatabaseType();
+        DataSource dataSource = dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig());
+        return PositionInitializerFactory.getPositionInitializer(databaseType).init(dataSource);
     }
     
     /**
@@ -147,12 +153,11 @@ public final class RuleAlteredJobPreparer {
      * @param jobContext job context
      */
     public void cleanup(final RuleAlteredJobContext jobContext) {
-        try (PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager()) {
-            initDataSourceManager(dataSourceManager, jobContext.getTaskConfigs());
-            for (TaskConfiguration each : jobContext.getTaskConfigs()) {
-                PositionInitializer positionInitializer = PositionInitializerFactory.newInstance(each.getHandleConfig().getSourceDatabaseType());
-                positionInitializer.destroy(dataSourceManager.getDataSource(each.getDumperConfig().getDataSourceConfig()));
-            }
+        PipelineDataSourceManager dataSourceManager = jobContext.getDataSourceManager();
+        try {
+            TaskConfiguration taskConfig = jobContext.getTaskConfig();
+            PositionInitializer positionInitializer = PositionInitializerFactory.getPositionInitializer(taskConfig.getHandleConfig().getSourceDatabaseType());
+            positionInitializer.destroy(dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig()));
         } catch (final SQLException ex) {
             log.warn("Scaling job destroying failed", ex);
         }

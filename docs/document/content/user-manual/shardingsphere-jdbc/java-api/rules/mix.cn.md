@@ -71,7 +71,6 @@ defaultDatabaseStrategyInlineProps.setProperty("algorithm-expression", "ds_${use
 shardingRuleConfiguration.getShardingAlgorithms().put("default_db_strategy_inline", new ShardingSphereAlgorithmConfiguration("INLINE", defaultDatabaseStrategyInlineProps));
 // 分布式序列算法配置
 Properties snowflakeProperties = new Properties();
-snowflakeProperties.setProperty("worker-id", "123");
 shardingRuleConfiguration.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", snowflakeProperties));
 
 /* 数据加密规则配置 */
@@ -87,8 +86,14 @@ encryptAlgorithmConfigs.put("pwd_encryptor", new ShardingSphereAlgorithmConfigur
 EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs);
 
 /* 读写分离规则配置 */
-ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration1 = new ReadwriteSplittingDataSourceRuleConfiguration("ds_0", "write_ds0", Arrays.asList("write_ds0_read0", "write_ds0_read1"), "roundRobin");
-ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration2 = new ReadwriteSplittingDataSourceRuleConfiguration("ds_1", "write_ds0", Arrays.asList("write_ds1_read0", "write_ds1_read0"), "roundRobin");
+Properties readwriteProps1 = new Properties();
+readwriteProps1.setProperty("write-data-source-name", "write_ds0");
+readwriteProps1.setProperty("read-data-source-names", "write_ds0_read0, write_ds0_read1");
+ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration1 = new ReadwriteSplittingDataSourceRuleConfiguration("ds_0", "Static", readwriteProps1, "roundRobin");
+Properties readwriteProps2 = new Properties();
+readwriteProps2.setProperty("write-data-source-name", "write_ds0");
+readwriteProps2.setProperty("read-data-source-names", "write_ds1_read0, write_ds1_read1");
+ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration2 = new ReadwriteSplittingDataSourceRuleConfiguration("ds_1", "Static", readwriteProps2, "roundRobin");
 
 //负载均衡算法
 Map<String, ShardingSphereAlgorithmConfiguration> loadBalanceMaps = new HashMap<>(1);
@@ -100,6 +105,6 @@ ReadwriteSplittingRuleConfiguration readWriteSplittingyRuleConfiguration = new R
 Properties otherProperties = new Properties();
 otherProperties.setProperty("sql-show", "true");
 
-/* shardingDataSource 就是最终被ORM框架或其他jdbc框架引用的数据源名称 */
+/* shardingDataSource 就是最终被 ORM 框架或其他 jdbc 框架引用的数据源名称 */
 DataSource shardingDataSource = ShardingSphereDataSourceFactory.createDataSource(datasourceMaps, Arrays.asList(shardingRuleConfiguration, readWriteSplittingyRuleConfiguration, encryptRuleConfiguration), otherProperties);
 ```

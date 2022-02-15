@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.exe
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -63,7 +63,7 @@ public final class ShowVariableExecutor extends AbstractShowExecutor {
         VariableEnum variable = VariableEnum.getValueOf(sqlStatement.getName());
         switch (variable) {
             case AGENT_PLUGINS_ENABLED:
-                return new MultipleLocalDataMergedResult(Collections.singletonList(Collections.singletonList(SystemPropertyUtil.getSystemProperty(variable.name(), Boolean.FALSE.toString()))));
+                return new MultipleLocalDataMergedResult(Collections.singletonList(Collections.singletonList(SystemPropertyUtil.getSystemProperty(variable.name(), Boolean.TRUE.toString()))));
             case CACHED_CONNECTIONS:
                 if (connectionSession.getBackendConnection() instanceof JDBCBackendConnection) {
                     int connectionSize = ((JDBCBackendConnection) connectionSession.getBackendConnection()).getConnectionSize();

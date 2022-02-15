@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.instance;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 
 import java.util.Collection;
 
@@ -34,4 +35,6 @@ public final class ComputeNodeInstance {
     private Collection<String> labels;
     
     private Collection<String> status;
+    
+    private Long workerId;
 }

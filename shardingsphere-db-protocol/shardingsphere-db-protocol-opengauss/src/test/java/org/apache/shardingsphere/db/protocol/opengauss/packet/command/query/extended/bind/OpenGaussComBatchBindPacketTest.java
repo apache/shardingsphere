@@ -59,13 +59,13 @@ public final class OpenGaussComBatchBindPacketTest {
         PostgreSQLPreparedStatementRegistry.getInstance().register(CONNECTION_ID, "S_1", "", expectedSQLStatement, columnTypes);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(BATCH_BIND_MESSAGE_BYTES), StandardCharsets.UTF_8);
         assertThat(payload.readInt1(), is((int) 'U'));
-        OpenGaussComBatchBindPacket actual = new OpenGaussComBatchBindPacket(payload, CONNECTION_ID);
+        OpenGaussComBatchBindPacket actual = new OpenGaussComBatchBindPacket(payload);
         assertThat(actual.getStatementId(), is("S_1"));
-        assertThat(actual.getPreparedStatement().getSqlStatement(), is(expectedSQLStatement));
         assertThat(actual.getEachGroupParametersCount(), is(3));
         assertThat(actual.getParameterFormats(), is(Arrays.asList(0, 0, 0)));
         assertTrue(actual.getResultFormats().isEmpty());
-        List<List<Object>> actualParameterSets = actual.readParameterSets();
+        List<List<Object>> actualParameterSets = actual.readParameterSets(
+                Arrays.asList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, PostgreSQLColumnType.POSTGRESQL_TYPE_VARCHAR, PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
         assertThat(actualParameterSets.size(), is(3));
         List<List<Object>> expectedParameterSets = Arrays.asList(Arrays.asList(1, "Foo", 18), Arrays.asList(2, "Bar", 36), Arrays.asList(3, "Tom", 54));
         assertThat(actualParameterSets, is(expectedParameterSets));

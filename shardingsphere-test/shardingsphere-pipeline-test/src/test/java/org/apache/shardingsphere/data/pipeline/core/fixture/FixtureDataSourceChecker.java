@@ -39,4 +39,9 @@ public final class FixtureDataSourceChecker implements DataSourceChecker {
     @Override
     public void checkTargetTable(final Collection<? extends DataSource> dataSources, final Collection<String> tableNames) {
     }
+    
+    @Override
+    public String getType() {
+        return "H2";
+    }
 }

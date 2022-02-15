@@ -59,12 +59,11 @@ rules:
       props:
         strategy: standard
         algorithmClassName: org.apache.shardingsphere.example.extension.sharding.algortihm.classbased.fixture.ClassBasedStandardShardingAlgorithmFixture
+        sharding-count: 2
     
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-          worker-id: 123
 
 props:
   sql-show: false

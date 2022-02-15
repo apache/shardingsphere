@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
@@ -39,12 +39,12 @@ public final class YamlDataSourcePropertiesSwapperTest {
         Map<String, Map<String, Object>> yamlConfig = createYamlConfig();
         Map<String, DataSource> dataSources = swapper.swapToDataSources(yamlConfig);
         HikariDataSource actual0 = (HikariDataSource) dataSources.get("ds_0");
-        assertThat(actual0.getDriverClassName(), is(MockedDataSource.class.getCanonicalName()));
+        assertThat(actual0.getDriverClassName(), is(MockedDataSource.class.getName()));
         assertThat(actual0.getJdbcUrl(), is("jdbc:mock://127.0.0.1/ds_0"));
         assertThat(actual0.getUsername(), is("root"));
         assertThat(actual0.getPassword(), is("root"));
         HikariDataSource actual1 = (HikariDataSource) dataSources.get("ds_1");
-        assertThat(actual1.getDriverClassName(), is(MockedDataSource.class.getCanonicalName()));
+        assertThat(actual1.getDriverClassName(), is(MockedDataSource.class.getName()));
         assertThat(actual1.getJdbcUrl(), is("jdbc:mock://127.0.0.1/ds_1"));
         assertThat(actual1.getUsername(), is("root"));
         assertThat(actual1.getPassword(), is("root"));
@@ -53,25 +53,29 @@ public final class YamlDataSourcePropertiesSwapperTest {
     @Test
     public void assertSwapToDataSourceProperties() {
         Map<String, Object> yamlConfig = new HashMap<>(3, 1);
-        yamlConfig.put("dataSourceClassName", MockedDataSource.class.getCanonicalName());
+        yamlConfig.put("dataSourceClassName", MockedDataSource.class.getName());
         yamlConfig.put("url", "xx:xxx");
         yamlConfig.put("username", "root");
         DataSourceProperties actual = swapper.swapToDataSourceProperties(yamlConfig);
-        assertThat(actual.getDataSourceClassName(), is(MockedDataSource.class.getCanonicalName()));
-        assertThat(actual.getProps().size(), is(2));
-        assertThat(actual.getProps().get("url").toString(), is("xx:xxx"));
-        assertThat(actual.getProps().get("username").toString(), is("root"));
+        assertThat(actual.getDataSourceClassName(), is(MockedDataSource.class.getName()));
+        assertThat(actual.getAllLocalProperties().size(), is(2));
+        assertThat(actual.getAllLocalProperties().get("url").toString(), is("xx:xxx"));
+        assertThat(actual.getAllLocalProperties().get("username").toString(), is("root"));
     }
     
     @Test
     public void assertSwapToMap() {
-        DataSourceProperties dataSourceProps = new DataSourceProperties(MockedDataSource.class.getCanonicalName());
-        dataSourceProps.getProps().put("url", "xx:xxx");
-        dataSourceProps.getProps().put("username", "root");
-        Map<String, Object> actual = swapper.swapToMap(dataSourceProps);
-        assertThat(actual.get("dataSourceClassName"), is(MockedDataSource.class.getCanonicalName()));
+        Map<String, Object> actual = swapper.swapToMap(new DataSourceProperties(MockedDataSource.class.getName(), createProperties()));
+        assertThat(actual.get("dataSourceClassName"), is(MockedDataSource.class.getName()));
         assertThat(actual.get("url").toString(), is("xx:xxx"));
         assertThat(actual.get("username").toString(), is("root"));
+    }
+    
+    private Map<String, Object> createProperties() {
+        Map<String, Object> result = new LinkedHashMap<>(2, 1);
+        result.put("url", "xx:xxx");
+        result.put("username", "root");
+        return result;
     }
     
     private Map<String, Map<String, Object>> createYamlConfig() {
@@ -84,7 +88,7 @@ public final class YamlDataSourcePropertiesSwapperTest {
     private Map<String, Object> createPropertyMap(final String name) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1);
         result.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
-        result.put("driverClassName", MockedDataSource.class.getCanonicalName());
+        result.put("driverClassName", MockedDataSource.class.getName());
         result.put("jdbcUrl", String.format("jdbc:mock://127.0.0.1/%s", name));
         result.put("username", "root");
         result.put("password", "root");

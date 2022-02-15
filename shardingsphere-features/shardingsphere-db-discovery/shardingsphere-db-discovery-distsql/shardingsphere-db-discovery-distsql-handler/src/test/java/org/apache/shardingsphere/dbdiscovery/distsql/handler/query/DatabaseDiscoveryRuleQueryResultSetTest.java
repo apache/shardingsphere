@@ -38,6 +38,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -49,14 +50,14 @@ public final class DatabaseDiscoveryRuleQueryResultSetTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
         ExportableRule exportableRule = mock(ExportableRule.class);
-        when(exportableRule.export()).thenReturn(Collections.emptyMap());
+        when(exportableRule.export(anyCollection())).thenReturn(Collections.emptyMap());
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.singleton(exportableRule));
         DistSQLResultSet resultSet = new DatabaseDiscoveryRuleQueryResultSet();
         resultSet.init(metaData, mock(ShowDatabaseDiscoveryRulesStatement.class));
         Collection<String> columnNames = resultSet.getColumnNames();
         ArrayList<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(columnNames.size(), is(5));
-        columnNames.containsAll(Arrays.asList("group_name", "data_source_names", "primary_data_source_name", "discover_type", "heartbeat"));
+        assertThat(columnNames.containsAll(Arrays.asList("group_name", "data_source_names", "primary_data_source_name", "discovery_type", "discovery_heartbeat")), is(true));
         assertThat(actual.size(), is(5));
         assertThat(actual.get(0), is("ms_group"));
         assertThat(actual.get(1), is("ds_0,ds_1"));

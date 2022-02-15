@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistReposito
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -54,6 +55,10 @@ public final class PersistRepositoryConfigurationYamlSwapperEngine {
      */
     @SuppressWarnings("unchecked")
     public PersistRepositoryConfiguration swapToObject(final String type, final YamlPersistRepositoryConfiguration yamlConfig) {
-        return (PersistRepositoryConfiguration) TypedSPIRegistry.getRegisteredService(PersistRepositoryConfigurationYamlSwapper.class, type, new Properties()).swapToObject(yamlConfig);
+        Optional<PersistRepositoryConfigurationYamlSwapper> swapper = TypedSPIRegistry.findRegisteredService(PersistRepositoryConfigurationYamlSwapper.class, type, new Properties());
+        if (swapper.isPresent()) {
+            return (PersistRepositoryConfiguration) swapper.get().swapToObject(yamlConfig);
+        }
+        return null;
     }
 }

@@ -75,6 +75,6 @@ public final class DatabaseDiscoverySpringNamespaceTest extends AbstractJUnit4Sp
         assertThat(dataSourceRuleConfig.getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1", "ds_2")));
         assertThat(dataSourceRuleConfig.getDiscoveryHeartbeatName(), is("mgr-heartbeat"));
         assertThat(dataSourceRuleConfig.getDiscoveryTypeName(), is("mgr"));
-        assertThat(dataSourceRuleConfig.getGroupName(), is("pr_ds"));
+        assertThat(dataSourceRuleConfig.getGroupName(), is("readwrite_ds"));
     }
 }

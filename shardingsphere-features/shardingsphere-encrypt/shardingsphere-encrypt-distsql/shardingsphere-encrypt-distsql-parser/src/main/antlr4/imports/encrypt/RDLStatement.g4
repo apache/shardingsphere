@@ -17,7 +17,7 @@
 
 grammar RDLStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 createEncryptRule
     : CREATE ENCRYPT RULE encryptRuleDefinition (COMMA encryptRuleDefinition)*
@@ -33,10 +33,6 @@ dropEncryptRule
 
 encryptRuleDefinition
     : tableName LP (RESOURCE EQ resourceName COMMA)? COLUMNS LP columnDefinition (COMMA columnDefinition)* RP (COMMA QUERY_WITH_CIPHER_COLUMN EQ queryWithCipherColumn)? RP
-    ;
-
-tableName
-    : IDENTIFIER
     ;
 
 resourceName

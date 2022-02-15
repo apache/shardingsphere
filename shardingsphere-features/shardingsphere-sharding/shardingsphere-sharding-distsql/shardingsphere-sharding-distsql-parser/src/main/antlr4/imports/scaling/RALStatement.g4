@@ -17,7 +17,7 @@
 
 grammar RALStatement;
 
-import Keyword, Literals, Symbol, BaseRule;
+import BaseRule;
 
 showScalingList
     : SHOW SCALING LIST
@@ -55,8 +55,8 @@ stopScalingSourceWriting
     : STOP SCALING SOURCE WRITING jobId
     ;
 
-checkoutScaling
-    : CHECKOUT SCALING jobId
+applyScaling
+    : APPLY SCALING jobId
     ;
 
 jobId

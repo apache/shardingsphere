@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor;
 
 import com.zaxxer.hikari.pool.HikariProxyResultSet;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
@@ -76,7 +76,7 @@ public final class SelectDatabaseExecutorTest {
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new HashMap<>(), mock(ShardingSphereRuleMetaData.class), 
-                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContext.class));
+                mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
     }
@@ -101,7 +101,7 @@ public final class SelectDatabaseExecutorTest {
         );
     }
     
-    private ShardingSphereMetaData getEmptyMetaData(final String schemaName) throws SQLException {
+    private ShardingSphereMetaData getEmptyMetaData(final String schemaName) {
         ShardingSphereRuleMetaData metaData = mock(ShardingSphereRuleMetaData.class);
         when(metaData.getRules()).thenReturn(Collections.emptyList());
         return new ShardingSphereMetaData(schemaName,

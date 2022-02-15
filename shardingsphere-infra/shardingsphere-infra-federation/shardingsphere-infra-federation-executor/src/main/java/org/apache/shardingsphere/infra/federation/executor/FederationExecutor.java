@@ -17,17 +17,14 @@
 
 package org.apache.shardingsphere.infra.federation.executor;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Map;
 
 /**
  * Federation executor.
@@ -39,13 +36,12 @@ public interface FederationExecutor extends AutoCloseable {
      *
      * @param prepareEngine prepare engine
      * @param callback callback
-     * @param logicSQL logic SQL
-     * @param metaDataMap meta data map
+     * @param federationContext federation context
      * @return result set
      * @throws SQLException SQL exception
      */
-    ResultSet executeQuery(DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, JDBCExecutorCallback<? extends ExecuteResult> callback, 
-                           LogicSQL logicSQL, Map<String, ShardingSphereMetaData> metaDataMap) throws SQLException;
+    ResultSet executeQuery(DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
+                           JDBCExecutorCallback<? extends ExecuteResult> callback, FederationContext federationContext) throws SQLException;
     
     /**
      * Get result set.

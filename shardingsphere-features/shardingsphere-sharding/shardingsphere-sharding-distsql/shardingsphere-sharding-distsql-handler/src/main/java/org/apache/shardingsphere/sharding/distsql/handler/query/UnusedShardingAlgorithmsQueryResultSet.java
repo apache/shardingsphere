@@ -45,7 +45,7 @@ import java.util.Properties;
  */
 public final class UnusedShardingAlgorithmsQueryResultSet implements DistSQLResultSet {
     
-    private static final String TYPE = ShowUnusedShardingAlgorithmsStatement.class.getCanonicalName();
+    private static final String TYPE = ShowUnusedShardingAlgorithmsStatement.class.getName();
     
     private static final String NAME = "name";
     
@@ -59,7 +59,7 @@ public final class UnusedShardingAlgorithmsQueryResultSet implements DistSQLResu
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         Optional<ShardingRuleConfiguration> ruleConfig = metaData.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findAny();
-        ruleConfig.ifPresent(rule -> getUnusedShardingAlgorithms(rule));
+        ruleConfig.ifPresent(this::getUnusedShardingAlgorithms);
     }
     
     @Override

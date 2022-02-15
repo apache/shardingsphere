@@ -45,6 +45,9 @@ please refer to [Distributed Transaction](/en/user-manual/shardingsphere-jdbc/sp
 When developer need to use user-defined algorithm, should use the way below to configure algorithm, use sharding algorithm as example. 
 
 1. Implement `ShardingAlgorithm` interface.
+1. Create `META-INF/services` directory in the `resources` directory.
+1. Create a new file `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm` in the `META-INF/services` directory.
+1. Absolute path of the implementation class are write to the file `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm`
 1. Package Java file to jar.
 1. Copy jar to ShardingSphere-Proxy's `ext-lib/` folder.
 1. Configure user-defined Java class into YAML file. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/yaml-config/) for more details.

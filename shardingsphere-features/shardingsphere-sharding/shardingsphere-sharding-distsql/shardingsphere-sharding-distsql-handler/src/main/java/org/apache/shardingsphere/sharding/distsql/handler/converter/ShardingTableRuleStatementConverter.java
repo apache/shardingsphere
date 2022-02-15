@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategy
 import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyType;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AbstractTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.KeyGenerateSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.KeyGenerateStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 
@@ -70,7 +70,7 @@ public final class ShardingTableRuleStatementConverter {
     
     private static Map<String, ShardingSphereAlgorithmConfiguration> createKeyGeneratorConfiguration(final AbstractTableRuleSegment rule) {
         Map<String, ShardingSphereAlgorithmConfiguration> result = new HashMap<>();
-        Optional.ofNullable(rule.getKeyGenerateSegment()).ifPresent(op -> {
+        Optional.ofNullable(rule.getKeyGenerateStrategySegment()).ifPresent(op -> {
             if (!op.getKeyGenerateAlgorithmName().isPresent()) {
                 result.put(getKeyGeneratorName(rule.getLogicTable(), op.getKeyGenerateAlgorithmSegment().getName()), createAlgorithmConfiguration(op.getKeyGenerateAlgorithmSegment()));
             }
@@ -84,7 +84,7 @@ public final class ShardingTableRuleStatementConverter {
                 result.put(getAutoTableShardingAlgorithmName(rule.getLogicTable(), op.getName()), createAlgorithmConfiguration(op)));
         return result;
     }
-
+    
     private static Map<String, ShardingSphereAlgorithmConfiguration> createAlgorithmConfiguration(final TableRuleSegment rule) {
         Map<String, ShardingSphereAlgorithmConfiguration> result = new HashMap<>();
         if (null != rule.getTableStrategySegment()) {
@@ -111,8 +111,8 @@ public final class ShardingTableRuleStatementConverter {
     private static ShardingAutoTableRuleConfiguration createAutoTableRuleConfiguration(final AutoTableRuleSegment rule) {
         ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration(rule.getLogicTable(), Joiner.on(",").join(rule.getDataSourceNodes()));
         result.setShardingStrategy(createAutoTableStrategyConfiguration(rule));
-        Optional.ofNullable(rule.getKeyGenerateSegment()).ifPresent(op ->
-                result.setKeyGenerateStrategy(createKeyGenerateStrategyConfiguration(rule.getLogicTable(), rule.getKeyGenerateSegment())));
+        Optional.ofNullable(rule.getKeyGenerateStrategySegment()).ifPresent(op ->
+                result.setKeyGenerateStrategy(createKeyGenerateStrategyConfiguration(rule.getLogicTable(), rule.getKeyGenerateStrategySegment())));
         return result;
     }
     
@@ -123,24 +123,24 @@ public final class ShardingTableRuleStatementConverter {
     
     private static ShardingTableRuleConfiguration createTableRuleConfiguration(final TableRuleSegment tableRuleSegment) {
         String dataSourceNodes = String.join(",", tableRuleSegment.getDataSourceNodes());
-        ShardingTableRuleConfiguration tableRuleConfiguration = new ShardingTableRuleConfiguration(tableRuleSegment.getLogicTable(), dataSourceNodes);
+        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration(tableRuleSegment.getLogicTable(), dataSourceNodes);
         Optional.ofNullable(tableRuleSegment.getTableStrategySegment()).ifPresent(op ->
-                tableRuleConfiguration.setTableShardingStrategy(createShardingStrategyConfiguration(tableRuleSegment.getLogicTable(), ShardingStrategyLevelType.TABLE, op.getType(), op)));
+                result.setTableShardingStrategy(createShardingStrategyConfiguration(tableRuleSegment.getLogicTable(), ShardingStrategyLevelType.TABLE, op.getType(), op)));
         Optional.ofNullable(tableRuleSegment.getDatabaseStrategySegment()).ifPresent(op ->
-                tableRuleConfiguration.setDatabaseShardingStrategy(createShardingStrategyConfiguration(tableRuleSegment.getLogicTable(), ShardingStrategyLevelType.DATABASE, op.getType(), op)));
-        Optional.ofNullable(tableRuleSegment.getKeyGenerateSegment()).ifPresent(op ->
-                tableRuleConfiguration.setKeyGenerateStrategy(createKeyGenerateStrategyConfiguration(tableRuleSegment.getLogicTable(), op)));
-        return tableRuleConfiguration;
+                result.setDatabaseShardingStrategy(createShardingStrategyConfiguration(tableRuleSegment.getLogicTable(), ShardingStrategyLevelType.DATABASE, op.getType(), op)));
+        Optional.ofNullable(tableRuleSegment.getKeyGenerateStrategySegment()).ifPresent(op ->
+                result.setKeyGenerateStrategy(createKeyGenerateStrategyConfiguration(tableRuleSegment.getLogicTable(), op)));
+        return result;
     }
     
     private static ShardingStrategyConfiguration createShardingStrategyConfiguration(final String logicTable, final ShardingStrategyLevelType strategyLevel, final String type,
                                                                                      final ShardingStrategySegment segment) {
-        String shardingAlgorithmName = null == segment.getShardingAlgorithmName() ? getTableShardingAlgorithmName(logicTable, strategyLevel, segment.getAlgorithmSegment().getName()) 
+        String shardingAlgorithmName = null == segment.getShardingAlgorithmName() ? getTableShardingAlgorithmName(logicTable, strategyLevel, segment.getAlgorithmSegment().getName())
                 : segment.getShardingAlgorithmName();
         return createStrategyConfiguration(ShardingStrategyType.getValueOf(type).name(), segment.getShardingColumn(), shardingAlgorithmName);
     }
     
-    private static KeyGenerateStrategyConfiguration createKeyGenerateStrategyConfiguration(final String logicTable, final KeyGenerateSegment segment) {
+    private static KeyGenerateStrategyConfiguration createKeyGenerateStrategyConfiguration(final String logicTable, final KeyGenerateStrategySegment segment) {
         if (segment.getKeyGenerateAlgorithmName().isPresent()) {
             return new KeyGenerateStrategyConfiguration(segment.getKeyGenerateColumn(), segment.getKeyGenerateAlgorithmName().get());
         }
@@ -163,7 +163,7 @@ public final class ShardingTableRuleStatementConverter {
     private static String getAutoTableShardingAlgorithmName(final String tableName, final String algorithmType) {
         return String.format("%s_%s", tableName, algorithmType);
     }
-
+    
     private static String getTableShardingAlgorithmName(final String tableName, final ShardingStrategyLevelType strategyLevel, final String algorithmType) {
         return String.format("%s_%s_%s", tableName, strategyLevel.name().toLowerCase(), algorithmType);
     }

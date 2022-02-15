@@ -95,7 +95,7 @@ ShardingSphere-JDBC 的以下特点能够很好地满足白条业务场景：
 
 * **扩展灵活：**搭配使用迁移同步组件轻松实现数据扩展。
 
-![](../../static/img/Blog_25_img_2_JD_ShardingSphere_JDBC_en.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_25_img_2_JD_ShardingSphere_JDBC_en.png)
 
 经内部大量系统性验证之后，Apache ShardingSphere 成为了京东白条数据分片中间件的首选方案，2018 年底正式开始对接。
 
@@ -132,7 +132,7 @@ Apache ShardingSphere 提供了内置的分布式主键生成器，例如 UUID�
 经两团队通力合作，京东白条业务与 Apache ShardingSphere 相结合的各项指标满足预期，性能与原生 JDBC 几乎一致。
 
 
-![](../../static/img/Blog_25_img_2_b.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_25_img_2_b.png)
 
 关于对接过程中的问题详情及方案，请通过[《Apache ShardingSphere 对接京东白条实战》](https://mp.weixin.qq.com/s/4ehcDu6L_iNbxVtg4zyKSg)一文来了解。
 

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.importer;
 
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
@@ -34,7 +33,6 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
-import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterListener;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 
 import javax.sql.DataSource;
@@ -60,15 +58,12 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
     
     private final PipelineSQLBuilder pipelineSqlBuilder;
     
-    @Setter
-    private PipelineChannel channel;
+    private final PipelineChannel channel;
     
-    @Setter
-    private ImporterListener importerListener;
-    
-    protected AbstractImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
+    protected AbstractImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
         this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
+        this.channel = channel;
         pipelineSqlBuilder = createSQLBuilder(importerConfig.getShardingColumnsMap());
     }
     
@@ -81,30 +76,36 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
     protected abstract PipelineSQLBuilder createSQLBuilder(Map<String, Set<String>> shardingColumnsMap);
     
     @Override
-    public final void start() {
-        super.start();
+    protected void doStart() {
         write();
     }
     
-    @Override
-    public final void write() {
+    private void write() {
         log.info("importer write");
+        int round = 1;
         int rowCount = 0;
+        boolean finishedByBreak = false;
+        int batchSize = importerConfig.getBatchSize() * 2;
         while (isRunning()) {
-            List<Record> records = channel.fetchRecords(1024, 3);
+            List<Record> records = channel.fetchRecords(batchSize, 3);
             if (null != records && !records.isEmpty()) {
+                round++;
                 rowCount += records.size();
                 flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
-                if (null != importerListener) {
-                    importerListener.recordsImported(records);
-                }
                 channel.ack(records);
+                if (log.isDebugEnabled()) {
+                    log.debug("importer write, round={}, rowCount={}", round, rowCount);
+                } else if (0 == round % 50) {
+                    log.info("importer write, round={}, rowCount={}", round, rowCount);
+                }
                 if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
+                    log.info("write, get FinishedRecord, break");
+                    finishedByBreak = true;
                     break;
                 }
             }
         }
-        log.info("importer write, rowCount={}", rowCount);
+        log.info("importer write done, rowCount={}, finishedByBreak={}", rowCount, finishedByBreak);
     }
     
     private void flush(final DataSource dataSource, final List<Record> buffer) {
@@ -215,5 +216,9 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
             }
             ps.executeBatch();
         }
+    }
+    
+    @Override
+    protected void doStop() {
     }
 }

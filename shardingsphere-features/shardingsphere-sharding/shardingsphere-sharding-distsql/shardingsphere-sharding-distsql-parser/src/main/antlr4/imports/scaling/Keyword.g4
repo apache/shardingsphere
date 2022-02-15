@@ -59,12 +59,24 @@ CHECK
     : C H E C K
     ;
 
-CHECKOUT
-    : C H E C K O U T
+APPLY
+    : A P P L Y
     ;
 
 SCALING
     : S C A L I N G
+    ;
+
+RULE
+    :  R U L E
+    ;
+
+RULES
+    :  R U L E S
+    ;
+
+FROM
+    : F R O M
     ;
 
 JOB
@@ -133,4 +145,12 @@ RATE_LIMITER
 
 STREAM_CHANNEL
     : S T R E A M UL_ C H A N N E L
+    ;
+
+ENABLE
+    : E N A B L E
+    ;
+
+DISABLE
+    : D I S A B L E
     ;

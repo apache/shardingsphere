@@ -17,40 +17,46 @@
 
 rules:
 - !SHADOW
-  column: shadow
-  sourceDataSourceNames:
-    - ds
-  shadowDataSourceNames:
-    - shadow_db
-
-- !SHARDING
+  dataSources:
+    shadowDataSource:
+      sourceDataSourceName: db
+      shadowDataSourceName: shadow_db
   tables:
-    t_order_item:
-      actualDataNodes: db.t_order_item
-      databaseStrategy:
-        standard:
-          shardingColumn: item_id
-          shardingAlgorithmName: database_inline
-      tableStrategy:
-        standard:
-          shardingColumn: item_id
-          shardingAlgorithmName: table_inline
-      keyGenerateStrategy:
-        column: item_id
-        keyGeneratorName: constant
-  defaultTableStrategy:
-    none:
-  
-  shardingAlgorithms:
-    database_inline:
-      type: INLINE
+    t_order:
+      dataSourceNames:
+        - shadowDataSource
+      shadowAlgorithmNames:
+        - user-id-insert-match-algorithm
+        - user-id-update-match-algorithm
+        - user-id-delete-match-algorithm
+        - user-id-select-match-algorithm
+        - simple-hint-algorithm
+  shadowAlgorithms:
+    user-id-insert-match-algorithm:
+      type: VALUE_MATCH
       props:
-        algorithm-expression: db
-    table_inline:
-      type: INLINE
+        operation: insert
+        column: user_id
+        value: 0
+    user-id-update-match-algorithm:
+      type: VALUE_MATCH
       props:
-        algorithm-expression: t_order_item
-  
-  keyGenerators:
-    constant:
-      type: Constant
+        operation: update
+        column: user_id
+        value: 0
+    user-id-delete-match-algorithm:
+      type: VALUE_MATCH
+      props:
+        operation: delete
+        column: user_id
+        value: 0
+    user-id-select-match-algorithm:
+      type: VALUE_MATCH
+      props:
+        operation: select
+        column: user_id
+        value: 0
+    simple-hint-algorithm:
+      type: SIMPLE_HINT
+      props:
+        foo: bar

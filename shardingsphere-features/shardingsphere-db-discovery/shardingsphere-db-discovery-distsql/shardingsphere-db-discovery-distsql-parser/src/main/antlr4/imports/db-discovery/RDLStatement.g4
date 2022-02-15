@@ -17,14 +17,14 @@
 
 grammar RDLStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 createDatabaseDiscoveryRule
-    : CREATE DB_DISCOVERY RULE databaseDiscoveryRule  (COMMA databaseDiscoveryRule)*
+    : CREATE DB_DISCOVERY RULE databaseDiscoveryRule (COMMA databaseDiscoveryRule)*
     ;
 
 alterDatabaseDiscoveryRule
-    : ALTER DB_DISCOVERY RULE databaseDiscoveryRule  (COMMA databaseDiscoveryRule)*
+    : ALTER DB_DISCOVERY RULE databaseDiscoveryRule (COMMA databaseDiscoveryRule)*
     ;
 
 dropDatabaseDiscoveryRule
@@ -38,7 +38,7 @@ createDatabaseDiscoveryType
 createDatabaseDiscoveryHeartbeat
     : CREATE DB_DISCOVERY HEARTBEAT heartbeatDefinition (COMMA heartbeatDefinition)*
     ;
-    
+
 alterDatabaseDiscoveryHeartbeat
     : ALTER DB_DISCOVERY HEARTBEAT heartbeatDefinition (COMMA heartbeatDefinition)*
     ;
@@ -50,7 +50,7 @@ dropDatabaseDiscoveryType
 dropDatabaseDiscoveryHeartbeat
     : DROP DB_DISCOVERY HEARTBEAT discoveryHeartbeatName (COMMA discoveryHeartbeatName)*
     ;
-    
+
 alterDatabaseDiscoveryType
     : ALTER DB_DISCOVERY TYPE databaseDiscoveryTypeDefinition (COMMA databaseDiscoveryTypeDefinition)*
     ;
@@ -106,7 +106,7 @@ property
 discoveryTypeName
     : IDENTIFIER
     ;
-    
+
 discoveryHeartbeatName
     : IDENTIFIER
     ;

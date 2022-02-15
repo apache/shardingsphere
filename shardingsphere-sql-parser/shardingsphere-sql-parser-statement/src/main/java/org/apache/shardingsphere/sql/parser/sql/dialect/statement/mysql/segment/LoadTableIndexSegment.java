@@ -30,9 +30,9 @@ import java.util.LinkedList;
 @Getter
 public final class LoadTableIndexSegment extends TableIndexSegment {
     
-    private Collection<IndexSegment> indexes = new LinkedList<>();
+    private final Collection<IndexSegment> indexes = new LinkedList<>();
     
-    private Collection<PartitionSegment> partitions = new LinkedList<>();
+    private final Collection<PartitionSegment> partitions = new LinkedList<>();
     
     public LoadTableIndexSegment(final int startIndex, final int stopIndex, final SimpleTableSegment table) {
         super(startIndex, stopIndex, table);

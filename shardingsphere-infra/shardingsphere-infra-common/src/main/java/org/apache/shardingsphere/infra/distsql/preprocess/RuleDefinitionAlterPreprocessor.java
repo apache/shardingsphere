@@ -34,7 +34,7 @@ public interface RuleDefinitionAlterPreprocessor<T extends SQLStatement, R exten
      *
      * @param currentRuleConfig current rule configuration to be updated
      * @param toBeAlteredRuleConfig to be altered rule configuration
-     * @return altered current rule configuration                             
+     * @return altered current rule configuration
      */
     R preprocess(R currentRuleConfig, R toBeAlteredRuleConfig);
 }

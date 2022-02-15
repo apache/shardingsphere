@@ -60,7 +60,7 @@ public final class ShowCreateDatabaseExecutor implements DatabaseAdminQueryExecu
     @Override
     public void execute(final ConnectionSession connectionSession) {
         queryResultMetaData = createQueryResultMetaData();
-        mergedResult = new TransparentMergedResult(getQueryResult(showCreateDatabaseStatement.getSchema()));
+        mergedResult = new TransparentMergedResult(getQueryResult(showCreateDatabaseStatement.getSchemaName()));
     }
     
     private QueryResult getQueryResult(final String schemaName) {

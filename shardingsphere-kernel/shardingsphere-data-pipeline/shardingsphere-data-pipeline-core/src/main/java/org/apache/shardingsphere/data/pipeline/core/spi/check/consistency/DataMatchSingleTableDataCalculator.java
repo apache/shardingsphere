@@ -21,14 +21,15 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.scaling.core.job.sqlbuilder.ScalingSQLBuilderFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -36,6 +37,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLXML;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -80,7 +82,7 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
     @Override
     protected Optional<Object> calculateChunk(final DataCalculateParameter dataCalculateParameter) {
         String logicTableName = dataCalculateParameter.getLogicTableName();
-        PipelineSQLBuilder sqlBuilder = ScalingSQLBuilderFactory.newInstance(dataCalculateParameter.getDatabaseType());
+        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getSQLBuilder(dataCalculateParameter.getDatabaseType());
         String uniqueKey = dataCalculateParameter.getUniqueKey();
         CalculatedResult previousCalculatedResult = (CalculatedResult) dataCalculateParameter.getPreviousCalculatedResult();
         Number startUniqueKeyValue = null != previousCalculatedResult ? previousCalculatedResult.getMaxUniqueKeyValue() : -1;
@@ -126,6 +128,7 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
         
         private final Collection<Collection<Object>> records;
     
+        @SneakyThrows
         @Override
         public boolean equals(final Object o) {
             if (this == o) {
@@ -153,7 +156,12 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
                 Iterator<Object> thisNextIterator = thisNext.iterator();
                 Iterator<Object> thatNextIterator = thatNext.iterator();
                 while (thisNextIterator.hasNext() && thatNextIterator.hasNext()) {
-                    if (!new EqualsBuilder().append(thisNextIterator.next(), thatNextIterator.next()).isEquals()) {
+                    Object thisResult = thisNextIterator.next();
+                    Object thatResult = thatNextIterator.next();
+                    if (thisResult instanceof SQLXML && thatResult instanceof SQLXML) {
+                        return ((SQLXML) thisResult).getString().equals(((SQLXML) thatResult).getString());
+                    }
+                    if (!new EqualsBuilder().append(thisResult, thatResult).isEquals()) {
                         return false;
                     }
                 }

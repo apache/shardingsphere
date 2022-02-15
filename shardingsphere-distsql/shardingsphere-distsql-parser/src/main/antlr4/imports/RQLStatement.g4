@@ -17,7 +17,7 @@
 
 grammar RQLStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 showResources
     : SHOW SCHEMA RESOURCES (FROM schemaName)?
@@ -26,26 +26,19 @@ showResources
 showSingleTableRules
     : SHOW SINGLE TABLE RULES (FROM schemaName)?
     ;
-    
+
 showSingleTable
-    : SHOW SINGLE (table | TABLES)  (FROM schemaName)?;
-    
-showAuthorityRule
-    : SHOW AUTHORITY RULE
+    : SHOW SINGLE (table | TABLES) (FROM schemaName)?
     ;
-    
-showTransactionRule
-    : SHOW TRANSACTION RULE
+
+countSchemaRules
+    : COUNT SCHEMA RULES (FROM schemaName)?
     ;
-    
-schemaName
-    : IDENTIFIER
+
+showRulesUsedResource
+    : SHOW RULES USED RESOURCE resourceName (FROM schemaName)?
     ;
 
 table
     : TABLE tableName
-    ;
-    
-tableName
-    : IDENTIFIER
     ;

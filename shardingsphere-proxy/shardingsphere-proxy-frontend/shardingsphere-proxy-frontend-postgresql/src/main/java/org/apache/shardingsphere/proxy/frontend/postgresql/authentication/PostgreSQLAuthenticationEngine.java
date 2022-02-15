@@ -51,7 +51,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     
     private static final int SSL_REQUEST_PAYLOAD_LENGTH = 8;
     
-    private static final int SSL_REQUEST_CODE = 80877103;
+    private static final int SSL_REQUEST_CODE = (1234 << 16) + 5679;
     
     private boolean startupMessageReceived;
     
@@ -109,7 +109,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         context.write(new PostgreSQLParameterStatusPacket("client_encoding", clientEncoding));
         context.write(new PostgreSQLParameterStatusPacket("server_encoding", "UTF8"));
         context.write(new PostgreSQLParameterStatusPacket("integer_datetimes", "on"));
-        context.writeAndFlush(new PostgreSQLReadyForQueryPacket(false));
+        context.writeAndFlush(PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
         return AuthenticationResultBuilder.finished(currentAuthResult.getUsername(), "", currentAuthResult.getDatabase());
     }
 }

@@ -421,7 +421,7 @@ dropTrigger
     ;
 
 renameTable
-    : RENAME TABLE tableName TO tableName (tableName TO tableName)*
+    : RENAME TABLE tableName TO tableName (COMMA_ tableName TO tableName)*
     ;
 
 createDefinitionClause
@@ -824,4 +824,20 @@ signalStatement
     
 signalInformationItem
     : conditionInformationItemName EQ_ expr
+    ;
+    
+prepare
+    : PREPARE identifier FROM (stringLiterals | userVariable)
+    ;
+    
+executeStmt
+    : EXECUTE identifier (USING executeVarList)?
+    ;
+    
+executeVarList
+    : userVariable (COMMA_ userVariable)*
+    ;
+    
+deallocate
+    : (DEALLOCATE | DROP) PREPARE identifier
     ;

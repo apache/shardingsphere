@@ -18,35 +18,22 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind;
 
 import io.netty.buffer.ByteBuf;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLBindCompletePacketTest {
     
-    @Mock
-    private PostgreSQLPacketPayload payload;
-    
-    @Mock
-    private ByteBuf byteBuf;
-    
     @Test
-    public void assertWrite() {
-        PostgreSQLBindCompletePacket rowPacket = new PostgreSQLBindCompletePacket();
-        rowPacket.write(payload);
-        assertThat(byteBuf.writerIndex(), is(0));
-    }
-    
-    @Test
-    public void assertGetMessageType() {
-        PostgreSQLBindCompletePacket rowPacket = new PostgreSQLBindCompletePacket();
-        assertThat(rowPacket.getIdentifier(), is(PostgreSQLMessagePacketType.BIND_COMPLETE));
+    public void assertGetInstanceAndWrite() {
+        PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class);
+        ByteBuf byteBuf = mock(ByteBuf.class);
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        PostgreSQLBindCompletePacket packet = PostgreSQLBindCompletePacket.getInstance();
+        packet.write(payload);
+        verify(byteBuf).writeBytes(new byte[]{'2', 0, 0, 0, 4});
     }
 }

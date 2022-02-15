@@ -63,6 +63,6 @@ public final class DatabaseDiscoveryHeartbeatQueryResultSet implements DistSQLRe
     
     @Override
     public String getType() {
-        return ShowDatabaseDiscoveryHeartbeatsStatement.class.getCanonicalName();
+        return ShowDatabaseDiscoveryHeartbeatsStatement.class.getName();
     }
 }

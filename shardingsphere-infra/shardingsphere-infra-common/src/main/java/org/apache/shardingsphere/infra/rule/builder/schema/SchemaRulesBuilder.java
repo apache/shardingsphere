@@ -22,23 +22,18 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 
-import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Properties;
-
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -55,43 +50,26 @@ public final class SchemaRulesBuilder {
     
     /**
      * Build rules.
-     * @param dataSources data source map
-     * @param schemaRuleConfigs schema rule config map
-     * @param props properties
-     * @return ShardingSphere rules
-     */
-    public static Map<String, Collection<ShardingSphereRule>> buildRules(final Map<String, Map<String, DataSource>> dataSources,
-                                                                         final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Properties props) {
-        Map<String, Collection<ShardingSphereRule>> result = new HashMap<>(schemaRuleConfigs.size(), 1);
-        for (String each : schemaRuleConfigs.keySet()) {
-            Map<String, DataSource> dataSourceMap = dataSources.get(each);
-            Collection<RuleConfiguration> ruleConfigs = schemaRuleConfigs.get(each);
-            DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSources.get(each).values());
-            result.put(each, buildRules(new SchemaRulesBuilderMaterials(each, ruleConfigs, databaseType, dataSourceMap, new ConfigurationProperties(null == props ? new Properties() : props))));
-        }
-        return result;
-    }
-    
-    /**
-     * Build rules.
      *
-     * @param materials rules builder materials
+     * @param schemaName schema name
+     * @param schemaConfig schema configuration
+     * @param props configuration properties
      * @return built rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Collection<ShardingSphereRule> buildRules(final SchemaRulesBuilderMaterials materials) {
+    public static Collection<ShardingSphereRule> buildRules(final String schemaName, final SchemaConfiguration schemaConfig, final ConfigurationProperties props) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        for (Entry<RuleConfiguration, SchemaRuleBuilder> entry : getRuleBuilderMap(materials).entrySet()) {
-            result.add(entry.getValue().build(materials, entry.getKey(), result));
+        for (Entry<RuleConfiguration, SchemaRuleBuilder> entry : getRuleBuilderMap(schemaConfig).entrySet()) {
+            result.add(entry.getValue().build(entry.getKey(), schemaName, schemaConfig.getDataSources(), result, props));
         }
         return result;
     }
     
     @SuppressWarnings("rawtypes")
-    private static Map<RuleConfiguration, SchemaRuleBuilder> getRuleBuilderMap(final SchemaRulesBuilderMaterials materials) {
+    private static Map<RuleConfiguration, SchemaRuleBuilder> getRuleBuilderMap(final SchemaConfiguration schemaConfig) {
         Map<RuleConfiguration, SchemaRuleBuilder> result = new LinkedHashMap<>();
-        result.putAll(getDistributedRuleBuilderMap(materials.getSchemaRuleConfigs()));
-        result.putAll(getEnhancedRuleBuilderMap(materials.getSchemaRuleConfigs()));
+        result.putAll(getDistributedRuleBuilderMap(schemaConfig.getRuleConfigurations()));
+        result.putAll(getEnhancedRuleBuilderMap(schemaConfig.getRuleConfigurations()));
         result.putAll(getMissedDefaultRuleBuilderMap(result.values()));
         return result;
     }

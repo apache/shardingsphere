@@ -195,7 +195,7 @@ shardingRule:
       keyGenerator:
         column: # 自增列名称，缺省表示不使用自增主键生成器
         type: # 自增列值生成器类型，缺省表示使用默认自增列值生成器。可使用用户自定义的列值生成器或选择内置类型：SNOWFLAKE/UUID
-        props: # 属性配置, 注意：使用 SNOWFLAKE 算法，需要配置 worker.id 与 max.tolerate.time.difference.milliseconds 属性。若使用此算法生成值作分片值，建议配置 max.vibration.offset 属性
+        props: # 属性配置, 注意：使用 SNOWFLAKE 算法，需要配置 max.tolerate.time.difference.milliseconds 属性。若使用此算法生成值作分片值，建议配置 max.vibration.offset 属性
           <property-name>: # 属性名称
 
   bindingTables: # 绑定表规则列表
@@ -213,7 +213,7 @@ shardingRule:
   defaultKeyGenerator: # 默认的主键生成算法 如果没有设置,默认为 SNOWFLAKE 算法
     type: # 默认自增列值生成器类型，缺省将使用 org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator。可使用用户自定义的列值生成器或选择内置类型：SNOWFLAKE/UUID
     props:
-      <property-name>: # 自增列值生成器属性配置, 比如 SNOWFLAKE 算法的 worker.id 与 max.tolerate.time.difference.milliseconds
+      <property-name>: # 自增列值生成器属性配置, 比如 SNOWFLAKE 算法的 max.tolerate.time.difference.milliseconds
 
   masterSlaveRules: # 读写分离规则，详见读写分离部分
     <data_source_name>: # 数据源名称，需要与真实数据源匹配，可配置多个 data_source_name
@@ -345,7 +345,7 @@ dataSources: # 配置数据源列表,必须是有效的 jdbc 配置,目前仅支
     password: password
 masterSlaveRule: # 这里配置这个规则的话,相当于是全局读写分离配置
   name: ds_rw # 名称,合法的字符串即可,但如果涉及到在读写分离的基础上设置分库分表,则名称需要有意义才可以,另外,虽然目前没有强制要求,但主从库配置需要配置在实际关联的主从库上,如果配置的数据源之间主从是断开的状态,那么可能会发生写入的数据对于只读会话无法读取到的问题
-  # 如果一个会话发生了写入并且没有提交(显式打开事务),sharding sphere 在后续的路由中,select 都会在主库执行,直到会话提交
+  # 如果一个会话发生了写入并且没有提交(显式打开事务)， ShardingSphere 在后续的路由中,select 都会在主库执行,直到会话提交
   masterDataSourceName: master_ds_0 # 主库的 DataSource 名称
   slaveDataSourceNames: # 从库的 DataSource 列表,至少需要有一个
     - slave_ds_0
@@ -393,7 +393,7 @@ shardingRule: # sharding 的配置
     type: # 自增键的类型,主要用于调用内置的主键生成算法有三个可用值:SNOWFLAKE(时间戳 +worker id+ 自增 id),UUID(java.util.UUID 类生成的随机 UUID),LEAF,其中 Snowflake 算法与 UUID 算法已经实现,LEAF 目前(2018-01-14)尚未实现
     className: # 非内置的其他实现了 KeyGenerator 接口的类,需要注意,如果设置这个,就不能设置 type,否则 type 的设置会覆盖 class 的设置
     props:
-    # 定制算法需要设置的参数,比如 SNOWFLAKE 算法的 worker.id 与 max.tolerate.time.difference.milliseconds
+    # 定制算法需要设置的参数,比如 SNOWFLAKE 算法的 max.tolerate.time.difference.milliseconds
   tables: # 配置表 sharding 的主要位置
     sharding_t1:
       actualDataNodes: master_test_${0..1}.t_order${0..1} # sharding 表对应的数据源以及物理名称,需要用表达式处理,表示表实际上在哪些数据源存在,配置示例中,意思是总共存在 4 个分片 master_test_0.t_order0,master_test_0.t_order1,master_test_1.t_order0,master_test_1.t_order1
