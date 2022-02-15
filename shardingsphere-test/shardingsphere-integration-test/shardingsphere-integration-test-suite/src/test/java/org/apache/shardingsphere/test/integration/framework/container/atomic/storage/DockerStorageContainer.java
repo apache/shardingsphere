@@ -77,7 +77,6 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
         result.setPassword("root");
         result.setMaximumPoolSize(4);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        getConnectionInitSQL().ifPresent(result::setConnectionInitSql);
         return result;
     }
     

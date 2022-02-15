@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.DockerStorageContainer;
 
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  * MySQL container.
@@ -37,11 +36,6 @@ public final class MySQLContainer extends DockerStorageContainer {
         withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password");
         setEnv(Collections.singletonList("LANG=C.UTF-8"));
         super.configure();
-    }
-    
-    @Override
-    public Optional<String> getConnectionInitSQL() {
-        return Optional.of("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
     }
     
     @Override

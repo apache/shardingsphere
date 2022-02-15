@@ -66,7 +66,6 @@ public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, S
         result.setPassword("root");
         result.setMaximumPoolSize(4);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        getConnectionInitSQL().ifPresent(result::setConnectionInitSql);
         return result;
     }
 }

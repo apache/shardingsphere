@@ -21,21 +21,11 @@ import org.apache.shardingsphere.test.integration.framework.container.atomic.ITC
 
 import javax.sql.DataSource;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Storage container.
  */
 public interface StorageContainer extends ITContainer {
-    
-    /**
-     * Get connection init SQL.
-     * 
-     * @return connection init SQL
-     */
-    default Optional<String> getConnectionInitSQL() {
-        return Optional.empty();
-    }
     
     /**
      * Get actual data source map.
