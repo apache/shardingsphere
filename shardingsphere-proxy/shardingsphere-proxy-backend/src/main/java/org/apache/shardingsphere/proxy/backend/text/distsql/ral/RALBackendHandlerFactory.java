@@ -44,7 +44,6 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.update.Updatable
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * RAL backend handler factory.
@@ -84,15 +83,11 @@ public final class RALBackendHandlerFactory {
         if (sqlStatement instanceof AdvancedDistSQLStatement) {
             result = AdvancedDistSQLBackendHandlerFactory.newInstance(databaseType, (AdvancedDistSQLStatement) sqlStatement, connectionSession);
         }
-        if (result != null) {
-            return result;
+        if (result == null) {
+            HandlerParameter parameter = new HandlerParameter().setStatement(sqlStatement).setConnectionSession(connectionSession).setDatabaseType(databaseType);
+            result = getHandler(sqlStatement, parameter);
         }
-        HandlerParameter parameter = new HandlerParameter().setStatement(sqlStatement).setConnectionSession(connectionSession).setDatabaseType(databaseType);
-        RALBackendHandler handler = getHandler(sqlStatement, parameter);
-        if (Objects.isNull(handler)) {
-            throw new UnsupportedOperationException();
-        }
-        return handler;
+        return result;
     }
     
     private static RALBackendHandler newInstance(final Class<? extends RALBackendHandler> clazz) {
@@ -105,6 +100,9 @@ public final class RALBackendHandlerFactory {
     
     private static RALBackendHandler getHandler(final RALStatement sqlStatement, final HandlerParameter<RALStatement> parameter) {
         Class<? extends RALBackendHandler> clz = handlerClz.get(sqlStatement.getClass().getName());
+        if (null == clz) {
+            throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
+        }
         return newInstance(clz).init(parameter);
     }
 }
