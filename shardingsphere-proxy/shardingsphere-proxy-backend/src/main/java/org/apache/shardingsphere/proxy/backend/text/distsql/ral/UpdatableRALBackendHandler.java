@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.alter;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
+import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 
 /**
- * Alter statement executor.
+ * Updatable RAL backend handler .
  */
-public interface AlterStatementExecutor {
+public abstract class UpdatableRALBackendHandler<E extends RALStatement, R extends UpdatableRALBackendHandler> extends RALBackendHandler<E, R> {
     
-    /**
-     * Execute alter statement.
-     *
-     * @return backend response
-     * @throws DistSQLException DistSQL exception
-     */
-    ResponseHeader execute() throws DistSQLException;
+    @Override
+    protected final ResponseHeader handle(final ContextManager contextManager, final E sqlStatement) throws DistSQLException {
+        doHandle(contextManager, sqlStatement);
+        return new UpdateResponseHeader(sqlStatement);
+    }
+    
+    protected abstract void doHandle(ContextManager contextManager, E sqlStatement) throws DistSQLException;
 }
