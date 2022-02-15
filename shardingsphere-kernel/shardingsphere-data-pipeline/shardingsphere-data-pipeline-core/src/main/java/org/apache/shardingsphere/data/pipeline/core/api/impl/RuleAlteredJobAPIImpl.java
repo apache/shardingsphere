@@ -82,6 +82,10 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     
     private static final JobProgressYamlSwapper JOB_PROGRESS_YAML_SWAPPER = new JobProgressYamlSwapper();
     
+    private static final String SCALING_OFFSET_PLACEHOLDER = "%s/%s/offset";
+    
+    private static final String SCALING_OFFSET_SHARDING_ITEM_PLACEHOLDER = "%s/%s/offset/%d";
+    
     @Override
     public boolean isDefault() {
         return false;
@@ -316,7 +320,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
                 throw new PipelineDataConsistencyCheckFailedException("Data consistency check not finished or failed.");
             }
         }
-        List<String> offsetKeys = PipelineAPIFactory.getGovernanceRepositoryAPI().getChildrenKeys(String.format("%s/%s/offset", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId));
+        List<String> offsetKeys = PipelineAPIFactory.getGovernanceRepositoryAPI().getChildrenKeys(String.format(SCALING_OFFSET_PLACEHOLDER, DataPipelineConstants.DATA_PIPELINE_ROOT, jobId));
         Map<Integer, JobProgress> progressMap = Maps.newHashMap();
         offsetKeys.forEach(each -> progressMap.put(Integer.parseInt(each), PipelineAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobId, Integer.parseInt(each))));
         progressMap.values().forEach(each -> each.setStatus(JobStatus.ALMOST_FINISHED));
@@ -363,6 +367,6 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     }
     
     private String getOffsetPath(final String jobId, final int shardingItem) {
-        return String.format("%s/%s/offset/%d", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, shardingItem);
+        return String.format(SCALING_OFFSET_SHARDING_ITEM_PLACEHOLDER, DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, shardingItem);
     }
 }
