@@ -26,12 +26,10 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.RegistryCacheManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ClusterSwitchConfigurationEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseSchemaNameLockEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
-import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -72,13 +70,14 @@ public final class ScalingRegistrySubscriber {
      */
     @Subscribe
     public void ruleConfigurationCached(final RuleConfigurationCachedEvent event) {
-        String sourceDataSource = repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(event.getSchemaName()));
-        String sourceRule = repository.get(SchemaMetaDataNode.getRulePath(event.getSchemaName()));
-        String targetRule = registryCacheManager.loadCache(SchemaMetaDataNode.getRulePath(event.getSchemaName()), event.getCacheId());
-        String ruleCacheId = event.getCacheId();
-        log.info("start scaling job, locked the schema name, event={}", event);
-        StartScalingEvent startScalingEvent = new StartScalingEvent(event.getSchemaName(), sourceDataSource, sourceRule, targetRule, ruleCacheId);
-        ShardingSphereEventBus.getInstance().post(startScalingEvent);
+        // TODO refactor with schema version
+//        String sourceDataSource = repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(event.getSchemaName()));
+//        String sourceRule = repository.get(SchemaMetaDataNode.getRulePath(event.getSchemaName()));
+//        String targetRule = registryCacheManager.loadCache(SchemaMetaDataNode.getRulePath(event.getSchemaName()), event.getCacheId());
+//        String ruleCacheId = event.getCacheId();
+//        log.info("start scaling job, locked the schema name, event={}", event);
+//        StartScalingEvent startScalingEvent = new StartScalingEvent(event.getSchemaName(), sourceDataSource, sourceRule, targetRule, ruleCacheId);
+//        ShardingSphereEventBus.getInstance().post(startScalingEvent);
     }
     
     /**
@@ -98,7 +97,8 @@ public final class ScalingRegistrySubscriber {
         String ruleCacheId = event.getRuleCacheId();
         if (null != ruleCacheId) {
             log.info("start to delete cache, ruleCacheId={}", ruleCacheId);
-            registryCacheManager.deleteCache(SchemaMetaDataNode.getRulePath(event.getTargetSchemaName()), ruleCacheId);
+            // TODO refactor with schema version
+            // registryCacheManager.deleteCache(SchemaMetaDataNode.getRulePath(event.getTargetSchemaName()), ruleCacheId);
         }
         ScalingReleaseSchemaNameLockEvent releaseLockEvent = new ScalingReleaseSchemaNameLockEvent(event.getTargetSchemaName());
         ShardingSphereEventBus.getInstance().post(releaseLockEvent);

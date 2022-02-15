@@ -109,9 +109,10 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         }
         return Optional.empty();
     }
-
+    
     private boolean isDataSourceChangedEvent(final String schemaName, final String eventPath) {
-        return SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName).equals(eventPath);
+        // TODO refactor with schema version
+        return SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName, "0").equals(eventPath);
     }
     
     @SuppressWarnings("unchecked")
@@ -124,11 +125,13 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     }
     
     private boolean isRuleChangedEvent(final String schemaName, final String eventPath) {
-        return SchemaMetaDataNode.getRulePath(schemaName).equals(eventPath);
+        // TODO refactor with schema version
+        return SchemaMetaDataNode.getRulePath(schemaName, "0").equals(eventPath);
     }
     
     private Optional<String> getRuleCacheId(final String schemaName, final String key) {
-        return CacheNode.getCacheId(SchemaMetaDataNode.getRulePath(schemaName), key);
+        // TODO refactor with schema version
+        return CacheNode.getCacheId(SchemaMetaDataNode.getRulePath(schemaName, "0"), key);
     }
     
     private GovernanceEvent createRuleChangedEvent(final String schemaName, final DataChangedEvent event) {
