@@ -34,5 +34,5 @@
     <row data-node="shadow_db.t_order" values="3, 0, shadow_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
     <row data-node="shadow_db.t_order" values="4, 0, shadow_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
     <row data-node="shadow_db.t_order" values="5, 0, shadow_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
-    <row data-node="shadow_db.t_order" values="6, 0, shadow_order, S, true, 50, summer, 100.00, 2021-01-01, 12:30:30, 2021-01-01 12:30:30.0" />
+    <row data-node="shadow_db.t_order" values="6, 0, shadow_order, S, true, 50, summer, 120.00, 2021-01-01, 12:30:30, 2021-01-01 12:30:30.0" />
 </dataset>
