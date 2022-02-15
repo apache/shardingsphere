@@ -72,7 +72,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     private DataSource createDataSource(final String dataSourceName) {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
-        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getPort(), dataSourceName));
+        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(getPort()), dataSourceName));
         result.setUsername("root");
         result.setPassword("root");
         result.setMaximumPoolSize(4);

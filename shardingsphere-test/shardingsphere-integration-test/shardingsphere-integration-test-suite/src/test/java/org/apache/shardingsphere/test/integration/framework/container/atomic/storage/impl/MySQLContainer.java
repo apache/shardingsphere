@@ -46,6 +46,6 @@ public final class MySQLContainer extends DockerStorageContainer {
     
     @Override
     public int getPort() {
-        return getMappedPort(3306);
+        return 3306;
     }
 }
