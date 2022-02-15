@@ -59,7 +59,6 @@ public final class ShardingSphereJDBCContainer extends AdapterContainer {
     
     @Override
     public void start() {
-        super.start();
         dataSourceMap = findStorageContainer().getActualDataSourceMap();
         isHealthy.set(true);
     }
