@@ -29,10 +29,10 @@ import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import java.util.Properties;
 
 /**
- * Updatable RAL backend handler factory.
+ * Scaling updatable RAL backend handler factory.
  */
 @Setter
-public final class UpdatableRALBackendHandler implements TextProtocolBackendHandler {
+public final class ScalingUpdatableRALBackendHandler implements TextProtocolBackendHandler {
     
     static {
         ShardingSphereServiceLoader.register(RALUpdater.class);

@@ -38,8 +38,8 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.AlterTrafficRuleHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.AlterTransactionRuleHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.CreateTrafficRuleHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.query.QueryableRALBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.update.UpdatableRALBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.query.ScalingQueryableRALBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.update.ScalingUpdatableRALBackendHandlerFactory;
 
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
@@ -72,10 +72,10 @@ public final class RALBackendHandlerFactory {
     public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final RALStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
         TextProtocolBackendHandler result = null;
         if (sqlStatement instanceof QueryableRALStatement) {
-            result = QueryableRALBackendHandlerFactory.newInstance((QueryableRALStatement) sqlStatement, connectionSession);
+            result = ScalingQueryableRALBackendHandlerFactory.newInstance((QueryableRALStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof UpdatableRALStatement) {
-            result = UpdatableRALBackendHandlerFactory.newInstance((UpdatableRALStatement) sqlStatement);
+            result = ScalingUpdatableRALBackendHandlerFactory.newInstance((UpdatableRALStatement) sqlStatement);
         }
         if (sqlStatement instanceof CommonDistSQLStatement) {
             result = CommonDistSQLBackendHandlerFactory.newInstance((CommonDistSQLStatement) sqlStatement, connectionSession);

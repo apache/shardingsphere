@@ -29,10 +29,10 @@ import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import java.util.Properties;
 
 /**
- * Queryable RAL backend handler factory.
+ * Scaling queryable RAL backend handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class QueryableRALBackendHandlerFactory {
+public final class ScalingQueryableRALBackendHandlerFactory {
     
     static {
         ShardingSphereServiceLoader.register(DistSQLResultSet.class);
@@ -47,6 +47,6 @@ public final class QueryableRALBackendHandlerFactory {
      */
     public static TextProtocolBackendHandler newInstance(final QueryableRALStatement sqlStatement, final ConnectionSession connectionSession) {
         DistSQLResultSet resultSet = TypedSPIRegistry.getRegisteredService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties());
-        return new QueryableRALBackendHandler(sqlStatement, connectionSession, resultSet);
+        return new ScalingQueryableRALBackendHandler(sqlStatement, connectionSession, resultSet);
     }
 }
