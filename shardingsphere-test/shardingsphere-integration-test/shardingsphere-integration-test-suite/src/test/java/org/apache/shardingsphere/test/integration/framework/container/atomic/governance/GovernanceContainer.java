@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.integration.framework.container.atomic.Doc
 public abstract class GovernanceContainer extends DockerITContainer {
     
     public GovernanceContainer(final String name, final String dockerImageName) {
-        super(name, dockerImageName, false);
+        super(name, dockerImageName);
     }
     
     /**

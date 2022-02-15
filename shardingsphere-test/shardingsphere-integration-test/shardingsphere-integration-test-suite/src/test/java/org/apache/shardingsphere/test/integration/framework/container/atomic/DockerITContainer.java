@@ -38,25 +38,15 @@ public abstract class DockerITContainer extends GenericContainer<DockerITContain
     
     private final String name;
     
-    private final boolean isFakedContainer;
-    
-    public DockerITContainer(final String name, final String dockerImageName, final boolean isFakedContainer) {
-        super(getDockerImage(dockerImageName, isFakedContainer));
+    public DockerITContainer(final String name, final String dockerImageName) {
+        super(new RemoteDockerImage(DockerImageName.parse(dockerImageName)));
         this.name = name;
-        this.isFakedContainer = isFakedContainer;
-    }
-    
-    private static RemoteDockerImage getDockerImage(final String imageName, final boolean isFakedContainer) {
-        RemoteDockerImage result = new RemoteDockerImage(DockerImageName.parse(imageName));
-        return isFakedContainer ? result.withImagePullPolicy(dockerName -> false) : result;
     }
     
     @Override
     public void start() {
         startDependencies();
-        if (!isFakedContainer) {
-            super.start();
-        }
+        super.start();
         execute();
     }
     

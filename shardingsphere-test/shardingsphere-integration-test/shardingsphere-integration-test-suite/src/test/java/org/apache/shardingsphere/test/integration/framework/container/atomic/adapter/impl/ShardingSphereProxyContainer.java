@@ -58,7 +58,7 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
     public ShardingSphereProxyContainer(final DatabaseType databaseType, final String scenario) {
-        super("ShardingSphere-Proxy", "apache/shardingsphere-proxy-test", false);
+        super("ShardingSphere-Proxy", "apache/shardingsphere-proxy-test");
         this.databaseType = databaseType;
         this.scenario = scenario;
     }
