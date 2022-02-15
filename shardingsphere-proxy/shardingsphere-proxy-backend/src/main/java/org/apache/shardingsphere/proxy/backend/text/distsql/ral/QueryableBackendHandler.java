@@ -50,17 +50,6 @@ public abstract class QueryableBackendHandler<E extends RALStatement, R extends 
         return new QueryResponseHeader(queryHeaders);
     }
     
-    /**
-     * Method to initialize handler, this method needs to be rewritten when the handler has properties other than sql statement.
-     * @param parameter parameters required by handler
-     * @return the object itself
-     */
-    @Override
-    protected R init(final HandlerParameter<E> parameter) {
-        setSqlStatement(parameter.getStatement());
-        return (R) this;
-    }
-    
     @Override
     public final boolean next() throws SQLException {
         return null != mergedResult && mergedResult.next();

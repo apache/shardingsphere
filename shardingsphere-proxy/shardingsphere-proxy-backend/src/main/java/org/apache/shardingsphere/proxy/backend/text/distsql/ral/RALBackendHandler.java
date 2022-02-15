@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
 import com.google.common.base.Preconditions;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -34,11 +35,11 @@ import java.sql.SQLException;
 /**
  * RAL backend handler .
  */
-@NoArgsConstructor
 public abstract class RALBackendHandler<E extends RALStatement, R extends RALBackendHandler> implements TextProtocolBackendHandler {
     
-    @Getter
-    private E sqlStatement;
+    // CHECKSTYLE:OFF
+    protected E sqlStatement;
+    // CHECKSTYLE:ON
     
     @Override
     public final ResponseHeader execute() throws SQLException {
@@ -47,17 +48,33 @@ public abstract class RALBackendHandler<E extends RALStatement, R extends RALBac
         return handle(contextManager, sqlStatement);
     }
     
-    protected abstract R init(HandlerParameter<E> parameter);
+    protected abstract ResponseHeader handle(ContextManager contextManager, E sqlStatement) throws DistSQLException;
     
-    protected abstract ResponseHeader handle(ContextManager contextManager, E sqlStatement);
+    /**
+     * Method to initialize handler, this method needs to be rewritten when the handler has properties other than sql statement.
+     *
+     * @param parameter parameters required by handler
+     * @return the object itself
+     */
+    public R init(final HandlerParameter<E> parameter) {
+        initStatement(parameter.getStatement());
+        return (R) this;
+    }
     
-    protected final void setSqlStatement(final E sqlStatement) {
-        this.sqlStatement = sqlStatement;
+    /**
+     * Initialize statement.
+     * @param statement RAL statement
+     * @return the object itself
+     */
+    public final R initStatement(final E statement) {
+        sqlStatement = statement;
+        return (R) this;
     }
     
     @Getter
-    @Builder
-    protected static class HandlerParameter<E extends RALStatement> {
+    @Setter
+    @Accessors(chain = true)
+    public static class HandlerParameter<E extends RALStatement> {
         
         private E statement;
         

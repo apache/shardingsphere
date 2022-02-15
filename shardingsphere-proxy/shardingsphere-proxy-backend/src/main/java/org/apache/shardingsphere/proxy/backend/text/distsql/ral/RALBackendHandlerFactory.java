@@ -19,15 +19,32 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.AdvancedDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterSQLParserRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterTransactionRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AlterTrafficRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateTrafficRuleStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.AdvancedDistSQLBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.CommonDistSQLBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.AlterSQLParserRuleHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.AlterTrafficRuleHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.AlterTransactionRuleHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.CreateTrafficRuleHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.query.QueryableRALBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.update.UpdatableRALBackendHandlerFactory;
 
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * RAL backend handler factory.
@@ -38,6 +55,10 @@ public final class RALBackendHandlerFactory {
     private static Map<String, Class<? extends RALBackendHandler>> handlerClz = new LinkedHashMap<>();
     
     static {
+        handlerClz.put(CreateTrafficRuleStatement.class.getName(), CreateTrafficRuleHandler.class);
+        handlerClz.put(AlterSQLParserRuleStatement.class.getName(), AlterSQLParserRuleHandler.class);
+        handlerClz.put(AlterTrafficRuleStatement.class.getName(), AlterTrafficRuleHandler.class);
+        handlerClz.put(AlterTransactionRuleStatement.class.getName(), AlterTransactionRuleHandler.class);
     }
     
     /**
@@ -50,9 +71,27 @@ public final class RALBackendHandlerFactory {
      * @throws SQLException SQL exception
      */
     public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final RALStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
-        HandlerParameter<RALStatement> parameter = new HandlerParameter.HandlerParameterBuilder<>()
-                .statement(sqlStatement).connectionSession(connectionSession).databaseType(databaseType).build();
+        TextProtocolBackendHandler result = null;
+        if (sqlStatement instanceof QueryableRALStatement) {
+            result = QueryableRALBackendHandlerFactory.newInstance((QueryableRALStatement) sqlStatement, connectionSession);
+        }
+        if (sqlStatement instanceof UpdatableRALStatement) {
+            result = UpdatableRALBackendHandlerFactory.newInstance((UpdatableRALStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof CommonDistSQLStatement) {
+            result = CommonDistSQLBackendHandlerFactory.newInstance((CommonDistSQLStatement) sqlStatement, connectionSession);
+        }
+        if (sqlStatement instanceof AdvancedDistSQLStatement) {
+            result = AdvancedDistSQLBackendHandlerFactory.newInstance(databaseType, (AdvancedDistSQLStatement) sqlStatement, connectionSession);
+        }
+        if (result != null) {
+            return result;
+        }
+        HandlerParameter parameter = new HandlerParameter().setStatement(sqlStatement).setConnectionSession(connectionSession).setDatabaseType(databaseType);
         RALBackendHandler handler = getHandler(sqlStatement, parameter);
+        if (Objects.isNull(handler)) {
+            throw new UnsupportedOperationException();
+        }
         return handler;
     }
     
