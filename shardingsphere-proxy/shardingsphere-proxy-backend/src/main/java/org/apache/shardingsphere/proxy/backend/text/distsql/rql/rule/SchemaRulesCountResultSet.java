@@ -156,8 +156,8 @@ public final class SchemaRulesCountResultSet implements DistSQLResultSet {
             dataMap.putIfAbsent(dataKey, buildRow(feature, type, DEFAULT_COUNT));
             return;
         }
-        Class<? extends RuleConfiguration> clz = FEATURE_MAP.get(feature);
-        if (!(ruleConfiguration.getClass().getCanonicalName().equals(clz.getCanonicalName()))) {
+        Class<? extends RuleConfiguration> clazz = FEATURE_MAP.get(feature);
+        if (!(ruleConfiguration.getClass().getCanonicalName().equals(clazz.getCanonicalName()))) {
             dataMap.putIfAbsent(dataKey, buildRow(feature, type, DEFAULT_COUNT));
             return;
         }

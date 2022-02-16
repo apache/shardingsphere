@@ -26,7 +26,7 @@
         <appender-ref ref="console" />
     </logger>
     <root>
-        <level value="error" />
+        <level value="warn" />
         <appender-ref ref="console" />
     </root>
 </configuration> 

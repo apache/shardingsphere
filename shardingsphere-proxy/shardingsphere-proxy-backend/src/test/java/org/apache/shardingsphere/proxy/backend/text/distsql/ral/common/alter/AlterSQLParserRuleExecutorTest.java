@@ -24,11 +24,12 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.alter.excutor.AlterSQLParserRuleExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.AlterSQLParserRuleHandler;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -44,11 +45,11 @@ import static org.mockito.Mockito.when;
 public final class AlterSQLParserRuleExecutorTest {
     
     @Test
-    public void assertExecuteWithoutCurrentRuleConfiguration() {
+    public void assertExecuteWithoutCurrentRuleConfiguration() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getConfigurations()).thenReturn(new LinkedList<>());
         ProxyContext.getInstance().init(contextManager);
-        new AlterSQLParserRuleExecutor(getSQLStatement()).execute();
+        new AlterSQLParserRuleHandler().initStatement(getSQLStatement()).execute();
         Collection<RuleConfiguration> globalRuleConfigurations = contextManager.getMetaDataContexts().getGlobalRuleMetaData().getConfigurations();
         RuleConfiguration ruleConfiguration = globalRuleConfigurations.stream().filter(configuration -> configuration instanceof SQLParserRuleConfiguration).findAny().orElse(null);
         assertNotNull(ruleConfiguration);
@@ -63,13 +64,13 @@ public final class AlterSQLParserRuleExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithDefaultRuleConfiguration() {
+    public void assertExecuteWithDefaultRuleConfiguration() throws SQLException {
         Collection<RuleConfiguration> globalRuleConfiguration = new LinkedList<>();
         globalRuleConfiguration.add(new DefaultSQLParserRuleConfigurationBuilder().build());
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getConfigurations()).thenReturn(globalRuleConfiguration);
         ProxyContext.getInstance().init(contextManager);
-        new AlterSQLParserRuleExecutor(getSQLStatement()).execute();
+        new AlterSQLParserRuleHandler().initStatement(getSQLStatement()).execute();
         Collection<RuleConfiguration> globalRuleConfigurations = contextManager.getMetaDataContexts().getGlobalRuleMetaData().getConfigurations();
         RuleConfiguration ruleConfiguration = globalRuleConfigurations.stream().filter(configuration -> configuration instanceof SQLParserRuleConfiguration).findAny().orElse(null);
         assertNotNull(ruleConfiguration);

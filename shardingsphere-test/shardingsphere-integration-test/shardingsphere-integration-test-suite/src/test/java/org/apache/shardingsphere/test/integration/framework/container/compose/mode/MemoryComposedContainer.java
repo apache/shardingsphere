@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.compose.mode;
 
-import org.apache.shardingsphere.test.integration.framework.container.atomic.AtomicContainers;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.ITContainers;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
@@ -33,19 +34,21 @@ import java.util.Map;
  */
 public final class MemoryComposedContainer implements ComposedContainer {
     
-    private final AtomicContainers containers;
+    private final ITContainers containers;
     
     private final StorageContainer storageContainer;
     
     private final AdapterContainer adapterContainer;
     
     public MemoryComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
-        containers = new AtomicContainers(parameterizedArray.getScenario());
-        storageContainer = containers.registerContainer(testSuiteName, 
-                StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getDatabaseType().getName());
-        adapterContainer = containers.registerContainer(testSuiteName, 
-                AdapterContainerFactory.newInstance(parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getAdapter());
-        adapterContainer.dependsOn(storageContainer);
+        containers = new ITContainers(parameterizedArray.getScenario());
+        storageContainer = containers.registerContainer(testSuiteName, StorageContainerFactory.newInstance(
+                parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getDatabaseType().getName());
+        adapterContainer = containers.registerContainer(testSuiteName, AdapterContainerFactory.newInstance(
+                parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), storageContainer, parameterizedArray.getScenario()), parameterizedArray.getAdapter());
+        if (adapterContainer instanceof DockerITContainer) {
+            ((DockerITContainer) adapterContainer).dependsOn(storageContainer);
+        }
     }
     
     @Override
@@ -64,7 +67,7 @@ public final class MemoryComposedContainer implements ComposedContainer {
     }
     
     @Override
-    public void close() {
-        containers.close();
+    public void stop() {
+        containers.stop();
     }
 }

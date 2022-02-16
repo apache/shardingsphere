@@ -15,18 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.alter.excutor;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
-import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterTransactionRuleStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.alter.AlterStatementExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
 import java.util.Collection;
@@ -35,15 +33,11 @@ import java.util.Optional;
 /**
  * Alter transaction rule statement executor.
  */
-@AllArgsConstructor
-public final class AlterTransactionRuleExecutor implements AlterStatementExecutor {
-    
-    private final AlterTransactionRuleStatement sqlStatement;
+public final class AlterTransactionRuleHandler extends UpdatableRALBackendHandler<AlterTransactionRuleStatement, AlterTrafficRuleHandler> {
     
     @Override
-    public ResponseHeader execute() {
+    protected void doHandle(final ContextManager contextManager, final AlterTransactionRuleStatement sqlStatement) {
         updateTransactionRule();
-        return new UpdateResponseHeader(sqlStatement);
     }
     
     private void updateTransactionRule() {

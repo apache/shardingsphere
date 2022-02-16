@@ -30,38 +30,28 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Atomic container.
+ * Docker IT container.
  */
-@Slf4j
 @Getter
-public abstract class AtomicContainer extends GenericContainer<AtomicContainer> {
+@Slf4j
+public abstract class DockerITContainer extends GenericContainer<DockerITContainer> implements ITContainer {
     
     private final String name;
     
-    private final boolean isFakedContainer;
-    
-    public AtomicContainer(final String name, final String dockerImageName, final boolean isFakedContainer) {
-        super(getDockerImage(dockerImageName, isFakedContainer));
+    public DockerITContainer(final String name, final String dockerImageName) {
+        super(new RemoteDockerImage(DockerImageName.parse(dockerImageName)));
         this.name = name;
-        this.isFakedContainer = isFakedContainer;
-    }
-    
-    private static RemoteDockerImage getDockerImage(final String imageName, final boolean isFakedContainer) {
-        RemoteDockerImage result = new RemoteDockerImage(DockerImageName.parse(imageName));
-        return isFakedContainer ? result.withImagePullPolicy(dockerName -> false) : result;
     }
     
     @Override
     public void start() {
         startDependencies();
-        if (!isFakedContainer) {
-            super.start();
-        }
+        super.start();
         execute();
     }
     
     private void startDependencies() {
-        Collection<AtomicContainer> dependencies = getDependencies().stream().map(each -> (AtomicContainer) each).collect(Collectors.toList());
+        Collection<DockerITContainer> dependencies = getDependencies().stream().filter(each -> each instanceof DockerITContainer).map(each -> (DockerITContainer) each).collect(Collectors.toList());
         dependencies.stream().filter(each -> !each.isCreated()).forEach(GenericContainer::start);
         dependencies.stream()
                 .filter(each -> {

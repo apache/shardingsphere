@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfig
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
@@ -44,7 +45,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * ShardingSphere proxy container.
  */
 @Slf4j
-public final class ShardingSphereProxyContainer extends AdapterContainer {
+public final class ShardingSphereProxyContainer extends DockerITContainer implements AdapterContainer {
     
     private static final String AGENT_HOME_IN_CONTAINER = "/usr/local/shardingsphere-agent";
     
@@ -57,11 +58,7 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
     public ShardingSphereProxyContainer(final DatabaseType databaseType, final String scenario) {
-        this(null, databaseType, scenario);
-    }
-    
-    public ShardingSphereProxyContainer(final String dockerName, final DatabaseType databaseType, final String scenario) {
-        super(Objects.isNull(dockerName) ? "ShardingSphere-Proxy" : dockerName, "apache/shardingsphere-proxy-test");
+        super("ShardingSphere-Proxy", "apache/shardingsphere-proxy-test");
         this.databaseType = databaseType;
         this.scenario = scenario;
     }
@@ -105,12 +102,6 @@ public final class ShardingSphereProxyContainer extends AdapterContainer {
         withConfMapping("/docker/proxy/conf/" + scenario + "/" + databaseType.getName().toLowerCase());
         setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*ShardingSphere-Proxy .* mode started successfully.*"));
         super.configure();
-    }
-    
-    @Override
-    protected void execute() {
-        log.info("Mapped port 3307: {}", getMappedPort(3307));
-        log.info("Mapped port 3308: {}", getMappedPort(3308));
     }
     
     @Override

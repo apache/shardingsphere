@@ -20,8 +20,9 @@ package org.apache.shardingsphere.test.integration.framework.container.atomic.st
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.DockerStorageContainer;
 import org.postgresql.util.PSQLException;
+import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -30,10 +31,11 @@ import java.sql.SQLException;
 /**
  * PostgreSQL container.
  */
-public final class PostgreSQLContainer extends StorageContainer {
+public final class PostgreSQLContainer extends DockerStorageContainer {
     
     public PostgreSQLContainer(final String scenario) {
-        super(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), "postgres:12.6", false, scenario);
+        super(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), "postgres:12.6", scenario);
+        setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*database system is ready to accept connections.*"));
     }
     
     @Override
@@ -46,12 +48,13 @@ public final class PostgreSQLContainer extends StorageContainer {
     
     @Override
     @SneakyThrows({ClassNotFoundException.class, SQLException.class, InterruptedException.class})
+    // TODO if remove the method, DML and BatchDML run together may throw exception. Need to investigate the reason, it is better to use LogMessageWaitStrategy only
     protected void execute() {
         Class.forName(DataSourceEnvironment.getDriverClassName(getDatabaseType()));
-        String url = DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getPort());
+        String url = DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getMappedPort(getPort()));
         boolean connected = false;
         while (!connected) {
-            try (Connection ignored = DriverManager.getConnection(url, getUsername(), getPassword())) {
+            try (Connection ignored = DriverManager.getConnection(url, "root", "root")) {
                 connected = true;
                 break;
             } catch (final PSQLException ex) {
@@ -61,17 +64,7 @@ public final class PostgreSQLContainer extends StorageContainer {
     }
     
     @Override
-    protected String getUsername() {
-        return "root";
-    }
-    
-    @Override
-    protected String getPassword() {
-        return "root";
-    }
-    
-    @Override
     protected int getPort() {
-        return getMappedPort(5432);
+        return 5432;
     }
 }

@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.compose.mode;
 
-import org.apache.shardingsphere.test.integration.framework.container.atomic.AtomicContainers;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.ITContainers;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.governance.GovernanceContainer;
@@ -35,7 +36,7 @@ import java.util.Map;
  */
 public final class ClusterComposedContainer implements ComposedContainer {
     
-    private final AtomicContainers containers;
+    private final ITContainers containers;
     
     private final GovernanceContainer governanceContainer;
     
@@ -44,14 +45,16 @@ public final class ClusterComposedContainer implements ComposedContainer {
     private final AdapterContainer adapterContainer;
     
     public ClusterComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
-        containers = new AtomicContainers(parameterizedArray.getScenario());
+        containers = new ITContainers(parameterizedArray.getScenario());
         // TODO support other types of governance
         governanceContainer = containers.registerContainer(testSuiteName, GovernanceContainerFactory.newInstance("ZooKeeper"), "zk");
-        storageContainer = containers.registerContainer(testSuiteName, 
-                StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getDatabaseType().getName());
-        adapterContainer = containers.registerContainer(testSuiteName, 
-                AdapterContainerFactory.newInstance(parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getAdapter());
-        adapterContainer.dependsOn(governanceContainer, storageContainer);
+        storageContainer = containers.registerContainer(testSuiteName, StorageContainerFactory.newInstance(
+                parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getDatabaseType().getName());
+        adapterContainer = containers.registerContainer(testSuiteName, AdapterContainerFactory.newInstance(
+                parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), storageContainer, parameterizedArray.getScenario()), parameterizedArray.getAdapter());
+        if (adapterContainer instanceof DockerITContainer) {
+            ((DockerITContainer) adapterContainer).dependsOn(governanceContainer, storageContainer);
+        }
     }
     
     @Override
@@ -70,7 +73,7 @@ public final class ClusterComposedContainer implements ComposedContainer {
     }
     
     @Override
-    public void close() {
-        containers.close();
+    public void stop() {
+        containers.stop();
     }
 }

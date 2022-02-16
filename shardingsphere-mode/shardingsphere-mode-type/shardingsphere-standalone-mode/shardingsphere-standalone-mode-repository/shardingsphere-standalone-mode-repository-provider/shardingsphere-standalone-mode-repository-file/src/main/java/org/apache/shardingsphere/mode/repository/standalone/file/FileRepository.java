@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -57,7 +58,10 @@ public final class FileRepository implements StandalonePersistRepository {
             return "";
         }
         try {
-            return Files.readAllLines(Paths.get(path, key)).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+            Collection<String> lines = Files.readAllLines(Paths.get(path, key));
+            if (!lines.isEmpty()) {
+                return lines.size() == 1 ? lines.iterator().next() : lines.stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+            }
         } catch (final IOException ex) {
             log.error("Get file data by key: {} failed", key, ex);
         }

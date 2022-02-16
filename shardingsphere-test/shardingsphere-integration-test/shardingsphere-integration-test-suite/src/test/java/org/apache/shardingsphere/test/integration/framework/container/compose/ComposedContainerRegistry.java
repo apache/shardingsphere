@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.compose;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.integration.framework.container.compose.mode.ClusterComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.container.compose.mode.MemoryComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
+import org.testcontainers.lifecycle.Startable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,21 +52,18 @@ public final class ComposedContainerRegistry implements AutoCloseable {
         }
     }
     
+    private String generateKey(final String testSuiteName, final ParameterizedArray parameterizedArray) {
+        return String.join("-", testSuiteName, parameterizedArray.getScenario(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType().getName());
+    }
+    
     private ComposedContainer createComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
         // TODO fix sharding_governance
         return "sharding_governance".equals(parameterizedArray.getScenario())
                 ? new ClusterComposedContainer(testSuiteName, parameterizedArray) : new MemoryComposedContainer(testSuiteName, parameterizedArray);
     }
     
-    private String generateKey(final String testSuiteName, final ParameterizedArray parameterizedArray) {
-        return String.join("-", testSuiteName, parameterizedArray.getScenario(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType().getName());
-    }
-    
     @Override
-    @SneakyThrows
     public void close() {
-        for (ComposedContainer each : composedContainers.values()) {
-            each.close();
-        }
+        composedContainers.values().forEach(Startable::close);
     }
 }
