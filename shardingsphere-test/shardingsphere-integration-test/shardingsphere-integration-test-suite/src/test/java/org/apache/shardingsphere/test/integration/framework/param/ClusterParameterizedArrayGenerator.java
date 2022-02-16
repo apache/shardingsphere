@@ -27,10 +27,10 @@ import org.apache.shardingsphere.test.integration.framework.param.model.Paramete
 import java.util.Collection;
 
 /**
- * Parameterized array factory for cluster mode.
+ * Parameterized array generator for cluster mode.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ClusterParameterizedArrayFactory {
+public final class ClusterParameterizedArrayGenerator {
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
@@ -41,7 +41,7 @@ public final class ClusterParameterizedArrayFactory {
      * @return assertion parameterized array
      */
     public static Collection<AssertionParameterizedArray> getAssertionParameterized(final SQLCommandType sqlCommandType) {
-        return new ParameterizedArrayFactory(ENV.getAdapters(), ENV.getScenarios(), ENV.getDatabaseTypes()).getAssertionParameterized(sqlCommandType);
+        return new ParameterizedArrayGenerator(ENV.getAdapters(), ENV.getScenarios(), ENV.getDatabaseTypes()).getAssertionParameterized(sqlCommandType);
     }
     
     /**
@@ -51,6 +51,6 @@ public final class ClusterParameterizedArrayFactory {
      * @return case parameterized array
      */
     public static Collection<ParameterizedArray> getCaseParameterized(final SQLCommandType sqlCommandType) {
-        return new ParameterizedArrayFactory(ENV.getAdapters(), ENV.getScenarios(), ENV.getDatabaseTypes()).getCaseParameterized(sqlCommandType);
+        return new ParameterizedArrayGenerator(ENV.getAdapters(), ENV.getScenarios(), ENV.getDatabaseTypes()).getCaseParameterized(sqlCommandType);
     }
 }

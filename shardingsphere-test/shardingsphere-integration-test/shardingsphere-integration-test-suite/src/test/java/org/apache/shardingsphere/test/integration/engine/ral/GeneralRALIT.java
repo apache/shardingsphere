@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.engine.ral;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRegistry;
-import org.apache.shardingsphere.test.integration.framework.param.ClusterParameterizedArrayFactory;
+import org.apache.shardingsphere.test.integration.framework.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
@@ -47,7 +47,7 @@ public final class GeneralRALIT extends BaseRALIT {
     
     @Parameters(name = "{0}")
     public static Collection<AssertionParameterizedArray> getParameters() {
-        return ClusterParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.RAL).stream()
+        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.RAL).stream()
                 .filter(each -> SQLExecuteType.Literal == each.getSqlExecuteType())
                 .filter(each -> "proxy".equals(each.getAdapter()))
                 .collect(Collectors.toList());

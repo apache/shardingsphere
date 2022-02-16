@@ -30,10 +30,10 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Parameterized array factory for memory mode.
+ * Parameterized array generator for memory mode.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MemoryParameterizedArrayFactory {
+public final class MemoryParameterizedArrayGenerator {
     
     private static final Collection<String> ADAPTERS = Collections.singleton("jdbc");
     
@@ -48,7 +48,7 @@ public final class MemoryParameterizedArrayFactory {
      * @return assertion parameterized array
      */
     public static Collection<AssertionParameterizedArray> getAssertionParameterized(final SQLCommandType sqlCommandType) {
-        return new ParameterizedArrayFactory(ADAPTERS, ENV.getScenarios(), DATABASE_TYPES).getAssertionParameterized(sqlCommandType);
+        return new ParameterizedArrayGenerator(ADAPTERS, ENV.getScenarios(), DATABASE_TYPES).getAssertionParameterized(sqlCommandType);
     }
     
     /**
@@ -58,6 +58,6 @@ public final class MemoryParameterizedArrayFactory {
      * @return case parameterized array
      */
     public static Collection<ParameterizedArray> getCaseParameterized(final SQLCommandType sqlCommandType) {
-        return new ParameterizedArrayFactory(ADAPTERS, ENV.getScenarios(), DATABASE_TYPES).getCaseParameterized(sqlCommandType);
+        return new ParameterizedArrayGenerator(ADAPTERS, ENV.getScenarios(), DATABASE_TYPES).getCaseParameterized(sqlCommandType);
     }
 }

@@ -37,6 +37,8 @@ public final class IntegrationTestEnvironment {
     
     private static final IntegrationTestEnvironment INSTANCE = new IntegrationTestEnvironment();
     
+    private final Collection<String> runModes;
+    
     private final EnvironmentType envType;
     
     private final Collection<String> adapters;
@@ -49,6 +51,7 @@ public final class IntegrationTestEnvironment {
     
     private IntegrationTestEnvironment() {
         Properties engineEnvProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
+        runModes = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.run.modes"));
         envType = getEnvironmentType(engineEnvProps);
         adapters = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.adapters"));
         scenarios = getScenarios(engineEnvProps);
