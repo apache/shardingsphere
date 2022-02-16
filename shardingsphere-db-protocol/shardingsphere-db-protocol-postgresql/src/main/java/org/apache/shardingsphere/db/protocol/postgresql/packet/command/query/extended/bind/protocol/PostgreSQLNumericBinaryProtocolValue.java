@@ -19,6 +19,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ex
 
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -28,7 +29,7 @@ public final class PostgreSQLNumericBinaryProtocolValue implements PostgreSQLBin
     
     @Override
     public int getColumnLength(final Object value) {
-        return null == value ? 0 : value.toString().getBytes(StandardCharsets.UTF_8).length;
+        return value instanceof BigDecimal ? PostgreSQLByteConverter.numeric((BigDecimal) value).length : value.toString().getBytes(StandardCharsets.UTF_8).length;
     }
     
     @Override
@@ -40,9 +41,6 @@ public final class PostgreSQLNumericBinaryProtocolValue implements PostgreSQLBin
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        if (null == value) {
-            return;
-        }
-        payload.writeBytes(value.toString().getBytes(StandardCharsets.UTF_8));
+        payload.writeBytes(value instanceof BigDecimal ? PostgreSQLByteConverter.numeric((BigDecimal) value) : value.toString().getBytes(StandardCharsets.UTF_8));
     }
 }
