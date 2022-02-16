@@ -41,7 +41,7 @@ public final class ClusterParameterizedArrayGenerator {
      * @return assertion parameterized array
      */
     public static Collection<AssertionParameterizedArray> getAssertionParameterized(final SQLCommandType sqlCommandType) {
-        return new ParameterizedArrayGenerator(ENV.getAdapters(), ENV.getScenarios(), ENV.getDatabaseTypes()).getAssertionParameterized(sqlCommandType);
+        return new ParameterizedArrayGenerator("Cluster", ENV.getAdapters(), ENV.getScenarios(), ENV.getDatabaseTypes()).getAssertionParameterized(sqlCommandType);
     }
     
     /**
@@ -51,6 +51,6 @@ public final class ClusterParameterizedArrayGenerator {
      * @return case parameterized array
      */
     public static Collection<ParameterizedArray> getCaseParameterized(final SQLCommandType sqlCommandType) {
-        return new ParameterizedArrayGenerator(ENV.getAdapters(), ENV.getScenarios(), ENV.getDatabaseTypes()).getCaseParameterized(sqlCommandType);
+        return new ParameterizedArrayGenerator("Cluster", ENV.getAdapters(), ENV.getScenarios(), ENV.getDatabaseTypes()).getCaseParameterized(sqlCommandType);
     }
 }

@@ -48,6 +48,8 @@ public final class ParameterizedArrayGenerator {
     
     private static final IntegrationTestCasesLoader TEST_CASES_LOADER = IntegrationTestCasesLoader.getInstance();
     
+    private final String mode;
+    
     private final Collection<String> envAdapters;
     
     private final Collection<String> envScenarios;
@@ -111,7 +113,7 @@ public final class ParameterizedArrayGenerator {
                                                                                           final SQLExecuteType sqlExecuteType, final SQLCommandType sqlCommandType) {
         Collection<String> scenarios = null == testCaseContext.getTestCase().getScenarioTypes() ? Collections.emptyList() : Arrays.asList(testCaseContext.getTestCase().getScenarioTypes().split(","));
         return envScenarios.stream().filter(each -> filterScenarios(each, scenarios, sqlCommandType.getSqlStatementClass()))
-                .map(each -> new AssertionParameterizedArray(testCaseContext, assertion, adapter, each, databaseType, sqlExecuteType, sqlCommandType)).collect(Collectors.toList());
+                .map(each -> new AssertionParameterizedArray(testCaseContext, assertion, mode, adapter, each, databaseType, sqlExecuteType, sqlCommandType)).collect(Collectors.toList());
     }
 
     private Boolean filterScenarios(final String scenario, final Collection<String> scenarios, final Class<? extends SQLStatement> sqlStatementClass) {
@@ -162,7 +164,7 @@ public final class ParameterizedArrayGenerator {
                                                                             final DatabaseType databaseType, final SQLCommandType sqlCommandType) {
         Collection<String> scenarios = null == testCaseContext.getTestCase().getScenarioTypes() ? Collections.emptyList() : Arrays.asList(testCaseContext.getTestCase().getScenarioTypes().split(","));
         return envScenarios.stream().filter(each -> scenarios.isEmpty() || scenarios.contains(each))
-                .map(each -> new CaseParameterizedArray(testCaseContext, adapter, each, databaseType, sqlCommandType)).collect(Collectors.toList());
+                .map(each -> new CaseParameterizedArray(testCaseContext, mode, adapter, each, databaseType, sqlCommandType)).collect(Collectors.toList());
     }
     
     private static Collection<DatabaseType> getDatabaseTypes(final String databaseTypes) {
