@@ -62,6 +62,23 @@ public final class GenerateUtil {
     
     /**
      * Generate file.
+     *
+     * @param templateConfig template configuration
+     * @param rootDir generator root directory
+     * @param dataModel data model
+     * @param path paths
+     * @throws IOException IO exception
+     * @throws TemplateException template exception
+     */
+    public static void generateFile(final Configuration templateConfig, final String rootDir, final Map<String, String> dataModel, final Map<String, String> templateMap, final String path) throws IOException, TemplateException {
+        String outputPath = generatePath(templateConfig, dataModel, path);
+        for (Entry<String, String> entry : templateMap.entrySet()) {
+            processFile(templateConfig, dataModel, rootDir + "/" + entry.getKey(), outputPath + "/" + entry.getValue());
+        }
+    }
+    
+    /**
+     * Generate file.
      * 
      * @param templateConfig template configuration
      * @param dataModel data model
