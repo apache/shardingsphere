@@ -39,7 +39,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoun
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobSchedulerCenter;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobPreparer;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCheckAlgorithm;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
@@ -68,6 +68,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -314,8 +315,6 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
                 throw new PipelineDataConsistencyCheckFailedException("Data consistency check not finished or failed.");
             }
         }
-        Optional<Collection<RuleAlteredJobContext>> optionalJobContexts = RuleAlteredJobSchedulerCenter.getJobContexts(jobId);
-        optionalJobContexts.ifPresent(jobContexts -> jobContexts.forEach(each -> each.setStatus(JobStatus.ALMOST_FINISHED)));
         YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(jobConfig.getPipelineConfig().getTarget().getParameter(), YamlRootConfiguration.class, true);
         WorkflowConfiguration workflowConfig = jobConfig.getWorkflowConfig();
         String schemaName = workflowConfig.getSchemaName();
@@ -324,6 +323,16 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
         PipelineAPIFactory.getGovernanceRepositoryAPI().renewJobStatus(JobStatus.FINISHED, jobId);
         stop(jobId);
+        // TODO clean up should be done after the task is complete.
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig);
+        RuleAlteredJobPreparer jobPreparer = new RuleAlteredJobPreparer();
+        jobPreparer.cleanup(jobContext);
+        jobContext.close();
     }
     
     @Override
