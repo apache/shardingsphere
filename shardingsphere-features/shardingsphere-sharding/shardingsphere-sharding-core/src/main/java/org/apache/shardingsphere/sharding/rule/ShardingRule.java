@@ -278,7 +278,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     private String getAlgorithmExpression(final TableRule tableRule, final boolean databaseOrNot) {
-        log.warn("12345678 = {}", tableRule == null);
+        log.warn("12345678 tableRule == null {}", tableRule == null);
         if (null == tableRule.getDatabaseShardingStrategyConfig() || null == tableRule.getTableShardingStrategyConfig()) {
             return "";
         }
@@ -289,16 +289,18 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     private String getShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfiguration) {
+        log.warn("12345678 null == shardingStrategyConfiguration {}", null == shardingStrategyConfiguration);
+        String result = null == defaultShardingColumn ? "" : defaultShardingColumn;
         if (null == shardingStrategyConfiguration) {
-            return "";
+            return result;
         }
         if (shardingStrategyConfiguration instanceof ComplexShardingStrategyConfiguration) {
-            return ((ComplexShardingStrategyConfiguration) shardingStrategyConfiguration).getShardingColumns();
+            result = ((ComplexShardingStrategyConfiguration) shardingStrategyConfiguration).getShardingColumns();
         }
         if (shardingStrategyConfiguration instanceof StandardShardingStrategyConfiguration) {
-            return ((StandardShardingStrategyConfiguration) shardingStrategyConfiguration).getShardingColumn();
+            result = ((StandardShardingStrategyConfiguration) shardingStrategyConfiguration).getShardingColumn();
         }
-        return null == defaultShardingColumn ? "" : defaultShardingColumn;
+        return null == result ? "" : result;
     }
     
     private void checkSameAlgorithmOnTable(final TableRule savedOne, final String savedTableName, final TableRule newOne,
@@ -314,6 +316,8 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     private void checkSameAlgorithmExpression(final Collection<String[]> algorithmExpressions, final String shardingStrategyConfig, final String bindingTableGroup) {
         String savedAlgorithmExpressions = "";
         for (String[] array : algorithmExpressions) {
+            log.warn("12345678 array {}", array);
+            log.warn("12345678 array[0] == null {}", array);
             String cleanedAlgorithmExpression = array[0].replaceAll(array[1], "").replaceAll(array[2], "");
             if (savedAlgorithmExpressions.isEmpty()) {
                 savedAlgorithmExpressions = cleanedAlgorithmExpression;
