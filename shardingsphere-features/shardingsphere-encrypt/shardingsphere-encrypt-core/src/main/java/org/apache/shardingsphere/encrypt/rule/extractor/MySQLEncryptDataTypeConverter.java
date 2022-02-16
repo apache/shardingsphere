@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.featuresupport.MySQLEncryptConfigDataTypeStatement;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -34,7 +34,7 @@ import java.util.Properties;
  */
 public final class MySQLEncryptDataTypeConverter implements EncryptDataTypeConverter {
     
-    private static final Map<String, String> COMPATIBLE_DATA_TYPES = initCompatibleDataTypes();
+    private static final Map<String, String> COMPATIBLE_DATA_TYPES = new HashMap<>(37, 1);
     
     private final CacheOption cacheOption = new CacheOption(128, 1024L, 4);
     
@@ -42,46 +42,44 @@ public final class MySQLEncryptDataTypeConverter implements EncryptDataTypeConve
     
     private final SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "STATEMENT", new Properties());
     
-    private static Map<String, String> initCompatibleDataTypes() {
-        Map<String, String> result = new LinkedHashMap<>();
-        result.put("bool", "tinyint");
-        result.put("boolean", "tinyint");
-        result.put("character varying", "varchar");
-        result.put("fixed", "decimal");
-        result.put("float4", "float");
-        result.put("float8", "double");
-        result.put("int1", "tinyint");
-        result.put("int2", "smallint");
-        result.put("int3", "mediumint");
-        result.put("int4", "int");
-        result.put("int8", "bigint");
-        result.put("long varbinary", "mediumblob");
-        result.put("long varchar", "mediumtext");
-        result.put("long char varying", "mediumtext");
-        result.put("long", "mediumtext");
-        result.put("middleint", "mediumint");
-        result.put("numeric", "decimal");
-        result.put("nchar", "char");
-        result.put("national character", "char");
-        result.put("national char", "char");
-        result.put("national varchar", "varchar");
-        result.put("nvarchar", "varchar");
-        result.put("nchar varchar", "varchar");
-        result.put("national character varying", "varchar");
-        result.put("national char varying", "varchar");
-        result.put("nchar varying", "varchar");
-        result.put("serial", "bigint");
-        result.put("geometrycollection", "binary");
-        result.put("year", "date");
-        result.put("geometry", "binary");
-        result.put("json", "text");
-        result.put("point", "binary");
-        result.put("multipoint", "binary");
-        result.put("linestring", "binary");
-        result.put("multilinestring", "binary");
-        result.put("polygon", "binary");
-        result.put("multipolygon", "binary");
-        return result;
+    static {
+        COMPATIBLE_DATA_TYPES.put("bool", "tinyint");
+        COMPATIBLE_DATA_TYPES.put("boolean", "tinyint");
+        COMPATIBLE_DATA_TYPES.put("character varying", "varchar");
+        COMPATIBLE_DATA_TYPES.put("fixed", "decimal");
+        COMPATIBLE_DATA_TYPES.put("float4", "float");
+        COMPATIBLE_DATA_TYPES.put("float8", "double");
+        COMPATIBLE_DATA_TYPES.put("int1", "tinyint");
+        COMPATIBLE_DATA_TYPES.put("int2", "smallint");
+        COMPATIBLE_DATA_TYPES.put("int3", "mediumint");
+        COMPATIBLE_DATA_TYPES.put("int4", "int");
+        COMPATIBLE_DATA_TYPES.put("int8", "bigint");
+        COMPATIBLE_DATA_TYPES.put("long varbinary", "mediumblob");
+        COMPATIBLE_DATA_TYPES.put("long varchar", "mediumtext");
+        COMPATIBLE_DATA_TYPES.put("long char varying", "mediumtext");
+        COMPATIBLE_DATA_TYPES.put("long", "mediumtext");
+        COMPATIBLE_DATA_TYPES.put("middleint", "mediumint");
+        COMPATIBLE_DATA_TYPES.put("numeric", "decimal");
+        COMPATIBLE_DATA_TYPES.put("nchar", "char");
+        COMPATIBLE_DATA_TYPES.put("national character", "char");
+        COMPATIBLE_DATA_TYPES.put("national char", "char");
+        COMPATIBLE_DATA_TYPES.put("national varchar", "varchar");
+        COMPATIBLE_DATA_TYPES.put("nvarchar", "varchar");
+        COMPATIBLE_DATA_TYPES.put("nchar varchar", "varchar");
+        COMPATIBLE_DATA_TYPES.put("national character varying", "varchar");
+        COMPATIBLE_DATA_TYPES.put("national char varying", "varchar");
+        COMPATIBLE_DATA_TYPES.put("nchar varying", "varchar");
+        COMPATIBLE_DATA_TYPES.put("serial", "bigint");
+        COMPATIBLE_DATA_TYPES.put("geometrycollection", "binary");
+        COMPATIBLE_DATA_TYPES.put("year", "date");
+        COMPATIBLE_DATA_TYPES.put("geometry", "binary");
+        COMPATIBLE_DATA_TYPES.put("json", "text");
+        COMPATIBLE_DATA_TYPES.put("point", "binary");
+        COMPATIBLE_DATA_TYPES.put("multipoint", "binary");
+        COMPATIBLE_DATA_TYPES.put("linestring", "binary");
+        COMPATIBLE_DATA_TYPES.put("multilinestring", "binary");
+        COMPATIBLE_DATA_TYPES.put("polygon", "binary");
+        COMPATIBLE_DATA_TYPES.put("multipolygon", "binary");
     }
     
     @Override
