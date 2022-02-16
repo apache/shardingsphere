@@ -101,7 +101,7 @@ public interface GovernanceRepositoryAPI {
     void persist(String key, String value);
     
     /**
-     * renew job status.
+     * Renew job status.
      * @param status status
      * @param jobId job id
      */
