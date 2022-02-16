@@ -68,11 +68,8 @@ public final class EncryptRuleQueryResultSet implements DistSQLResultSet {
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("table", "logic_column", "logic_data_type",
-                "cipher_column", "cipher_data_type",
-                "plain_column", "plain_data_type",
-                "assisted_query_column", "assisted_query_data_type",
-                "encryptor_type", "encryptor_props", "query_with_cipher_column");
+        return Arrays.asList("table", "logic_column", "logic_data_type", "cipher_column", "cipher_data_type", "plain_column", "plain_data_type",
+                "assisted_query_column", "assisted_query_data_type", "encryptor_type", "encryptor_props", "query_with_cipher_column");
     }
     
     @Override
