@@ -286,7 +286,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         String shardingAlgorithmName = databaseOrNot ? tableRule.getDatabaseShardingStrategyConfig().getShardingAlgorithmName()
                 : tableRule.getTableShardingStrategyConfig().getShardingAlgorithmName();
         ShardingAlgorithm shardingAlgorithm = shardingAlgorithms.get(shardingAlgorithmName);
-        result =  null == shardingAlgorithm ? "" : shardingAlgorithm.getProps().getProperty("algorithm-expression");
+        result = null == shardingAlgorithm ? "" : shardingAlgorithm.getProps().getProperty("algorithm-expression");
         return null == result ? "" : result;
     }
     
