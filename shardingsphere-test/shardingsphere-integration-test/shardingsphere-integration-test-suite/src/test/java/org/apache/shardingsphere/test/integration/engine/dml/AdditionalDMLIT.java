@@ -22,7 +22,7 @@ import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRegistry;
-import org.apache.shardingsphere.test.integration.framework.param.ParameterizedArrayFactory;
+import org.apache.shardingsphere.test.integration.framework.param.ClusterParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
@@ -52,7 +52,7 @@ public final class AdditionalDMLIT extends BaseDMLIT {
     @Parameters(name = "{0}")
     public static Collection<AssertionParameterizedArray> getParameters() {
         if (IntegrationTestEnvironment.getInstance().isRunAdditionalTestCases()) {
-            return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DML);
+            return ClusterParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DML);
         }
         return Collections.emptyList();
     }

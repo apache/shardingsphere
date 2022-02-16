@@ -22,7 +22,7 @@ import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTes
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.engine.BatchITCase;
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRegistry;
-import org.apache.shardingsphere.test.integration.framework.param.ParameterizedArrayFactory;
+import org.apache.shardingsphere.test.integration.framework.param.ClusterParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.CaseParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
@@ -51,7 +51,7 @@ public final class BatchDMLIT extends BatchITCase {
     
     @Parameters(name = "{0}")
     public static Collection<ParameterizedArray> getParameters() {
-        return ParameterizedArrayFactory.getCaseParameterized(SQLCommandType.DML);
+        return ClusterParameterizedArrayFactory.getCaseParameterized(SQLCommandType.DML);
     }
     
     @AfterClass
