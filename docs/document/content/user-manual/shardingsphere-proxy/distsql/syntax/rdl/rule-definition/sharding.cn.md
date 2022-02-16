@@ -154,10 +154,10 @@ scalingRuleDefinition:
     [inputDefinition] [, outputDefinition] [, streamChannel] [, completionDetector] [, dataConsistencyChecker]
 
 inputDefinition:
-    INPUT (workerThread, batchSize, rateLimiter)
+    INPUT ([workerThread] [, batchSize] [, rateLimiter])
 
 outputDefinition:
-    INPUT (workerThread, batchSize, rateLimiter)
+    OUTPUT ([workerThread] [, batchSize] [, rateLimiter])
 
 completionDetector:
     COMPLETION_DETECTOR (algorithmDefinition)
