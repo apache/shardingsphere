@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator;
 
 import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
@@ -27,7 +26,6 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/clear-text-authentication.html">Clear Text Authentication</a>
  */
-@RequiredArgsConstructor
 public final class MySQLClearPasswordAuthenticator implements MySQLAuthenticator {
     
     @Override
