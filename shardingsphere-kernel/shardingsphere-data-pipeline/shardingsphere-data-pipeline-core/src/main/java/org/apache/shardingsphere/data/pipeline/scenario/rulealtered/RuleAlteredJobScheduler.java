@@ -28,6 +28,8 @@ import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseSchemaNameLockEvent;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Rule altered job scheduler.
  */
@@ -60,6 +62,17 @@ public final class RuleAlteredJobScheduler implements Runnable {
             log.info("stop incremental task {} - {}", jobContext.getJobId(), each.getTaskId());
             each.stop();
             each.close();
+        }
+        // TODO clean up should be done after the task is complete.
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        log.info("almost finished, preparer cleanup, job {}", jobContext.getJobId());
+        RuleAlteredJobPreparer jobPreparer = jobContext.getJobPreparer();
+        if (null != jobPreparer) {
+            jobPreparer.cleanup(jobContext);
         }
         jobContext.close();
     }
