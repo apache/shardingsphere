@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.integration.framework.param;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
@@ -34,6 +35,10 @@ import java.util.Collections;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MemoryParameterizedArrayFactory {
     
+    private static final Collection<String> ADAPTERS = Collections.singleton("jdbc");
+    
+    private static final Collection<DatabaseType> DATABASE_TYPES = Collections.singleton(DatabaseTypeRegistry.getActualDatabaseType("H2"));
+    
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
     /**
@@ -43,8 +48,7 @@ public final class MemoryParameterizedArrayFactory {
      * @return assertion parameterized array
      */
     public static Collection<AssertionParameterizedArray> getAssertionParameterized(final SQLCommandType sqlCommandType) {
-        return new ParameterizedArrayFactory(
-                Collections.singleton("jdbc"), ENV.getScenarios(), Collections.singleton(DatabaseTypeRegistry.getActualDatabaseType("H2"))).getAssertionParameterized(sqlCommandType);
+        return new ParameterizedArrayFactory(ADAPTERS, ENV.getScenarios(), DATABASE_TYPES).getAssertionParameterized(sqlCommandType);
     }
     
     /**
@@ -54,7 +58,6 @@ public final class MemoryParameterizedArrayFactory {
      * @return case parameterized array
      */
     public static Collection<ParameterizedArray> getCaseParameterized(final SQLCommandType sqlCommandType) {
-        return new ParameterizedArrayFactory(
-                Collections.singleton("jdbc"), ENV.getScenarios(), Collections.singleton(DatabaseTypeRegistry.getActualDatabaseType("H2"))).getCaseParameterized(sqlCommandType);
+        return new ParameterizedArrayFactory(ADAPTERS, ENV.getScenarios(), DATABASE_TYPES).getCaseParameterized(sqlCommandType);
     }
 }
