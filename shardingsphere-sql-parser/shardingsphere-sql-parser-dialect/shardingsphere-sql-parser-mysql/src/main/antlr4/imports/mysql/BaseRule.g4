@@ -1126,11 +1126,11 @@ dataType
     | dataTypeName = BIT fieldLength?
     | dataTypeName = (BOOL | BOOLEAN)
     | dataTypeName = CHAR fieldLength? charsetWithOptBinary?
-    | (dataTypeName = NCHAR | dataTypeName = NATIONAL CHAR) fieldLength? BINARY?
+    | (dataTypeName = NCHAR | NATIONAL dataTypeName = CHAR) fieldLength? BINARY?
     | dataTypeName = SIGNED (INTEGER | INT)?
     | dataTypeName = BINARY fieldLength?
     | (dataTypeName = CHAR VARYING | dataTypeName = VARCHAR) fieldLength charsetWithOptBinary?
-    | (dataTypeName = NATIONAL VARCHAR | dataTypeName = NVARCHAR | dataTypeName = NCHAR VARCHAR | dataTypeName = NATIONAL CHAR VARYING | dataTypeName = NCHAR VARYING) fieldLength BINARY?
+    | (NATIONAL dataTypeName = VARCHAR | dataTypeName = NVARCHAR | NCHAR dataTypeName = VARCHAR | dataTypeName = NATIONAL CHAR VARYING | dataTypeName = NCHAR VARYING) fieldLength BINARY?
     | dataTypeName = VARBINARY fieldLength?
     | dataTypeName = YEAR fieldLength? fieldOptions?
     | dataTypeName = DATE

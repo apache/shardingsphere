@@ -69,18 +69,18 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     public EncryptRule(final EncryptRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
         Preconditions.checkArgument(isValidRuleConfiguration(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
         config.getEncryptors().forEach((key, value) -> encryptors.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, EncryptAlgorithm.class)));
-        initEncryptTables(config.getTables(), dataSourceMap);
+        createEncryptTables(config.getTables(), dataSourceMap);
         queryWithCipherColumn = config.isQueryWithCipherColumn();
     }
     
     public EncryptRule(final AlgorithmProvidedEncryptRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
         Preconditions.checkArgument(isValidRuleConfigurationWithAlgorithmProvided(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
         encryptors.putAll(config.getEncryptors());
-        initEncryptTables(config.getTables(), dataSourceMap);
+        createEncryptTables(config.getTables(), dataSourceMap);
         queryWithCipherColumn = config.isQueryWithCipherColumn();
     }
     
-    private void initEncryptTables(final Collection<EncryptTableRuleConfiguration> tableRuleConfigurations, final Map<String, DataSource> dataSourceMap) {
+    private void createEncryptTables(final Collection<EncryptTableRuleConfiguration> tableRuleConfigurations, final Map<String, DataSource> dataSourceMap) {
         if (containsConfigDataTypeColumn(tableRuleConfigurations)) {
             Map<String, Integer> dataTypes = getDataTypes(dataSourceMap);
             DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());

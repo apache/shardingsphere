@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.encrypt.rule.extractor.MySQLEncryptDataTypeExtractor
-
+org.apache.shardingsphere.sql.parser.mysql.parser.MySQLParserFacade

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.spi.context;
 
 import lombok.Getter;
-import org.apache.shardingsphere.encrypt.spi.EncryptDataTypeExtractor;
+import org.apache.shardingsphere.encrypt.spi.EncryptDataTypeConverter;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
@@ -42,8 +42,8 @@ public final class EncryptColumnDataType {
     }
     
     private static Integer getDataTypeByTypeName(final String typeName, final Map<String, Integer> dataTypes, final DatabaseType databaseType) {
-        Optional<EncryptDataTypeExtractor> extractor = findEncryptDataTypeExtractor(databaseType);
-        Optional<Integer> result = extractor.isPresent() ? extractor.get().getDataType(typeName, dataTypes) : getDataTypeByDefault(typeName, dataTypes);
+        Optional<EncryptDataTypeConverter> converter = findEncryptDataTypeExtractor(databaseType);
+        Optional<Integer> result = converter.isPresent() ? converter.get().convertDataType(typeName, dataTypes) : getDataTypeByDefault(typeName, dataTypes);
         if (!result.isPresent()) {
             throw new ShardingSphereConfigurationException("Can not get data types, please check config: %s", typeName);
         }
@@ -60,7 +60,7 @@ public final class EncryptColumnDataType {
         return Optional.ofNullable(dataTypes.get(dataType));
     }
     
-    private static Optional<EncryptDataTypeExtractor> findEncryptDataTypeExtractor(final DatabaseType databaseType) {
-        return Optional.ofNullable(SingletonSPIRegistry.getSingletonInstancesMap(EncryptDataTypeExtractor.class, EncryptDataTypeExtractor::getDatabaseType).get(databaseType.getName()));
+    private static Optional<EncryptDataTypeConverter> findEncryptDataTypeExtractor(final DatabaseType databaseType) {
+        return Optional.ofNullable(SingletonSPIRegistry.getSingletonInstancesMap(EncryptDataTypeConverter.class, EncryptDataTypeConverter::getDatabaseType).get(databaseType.getName()));
     }
 }

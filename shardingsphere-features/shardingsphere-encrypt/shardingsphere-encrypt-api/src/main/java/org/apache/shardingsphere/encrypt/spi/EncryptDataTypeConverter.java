@@ -15,12 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement;
+package org.apache.shardingsphere.encrypt.spi;
+
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeAwareSPI;
+import org.apache.shardingsphere.spi.singleton.SingletonSPI;
+
+import java.util.Map;
+import java.util.Optional;
 
 /**
- * SQL statement type.
+ * Encrypt data type converter for SPI.
  */
-public enum SQLStatementType {
+public interface EncryptDataTypeConverter extends DatabaseTypeAwareSPI, SingletonSPI {
     
-    DML, DDL, TCL, DCL, DAL, RL, FEATURE_SUPPORT
+    /**
+     * Convert data type which is java.sql.Types code.
+     * 
+     * @param typeName type name
+     * @param dataTypes data types map
+     * @return data type
+     */
+    Optional<Integer> convertDataType(String typeName, Map<String, Integer> dataTypes);
 }

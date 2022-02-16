@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement;
+grammar FeatureSupportStatement;
 
-/**
- * SQL statement type.
- */
-public enum SQLStatementType {
-    
-    DML, DDL, TCL, DCL, DAL, RL, FEATURE_SUPPORT
-}
+import Symbol, Keyword, MySQLKeyword, Literals, BaseRule, DDLStatement;
+
+featureSupportStatement
+    : encryptConfigDataType
+    ;
+
+encryptConfigDataType
+    : fieldDefinition referenceDefinition?
+    ;

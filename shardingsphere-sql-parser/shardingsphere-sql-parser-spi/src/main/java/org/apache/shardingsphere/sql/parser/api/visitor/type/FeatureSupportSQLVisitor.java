@@ -15,25 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.spi;
-
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeAwareSPI;
-import org.apache.shardingsphere.spi.singleton.SingletonSPI;
-
-import java.util.Map;
-import java.util.Optional;
+package org.apache.shardingsphere.sql.parser.api.visitor.type;
 
 /**
- * Encrypt data type extractor for SPI.
+ * Feature support SQL visitor.
  */
-public interface EncryptDataTypeExtractor extends DatabaseTypeAwareSPI, SingletonSPI {
-    
-    /**
-     * Get data type which is java.sql.Types code.
-     * 
-     * @param typeName type name
-     * @param dataTypes data types map
-     * @return data type
-     */
-    Optional<Integer> getDataType(String typeName, Map<String, Integer> dataTypes);
+public interface FeatureSupportSQLVisitor extends SQLTypeVisitor {
 }

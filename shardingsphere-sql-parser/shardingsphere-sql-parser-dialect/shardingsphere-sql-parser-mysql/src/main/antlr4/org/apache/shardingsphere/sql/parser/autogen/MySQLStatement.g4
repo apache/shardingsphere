@@ -17,7 +17,7 @@
 
 grammar MySQLStatement;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement, RLStatement;
+import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement, RLStatement, FeatureSupportStatement;
 
 execute
     : (select
@@ -123,6 +123,7 @@ execute
     | alterTablespace
     | dropTablespace
     | delimiter
+    | featureSupportStatement
     ) (SEMI_ EOF? | EOF)
     | EOF
     ;

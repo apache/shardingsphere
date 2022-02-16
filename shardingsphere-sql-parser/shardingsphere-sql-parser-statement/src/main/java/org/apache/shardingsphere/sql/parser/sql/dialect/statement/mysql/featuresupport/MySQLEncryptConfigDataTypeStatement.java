@@ -15,12 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.featuresupport;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.featuresupport.FeatureSupportStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * SQL statement type.
+ * MySQL encrypt config data type statement.
  */
-public enum SQLStatementType {
+@RequiredArgsConstructor
+@Getter
+@ToString
+public final class MySQLEncryptConfigDataTypeStatement extends AbstractSQLStatement implements FeatureSupportStatement, MySQLStatement {
     
-    DML, DDL, TCL, DCL, DAL, RL, FEATURE_SUPPORT
+    private final String dataTypeName;
 }

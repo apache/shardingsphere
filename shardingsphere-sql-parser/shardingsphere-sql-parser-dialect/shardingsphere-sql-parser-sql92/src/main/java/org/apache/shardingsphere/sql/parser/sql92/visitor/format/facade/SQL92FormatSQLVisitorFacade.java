@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql92.visitor.format.facade;
 
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
@@ -57,6 +58,11 @@ public final class SQL92FormatSQLVisitorFacade implements SQLVisitorFacade {
     
     @Override
     public Class<? extends RLSQLVisitor> getRLVisitorClass() {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public Class<? extends SQLVisitor> getFeatureSupportVisitorClass() {
         throw new UnsupportedOperationException();
     }
     

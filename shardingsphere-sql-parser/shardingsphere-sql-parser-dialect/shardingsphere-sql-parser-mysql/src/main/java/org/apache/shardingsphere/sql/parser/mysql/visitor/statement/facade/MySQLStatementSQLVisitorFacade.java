@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.facade;
 
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl.MySQLFeatureSupportStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
@@ -64,6 +66,11 @@ public final class MySQLStatementSQLVisitorFacade implements SQLVisitorFacade {
     @Override
     public Class<? extends RLSQLVisitor> getRLVisitorClass() {
         return MySQLRLStatementSQLVisitor.class;
+    }
+    
+    @Override
+    public Class<? extends SQLVisitor> getFeatureSupportVisitorClass() {
+        return MySQLFeatureSupportStatementSQLVisitor.class;
     }
     
     @Override

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.featuresupport;
+
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * SQL statement type.
+ * Feature support statement.
  */
-public enum SQLStatementType {
-    
-    DML, DDL, TCL, DCL, DAL, RL, FEATURE_SUPPORT
+public interface FeatureSupportStatement extends SQLStatement {
 }

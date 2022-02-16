@@ -17,20 +17,32 @@
 
 package org.apache.shardingsphere.encrypt.rule.extractor;
 
-import org.apache.shardingsphere.encrypt.spi.EncryptDataTypeExtractor;
+import org.apache.shardingsphere.encrypt.spi.EncryptDataTypeConverter;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.featuresupport.MySQLEncryptConfigDataTypeStatement;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * MySQL encrypt data type extractor.
+ * COMPATIBLE_DATA_TYPES ref to com.mysql.cj.MysqlType 8.0.26.
  */
-public final class MySQLEncryptDataTypeExtractor implements EncryptDataTypeExtractor {
+public final class MySQLEncryptDataTypeConverter implements EncryptDataTypeConverter {
     
-    private final Map<String, String> compatibleDbDataTypes = initCompatibleDataTypes();
+    private static final Map<String, String> COMPATIBLE_DATA_TYPES = initCompatibleDataTypes();
     
-    private Map<String, String> initCompatibleDataTypes() {
+    private final CacheOption cacheOption = new CacheOption(128, 1024L, 4);
+    
+    private final SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption, false);
+    
+    private final SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "STATEMENT", new Properties());
+    
+    private static Map<String, String> initCompatibleDataTypes() {
         Map<String, String> result = new LinkedHashMap<>();
         result.put("bool", "tinyint");
         result.put("boolean", "tinyint");
@@ -73,65 +85,17 @@ public final class MySQLEncryptDataTypeExtractor implements EncryptDataTypeExtra
     }
     
     @Override
-    public Optional<Integer> getDataType(final String typeName, final Map<String, Integer> dataTypes) {
+    public Optional<Integer> convertDataType(final String typeName, final Map<String, Integer> dataTypes) {
         return Optional.ofNullable(dataTypes.get(getRealDataTypeName(typeName)));
     }
     
     private String getRealDataTypeName(final String fullDataTypeDefinition) {
         String dataType = extractConfigDataType(fullDataTypeDefinition);
-        return compatibleDbDataTypes.getOrDefault(dataType, dataType);
+        return COMPATIBLE_DATA_TYPES.getOrDefault(dataType, dataType);
     }
     
     private String extractConfigDataType(final String fullDataTypeDefinition) {
-        String dataType = fullDataTypeDefinition.trim().toLowerCase();
-        Optional<String> multiWordDataType = findMultiWordDataType(dataType);
-        if (multiWordDataType.isPresent()) {
-            return multiWordDataType.get();
-        }
-        if (dataType.contains("(")) {
-            return dataType.substring(0, dataType.indexOf("("));
-        } 
-        if (dataType.contains(" ")) {
-            return dataType.substring(0, dataType.indexOf(" "));
-        } 
-        return dataType;
-    }
-    
-    private Optional<String> findMultiWordDataType(final String dataType) {
-        if (dataType.startsWith("character varying")) {
-            return Optional.of("character varying");
-        }
-        if (dataType.startsWith("long varbinary")) {
-            return Optional.of("long varbinary");
-        }
-        if (dataType.startsWith("long varchar")) {
-            return Optional.of("long varchar");
-        }
-        if (dataType.startsWith("long char varying")) {
-            return Optional.of("long char varying");
-        }
-        if (dataType.startsWith("national character varying")) {
-            return Optional.of("national character varying");
-        }
-        if (dataType.startsWith("national char varying")) {
-            return Optional.of("national char varying");
-        }
-        if (dataType.startsWith("nchar varying")) {
-            return Optional.of("nchar varying");
-        }
-        if (dataType.startsWith("national character")) {
-            return Optional.of("national character");
-        }
-        if (dataType.startsWith("national char")) {
-            return Optional.of("char");
-        }
-        if (dataType.startsWith("national varchar")) {
-            return Optional.of("national varchar");
-        }
-        if (dataType.startsWith("nchar varchar")) {
-            return Optional.of("nchar varchar");
-        }
-        return Optional.empty();
+        return ((MySQLEncryptConfigDataTypeStatement) visitorEngine.visit(parserEngine.parse(fullDataTypeDefinition, true))).getDataTypeName().toLowerCase();
     }
     
     @Override

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.opengauss.visitor.format.facade;
 
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
@@ -57,6 +58,11 @@ public final class OpenGaussFormatSQLVisitorFacade implements SQLVisitorFacade {
     
     @Override
     public Class<? extends RLSQLVisitor> getRLVisitorClass() {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public Class<? extends SQLVisitor> getFeatureSupportVisitorClass() {
         throw new UnsupportedOperationException();
     }
     

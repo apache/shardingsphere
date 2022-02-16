@@ -66,10 +66,11 @@ public final class EncryptTable {
     }
     
     private void checkColumnConfig(final EncryptColumnRuleConfiguration columnRuleConfiguration) {
-        Preconditions.checkState(!Strings.isNullOrEmpty(columnRuleConfiguration.getLogicDataType()));
-        Preconditions.checkState(!Strings.isNullOrEmpty(columnRuleConfiguration.getCipherDataType()));
-        Preconditions.checkState(Strings.isNullOrEmpty(columnRuleConfiguration.getPlainColumn()) || !Strings.isNullOrEmpty(columnRuleConfiguration.getPlainDataType()));
-        Preconditions.checkState(Strings.isNullOrEmpty(columnRuleConfiguration.getAssistedQueryColumn()) || !Strings.isNullOrEmpty(columnRuleConfiguration.getAssistedQueryDataType()));
+        if (!Strings.isNullOrEmpty(columnRuleConfiguration.getLogicDataType())) {
+            Preconditions.checkState(!Strings.isNullOrEmpty(columnRuleConfiguration.getCipherDataType()));
+            Preconditions.checkState(Strings.isNullOrEmpty(columnRuleConfiguration.getPlainColumn()) || !Strings.isNullOrEmpty(columnRuleConfiguration.getPlainDataType()));
+            Preconditions.checkState(Strings.isNullOrEmpty(columnRuleConfiguration.getAssistedQueryColumn()) || !Strings.isNullOrEmpty(columnRuleConfiguration.getAssistedQueryDataType()));   
+        }
     }
     
     /**

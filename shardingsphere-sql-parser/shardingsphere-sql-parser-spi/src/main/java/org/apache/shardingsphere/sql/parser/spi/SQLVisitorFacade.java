@@ -79,4 +79,11 @@ public interface SQLVisitorFacade {
      * @return RL visitor class
      */
     Class<? extends SQLVisitor> getRLVisitorClass();
+    
+    /**
+     * Get feature support visitor class.
+     * 
+     * @return feature support visitor class
+     */
+    Class<? extends SQLVisitor> getFeatureSupportVisitorClass();
 }

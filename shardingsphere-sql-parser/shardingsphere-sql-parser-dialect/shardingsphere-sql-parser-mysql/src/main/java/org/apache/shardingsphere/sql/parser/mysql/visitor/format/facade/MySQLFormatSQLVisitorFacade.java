@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.format.facade;
 
-import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl.MySQLDDLFo
 import org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl.MySQLDMLFormatSQLVisitor;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl.MySQLRLFormatSQLVisitor;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl.MySQLTCLFormatSQLVisitor;
+import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
 
 /**
  * Format SQL Visitor facade for MySQL.
@@ -64,6 +65,11 @@ public final class MySQLFormatSQLVisitorFacade implements SQLVisitorFacade {
     @Override
     public Class<? extends RLSQLVisitor> getRLVisitorClass() {
         return MySQLRLFormatSQLVisitor.class;
+    }
+    
+    @Override
+    public Class<? extends SQLVisitor> getFeatureSupportVisitorClass() {
+        throw new UnsupportedOperationException();
     }
     
     @Override
