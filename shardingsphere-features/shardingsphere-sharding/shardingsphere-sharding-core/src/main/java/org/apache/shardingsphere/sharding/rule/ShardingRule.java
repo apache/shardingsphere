@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.rule;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
