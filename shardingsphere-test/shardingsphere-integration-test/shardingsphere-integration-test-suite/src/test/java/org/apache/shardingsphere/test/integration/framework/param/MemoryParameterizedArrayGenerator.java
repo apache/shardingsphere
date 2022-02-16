@@ -19,19 +19,25 @@ package org.apache.shardingsphere.test.integration.framework.param;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
 
 /**
- * Parameterized array factory.
+ * Parameterized array generator for memory mode.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ParameterizedArrayFactory {
+public final class MemoryParameterizedArrayGenerator {
+    
+    private static final Collection<String> ADAPTERS = Collections.singleton("jdbc");
+    
+    private static final Collection<DatabaseType> DATABASE_TYPES = Collections.singleton(DatabaseTypeRegistry.getActualDatabaseType("H2"));
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
@@ -42,15 +48,7 @@ public final class ParameterizedArrayFactory {
      * @return assertion parameterized array
      */
     public static Collection<AssertionParameterizedArray> getAssertionParameterized(final SQLCommandType sqlCommandType) {
-        Collection<AssertionParameterizedArray> result = new LinkedList<>();
-        for (String each : ENV.getRunModes()) {
-            if ("Memory".equalsIgnoreCase(each)) {
-                result.addAll(MemoryParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
-            } else if ("Cluster".equalsIgnoreCase(each)) {
-                result.addAll(ClusterParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
-            }
-        }
-        return result;
+        return new ParameterizedArrayGenerator(ADAPTERS, ENV.getScenarios(), DATABASE_TYPES).getAssertionParameterized(sqlCommandType);
     }
     
     /**
@@ -60,14 +58,6 @@ public final class ParameterizedArrayFactory {
      * @return case parameterized array
      */
     public static Collection<ParameterizedArray> getCaseParameterized(final SQLCommandType sqlCommandType) {
-        Collection<ParameterizedArray> result = new LinkedList<>();
-        for (String each : ENV.getRunModes()) {
-            if ("Memory".equalsIgnoreCase(each)) {
-                result.addAll(MemoryParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
-            } else if ("Cluster".equalsIgnoreCase(each)) {
-                result.addAll(ClusterParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
-            }
-        }
-        return result;
+        return new ParameterizedArrayGenerator(ADAPTERS, ENV.getScenarios(), DATABASE_TYPES).getCaseParameterized(sqlCommandType);
     }
 }
