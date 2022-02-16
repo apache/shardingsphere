@@ -38,7 +38,6 @@ public final class DBCPDataSourcePoolCreatorTest {
     public void assertCreateDataSource() {
         BasicDataSource actual = (BasicDataSource) DataSourcePoolCreator.create(new DataSourceProperties(BasicDataSource.class.getName(), createDataSourceProperties()));
         assertThat(actual.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
-        assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getName()));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("root"));
         assertThat(getConnectionProperties(actual), is(createJdbcUrlProperties()));

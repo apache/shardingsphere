@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.datasource.pool.creator.type;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 import org.junit.Test;
 
@@ -38,7 +37,6 @@ public final class TomcatDBCPDataSourcePoolCreatorTest {
     public void assertCreateDataSource() {
         BasicDataSource actual = (BasicDataSource) DataSourcePoolCreator.create(new DataSourceProperties(BasicDataSource.class.getName(), createDataSourceProperties()));
         assertThat(actual.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
-        assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getName()));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("root"));
         assertThat(getConnectionProperties(actual), is(createJdbcUrlProperties()));
@@ -47,7 +45,6 @@ public final class TomcatDBCPDataSourcePoolCreatorTest {
     private Map<String, Object> createDataSourceProperties() {
         Map<String, Object> result = new HashMap<>();
         result.put("url", "jdbc:mock://127.0.0.1/foo_ds");
-        result.put("driverClassName", MockedDataSource.class.getName());
         result.put("username", "root");
         result.put("password", "root");
         result.put("connectionProperties", createJdbcUrlProperties());
