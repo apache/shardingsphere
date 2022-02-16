@@ -45,7 +45,7 @@ public final class IntegrationTestEnvironment {
     
     private final boolean runAdditionalTestCases;
     
-    private final Set<DatabaseType> databaseTypes;
+    private final Collection<DatabaseType> databaseTypes;
     
     private IntegrationTestEnvironment() {
         Properties engineEnvProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
