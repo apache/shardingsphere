@@ -31,7 +31,7 @@ public final class MySQLClearPasswordAuthenticator implements MySQLAuthenticator
     @Override
     public boolean authenticate(final ShardingSphereUser user, final byte[] authResponse) {
         byte[] password = new byte[authResponse.length - 1];
-        System.arraycopy(authResponse, 0, password, 0, password.length - 1);
+        System.arraycopy(authResponse, 0, password, 0, authResponse.length - 1);
         return Strings.isNullOrEmpty(user.getPassword()) || user.getPassword().equals(new String(password));
     }
     
