@@ -88,7 +88,7 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
     }
     
     private Collection<String> getInvalidColumns(final String tableName, final Collection<EncryptColumnSegment> columns) {
-        return columns.stream().filter(each1 -> !each.isCorrectDataType()).map(each -> String.format("%s.%s", tableName, each.getName())).collect(Collectors.toCollection(LinkedList::new));
+        return columns.stream().filter(each -> !each.isCorrectDataType()).map(each -> String.format("%s.%s", tableName, each.getName())).collect(Collectors.toCollection(LinkedList::new));
     }
     
     private void checkToBeAlteredEncryptors(final AlterEncryptRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
