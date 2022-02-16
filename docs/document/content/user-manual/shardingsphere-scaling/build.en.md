@@ -58,16 +58,14 @@ rules:
         workerThread: # Worker thread pool size for inventory data ingestion from source. If it's not configured, then use system default value.
         batchSize: # Maximum records count of a DML select operation. If it's not configured, then use system default value.
         rateLimiter: # Rate limit algorithm. If it's not configured, then system will skip rate limit.
-          type: # Algorithm type. Options: QPS
+          type: # Algorithm type. Options:
           props: # Algorithm properties
-            qps: # QPS property. Available for types: QPS
       output: # Data write configuration. If it's not configured, then part of its configuration will take effect.
         workerThread: # Worker thread pool size for data importing to target. If it's not configured, then use system default value.
         batchSize: # Maximum records count of a DML insert/delete/update operation. If it's not configured, then use system default value.
         rateLimiter: # Rate limit algorithm. If it's not configured, then system will skip rate limit.
-          type: # Algorithm type. Options: TPS
+          type: # Algorithm type. Options:
           props: # Algorithm properties
-            tps: # TPS property. Available for types: TPS
       streamChannel: # Algorithm of channel that connect producer and consumer, used for input and output. If it's not configured, then system will use MEMORY type
         type: # Algorithm type. Options: MEMORY
         props: # Algorithm properties
@@ -94,17 +92,9 @@ rules:
       input:
         workerThread: 40
         batchSize: 1000
-        rateLimiter:
-          type: QPS
-          props:
-            qps: 50
       output:
         workerThread: 40
         batchSize: 1000
-        rateLimiter:
-          type: TPS
-          props:
-            tps: 2000
       streamChannel:
         type: MEMORY
         props:
@@ -128,13 +118,11 @@ Create scaling configuration example:
 CREATE SHARDING SCALING RULE default_scaling (
 INPUT(
   WORKER_THREAD=40,
-  BATCH_SIZE=1000,
-  RATE_LIMITER(TYPE(NAME=QPS, PROPERTIES("qps"=50)))
+  BATCH_SIZE=1000
 ),
 OUTPUT(
   WORKER_THREAD=40,
-  BATCH_SIZE=1000,
-  RATE_LIMITER(TYPE(NAME=TPS, PROPERTIES("tps"=2000)))
+  BATCH_SIZE=1000
 ),
 STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
 COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-minute-threshold"=3))),
