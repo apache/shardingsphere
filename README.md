@@ -63,14 +63,14 @@ For guides on how to get started and setup your environment, contributor & commi
 
 ### Status:
 
-:white_check_mark: Version 5.0.0: released :tada:
+:white_check_mark: Version 5.1.0: released :tada:
 
 🔗 For the release notes, follow this link to the relevant [GitHub page](https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md).
 
 
-:soon: Version 5.0.1
+:soon: Version 5.1.1
 
-We are currently working towards our 5.0.1 milestone. Keep an eye on the [milestones page](https://github.com/apache/shardingsphere/milestones) of this repo to stay up to date.
+We are currently working towards our 5.1.1 milestone. Keep an eye on the [milestones page](https://github.com/apache/shardingsphere/milestones) of this repo to stay up to date.
 
 
  ### Nightly Builds:
@@ -96,8 +96,8 @@ With the client end connecting directly to the database, it provides services in
  
 #### ShardingSphere-Proxy
 
-[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://apache.org/dyn/closer.cgi?path=shardingsphere/5.0.0-beta/apache-shardingsphere-5.0.0-beta-shardingsphere-proxy-bin.tar.gz)
-[![Docker Pulls](https://img.shields.io/docker/pulls/apache/sharding-proxy.svg)](https://store.docker.com/community/images/apache/sharding-proxy)
+[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://apache.org/dyn/closer.cgi?path=shardingsphere/5.1.0/apache-shardingsphere-5.1.0-shardingsphere-proxy-bin.tar.gz)
+[![Docker Pulls](https://img.shields.io/docker/pulls/apache/shardingsphere-proxy.svg)](https://store.docker.com/community/images/apache/shardingsphere-proxy)
 
 A transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
 Friendlier to DBAs, the MySQL and PostgreSQL version now provided can use any kind of terminal.
