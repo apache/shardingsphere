@@ -18,9 +18,13 @@
 package org.apache.shardingsphere.encrypt.spi.context;
 
 import lombok.Getter;
+import org.apache.shardingsphere.encrypt.spi.EncryptDataTypeExtractor;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Encrypt column data type.
@@ -32,28 +36,31 @@ public final class EncryptColumnDataType {
     
     private final int dataType;
     
-    public EncryptColumnDataType(final String typeName, final Map<String, Integer> dataTypes) {
+    public EncryptColumnDataType(final String typeName, final Map<String, Integer> dataTypes, final DatabaseType databaseType) {
         this.typeName = typeName;
-        this.dataType = getDataTypeByTypeName(typeName, dataTypes); 
+        this.dataType = getDataTypeByTypeName(typeName, dataTypes, databaseType); 
     }
     
-    private static Integer getDataTypeByTypeName(final String typeName, final Map<String, Integer> dataTypes) {
-        Integer result = dataTypes.get(getExactlyTypeName(typeName));
-        if (null == result) {
+    private static Integer getDataTypeByTypeName(final String typeName, final Map<String, Integer> dataTypes, final DatabaseType databaseType) {
+        Optional<EncryptDataTypeExtractor> extractor = findEncryptDataTypeExtractor(databaseType);
+        Optional<Integer> result = extractor.isPresent() ? extractor.get().getDataType(typeName, dataTypes) : getDataTypeByDefault(typeName, dataTypes);
+        if (!result.isPresent()) {
             throw new ShardingSphereConfigurationException("Can not get data types, please check config: %s", typeName);
         }
-        return result;
+        return result.get();
     }
     
-    private static String getExactlyTypeName(final String dataTypeName) {
-        String dataType = dataTypeName.trim().toLowerCase();
+    private static Optional<Integer> getDataTypeByDefault(final String fullDataTypeDefinition, final Map<String, Integer> dataTypes) {
+        String dataType = fullDataTypeDefinition.trim().toLowerCase();
         if (dataType.contains("(")) {
-            return dataType.substring(0, dataType.indexOf("("));
+            dataType = dataType.substring(0, dataType.indexOf("("));
         } else if (dataType.contains(" ")) {
-            return dataType.substring(0, dataType.indexOf(" "));
-        } else {
-            return dataType;
+            dataType = dataType.substring(0, dataType.indexOf(" "));
         }
-        // TODO refactor as dialect config extractor
+        return Optional.ofNullable(dataTypes.get(dataType));
+    }
+    
+    private static Optional<EncryptDataTypeExtractor> findEncryptDataTypeExtractor(final DatabaseType databaseType) {
+        return Optional.ofNullable(SingletonSPIRegistry.getSingletonInstancesMap(EncryptDataTypeExtractor.class, EncryptDataTypeExtractor::getDatabaseType).get(databaseType.getName()));
     }
 }

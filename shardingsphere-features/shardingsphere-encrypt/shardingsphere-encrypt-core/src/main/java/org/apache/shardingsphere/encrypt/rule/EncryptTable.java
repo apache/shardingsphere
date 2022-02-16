@@ -23,6 +23,7 @@ import com.google.common.collect.Maps;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptColumnDataType;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.util.Collection;
@@ -41,27 +42,34 @@ public final class EncryptTable {
     
     private final Boolean queryWithCipherColumn;
     
-    public EncryptTable(final EncryptTableRuleConfiguration config, final Map<String, Integer> dataTypes) {
+    public EncryptTable(final EncryptTableRuleConfiguration config) {
         columns = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (EncryptColumnRuleConfiguration each : config.getColumns()) {
-            checkColumnConfig(each);
-            columns.put(each.getLogicColumn(), new EncryptColumn(getEncryptColumnDataType(each.getLogicDataType(), dataTypes), each.getCipherColumn(), 
-                    getEncryptColumnDataType(each.getCipherDataType(), dataTypes), each.getAssistedQueryColumn(), getEncryptColumnDataType(each.getAssistedQueryDataType(), 
-                    dataTypes), each.getPlainColumn(), getEncryptColumnDataType(each.getPlainDataType(), dataTypes), each.getEncryptorName()));
+            columns.put(each.getLogicColumn(), new EncryptColumn(null, each.getCipherColumn(), null, each.getAssistedQueryColumn(), null, each.getPlainColumn(), null, each.getEncryptorName()));
         }
         queryWithCipherColumn = config.getQueryWithCipherColumn();
     }
     
-    private EncryptColumnDataType getEncryptColumnDataType(final String dataTypeName, final Map<String, Integer> dataTypes) {
-        return Strings.isNullOrEmpty(dataTypeName) ? null : new EncryptColumnDataType(dataTypeName, dataTypes);
+    public EncryptTable(final EncryptTableRuleConfiguration config, final Map<String, Integer> dataTypes, final DatabaseType databaseType) {
+        columns = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        for (EncryptColumnRuleConfiguration each : config.getColumns()) {
+            checkColumnConfig(each);
+            columns.put(each.getLogicColumn(), new EncryptColumn(getEncryptColumnDataType(each.getLogicDataType(), dataTypes, databaseType), each.getCipherColumn(), 
+                    getEncryptColumnDataType(each.getCipherDataType(), dataTypes, databaseType), each.getAssistedQueryColumn(), getEncryptColumnDataType(each.getAssistedQueryDataType(), 
+                    dataTypes, databaseType), each.getPlainColumn(), getEncryptColumnDataType(each.getPlainDataType(), dataTypes, databaseType), each.getEncryptorName()));
+        }
+        queryWithCipherColumn = config.getQueryWithCipherColumn();
+    }
+    
+    private EncryptColumnDataType getEncryptColumnDataType(final String dataTypeName, final Map<String, Integer> dataTypes, final DatabaseType databaseType) {
+        return Strings.isNullOrEmpty(dataTypeName) ? null : new EncryptColumnDataType(dataTypeName, dataTypes, databaseType);
     }
     
     private void checkColumnConfig(final EncryptColumnRuleConfiguration columnRuleConfiguration) {
-        if (!Strings.isNullOrEmpty(columnRuleConfiguration.getLogicDataType())) {
-            Preconditions.checkState(!Strings.isNullOrEmpty(columnRuleConfiguration.getCipherDataType()));
-            Preconditions.checkState(Strings.isNullOrEmpty(columnRuleConfiguration.getPlainColumn()) || !Strings.isNullOrEmpty(columnRuleConfiguration.getPlainDataType()));
-            Preconditions.checkState(Strings.isNullOrEmpty(columnRuleConfiguration.getAssistedQueryColumn()) || !Strings.isNullOrEmpty(columnRuleConfiguration.getAssistedQueryDataType()));
-        }
+        Preconditions.checkState(!Strings.isNullOrEmpty(columnRuleConfiguration.getLogicDataType()));
+        Preconditions.checkState(!Strings.isNullOrEmpty(columnRuleConfiguration.getCipherDataType()));
+        Preconditions.checkState(Strings.isNullOrEmpty(columnRuleConfiguration.getPlainColumn()) || !Strings.isNullOrEmpty(columnRuleConfiguration.getPlainDataType()));
+        Preconditions.checkState(Strings.isNullOrEmpty(columnRuleConfiguration.getAssistedQueryColumn()) || !Strings.isNullOrEmpty(columnRuleConfiguration.getAssistedQueryDataType()));
     }
     
     /**

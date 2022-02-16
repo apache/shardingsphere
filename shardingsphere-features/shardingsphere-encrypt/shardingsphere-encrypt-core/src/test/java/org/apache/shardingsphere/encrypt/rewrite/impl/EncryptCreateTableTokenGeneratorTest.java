@@ -25,6 +25,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
@@ -53,8 +54,12 @@ public final class EncryptCreateTableTokenGeneratorTest {
     
     private EncryptCreateTableTokenGenerator generator;
     
+    private DatabaseType databaseType;
+    
     @Before
     public void setup() {
+        databaseType = mock(DatabaseType.class);
+        when(databaseType.getName()).thenReturn("MySQL");
         generator = new EncryptCreateTableTokenGenerator();
         generator.setEncryptRule(buildEncryptRule());
     }
@@ -103,10 +108,10 @@ public final class EncryptCreateTableTokenGeneratorTest {
         Map<String, Integer> dataTypes = new HashMap<>();
         dataTypes.put("int", Types.INTEGER);
         dataTypes.put("varchar", Types.VARCHAR);
-        EncryptColumnDataType logicDataType = new EncryptColumnDataType("int(20) unsigned not null default 0", dataTypes);
-        EncryptColumnDataType cipherDataType = new EncryptColumnDataType("varchar(200) not null default ''", dataTypes);
-        EncryptColumnDataType assistedQueryDataType = new EncryptColumnDataType("varchar(200) not null", dataTypes);
-        EncryptColumnDataType plainDataType = new EncryptColumnDataType("int(20) unsigned not null default 0", dataTypes);
+        EncryptColumnDataType logicDataType = new EncryptColumnDataType("int(20) unsigned not null default 0", dataTypes, databaseType);
+        EncryptColumnDataType cipherDataType = new EncryptColumnDataType("varchar(200) not null default ''", dataTypes, databaseType);
+        EncryptColumnDataType assistedQueryDataType = new EncryptColumnDataType("varchar(200) not null", dataTypes, databaseType);
+        EncryptColumnDataType plainDataType = new EncryptColumnDataType("int(20) unsigned not null default 0", dataTypes, databaseType);
         return new EncryptColumn(logicDataType, "cipher_certificate_number", cipherDataType, 
                 "assisted_certificate_number", assistedQueryDataType, "certificate_number_plain", plainDataType, "test");
     }

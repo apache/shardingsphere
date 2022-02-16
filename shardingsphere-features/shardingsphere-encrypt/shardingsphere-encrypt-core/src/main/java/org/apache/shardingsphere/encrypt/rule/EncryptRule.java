@@ -30,6 +30,8 @@ import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.DataTypeLoader;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
@@ -67,17 +69,25 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     public EncryptRule(final EncryptRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
         Preconditions.checkArgument(isValidRuleConfiguration(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
         config.getEncryptors().forEach((key, value) -> encryptors.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, EncryptAlgorithm.class)));
-        Map<String, Integer> dataTypes = containsConfigDataTypeColumn(config.getTables()) ? getDataTypes(dataSourceMap) : Collections.emptyMap();
-        config.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each, dataTypes)));
+        initEncryptTables(config.getTables(), dataSourceMap);
         queryWithCipherColumn = config.isQueryWithCipherColumn();
     }
     
     public EncryptRule(final AlgorithmProvidedEncryptRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
         Preconditions.checkArgument(isValidRuleConfigurationWithAlgorithmProvided(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
         encryptors.putAll(config.getEncryptors());
-        Map<String, Integer> dataTypes = containsConfigDataTypeColumn(config.getTables()) ? getDataTypes(dataSourceMap) : Collections.emptyMap();
-        config.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each, dataTypes)));
+        initEncryptTables(config.getTables(), dataSourceMap);
         queryWithCipherColumn = config.isQueryWithCipherColumn();
+    }
+    
+    private void initEncryptTables(final Collection<EncryptTableRuleConfiguration> tableRuleConfigurations, final Map<String, DataSource> dataSourceMap) {
+        if (containsConfigDataTypeColumn(tableRuleConfigurations)) {
+            Map<String, Integer> dataTypes = getDataTypes(dataSourceMap);
+            DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
+            tableRuleConfigurations.forEach(each -> tables.put(each.getName(), new EncryptTable(each, dataTypes, databaseType)));
+        } else {
+            tableRuleConfigurations.forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
+        }
     }
     
     private boolean isValidRuleConfiguration(final EncryptRuleConfiguration config) {
