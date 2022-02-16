@@ -78,7 +78,6 @@ import java.util.stream.Collectors;
  * Sharding rule.
  */
 @Getter
-@Slf4j
 public final class ShardingRule implements SchemaRule, DataNodeContainedRule, TableContainedRule, InstanceAwareRule {
     
     private static final String EQUAL = "=";
@@ -137,7 +136,6 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
                 ? RequiredSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
         defaultShardingColumn = config.getDefaultShardingColumn();
-        log.warn("12345678 config == null？{}", config == null);
         checkSameBindingTables(config.getBindingTableGroups(), bindingTableRules);
     }
     
@@ -212,21 +210,14 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     private void checkSameBindingTables(final Collection<String> bindingTableGroups, final Map<String, BindingTableRule> bindingTableRules) {
-        log.warn("12345678 bindingTableGroups {}", bindingTableGroups);
         if (null == bindingTableGroups || bindingTableGroups.isEmpty()) {
             return;
         }
         for (String bindingTableGroup : bindingTableGroups) {
-            log.warn("12345678 bindingTableGroup {}", bindingTableGroup);
             List<String> bindingTableList = Splitter.on(",").trimResults().splitToList(bindingTableGroup.toLowerCase());
-            log.warn("12345678 bindingTableList {}", bindingTableList);
             TableRule savedTableRule = null;
             for (String bindingTable : bindingTableList) {
-                log.warn("12345678 bindingTableRules == null? {}", bindingTableRules == null);
-                log.warn("12345678 bindingTableRules.get(bindingTable) == null? {}", bindingTableRules.get(bindingTable) == null);
-                log.warn("12345678 bindingTableRules.get(bindingTable).getTableRules() == null? {}", bindingTableRules.get(bindingTable).getTableRules() == null);
                 TableRule tableRule = bindingTableRules.get(bindingTable).getTableRules().get(bindingTable);
-                log.warn("12345678 tableRule == null? {}", tableRule == null);
                 if (null == savedTableRule) {
                     savedTableRule = tableRule;
                 } else {
@@ -237,32 +228,18 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     private void checkSameActualDatasourceNamesAndActualTableIndex(final TableRule savedOne, final TableRule newOne, final String bindingTableGroup) {
-        log.warn("12345678 savedOne == null? {}", savedOne == null);
-        log.warn("12345678 newOne == null? {}", newOne == null);
-        log.warn("12345678 savedOne.getActualDatasourceNames() = {}", savedOne.getActualDatasourceNames());
-        log.warn("12345678 newOne.getActualDatasourceNames() = {}", newOne.getActualDatasourceNames());
         if (!savedOne.getActualDatasourceNames().containsAll(newOne.getActualDatasourceNames())) {
             throw new ShardingSphereConfigurationException("The actualDatasourceNames on bindingTableGroup `%s` are inconsistent", bindingTableGroup);
         }
-        log.warn("12345678 savedOne.getActualDatasourceNames().stream().findFirst() = {}", savedOne.getActualDatasourceNames().stream().findFirst());
         checkSameAlgorithmOnDatabase(savedOne, newOne, savedOne.getActualDatasourceNames().stream().findFirst().get(), bindingTableGroup);
         for (String dataSourceName : savedOne.getActualDatasourceNames()) {
-            log.warn("12345678 dataSourceName = {}", dataSourceName);
-            log.warn("12345678 savedOne.getActualTableNames(dataSourceName) = {}", savedOne.getActualTableNames(dataSourceName));
             Collection<String> savedActualTableNames = savedOne.getActualTableNames(dataSourceName).stream().map(each -> substring(each)[1])
                     .filter(each -> !each.isEmpty()).collect(Collectors.toList());
-            log.warn("12345678 newOne.getActualTableNames(dataSourceName) = {}", newOne.getActualTableNames(dataSourceName));
             Collection<String> newOneActualTableNames = newOne.getActualTableNames(dataSourceName).stream().map(each -> substring(each)[1])
                     .filter(each -> !each.isEmpty()).collect(Collectors.toList());
-            log.warn("12345678 savedActualTableNames == null? {}", savedActualTableNames == null);
-            log.warn("12345678 newOneActualTableNames == null? {}", newOneActualTableNames == null);
-            log.warn("12345678 savedActualTableNames = {}", savedActualTableNames);
-            log.warn("12345678 newOneActualTableNames = {}", newOneActualTableNames);
             if (!savedActualTableNames.containsAll(newOneActualTableNames)) {
                 throw new ShardingSphereConfigurationException("The actualTableNames on bindingTableGroup `%s` are inconsistent", bindingTableGroup);
             }
-            log.warn("12345678 savedOne.getActualTableNames(dataSourceName).stream().findFirst() = {}", savedOne.getActualTableNames(dataSourceName).stream().findFirst());
-            log.warn("12345678 newOne.getActualTableNames(dataSourceName).stream().findFirst() = {}", newOne.getActualTableNames(dataSourceName).stream().findFirst());
             checkSameAlgorithmOnTable(savedOne, savedOne.getActualTableNames(dataSourceName).stream().findFirst().get(), newOne,
                     newOne.getActualTableNames(dataSourceName).stream().findFirst().get(), bindingTableGroup);
         }
@@ -278,7 +255,6 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     private String getAlgorithmExpression(final TableRule tableRule, final boolean databaseOrNot) {
-        log.warn("12345678 tableRule == null {}", tableRule == null);
         String result = "";
         if (null == tableRule.getDatabaseShardingStrategyConfig() || null == tableRule.getTableShardingStrategyConfig()) {
             return result;
@@ -291,7 +267,6 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     private String getShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfiguration) {
-        log.warn("12345678 null == shardingStrategyConfiguration {}", null == shardingStrategyConfiguration);
         String result = null == defaultShardingColumn ? "" : defaultShardingColumn;
         if (null == shardingStrategyConfiguration) {
             return result;
@@ -318,8 +293,6 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     private void checkSameAlgorithmExpression(final Collection<String[]> algorithmExpressions, final String shardingStrategyConfig, final String bindingTableGroup) {
         String savedAlgorithmExpressions = "";
         for (String[] array : algorithmExpressions) {
-            log.warn("12345678 array {}", array);
-            log.warn("12345678 array[0] == null {}", array);
             String cleanedAlgorithmExpression = array[0].replaceAll(array[1], "").replaceAll(array[2], "");
             if (savedAlgorithmExpressions.isEmpty()) {
                 savedAlgorithmExpressions = cleanedAlgorithmExpression;
