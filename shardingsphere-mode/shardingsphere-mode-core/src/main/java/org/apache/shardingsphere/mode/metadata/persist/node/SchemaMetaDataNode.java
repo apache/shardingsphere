@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.node;
 
+import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -37,14 +38,19 @@ public final class SchemaMetaDataNode {
     
     private static final String TABLES_NODE = "tables";
     
+    private static final String ACTIVE_VERSION = "active_version";
+    
+    private static final String VERSIONS = "versions";
+    
     /**
      * Get meta data data source path.
      *
      * @param schemaName schema name
+     * @param version data source version                  
      * @return data source path
      */
-    public static String getMetaDataDataSourcePath(final String schemaName) {
-        return getFullMetaDataPath(schemaName, DATA_SOURCE_NODE);
+    public static String getMetaDataDataSourcePath(final String schemaName, final String version) {
+        return Joiner.on("/").join(getFullMetaDataPath(schemaName, VERSIONS), version, DATA_SOURCE_NODE);
     }
     
     /**
@@ -70,10 +76,11 @@ public final class SchemaMetaDataNode {
      * Get rule path.
      *
      * @param schemaName schema name
+     * @param version rule version                  
      * @return rule path
      */
-    public static String getRulePath(final String schemaName) {
-        return getFullMetaDataPath(schemaName, RULE_NODE);
+    public static String getRulePath(final String schemaName, final String version) {
+        return Joiner.on("/").join(getFullMetaDataPath(schemaName, VERSIONS), version, RULE_NODE);
     }
     
     /**
@@ -136,5 +143,15 @@ public final class SchemaMetaDataNode {
         Pattern pattern = Pattern.compile(getMetaDataTablesPath(schemaName) + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(tableMetaDataPath);
         return matcher.find() ? matcher.group(1) : "";
+    }
+    
+    /**
+     * Get active version path.
+     * 
+     * @param schemaName schema name
+     * @return active version path
+     */
+    public static String getActiveVersionPath(final String schemaName) {
+        return getFullMetaDataPath(schemaName, ACTIVE_VERSION);
     }
 }

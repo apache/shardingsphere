@@ -107,7 +107,7 @@ public final class InventoryTaskSplitter {
         RuleAlteredContext ruleAlteredContext = jobContext.getRuleAlteredContext();
         InputConfiguration inputConfig = ruleAlteredContext.getOnRuleAlteredActionConfig().getInput();
         if (null == inputConfig) {
-            inputConfig = new InputConfigurationSwapper().swapToObject(new YamlInputConfiguration());
+            inputConfig = new InputConfigurationSwapper().swapToObject(YamlInputConfiguration.buildWithDefaultValue());
         }
         int batchSize = inputConfig.getBatchSize();
         JobRateLimitAlgorithm rateLimitAlgorithm = ruleAlteredContext.getInputRateLimitAlgorithm();

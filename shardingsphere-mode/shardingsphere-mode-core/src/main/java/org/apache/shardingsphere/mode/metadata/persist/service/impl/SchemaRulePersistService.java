@@ -23,10 +23,9 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.mode.metadata.persist.node.CacheNode;
-import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaBasedPersistService;
+import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -36,6 +35,8 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 public final class SchemaRulePersistService implements SchemaBasedPersistService<Collection<RuleConfiguration>> {
+    
+    private static final String DEFAULT_VERSION = "0";
     
     private final PersistRepository repository;
     
@@ -48,7 +49,10 @@ public final class SchemaRulePersistService implements SchemaBasedPersistService
     
     @Override
     public void persist(final String schemaName, final Collection<RuleConfiguration> configs) {
-        repository.persist(SchemaMetaDataNode.getRulePath(schemaName), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
+        if (Strings.isNullOrEmpty(getSchemaActiveVersion(schemaName))) {
+            repository.persist(SchemaMetaDataNode.getActiveVersionPath(schemaName), DEFAULT_VERSION);
+        }
+        repository.persist(SchemaMetaDataNode.getRulePath(schemaName, getSchemaActiveVersion(schemaName)), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
     }
     
     private Collection<YamlRuleConfiguration> createYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
@@ -60,17 +64,23 @@ public final class SchemaRulePersistService implements SchemaBasedPersistService
     public Collection<RuleConfiguration> load(final String schemaName) {
         return isExisted(schemaName)
                 // TODO process algorithm provided configuration 
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(SchemaMetaDataNode.getRulePath(schemaName)), Collection.class, true))
+                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(SchemaMetaDataNode.getRulePath(schemaName, 
+                getSchemaActiveVersion(schemaName))), Collection.class, true))
                 : new LinkedList<>();
     }
     
     @Override
     public boolean isExisted(final String schemaName) {
-        return !Strings.isNullOrEmpty(repository.get(SchemaMetaDataNode.getRulePath(schemaName)));
+        return !Strings.isNullOrEmpty(getSchemaActiveVersion(schemaName)) && !Strings.isNullOrEmpty(repository.get(SchemaMetaDataNode.getRulePath(schemaName, getSchemaActiveVersion(schemaName))));
     }
     
     @Override
     public void cache(final String schemaName, final Collection<RuleConfiguration> configs) {
-        repository.persist(CacheNode.getCachePath(SchemaMetaDataNode.getRulePath(schemaName)), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
+        // TODO cache should be removed
+        // repository.persist(CacheNode.getCachePath(SchemaMetaDataNode.getRulePath(schemaName)), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
+    }
+    
+    private String getSchemaActiveVersion(final String schemaName) {
+        return repository.get(SchemaMetaDataNode.getActiveVersionPath(schemaName));
     }
 }

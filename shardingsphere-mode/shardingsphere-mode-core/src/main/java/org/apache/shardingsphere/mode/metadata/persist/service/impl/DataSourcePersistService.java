@@ -38,6 +38,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class DataSourcePersistService implements SchemaBasedPersistService<Map<String, DataSourceProperties>> {
     
+    private static final String DEFAULT_VERSION = "0";
+    
     private final PersistRepository repository;
     
     @Override
@@ -49,7 +51,10 @@ public final class DataSourcePersistService implements SchemaBasedPersistService
     
     @Override
     public void persist(final String schemaName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        repository.persist(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName), YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourcePropsMap)));
+        if (Strings.isNullOrEmpty(getSchemaActiveVersion(schemaName))) {
+            repository.persist(SchemaMetaDataNode.getActiveVersionPath(schemaName), DEFAULT_VERSION);
+        }
+        repository.persist(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName, getSchemaActiveVersion(schemaName)), YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourcePropsMap)));
     }
     
     private Map<String, Map<String, Object>> swapYamlDataSourceConfiguration(final Map<String, DataSourceProperties> dataSourcePropsMap) {
@@ -59,7 +64,7 @@ public final class DataSourcePersistService implements SchemaBasedPersistService
     
     @Override
     public Map<String, DataSourceProperties> load(final String schemaName) {
-        return isExisted(schemaName) ? getDataSourceProperties(repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName))) : new LinkedHashMap<>();
+        return isExisted(schemaName) ? getDataSourceProperties(repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName, getSchemaActiveVersion(schemaName)))) : new LinkedHashMap<>();
     }
     
     @SuppressWarnings("unchecked")
@@ -75,7 +80,8 @@ public final class DataSourcePersistService implements SchemaBasedPersistService
     
     @Override
     public boolean isExisted(final String schemaName) {
-        return !Strings.isNullOrEmpty(repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName)));
+        return !Strings.isNullOrEmpty(getSchemaActiveVersion(schemaName)) && !Strings.isNullOrEmpty(repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName, 
+                getSchemaActiveVersion(schemaName))));
     }
     
     /**
@@ -102,5 +108,9 @@ public final class DataSourcePersistService implements SchemaBasedPersistService
             dataSourcePropsMap.remove(each);
         }
         persist(schemaName, dataSourcePropsMap);
+    }
+    
+    private String getSchemaActiveVersion(final String schemaName) {
+        return repository.get(SchemaMetaDataNode.getActiveVersionPath(schemaName));
     }
 }

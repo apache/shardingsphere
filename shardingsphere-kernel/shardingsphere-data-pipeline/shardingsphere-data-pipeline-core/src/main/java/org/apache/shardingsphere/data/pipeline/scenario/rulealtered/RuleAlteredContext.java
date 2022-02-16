@@ -108,10 +108,10 @@ public final class RuleAlteredContext {
     private OnRuleAlteredActionConfiguration convertActionConfig(final OnRuleAlteredActionConfiguration actionConfig) {
         YamlOnRuleAlteredActionConfiguration yamlActionConfig = ACTION_CONFIG_YAML_SWAPPER.swapToYamlConfiguration(actionConfig);
         if (null == yamlActionConfig.getInput()) {
-            yamlActionConfig.setInput(new YamlInputConfiguration());
+            yamlActionConfig.setInput(YamlInputConfiguration.buildWithDefaultValue());
         }
         if (null == yamlActionConfig.getOutput()) {
-            yamlActionConfig.setOutput(new YamlOutputConfiguration());
+            yamlActionConfig.setOutput(YamlOutputConfiguration.buildWithDefaultValue());
         }
         if (null == yamlActionConfig.getStreamChannel()) {
             yamlActionConfig.setStreamChannel(new YamlShardingSphereAlgorithmConfiguration(MemoryPipelineChannelFactory.TYPE, new Properties()));

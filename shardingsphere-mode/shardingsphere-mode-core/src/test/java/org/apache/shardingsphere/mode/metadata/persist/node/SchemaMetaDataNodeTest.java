@@ -27,7 +27,7 @@ public class SchemaMetaDataNodeTest {
     
     @Test
     public void assertGetRulePath() {
-        assertThat(SchemaMetaDataNode.getRulePath(DefaultSchema.LOGIC_NAME), is("/metadata/logic_db/rules"));
+        assertThat(SchemaMetaDataNode.getRulePath(DefaultSchema.LOGIC_NAME, "0"), is("/metadata/logic_db/versions/0/rules"));
     }
     
     @Test
