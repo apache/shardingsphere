@@ -16,4 +16,5 @@
 #
 
 org.apache.shardingsphere.sharding.rewrite.fixture.NormalEncryptAlgorithmFixture
+org.apache.shardingsphere.sharding.rewrite.fixture.SchemaBasedEncryptAlgorithmFixture
 org.apache.shardingsphere.sharding.rewrite.fixture.QueryAssistedEncryptAlgorithmFixture
