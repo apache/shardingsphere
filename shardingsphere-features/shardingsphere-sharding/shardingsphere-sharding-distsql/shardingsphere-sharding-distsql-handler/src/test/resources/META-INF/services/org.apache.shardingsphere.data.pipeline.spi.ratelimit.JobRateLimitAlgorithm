@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.core.spi.ratelimit.QPSJobRateLimitAlgorithm
-org.apache.shardingsphere.data.pipeline.core.spi.ratelimit.TPSJobRateLimitAlgorithm
+org.apache.shardingsphere.data.pipeline.spi.ratelimit.FixtureInputJobRateLimitAlgorithm
+org.apache.shardingsphere.data.pipeline.spi.ratelimit.FixtureOutputJobRateLimitAlgorithm
