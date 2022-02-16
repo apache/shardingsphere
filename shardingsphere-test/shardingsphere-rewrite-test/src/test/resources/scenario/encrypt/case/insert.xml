@@ -191,4 +191,14 @@
         <input sql="INSERT INTO t_account_bak SET account_id = 1, certificate_number = '111X', password = 'aaa', amount = ?, status = 'OK'" parameters="1000"/>
         <output sql="INSERT INTO t_account_bak SET account_id = 1, cipher_certificate_number = 'encrypt_111X', assisted_query_certificate_number = 'assisted_query_111X', plain_certificate_number = '111X', cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', plain_password = 'aaa', cipher_amount = ?, plain_amount = ?, status = 'OK'" parameters="encrypt_1000, 1000"/>
     </rewrite-assertion>
+
+    <rewrite-assertion id="insert_values_with_schema_based_algorithm_for_plain" db-types="MySQL">
+        <input sql="INSERT INTO t_order(order_id, user_id, content) VALUES (1, 1, 'TEST');" />
+        <output sql="INSERT INTO t_order(order_id, user_id, cipher_content, plain_content) VALUES (1, 1, 'encrypt_TEST_t_order', 'TEST');" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_values_with_schema_based_algorithm_for_parameters" db-types="MySQL">
+        <input sql="INSERT INTO t_order(order_id, user_id, content) VALUES (?, ?, ?);" parameters="1, 1, TEST" />
+        <output sql="INSERT INTO t_order(order_id, user_id, cipher_content, plain_content) VALUES (?, ?, ?, ?);" parameters="1, 1, encrypt_TEST_t_order, TEST" />
+    </rewrite-assertion>
 </rewrite-assertions>
