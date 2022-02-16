@@ -69,7 +69,7 @@ public final class ParameterizedArrayFactory {
     private static Collection<AssertionParameterizedArray> getAssertionParameterizedArray(final IntegrationTestCaseContext testCaseContext, final SQLCommandType sqlCommandType) {
         Collection<AssertionParameterizedArray> result = new LinkedList<>();
         for (DatabaseType each : getDatabaseTypes(testCaseContext.getTestCase().getDbTypes())) {
-            if (IntegrationTestEnvironment.getInstance().getDatabaseTypes().contains(each)) {
+            if (ENV.getDatabaseTypes().contains(each)) {
                 result.addAll(getAssertionParameterizedArray(testCaseContext, each, sqlCommandType));
             }
         }
@@ -140,7 +140,7 @@ public final class ParameterizedArrayFactory {
     private static Collection<ParameterizedArray> getCaseParameterizedArray(final IntegrationTestCaseContext testCaseContext, final SQLCommandType sqlCommandType) {
         Collection<ParameterizedArray> result = new LinkedList<>();
         for (DatabaseType each : getDatabaseTypes(testCaseContext.getTestCase().getDbTypes())) {
-            if (IntegrationTestEnvironment.getInstance().getDatabaseTypes().contains(each)) {
+            if (ENV.getDatabaseTypes().contains(each)) {
                 result.addAll(getCaseParameterizedArray(testCaseContext, each, sqlCommandType));
             }
         }
