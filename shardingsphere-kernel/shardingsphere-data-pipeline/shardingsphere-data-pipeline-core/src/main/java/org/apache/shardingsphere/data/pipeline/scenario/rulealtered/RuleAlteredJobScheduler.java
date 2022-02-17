@@ -63,17 +63,6 @@ public final class RuleAlteredJobScheduler implements Runnable {
             each.stop();
             each.close();
         }
-        // TODO clean up should be done after the task is complete.
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        log.info("almost finished, preparer cleanup, job {}", jobContext.getJobId());
-        RuleAlteredJobPreparer jobPreparer = jobContext.getJobPreparer();
-        if (null != jobPreparer) {
-            jobPreparer.cleanup(jobContext);
-        }
         jobContext.close();
     }
     
