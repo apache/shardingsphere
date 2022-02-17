@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.mode.metadata.persist.service.ComputeNodePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.SchemaVersionPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.GlobalRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPersistService;
@@ -60,6 +61,8 @@ public final class MetaDataPersistService {
     
     private final ComputeNodePersistService computeNodePersistService;
     
+    private final SchemaVersionPersistService schemaVersionPersistService;
+    
     public MetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
         dataSourceService = new DataSourcePersistService(repository);
@@ -68,6 +71,7 @@ public final class MetaDataPersistService {
         globalRuleService = new GlobalRulePersistService(repository);
         propsService = new PropertiesPersistService(repository);
         computeNodePersistService = new ComputeNodePersistService(repository);
+        schemaVersionPersistService = new SchemaVersionPersistService(repository);
     }
     
     /**
