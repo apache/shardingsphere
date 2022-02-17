@@ -30,9 +30,9 @@ public abstract class UpdatableRALBackendHandler<E extends RALStatement, R exten
     
     @Override
     protected final ResponseHeader handle(final ContextManager contextManager, final E sqlStatement) throws DistSQLException {
-        doHandle(contextManager, sqlStatement);
+        update(contextManager, sqlStatement);
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    protected abstract void doHandle(ContextManager contextManager, E sqlStatement) throws DistSQLException;
+    protected abstract void update(ContextManager contextManager, E sqlStatement) throws DistSQLException;
 }

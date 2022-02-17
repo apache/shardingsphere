@@ -37,7 +37,7 @@ import java.util.LinkedHashSet;
 public final class LabelInstanceHandler extends UpdatableRALBackendHandler<LabelInstanceStatement, LabelInstanceHandler> {
     
     @Override
-    public void doHandle(final ContextManager contextManager, final LabelInstanceStatement sqlStatement) {
+    public void update(final ContextManager contextManager, final LabelInstanceStatement sqlStatement) {
         MetaDataPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService().orElse(null);
         if (null == persistService || null == persistService.getRepository() || persistService.getRepository() instanceof StandalonePersistRepository) {
             throw new UnsupportedOperationException("Labels can only be added in cluster mode");

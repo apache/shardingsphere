@@ -53,7 +53,7 @@ public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVari
     }
     
     @Override
-    protected void doHandle(final ContextManager contextManager, final SetVariableStatement sqlStatement) throws DistSQLException {
+    protected void update(final ContextManager contextManager, final SetVariableStatement sqlStatement) throws DistSQLException {
         Enum<?> enumType = getEnumType(sqlStatement.getName());
         if (enumType instanceof ConfigurationPropertyKey) {
             handleConfigurationProperty((ConfigurationPropertyKey) enumType, sqlStatement.getValue());

@@ -40,7 +40,7 @@ import java.util.Optional;
 public final class SetInstanceStatusHandler extends UpdatableRALBackendHandler<SetInstanceStatusStatement, SetInstanceStatusHandler> {
     
     @Override
-    protected void doHandle(final ContextManager contextManager, final SetInstanceStatusStatement sqlStatement) {
+    protected void update(final ContextManager contextManager, final SetInstanceStatusStatement sqlStatement) {
         InstanceId operationInstanceId = new InstanceId(sqlStatement.getIp(), Integer.valueOf(sqlStatement.getPort()));
         boolean isDisable = "DISABLE".equals(sqlStatement.getStatus());
         if (isDisable) {

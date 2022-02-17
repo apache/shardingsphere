@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<AlterTrafficRuleStatement, AlterTrafficRuleHandler> {
     
     @Override
-    protected void doHandle(final ContextManager contextManager, final AlterTrafficRuleStatement sqlStatement) throws DistSQLException {
+    protected void update(final ContextManager contextManager, final AlterTrafficRuleStatement sqlStatement) throws DistSQLException {
         Optional<TrafficRuleConfiguration> currentConfiguration = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData()
                 .findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
         check(sqlStatement, currentConfiguration);

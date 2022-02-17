@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 public final class DropTrafficRuleHandler extends UpdatableRALBackendHandler<DropTrafficRuleStatement, DropTrafficRuleHandler> {
     
     @Override
-    protected void doHandle(final ContextManager contextManager, final DropTrafficRuleStatement sqlStatement) throws DistSQLException {
+    protected void update(final ContextManager contextManager, final DropTrafficRuleStatement sqlStatement) throws DistSQLException {
         Optional<TrafficRuleConfiguration> configuration = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData()
                 .findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
         check(sqlStatement, configuration);
