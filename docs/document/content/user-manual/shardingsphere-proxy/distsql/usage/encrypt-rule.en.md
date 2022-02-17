@@ -43,7 +43,7 @@ CREATE TABLE `t_encrypt` (
 ```sql
 ALTER ENCRYPT RULE t_encrypt (
     COLUMNS(
-        (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),
+        (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc')))
 ));
 ```
 
