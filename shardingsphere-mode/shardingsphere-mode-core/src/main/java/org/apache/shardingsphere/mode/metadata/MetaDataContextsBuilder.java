@@ -46,6 +46,7 @@ import java.util.Properties;
  */
 public final class MetaDataContextsBuilder {
     
+    @Getter
     private final Map<String, SchemaConfiguration> schemaConfigMap = new LinkedHashMap<>();
     
     private final Map<String, Collection<ShardingSphereRule>> schemaRulesMap = new LinkedHashMap<>();
@@ -53,6 +54,7 @@ public final class MetaDataContextsBuilder {
     @Getter
     private final Map<String, ShardingSphereSchema> schemaMap = new LinkedHashMap<>();
     
+    @Getter
     private final Collection<RuleConfiguration> globalRuleConfigs;
     
     private final ConfigurationProperties props;

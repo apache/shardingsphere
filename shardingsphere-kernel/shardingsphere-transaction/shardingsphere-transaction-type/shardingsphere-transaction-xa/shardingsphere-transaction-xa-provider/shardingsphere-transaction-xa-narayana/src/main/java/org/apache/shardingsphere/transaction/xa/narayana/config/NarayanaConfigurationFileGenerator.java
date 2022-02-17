@@ -25,13 +25,23 @@ import com.arjuna.ats.internal.jta.recovery.arjunacore.JTAActionStatusServiceXAR
 import com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter;
 import com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter;
 import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
+import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGenerator;
 
+import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
 import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Narayana transaction configuration file generator.
@@ -39,20 +49,22 @@ import java.util.LinkedList;
 public final class NarayanaConfigurationFileGenerator implements TransactionConfigurationFileGenerator {
     
     @Override
-    public void generateFile(final TransactionRule transactionRule, final String instanceId) {
-        NarayanaConfiguration config = createDefaultConfiguration(instanceId);
+    public void generateFile(final TransactionRule transactionRule, final InstanceContext instanceContext) {
+        String instanceId = instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId();
+        String recoveryId = null == instanceContext.getInstance().getXaRecoveryId() ? instanceId : instanceContext.getInstance().getXaRecoveryId();
+        NarayanaConfiguration config = createDefaultConfiguration(instanceId, recoveryId);
         if (null != transactionRule.getProps()) {
-            appendJdbcStoreConfiguration(transactionRule, config);
+            appendUserDefinedJdbcStoreConfiguration(transactionRule, config);
         }
         JAXB.marshal(config, new File(ClassLoader.getSystemResource("").getPath(), "jbossts-properties.xml"));
     }
     
-    private NarayanaConfiguration createDefaultConfiguration(final String instanceId) {
+    private NarayanaConfiguration createDefaultConfiguration(final String instanceId, final String recoveryId) {
         NarayanaConfiguration result = new NarayanaConfiguration();
         result.getEntries().add(createEntry("CoordinatorEnvironmentBean.commitOnePhase", "YES"));
         result.getEntries().add(createEntry("ObjectStoreEnvironmentBean.transactionSync", "NO"));
-        result.getEntries().add(createEntry("CoreEnvironmentBean.nodeIdentifier", null == instanceId ? "1" : instanceId));
-        result.getEntries().add(createEntry("JTAEnvironmentBean.xaRecoveryNodes", null == instanceId ? "1" : instanceId));
+        result.getEntries().add(createEntry("CoreEnvironmentBean.nodeIdentifier", instanceId));
+        result.getEntries().add(createEntry("JTAEnvironmentBean.xaRecoveryNodes", recoveryId));
         result.getEntries().add(createEntry("JTAEnvironmentBean.xaResourceOrphanFilterClassNames", createXAResourceOrphanFilterClassNames()));
         result.getEntries().add(createEntry("CoreEnvironmentBean.socketProcessIdPort", "0"));
         result.getEntries().add(createEntry("RecoveryEnvironmentBean.recoveryModuleClassNames", getRecoveryModuleClassNames()));
@@ -95,27 +107,90 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         return result;
     }
     
-    private void appendJdbcStoreConfiguration(final TransactionRule transactionRule, final NarayanaConfiguration config) {
+    private void appendUserDefinedJdbcStoreConfiguration(final TransactionRule transactionRule, final NarayanaConfiguration config) {
         String url = transactionRule.getProps().getProperty("recoveryStoreUrl");
         String user = transactionRule.getProps().getProperty("recoveryStoreUser");
         String password = String.valueOf(transactionRule.getProps().get("recoveryStorePassword"));
         String dataSourceClass = transactionRule.getProps().getProperty("recoveryStoreDataSource");
         if (null != url && null != user && null != password && null != dataSourceClass) {
-            String jdbcAccessPatten = DynamicDataSourceJDBCAccess.class.getName() + ";ClassName=%s;URL=%s;User=%s;Password=%s";
-            String jdbcAccess = String.format(jdbcAccessPatten, dataSourceClass, url, user, password);
-            config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.objectStoreType", JDBCStore.class.getName()));
-            config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.jdbcAccess", jdbcAccess));
-            config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.tablePrefix", "Action"));
-            config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.dropTable", "true"));
-            config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.objectStoreType", JDBCStore.class.getName()));
-            config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.jdbcAccess", jdbcAccess));
-            config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.tablePrefix", "stateStore"));
-            config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.dropTable", "true"));
-            config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.objectStoreType", JDBCStore.class.getName()));
-            config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.jdbcAccess", jdbcAccess));
-            config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.tablePrefix", "Communication"));
-            config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.dropTable", "true"));
+            appendJdbcStoreConfiguration(url, user, password, dataSourceClass, config);
         }
+    }
+    
+    private void appendJdbcStoreConfiguration(final String jdbcUrl, final String user, final String password, final String dataSourceClassName, final NarayanaConfiguration config) {
+        String jdbcAccessPatten = DynamicDataSourceJDBCAccess.class.getName() + ";ClassName=%s;URL=%s;User=%s;Password=%s";
+        String jdbcAccess = String.format(jdbcAccessPatten, dataSourceClassName, jdbcUrl, user, password);
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.objectStoreType", JDBCStore.class.getName()));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.jdbcAccess", jdbcAccess));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.tablePrefix", "Action"));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.dropTable", "true"));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.objectStoreType", JDBCStore.class.getName()));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.jdbcAccess", jdbcAccess));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.tablePrefix", "stateStore"));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.dropTable", "true"));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.objectStoreType", JDBCStore.class.getName()));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.jdbcAccess", jdbcAccess));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.tablePrefix", "Communication"));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.dropTable", "true"));
+    }
+    
+    @Override
+    public Properties getTransactionProps(final TransactionRuleConfiguration transactionRuleConfiguration, final SchemaConfiguration schemaConfiguration) {
+        Properties result = new Properties();
+        if (!transactionRuleConfiguration.getProps().isEmpty()) {
+            getUserDefinedJdbcStoreConfiguration(transactionRuleConfiguration, result);
+        } else {
+            getDefaultJdbcStoreConfiguration(schemaConfiguration, result);
+        }
+        return result;
+    }
+    
+    private void getUserDefinedJdbcStoreConfiguration(final TransactionRuleConfiguration transactionRuleConfiguration, final Properties props) {
+        String url = transactionRuleConfiguration.getProps().getProperty("recoveryStoreUrl");
+        String user = transactionRuleConfiguration.getProps().getProperty("recoveryStoreUser");
+        String password = String.valueOf(transactionRuleConfiguration.getProps().get("recoveryStorePassword"));
+        String dataSourceClass = transactionRuleConfiguration.getProps().getProperty("recoveryStoreDataSource");
+        generateTransactionProps(url, user, password, dataSourceClass, props);
+    }
+    
+    private void getDefaultJdbcStoreConfiguration(final SchemaConfiguration schemaConfiguration, final Properties props) {
+        Map<String, DataSource> datasourceMap = schemaConfiguration.getDataSources();
+        Optional<DataSource> dataSource = datasourceMap.values().stream().findFirst();
+        if (dataSource.isPresent()) {
+            HikariDataSource hikariDataSource = (HikariDataSource) dataSource.get();
+            int endIndex = hikariDataSource.getJdbcUrl().indexOf("?");
+            String jdbcUrl = hikariDataSource.getJdbcUrl().substring(0, endIndex);
+            String user = hikariDataSource.getUsername();
+            String password = hikariDataSource.getPassword();
+            String dataSourceClassName = getDataSourceClassNameByJdbcUrl(jdbcUrl);
+            generateTransactionProps(jdbcUrl, user, password, dataSourceClassName, props);
+        }
+    }
+    
+    private String getDataSourceClassNameByJdbcUrl(final String jdbcUrl) {
+        DatabaseType type = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl);
+        return getDataSourceClassNameByDatabaseType(type);
+    }
+    
+    private String getDataSourceClassNameByDatabaseType(final DatabaseType databaseType) {
+        switch (databaseType.getName()) {
+            case "MySQL":
+                return "com.mysql.jdbc.jdbc2.optional.MysqlDataSource";
+            case "PostgreSQL":
+                return "org.postgresql.ds.PGSimpleDataSource";
+            case "openGauss":
+                return "org.opengauss.ds.PGSimpleDataSource";
+            default:
+                throw new UnsupportedOperationException(String.format("Cannot support database type: `%s` as narayana recovery store", databaseType));
+        }
+    }
+    
+    private void generateTransactionProps(final String recoveryStoreUrl, final String recoveryStoreUser, final String recoveryStorePassword, final String recoveryStoreDataSource,
+                                          final Properties props) {
+        props.setProperty("recoveryStoreUrl", recoveryStoreUrl);
+        props.setProperty("recoveryStoreUser", recoveryStoreUser);
+        props.setProperty("recoveryStorePassword", recoveryStorePassword);
+        props.setProperty("recoveryStoreDataSource", recoveryStoreDataSource);
     }
     
     @Override

@@ -24,10 +24,12 @@ import com.arjuna.ats.internal.jta.recovery.arjunacore.JTAActionStatusServiceXAR
 import com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter;
 import com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter;
 import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -42,6 +44,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 public final class NarayanaConfigurationFileGeneratorTest {
     
@@ -51,12 +54,17 @@ public final class NarayanaConfigurationFileGeneratorTest {
     
     private String jdbcAccess;
     
+    @Mock
+    private InstanceContext instanceContext;
+    
     @Before
     public void setUp() {
         TransactionRuleConfiguration transactionRuleConfiguration = createTransactionRuleConfiguration();
         transactionRule = new TransactionRule(transactionRuleConfiguration);
         jdbcAccess = "com.arjuna.ats.internal.arjuna.objectstore.jdbc.accessors.DynamicDataSourceJDBCAccess;ClassName=com.mysql.jdbc.jdbc2.optional.MysqlDataSource;"
                 + "URL=jdbc:mysql://127.0.0.1:3306/jbossts;User=root;Password=12345678";
+        when(instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId()).thenReturn("127.0.0.1@3307");
+        when(instanceContext.getInstance().getXaRecoveryId()).thenReturn("127.0.0.1@3307");
     }
     
     private TransactionRuleConfiguration createTransactionRuleConfiguration() {
@@ -70,7 +78,7 @@ public final class NarayanaConfigurationFileGeneratorTest {
     
     @Test
     public void assertNarayanaConfigurationFileGenerator() throws JAXBException, FileNotFoundException {
-        narayanaConfigurationFileGenerator.generateFile(transactionRule, "1");
+        narayanaConfigurationFileGenerator.generateFile(transactionRule, instanceContext);
         JAXBContext jaxbContext = JAXBContext.newInstance(NarayanaConfiguration.class);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         InputStream inputStream = new FileInputStream(new File(ClassLoader.getSystemResource("").getPath(), "jbossts-properties.xml"));
@@ -120,14 +128,14 @@ public final class NarayanaConfigurationFileGeneratorTest {
         Optional<NarayanaConfigEntry> entry = configuration.getEntries().stream().filter(each -> "CoreEnvironmentBean.nodeIdentifier".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertThat(entry.get().getValue().size(), is(1));
-        assertTrue(entry.get().getValue().contains("1"));
+        assertTrue(entry.get().getValue().contains("127.0.0.1@3307"));
     }
     
     private void assertXaRecoveryNodes(final NarayanaConfiguration configuration) {
         Optional<NarayanaConfigEntry> entry = configuration.getEntries().stream().filter(each -> "JTAEnvironmentBean.xaRecoveryNodes".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertThat(entry.get().getValue().size(), is(1));
-        assertTrue(entry.get().getValue().contains("1"));
+        assertTrue(entry.get().getValue().contains("127.0.0.1@3307"));
     }
     
     private void assertXaResourceOrphanFilterClassNames(final NarayanaConfiguration configuration) {

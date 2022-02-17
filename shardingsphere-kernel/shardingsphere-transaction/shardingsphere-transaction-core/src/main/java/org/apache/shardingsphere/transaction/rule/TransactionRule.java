@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.transaction.rule;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -34,6 +35,7 @@ public final class TransactionRule implements GlobalRule {
     
     private final String providerType;
     
+    @Setter
     private final Properties props; 
     
     public TransactionRule(final TransactionRuleConfiguration ruleConfig) {

@@ -31,6 +31,7 @@ import org.apache.shardingsphere.mode.metadata.persist.service.impl.GlobalRulePe
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -138,5 +139,21 @@ public final class MetaDataPersistService {
             }
         }
         return result;
+    }
+    
+    /**
+     * Persist transaction rule.
+     *
+     * @param props transaction props
+     * @param isOverwrite whether overwrite registry center's configuration if existed
+     */
+    public void persistTransactionRule(final Properties props, final boolean isOverwrite) {
+        Collection<RuleConfiguration> ruleConfigurations = globalRuleService.load();
+        for (RuleConfiguration each : ruleConfigurations) {
+            if (each instanceof TransactionRuleConfiguration) {
+                ((TransactionRuleConfiguration) each).getProps().putAll(props);
+            }
+        }
+        globalRuleService.persist(ruleConfigurations, isOverwrite);
     }
 }
