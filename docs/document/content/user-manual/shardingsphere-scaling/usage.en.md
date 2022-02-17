@@ -253,7 +253,6 @@ Current scaling job is finished, new sharding rule should take effect, and not i
 | RUNNING                                           | running                                                      |
 | EXECUTE_INVENTORY_TASK                            | inventory task running                                       |
 | EXECUTE_INCREMENTAL_TASK                          | incremental task running                                     |
-| ALMOST_FINISHED                                   | almost finished                                              |
 | FINISHED                                          | finished (The whole process is completed, and the new rules have been taken effect) |
 | PREPARING_FAILURE                                 | preparation failed                                           |
 | EXECUTE_INVENTORY_TASK_FAILURE                    | inventory task failed                                        |
