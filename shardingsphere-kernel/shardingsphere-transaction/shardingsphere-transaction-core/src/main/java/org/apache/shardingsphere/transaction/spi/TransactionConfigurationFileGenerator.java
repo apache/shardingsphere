@@ -43,8 +43,8 @@ public interface TransactionConfigurationFileGenerator extends TypedSPI {
     /**
      * Get transaction configuration.
      *
-     * @param transactionRuleConfiguration
-     * @param schemaConfiguration
+     * @param transactionRuleConfiguration transaction rule configuration
+     * @param schemaConfiguration schema configuration
      */
     Properties getTransactionProps(TransactionRuleConfiguration transactionRuleConfiguration, SchemaConfiguration schemaConfiguration);
 }
