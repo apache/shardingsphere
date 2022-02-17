@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementBaseVisi
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ApplyScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.BatchSizeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CheckScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CompletionDetectorContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CreateShardingScalingRuleContext;
@@ -43,6 +44,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.S
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StopScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StopScalingSourceWritingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StreamChannelContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.WorkerThreadContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.scaling.distsql.statement.ApplyScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.CheckScalingStatement;
@@ -159,18 +161,38 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitInputDefinition(final InputDefinitionContext ctx) {
-        int workerThread = Integer.parseInt(ctx.workerThread().intValue().getText());
-        int batchSize = Integer.parseInt(ctx.batchSize().intValue().getText());
-        AlgorithmSegment rateLimiter = (AlgorithmSegment) visit(ctx.rateLimiter());
+        Integer workerThread = getWorkerThread(ctx.workerThread());
+        Integer batchSize = getBatchSize(ctx.batchSize());
+        AlgorithmSegment rateLimiter = null;
+        if (null != ctx.rateLimiter()) {
+            rateLimiter = (AlgorithmSegment) visit(ctx.rateLimiter());
+        }
         return new InputOrOutputSegment(workerThread, batchSize, rateLimiter);
     }
     
     @Override
     public ASTNode visitOutputDefinition(final OutputDefinitionContext ctx) {
-        int workerThread = Integer.parseInt(ctx.workerThread().intValue().getText());
-        int batchSize = Integer.parseInt(ctx.batchSize().intValue().getText());
-        AlgorithmSegment rateLimiter = (AlgorithmSegment) visit(ctx.rateLimiter());
+        Integer workerThread = getWorkerThread(ctx.workerThread());
+        Integer batchSize = getBatchSize(ctx.batchSize());
+        AlgorithmSegment rateLimiter = null;
+        if (null != ctx.rateLimiter()) {
+            rateLimiter = (AlgorithmSegment) visit(ctx.rateLimiter());
+        }
         return new InputOrOutputSegment(workerThread, batchSize, rateLimiter);
+    }
+    
+    private Integer getWorkerThread(final WorkerThreadContext ctx) {
+        if (null == ctx) {
+            return null;
+        }
+        return Integer.parseInt(ctx.intValue().getText());
+    }
+    
+    private Integer getBatchSize(final BatchSizeContext ctx) {
+        if (null == ctx) {
+            return null;
+        }
+        return Integer.parseInt(ctx.intValue().getText());
     }
     
     @Override

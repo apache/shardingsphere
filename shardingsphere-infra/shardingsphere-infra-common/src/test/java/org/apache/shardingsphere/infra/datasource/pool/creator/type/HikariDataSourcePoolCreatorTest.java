@@ -36,7 +36,6 @@ public final class HikariDataSourcePoolCreatorTest {
     public void assertCreateDataSource() {
         HikariDataSource actual = (HikariDataSource) DataSourcePoolCreator.create(new DataSourceProperties(HikariDataSource.class.getName(), createDataSourceProperties()));
         assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
-        assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getName()));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("root"));
         assertThat(actual.getDataSourceProperties(), is(createJdbcUrlProperties()));

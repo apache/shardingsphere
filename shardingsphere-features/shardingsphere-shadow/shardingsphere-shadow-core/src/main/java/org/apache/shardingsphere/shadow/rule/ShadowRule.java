@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -216,7 +217,7 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
      */
     public Map<String, String> getAllShadowDataSourceMappings() {
         Map<String, String> result = new LinkedHashMap<>();
-        for (Map.Entry<String, ShadowDataSourceRule> entry : shadowDataSourceMappings.entrySet()) {
+        for (Entry<String, ShadowDataSourceRule> entry : shadowDataSourceMappings.entrySet()) {
             ShadowDataSourceRule rule = entry.getValue();
             result.put(rule.getSourceDataSource(), rule.getShadowDataSource());
         }
