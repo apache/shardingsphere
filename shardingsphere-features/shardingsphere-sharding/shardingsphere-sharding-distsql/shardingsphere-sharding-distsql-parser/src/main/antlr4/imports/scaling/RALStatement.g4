@@ -60,5 +60,5 @@ applyScaling
     ;
 
 jobId
-    : INT
+    : INT | IDENTIFIER
     ;
