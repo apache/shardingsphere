@@ -21,6 +21,7 @@ import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -114,10 +115,10 @@ public final class SchemaMetaDataNode {
      * @param configurationNodeFullPath configuration node full path
      * @return schema name
      */
-    public static String getSchemaName(final String configurationNodeFullPath) {
+    public static Optional<String> getSchemaName(final String configurationNodeFullPath) {
         Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)" + "(/datasources|/rules|/tables)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(configurationNodeFullPath);
-        return matcher.find() ? matcher.group(1) : "";
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
     
     /**
@@ -126,23 +127,22 @@ public final class SchemaMetaDataNode {
      * @param schemaPath schema path
      * @return schema name
      */
-    public static String getSchemaNameBySchemaPath(final String schemaPath) {
+    public static Optional<String> getSchemaNameBySchemaPath(final String schemaPath) {
         Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(schemaPath);
-        return matcher.find() ? matcher.group(1) : "";
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
     
     /**
      * Get table meta data path.
-     * 
-     * @param schemaName schema name
+     *
      * @param tableMetaDataPath table meta data path
      * @return table name
      */
-    public static String getTableName(final String schemaName, final String tableMetaDataPath) {
-        Pattern pattern = Pattern.compile(getMetaDataTablesPath(schemaName) + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+    public static Optional<String> getTableName(final String tableMetaDataPath) {
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/tables" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(tableMetaDataPath);
-        return matcher.find() ? matcher.group(1) : "";
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
     
     /**
@@ -153,5 +153,29 @@ public final class SchemaMetaDataNode {
      */
     public static String getActiveVersionPath(final String schemaName) {
         return getFullMetaDataPath(schemaName, ACTIVE_VERSION);
+    }
+    
+    /**
+     * Get version by data sources path.
+     * 
+     * @param dataSourceNodeFullPath data sources node full path
+     * @return version
+     */
+    public static Optional<String> getVersionByDataSourcesPath(final String dataSourceNodeFullPath) {
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)" + "/versions/([\\w\\-]+)/dataSources", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+    }
+    
+    /**
+     * Get version by rules path.
+     *
+     * @param rulesNodeFullPath rules node full path
+     * @return version
+     */
+    public static Optional<String> getVersionByRulesPath(final String rulesNodeFullPath) {
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)" + "/versions/([\\w\\-]+)/rules", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rulesNodeFullPath);
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
 }

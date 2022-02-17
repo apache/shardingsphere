@@ -33,5 +33,7 @@ public final class RuleConfigurationsChangedEvent implements GovernanceEvent {
     
     private final String schemaName;
     
+    private final String schemaVersion;
+    
     private final Collection<RuleConfiguration> ruleConfigurations;
 }
