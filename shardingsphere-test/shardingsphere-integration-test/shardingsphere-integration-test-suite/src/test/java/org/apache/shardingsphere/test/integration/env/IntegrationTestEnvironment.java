@@ -47,7 +47,7 @@ public final class IntegrationTestEnvironment {
     
     private final Collection<String> clusterAdapters;
     
-    private final Collection<DatabaseType> databaseTypes;
+    private final Collection<DatabaseType> clusterDatabaseTypes;
     
     private IntegrationTestEnvironment() {
         Properties engineEnvProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
@@ -56,7 +56,7 @@ public final class IntegrationTestEnvironment {
         scenarios = getScenarios(engineEnvProps);
         clusterEnvironmentType = getClusterEnvironmentType(engineEnvProps);
         clusterAdapters = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.cluster.adapters"));
-        databaseTypes = getDatabaseTypes(engineEnvProps);
+        clusterDatabaseTypes = getClusterDatabaseTypes(engineEnvProps);
     }
     
     private Collection<String> getScenarios(final Properties engineEnvProps) {
@@ -79,8 +79,8 @@ public final class IntegrationTestEnvironment {
         }
     }
     
-    private Set<DatabaseType> getDatabaseTypes(final Properties engineEnvProps) {
-        return Arrays.stream(engineEnvProps.getProperty("it.databases").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toSet());
+    private Set<DatabaseType> getClusterDatabaseTypes(final Properties engineEnvProps) {
+        return Arrays.stream(engineEnvProps.getProperty("it.cluster.databases").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toSet());
     }
     
     /**
