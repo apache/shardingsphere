@@ -236,7 +236,7 @@ Response:
 ```
 mysql> show scaling status 660152090995195904;
 +------+-------------+----------+-------------------------------+--------------------------+
-| item | data_source | status   | inventory_finished_percentage | incremental_idle_minutes |
+| item | data_source | status   | inventory_finished_percentage | incremental_idle_seconds |
 +------+-------------+----------+-------------------------------+--------------------------+
 | 0    | ds_1        | FINISHED | 100                           | 2834                     |
 | 1    | ds_0        | FINISHED | 100                           | 2834                     |
