@@ -24,12 +24,18 @@ import com.arjuna.ats.internal.jta.recovery.arjunacore.JTAActionStatusServiceXAR
 import com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter;
 import com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter;
 import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import static org.mockito.Mockito.mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -46,6 +52,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class NarayanaConfigurationFileGeneratorTest {
     
     private final NarayanaConfigurationFileGenerator narayanaConfigurationFileGenerator = new NarayanaConfigurationFileGenerator();
@@ -63,8 +70,14 @@ public final class NarayanaConfigurationFileGeneratorTest {
         transactionRule = new TransactionRule(transactionRuleConfiguration);
         jdbcAccess = "com.arjuna.ats.internal.arjuna.objectstore.jdbc.accessors.DynamicDataSourceJDBCAccess;ClassName=com.mysql.jdbc.jdbc2.optional.MysqlDataSource;"
                 + "URL=jdbc:mysql://127.0.0.1:3306/jbossts;User=root;Password=12345678";
-        when(instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId()).thenReturn("127.0.0.1@3307");
-        when(instanceContext.getInstance().getXaRecoveryId()).thenReturn("127.0.0.1@3307");
+        InstanceId instanceId = mock(InstanceId.class);
+        when(instanceId.getId()).thenReturn("127.0.0.1@3307");
+        InstanceDefinition instanceDefinition = mock(InstanceDefinition.class);
+        when(instanceDefinition.getInstanceId()).thenReturn(instanceId);
+        ComputeNodeInstance computeNodeInstance = mock(ComputeNodeInstance.class);
+        when(computeNodeInstance.getInstanceDefinition()).thenReturn(instanceDefinition);
+        when(computeNodeInstance.getXaRecoveryId()).thenReturn("127.0.0.1@3307");
+        when(instanceContext.getInstance()).thenReturn(computeNodeInstance);
     }
     
     private TransactionRuleConfiguration createTransactionRuleConfiguration() {

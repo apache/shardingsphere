@@ -19,12 +19,10 @@ package org.apache.shardingsphere.transaction.spi;
 
 import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
-import javax.sql.DataSource;
 import java.util.Properties;
 
 /**
@@ -45,6 +43,7 @@ public interface TransactionConfigurationFileGenerator extends TypedSPI {
      *
      * @param transactionRuleConfiguration transaction rule configuration
      * @param schemaConfiguration schema configuration
+     * @return transaction rule props
      */
     Properties getTransactionProps(TransactionRuleConfiguration transactionRuleConfiguration, SchemaConfiguration schemaConfiguration);
 }
