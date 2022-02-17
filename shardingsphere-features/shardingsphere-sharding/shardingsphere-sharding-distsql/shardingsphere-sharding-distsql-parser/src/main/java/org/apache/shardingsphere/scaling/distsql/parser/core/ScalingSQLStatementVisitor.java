@@ -35,6 +35,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.I
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.OutputDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.RateLimiterContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ResetScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.RestoreScalingSourceWritingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ScalingRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingCheckAlgorithmsContext;
@@ -55,6 +56,7 @@ import org.apache.shardingsphere.scaling.distsql.statement.DropScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.DropShardingScalingRuleStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.EnableShardingScalingRuleStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ResetScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.RestoreScalingSourceWritingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingCheckAlgorithmsStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingListStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingStatusStatement;
@@ -123,6 +125,11 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     @Override
     public ASTNode visitStopScalingSourceWriting(final StopScalingSourceWritingContext ctx) {
         return new StopScalingSourceWritingStatement(getIdentifierValue(ctx.jobId()));
+    }
+    
+    @Override
+    public ASTNode visitRestoreScalingSourceWriting(final RestoreScalingSourceWritingContext ctx) {
+        return new RestoreScalingSourceWritingStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override

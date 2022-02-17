@@ -15,54 +15,18 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+package org.apache.shardingsphere.scaling.distsql.statement;
 
-import BaseRule;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
-showScalingList
-    : SHOW SCALING LIST
-    ;
-
-showScalingStatus
-    : SHOW SCALING STATUS jobId
-    ;
-
-startScaling
-    : START SCALING jobId
-    ;
-
-stopScaling
-    : STOP SCALING jobId
-    ;
-
-dropScaling
-    : DROP SCALING jobId
-    ;
-
-resetScaling
-    : RESET SCALING jobId
-    ;
-
-checkScaling
-    : CHECK SCALING jobId (BY algorithmDefinition)?
-    ;
-
-showScalingCheckAlgorithms
-    : SHOW SCALING CHECK ALGORITHMS
-    ;
-
-stopScalingSourceWriting
-    : STOP SCALING SOURCE WRITING jobId
-    ;
-
-restoreScalingSourceWriting
-    : RESTORE SCALING SOURCE WRITING jobId
-    ;
-
-applyScaling
-    : APPLY SCALING jobId
-    ;
-
-jobId
-    : INT | IDENTIFIER
-    ;
+/**
+ * Restore scaling source writing statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class RestoreScalingSourceWritingStatement extends UpdatableRALStatement {
+    
+    private final String jobId;
+}

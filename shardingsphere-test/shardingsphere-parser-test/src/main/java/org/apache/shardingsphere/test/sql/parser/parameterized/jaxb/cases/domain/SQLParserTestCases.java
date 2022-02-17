@@ -194,6 +194,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.UnlabelInstanceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ApplyScalingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.CheckScalingStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.RestoreScalingSourceWritingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ShowScalingCheckAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.StopScalingSourceWritingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryConstructionRuleStatementTestCase;
@@ -748,6 +749,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "stop-scaling-source-writing")
     private final List<StopScalingSourceWritingStatementTestCase> stopScalingSourceWritingStatementTestCase = new LinkedList<>();
     
+    @XmlElement(name = "restore-scaling-source-writing")
+    private final List<RestoreScalingSourceWritingStatementTestCase> restoreScalingSourceWritingStatementTestCase = new LinkedList<>();
+    
     @XmlElement(name = "apply-scaling")
     private final List<ApplyScalingStatementTestCase> applyScalingStatementTestCases = new LinkedList<>();
     
@@ -1250,6 +1254,7 @@ public final class SQLParserTestCases {
         putAll(checkScalingStatementTestCase, result);
         putAll(showScalingCheckAlgorithmsStatementTestCase, result);
         putAll(stopScalingSourceWritingStatementTestCase, result);
+        putAll(restoreScalingSourceWritingStatementTestCase, result);
         putAll(applyScalingStatementTestCases, result);
         putAll(createShardingScalingRuleStatementTestCases, result);
         putAll(dropShardingScalingRuleStatementTestCases, result);
