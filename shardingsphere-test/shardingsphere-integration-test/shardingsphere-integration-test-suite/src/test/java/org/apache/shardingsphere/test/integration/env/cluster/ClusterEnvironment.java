@@ -17,16 +17,19 @@
 
 package org.apache.shardingsphere.test.integration.env.cluster;
 
+import com.google.common.base.Splitter;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Cluster environment.
  */
-@RequiredArgsConstructor
 @Getter
 public final class ClusterEnvironment {
     
@@ -35,4 +38,30 @@ public final class ClusterEnvironment {
     private final Collection<String> adapters;
     
     private final Collection<DatabaseType> databaseTypes;
+    
+    public ClusterEnvironment(final Properties envProps) {
+        environmentType = getEnvironmentType(envProps);
+        adapters = getAdapters(envProps);
+        databaseTypes = getDatabaseTypes(envProps);
+    }
+    
+    private ClusterEnvironmentType getEnvironmentType(final Properties envProps) {
+        String value = envProps.getProperty("it.cluster.env.type");
+        if (null == value) {
+            return ClusterEnvironmentType.NATIVE;
+        }
+        try {
+            return ClusterEnvironmentType.valueOf(value);
+        } catch (final IllegalArgumentException ignored) {
+            return ClusterEnvironmentType.NATIVE;
+        }
+    }
+    
+    private Collection<String> getAdapters(final Properties envProps) {
+        return Splitter.on(",").trimResults().splitToList(envProps.getProperty("it.cluster.adapters"));
+    }
+    
+    private Collection<DatabaseType> getDatabaseTypes(final Properties envProps) {
+        return Arrays.stream(envProps.getProperty("it.cluster.databases").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toSet());
+    }
 }
