@@ -103,12 +103,6 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
-    public void deleteJobProgress(final String jobId) {
-        log.info("delete job progress {}", jobId);
-        repository.delete(String.format("%s/%s/offset", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId));
-    }
-    
-    @Override
     public void deleteJob(final String jobId) {
         log.info("delete job {}", jobId);
         repository.delete(String.format("%s/%s", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId));

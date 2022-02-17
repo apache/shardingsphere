@@ -62,13 +62,6 @@ public interface GovernanceRepositoryAPI {
     Optional<Boolean> getJobCheckResult(String jobId);
     
     /**
-     * Delete job progress.
-     *
-     * @param jobId job id
-     */
-    void deleteJobProgress(String jobId);
-    
-    /**
      * Delete job.
      *
      * @param jobId job id
