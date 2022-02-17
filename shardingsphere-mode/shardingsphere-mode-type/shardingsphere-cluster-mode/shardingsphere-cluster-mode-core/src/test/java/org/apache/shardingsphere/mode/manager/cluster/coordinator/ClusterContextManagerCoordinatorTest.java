@@ -172,7 +172,7 @@ public final class ClusterContextManagerCoordinatorTest {
     @Test
     public void assertRuleConfigurationsChanged() {
         assertThat(contextManager.getMetaDataContexts().getMetaData("schema"), is(metaData));
-        RuleConfigurationsChangedEvent event = new RuleConfigurationsChangedEvent("schema", new LinkedList<>());
+        RuleConfigurationsChangedEvent event = new RuleConfigurationsChangedEvent("schema", "0", new LinkedList<>());
         coordinator.renew(event);
         assertThat(contextManager.getMetaDataContexts().getMetaData("schema"), not(metaData));
     }
@@ -185,7 +185,7 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertDataSourceChanged() {
-        DataSourceChangedEvent event = new DataSourceChangedEvent("schema", getChangedDataSourcePropertiesMap());
+        DataSourceChangedEvent event = new DataSourceChangedEvent("schema", "0", getChangedDataSourcePropertiesMap());
         coordinator.renew(event);
         assertTrue(contextManager.getMetaDataContexts().getMetaData("schema").getResource().getDataSources().containsKey("ds_2"));
     }
