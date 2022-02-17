@@ -83,27 +83,27 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitShowScalingStatus(final ShowScalingStatusContext ctx) {
-        return new ShowScalingStatusStatement(ctx.jobId().getText());
+        return new ShowScalingStatusStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
     public ASTNode visitStartScaling(final StartScalingContext ctx) {
-        return new StartScalingStatement(ctx.jobId().getText());
+        return new StartScalingStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
     public ASTNode visitStopScaling(final StopScalingContext ctx) {
-        return new StopScalingStatement(ctx.jobId().getText());
+        return new StopScalingStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
     public ASTNode visitDropScaling(final DropScalingContext ctx) {
-        return new DropScalingStatement(ctx.jobId().getText());
+        return new DropScalingStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
     public ASTNode visitResetScaling(final ResetScalingContext ctx) {
-        return new ResetScalingStatement(ctx.jobId().getText());
+        return new ResetScalingStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
@@ -112,7 +112,7 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
         if (null != ctx.algorithmDefinition()) {
             typeStrategy = (AlgorithmSegment) visit(ctx.algorithmDefinition());
         }
-        return new CheckScalingStatement(ctx.jobId().getText(), typeStrategy);
+        return new CheckScalingStatement(getIdentifierValue(ctx.jobId()), typeStrategy);
     }
     
     @Override
@@ -122,12 +122,12 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitStopScalingSourceWriting(final StopScalingSourceWritingContext ctx) {
-        return new StopScalingSourceWritingStatement(ctx.jobId().getText());
+        return new StopScalingSourceWritingStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
     public ASTNode visitApplyScaling(final ApplyScalingContext ctx) {
-        return new ApplyScalingStatement(ctx.jobId().getText());
+        return new ApplyScalingStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
