@@ -82,7 +82,7 @@ public abstract class BatchITCase extends BaseITCase {
     
     @Override
     public void tearDown() throws Exception {
-        dataSetEnvironmentManager.clearData();
+        dataSetEnvironmentManager.cleanData();
         super.tearDown();
     }
     
