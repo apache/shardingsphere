@@ -61,7 +61,7 @@ public final class EncryptRuleQueryResultSet implements DistSQLResultSet {
             result.add(Arrays.asList(tableRuleConfiguration.getName(), each.getLogicColumn(), each.getLogicDataType(), each.getCipherColumn(), each.getCipherDataType(),
                     each.getPlainColumn(), each.getPlainDataType(), each.getAssistedQueryColumn(), each.getAssistedQueryDataType(),
                     algorithmConfiguration.getType(), PropertiesConverter.convert(algorithmConfiguration.getProps()),
-                    Objects.isNull(tableRuleConfiguration.getQueryWithCipherColumn()) ? Boolean.FALSE.toString() : tableRuleConfiguration.getQueryWithCipherColumn().toString()));
+                    Objects.isNull(tableRuleConfiguration.getQueryWithCipherColumn()) ? Boolean.TRUE.toString() : tableRuleConfiguration.getQueryWithCipherColumn().toString()));
         });
         return result;
     }
