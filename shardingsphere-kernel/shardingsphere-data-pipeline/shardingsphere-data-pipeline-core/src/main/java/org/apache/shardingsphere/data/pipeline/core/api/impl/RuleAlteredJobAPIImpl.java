@@ -326,8 +326,8 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         // TODO clean up should be done after the task is complete.
         try {
             TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (final InterruptedException ex) {
+            log.error(ex.getMessage());
         }
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig);
         RuleAlteredJobPreparer jobPreparer = new RuleAlteredJobPreparer();
