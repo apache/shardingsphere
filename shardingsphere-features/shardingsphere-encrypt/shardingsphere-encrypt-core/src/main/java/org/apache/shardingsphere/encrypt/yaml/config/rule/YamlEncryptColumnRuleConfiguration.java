@@ -30,19 +30,11 @@ public final class YamlEncryptColumnRuleConfiguration implements YamlConfigurati
     
     private String logicColumn;
     
-    private String logicDataType;
-    
     private String cipherColumn;
-    
-    private String cipherDataType;
     
     private String assistedQueryColumn;
     
-    private String assistedQueryDataType;
-    
     private String plainColumn;
-    
-    private String plainDataType;
     
     private String encryptorName;
 }
