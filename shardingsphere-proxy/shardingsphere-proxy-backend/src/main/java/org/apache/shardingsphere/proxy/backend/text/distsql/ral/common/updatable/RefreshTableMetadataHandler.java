@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
-import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.RefreshTableMetadataStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBack
 /**
  * Refresh table metadata handler.
  */
-@Getter
 public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandler<RefreshTableMetadataStatement, RefreshTableMetadataHandler> {
     
     private ConnectionSession connectionSession;

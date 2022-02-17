@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.drop.DropTrafficRuleStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
@@ -37,7 +36,6 @@ import java.util.stream.Collectors;
 /**
  * Drop traffic rule statement handler.
  */
-@RequiredArgsConstructor
 public final class DropTrafficRuleHandler extends UpdatableRALBackendHandler<DropTrafficRuleStatement, DropTrafficRuleHandler> {
     
     @Override

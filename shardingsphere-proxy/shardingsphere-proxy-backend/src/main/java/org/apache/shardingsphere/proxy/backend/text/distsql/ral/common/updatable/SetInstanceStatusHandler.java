@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
-import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetInstanceStatusStatement;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
@@ -38,7 +37,6 @@ import java.util.Optional;
 /**
  * Set instance status handler.
  */
-@AllArgsConstructor
 public final class SetInstanceStatusHandler extends UpdatableRALBackendHandler<SetInstanceStatusStatement, SetInstanceStatusHandler> {
     
     @Override

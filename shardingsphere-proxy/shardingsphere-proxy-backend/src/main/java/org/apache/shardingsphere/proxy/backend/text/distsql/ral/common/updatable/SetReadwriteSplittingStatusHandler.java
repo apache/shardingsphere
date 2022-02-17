@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
-import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
@@ -50,7 +49,6 @@ import java.util.stream.Collectors;
 /**
  * Set readwrite-splitting status handler.
  */
-@AllArgsConstructor
 public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBackendHandler<SetReadwriteSplittingStatusStatement, SetReadwriteSplittingStatusHandler> {
     
     private static final String DISABLE = "DISABLE";

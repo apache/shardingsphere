@@ -27,6 +27,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatem
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.RefreshTableMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterTransactionRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.drop.DropTrafficRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.LabelInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetInstanceStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
@@ -41,6 +42,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.Advance
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.CommonDistSQLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.AlterSQLParserRuleHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.AlterTrafficRuleHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.AlterTransactionRuleHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.CreateTrafficRuleHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.DropTrafficRuleHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.LabelInstanceHandler;
@@ -73,9 +75,10 @@ public final class RALBackendHandlerFactory {
         handlerMap.put(SetReadwriteSplittingStatusStatement.class.getName(), SetReadwriteSplittingStatusHandler.class);
         handlerMap.put(RefreshTableMetadataStatement.class.getName(), RefreshTableMetadataHandler.class);
         handlerMap.put(CreateTrafficRuleStatement.class.getName(), CreateTrafficRuleHandler.class);
-        handlerMap.put(AlterSQLParserRuleStatement.class.getName(), AlterSQLParserRuleHandler.class);
         handlerMap.put(AlterTrafficRuleStatement.class.getName(), AlterTrafficRuleHandler.class);
-        handlerMap.put(AlterTransactionRuleStatement.class.getName(), DropTrafficRuleHandler.class);
+        handlerMap.put(DropTrafficRuleStatement.class.getName(), DropTrafficRuleHandler.class);
+        handlerMap.put(AlterSQLParserRuleStatement.class.getName(), AlterSQLParserRuleHandler.class);
+        handlerMap.put(AlterTransactionRuleStatement.class.getName(), AlterTransactionRuleHandler.class);
     }
     
     /**
@@ -119,7 +122,7 @@ public final class RALBackendHandlerFactory {
     private static RALBackendHandler getHandler(final RALStatement sqlStatement, final HandlerParameter<RALStatement> parameter) {
         Class<? extends RALBackendHandler> clazz = handlerMap.get(sqlStatement.getClass().getName());
         if (null == clazz) {
-            throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
+            throw new UnsupportedOperationException(String.format("Unsupported statement : %s", sqlStatement.getClass().getCanonicalName()));
         }
         return newInstance(clazz).init(parameter);
     }

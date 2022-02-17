@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -42,7 +41,6 @@ import java.util.Properties;
 /**
  * Set variable statement handler.
  */
-@RequiredArgsConstructor
 public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVariableStatement, SetVariableHandler> {
     
     private ConnectionSession connectionSession;

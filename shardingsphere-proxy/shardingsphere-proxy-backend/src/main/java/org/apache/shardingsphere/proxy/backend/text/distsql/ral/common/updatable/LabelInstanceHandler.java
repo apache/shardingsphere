@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
-import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.LabelInstanceStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
@@ -35,7 +34,6 @@ import java.util.LinkedHashSet;
 /**
  * Label instance handler.
  */
-@AllArgsConstructor
 public final class LabelInstanceHandler extends UpdatableRALBackendHandler<LabelInstanceStatement, LabelInstanceHandler> {
     
     @Override

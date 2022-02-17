@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
-import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.UnlabelInstanceStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
@@ -36,7 +35,6 @@ import java.util.LinkedHashSet;
 /**
  * Unlabel instance handler.
  */
-@AllArgsConstructor
 public final class UnlabelInstanceHandler extends UpdatableRALBackendHandler<UnlabelInstanceStatement, UnlabelInstanceHandler> {
     
     @Override
