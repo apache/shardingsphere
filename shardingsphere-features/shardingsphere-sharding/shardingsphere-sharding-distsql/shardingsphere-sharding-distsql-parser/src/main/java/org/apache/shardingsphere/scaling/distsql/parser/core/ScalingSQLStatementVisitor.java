@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.distsql.parser.core;
 
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.AlgorithmDefinitionContext;
@@ -131,7 +132,7 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitCreateShardingScalingRule(final CreateShardingScalingRuleContext ctx) {
-        CreateShardingScalingRuleStatement result = new CreateShardingScalingRuleStatement(new IdentifierValue(ctx.scalingName().getText()).getValue());
+        CreateShardingScalingRuleStatement result = new CreateShardingScalingRuleStatement(getIdentifierValue(ctx.scalingName()));
         if (null != ctx.scalingRuleDefinition()) {
             result.setConfigurationSegment((ShardingScalingRuleConfigurationSegment) visit(ctx.scalingRuleDefinition()));
         }
@@ -217,17 +218,17 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitDropShardingScalingRule(final DropShardingScalingRuleContext ctx) {
-        return new DropShardingScalingRuleStatement(new IdentifierValue(ctx.scalingName().getText()).getValue());
+        return new DropShardingScalingRuleStatement(getIdentifierValue(ctx.scalingName()));
     }
     
     @Override
     public ASTNode visitEnableShardingScalingRule(final EnableShardingScalingRuleContext ctx) {
-        return new EnableShardingScalingRuleStatement(new IdentifierValue(ctx.scalingName().getText()).getValue());
+        return new EnableShardingScalingRuleStatement(getIdentifierValue(ctx.scalingName()));
     }
     
     @Override
     public ASTNode visitDisableShardingScalingRule(final DisableShardingScalingRuleContext ctx) {
-        return new DisableShardingScalingRuleStatement(new IdentifierValue(ctx.scalingName().getText()).getValue());
+        return new DisableShardingScalingRuleStatement(getIdentifierValue(ctx.scalingName()));
     }
     
     @Override
@@ -237,7 +238,7 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
-        return new AlgorithmSegment(ctx.algorithmName().getText(), getAlgorithmProperties(ctx));
+        return new AlgorithmSegment(getIdentifierValue(ctx.algorithmName()), getAlgorithmProperties(ctx));
     }
     
     private Properties getAlgorithmProperties(final AlgorithmDefinitionContext ctx) {
@@ -254,5 +255,12 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     @Override
     public ASTNode visitSchemaName(final SchemaNameContext ctx) {
         return new SchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
+    }
+    
+    private String getIdentifierValue(final ParseTree context) {
+        if (null == context) {
+            return null;
+        }
+        return new IdentifierValue(context.getText()).getValue();
     }
 }
