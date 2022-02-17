@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.param;
+package org.apache.shardingsphere.test.integration.framework.param.array;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -15,22 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.param;
+package org.apache.shardingsphere.test.integration.framework.param.array;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Parameterized array generator for cluster mode.
+ * Parameterized array generator for memory mode.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ClusterParameterizedArrayGenerator {
+public final class MemoryParameterizedArrayGenerator {
+    
+    private static final Collection<String> ADAPTERS = Collections.singleton("jdbc");
+    
+    private static final Collection<DatabaseType> DATABASE_TYPES = Collections.singleton(DatabaseTypeRegistry.getActualDatabaseType("H2"));
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
@@ -41,7 +48,7 @@ public final class ClusterParameterizedArrayGenerator {
      * @return assertion parameterized array
      */
     public static Collection<AssertionParameterizedArray> getAssertionParameterized(final SQLCommandType sqlCommandType) {
-        return new ParameterizedArrayGenerator(ENV.getAdapters(), ENV.getScenarios(), ENV.getDatabaseTypes()).getAssertionParameterized(sqlCommandType);
+        return new ParameterizedArrayGenerator(ADAPTERS, ENV.getScenarios(), DATABASE_TYPES).getAssertionParameterized(sqlCommandType);
     }
     
     /**
@@ -51,6 +58,6 @@ public final class ClusterParameterizedArrayGenerator {
      * @return case parameterized array
      */
     public static Collection<ParameterizedArray> getCaseParameterized(final SQLCommandType sqlCommandType) {
-        return new ParameterizedArrayGenerator(ENV.getAdapters(), ENV.getScenarios(), ENV.getDatabaseTypes()).getCaseParameterized(sqlCommandType);
+        return new ParameterizedArrayGenerator(ADAPTERS, ENV.getScenarios(), DATABASE_TYPES).getCaseParameterized(sqlCommandType);
     }
 }
