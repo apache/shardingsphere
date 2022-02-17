@@ -171,118 +171,69 @@ rules:
         databaseStrategy:
           standard:
             shardingColumn: w_id
-            shardingAlgorithmName: bmsql_warehouse_database_inline
+            shardingAlgorithmName: mod_4
 
       bmsql_district:
         actualDataNodes: ds_${0..3}.bmsql_district
         databaseStrategy:
           standard:
             shardingColumn: d_w_id
-            shardingAlgorithmName: bmsql_district_database_inline
+            shardingAlgorithmName: mod_4
 
       bmsql_customer:
         actualDataNodes: ds_${0..3}.bmsql_customer
         databaseStrategy:
           standard:
             shardingColumn: c_w_id
-            shardingAlgorithmName: bmsql_customer_database_inline
+            shardingAlgorithmName: mod_4
 
       bmsql_item:
         actualDataNodes: ds_${0..3}.bmsql_item
         databaseStrategy:
           standard:
             shardingColumn: i_id
-            shardingAlgorithmName: bmsql_item_database_inline
+            shardingAlgorithmName: mod_4
 
       bmsql_history:
         actualDataNodes: ds_${0..3}.bmsql_history
         databaseStrategy:
           standard:
             shardingColumn: h_w_id
-            shardingAlgorithmName: bmsql_history_database_inline
+            shardingAlgorithmName: mod_4
 
       bmsql_oorder:
-        actualDataNodes: ds_${0..3}.bmsql_oorder_${0..3}
+        actualDataNodes: ds_${0..3}.bmsql_oorder
         databaseStrategy:
           standard:
             shardingColumn: o_w_id
-            shardingAlgorithmName: bmsql_oorder_database_inline
-        tableStrategy:
-          standard:
-            shardingColumn: o_c_id
-            shardingAlgorithmName: bmsql_oorder_table_inline
+            shardingAlgorithmName: mod_4
 
       bmsql_stock:
         actualDataNodes: ds_${0..3}.bmsql_stock
         databaseStrategy:
           standard:
             shardingColumn: s_w_id
-            shardingAlgorithmName: bmsql_stock_database_inline
+            shardingAlgorithmName: mod_4
 
       bmsql_new_order:
         actualDataNodes: ds_${0..3}.bmsql_new_order
         databaseStrategy:
           standard:
             shardingColumn: no_w_id
-            shardingAlgorithmName: bmsql_new_order_database_inline
+            shardingAlgorithmName: mod_4
 
       bmsql_order_line:
         actualDataNodes: ds_${0..3}.bmsql_order_line
         databaseStrategy:
           standard:
             shardingColumn: ol_w_id
-            shardingAlgorithmName: bmsql_order_line_database_inline
+            shardingAlgorithmName: mod_4
 
     shardingAlgorithms:
-      bmsql_warehouse_database_inline:
-        type: INLINE
+      mod_4:
+        type: MOD
         props:
-          algorithm-expression: ds_${w_id & 3}
-
-      bmsql_district_database_inline:
-        type: INLINE
-        props:
-          algorithm-expression: ds_${d_w_id & 3}
-
-      bmsql_customer_database_inline:
-        type: INLINE
-        props:
-          algorithm-expression: ds_${c_w_id & 3}
-
-      bmsql_item_database_inline:
-        type: INLINE
-        props:
-          algorithm-expression: ds_${i_id & 3}
-
-      bmsql_history_database_inline:
-        type: INLINE
-        props:
-          algorithm-expression: ds_${h_w_id & 3}
-
-      bmsql_oorder_database_inline:
-        type: INLINE
-        props:
-          algorithm-expression: ds_${o_w_id & 3}
-
-      bmsql_oorder_table_inline:
-        type: INLINE
-        props:
-          algorithm-expression: bmsql_oorder_${o_c_id & 3}
-
-      bmsql_stock_database_inline:
-        type: INLINE
-        props:
-          algorithm-expression: ds_${s_w_id & 3}
-
-      bmsql_new_order_database_inline:
-        type: INLINE
-        props:
-          algorithm-expression: ds_${no_w_id & 3}
-
-      bmsql_order_line_database_inline:
-        type: INLINE
-        props:
-          algorithm-expression: ds_${ol_w_id & 3}
+          sharding-count: 4
 ```
 
 ## BenchmarkSQL 5.0 PostgreSQL 语句列表
