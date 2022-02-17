@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
 import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
@@ -24,15 +24,14 @@ import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResour
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node.StorageStatusNode;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.SetStatementExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.status.SetReadwriteSplittingStatusStatement;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
@@ -49,19 +48,24 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Set readwrite-splitting status executor.
+ * Set readwrite-splitting status handler.
  */
 @AllArgsConstructor
-public final class SetReadwriteSplittingStatusExecutor implements SetStatementExecutor {
+public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBackendHandler<SetReadwriteSplittingStatusStatement, SetReadwriteSplittingStatusHandler> {
     
     private static final String DISABLE = "DISABLE";
     
-    private final SetReadwriteSplittingStatusStatement sqlStatement;
-    
-    private final ConnectionSession connectionSession;
+    private ConnectionSession connectionSession;
     
     @Override
-    public ResponseHeader execute() throws DistSQLException {
+    public SetReadwriteSplittingStatusHandler init(final HandlerParameter<SetReadwriteSplittingStatusStatement> parameter) {
+        initStatement(parameter.getStatement());
+        connectionSession = parameter.getConnectionSession();
+        return this;
+    }
+    
+    @Override
+    protected void doHandle(final ContextManager contextManager, final SetReadwriteSplittingStatusStatement sqlStatement) throws DistSQLException {
         String schemaName = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getSchemaName();
         String resourceName = sqlStatement.getResourceName();
         checkSchema(schemaName);
@@ -72,7 +76,6 @@ public final class SetReadwriteSplittingStatusExecutor implements SetStatementEx
             checkEnablingIsValid(schemaName, resourceName);
         }
         ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, resourceName, isDisable));
-        return new UpdateResponseHeader(sqlStatement);
     }
     
     private void checkSchema(final String schemaName) {

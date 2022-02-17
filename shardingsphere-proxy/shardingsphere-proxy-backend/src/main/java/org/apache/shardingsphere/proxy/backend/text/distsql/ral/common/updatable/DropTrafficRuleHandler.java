@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.drop;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.drop.DropTrafficRuleStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
 
@@ -39,12 +38,10 @@ import java.util.stream.Collectors;
  * Drop traffic rule statement handler.
  */
 @RequiredArgsConstructor
-public final class DropTrafficRuleHandler implements TextProtocolBackendHandler {
-    
-    private final DropTrafficRuleStatement sqlStatement;
+public final class DropTrafficRuleHandler extends UpdatableRALBackendHandler<DropTrafficRuleStatement, DropTrafficRuleHandler> {
     
     @Override
-    public ResponseHeader execute() throws DistSQLException {
+    protected void doHandle(final ContextManager contextManager, final DropTrafficRuleStatement sqlStatement) throws DistSQLException {
         Optional<TrafficRuleConfiguration> configuration = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData()
                 .findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
         check(sqlStatement, configuration);
@@ -54,7 +51,6 @@ public final class DropTrafficRuleHandler implements TextProtocolBackendHandler 
             getUnusedLoadBalancer(configuration.get()).forEach(each -> configuration.get().getLoadBalancers().remove(each));
             updateToRepository(configuration.get());
         }
-        return new UpdateResponseHeader(sqlStatement);
     }
     
     private void check(final DropTrafficRuleStatement sqlStatement, final Optional<TrafficRuleConfiguration> configuration) throws DistSQLException {

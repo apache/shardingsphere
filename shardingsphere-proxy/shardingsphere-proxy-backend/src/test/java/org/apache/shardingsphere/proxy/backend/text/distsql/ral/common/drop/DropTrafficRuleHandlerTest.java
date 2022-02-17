@@ -20,14 +20,15 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.drop;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.drop.DropTrafficRuleStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.DropTrafficRuleHandler;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,35 +49,35 @@ import static org.mockito.Mockito.when;
 public class DropTrafficRuleHandlerTest {
     
     @Test(expected = RequiredRuleMissedException.class)
-    public void assertExecuteWithEmptyRuleConfigurationAndNotExistRule() throws DistSQLException {
+    public void assertExecuteWithEmptyRuleConfigurationAndNotExistRule() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(new LinkedList<>());
         ProxyContext.getInstance().init(contextManager);
-        new DropTrafficRuleHandler(getSQLStatement(Collections.singletonList("rule_name"), false)).execute();
+        new DropTrafficRuleHandler().initStatement(getSQLStatement(Collections.singletonList("rule_name"), false)).execute();
     }
     
     @Test
-    public void assertExecuteWithEmptyRuleConfigurationAndNotExistRuleAndIfExists() throws DistSQLException {
+    public void assertExecuteWithEmptyRuleConfigurationAndNotExistRuleAndIfExists() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(new LinkedList<>());
         ProxyContext.getInstance().init(contextManager);
-        new DropTrafficRuleHandler(getSQLStatement(Collections.singletonList("rule_name"), true)).execute();
+        new DropTrafficRuleHandler().initStatement(getSQLStatement(Collections.singletonList("rule_name"), true)).execute();
     }
     
     @Test(expected = RequiredRuleMissedException.class)
-    public void assertExecuteWithNotExistRule() throws DistSQLException {
+    public void assertExecuteWithNotExistRule() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(createTrafficRule());
         ProxyContext.getInstance().init(contextManager);
-        new DropTrafficRuleHandler(getSQLStatement(Collections.singletonList("rule_name"), false)).execute();
+        new DropTrafficRuleHandler().initStatement(getSQLStatement(Collections.singletonList("rule_name"), false)).execute();
     }
     
     @Test
-    public void assertExecute() throws DistSQLException {
+    public void assertExecute() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(createTrafficRule());
         ProxyContext.getInstance().init(contextManager);
-        new DropTrafficRuleHandler(getSQLStatement(Collections.singletonList("rule_name_1"), false)).execute();
+        new DropTrafficRuleHandler().initStatement(getSQLStatement(Collections.singletonList("rule_name_1"), false)).execute();
         Optional<TrafficRuleConfiguration> ruleConfiguration = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
         assertTrue(ruleConfiguration.isPresent());
         TrafficRuleConfiguration configuration = ruleConfiguration.get();
@@ -89,11 +90,11 @@ public class DropTrafficRuleHandlerTest {
     }
     
     @Test
-    public void assertExecuteWithIfExists() throws DistSQLException {
+    public void assertExecuteWithIfExists() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(createTrafficRule());
         ProxyContext.getInstance().init(contextManager);
-        new DropTrafficRuleHandler(getSQLStatement(Collections.singletonList("rule_name_1"), false)).execute();
+        new DropTrafficRuleHandler().initStatement(getSQLStatement(Collections.singletonList("rule_name_1"), false)).execute();
         Optional<TrafficRuleConfiguration> ruleConfiguration = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
         assertTrue(ruleConfiguration.isPresent());
         TrafficRuleConfiguration configuration = ruleConfiguration.get();
@@ -106,11 +107,11 @@ public class DropTrafficRuleHandlerTest {
     }
     
     @Test
-    public void assertExecuteWithNotExistRuleAndIfExists() throws DistSQLException {
+    public void assertExecuteWithNotExistRuleAndIfExists() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(createTrafficRule());
         ProxyContext.getInstance().init(contextManager);
-        new DropTrafficRuleHandler(getSQLStatement(Collections.singletonList("rule_name_3"), true)).execute();
+        new DropTrafficRuleHandler().initStatement(getSQLStatement(Collections.singletonList("rule_name_3"), true)).execute();
         Optional<TrafficRuleConfiguration> ruleConfiguration = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
         assertTrue(ruleConfiguration.isPresent());
         TrafficRuleConfiguration configuration = ruleConfiguration.get();

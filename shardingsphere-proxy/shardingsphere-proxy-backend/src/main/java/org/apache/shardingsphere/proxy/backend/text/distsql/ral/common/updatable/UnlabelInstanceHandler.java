@@ -15,46 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
 import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.LabelInstanceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.UnlabelInstanceStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.SetStatementExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
 /**
- * Label instance executor.
+ * Unlabel instance handler.
  */
 @AllArgsConstructor
-public final class LabelInstanceExecutor implements SetStatementExecutor {
-    
-    private final LabelInstanceStatement sqlStatement;
+public final class UnlabelInstanceHandler extends UpdatableRALBackendHandler<UnlabelInstanceStatement, UnlabelInstanceHandler> {
     
     @Override
-    public ResponseHeader execute() throws DistSQLException {
+    protected void doHandle(final ContextManager contextManager, final UnlabelInstanceStatement sqlStatement) throws DistSQLException {
         MetaDataPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService().orElse(null);
         if (null == persistService || null == persistService.getRepository() || persistService.getRepository() instanceof StandalonePersistRepository) {
-            throw new UnsupportedOperationException("Labels can only be added in cluster mode");
+            throw new UnsupportedOperationException("Labels can only be removed in cluster mode");
         }
         String instanceId = new InstanceId(sqlStatement.getIp(), Integer.valueOf(sqlStatement.getPort())).getId();
         ComputeNodeInstance instances = persistService.getComputeNodePersistService().loadComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, instanceId));
-        Collection<String> labels = new LinkedHashSet<>(sqlStatement.getLabels());
-        if (!sqlStatement.isOverwrite()) {
-            labels.addAll(instances.getLabels());
+        Collection<String> labels = new LinkedHashSet<>(instances.getLabels());
+        if (sqlStatement.getLabels().isEmpty()) {
+            persistService.getComputeNodePersistService().deleteInstanceLabels(instanceId);
+        } else {
+            labels.removeAll(sqlStatement.getLabels());
+            persistService.getComputeNodePersistService().persistInstanceLabels(instanceId, labels, true);
         }
-        persistService.getComputeNodePersistService().persistInstanceLabels(instanceId, labels, true);
-        return new UpdateResponseHeader(sqlStatement);
     }
 }

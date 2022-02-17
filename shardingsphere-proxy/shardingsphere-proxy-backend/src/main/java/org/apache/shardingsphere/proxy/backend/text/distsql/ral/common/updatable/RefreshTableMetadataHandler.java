@@ -15,41 +15,54 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
 import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.RefreshTableMetadataStatement;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
+import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 
 /**
  * Refresh table metadata handler.
  */
 @Getter
-public final class RefreshTableMetadataHandler extends SchemaRequiredBackendHandler<RefreshTableMetadataStatement> {
+public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandler<RefreshTableMetadataStatement, RefreshTableMetadataHandler> {
     
-    public RefreshTableMetadataHandler(final RefreshTableMetadataStatement sqlStatement, final ConnectionSession connectionSession) {
-        super(sqlStatement, connectionSession);
+    private ConnectionSession connectionSession;
+    
+    @Override
+    public RefreshTableMetadataHandler init(final HandlerParameter<RefreshTableMetadataStatement> parameter) {
+        sqlStatement = parameter.getStatement();
+        connectionSession = parameter.getConnectionSession();
+        return this;
     }
     
     @Override
-    protected ResponseHeader execute(final String schemaName, final RefreshTableMetadataStatement sqlStatement) throws SQLException {
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
+    protected void doHandle(final ContextManager contextManager, final RefreshTableMetadataStatement sqlStatement) throws DistSQLException {
+        String schemaName = connectionSession.getSchemaName();
+        checkSchema(schemaName);
         if (sqlStatement.getResourceName().isPresent()) {
             contextManager.reloadMetaData(schemaName, sqlStatement.getTableName().get(), sqlStatement.getResourceName().get());
-            return new UpdateResponseHeader(sqlStatement);
+            return;
         }
         if (sqlStatement.getTableName().isPresent()) {
             contextManager.reloadMetaData(schemaName, sqlStatement.getTableName().get());
-            return new UpdateResponseHeader(sqlStatement);
+            return;
         }
         contextManager.reloadMetaData(schemaName);
-        return new UpdateResponseHeader(sqlStatement);
+    }
+    
+    private void checkSchema(final String schemaName) {
+        if (null == schemaName) {
+            throw new NoDatabaseSelectedException();
+        }
+        if (!ProxyContext.getInstance().schemaExists(schemaName)) {
+            throw new UnknownDatabaseException(schemaName);
+        }
     }
 }
