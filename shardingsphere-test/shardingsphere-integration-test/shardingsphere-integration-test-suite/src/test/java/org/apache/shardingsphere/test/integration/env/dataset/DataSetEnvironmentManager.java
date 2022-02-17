@@ -179,7 +179,7 @@ public final class DataSetEnvironmentManager {
         private final String insertSQL;
         
         private final Collection<SQLValueGroup> sqlValueGroups;
-
+        
         @Override
         public Void call() throws SQLException {
             try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
