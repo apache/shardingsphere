@@ -35,7 +35,7 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExecutor;
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
-import org.apache.shardingsphere.data.pipeline.core.lock.ScalingSchemaNameDistributeLock;
+import org.apache.shardingsphere.data.pipeline.core.lock.PipelineSimpleLock;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -326,6 +326,6 @@ public final class RuleAlteredJobWorker {
      */
     @Subscribe
     public void scalingReleaseSchemaNameLock(final ScalingReleaseSchemaNameLockEvent event) {
-        ScalingSchemaNameDistributeLock.getInstance().releaseLock(event.getSchemaName());
+        PipelineSimpleLock.getInstance().releaseLock(event.getSchemaName());
     }
 }

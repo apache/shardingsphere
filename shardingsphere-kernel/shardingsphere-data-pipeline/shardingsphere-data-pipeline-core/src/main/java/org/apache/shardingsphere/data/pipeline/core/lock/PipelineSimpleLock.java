@@ -18,38 +18,46 @@
 package org.apache.shardingsphere.data.pipeline.core.lock;
 
 import com.google.common.collect.Maps;
+import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
- * Distributed locks added to the schema name during scaling.
+ * Pipeline simple lock.
  */
-public final class ScalingSchemaNameDistributeLock {
+// TODO extract interface and factory
+public final class PipelineSimpleLock {
     
-    private static volatile ScalingSchemaNameDistributeLock instance;
+    private static volatile PipelineSimpleLock instance;
     
     private final LockRegistryService lockRegistryService;
     
     private final Map<String, Boolean> lockNameLockedMap;
     
-    private ScalingSchemaNameDistributeLock() {
-        ClusterPersistRepository repository = (ClusterPersistRepository) PipelineContext.getContextManager().getMetaDataContexts().getMetaDataPersistService().get().getRepository();
+    private PipelineSimpleLock() {
+        Optional<MetaDataPersistService> persistServiceOptional = PipelineContext.getContextManager().getMetaDataContexts().getMetaDataPersistService();
+        persistServiceOptional.orElseThrow(() -> new RuntimeException("Could not get metadata persist service"));
+        // TODO Use PersistRepository later
+        ClusterPersistRepository repository = (ClusterPersistRepository) persistServiceOptional.get().getRepository();
         lockRegistryService = new LockRegistryService(repository);
         lockNameLockedMap = Maps.newConcurrentMap();
     }
     
     /**
-     * get ScalingSchemaNameDistributeLock instance.
-     * @return ScalingSchemaNameDistributeLock
+     * Get instance.
+     *
+     * @return instance
      */
-    public static ScalingSchemaNameDistributeLock getInstance() {
+    public static PipelineSimpleLock getInstance() {
         if (null == instance) {
-            synchronized (ScalingSchemaNameDistributeLock.class) {
+            synchronized (PipelineSimpleLock.class) {
                 if (null == instance) {
-                    instance = new ScalingSchemaNameDistributeLock();
+                    instance = new PipelineSimpleLock();
                 }
             }
         }
@@ -57,21 +65,23 @@ public final class ScalingSchemaNameDistributeLock {
     }
     
     /**
-     * Try to get lock.
+     * Try to lock.
+     *
      * @param lockName lock name
-     * @param timeoutMilliseconds the maximum time in milliseconds to acquire lock
-     * @return true if get the lock, false if not
+     * @param timeoutMills the maximum time in milliseconds to acquire lock
+     * @return true if lock got, else false
      */
-    public boolean tryLock(final String lockName, final long timeoutMilliseconds) {
-        boolean locked = lockRegistryService.tryLock(decorateLockName(lockName), timeoutMilliseconds);
-        if (locked) {
+    public boolean tryLock(final String lockName, final long timeoutMills) {
+        boolean result = lockRegistryService.tryLock(decorateLockName(lockName), timeoutMills);
+        if (result) {
             lockNameLockedMap.put(lockName, true);
         }
-        return locked;
+        return result;
     }
     
     /**
      * Release lock.
+     *
      * @param lockName lock name
      */
     public void releaseLock(final String lockName) {
@@ -81,7 +91,7 @@ public final class ScalingSchemaNameDistributeLock {
         }
     }
     
-    private String decorateLockName(final String schemaName) {
-        return "Scaling-" + schemaName;
+    private String decorateLockName(final String lockName) {
+        return DataPipelineConstants.DATA_PIPELINE_NODE_NAME + "-" + lockName;
     }
 }
