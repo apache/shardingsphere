@@ -79,7 +79,7 @@ rules:
 ### PostgreSQL JDBC URL 参数建议
 
 对 BenchmarkSQL 所使用的配置文件中的 JDBC URL 进行调整，即参数名 `conn` 的值：
-- 增加参数 `defaultRowFetchSize=50` 可以尽量减少多行结果集的 fetch 次数，需要根据实际测试结果适当增大或减小。
+- 增加参数 `defaultRowFetchSize=50` 可能减少多行结果集的 fetch 次数，需要根据实际测试结果适当增大或减小。
 - 增加参数 `reWriteBatchedInserts=true` 可能减少批量插入的耗时，例如准备数据或 New Order 业务的批量插入，需要根据实际测试结果决定是否启用。
 
 props.pg 文件节选，建议修改的位置为第 3 行 `conn` 的参数值：
