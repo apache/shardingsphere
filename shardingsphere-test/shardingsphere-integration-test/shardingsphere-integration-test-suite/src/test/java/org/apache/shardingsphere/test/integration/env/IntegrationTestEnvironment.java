@@ -39,24 +39,32 @@ public final class IntegrationTestEnvironment {
     
     private final Collection<String> runModes;
     
-    private final ClusterEnvironmentType clusterEnvironmentType;
-    
-    private final Collection<String> adapters;
+    private final boolean runAdditionalTestCases;
     
     private final Collection<String> scenarios;
     
-    private final boolean runAdditionalTestCases;
+    private final ClusterEnvironmentType clusterEnvironmentType;
+    
+    private final Collection<String> clusterAdapters;
     
     private final Collection<DatabaseType> databaseTypes;
     
     private IntegrationTestEnvironment() {
         Properties engineEnvProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
         runModes = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.run.modes"));
-        clusterEnvironmentType = getClusterEnvironmentType(engineEnvProps);
-        adapters = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.adapters"));
-        scenarios = getScenarios(engineEnvProps);
         runAdditionalTestCases = Boolean.parseBoolean(engineEnvProps.getProperty("it.run.additional.cases"));
+        scenarios = getScenarios(engineEnvProps);
+        clusterEnvironmentType = getClusterEnvironmentType(engineEnvProps);
+        clusterAdapters = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.cluster.adapters"));
         databaseTypes = getDatabaseTypes(engineEnvProps);
+    }
+    
+    private Collection<String> getScenarios(final Properties engineEnvProps) {
+        Collection<String> result = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.scenarios"));
+        for (String each : result) {
+            EnvironmentPath.assertScenarioDirectoryExisted(each);
+        }
+        return result;
     }
     
     private ClusterEnvironmentType getClusterEnvironmentType(final Properties engineEnvProps) {
@@ -69,14 +77,6 @@ public final class IntegrationTestEnvironment {
         } catch (final IllegalArgumentException ignored) {
             return ClusterEnvironmentType.NATIVE;
         }
-    }
-    
-    private Collection<String> getScenarios(final Properties engineEnvProps) {
-        Collection<String> result = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.scenarios"));
-        for (String each : result) {
-            EnvironmentPath.assertScenarioDirectoryExisted(each);
-        }
-        return result;
     }
     
     private Set<DatabaseType> getDatabaseTypes(final Properties engineEnvProps) {
