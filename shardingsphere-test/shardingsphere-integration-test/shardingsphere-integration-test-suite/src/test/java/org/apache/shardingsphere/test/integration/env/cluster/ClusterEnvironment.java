@@ -15,12 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env;
+package org.apache.shardingsphere.test.integration.env.cluster;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+
+import java.util.Collection;
 
 /**
- * Cluster environment type.
+ * Cluster environment.
  */
-public enum ClusterEnvironmentType {
+@RequiredArgsConstructor
+@Getter
+public final class ClusterEnvironment {
     
-    DOCKER, NATIVE
+    private final ClusterEnvironmentType environmentType;
+    
+    private final Collection<String> adapters;
+    
+    private final Collection<DatabaseType> databaseTypes;
 }

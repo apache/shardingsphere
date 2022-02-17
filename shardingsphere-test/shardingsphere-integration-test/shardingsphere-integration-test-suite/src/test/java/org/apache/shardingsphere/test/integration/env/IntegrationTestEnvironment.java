@@ -21,6 +21,8 @@ import com.google.common.base.Splitter;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.test.integration.env.cluster.ClusterEnvironmentType;
+import org.apache.shardingsphere.test.integration.env.cluster.ClusterEnvironment;
 import org.apache.shardingsphere.test.integration.env.props.EnvironmentProperties;
 
 import java.util.Arrays;
@@ -30,7 +32,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Integration test running environment.
+ * Integration test environment.
  */
 @Getter
 public final class IntegrationTestEnvironment {
@@ -43,20 +45,15 @@ public final class IntegrationTestEnvironment {
     
     private final Collection<String> scenarios;
     
-    private final ClusterEnvironmentType clusterEnvironmentType;
-    
-    private final Collection<String> clusterAdapters;
-    
-    private final Collection<DatabaseType> clusterDatabaseTypes;
+    private final ClusterEnvironment clusterEnvironment;
     
     private IntegrationTestEnvironment() {
         Properties engineEnvProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
         runModes = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.run.modes"));
         runAdditionalTestCases = Boolean.parseBoolean(engineEnvProps.getProperty("it.run.additional.cases"));
         scenarios = getScenarios(engineEnvProps);
-        clusterEnvironmentType = getClusterEnvironmentType(engineEnvProps);
-        clusterAdapters = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.cluster.adapters"));
-        clusterDatabaseTypes = getClusterDatabaseTypes(engineEnvProps);
+        clusterEnvironment = new ClusterEnvironment(
+                getClusterEnvironmentType(engineEnvProps), Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.cluster.adapters")), getClusterDatabaseTypes(engineEnvProps));
     }
     
     private Collection<String> getScenarios(final Properties engineEnvProps) {
@@ -91,5 +88,4 @@ public final class IntegrationTestEnvironment {
     public static IntegrationTestEnvironment getInstance() {
         return INSTANCE;
     }
-    
 }
