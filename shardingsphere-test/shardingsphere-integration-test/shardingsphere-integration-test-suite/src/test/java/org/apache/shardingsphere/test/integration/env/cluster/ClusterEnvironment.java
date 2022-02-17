@@ -33,27 +33,27 @@ import java.util.stream.Collectors;
 @Getter
 public final class ClusterEnvironment {
     
-    private final ClusterEnvironmentType environmentType;
+    private final Type type;
     
     private final Collection<String> adapters;
     
     private final Collection<DatabaseType> databaseTypes;
     
     public ClusterEnvironment(final Properties envProps) {
-        environmentType = getEnvironmentType(envProps);
+        type = getType(envProps);
         adapters = getAdapters(envProps);
         databaseTypes = getDatabaseTypes(envProps);
     }
     
-    private ClusterEnvironmentType getEnvironmentType(final Properties envProps) {
+    private Type getType(final Properties envProps) {
         String value = envProps.getProperty("it.cluster.env.type");
         if (null == value) {
-            return ClusterEnvironmentType.NATIVE;
+            return Type.NATIVE;
         }
         try {
-            return ClusterEnvironmentType.valueOf(value);
+            return Type.valueOf(value);
         } catch (final IllegalArgumentException ignored) {
-            return ClusterEnvironmentType.NATIVE;
+            return Type.NATIVE;
         }
     }
     
@@ -63,5 +63,13 @@ public final class ClusterEnvironment {
     
     private Collection<DatabaseType> getDatabaseTypes(final Properties envProps) {
         return Arrays.stream(envProps.getProperty("it.cluster.databases").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toSet());
+    }
+    
+    /**
+     * Cluster environment type.
+     */
+    public enum Type {
+        
+        DOCKER, NATIVE
     }
 }
