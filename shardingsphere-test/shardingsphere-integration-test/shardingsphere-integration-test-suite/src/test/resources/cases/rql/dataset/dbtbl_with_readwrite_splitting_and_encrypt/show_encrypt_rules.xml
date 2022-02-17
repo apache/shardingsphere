@@ -31,7 +31,7 @@
         <column name="query_with_cipher_column" />
     </metadata>
     <row values="t_user_details| number_new| null| number_new_cipher| null| number_new_plain| null| null| null| AES| aes-key-value=123456abc| false" />
-    <row values="t_user_details| pwd| null|pwd_cipher | null| pwd_plain| null| null| null| AES| aes-key-value=123456abc| false" />
+    <row values="t_user| pwd| null|pwd_cipher | null| pwd_plain| null| null| null| AES| aes-key-value=123456abc| false" />
     <row values="t_user_details| number| null| number_cipher| null| number_plain| null| null| null| AES| aes-key-value=123456abc| false" />
     <row values="t_user_encrypt_federate| pwd| null| cipher_pwd| null| plain_pwd| null| null| null| AES| aes-key-value=123456abc| false" />
     <row values="t_user_encrypt_federate_sharding| pwd| null| cipher_pwd| null| plain_pwd| null| null| null| AES| aes-key-value=123456abc| false" />
