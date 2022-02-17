@@ -62,13 +62,13 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         ClusterPersistRepository repository = ClusterPersistRepositoryFactory.newInstance((ClusterPersistRepositoryConfiguration) parameter.getModeConfig().getRepository());
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
         persistConfigurations(metaDataPersistService, parameter);
+        RegistryCenter registryCenter = registerOnline(repository, parameter.getInstanceDefinition());
         MetaDataContextsBuilder metaDataContextsBuilder = createMetaDataContextsBuilder(metaDataPersistService, parameter);
         persistMetaData(metaDataPersistService, metaDataContextsBuilder.getSchemaMap());
         MetaDataContexts metaDataContexts = metaDataContextsBuilder.build(metaDataPersistService);
         generateTransactionConfigurationFile(parameter.getInstanceDefinition().getInstanceId().getId(), metaDataContexts);
-        ContextManager result = createContextManager(repository, metaDataPersistService,
-                parameter.getInstanceDefinition(), metaDataContexts, parameter.getModeConfig());
-        registerOnline(repository, metaDataPersistService, parameter.getInstanceDefinition(), result);
+        ContextManager result = createContextManager(repository, metaDataPersistService, parameter.getInstanceDefinition(), metaDataContexts, parameter.getModeConfig());
+        new ClusterContextManagerCoordinator(metaDataPersistService, result, registryCenter);
         return result;
     }
     
