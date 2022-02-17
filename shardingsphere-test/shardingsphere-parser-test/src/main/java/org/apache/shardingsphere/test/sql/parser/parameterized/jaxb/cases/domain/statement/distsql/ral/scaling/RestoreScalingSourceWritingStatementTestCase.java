@@ -15,54 +15,23 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling;
 
-import BaseRule;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-showScalingList
-    : SHOW SCALING LIST
-    ;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
-showScalingStatus
-    : SHOW SCALING STATUS jobId
-    ;
-
-startScaling
-    : START SCALING jobId
-    ;
-
-stopScaling
-    : STOP SCALING jobId
-    ;
-
-dropScaling
-    : DROP SCALING jobId
-    ;
-
-resetScaling
-    : RESET SCALING jobId
-    ;
-
-checkScaling
-    : CHECK SCALING jobId (BY algorithmDefinition)?
-    ;
-
-showScalingCheckAlgorithms
-    : SHOW SCALING CHECK ALGORITHMS
-    ;
-
-stopScalingSourceWriting
-    : STOP SCALING SOURCE WRITING jobId
-    ;
-
-restoreScalingSourceWriting
-    : RESTORE SCALING SOURCE WRITING jobId
-    ;
-
-applyScaling
-    : APPLY SCALING jobId
-    ;
-
-jobId
-    : INT | IDENTIFIER
-    ;
+/**
+ * Restore scaling source writing statement test case.
+ */
+@Getter
+@Setter
+public final class RestoreScalingSourceWritingStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "job-id")
+    private final List<String> jobIds = new LinkedList<>();
+}
