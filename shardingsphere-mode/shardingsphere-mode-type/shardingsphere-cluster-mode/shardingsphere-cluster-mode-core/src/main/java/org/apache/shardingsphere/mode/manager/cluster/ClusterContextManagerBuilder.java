@@ -65,13 +65,13 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         ClusterPersistRepository repository = ClusterPersistRepositoryFactory.newInstance((ClusterPersistRepositoryConfiguration) parameter.getModeConfig().getRepository());
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
         persistConfigurations(metaDataPersistService, parameter);
+        RegistryCenter registryCenter = new RegistryCenter(repository);
         MetaDataContextsBuilder metaDataContextsBuilder = createMetaDataContextsBuilder(metaDataPersistService, parameter);
         persistTransactionConfiguration(metaDataContextsBuilder.getSchemaConfigMap(), metaDataContextsBuilder.getGlobalRuleConfigs(), metaDataPersistService);
         persistMetaData(metaDataPersistService, metaDataContextsBuilder.getSchemaMap());
         MetaDataContexts metaDataContexts = metaDataContextsBuilder.build(metaDataPersistService);
-        ContextManager result = createContextManager(repository, metaDataPersistService,
-                parameter.getInstanceDefinition(), metaDataContexts, parameter.getModeConfig());
-        registerOnline(repository, metaDataPersistService, parameter.getInstanceDefinition(), result);
+        ContextManager result = createContextManager(repository, metaDataPersistService, parameter.getInstanceDefinition(), metaDataContexts, parameter.getModeConfig());
+        registerOnline(metaDataPersistService, parameter.getInstanceDefinition(), result, registryCenter);
         return result;
     }
     
@@ -139,9 +139,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         }
     }
     
-    private void registerOnline(final ClusterPersistRepository repository, 
-                                final MetaDataPersistService metaDataPersistService, final InstanceDefinition instanceDefinition, final ContextManager contextManager) {
-        RegistryCenter registryCenter = new RegistryCenter(repository);
+    private void registerOnline(final MetaDataPersistService metaDataPersistService, final InstanceDefinition instanceDefinition, final ContextManager contextManager,
+                                final RegistryCenter registryCenter) {
         new ClusterContextManagerCoordinator(metaDataPersistService, contextManager, registryCenter);
         registryCenter.onlineInstance(instanceDefinition);
     }
