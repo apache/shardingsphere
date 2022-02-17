@@ -62,7 +62,7 @@ public abstract class BaseDMLIT extends SingleITCase {
     
     @Override
     public final void tearDown() throws Exception {
-        dataSetEnvironmentManager.clearData();
+        dataSetEnvironmentManager.cleanData();
         super.tearDown();
     }
     
