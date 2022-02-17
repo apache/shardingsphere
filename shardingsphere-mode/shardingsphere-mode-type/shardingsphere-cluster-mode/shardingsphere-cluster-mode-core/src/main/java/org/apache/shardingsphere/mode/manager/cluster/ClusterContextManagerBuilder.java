@@ -62,13 +62,13 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         ClusterPersistRepository repository = ClusterPersistRepositoryFactory.newInstance((ClusterPersistRepositoryConfiguration) parameter.getModeConfig().getRepository());
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
         persistConfigurations(metaDataPersistService, parameter);
+        RegistryCenter registryCenter = new RegistryCenter(repository);
         MetaDataContextsBuilder metaDataContextsBuilder = createMetaDataContextsBuilder(metaDataPersistService, parameter);
         persistMetaData(metaDataPersistService, metaDataContextsBuilder.getSchemaMap());
         MetaDataContexts metaDataContexts = metaDataContextsBuilder.build(metaDataPersistService);
         generateTransactionConfigurationFile(parameter.getInstanceDefinition().getInstanceId().getId(), metaDataContexts);
-        ContextManager result = createContextManager(repository, metaDataPersistService,
-                parameter.getInstanceDefinition(), metaDataContexts, parameter.getModeConfig());
-        registerOnline(repository, metaDataPersistService, parameter.getInstanceDefinition(), result);
+        ContextManager result = createContextManager(repository, metaDataPersistService, parameter.getInstanceDefinition(), metaDataContexts, parameter.getModeConfig());
+        registerOnline(metaDataPersistService, parameter.getInstanceDefinition(), result, registryCenter);
         return result;
     }
     
@@ -120,9 +120,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return result;
     }
     
-    private void registerOnline(final ClusterPersistRepository repository, 
-                                final MetaDataPersistService metaDataPersistService, final InstanceDefinition instanceDefinition, final ContextManager contextManager) {
-        RegistryCenter registryCenter = new RegistryCenter(repository);
+    private void registerOnline(final MetaDataPersistService metaDataPersistService, final InstanceDefinition instanceDefinition, final ContextManager contextManager,
+                                final RegistryCenter registryCenter) {
         new ClusterContextManagerCoordinator(metaDataPersistService, contextManager, registryCenter);
         registryCenter.onlineInstance(instanceDefinition);
     }
