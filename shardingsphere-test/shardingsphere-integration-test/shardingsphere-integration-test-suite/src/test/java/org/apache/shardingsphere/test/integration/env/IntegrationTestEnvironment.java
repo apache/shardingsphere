@@ -39,7 +39,7 @@ public final class IntegrationTestEnvironment {
     
     private final Collection<String> runModes;
     
-    private final EnvironmentType envType;
+    private final ClusterEnvironmentType clusterEnvironmentType;
     
     private final Collection<String> adapters;
     
@@ -52,18 +52,22 @@ public final class IntegrationTestEnvironment {
     private IntegrationTestEnvironment() {
         Properties engineEnvProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
         runModes = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.run.modes"));
-        envType = getEnvironmentType(engineEnvProps);
+        clusterEnvironmentType = getClusterEnvironmentType(engineEnvProps);
         adapters = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.adapters"));
         scenarios = getScenarios(engineEnvProps);
         runAdditionalTestCases = Boolean.parseBoolean(engineEnvProps.getProperty("it.run.additional.cases"));
         databaseTypes = getDatabaseTypes(engineEnvProps);
     }
     
-    private EnvironmentType getEnvironmentType(final Properties engineEnvProps) {
+    private ClusterEnvironmentType getClusterEnvironmentType(final Properties engineEnvProps) {
+        String value = engineEnvProps.getProperty("it.cluster.env.type");
+        if (null == value) {
+            return ClusterEnvironmentType.NATIVE;
+        }
         try {
-            return EnvironmentType.valueOf(engineEnvProps.getProperty("it.env.type"));
+            return ClusterEnvironmentType.valueOf(value);
         } catch (final IllegalArgumentException ignored) {
-            return EnvironmentType.NATIVE;
+            return ClusterEnvironmentType.NATIVE;
         }
     }
     

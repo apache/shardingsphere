@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.test.integration.env;
 
 /**
- * Environment type.
+ * Cluster environment type.
  */
-public enum EnvironmentType {
+public enum ClusterEnvironmentType {
     
     DOCKER, NATIVE
 }
