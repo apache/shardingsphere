@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
  * Data source environment.
  */
 public final class DataSourceEnvironment {
-
+    
     /**
      * Get driver class name.
      *
@@ -46,7 +46,7 @@ public final class DataSourceEnvironment {
                 throw new UnsupportedOperationException(databaseType.getName());
         }
     }
-
+    
     /**
      * Get URL.
      *
@@ -71,7 +71,7 @@ public final class DataSourceEnvironment {
                 throw new UnsupportedOperationException(databaseType.getName());
         }
     }
-
+    
     /**
      * Get URL.
      *
