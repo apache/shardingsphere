@@ -20,17 +20,20 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.exec
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor.SetVariableExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.SetVariableHandler;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -46,31 +49,35 @@ public final class SetVariableExecutorTest {
     private ConnectionSession connectionSession;
     
     @Test
-    public void assertExecuteWithTransactionType() {
+    public void assertExecuteWithTransactionType() throws SQLException {
         SetVariableStatement statement = new SetVariableStatement("transaction_type", "local");
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.XA));
-        new SetVariableExecutor(statement, connectionSession).execute();
+        new SetVariableHandler().init(getParameter(statement, connectionSession)).execute();
         assertThat(connectionSession.getTransactionStatus().getTransactionType().name(), is(TransactionType.LOCAL.name()));
     }
     
     @Test
-    public void assertExecuteWithAgent() {
+    public void assertExecuteWithAgent() throws SQLException {
         SetVariableStatement statement = new SetVariableStatement("AGENT_PLUGINS_ENABLED", "false");
-        new SetVariableExecutor(statement, connectionSession).execute();
+        new SetVariableHandler().init(getParameter(statement, connectionSession)).execute();
         String actualValue = SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "default");
         assertThat(actualValue, is("false"));
     }
     
     @Test
-    public void assertExecuteWithConfigurationKey() {
+    public void assertExecuteWithConfigurationKey() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(null);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
         SetVariableStatement statement = new SetVariableStatement("proxy_frontend_flush_threshold", "1024");
-        new SetVariableExecutor(statement, connectionSession).execute();
+        new SetVariableHandler().init(getParameter(statement, connectionSession)).execute();
         Object actualValue = contextManager.getMetaDataContexts().getProps().getProps().get("proxy-frontend-flush-threshold");
         assertNotNull(actualValue);
         assertThat(actualValue.toString(), is("1024"));
+    }
+    
+    private HandlerParameter<SetVariableStatement> getParameter(final SetVariableStatement statement, final ConnectionSession connectionSession) {
+        return new HandlerParameter<SetVariableStatement>().setStatement(statement).setConnectionSession(connectionSession);
     }
 }

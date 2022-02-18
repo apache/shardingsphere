@@ -21,13 +21,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.RefreshTableMetadataStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.drop.DropTrafficRuleStatement;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.drop.DropTrafficRuleHandler;
 
 import java.sql.SQLException;
 
@@ -46,20 +42,11 @@ public final class CommonDistSQLBackendHandlerFactory {
      * @throws SQLException SQL exception
      */
     public static TextProtocolBackendHandler newInstance(final CommonDistSQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
-        if (sqlStatement instanceof SetDistSQLStatement) {
-            return new SetDistSQLBackendHandler((SetDistSQLStatement) sqlStatement, connectionSession);
-        }
         if (sqlStatement instanceof ShowDistSQLStatement) {
             return new ShowDistSQLBackendHandler((ShowDistSQLStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof HintDistSQLStatement) {
             return new HintDistSQLBackendHandler((HintDistSQLStatement) sqlStatement, connectionSession);
-        }
-        if (sqlStatement instanceof RefreshTableMetadataStatement) {
-            return new RefreshTableMetadataHandler((RefreshTableMetadataStatement) sqlStatement, connectionSession);
-        }
-        if (sqlStatement instanceof DropTrafficRuleStatement) {
-            return new DropTrafficRuleHandler((DropTrafficRuleStatement) sqlStatement);
         }
         return null;
     }

@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.properties.TypedPropertyValue;
 import org.apache.shardingsphere.infra.properties.TypedPropertyValueException;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.InvalidValueException;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.SetStatementExecutor;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -40,17 +39,21 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Set variable statement executor.
+ * Set variable statement handler.
  */
-@RequiredArgsConstructor
-public final class SetVariableExecutor implements SetStatementExecutor {
+public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVariableStatement, SetVariableHandler> {
     
-    private final SetVariableStatement sqlStatement;
-    
-    private final ConnectionSession connectionSession;
+    private ConnectionSession connectionSession;
     
     @Override
-    public ResponseHeader execute() {
+    public SetVariableHandler init(final HandlerParameter<SetVariableStatement> parameter) {
+        initStatement(parameter.getStatement());
+        connectionSession = parameter.getConnectionSession();
+        return this;
+    }
+    
+    @Override
+    protected void update(final ContextManager contextManager, final SetVariableStatement sqlStatement) throws DistSQLException {
         Enum<?> enumType = getEnumType(sqlStatement.getName());
         if (enumType instanceof ConfigurationPropertyKey) {
             handleConfigurationProperty((ConfigurationPropertyKey) enumType, sqlStatement.getValue());
@@ -59,7 +62,6 @@ public final class SetVariableExecutor implements SetStatementExecutor {
         } else {
             throw new UnsupportedVariableException(sqlStatement.getName());
         }
-        return new UpdateResponseHeader(sqlStatement);
     }
     
     private Enum<?> getEnumType(final String name) {

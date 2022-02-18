@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateTrafficRuleStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -46,11 +45,10 @@ import java.util.stream.Collectors;
 /**
  * Create traffic rule handler.
  */
-@RequiredArgsConstructor
 public final class CreateTrafficRuleHandler extends UpdatableRALBackendHandler<CreateTrafficRuleStatement, CreateTrafficRuleHandler> {
     
     @Override
-    protected void doHandle(final ContextManager contextManager, final CreateTrafficRuleStatement sqlStatement) throws DistSQLException {
+    protected void update(final ContextManager contextManager, final CreateTrafficRuleStatement sqlStatement) throws DistSQLException {
         Optional<TrafficRuleConfiguration> trafficRuleConfiguration = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData()
                 .findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
         check(sqlStatement, trafficRuleConfiguration);

@@ -15,38 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.excutor;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
-import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetInstanceStatusStatement;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.infra.state.StateType;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ComputeNodeStatusChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.set.SetStatementExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 
 import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Set instance status executor.
+ * Set instance status handler.
  */
-@AllArgsConstructor
-public final class SetInstanceStatusExecutor implements SetStatementExecutor {
-    
-    private final SetInstanceStatusStatement sqlStatement;
+public final class SetInstanceStatusHandler extends UpdatableRALBackendHandler<SetInstanceStatusStatement, SetInstanceStatusHandler> {
     
     @Override
-    public ResponseHeader execute() throws DistSQLException {
+    protected void update(final ContextManager contextManager, final SetInstanceStatusStatement sqlStatement) {
         InstanceId operationInstanceId = new InstanceId(sqlStatement.getIp(), Integer.valueOf(sqlStatement.getPort()));
         boolean isDisable = "DISABLE".equals(sqlStatement.getStatus());
         if (isDisable) {
@@ -56,7 +50,6 @@ public final class SetInstanceStatusExecutor implements SetStatementExecutor {
         }
         ShardingSphereEventBus.getInstance().post(new ComputeNodeStatusChangedEvent(isDisable ? ComputeNodeStatus.CIRCUIT_BREAK : ComputeNodeStatus.ONLINE,
                 sqlStatement.getIp(), sqlStatement.getPort()));
-        return new UpdateResponseHeader(sqlStatement);
     }
     
     private void checkEnablingIsValid(final InstanceId operationInstanceId) {

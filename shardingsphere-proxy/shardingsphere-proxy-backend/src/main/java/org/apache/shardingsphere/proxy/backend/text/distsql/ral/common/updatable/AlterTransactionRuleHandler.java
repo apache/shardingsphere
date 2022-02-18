@@ -36,7 +36,7 @@ import java.util.Optional;
 public final class AlterTransactionRuleHandler extends UpdatableRALBackendHandler<AlterTransactionRuleStatement, AlterTrafficRuleHandler> {
     
     @Override
-    protected void doHandle(final ContextManager contextManager, final AlterTransactionRuleStatement sqlStatement) {
+    protected void update(final ContextManager contextManager, final AlterTransactionRuleStatement sqlStatement) {
         updateTransactionRule();
     }
     
