@@ -138,6 +138,7 @@ public final class MetaDataPersistService {
             } else if (DataSourcePropertiesCreator.create(localConfiguredDataSource).equals(persistedDataSourceProps)) {
                 result.put(dataSourceName, localConfiguredDataSource);
             } else {
+                result.put(dataSourceName, DataSourcePoolCreator.create(persistedDataSourceProps));
                 DataSourcePoolDestroyerFactory.destroy(localConfiguredDataSource);
             }
         }
