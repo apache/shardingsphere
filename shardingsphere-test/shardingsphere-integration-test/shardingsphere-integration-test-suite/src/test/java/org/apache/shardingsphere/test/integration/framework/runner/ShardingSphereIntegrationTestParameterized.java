@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.test.integration.framework.runner;
 
-import org.apache.shardingsphere.test.integration.env.EnvironmentType;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.integration.env.cluster.ClusterEnvironment;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.ParallelRunnerScheduler;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
 import org.junit.runners.Parameterized;
@@ -32,7 +32,7 @@ public final class ShardingSphereIntegrationTestParameterized extends Parameteri
     public ShardingSphereIntegrationTestParameterized(final Class<?> clazz) throws Throwable {
         // CHECKSTYLE:ON
         super(clazz);
-        if (EnvironmentType.DOCKER != IntegrationTestEnvironment.getInstance().getEnvType()) {
+        if (ClusterEnvironment.Type.DOCKER != IntegrationTestEnvironment.getInstance().getClusterEnvironment().getType()) {
             ParallelRuntimeStrategy parallelRuntimeStrategy = clazz.getAnnotation(ParallelRuntimeStrategy.class);
             if (null != parallelRuntimeStrategy) {
                 setScheduler(new ParallelRunnerScheduler(parallelRuntimeStrategy.value()));

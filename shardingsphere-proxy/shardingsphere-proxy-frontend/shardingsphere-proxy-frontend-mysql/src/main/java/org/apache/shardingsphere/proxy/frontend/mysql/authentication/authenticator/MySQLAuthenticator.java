@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.database.embedded;
+package org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator;
 
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 
 /**
- * Embedded database.
+ * MySQL authenticator.
  */
-public interface EmbeddedDatabase extends TypedSPI {
+public interface MySQLAuthenticator extends Authenticator {
     
     /**
-     * Start embedded database.
-     * 
-     * @param embeddedDatabaseProps embedded database properties
-     * @param port port of database access
+     * Authenticate.
+     *
+     * @param user ShardingSphere user
+     * @param authResponse auth response for user authentication
+     * @return authentication success or not
      */
-    void start(EmbeddedDatabaseDistributionProperties embeddedDatabaseProps, int port);
-    
-    /**
-     * Stop embedded database.
-     */
-    void stop();
+    boolean authenticate(ShardingSphereUser user, byte[] authResponse);
 }

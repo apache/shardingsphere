@@ -51,14 +51,6 @@ public final class RuleAlteredJobScheduler implements Runnable {
      */
     public void stop() {
         log.info("stop job {}", jobContext.getJobId());
-        final boolean almostFinished = jobContext.getStatus() == JobStatus.ALMOST_FINISHED;
-        if (almostFinished) {
-            log.info("almost finished, preparer cleanup, job {}", jobContext.getJobId());
-            RuleAlteredJobPreparer jobPreparer = jobContext.getJobPreparer();
-            if (null != jobPreparer) {
-                jobPreparer.cleanup(jobContext);
-            }
-        }
         for (InventoryTask each : jobContext.getInventoryTasks()) {
             log.info("stop inventory task {} - {}", jobContext.getJobId(), each.getTaskId());
             each.stop();

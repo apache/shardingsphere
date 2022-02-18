@@ -128,8 +128,10 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final RuleConfigurationsChangedEvent event) {
-        contextManager.alterRuleConfiguration(event.getSchemaName(), event.getRuleConfigurations());
-        buildSpecialRules();
+        if (metaDataPersistService.getSchemaVersionPersistService().isActiveVersion(event.getSchemaName(), event.getSchemaVersion())) {
+            contextManager.alterRuleConfiguration(event.getSchemaName(), event.getRuleConfigurations());
+            buildSpecialRules();
+        }
     }
     
     /**
@@ -139,8 +141,10 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final DataSourceChangedEvent event) {
-        contextManager.alterDataSourceConfiguration(event.getSchemaName(), event.getDataSourcePropertiesMap());
-        buildSpecialRules();
+        if (metaDataPersistService.getSchemaVersionPersistService().isActiveVersion(event.getSchemaName(), event.getSchemaVersion())) {
+            contextManager.alterDataSourceConfiguration(event.getSchemaName(), event.getDataSourcePropertiesMap());
+            buildSpecialRules();
+        }
     }
     
     /**

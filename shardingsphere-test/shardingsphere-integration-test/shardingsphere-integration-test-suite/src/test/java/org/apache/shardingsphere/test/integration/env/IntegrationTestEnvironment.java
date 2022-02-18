@@ -19,18 +19,14 @@ package org.apache.shardingsphere.test.integration.env;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.test.integration.env.cluster.ClusterEnvironment;
 import org.apache.shardingsphere.test.integration.env.props.EnvironmentProperties;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Properties;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
- * Integration test running environment.
+ * Integration test environment.
  */
 @Getter
 public final class IntegrationTestEnvironment {
@@ -39,44 +35,26 @@ public final class IntegrationTestEnvironment {
     
     private final Collection<String> runModes;
     
-    private final EnvironmentType envType;
-    
-    private final Collection<String> adapters;
+    private final boolean runAdditionalTestCases;
     
     private final Collection<String> scenarios;
     
-    private final boolean runAdditionalTestCases;
-    
-    private final Collection<DatabaseType> databaseTypes;
+    private final ClusterEnvironment clusterEnvironment;
     
     private IntegrationTestEnvironment() {
-        Properties engineEnvProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
-        runModes = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.run.modes"));
-        envType = getEnvironmentType(engineEnvProps);
-        adapters = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.adapters"));
-        scenarios = getScenarios(engineEnvProps);
-        runAdditionalTestCases = Boolean.parseBoolean(engineEnvProps.getProperty("it.run.additional.cases"));
-        databaseTypes = getDatabaseTypes(engineEnvProps);
+        Properties envProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
+        runModes = Splitter.on(",").trimResults().splitToList(envProps.getProperty("it.run.modes"));
+        runAdditionalTestCases = Boolean.parseBoolean(envProps.getProperty("it.run.additional.cases"));
+        scenarios = getScenarios(envProps);
+        clusterEnvironment = new ClusterEnvironment(envProps);
     }
     
-    private EnvironmentType getEnvironmentType(final Properties engineEnvProps) {
-        try {
-            return EnvironmentType.valueOf(engineEnvProps.getProperty("it.env.type"));
-        } catch (final IllegalArgumentException ignored) {
-            return EnvironmentType.NATIVE;
-        }
-    }
-    
-    private Collection<String> getScenarios(final Properties engineEnvProps) {
-        Collection<String> result = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.scenarios"));
+    private Collection<String> getScenarios(final Properties envProps) {
+        Collection<String> result = Splitter.on(",").trimResults().splitToList(envProps.getProperty("it.scenarios"));
         for (String each : result) {
             EnvironmentPath.assertScenarioDirectoryExisted(each);
         }
         return result;
-    }
-    
-    private Set<DatabaseType> getDatabaseTypes(final Properties engineEnvProps) {
-        return Arrays.stream(engineEnvProps.getProperty("it.databases").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toSet());
     }
     
     /**
@@ -87,5 +65,4 @@ public final class IntegrationTestEnvironment {
     public static IntegrationTestEnvironment getInstance() {
         return INSTANCE;
     }
-    
 }

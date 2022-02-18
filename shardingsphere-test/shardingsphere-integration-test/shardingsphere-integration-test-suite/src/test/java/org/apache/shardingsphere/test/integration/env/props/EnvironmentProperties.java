@@ -34,7 +34,7 @@ public final class EnvironmentProperties {
      * Load properties.
      * 
      * @param propsFileName properties file name
-     * @return properties
+     * @return loaded properties
      */
     @SuppressWarnings("AccessOfSystemProperties")
     public static Properties loadProperties(final String propsFileName) {

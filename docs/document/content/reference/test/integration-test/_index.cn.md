@@ -124,19 +124,20 @@ SQL 用例在 `resources/cases/${SQL-TYPE}/${SQL-TYPE}-integration-test-cases.xm
 所有的属性值都可以通过 Maven 命令行 `-D` 的方式动态注入。
 
 ```properties
-# 配置环境类型，只支持单值。可选值：docker或空，默认值：空
-it.env.type=${it.env}
-# 待测试的接入端类型，多个值可用逗号分隔。可选值：jdbc, proxy，默认值：jdbc
-it.adapters=jdbc
 
 # 场景类型，多个值可用逗号分隔。可选值：db, tbl, dbtbl_with_replica_query, replica_query
 it.scenarios=db,tbl,dbtbl_with_replica_query,replica_query
 
-# 场景类型，多个值可用逗号分隔。可选值：H2, MySQL, Oracle, SQLServer, PostgreSQL
-it.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
-
 # 是否运行附加测试用例
 it.run.additional.cases=false
+
+# 配置环境类型，只支持单值。可选值：docker或空，默认值：空
+it.cluster.env.type=${it.env}
+# 待测试的接入端类型，多个值可用逗号分隔。可选值：jdbc, proxy，默认值：jdbc
+it.cluster.adapters=jdbc
+
+# 场景类型，多个值可用逗号分隔。可选值：H2, MySQL, Oracle, SQLServer, PostgreSQL
+it.cluster.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
 ```
 
 #### 运行调试模式
@@ -154,7 +155,7 @@ it.run.additional.cases=false
 #### 运行 Docker 模式
 
 ```bash
-./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_1,scenario_name_n} -Dit.databases=MySQL
+./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_1,scenario_name_n} -Dit.cluster.databases=MySQL
 ```
 
 #### 注意事项

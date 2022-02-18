@@ -15,12 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env;
+package org.apache.shardingsphere.proxy.frontend.authentication;
 
 /**
- * Environment type.
+ * Authenticator.
  */
-public enum EnvironmentType {
-    
-    EMBEDDED, DOCKER, NATIVE
+public interface Authenticator {
+
+    /**
+     * Get the name of authentication method.
+     *
+     * @return name of authentication method
+     */
+    String getAuthenticationMethodName();
 }
