@@ -33,12 +33,12 @@ public final class HikariDataSourceJdbcUrlMetaData implements DataSourceJdbcUrlM
     }
     
     @Override
-    public String getUserName(HikariDataSource targetDataSource) {
+    public String getUserName(final HikariDataSource targetDataSource) {
         return targetDataSource.getUsername();
     }
     
     @Override
-    public String getPassword(HikariDataSource targetDataSource) {
+    public String getPassword(final HikariDataSource targetDataSource) {
         return targetDataSource.getPassword();
     }
     

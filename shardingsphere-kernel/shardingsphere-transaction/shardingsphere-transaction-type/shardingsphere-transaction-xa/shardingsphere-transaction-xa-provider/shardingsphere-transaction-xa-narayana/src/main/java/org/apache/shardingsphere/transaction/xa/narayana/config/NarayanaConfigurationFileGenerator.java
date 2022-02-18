@@ -30,6 +30,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
+import org.apache.shardingsphere.infra.datasource.utils.DataSourceClassNameGenerator;
+import org.apache.shardingsphere.infra.datasource.utils.DataSourceClassNameGeneratorFactory;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -139,14 +141,14 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
     public Properties getTransactionProps(final TransactionRuleConfiguration transactionRuleConfiguration, final SchemaConfiguration schemaConfiguration) {
         Properties result = new Properties();
         if (!transactionRuleConfiguration.getProps().isEmpty()) {
-            getUserDefinedJdbcStoreConfiguration(transactionRuleConfiguration, result);
+            generateUserDefinedJdbcStoreConfiguration(transactionRuleConfiguration, result);
         } else {
-            getDefaultJdbcStoreConfiguration(schemaConfiguration, result);
+            generateDefaultJdbcStoreConfiguration(schemaConfiguration, result);
         }
         return result;
     }
     
-    private void getUserDefinedJdbcStoreConfiguration(final TransactionRuleConfiguration transactionRuleConfiguration, final Properties props) {
+    private void generateUserDefinedJdbcStoreConfiguration(final TransactionRuleConfiguration transactionRuleConfiguration, final Properties props) {
         String url = transactionRuleConfiguration.getProps().getProperty("recoveryStoreUrl");
         String user = transactionRuleConfiguration.getProps().getProperty("recoveryStoreUser");
         String password = String.valueOf(transactionRuleConfiguration.getProps().get("recoveryStorePassword"));
@@ -155,7 +157,7 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void getDefaultJdbcStoreConfiguration(final SchemaConfiguration schemaConfiguration, final Properties props) {
+    private void generateDefaultJdbcStoreConfiguration(final SchemaConfiguration schemaConfiguration, final Properties props) {
         Map<String, DataSource> datasourceMap = schemaConfiguration.getDataSources();
         Optional<DataSource> dataSource = datasourceMap.values().stream().findFirst();
         if (dataSource.isPresent()) {
@@ -174,20 +176,11 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
     
     private String getDataSourceClassNameByJdbcUrl(final String jdbcUrl) {
         DatabaseType type = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl);
-        return getDataSourceClassNameByDatabaseType(type);
-    }
-    
-    private String getDataSourceClassNameByDatabaseType(final DatabaseType databaseType) {
-        switch (databaseType.getName()) {
-            case "MySQL":
-                return "com.mysql.jdbc.jdbc2.optional.MysqlDataSource";
-            case "PostgreSQL":
-                return "org.postgresql.ds.PGSimpleDataSource";
-            case "openGauss":
-                return "org.opengauss.ds.PGSimpleDataSource";
-            default:
-                throw new UnsupportedOperationException(String.format("Cannot support database type: `%s` as narayana recovery store", databaseType));
+        Optional<DataSourceClassNameGenerator> dataSourceClassNameGenerator = DataSourceClassNameGeneratorFactory.newInstance(type);
+        if (dataSourceClassNameGenerator.isPresent()) {
+            return dataSourceClassNameGenerator.get().getDataSourceClassName();
         }
+        throw new UnsupportedOperationException(String.format("Cannot support database type: `%s` as narayana recovery store", type));
     }
     
     private void generateTransactionProps(final String recoveryStoreUrl, final String recoveryStoreUser, final String recoveryStorePassword, final String recoveryStoreDataSource,

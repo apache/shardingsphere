@@ -15,35 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.rule;
+package org.apache.shardingsphere.infra.datasource.utils;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
-import org.apache.shardingsphere.transaction.core.TransactionType;
-
-import java.util.Properties;
-
-/**
- * Transaction rule.
- */
-@Getter
-public final class TransactionRule implements GlobalRule {
+public class PostgreSQLDataSourceClassNameGenerator implements DataSourceClassNameGenerator {
     
-    private final TransactionType defaultType;
-    
-    private final String providerType;
-    
-    private final Properties props;
-    
-    public TransactionRule(final TransactionRuleConfiguration ruleConfig) {
-        defaultType = TransactionType.valueOf(ruleConfig.getDefaultType().toUpperCase());
-        providerType = ruleConfig.getProviderType();
-        props = ruleConfig.getProps();
+    @Override
+    public String getDataSourceClassName() {
+        return "org.postgresql.ds.PGSimpleDataSource";
     }
     
     @Override
     public String getType() {
-        return TransactionRule.class.getSimpleName();
+        return "PostgreSQL";
     }
 }

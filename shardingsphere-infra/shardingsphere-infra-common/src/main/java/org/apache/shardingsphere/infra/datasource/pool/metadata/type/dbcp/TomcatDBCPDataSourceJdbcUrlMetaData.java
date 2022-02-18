@@ -35,12 +35,12 @@ public final class TomcatDBCPDataSourceJdbcUrlMetaData implements DataSourceJdbc
     }
     
     @Override
-    public String getUserName(BasicDataSource targetDataSource) {
+    public String getUserName(final BasicDataSource targetDataSource) {
         return targetDataSource.getUsername();
     }
     
     @Override
-    public String getPassword(BasicDataSource targetDataSource) {
+    public String getPassword(final BasicDataSource targetDataSource) {
         return targetDataSource.getPassword();
     }
     
