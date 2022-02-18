@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.swapper.DatabaseDiscoveryRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.ExportSchemaConfigurationStatement;
@@ -28,27 +27,24 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.swapper.ReadwriteSplittingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
 import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
 
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.Types;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -56,10 +52,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Export schema configuration executor.
+ * Export schema configuration handler.
  */
-@RequiredArgsConstructor
-public final class ExportSchemaConfigurationExecutor extends AbstractShowExecutor {
+public final class ExportSchemaConfigurationHandler extends QueryableRALBackendHandler<ExportSchemaConfigurationStatement, ExportSchemaConfigurationHandler> {
     
     private static final String CONFIG = "config";
     
@@ -93,9 +88,7 @@ public final class ExportSchemaConfigurationExecutor extends AbstractShowExecuto
     
     private static final Map<String, Class<? extends RuleConfiguration>> FEATURE_MAP = new HashMap<>(5, 1);
     
-    private final ExportSchemaConfigurationStatement sqlStatement;
-    
-    private final ConnectionSession connectionSession;
+    private ConnectionSession connectionSession;
     
     static {
         FEATURE_MAP.put(SHARDING, ShardingRuleConfiguration.class);
@@ -106,12 +99,18 @@ public final class ExportSchemaConfigurationExecutor extends AbstractShowExecuto
     }
     
     @Override
-    protected List<QueryHeader> createQueryHeaders() {
-        return Arrays.asList(new QueryHeader("", "", CONFIG, CONFIG, Types.VARCHAR, "VARCHAR", 128, 0, false, false, false, false));
+    public ExportSchemaConfigurationHandler init(final HandlerParameter<ExportSchemaConfigurationStatement> parameter) {
+        connectionSession = parameter.getConnectionSession();
+        return super.init(parameter);
     }
     
     @Override
-    protected MergedResult createMergedResult() {
+    protected Collection<String> getColumnNames() {
+        return Collections.singletonList(CONFIG);
+    }
+    
+    @Override
+    protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         String schemaName = getSchemaName();
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(schemaName);
         StringBuilder result = new StringBuilder();
@@ -119,9 +118,8 @@ public final class ExportSchemaConfigurationExecutor extends AbstractShowExecuto
         getDataSourcesConfig(metaData, result);
         getRulesConfig(metaData.getRuleMetaData().getConfigurations(), result);
         if (!sqlStatement.getFilePath().isPresent()) {
-            return new MultipleLocalDataMergedResult(Collections.singleton(Collections.singletonList(result.toString())));
+            return Collections.singleton(Collections.singletonList(result.toString()));
         }
-        
         File outFile = new File(sqlStatement.getFilePath().get());
         try (FileOutputStream stream = new FileOutputStream(outFile)) {
             stream.write(result.toString().getBytes());

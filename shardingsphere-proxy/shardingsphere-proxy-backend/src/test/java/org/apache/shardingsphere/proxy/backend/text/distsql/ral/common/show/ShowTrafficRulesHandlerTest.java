@@ -22,8 +22,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowTrafficRulesExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowTrafficRulesHandler;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
 import org.junit.Test;
@@ -42,20 +41,19 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ShowTrafficRulesExecutorTest {
+public class ShowTrafficRulesHandlerTest {
     
     @Test
     public void assertExecutor() throws SQLException {
         ShowTrafficRulesStatement showTrafficRuleStatement = new ShowTrafficRulesStatement();
         showTrafficRuleStatement.setRuleName("rule_name_1");
-        ShowTrafficRulesExecutor executor = new ShowTrafficRulesExecutor(showTrafficRuleStatement);
+        ShowTrafficRulesHandler handler = new ShowTrafficRulesHandler().initStatement(showTrafficRuleStatement);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(createTrafficRule());
         ProxyContext.getInstance().init(contextManager);
-        executor.execute();
-        executor.next();
-        QueryResponseRow queryResponseRow = executor.getQueryResponseRow();
-        ArrayList<Object> data = new ArrayList<>(queryResponseRow.getData());
+        handler.execute();
+        handler.next();
+        ArrayList<Object> data = new ArrayList<>(handler.getRowData());
         assertThat(data.size(), is(6));
         assertThat(data.get(0), is("rule_name_1"));
         assertThat(data.get(1), is("olap,order_by"));

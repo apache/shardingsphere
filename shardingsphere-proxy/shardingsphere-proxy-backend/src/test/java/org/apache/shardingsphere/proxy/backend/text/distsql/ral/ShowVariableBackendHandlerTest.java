@@ -27,9 +27,10 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.ShowDistSQLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowVariableHandler;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.After;
@@ -64,7 +65,8 @@ public final class ShowVariableBackendHandlerTest {
     @Test
     public void assertShowTransactionType() throws SQLException {
         connectionSession.setCurrentSchema("schema");
-        ShowDistSQLBackendHandler backendHandler = new ShowDistSQLBackendHandler(new ShowVariableStatement("transaction_type"), connectionSession);
+        ShowVariableHandler backendHandler = new ShowVariableHandler()
+                .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement("transaction_type")).setConnectionSession(connectionSession));
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(1));
@@ -76,7 +78,8 @@ public final class ShowVariableBackendHandlerTest {
     @Test
     public void assertShowCachedConnections() throws SQLException {
         connectionSession.setCurrentSchema("schema");
-        ShowDistSQLBackendHandler backendHandler = new ShowDistSQLBackendHandler(new ShowVariableStatement("cached_connections"), connectionSession);
+        ShowVariableHandler backendHandler = new ShowVariableHandler()
+                .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement("cached_connections")).setConnectionSession(connectionSession));
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(1));
@@ -88,14 +91,17 @@ public final class ShowVariableBackendHandlerTest {
     @Test(expected = UnsupportedVariableException.class)
     public void assertShowCachedConnectionFailed() throws SQLException {
         connectionSession.setCurrentSchema("schema");
-        new ShowDistSQLBackendHandler(new ShowVariableStatement("cached_connectionss"), connectionSession).execute();
+        ShowVariableHandler backendHandler = new ShowVariableHandler()
+                .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement("cached_connectionss")).setConnectionSession(connectionSession));
+        backendHandler.execute();
     }
     
     @Test
     public void assertShowAgentPluginsEnabled() throws SQLException {
         SystemPropertyUtil.setSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString());
         connectionSession.setCurrentSchema("schema");
-        ShowDistSQLBackendHandler backendHandler = new ShowDistSQLBackendHandler(new ShowVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name()), connectionSession);
+        ShowVariableHandler backendHandler = new ShowVariableHandler()
+                .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name())).setConnectionSession(connectionSession));
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(1));
@@ -115,7 +121,8 @@ public final class ShowVariableBackendHandlerTest {
         props.put("sql-show", "true");
         ConfigurationProperties configurationProperties = new ConfigurationProperties(props);
         when(metaDataContexts.getProps()).thenReturn(configurationProperties);
-        ShowDistSQLBackendHandler backendHandler = new ShowDistSQLBackendHandler(new ShowVariableStatement("SQL_SHOW"), connectionSession);
+        ShowVariableHandler backendHandler = new ShowVariableHandler()
+                .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement("SQL_SHOW")).setConnectionSession(connectionSession));
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(1));

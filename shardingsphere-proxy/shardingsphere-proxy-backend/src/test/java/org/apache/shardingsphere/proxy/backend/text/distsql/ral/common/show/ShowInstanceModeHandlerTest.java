@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show;
 
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceModeStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowInstanceModeExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowInstanceModeHandler;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -36,19 +36,18 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowInstanceModeExecutorTest {
+public final class ShowInstanceModeHandlerTest {
     
     @Test
     public void assertExecutor() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         InstanceContext instanceContext = createInstanceContext();
         when(contextManager.getInstanceContext()).thenReturn(instanceContext);
-        ShowInstanceModeExecutor executor = new ShowInstanceModeExecutor();
+        ShowInstanceModeHandler handler = new ShowInstanceModeHandler().initStatement(new ShowInstanceModeStatement());
         ProxyContext.getInstance().init(contextManager);
-        executor.execute();
-        executor.next();
-        QueryResponseRow queryResponseRow = executor.getQueryResponseRow();
-        ArrayList<Object> data = new ArrayList<>(queryResponseRow.getData());
+        handler.execute();
+        handler.next();
+        ArrayList<Object> data = new ArrayList<>(handler.getRowData());
         assertThat(data.size(), is(5));
         assertThat(data.get(0), is("127.0.0.1@3309"));
         assertThat(data.get(1), is("Cluster"));

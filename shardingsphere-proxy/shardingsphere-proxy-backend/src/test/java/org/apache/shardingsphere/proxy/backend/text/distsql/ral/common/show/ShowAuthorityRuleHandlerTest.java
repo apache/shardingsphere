@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowAuthorityRuleExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowAuthorityRuleHandler;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -39,19 +39,18 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowAuthorityRuleExecutorTest {
+public final class ShowAuthorityRuleHandlerTest {
     
-    private final ShowAuthorityRuleExecutor executor = new ShowAuthorityRuleExecutor();
+    private final ShowAuthorityRuleHandler handler = new ShowAuthorityRuleHandler().initStatement(new ShowAuthorityRuleStatement());
     
     @Test
     public void assertAuthorityRule() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData());
         ProxyContext.getInstance().init(contextManager);
-        executor.execute();
-        executor.next();
-        QueryResponseRow queryResponseRow = executor.getQueryResponseRow();
-        List<Object> data = new ArrayList<>(queryResponseRow.getData());
+        handler.execute();
+        handler.next();
+        List<Object> data = new ArrayList<>(handler.getRowData());
         assertThat(data.size(), is(3));
         assertThat(data.get(0), is("root@localhost"));
         assertThat(data.get(1), is("ALL_PRIVILEGES_PERMITTED"));

@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTableMetadataStatement;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,10 +34,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Show table metadata executor.
+ * Show table metadata handler.
  */
-@RequiredArgsConstructor
-public final class ShowTableMetadataExecutor extends AbstractShowExecutor {
+public final class ShowTableMetadataHandler extends QueryableRALBackendHandler<ShowTableMetadataStatement, ShowTableMetadataHandler> {
     
     private static final String SCHEMA_NAME = "schema_name";
     
@@ -50,22 +46,21 @@ public final class ShowTableMetadataExecutor extends AbstractShowExecutor {
     
     private static final String NAME = "name";
     
-    private final ShowTableMetadataStatement sqlStatement;
-    
-    private final ConnectionSession connectionSession;
+    private ConnectionSession connectionSession;
     
     @Override
-    protected List<QueryHeader> createQueryHeaders() {
-        return Arrays.asList(
-                new QueryHeader("", "", SCHEMA_NAME, SCHEMA_NAME, Types.VARCHAR, "VARCHAR", 128, 0, false, false, false, false),
-                new QueryHeader("", "", TABLE_NAME, TABLE_NAME, Types.VARCHAR, "VARCHAR", 128, 0, false, false, false, false),
-                new QueryHeader("", "", TYPE, TYPE, Types.VARCHAR, "VARCHAR", 128, 0, false, false, false, false),
-                new QueryHeader("", "", NAME, NAME, Types.VARCHAR, "VARCHAR", 128, 0, false, false, false, false)
-        );
+    public ShowTableMetadataHandler init(final HandlerParameter<ShowTableMetadataStatement> parameter) {
+        connectionSession = parameter.getConnectionSession();
+        return super.init(parameter);
     }
     
     @Override
-    protected MergedResult createMergedResult() {
+    protected Collection<String> getColumnNames() {
+        return Arrays.asList(SCHEMA_NAME, TABLE_NAME, TYPE, NAME);
+    }
+    
+    @Override
+    protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         String schemaName = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getSchemaName();
         if (null == schemaName) {
             throw new NoDatabaseSelectedException();
@@ -74,9 +69,8 @@ public final class ShowTableMetadataExecutor extends AbstractShowExecutor {
             throw new SchemaNotExistedException(schemaName);
         }
         ShardingSphereSchema schema = ProxyContext.getInstance().getMetaData(schemaName).getSchema();
-        Collection<List<Object>> rows = schema.getAllTableNames().stream().filter(each -> sqlStatement.getTableNames().contains(each))
+        return schema.getAllTableNames().stream().filter(each -> sqlStatement.getTableNames().contains(each))
                 .map(each -> buildTableRows(schemaName, schema, each)).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));
-        return new MultipleLocalDataMergedResult(rows);
     }
     
     private Collection<List<Object>> buildTableRows(final String schemaName, final ShardingSphereSchema schema, final String tableName) {
@@ -93,5 +87,4 @@ public final class ShowTableMetadataExecutor extends AbstractShowExecutor {
     private List<Object> buildRow(final String schemaName, final String tableName, final String type, final String name) {
         return new ArrayList<>(Arrays.asList(schemaName, tableName, type, name));
     }
-    
 }

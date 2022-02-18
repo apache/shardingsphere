@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceModeStatement;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 
-import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Show instance mode executor.
+ * Show instance mode handler.
  */
-public final class ShowInstanceModeExecutor extends AbstractShowExecutor {
+public final class ShowInstanceModeHandler extends QueryableRALBackendHandler<ShowInstanceModeStatement, ShowInstanceModeHandler> {
     
     private static final String ID = "id";
     
@@ -47,22 +46,12 @@ public final class ShowInstanceModeExecutor extends AbstractShowExecutor {
     private static final String OVERWRITE = "overwrite";
     
     @Override
-    protected List<QueryHeader> createQueryHeaders() {
-        return Arrays.asList(
-                new QueryHeader("", "", ID, ID, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
-                new QueryHeader("", "", TYPE, TYPE, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
-                new QueryHeader("", "", REPOSITORY, REPOSITORY, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
-                new QueryHeader("", "", PROPS, PROPS, Types.VARCHAR, "VARCHAR", 1024, 0, false, false, false, false),
-                new QueryHeader("", "", OVERWRITE, OVERWRITE, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false)
-        );
+    protected Collection<String> getColumnNames() {
+        return Arrays.asList(ID, TYPE, REPOSITORY, PROPS, OVERWRITE);
     }
     
     @Override
-    protected MergedResult createMergedResult() {
-        return new MultipleLocalDataMergedResult(buildRows());
-    }
-    
-    private Collection<List<Object>> buildRows() {
+    protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
         PersistRepositoryConfiguration repositoryConfiguration = instanceContext.getModeConfiguration().getRepository();
         return Collections.singleton(Arrays.asList(instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId(), instanceContext.getModeConfiguration().getType(),
