@@ -186,6 +186,8 @@ public enum SQLVisitorRule {
     
     DECLARE("Declare", SQLStatementType.DDL),
     
+    DISCARD("Discard", SQLStatementType.DDL),
+    
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
     
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),

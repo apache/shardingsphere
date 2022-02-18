@@ -79,6 +79,7 @@ execute
     | createType
     | createTextSearch
     | declare
+    | discard
     | dropDatabase
     | dropFunction
     | dropProcedure
