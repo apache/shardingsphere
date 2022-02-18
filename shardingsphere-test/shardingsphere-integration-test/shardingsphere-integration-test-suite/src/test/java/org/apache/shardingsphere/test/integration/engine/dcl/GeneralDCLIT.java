@@ -39,7 +39,7 @@ public final class GeneralDCLIT extends BaseDCLIT {
     private static final ComposedContainerRegistry COMPOSED_CONTAINER_REGISTRY = new ComposedContainerRegistry();
     
     public GeneralDCLIT(final AssertionParameterizedArray parameterizedArray) {
-        super(parameterizedArray, COMPOSED_CONTAINER_REGISTRY.getComposedContainer(GeneralDCLIT.class.getSimpleName(), parameterizedArray));
+        super(parameterizedArray, COMPOSED_CONTAINER_REGISTRY.getComposedContainer(parameterizedArray));
     }
     
     @Parameters(name = "{0}")

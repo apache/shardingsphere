@@ -35,31 +35,29 @@ public final class ComposedContainerRegistry implements AutoCloseable {
     /**
      * Get composed container.
      *
-     * @param testSuiteName test suite name
      * @param parameterizedArray parameterized array
      * @return composed container
      */
-    public ComposedContainer getComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
-        String key = generateKey(testSuiteName, parameterizedArray);
+    public ComposedContainer getComposedContainer(final ParameterizedArray parameterizedArray) {
+        String key = generateKey(parameterizedArray);
         if (composedContainers.containsKey(key)) {
             return composedContainers.get(key);
         }
         synchronized (composedContainers) {
             if (!composedContainers.containsKey(key)) {
-                composedContainers.put(key, createComposedContainer(testSuiteName, parameterizedArray));
+                composedContainers.put(key, createComposedContainer(parameterizedArray));
             }
             return composedContainers.get(key);
         }
     }
     
-    private String generateKey(final String testSuiteName, final ParameterizedArray parameterizedArray) {
-        return String.join("-", testSuiteName, parameterizedArray.getScenario(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType().getName());
+    private String generateKey(final ParameterizedArray parameterizedArray) {
+        return String.join("-", parameterizedArray.getScenario(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType().getName());
     }
     
-    private ComposedContainer createComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
+    private ComposedContainer createComposedContainer(final ParameterizedArray parameterizedArray) {
         // TODO fix sharding_governance
-        return "sharding_governance".equals(parameterizedArray.getScenario())
-                ? new ClusterComposedContainer(testSuiteName, parameterizedArray) : new MemoryComposedContainer(testSuiteName, parameterizedArray);
+        return "sharding_governance".equals(parameterizedArray.getScenario()) ? new ClusterComposedContainer(parameterizedArray) : new MemoryComposedContainer(parameterizedArray);
     }
     
     @Override
