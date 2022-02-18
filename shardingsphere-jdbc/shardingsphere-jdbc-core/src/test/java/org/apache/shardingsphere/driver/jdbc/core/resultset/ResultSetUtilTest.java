@@ -49,7 +49,6 @@ public final class ResultSetUtilTest {
     public void assertConvertValue() throws SQLException {
         Object object = new Object();
         assertThat(ResultSetUtil.convertValue(object, String.class), is(object.toString()));
-        assertThat(ResultSetUtil.convertValue("1", int.class), is("1"));
     }
     
     @Test
