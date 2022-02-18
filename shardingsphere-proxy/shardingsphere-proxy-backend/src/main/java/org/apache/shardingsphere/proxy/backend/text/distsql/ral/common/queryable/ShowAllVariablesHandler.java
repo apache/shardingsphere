@@ -15,54 +15,59 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAllVariablesStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
-import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
 
-import java.sql.Types;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Show all variables executor.
+ * Show all variables handler.
  */
-@RequiredArgsConstructor
-public final class ShowAllVariablesExecutor extends AbstractShowExecutor {
+public final class ShowAllVariablesHandler extends QueryableRALBackendHandler<ShowAllVariablesStatement, ShowAllVariablesHandler> {
     
-    private final ConnectionSession connectionSession;
+    private static final String VARIABLE_NAME = "variable_name";
+    
+    private static final String VARIABLE_VALUE = "variable_value";
+    
+    private ConnectionSession connectionSession;
     
     @Override
-    protected List<QueryHeader> createQueryHeaders() {
-        List<QueryHeader> result = new LinkedList<>();
-        result.add(new QueryHeader("", "", "variable_name", "variable_name", Types.VARCHAR, "VARCHAR", 100, 0, false, false, false, false));
-        result.add(new QueryHeader("", "", "variable_value", "variable_value", Types.VARCHAR, "VARCHAR", 100, 0, false, false, false, false));
-        return result;
+    public ShowAllVariablesHandler init(final HandlerParameter<ShowAllVariablesStatement> parameter) {
+        connectionSession = parameter.getConnectionSession();
+        return super.init(parameter);
     }
     
     @Override
-    protected MergedResult createMergedResult() {
-        List<List<Object>> rows = new LinkedList<>();
+    protected Collection<String> getColumnNames() {
+        return Arrays.asList(VARIABLE_NAME, VARIABLE_VALUE);
+    }
+    
+    @Override
+    protected Collection<List<Object>> getRows(final ContextManager contextManager) {
+        List<List<Object>> result = new LinkedList<>();
         ConfigurationProperties configurationProperties = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps();
         ConfigurationPropertyKey.getKeyNames().forEach(each -> {
             String propertyValue = configurationProperties.getValue(ConfigurationPropertyKey.valueOf(each)).toString();
-            rows.add(Arrays.asList(each.toLowerCase(), propertyValue));
+            result.add(Arrays.asList(each.toLowerCase(), propertyValue));
         });
-        rows.add(Arrays.asList(VariableEnum.AGENT_PLUGINS_ENABLED.name().toLowerCase(), SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString())));
+        result.add(Arrays.asList(VariableEnum.AGENT_PLUGINS_ENABLED.name().toLowerCase(), SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString())));
         if (connectionSession.getBackendConnection() instanceof JDBCBackendConnection) {
-            rows.add(Arrays.asList(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), ((JDBCBackendConnection) connectionSession.getBackendConnection()).getConnectionSize()));
+            result.add(Arrays.asList(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), ((JDBCBackendConnection) connectionSession.getBackendConnection()).getConnectionSize()));
         }
-        rows.add(Arrays.asList(VariableEnum.TRANSACTION_TYPE.name().toLowerCase(), connectionSession.getTransactionStatus().getTransactionType().name()));
-        return new MultipleLocalDataMergedResult(rows);
+        result.add(Arrays.asList(VariableEnum.TRANSACTION_TYPE.name().toLowerCase(), connectionSession.getTransactionStatus().getTransactionType().name()));
+        return result;
     }
 }

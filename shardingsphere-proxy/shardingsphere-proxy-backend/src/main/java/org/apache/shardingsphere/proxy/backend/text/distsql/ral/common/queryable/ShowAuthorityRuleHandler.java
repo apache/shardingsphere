@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAuthorityRuleStatement;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 
-import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,8 +31,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
-public final class ShowAuthorityRuleExecutor extends AbstractShowExecutor {
+public final class ShowAuthorityRuleHandler extends QueryableRALBackendHandler<ShowAuthorityRuleStatement, ShowAuthorityRuleHandler> {
     
     private static final String USERS = "users";
     
@@ -43,27 +40,24 @@ public final class ShowAuthorityRuleExecutor extends AbstractShowExecutor {
     private static final String PROPS = "props";
     
     @Override
-    protected List<QueryHeader> createQueryHeaders() {
-        return Arrays.asList(
-                new QueryHeader("", "", USERS, USERS, Types.VARCHAR, "VARCHAR", 100, 0, false, false, false, false),
-                new QueryHeader("", "", PROVIDER, PROVIDER, Types.VARCHAR, "VARCHAR", 100, 0, false, false, false, false),
-                new QueryHeader("", "", PROPS, PROPS, Types.VARCHAR, "VARCHAR", 100, 0, false, false, false, false));
+    protected Collection<String> getColumnNames() {
+        return Arrays.asList(USERS, PROVIDER, PROPS);
     }
     
     @Override
-    protected MergedResult createMergedResult() {
+    protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         Optional<AuthorityRuleConfiguration> authorityRuleConfigurationOptional = ProxyContext.getInstance().getContextManager()
                 .getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(AuthorityRuleConfiguration.class).stream().findFirst();
         if (!authorityRuleConfigurationOptional.isPresent()) {
-            return new MultipleLocalDataMergedResult(Collections.emptyList());
+            return Collections.emptyList();
         }
         AuthorityRuleConfiguration authorityRuleConfiguration = authorityRuleConfigurationOptional.get();
         List<Object> row = new LinkedList<>();
         row.add(authorityRuleConfiguration.getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; ")));
         row.add(authorityRuleConfiguration.getProvider().getType());
         row.add(authorityRuleConfiguration.getProvider().getProps().size() == 0 ? "" : authorityRuleConfiguration.getProvider().getProps());
-        Collection<List<Object>> rows = new LinkedList<>();
-        rows.add(row);
-        return new MultipleLocalDataMergedResult(rows);
+        Collection<List<Object>> result = new LinkedList<>();
+        result.add(row);
+        return result;
     }
 }

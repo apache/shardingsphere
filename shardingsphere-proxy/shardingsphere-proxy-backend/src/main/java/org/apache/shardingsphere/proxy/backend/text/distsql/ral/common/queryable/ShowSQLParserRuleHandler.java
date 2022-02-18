@@ -15,18 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
 import com.google.gson.Gson;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowSQLParserRuleStatement;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 
-import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,43 +32,37 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Show SQL parser rule executor.
+ * Show SQL parser rule handler.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShowSQLParserRuleExecutor extends AbstractShowExecutor {
+public final class ShowSQLParserRuleHandler extends QueryableRALBackendHandler<ShowSQLParserRuleStatement, ShowSQLParserRuleHandler> {
     
     private static final Gson GSON = new Gson();
-
+    
     private static final String SQL_COMMENT_PARSE_ENABLE = "sql_comment_parse_enable";
-
+    
     private static final String PARSE_TREE_CACHE = "parse_tree_cache";
-
+    
     private static final String SQL_STATEMENT_CACHE = "sql_statement_cache";
     
     @Override
-    protected List<QueryHeader> createQueryHeaders() {
-        return Arrays.asList(
-                new QueryHeader("", "", SQL_COMMENT_PARSE_ENABLE, SQL_COMMENT_PARSE_ENABLE, Types.VARCHAR, "VARCHAR", 6, 0, false, false, false, false),
-                new QueryHeader("", "", PARSE_TREE_CACHE, PARSE_TREE_CACHE, Types.VARCHAR, "VARCHAR", 255, 0, false, false, false, false),
-                new QueryHeader("", "", SQL_STATEMENT_CACHE, SQL_STATEMENT_CACHE, Types.VARCHAR, "VARCHAR", 255, 0, false, false, false, false)
-        );
+    protected Collection<String> getColumnNames() {
+        return Arrays.asList(SQL_COMMENT_PARSE_ENABLE, PARSE_TREE_CACHE, SQL_STATEMENT_CACHE);
     }
     
     @Override
-    protected MergedResult createMergedResult() {
+    protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         Optional<SQLParserRuleConfiguration> sqlParserRuleConfigurationOptional = ProxyContext.getInstance().getContextManager()
                 .getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(SQLParserRuleConfiguration.class).stream().findAny();
         if (!sqlParserRuleConfigurationOptional.isPresent()) {
-            return new MultipleLocalDataMergedResult(Collections.emptyList());
+            return Collections.emptyList();
         }
         SQLParserRuleConfiguration sqlParserRuleConfiguration = sqlParserRuleConfigurationOptional.get();
         List<Object> row = new LinkedList<>();
         row.add(String.valueOf(sqlParserRuleConfiguration.isSqlCommentParseEnabled()));
         row.add(GSON.toJson(sqlParserRuleConfiguration.getParseTreeCache()));
         row.add(GSON.toJson(sqlParserRuleConfiguration.getSqlStatementCache()));
-        Collection<List<Object>> rows = new LinkedList<>();
-        rows.add(row);
-        return new MultipleLocalDataMergedResult(rows);
+        Collection<List<Object>> result = new LinkedList<>();
+        result.add(row);
+        return result;
     }
 }

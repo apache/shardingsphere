@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show;
 
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowSQLParserRuleExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowSQLParserRuleHandler;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.Test;
 
@@ -38,18 +38,17 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowSQLParserRuleExecutorTest {
-
+public final class ShowSQLParserRuleHandlerTest {
+    
     @Test
     public void assertSQLParserRule() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData());
         ProxyContext.getInstance().init(contextManager);
-        ShowSQLParserRuleExecutor executor = new ShowSQLParserRuleExecutor();
-        executor.execute();
-        executor.next();
-        QueryResponseRow queryResponseRow = executor.getQueryResponseRow();
-        List<Object> data = new ArrayList<>(queryResponseRow.getData());
+        ShowSQLParserRuleHandler handler = new ShowSQLParserRuleHandler().initStatement(new ShowSQLParserRuleStatement());
+        handler.execute();
+        handler.next();
+        List<Object> data = new ArrayList<>(handler.getRowData());
         assertThat(data.size(), is(3));
         assertThat(data.get(0), is("true"));
         String parseTreeCache = String.valueOf(data.get(1));
@@ -61,7 +60,7 @@ public final class ShowSQLParserRuleExecutorTest {
         assertThat(sqlStatementCache, containsString("\"maximumSize\":65535"));
         assertThat(sqlStatementCache, containsString("\"concurrencyLevel\":4"));
     }
-
+    
     private ShardingSphereRuleMetaData getGlobalRuleMetaData() {
         CacheOption parseTreeCache = new CacheOption(128, 1024, 4);
         CacheOption sqlStatementCache = new CacheOption(2000, 65535, 4);

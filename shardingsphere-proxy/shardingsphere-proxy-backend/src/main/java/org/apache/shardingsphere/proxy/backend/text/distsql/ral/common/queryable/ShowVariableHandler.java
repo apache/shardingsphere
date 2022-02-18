@@ -15,64 +15,63 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
-import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
-import java.sql.Types;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Show variable executor.
+ * Show variable handler.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShowVariableExecutor extends AbstractShowExecutor {
+public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVariableStatement, ShowVariableHandler> {
     
-    private final ShowVariableStatement sqlStatement;
-    
-    private final ConnectionSession connectionSession;
+    private ConnectionSession connectionSession;
     
     @Override
-    protected List<QueryHeader> createQueryHeaders() {
-        return Collections.singletonList(new QueryHeader("", "", sqlStatement.getName().toLowerCase(), sqlStatement.getName(), Types.VARCHAR, "VARCHAR", 100, 0, false, false, false, false));
+    public ShowVariableHandler init(final HandlerParameter<ShowVariableStatement> parameter) {
+        initStatement(parameter.getStatement());
+        connectionSession = parameter.getConnectionSession();
+        return this;
     }
     
     @Override
-    protected MergedResult createMergedResult() {
+    protected Collection<String> getColumnNames() {
+        return Collections.singletonList(sqlStatement.getName().toLowerCase());
+    }
+    
+    @Override
+    protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         if (ConfigurationPropertyKey.getKeyNames().contains(sqlStatement.getName())) {
-            ConfigurationProperties configurationProperties = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps();
+            ConfigurationProperties configurationProperties = contextManager.getMetaDataContexts().getProps();
             String propertyValue = configurationProperties.getValue(ConfigurationPropertyKey.valueOf(sqlStatement.getName())).toString();
-            return new MultipleLocalDataMergedResult(Collections.singletonList(Collections.singletonList(propertyValue)));
+            return Collections.singletonList(Collections.singletonList(propertyValue));
         }
         VariableEnum variable = VariableEnum.getValueOf(sqlStatement.getName());
         switch (variable) {
             case AGENT_PLUGINS_ENABLED:
-                return new MultipleLocalDataMergedResult(Collections.singletonList(Collections.singletonList(SystemPropertyUtil.getSystemProperty(variable.name(), Boolean.TRUE.toString()))));
+                return Collections.singletonList(Collections.singletonList(SystemPropertyUtil.getSystemProperty(variable.name(), Boolean.TRUE.toString())));
             case CACHED_CONNECTIONS:
                 if (connectionSession.getBackendConnection() instanceof JDBCBackendConnection) {
                     int connectionSize = ((JDBCBackendConnection) connectionSession.getBackendConnection()).getConnectionSize();
-                    return new MultipleLocalDataMergedResult(Collections.singletonList(Collections.singletonList(connectionSize)));
+                    return Collections.singletonList(Collections.singletonList(connectionSize));
                 }
                 break;
             case TRANSACTION_TYPE:
                 TransactionType transactionType = connectionSession.getTransactionStatus().getTransactionType();
-                return new MultipleLocalDataMergedResult(Collections.singletonList(Collections.singletonList(transactionType.name())));
+                return Collections.singletonList(Collections.singletonList(transactionType.name()));
             default:
         }
         throw new UnsupportedVariableException(sqlStatement.getName());

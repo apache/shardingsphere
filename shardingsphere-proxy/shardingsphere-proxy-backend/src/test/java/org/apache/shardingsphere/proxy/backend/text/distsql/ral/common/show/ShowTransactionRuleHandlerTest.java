@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show;
 
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowTransactionRuleExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowTransactionRuleHandler;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.junit.Test;
 
@@ -38,19 +38,18 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowTransactionRuleExecutorTest {
+public final class ShowTransactionRuleHandlerTest {
     
-    private final ShowTransactionRuleExecutor executor = new ShowTransactionRuleExecutor();
+    private final ShowTransactionRuleHandler handler = new ShowTransactionRuleHandler().initStatement(new ShowTransactionRuleStatement());
     
     @Test
     public void assertExecutorWithXA() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData("XA", "Atomikos", getProperties()));
         ProxyContext.getInstance().init(contextManager);
-        executor.execute();
-        executor.next();
-        QueryResponseRow queryResponseRow = executor.getQueryResponseRow();
-        ArrayList<Object> data = new ArrayList<>(queryResponseRow.getData());
+        handler.execute();
+        handler.next();
+        ArrayList<Object> data = new ArrayList<>(handler.getRowData());
         assertThat(data.size(), is(3));
         assertThat(data.get(0), is("XA"));
         assertThat(data.get(1), is("Atomikos"));
@@ -64,10 +63,9 @@ public final class ShowTransactionRuleExecutorTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData("LOCAL", null, null));
         ProxyContext.getInstance().init(contextManager);
-        executor.execute();
-        executor.next();
-        QueryResponseRow queryResponseRow = executor.getQueryResponseRow();
-        ArrayList<Object> data = new ArrayList<>(queryResponseRow.getData());
+        handler.execute();
+        handler.next();
+        ArrayList<Object> data = new ArrayList<>(handler.getRowData());
         assertThat(data.size(), is(3));
         assertThat(data.get(0), is("LOCAL"));
         assertThat(data.get(1), is(""));

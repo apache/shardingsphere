@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
 
-import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -37,10 +35,10 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Show traffic rules executor.
+ * Show traffic rules handler.
  */
 @RequiredArgsConstructor
-public final class ShowTrafficRulesExecutor extends AbstractShowExecutor {
+public final class ShowTrafficRulesHandler extends QueryableRALBackendHandler<ShowTrafficRulesStatement, ShowTrafficRulesHandler> {
     
     private static final String RULE_NAME = "name";
     
@@ -54,32 +52,24 @@ public final class ShowTrafficRulesExecutor extends AbstractShowExecutor {
     
     private static final String LOAD_BALANCER_PROPS = "load_balancer_props";
     
-    private final ShowTrafficRulesStatement sqlStatement;
-    
     @Override
-    protected List<QueryHeader> createQueryHeaders() {
-        return Arrays.asList(
-                new QueryHeader("", "", RULE_NAME, RULE_NAME, Types.VARCHAR, "VARCHAR", 128, 0, false, false, false, false),
-                new QueryHeader("", "", LABELS, LABELS, Types.VARCHAR, "VARCHAR", 128, 0, false, false, false, false),
-                new QueryHeader("", "", ALGORITHM_TYPE, ALGORITHM_TYPE, Types.VARCHAR, "VARCHAR", 128, 0, false, false, false, false),
-                new QueryHeader("", "", ALGORITHM_PROPS, ALGORITHM_PROPS, Types.VARCHAR, "VARCHAR", 1024, 0, false, false, false, false),
-                new QueryHeader("", "", LOAD_BALANCER_TYPE, LOAD_BALANCER_TYPE, Types.VARCHAR, "VARCHAR", 128, 0, false, false, false, false),
-                new QueryHeader("", "", LOAD_BALANCER_PROPS, LOAD_BALANCER_PROPS, Types.VARCHAR, "VARCHAR", 1024, 0, false, false, false, false));
+    protected Collection<String> getColumnNames() {
+        return Arrays.asList(RULE_NAME, LABELS, ALGORITHM_TYPE, ALGORITHM_PROPS, LOAD_BALANCER_TYPE, LOAD_BALANCER_PROPS);
     }
     
     @Override
-    protected MergedResult createMergedResult() {
+    protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         Optional<TrafficRuleConfiguration> configuration = ProxyContext.getInstance().getContextManager().getMetaDataContexts()
                 .getGlobalRuleMetaData().findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
-        Collection<List<Object>> rows = new LinkedList<>();
+        Collection<List<Object>> result = new LinkedList<>();
         Optional<String> ruleName = Optional.ofNullable(sqlStatement.getRuleName());
         configuration.ifPresent(op -> {
             Map<String, ShardingSphereAlgorithmConfiguration> trafficAlgorithms = op.getTrafficAlgorithms();
             Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = op.getLoadBalancers();
             op.getTrafficStrategies().stream().filter(each -> !ruleName.isPresent() || each.getName().equals(ruleName.get()))
-                    .forEach(each -> rows.add(buildRow(each, trafficAlgorithms.get(each.getAlgorithmName()), loadBalancers.get(each.getLoadBalancerName()))));
+                    .forEach(each -> result.add(buildRow(each, trafficAlgorithms.get(each.getAlgorithmName()), loadBalancers.get(each.getLoadBalancerName()))));
         });
-        return new MultipleLocalDataMergedResult(rows);
+        return result;
     }
     
     private List<Object> buildRow(final TrafficStrategyConfiguration strategy, final ShardingSphereAlgorithmConfiguration trafficAlgorithm,
