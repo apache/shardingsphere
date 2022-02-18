@@ -25,11 +25,13 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URL;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
+import java.sql.Ref;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -367,8 +369,47 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getObject(final int columnIndex, final Class<T> type) throws SQLException {
-        if (LocalDateTime.class.equals(type) || LocalDate.class.equals(type) || LocalTime.class.equals(type)) {
+        if (null == type) {
+            throw new SQLException("Type cannot be null");
+        }
+        if (String.class.equals(type)) {
+            return (T) getString(columnIndex);
+        } else if (Boolean.class.equals(type) || Boolean.TYPE.equals(type)) {
+            return (T) Boolean.valueOf(getBoolean(columnIndex));
+        } else if (Byte.class.equals(type) || Byte.TYPE.equals(type)) {
+            return (T) Byte.valueOf(getByte(columnIndex));
+        } else if (byte[].class.equals(type)) {
+            return (T) getBytes(columnIndex);
+        } else if (BigDecimal.class.equals(type)) {
+            return (T) getBigDecimal(columnIndex);
+        } else if (BigInteger.class.equals(type)) {
+            return (T) BigInteger.valueOf(getLong(columnIndex));
+        } else if (Double.class.equals(type) || Double.TYPE.equals(type)) {
+            return (T) Double.valueOf(getDouble(columnIndex));
+        } else if (Float.class.equals(type) || Float.TYPE.equals(type)) {
+            return (T) Float.valueOf(getFloat(columnIndex));
+        } else if (Integer.class.equals(type) || Integer.TYPE.equals(type)) {
+            return (T) Integer.valueOf(getInt(columnIndex));
+        } else if (Long.class.equals(type) || Long.TYPE.equals(type)) {
+            return (T) Long.valueOf(getLong(columnIndex));
+        } else if (Short.class.equals(type) || Short.TYPE.equals(type)) {
+            return (T) Short.valueOf(getShort(columnIndex));
+        } else if (Date.class.equals(type)) {
+            return (T) getDate(columnIndex);
+        } else if (Time.class.equals(type)) {
+            return (T) getTime(columnIndex);
+        } else if (Timestamp.class.equals(type)) {
+            return (T) getTimestamp(columnIndex);
+        } else if (LocalDateTime.class.equals(type) || LocalDate.class.equals(type) || LocalTime.class.equals(type)) {
             return (T) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), type);
+        } else if (Blob.class.equals(type)) {
+            return (T) getBlob(columnIndex);
+        } else if (Clob.class.equals(type)) {
+            return (T) getClob(columnIndex);
+        } else if (Ref.class.equals(type)) {
+            return (T) getRef(columnIndex);
+        } else if (URL.class.equals(type)) {
+            return (T) getURL(columnIndex);
         }
         throw new SQLFeatureNotSupportedException("getObject with type");
     }
