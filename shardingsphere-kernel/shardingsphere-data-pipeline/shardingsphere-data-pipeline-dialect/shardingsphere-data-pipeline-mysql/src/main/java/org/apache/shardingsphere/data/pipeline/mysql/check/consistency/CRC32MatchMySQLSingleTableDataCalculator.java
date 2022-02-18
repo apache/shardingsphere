@@ -58,7 +58,7 @@ public final class CRC32MatchMySQLSingleTableDataCalculator extends AbstractSing
     public Iterable<Object> calculate(final DataCalculateParameter dataCalculateParameter) {
         String logicTableName = dataCalculateParameter.getLogicTableName();
         List<Long> result = dataCalculateParameter.getColumnNames().stream().map(each -> {
-            String sql = SQL_BUILDER.buildChecksumSQL(logicTableName, each);
+            String sql = SQL_BUILDER.buildCrc32SQL(logicTableName, each);
             try {
                 return calculateChecksum(dataCalculateParameter.getDataSource(), sql);
             } catch (final SQLException ex) {
