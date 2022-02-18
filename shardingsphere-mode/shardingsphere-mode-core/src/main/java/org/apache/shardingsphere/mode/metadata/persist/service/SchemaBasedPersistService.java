@@ -59,6 +59,15 @@ public interface SchemaBasedPersistService<T> {
     T load(String schemaName);
     
     /**
+     * Load configurations based version.
+     * 
+     * @param schemaName schema name
+     * @param version version
+     * @return configurations
+     */
+    T load(String schemaName, String version);
+    
+    /**
      * Judge whether schema configuration existed.
      *
      * @param schemaName schema name

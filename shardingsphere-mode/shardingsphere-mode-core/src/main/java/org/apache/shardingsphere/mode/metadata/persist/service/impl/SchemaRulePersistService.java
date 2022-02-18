@@ -75,6 +75,13 @@ public final class SchemaRulePersistService implements SchemaBasedPersistService
     }
     
     @Override
+    public Collection<RuleConfiguration> load(final String schemaName, final String version) {
+        String yamlContent = repository.get(SchemaMetaDataNode.getRulePath(schemaName, version));
+        return Strings.isNullOrEmpty(yamlContent) ? new LinkedList<>() : new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(SchemaMetaDataNode
+                .getRulePath(schemaName, getSchemaActiveVersion(schemaName))), Collection.class, true));
+    }
+    
+    @Override
     public boolean isExisted(final String schemaName) {
         return !Strings.isNullOrEmpty(getSchemaActiveVersion(schemaName)) && !Strings.isNullOrEmpty(repository.get(SchemaMetaDataNode.getRulePath(schemaName, getSchemaActiveVersion(schemaName))));
     }
