@@ -314,10 +314,10 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     private Optional<BindingTableRule> findBindingTableRule(final Collection<String> logicTableNames) {
-        for (String logicTableName : logicTableNames) {
-            Optional<BindingTableRule> bindingTableRule = findBindingTableRule(logicTableName);
-            if (bindingTableRule.isPresent()) {
-                return bindingTableRule;
+        for (String each : logicTableNames) {
+            Optional<BindingTableRule> result = findBindingTableRule(each);
+            if (result.isPresent()) {
+                return result;
             }
         }
         return Optional.empty();

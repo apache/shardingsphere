@@ -56,10 +56,8 @@ public final class DeleteStatementContext extends CommonSQLStatementContext<Dele
     
     private Collection<SimpleTableSegment> filterAliasDeleteTable(final Collection<SimpleTableSegment> tableSegments) {
         Map<String, SimpleTableSegment> aliasTableSegmentMap = new HashMap<>(tableSegments.size(), 1f);
-        for (SimpleTableSegment tableSegment : tableSegments) {
-            if (tableSegment.getAlias().isPresent()) {
-                aliasTableSegmentMap.putIfAbsent(tableSegment.getAlias().get(), tableSegment);
-            }
+        for (SimpleTableSegment each : tableSegments) {
+            each.getAlias().ifPresent(alias -> aliasTableSegmentMap.putIfAbsent(alias, each));
         }
         Collection<SimpleTableSegment> result = new LinkedList<>();
         for (SimpleTableSegment each : tableSegments) {
