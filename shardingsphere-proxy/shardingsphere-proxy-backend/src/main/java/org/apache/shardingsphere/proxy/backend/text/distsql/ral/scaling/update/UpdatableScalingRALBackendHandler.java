@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.update;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.scaling.update;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
