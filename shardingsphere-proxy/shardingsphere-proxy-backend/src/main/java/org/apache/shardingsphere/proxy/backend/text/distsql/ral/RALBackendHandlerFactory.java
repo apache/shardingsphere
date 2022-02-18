@@ -19,10 +19,11 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.AdvancedDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.parse.ParseStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.preview.PreviewStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.ExportSchemaConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.RefreshTableMetadataStatement;
@@ -48,7 +49,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.AdvancedDistSQLBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.ParseDistSQLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.PreviewDistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.HintDistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ExportSchemaConfigurationHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowAllVariablesHandler;
@@ -72,8 +74,8 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.SetReadwriteSplittingStatusHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.SetVariableHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.UnlabelInstanceHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.query.QueryableScalingRALBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.update.UpdatableScalingRALBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.scaling.query.QueryableScalingRALBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.scaling.update.UpdatableScalingRALBackendHandlerFactory;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingReadResourcesStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.status.SetReadwriteSplittingStatusStatement;
 
@@ -122,6 +124,8 @@ public final class RALBackendHandlerFactory {
         QUERYABLE_HANDLER_MAP.put(ShowTrafficRulesStatement.class.getName(), ShowTrafficRulesHandler.class);
         QUERYABLE_HANDLER_MAP.put(ShowTransactionRuleStatement.class.getName(), ShowTransactionRuleHandler.class);
         QUERYABLE_HANDLER_MAP.put(ExportSchemaConfigurationStatement.class.getName(), ExportSchemaConfigurationHandler.class);
+        QUERYABLE_HANDLER_MAP.put(ParseStatement.class.getName(), ParseDistSQLBackendHandler.class);
+        QUERYABLE_HANDLER_MAP.put(PreviewStatement.class.getName(), PreviewDistSQLBackendHandler.class);
     }
     
     /**
@@ -143,9 +147,6 @@ public final class RALBackendHandlerFactory {
         }
         if (sqlStatement instanceof UpdatableRALStatement) {
             result = UpdatableScalingRALBackendHandlerFactory.newInstance((UpdatableRALStatement) sqlStatement);
-        }
-        if (sqlStatement instanceof AdvancedDistSQLStatement) {
-            result = AdvancedDistSQLBackendHandlerFactory.newInstance(databaseType, (AdvancedDistSQLStatement) sqlStatement, connectionSession);
         }
         if (result == null) {
             HandlerParameter parameter = new HandlerParameter(sqlStatement, databaseType, connectionSession);
