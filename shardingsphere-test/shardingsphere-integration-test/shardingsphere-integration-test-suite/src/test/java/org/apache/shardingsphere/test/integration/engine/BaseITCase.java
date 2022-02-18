@@ -48,7 +48,7 @@ public abstract class BaseITCase {
     
     private static final ComposedContainerRegistry COMPOSED_CONTAINER_REGISTRY = new ComposedContainerRegistry();
     
-    public static final AtomicInteger COMPLETED_SUITES_COUNT = new AtomicInteger(0);
+    private static final AtomicInteger COMPLETED_SUITES_COUNT = new AtomicInteger(0);
     
     private final String scenario;
     
