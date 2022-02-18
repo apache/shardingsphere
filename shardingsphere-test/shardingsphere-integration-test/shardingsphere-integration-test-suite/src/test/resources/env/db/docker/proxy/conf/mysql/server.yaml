@@ -22,10 +22,10 @@ mode:
     props:
       namespace: db
       server-lists: zk.db.host:2181
-      retryIntervalMilliseconds: 500
       timeToLiveSeconds: 60
-      maxRetries: 3
       operationTimeoutMilliseconds: 500
+      retryIntervalMilliseconds: 500
+      maxRetries: 3
   overwrite: false
 
 rules:
