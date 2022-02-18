@@ -83,7 +83,8 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
                 new Properties());
         if (!RuleAlteredJobWorker.isOnRuleAlteredActionEnabled(currentRuleConfig)) {
             if (RULE_ALTERED_ACTION_LIST.contains(sqlStatement.getClass().getCanonicalName())) {
-                throw new RuntimeException("scaling is not enabled");
+                // TODO throw new RuntimeException("scaling is not enabled");
+                log.warn("rule altered and scaling is not enabled.");
             }
         } else if (preprocessor.isPresent()) {
             prepareScaling(shardingSphereMetaData, sqlStatement, (RuleDefinitionAlterUpdater) ruleDefinitionUpdater, currentRuleConfig, preprocessor.get());
