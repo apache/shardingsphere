@@ -204,7 +204,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
             return tableRule.getActualDatasourceNames();
         }
         Collection<String> result = databaseShardingStrategy.doSharding(tableRule.getActualDatasourceNames(), databaseShardingValues, properties);
-        Preconditions.checkState(!result.isEmpty(), "no database route info");
+        Preconditions.checkState(!result.isEmpty(), "No database route info");
         Preconditions.checkState(tableRule.getActualDatasourceNames().containsAll(result), 
                 "Some routed data sources do not belong to configured data sources. routed data sources: `%s`, configured data sources: `%s`", result, tableRule.getActualDatasourceNames());
         return result;
