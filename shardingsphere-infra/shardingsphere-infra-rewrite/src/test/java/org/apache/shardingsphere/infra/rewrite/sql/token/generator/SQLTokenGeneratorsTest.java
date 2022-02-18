@@ -81,7 +81,7 @@ public final class SQLTokenGeneratorsTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public void assertGenerateSQLTokensWithOptionalSQLTokenGenerator() {
         OptionalSQLTokenGenerator<SQLStatementContext> optionalSQLTokenGenerator = mock(OptionalSQLTokenGenerator.class);
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
@@ -97,7 +97,7 @@ public final class SQLTokenGeneratorsTest {
     @Test
     @SuppressWarnings("unchecked")
     public void assertGenerateSQLTokensWithCollectionSQLTokenGenerator() {
-        CollectionSQLTokenGenerator<SQLStatementContext> collectionSQLTokenGenerator = mock(CollectionSQLTokenGenerator.class);
+        CollectionSQLTokenGenerator<SQLStatementContext<?>> collectionSQLTokenGenerator = mock(CollectionSQLTokenGenerator.class);
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
         sqlTokenGenerators.addAll(Collections.singleton(collectionSQLTokenGenerator));
         List<SQLToken> expectedCollection = Arrays.asList(mock(SQLToken.class), mock(SQLToken.class));
@@ -108,6 +108,7 @@ public final class SQLTokenGeneratorsTest {
         assertThat(actualSqlTokens, is(expectedCollection));
     }
 
+    @SuppressWarnings("unchecked")
     private Map<Class<?>, SQLTokenGenerator> getSqlTokenGeneratorsMap(final SQLTokenGenerators sqlTokenGenerators) throws NoSuchFieldException, IllegalAccessException {
         Field field = sqlTokenGenerators.getClass().getDeclaredField("sqlTokenGenerators");
         field.setAccessible(true);
