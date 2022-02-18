@@ -351,4 +351,4 @@ Apache ShardingSphere PMC
 
 Previously responsible for the database products R&D at JingDong Technology, he is passionate about Open-Source and database ecosystems. Currently, he focuses on the development of the ShardingSphere database ecosystem and open source community building.
 
-![2](../../static/img/Meng_Haoran_Photo.png)
+![2](https://shardingsphere.apache.org/blog/img/Meng_Haoran_Photo.png)
