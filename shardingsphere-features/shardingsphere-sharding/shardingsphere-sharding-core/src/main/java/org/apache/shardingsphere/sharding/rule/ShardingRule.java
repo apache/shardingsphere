@@ -250,20 +250,22 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         checkSameAlgorithmExpression(algorithmExpressions, "databaseShardingStrategyConfig", bindingTableGroup);
     }
     
-    private String getAlgorithmExpression(final TableRule tableRule, final boolean databaseOrNot) {
-        String result = "";
+    private String getAlgorithmExpression(final TableRule tableRule, final boolean databaseOrTable) {
         if (null == tableRule.getDatabaseShardingStrategyConfig() || null == tableRule.getTableShardingStrategyConfig()) {
-            return result;
+            return "";
         }
-        String shardingAlgorithmName = databaseOrNot ? tableRule.getDatabaseShardingStrategyConfig().getShardingAlgorithmName()
+        String shardingAlgorithmName = databaseOrTable ? tableRule.getDatabaseShardingStrategyConfig().getShardingAlgorithmName()
                 : tableRule.getTableShardingStrategyConfig().getShardingAlgorithmName();
         ShardingAlgorithm shardingAlgorithm = shardingAlgorithms.get(shardingAlgorithmName);
-        result = null == shardingAlgorithm ? "" : shardingAlgorithm.getProps().getProperty("algorithm-expression");
-        return null == result ? "" : result;
+        return null == shardingAlgorithm ? "" : checkWithDefaultValue(shardingAlgorithm.getProps().getProperty("algorithm-expression"), "");
+    }
+    
+    private String checkWithDefaultValue(final String str, final String defaultValue) {
+        return null == str ? defaultValue : str;
     }
     
     private String getShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfiguration) {
-        String result = null == defaultShardingColumn ? "" : defaultShardingColumn;
+        String result = checkWithDefaultValue(defaultShardingColumn, "");
         if (null == shardingStrategyConfiguration) {
             return result;
         }
@@ -273,7 +275,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         if (shardingStrategyConfiguration instanceof StandardShardingStrategyConfiguration) {
             result = ((StandardShardingStrategyConfiguration) shardingStrategyConfiguration).getShardingColumn();
         }
-        return null == result ? "" : result;
+        return checkWithDefaultValue(result, "");
     }
     
     private void checkSameAlgorithmOnTable(final TableRule sampleTableRule, final String sampleTableName, final TableRule tableRule,
@@ -287,12 +289,12 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     private void checkSameAlgorithmExpression(final Collection<String[]> algorithmExpressions, final String shardingStrategyConfig, final String bindingTableGroup) {
-        String savedAlgorithmExpressions = "";
-        for (String[] array : algorithmExpressions) {
-            String cleanedAlgorithmExpression = array[0].replaceAll(array[1], "").replaceAll(array[2], "");
-            if (savedAlgorithmExpressions.isEmpty()) {
-                savedAlgorithmExpressions = cleanedAlgorithmExpression;
-            } else if (!Objects.equals(savedAlgorithmExpressions, cleanedAlgorithmExpression)) {
+        String sampleAlgorithmExpressions = "";
+        for (String[] each : algorithmExpressions) {
+            String algorithmExpression = each[0].replaceAll(each[1], "").replaceAll(each[2], "");
+            if (sampleAlgorithmExpressions.isEmpty()) {
+                sampleAlgorithmExpressions = algorithmExpression;
+            } else if (!Objects.equals(sampleAlgorithmExpressions, algorithmExpression)) {
                 throw new ShardingSphereConfigurationException("The %s of %s on bindingTableGroup `%s` are inconsistent", "algorithm-expressions", shardingStrategyConfig, bindingTableGroup);
             }
         }
