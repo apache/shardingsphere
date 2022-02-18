@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Schema version persist service.
@@ -51,5 +52,22 @@ public final class SchemaVersionPersistService {
     public boolean isActiveVersion(final String schemaName, final String version) {
         Optional<String> actualVersion = getSchemaActiveVersion(schemaName);
         return actualVersion.isPresent() && actualVersion.get().equals(version);
+    }
+    
+    /**
+     * Create new schema version.
+     * 
+     * @param schemaName schema name
+     * @return new version
+     */
+    public Optional<String> createNewVersion(final String schemaName) {
+        Optional<String> activeVersion = getSchemaActiveVersion(schemaName);
+        if (activeVersion.isPresent()) {
+            String newVersion = String.valueOf(new AtomicLong(Long.valueOf(activeVersion.get())).incrementAndGet());
+            repository.persist(SchemaMetaDataNode.getRulePath(schemaName, newVersion), repository.get(SchemaMetaDataNode.getRulePath(schemaName, activeVersion.get())));
+            repository.persist(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName, newVersion), repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName, activeVersion.get())));
+            return Optional.of(newVersion);
+        }
+        return Optional.empty();
     }
 }

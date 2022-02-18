@@ -95,6 +95,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Alt
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ValidateConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterMaterializedViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DeclareContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
@@ -153,6 +154,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateTypeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDeallocateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDeclareStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropConversionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropDomainStatement;
@@ -723,5 +725,10 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @Override
     public ASTNode visitDropExtension(final DropExtensionContext ctx) {
         return new OpenGaussDropExtensionStatement();
+    }
+    
+    @Override
+    public ASTNode visitDeclare(final DeclareContext ctx) {
+        return new OpenGaussDeclareStatement();
     }
 }
