@@ -44,10 +44,8 @@ import static org.junit.Assert.assertTrue;
 @ParallelRuntimeStrategy(ParallelLevel.CASE)
 public final class AdditionalDQLIT extends BaseDQLIT {
     
-    private static final ComposedContainerRegistry COMPOSED_CONTAINER_REGISTRY = new ComposedContainerRegistry();
-    
     public AdditionalDQLIT(final AssertionParameterizedArray parameterizedArray) {
-        super(parameterizedArray, COMPOSED_CONTAINER_REGISTRY.getComposedContainer(parameterizedArray));
+        super(parameterizedArray);
     }
     
     @Parameters(name = "{0}")
@@ -56,11 +54,6 @@ public final class AdditionalDQLIT extends BaseDQLIT {
             return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DQL);
         }
         return Collections.emptyList();
-    }
-    
-    @AfterClass
-    public static void closeContainers() {
-        COMPOSED_CONTAINER_REGISTRY.close();
     }
     
     @Test
