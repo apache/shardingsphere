@@ -103,19 +103,20 @@ public final class PropertyUtil {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private static Object v2(final Environment environment, final String prefix, final Class<?> targetClass) {
+        String dashedPrefix = toDashedForm(prefix);
         Class<?> binderClass = Class.forName("org.springframework.boot.context.properties.bind.Binder");
         Method getMethod = binderClass.getDeclaredMethod("get", Environment.class);
         Method bindMethod = binderClass.getDeclaredMethod("bind", String.class, Class.class);
         Object binderObject = getMethod.invoke(null, environment);
-        String prefixParam = prefix.endsWith(".") ? prefix.substring(0, prefix.length() - 1) : prefix;
+        String prefixParam = dashedPrefix.endsWith(".") ? dashedPrefix.substring(0, prefix.length() - 1) : dashedPrefix;
         Object bindResultObject = bindMethod.invoke(binderObject, prefixParam, targetClass);
         Method resultGetMethod = bindResultObject.getClass().getDeclaredMethod("get");
         return resultGetMethod.invoke(bindResultObject);
     }
-    
+
     /**
      * Convert keys of map to camel case.
-     * 
+     *
      * @param dataSourceProps map to be converted
      * @return converted map
      */
@@ -126,5 +127,36 @@ public final class PropertyUtil {
             result.put(key.contains("-") ? CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_CAMEL, key) : key, entry.getValue());
         }
         return result;
+    }
+
+    /**
+     * Return the specified Java Bean property name in dashed form.
+     * @param name the source name
+     * @return the dashed from
+     */
+    static String toDashedForm(final String name) {
+        StringBuilder result = new StringBuilder(name.length());
+        boolean inIndex = false;
+        for (int i = 0; i < name.length(); i++) {
+            char ch = name.charAt(i);
+            if (inIndex) {
+                result.append(ch);
+                if (ch == ']') {
+                    inIndex = false;
+                }
+            } else {
+                if (ch == '[') {
+                    inIndex = true;
+                    result.append(ch);
+                } else {
+                    ch = (ch != '_') ? ch : '-';
+                    if (Character.isUpperCase(ch) && result.length() > 0 && result.charAt(result.length() - 1) != '-') {
+                        result.append('-');
+                    }
+                    result.append(Character.toLowerCase(ch));
+                }
+            }
+        }
+        return result.toString();
     }
 }
