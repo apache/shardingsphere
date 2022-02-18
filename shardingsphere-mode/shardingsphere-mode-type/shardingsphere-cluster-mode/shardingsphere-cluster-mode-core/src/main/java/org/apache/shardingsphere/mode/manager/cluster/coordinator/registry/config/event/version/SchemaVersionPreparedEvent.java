@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-
-import java.util.Collection;
-import java.util.Map;
 
 /**
- * Cluster switch configuration event.
+ * Schema version prepared event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ClusterSwitchConfigurationEvent {
+public final class SchemaVersionPreparedEvent {
     
-    private final String targetSchemaName;
+    private final String version;
     
-    private final Map<String, DataSourceProperties> targetDataSourcePropertiesMap;
-    
-    private final Collection<RuleConfiguration> targetRuleConfigs;
+    private final String schemaName;
 }

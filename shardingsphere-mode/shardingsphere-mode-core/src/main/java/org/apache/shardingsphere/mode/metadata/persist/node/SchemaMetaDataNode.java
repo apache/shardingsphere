@@ -156,6 +156,17 @@ public final class SchemaMetaDataNode {
     }
     
     /**
+     * Get schema version path.
+     * 
+     * @param schemaName schema name
+     * @param version version
+     * @return schema version path
+     */
+    public static String getSchemaVersionPath(final String schemaName, final String version) {
+        return Joiner.on("/").join(getFullMetaDataPath(schemaName, VERSIONS), version);
+    }
+    
+    /**
      * Get version by data sources path.
      * 
      * @param dataSourceNodeFullPath data sources node full path

@@ -55,6 +55,11 @@ public final class SchemaRulePersistService implements SchemaBasedPersistService
         repository.persist(SchemaMetaDataNode.getRulePath(schemaName, getSchemaActiveVersion(schemaName)), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
     }
     
+    @Override
+    public void persist(final String schemaName, final String version, final Collection<RuleConfiguration> configs) {
+        repository.persist(SchemaMetaDataNode.getRulePath(schemaName, version), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
+    }
+    
     private Collection<YamlRuleConfiguration> createYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
         return new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(ruleConfigs);
     }
@@ -72,12 +77,6 @@ public final class SchemaRulePersistService implements SchemaBasedPersistService
     @Override
     public boolean isExisted(final String schemaName) {
         return !Strings.isNullOrEmpty(getSchemaActiveVersion(schemaName)) && !Strings.isNullOrEmpty(repository.get(SchemaMetaDataNode.getRulePath(schemaName, getSchemaActiveVersion(schemaName))));
-    }
-    
-    @Override
-    public void cache(final String schemaName, final Collection<RuleConfiguration> configs) {
-        // TODO cache should be removed
-        // repository.persist(CacheNode.getCachePath(SchemaMetaDataNode.getRulePath(schemaName)), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
     }
     
     private String getSchemaActiveVersion(final String schemaName) {

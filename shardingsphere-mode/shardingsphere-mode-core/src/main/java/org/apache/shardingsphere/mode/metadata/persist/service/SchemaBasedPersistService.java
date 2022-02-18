@@ -42,6 +42,15 @@ public interface SchemaBasedPersistService<T> {
     void persist(String schemaName, T configs);
     
     /**
+     * Persist version configurations.
+     * 
+     * @param schemaName schema name
+     * @param version version
+     * @param configs configurations
+     */
+    void persist(String schemaName, String version, T configs);
+    
+    /**
      * Load configurations.
      *
      * @param schemaName schema name
@@ -56,12 +65,4 @@ public interface SchemaBasedPersistService<T> {
      * @return configuration existed or not
      */
     boolean isExisted(String schemaName);
-    
-    /**
-     * Cache configurations.
-     *
-     * @param schemaName schema name
-     * @param configs configurations
-     */
-    default void cache(String schemaName, T configs) { }
 }
