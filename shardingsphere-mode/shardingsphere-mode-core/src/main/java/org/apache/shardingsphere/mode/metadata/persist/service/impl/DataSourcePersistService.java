@@ -72,6 +72,12 @@ public final class DataSourcePersistService implements SchemaBasedPersistService
         return isExisted(schemaName) ? getDataSourceProperties(repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName, getSchemaActiveVersion(schemaName)))) : new LinkedHashMap<>();
     }
     
+    @Override
+    public Map<String, DataSourceProperties> load(final String schemaName, final String version) {
+        String yamlContent = repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName, version));
+        return Strings.isNullOrEmpty(yamlContent) ? new LinkedHashMap<>() : getDataSourceProperties(yamlContent);
+    }
+    
     @SuppressWarnings("unchecked")
     private Map<String, DataSourceProperties> getDataSourceProperties(final String yamlContent) {
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(yamlContent, Map.class);
