@@ -25,10 +25,11 @@ import com.arjuna.ats.internal.jta.recovery.arjunacore.JTAActionStatusServiceXAR
 import com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter;
 import com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter;
 import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -153,17 +154,21 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         generateTransactionProps(url, user, password, dataSourceClass, props);
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private void getDefaultJdbcStoreConfiguration(final SchemaConfiguration schemaConfiguration, final Properties props) {
         Map<String, DataSource> datasourceMap = schemaConfiguration.getDataSources();
         Optional<DataSource> dataSource = datasourceMap.values().stream().findFirst();
         if (dataSource.isPresent()) {
-            HikariDataSource hikariDataSource = (HikariDataSource) dataSource.get();
-            int endIndex = hikariDataSource.getJdbcUrl().indexOf("?");
-            String jdbcUrl = hikariDataSource.getJdbcUrl().substring(0, endIndex);
-            String user = hikariDataSource.getUsername();
-            String password = hikariDataSource.getPassword();
-            String dataSourceClassName = getDataSourceClassNameByJdbcUrl(jdbcUrl);
-            generateTransactionProps(jdbcUrl, user, password, dataSourceClassName, props);
+            Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSource.get().getClass().getName());
+            if (poolMetaData.isPresent()) {
+                String jdbcUrl = poolMetaData.get().getJdbcUrlMetaData().getJdbcUrl(dataSource.get());
+                int endIndex = jdbcUrl.indexOf("?");
+                jdbcUrl = jdbcUrl.substring(0, endIndex);
+                String user = poolMetaData.get().getJdbcUrlMetaData().getUserName(dataSource.get());
+                String password = poolMetaData.get().getJdbcUrlMetaData().getPassword(dataSource.get());
+                String dataSourceClassName = getDataSourceClassNameByJdbcUrl(jdbcUrl);
+                generateTransactionProps(jdbcUrl, user, password, dataSourceClassName, props);
+            }
         }
     }
     

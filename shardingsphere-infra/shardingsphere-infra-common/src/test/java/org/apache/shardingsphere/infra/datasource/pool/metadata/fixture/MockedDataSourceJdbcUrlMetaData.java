@@ -30,6 +30,16 @@ public final class MockedDataSourceJdbcUrlMetaData implements DataSourceJdbcUrlM
     }
     
     @Override
+    public String getUserName(MockedDataSource targetDataSource) {
+        return targetDataSource.getUsername();
+    }
+    
+    @Override
+    public String getPassword(MockedDataSource targetDataSource) {
+        return targetDataSource.getPassword();
+    }
+    
+    @Override
     public String getJdbcUrlPropertiesFieldName() {
         return null;
     }
