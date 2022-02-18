@@ -336,7 +336,6 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     public void reset(final String jobId) {
         checkModeConfig();
         log.info("Scaling job {} reset target table", jobId);
-        PipelineAPIFactory.getGovernanceRepositoryAPI().deleteJobProgress(jobId);
         try {
             new ScalingEnvironmentManager().cleanupTargetTables(getJobConfig(jobId));
         } catch (final SQLException ex) {

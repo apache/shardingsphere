@@ -297,7 +297,7 @@ public final class RuleAlteredJobWorker {
         boolean isUncompletedJobOfSameSchema = false;
         for (JobInfo each : PipelineJobAPIFactory.getRuleAlteredJobAPI().list()) {
             if (PipelineJobAPIFactory.getRuleAlteredJobAPI().getProgress(each.getJobId()).values().stream()
-                    .allMatch(progress -> progress.getStatus().equals(JobStatus.FINISHED))) {
+                    .allMatch(progress -> null != progress && progress.getStatus().equals(JobStatus.FINISHED))) {
                 continue;
             }
             JobConfiguration jobConfiguration = YamlEngine.unmarshal(each.getJobParameter(), JobConfiguration.class, true);
