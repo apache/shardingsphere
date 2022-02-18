@@ -204,16 +204,6 @@ public final class UnsupportedOperationResultSetTest {
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertObjectForColumnIndexWithType() throws SQLException {
-        shardingSphereResultSet.getObject(1, String.class);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertObjectForColumnLabelWithType() throws SQLException {
-        shardingSphereResultSet.getObject("label", String.class);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertObjectForColumnIndexWithMap() throws SQLException {
         shardingSphereResultSet.getObject(1, Collections.emptyMap());
     }
