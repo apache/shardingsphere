@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -47,8 +48,12 @@ public final class ResultSetUtil {
      * @param value original value
      * @param convertType expected class type
      * @return converted value
+     * @throws SQLException SQL exception
      */
-    public static Object convertValue(final Object value, final Class<?> convertType) {
+    public static Object convertValue(final Object value, final Class<?> convertType) throws SQLException {
+        if (null == convertType) {
+            throw new SQLException("Type cannot be null");
+        }
         if (null == value) {
             return convertNullValue(convertType);
         }

@@ -369,9 +369,6 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getObject(final int columnIndex, final Class<T> type) throws SQLException {
-        if (null == type) {
-            throw new SQLException("Type cannot be null");
-        }
         if (String.class.equals(type)) {
             return (T) getString(columnIndex);
         } else if (Boolean.class.equals(type) || Boolean.TYPE.equals(type)) {
