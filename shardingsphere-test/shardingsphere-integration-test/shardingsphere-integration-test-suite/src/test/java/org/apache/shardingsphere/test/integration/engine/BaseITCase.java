@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
+import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRegistry;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
@@ -92,7 +93,8 @@ public abstract class BaseITCase {
     
     @AfterClass
     public static void closeContainers() {
-        if (9 == COMPLETED_SUITES_COUNT.incrementAndGet()) {
+        int totalSuitesCount = IntegrationTestEnvironment.getInstance().isRunAdditionalTestCases() ? 11 : 9;
+        if (totalSuitesCount == COMPLETED_SUITES_COUNT.incrementAndGet()) {
             COMPOSED_CONTAINER_REGISTRY.close();
         }
     }
