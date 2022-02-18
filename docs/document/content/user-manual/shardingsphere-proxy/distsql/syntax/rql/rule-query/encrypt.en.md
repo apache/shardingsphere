@@ -20,11 +20,11 @@ SHOW ENCRYPT TABLE RULE tableName [from schemaName]
 | logic_column              | Logical column name                         |
 | logic_data_type           | Logical column data type                    |
 | cipher_column             | Ciphertext column name                      |
-| cipher_data_type          | Ciphertext column data typ                  |
+| cipher_data_type          | Ciphertext column data type                 |
 | plain_column              | Plaintext column name                       |
-| plain_data_type           | Plaintext column data typ                   |
+| plain_data_type           | Plaintext column data type                  |
 | assisted_query_column     | Assisted query column name                  |
-| assisted_query_data_type  | Assisted query column data typ              |
+| assisted_query_data_type  | Assisted query column data type             |
 | encryptor_type            | Encryption algorithm type                   |
 | encryptor_props           | Encryption algorithm parameter              |
 | query_with_cipher_column  | Whether to use encrypted column for query   |
