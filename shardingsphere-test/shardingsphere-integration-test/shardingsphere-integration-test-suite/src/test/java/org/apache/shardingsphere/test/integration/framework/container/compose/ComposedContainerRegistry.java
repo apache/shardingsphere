@@ -56,11 +56,11 @@ public final class ComposedContainerRegistry implements AutoCloseable {
     }
     
     private ComposedContainer createComposedContainer(final ParameterizedArray parameterizedArray) {
-        return isClusterMode(parameterizedArray) ? new ClusterComposedContainer(parameterizedArray) : new MemoryComposedContainer(parameterizedArray);
+        return isMemoryMode(parameterizedArray) ? new MemoryComposedContainer(parameterizedArray) : new ClusterComposedContainer(parameterizedArray);
     }
     
-    private boolean isClusterMode(final ParameterizedArray parameterizedArray) {
-        return !"H2".equals(parameterizedArray.getDatabaseType().getName());
+    private boolean isMemoryMode(final ParameterizedArray parameterizedArray) {
+        return "H2".equals(parameterizedArray.getDatabaseType().getName());
     }
     
     @Override
