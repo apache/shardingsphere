@@ -99,7 +99,7 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
     
     @Override
     protected void configure() {
-        withConfMapping("/docker/proxy/conf/" + scenario + "/" + databaseType.getName().toLowerCase());
+        withConfMapping("/env/" + scenario + "/docker/proxy/conf/" + databaseType.getName().toLowerCase());
         setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*ShardingSphere-Proxy .* mode started successfully.*"));
         super.configure();
     }
@@ -130,7 +130,7 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
     
     @SneakyThrows(IOException.class)
     private YamlUserConfiguration loadUserConfiguration() {
-        String serverFile = "/docker/proxy/conf/" + scenario + "/" + databaseType.getName().toLowerCase() + "/server.yaml";
+        String serverFile = "/env/" + scenario + "/docker/proxy/conf/" + databaseType.getName().toLowerCase() + "/server.yaml";
         YamlProxyServerConfiguration serverConfig = YamlEngine.unmarshal(
                 ByteStreams.toByteArray(Objects.requireNonNull(this.getClass().getResourceAsStream(serverFile))), YamlProxyServerConfiguration.class);
         return YamlUsersConfigurationConverter.convertYamlUserConfiguration(getProxyUsers(serverConfig)).stream().findFirst().orElse(new YamlUserConfiguration());
