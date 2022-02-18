@@ -120,10 +120,17 @@ public final class ProxySQLExecutor {
     
     private List<ExecuteResult> execute(final ExecutionContext executionContext, final Collection<ShardingSphereRule> rules,
                                         final int maxConnectionsSizePerQuery, final boolean isReturnGeneratedKeys) throws SQLException {
-        if (rules.stream().anyMatch(each -> each instanceof RawExecutionRule)) {
-            return rawExecute(executionContext, rules, maxConnectionsSizePerQuery);
+        return hasRawExecutionRule(rules) ? rawExecute(executionContext, rules, maxConnectionsSizePerQuery) 
+                : useDriverToExecute(executionContext, rules, maxConnectionsSizePerQuery, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown());
+    }
+    
+    private boolean hasRawExecutionRule(final Collection<ShardingSphereRule> rules) {
+        for (ShardingSphereRule each : rules) {
+            if (each instanceof RawExecutionRule) {
+                return true;
+            }
         }
-        return useDriverToExecute(executionContext, rules, maxConnectionsSizePerQuery, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown());
+        return false;
     }
     
     private List<ExecuteResult> rawExecute(final ExecutionContext executionContext, final Collection<ShardingSphereRule> rules, final int maxConnectionsSizePerQuery) throws SQLException {
