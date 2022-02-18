@@ -57,6 +57,11 @@ public final class DataSourcePersistService implements SchemaBasedPersistService
         repository.persist(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName, getSchemaActiveVersion(schemaName)), YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourcePropsMap)));
     }
     
+    @Override
+    public void persist(final String schemaName, final String version, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        repository.persist(SchemaMetaDataNode.getMetaDataDataSourcePath(schemaName, version), YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourcePropsMap)));
+    }
+    
     private Map<String, Map<String, Object>> swapYamlDataSourceConfiguration(final Map<String, DataSourceProperties> dataSourcePropsMap) {
         return dataSourcePropsMap.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
