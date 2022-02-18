@@ -77,7 +77,7 @@ public final class MySQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
      * @param column column
      * @return select CRC32 SQL
      */
-    public String buildCrc32SQL(final String tableName, final String column) {
+    public String buildCRC32SQL(final String tableName, final String column) {
         return String.format("SELECT BIT_XOR(CAST(CRC32(%s) AS UNSIGNED)) AS checksum FROM %s", quote(column), quote(tableName));
     }
     
