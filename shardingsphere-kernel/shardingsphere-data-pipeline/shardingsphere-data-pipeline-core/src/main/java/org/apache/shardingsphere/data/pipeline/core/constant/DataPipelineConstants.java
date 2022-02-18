@@ -27,8 +27,13 @@ import lombok.NoArgsConstructor;
 public final class DataPipelineConstants {
     
     /**
+     * Data pipeline node name.
+     */
+    // TODO change to pipeline after job configuration structure completed
+    public static final String DATA_PIPELINE_NODE_NAME = "scaling";
+    
+    /**
      * Data pipeline root path.
      */
-    // TODO change to /pipeline after job configuration structure completed
-    public static final String DATA_PIPELINE_ROOT = "/scaling";
+    public static final String DATA_PIPELINE_ROOT = "/" + DATA_PIPELINE_NODE_NAME;
 }
