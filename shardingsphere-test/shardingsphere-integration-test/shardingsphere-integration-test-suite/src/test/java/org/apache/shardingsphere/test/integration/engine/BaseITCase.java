@@ -22,7 +22,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
-import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRegistry;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
@@ -48,6 +47,8 @@ public abstract class BaseITCase {
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
     private static final ComposedContainerRegistry COMPOSED_CONTAINER_REGISTRY = new ComposedContainerRegistry();
+    
+    private static final int TOTAL_SUITES_COUNT = TotalSuitesCountCalculator.calculate();
     
     private static final AtomicInteger COMPLETED_SUITES_COUNT = new AtomicInteger(0);
     
@@ -93,33 +94,9 @@ public abstract class BaseITCase {
     
     @AfterClass
     public static void closeContainers() {
-        int totalSuitesCount = getTotalSuitesCount();
-        if (totalSuitesCount == COMPLETED_SUITES_COUNT.incrementAndGet()) {
+        if (COMPLETED_SUITES_COUNT.incrementAndGet() == TOTAL_SUITES_COUNT) {
             COMPOSED_CONTAINER_REGISTRY.close();
         }
-    }
-    
-    private static int getTotalSuitesCount() {
-        int result = 11;
-        IntegrationTestEnvironment env = IntegrationTestEnvironment.getInstance();
-        if (!env.isRunAdditionalTestCases()) {
-            result -= 2;
-        }
-        if (!isRunDCL(env)) {
-            result--;
-        }
-        if (!isRunProxy(env)) {
-            result -= 4;
-        }
-        return result;
-    }
-    
-    private static boolean isRunDCL(final IntegrationTestEnvironment env) {
-        return env.getRunModes().contains("Cluster");
-    }
-    
-    private static boolean isRunProxy(final IntegrationTestEnvironment env) {
-        return env.getRunModes().contains("Cluster") && env.getClusterEnvironment().getAdapters().contains("proxy");
     }
     
     protected abstract String getSQL() throws ParseException;
