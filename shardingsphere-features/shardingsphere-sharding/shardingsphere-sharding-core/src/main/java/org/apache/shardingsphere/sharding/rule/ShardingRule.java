@@ -314,7 +314,13 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     private Optional<BindingTableRule> findBindingTableRule(final Collection<String> logicTableNames) {
-        return logicTableNames.stream().map(this::findBindingTableRule).filter(Optional::isPresent).findFirst().orElse(Optional.empty());
+        for (String each : logicTableNames) {
+            Optional<BindingTableRule> result = findBindingTableRule(each);
+            if (result.isPresent()) {
+                return result;
+            }
+        }
+        return Optional.empty();
     }
     
     /**
@@ -394,7 +400,12 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
      * @return whether a table rule exists for logic tables
      */
     public boolean tableRuleExists(final Collection<String> logicTableNames) {
-        return logicTableNames.stream().anyMatch(each -> isShardingTable(each) || isBroadcastTable(each));
+        for (String each : logicTableNames) {
+            if (isShardingTable(each) || isBroadcastTable(each)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**
