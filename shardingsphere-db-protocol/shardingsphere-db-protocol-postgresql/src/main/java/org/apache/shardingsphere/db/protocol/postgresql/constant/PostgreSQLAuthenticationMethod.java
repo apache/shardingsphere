@@ -15,29 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.constant;
+package org.apache.shardingsphere.db.protocol.postgresql.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * MySQL client/server protocol authentication method.
+ * PostgreSQL password authentication method.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/authentication-method.html">Authentication Method</a>
+ * @see <a href="https://www.postgresql.org/docs/14/auth-password.html">Password Authentication</a>
  */
 @RequiredArgsConstructor
 @Getter
-public enum MySQLAuthenticationMethod {
+public enum PostgreSQLAuthenticationMethod {
     
-    OLD_PASSWORD_AUTHENTICATION("mysql_old_password"),
+    MD5("md5"),
     
-    SECURE_PASSWORD_AUTHENTICATION("mysql_native_password"),
-    
-    CLEAR_TEXT_AUTHENTICATION("mysql_clear_password"),
-    
-    WINDOWS_NATIVE_AUTHENTICATION("authentication_windows_client"),
-    
-    SHA256("sha256_password");
+    PASSWORD("password"),
+
+    SCRAM_SHA256("scram-sha-256");
     
     private final String methodName;
 }

@@ -15,29 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.constant;
+package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 
 /**
- * MySQL client/server protocol authentication method.
- *
- * @see <a href="https://dev.mysql.com/doc/internals/en/authentication-method.html">Authentication Method</a>
+ * PostgreSQL authenticator.
+ * 
+ * @see <a href="https://www.postgresql.org/docs/14/auth-password.html">Password Authentication</a>
  */
-@RequiredArgsConstructor
-@Getter
-public enum MySQLAuthenticationMethod {
+public interface PostgreSQLAuthenticator extends Authenticator {
     
-    OLD_PASSWORD_AUTHENTICATION("mysql_old_password"),
-    
-    SECURE_PASSWORD_AUTHENTICATION("mysql_native_password"),
-    
-    CLEAR_TEXT_AUTHENTICATION("mysql_clear_password"),
-    
-    WINDOWS_NATIVE_AUTHENTICATION("authentication_windows_client"),
-    
-    SHA256("sha256_password");
-    
-    private final String methodName;
+    /**
+     * Authenticate.
+     *
+     * @param user ShardingSphere user
+     * @param args arguments for user authentication
+     * @return authentication success or not
+     */
+    boolean authenticate(ShardingSphereUser user, Object[] args);
 }
