@@ -486,7 +486,10 @@ public final class ShardingSphereResultSetTest {
     
     @Test
     public void assertGetObjectWithBoolean() throws SQLException {
-        when(mergeResultSet.getValue(1, boolean.class)).thenReturn(true);
+        boolean result = true;
+        when(mergeResultSet.getValue(1, boolean.class)).thenReturn(result);
+        assertTrue(shardingSphereResultSet.getObject(1, boolean.class));
+        when(mergeResultSet.getValue(1, Boolean.class)).thenReturn(result);
         assertTrue(shardingSphereResultSet.getObject(1, Boolean.class));
     }
     
@@ -520,36 +523,46 @@ public final class ShardingSphereResultSetTest {
     
     @Test
     public void assertGetObjectWithDouble() throws SQLException {
-        Double result = Double.valueOf(0.0);
+        double result = 0.0;
         when(mergeResultSet.getValue(1, double.class)).thenReturn(result);
+        assertThat(shardingSphereResultSet.getObject(1, double.class), is(result));
+        when(mergeResultSet.getValue(1, Double.class)).thenReturn(result);
         assertThat(shardingSphereResultSet.getObject(1, Double.class), is(result));
     }
     
     @Test
     public void assertGetObjectWithFloat() throws SQLException {
-        Float result = Float.valueOf(0.0f);
+        float result = 0.0f;
         when(mergeResultSet.getValue(1, float.class)).thenReturn(result);
+        assertThat(shardingSphereResultSet.getObject(1, float.class), is(result));
+        when(mergeResultSet.getValue(1, Float.class)).thenReturn(result);
         assertThat(shardingSphereResultSet.getObject(1, Float.class), is(result));
     }
     
     @Test
     public void assertGetObjectWithInteger() throws SQLException {
-        Integer result = Integer.valueOf(0);
+        int result = 0;
         when(mergeResultSet.getValue(1, int.class)).thenReturn(result);
+        assertThat(shardingSphereResultSet.getObject(1, int.class), is(result));
+        when(mergeResultSet.getValue(1, Integer.class)).thenReturn(result);
         assertThat(shardingSphereResultSet.getObject(1, Integer.class), is(result));
     }
     
     @Test
     public void assertGetObjectWithLong() throws SQLException {
-        Long result = Long.valueOf(0L);
+        long result = 0L;
         when(mergeResultSet.getValue(1, long.class)).thenReturn(result);
+        assertThat(shardingSphereResultSet.getObject(1, long.class), is(result));
+        when(mergeResultSet.getValue(1, Long.class)).thenReturn(result);
         assertThat(shardingSphereResultSet.getObject(1, Long.class), is(result));
     }
     
     @Test
     public void assertGetObjectWithShort() throws SQLException {
-        Short result = Short.valueOf((short) 0);
+        short result = (short) 0;
         when(mergeResultSet.getValue(1, short.class)).thenReturn(result);
+        assertThat(shardingSphereResultSet.getObject(1, short.class), is(result));
+        when(mergeResultSet.getValue(1, Short.class)).thenReturn(result);
         assertThat(shardingSphereResultSet.getObject(1, Short.class), is(result));
     }
     
@@ -597,6 +610,8 @@ public final class ShardingSphereResultSetTest {
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetObjectWithRef() throws SQLException {
+        Ref result = mock(Ref.class);
+        when(mergeResultSet.getValue(1, Ref.class)).thenReturn(result);
         shardingSphereResultSet.getObject(1, Ref.class);
     }
     

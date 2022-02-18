@@ -28,6 +28,7 @@ import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -83,9 +84,8 @@ public final class ResultSetUtil {
         }
         if (String.class.equals(convertType)) {
             return value.toString();
-        } else {
-            return value;
         }
+        throw new SQLFeatureNotSupportedException("getObject with type");
     }
     
     private static Object convertURL(final Object value) {
