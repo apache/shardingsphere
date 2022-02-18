@@ -329,7 +329,7 @@ Read/write-splitting supports static and dynamic configuration
 
 51. Fix column value matching shadow algorithm data type conversion exception
 
-![2](../../static/img/List_of_contributors.png)
+![2](https://shardingsphere.apache.org/blog/img/List_of_contributors.png)
 
 ## Apache ShardingSphere Open Source Project Links:
 
