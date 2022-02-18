@@ -25,9 +25,9 @@ import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ShowTableMetadataExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowTableMetadataHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowTableMetadataExecutorTest {
+public final class ShowTableMetadataHandlerTest {
     
     @Test
     public void assertExecutor() throws SQLException {
@@ -55,18 +55,17 @@ public final class ShowTableMetadataExecutorTest {
         when(shardingSphereMetaData.getSchema()).thenReturn(new ShardingSphereSchema(createTableMap()));
         when(contextManager.getMetaDataContexts().getMetaData("schema_name")).thenReturn(shardingSphereMetaData);
         ProxyContext.getInstance().init(contextManager);
-        ShowTableMetadataExecutor executor = new ShowTableMetadataExecutor(createSqlStatement(), mockConnectionSession());
-        executor.execute();
-        executor.next();
-        QueryResponseRow queryResponseRow = executor.getQueryResponseRow();
-        ArrayList<Object> data = new ArrayList<>(queryResponseRow.getData());
+        ShowTableMetadataHandler handler = new ShowTableMetadataHandler().init(getParameter(createSqlStatement(), mockConnectionSession()));
+        handler.execute();
+        handler.next();
+        ArrayList<Object> data = new ArrayList<>(handler.getRowData());
         assertThat(data.size(), is(4));
         assertThat(data.get(0), is("schema_name"));
         assertThat(data.get(1), is("t_order"));
         assertThat(data.get(2), is("COLUMN"));
         assertThat(data.get(3), is("order_id"));
-        executor.next();
-        data = new ArrayList<>(executor.getQueryResponseRow().getData());
+        handler.next();
+        data = new ArrayList<>(handler.getRowData());
         assertThat(data.size(), is(4));
         assertThat(data.get(0), is("schema_name"));
         assertThat(data.get(1), is("t_order"));
@@ -88,5 +87,9 @@ public final class ShowTableMetadataExecutorTest {
     
     private ConnectionSession mockConnectionSession() {
         return mock(ConnectionSession.class);
+    }
+    
+    private HandlerParameter<ShowTableMetadataStatement> getParameter(final ShowTableMetadataStatement statement, final ConnectionSession connectionSession) {
+        return new HandlerParameter<ShowTableMetadataStatement>().setStatement(statement).setConnectionSession(connectionSession);
     }
 }

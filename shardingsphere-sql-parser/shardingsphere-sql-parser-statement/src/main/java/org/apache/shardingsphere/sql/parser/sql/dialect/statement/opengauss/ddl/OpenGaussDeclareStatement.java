@@ -15,32 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DeclareStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
-import java.util.List;
-
-@NoArgsConstructor
-@Getter
-@Setter
+/**
+ * OpenGauss declare statement.
+ */
 @ToString
-public final class WorkflowConfiguration {
-    
-    private long allowDelayMilliseconds = 60 * 1000L;
-    
-    private String schemaName;
-    
-    private List<String> alteredRuleYamlClassNames;
-    
-    private String schemaVersion;
-    
-    public WorkflowConfiguration(final String schemaName, final List<String> alteredRuleYamlClassNames, final String schemaVersion) {
-        this.schemaName = schemaName;
-        this.alteredRuleYamlClassNames = alteredRuleYamlClassNames;
-        this.schemaVersion = schemaVersion;
-    }
+public final class OpenGaussDeclareStatement extends DeclareStatement implements OpenGaussStatement {
 }

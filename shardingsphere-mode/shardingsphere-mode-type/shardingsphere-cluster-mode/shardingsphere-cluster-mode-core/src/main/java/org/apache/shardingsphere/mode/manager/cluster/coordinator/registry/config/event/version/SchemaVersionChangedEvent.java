@@ -15,32 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
-import java.util.List;
-
-@NoArgsConstructor
+/**
+ * Schema version changed event.
+ */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@ToString
-public final class WorkflowConfiguration {
+public final class SchemaVersionChangedEvent implements GovernanceEvent {
     
-    private long allowDelayMilliseconds = 60 * 1000L;
+    private final String schemaName;
     
-    private String schemaName;
-    
-    private List<String> alteredRuleYamlClassNames;
-    
-    private String schemaVersion;
-    
-    public WorkflowConfiguration(final String schemaName, final List<String> alteredRuleYamlClassNames, final String schemaVersion) {
-        this.schemaName = schemaName;
-        this.alteredRuleYamlClassNames = alteredRuleYamlClassNames;
-        this.schemaVersion = schemaVersion;
-    }
+    private final String activeVersion;
 }

@@ -31,6 +31,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.Gover
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.SchemaChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.SchemaVersionChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
@@ -98,6 +99,9 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         Optional<String> schemaName = SchemaMetaDataNode.getSchemaName(event.getKey());
         if (!schemaName.isPresent() || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
+        }
+        if (event.getKey().equals(SchemaMetaDataNode.getActiveVersionPath(schemaName.get()))) {
+            return Optional.of(new SchemaVersionChangedEvent(schemaName.get(), event.getValue()));
         }
         Optional<String> schemaVersion = SchemaMetaDataNode.getVersionByDataSourcesPath(event.getKey());
         if (schemaVersion.isPresent()) {

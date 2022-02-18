@@ -56,11 +56,16 @@ public final class ComposedContainerRegistry implements AutoCloseable {
     }
     
     private ComposedContainer createComposedContainer(final ParameterizedArray parameterizedArray) {
+<<<<<<< HEAD
         return isClusterMode(parameterizedArray) ? new ClusterComposedContainer(parameterizedArray) : new MemoryComposedContainer(parameterizedArray);
     }
     
     private boolean isClusterMode(final ParameterizedArray parameterizedArray) {
         return !"H2".equals(parameterizedArray.getDatabaseType().getName());
+=======
+        // TODO fix sharding_governance
+        return "sharding_governance".equals(parameterizedArray.getScenario()) ? new ClusterComposedContainer(parameterizedArray) : new MemoryComposedContainer(parameterizedArray);
+>>>>>>> master
     }
     
     @Override

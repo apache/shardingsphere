@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceId;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 
-import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,9 +36,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * Show instance executor.
+ * Show instance handler.
  */
-public final class ShowInstanceExecutor extends AbstractShowExecutor {
+public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowInstanceStatement, ShowInstanceHandler> {
     
     private static final String DELIMITER = "@";
     
@@ -58,23 +57,17 @@ public final class ShowInstanceExecutor extends AbstractShowExecutor {
     private static final String ENABLED = "enabled";
     
     @Override
-    protected List<QueryHeader> createQueryHeaders() {
-        return Arrays.asList(
-                new QueryHeader("", "", ID, ID, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
-                new QueryHeader("", "", HOST, HOST, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
-                new QueryHeader("", "", PORT, PORT, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
-                new QueryHeader("", "", STATUS, STATUS, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
-                new QueryHeader("", "", LABELS, LABELS, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false)
-        );
+    protected Collection<String> getColumnNames() {
+        return Arrays.asList(ID, HOST, PORT, STATUS, LABELS);
     }
     
     @Override
-    protected MergedResult createMergedResult() {
+    protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         MetaDataPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService().orElse(null);
         if (null == persistService || null == persistService.getRepository() || persistService.getRepository() instanceof StandalonePersistRepository) {
-            return new MultipleLocalDataMergedResult(buildInstanceRows());
+            return buildInstanceRows();
         }
-        return new MultipleLocalDataMergedResult(buildInstanceRows(persistService));
+        return buildInstanceRows(persistService);
     }
     
     private Collection<List<Object>> buildInstanceRows() {

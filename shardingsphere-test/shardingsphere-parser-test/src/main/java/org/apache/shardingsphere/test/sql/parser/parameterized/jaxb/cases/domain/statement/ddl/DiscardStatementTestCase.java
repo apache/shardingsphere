@@ -15,20 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Rule configuration cached event.
+ * Discard statement test case.
  */
-@RequiredArgsConstructor
-@Getter
-public final class RuleConfigurationCachedEvent implements GovernanceEvent {
-    
-    private final String cacheId;
-    
-    private final String schemaName;
+public final class DiscardStatementTestCase extends SQLParserTestCase {
 }

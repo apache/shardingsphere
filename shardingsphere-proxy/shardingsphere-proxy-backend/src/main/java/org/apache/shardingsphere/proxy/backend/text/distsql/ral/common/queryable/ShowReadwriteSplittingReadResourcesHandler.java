@@ -15,28 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node.StorageStatusNode;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingReadResourcesStatement;
-import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
 
-import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -54,8 +51,7 @@ import java.util.stream.Stream;
 /**
  * Show readwrite-splitting read resources executor.
  */
-@RequiredArgsConstructor
-public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractShowExecutor {
+public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableRALBackendHandler<ShowReadwriteSplittingReadResourcesStatement, ShowReadwriteSplittingReadResourcesHandler> {
     
     private static final String DELIMITER = "\\.";
     
@@ -67,19 +63,21 @@ public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractS
     
     private static final String ENABLED = "enabled";
     
-    private final ShowReadwriteSplittingReadResourcesStatement sqlStatement;
-    
-    private final ConnectionSession connectionSession;
+    private ConnectionSession connectionSession;
     
     @Override
-    protected List<QueryHeader> createQueryHeaders() {
-        return Arrays.asList(
-                new QueryHeader("", "", RESOURCE, RESOURCE, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false),
-                new QueryHeader("", "", STATUS, STATUS, Types.VARCHAR, "VARCHAR", 64, 0, false, false, false, false));
+    public ShowReadwriteSplittingReadResourcesHandler init(final HandlerParameter<ShowReadwriteSplittingReadResourcesStatement> parameter) {
+        connectionSession = parameter.getConnectionSession();
+        return super.init(parameter);
     }
     
     @Override
-    protected MergedResult createMergedResult() {
+    protected Collection<String> getColumnNames() {
+        return Arrays.asList(RESOURCE, STATUS);
+    }
+    
+    @Override
+    protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         String schemaName = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getSchemaName();
         if (null == schemaName) {
             throw new NoDatabaseSelectedException();
@@ -92,7 +90,7 @@ public final class ShowReadwriteSplittingReadResourcesExecutor extends AbstractS
         Collection<Object> notShownResourceRows = new LinkedHashSet<>();
         Collection<List<Object>> enableResourceRows = buildEnableResourceRows(metaData, notShownResourceRows);
         Collection<List<Object>> disabledResourceRows = buildDisableResourceRows(schemaName, metaDataContexts.getMetaDataPersistService().orElse(null), notShownResourceRows);
-        return new MultipleLocalDataMergedResult(mergeRows(enableResourceRows, disabledResourceRows, notShownResourceRows));
+        return mergeRows(enableResourceRows, disabledResourceRows, notShownResourceRows);
     }
     
     private Collection<List<Object>> buildEnableResourceRows(final ShardingSphereMetaData metaData, final Collection<Object> notShownResourceRows) {

@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-
-import java.util.Collection;
-import java.util.Map;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Cluster switch configuration event.
+ * Declare statement test case.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ClusterSwitchConfigurationEvent {
-    
-    private final String targetSchemaName;
-    
-    private final Map<String, DataSourceProperties> targetDataSourcePropertiesMap;
-    
-    private final Collection<RuleConfiguration> targetRuleConfigs;
+public final class DeclareStatementTestCase extends SQLParserTestCase {
 }
