@@ -22,7 +22,6 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
-import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.junit.Before;
 
@@ -41,8 +40,8 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseRDLIT extends SingleITCase {
     
-    public BaseRDLIT(final AssertionParameterizedArray parameterizedArray, final ComposedContainer composedContainer) {
-        super(parameterizedArray, composedContainer);
+    public BaseRDLIT(final AssertionParameterizedArray parameterizedArray) {
+        super(parameterizedArray);
     }
     
     @Before
