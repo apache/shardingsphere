@@ -31,13 +31,6 @@ public final class PropertyUtilTest {
     public void assertGetCamelCaseKeys() {
         assertThat(PropertyUtil.getCamelCaseKeys(createToBeConvertedMap()), is(createConvertedMap()));
     }
-
-    @Test
-    public void assertToDashedForm() throws Exception {
-        assertThat(PropertyUtil.toDashedForm("fooKey"), is("foo-key"));
-        assertThat(PropertyUtil.toDashedForm("foo_key"), is("foo-key"));
-        assertThat(PropertyUtil.toDashedForm("foo_Key"), is("foo-key"));
-    }
     
     private Map<String, Object> createToBeConvertedMap() {
         Map<String, Object> result = new LinkedHashMap<>(2, 1);
