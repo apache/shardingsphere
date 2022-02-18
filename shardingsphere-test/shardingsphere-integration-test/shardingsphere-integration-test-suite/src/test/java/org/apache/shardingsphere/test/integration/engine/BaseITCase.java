@@ -93,10 +93,33 @@ public abstract class BaseITCase {
     
     @AfterClass
     public static void closeContainers() {
-        int totalSuitesCount = IntegrationTestEnvironment.getInstance().isRunAdditionalTestCases() ? 11 : 9;
+        int totalSuitesCount = getTotalSuitesCount();
         if (totalSuitesCount == COMPLETED_SUITES_COUNT.incrementAndGet()) {
             COMPOSED_CONTAINER_REGISTRY.close();
         }
+    }
+    
+    private static int getTotalSuitesCount() {
+        int result = 11;
+        IntegrationTestEnvironment env = IntegrationTestEnvironment.getInstance();
+        if (!env.isRunAdditionalTestCases()) {
+            result -= 2;
+        }
+        if (!isRunDCL(env)) {
+            result--;
+        }
+        if (!isRunProxy(env)) {
+            result -= 4;
+        }
+        return result;
+    }
+    
+    private static boolean isRunDCL(final IntegrationTestEnvironment env) {
+        return env.getRunModes().contains("Cluster");
+    }
+    
+    private static boolean isRunProxy(final IntegrationTestEnvironment env) {
+        return env.getRunModes().contains("Cluster") && env.getClusterEnvironment().getAdapters().contains("proxy");
     }
     
     protected abstract String getSQL() throws ParseException;
