@@ -53,7 +53,7 @@ public final class H2Container extends EmbeddedStorageContainer {
                     Connection connection = entry.getValue().getConnection();
                     FileReader reader = new FileReader(initSQLFile)) {
                 RunScript.execute(connection, reader);
-                if (scenarioPath.checkSQLFileExist(getDatabaseType(), dbInitSQLFileName)) {
+                if (scenarioPath.isInitSQLFileExist(getDatabaseType(), dbInitSQLFileName)) {
                     executeDataInitFile(connection, dbInitSQLFileName);
                 }
             }
