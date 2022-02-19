@@ -76,16 +76,6 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
     }
     
     /**
-     * Mount configure path into container from classpath.
-     *
-     * @param resourcePath resource path
-     * @return self
-     */
-    public ShardingSphereProxyContainer withConfMapping(final String resourcePath) {
-        return withClassPathResourceMapping(resourcePath, "/opt/shardingsphere-proxy/conf");
-    }
-    
-    /**
      * Mount the agent into container.
      *
      * @param agentHome agent home
@@ -99,7 +89,7 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
     
     @Override
     protected void configure() {
-        withConfMapping("/env/" + scenario + "/docker/proxy/conf/" + databaseType.getName().toLowerCase());
+        withClassPathResourceMapping("/env/" + scenario + "/docker/proxy/conf/" + databaseType.getName().toLowerCase(), "/opt/shardingsphere-proxy/conf");
         setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*ShardingSphere-Proxy .* mode started successfully.*"));
         super.configure();
     }
