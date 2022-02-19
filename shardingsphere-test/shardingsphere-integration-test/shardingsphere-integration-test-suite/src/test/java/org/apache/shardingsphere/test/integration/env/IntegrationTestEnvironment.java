@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.integration.env;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import org.apache.shardingsphere.test.integration.env.cluster.ClusterEnvironment;
+import org.apache.shardingsphere.test.integration.env.scenario.ScenarioEnvironmentPath;
 
 import java.io.IOException;
 import java.io.InputStream;

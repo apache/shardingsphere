@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.database;
+package org.apache.shardingsphere.test.integration.env.scenario.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.integration.env.ScenarioEnvironmentPath;
+import org.apache.shardingsphere.test.integration.env.scenario.ScenarioEnvironmentPath;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

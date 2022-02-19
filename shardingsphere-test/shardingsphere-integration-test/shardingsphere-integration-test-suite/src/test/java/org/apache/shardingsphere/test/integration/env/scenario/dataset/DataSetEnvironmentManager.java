@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.dataset;
+package org.apache.shardingsphere.test.integration.env.scenario.dataset;
 
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
