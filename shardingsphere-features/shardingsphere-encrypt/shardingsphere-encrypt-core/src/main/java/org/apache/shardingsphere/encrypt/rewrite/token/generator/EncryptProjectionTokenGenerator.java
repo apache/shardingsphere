@@ -50,7 +50,7 @@ import java.util.Optional;
  * Projection token generator for encrypt.
  */
 @Setter
-public final class EncryptProjectionTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, PreviousSQLTokensAware, SchemaMetaDataAware, EncryptRuleAware {
+public final class EncryptProjectionTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext<?>>, PreviousSQLTokensAware, SchemaMetaDataAware, EncryptRuleAware {
     
     private List<SQLToken> previousSQLTokens;
     
@@ -59,12 +59,12 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     private EncryptRule encryptRule;
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getAllTables().isEmpty();
     }
     
     @Override
-    public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+    public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext<?> sqlStatementContext) {
         Preconditions.checkState(sqlStatementContext instanceof SelectStatementContext);
         Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
         for (SelectStatementContext each : getSelectStatementContexts((SelectStatementContext) sqlStatementContext)) {

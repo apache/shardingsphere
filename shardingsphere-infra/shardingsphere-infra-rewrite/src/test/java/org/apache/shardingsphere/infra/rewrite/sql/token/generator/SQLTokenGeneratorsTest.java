@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SQLTokenGeneratorsTest {
-
+    
     @Test
     public void assertAddAllWithList() throws Exception {
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
@@ -55,7 +55,7 @@ public final class SQLTokenGeneratorsTest {
         assertTrue(actualSqlTokenGeneratorsMap.containsKey(mockSqlTokenGenerator.getClass()));
         assertThat(actualSqlTokenGeneratorsMap.get(mockSqlTokenGenerator.getClass()), is(mockSqlTokenGenerator));
     }
-
+    
     @Test
     public void assertAddAllWithSameClass() throws Exception {
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
@@ -70,7 +70,7 @@ public final class SQLTokenGeneratorsTest {
         SQLTokenGenerator actualSqlTokenGenerator = actualSqlTokenGeneratorsMap.get(expectedSqlTokenGenerator.getClass());
         assertThat(actualSqlTokenGenerator, is(expectedSqlTokenGenerator));
     }
-
+    
     @Test
     public void assertAddAllWithEmptyList() throws Exception {
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
@@ -79,7 +79,7 @@ public final class SQLTokenGeneratorsTest {
         assertNotNull(actualSqlTokenGeneratorsMap);
         assertTrue(actualSqlTokenGeneratorsMap.isEmpty());
     }
-
+    
     @Test
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void assertGenerateSQLTokensWithOptionalSQLTokenGenerator() {
@@ -93,7 +93,7 @@ public final class SQLTokenGeneratorsTest {
         assertThat(actualSqlTokens.size(), is(1));
         assertThat(actualSqlTokens.iterator().next(), is(expectedToken));
     }
-
+    
     @Test
     @SuppressWarnings("unchecked")
     public void assertGenerateSQLTokensWithCollectionSQLTokenGenerator() {
@@ -107,7 +107,7 @@ public final class SQLTokenGeneratorsTest {
         assertThat(actualSqlTokens.size(), is(2));
         assertThat(actualSqlTokens, is(expectedCollection));
     }
-
+    
     @SuppressWarnings("unchecked")
     private Map<Class<?>, SQLTokenGenerator> getSqlTokenGeneratorsMap(final SQLTokenGenerators sqlTokenGenerators) throws NoSuchFieldException, IllegalAccessException {
         Field field = sqlTokenGenerators.getClass().getDeclaredField("sqlTokenGenerators");
