@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
+import org.apache.shardingsphere.test.integration.env.ScenarioEnvironmentPath;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.EmbeddedITContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
@@ -61,7 +61,7 @@ public final class ShardingSphereJDBCContainer implements EmbeddedITContainer, A
             if (Strings.isNullOrEmpty(serverLists)) {
                 try {
                     targetDataSourceProvider.set(
-                            YamlShardingSphereDataSourceFactory.createDataSource(storageContainer.getActualDataSourceMap(), new File(EnvironmentPath.getRulesConfigurationFile(scenario))));
+                            YamlShardingSphereDataSourceFactory.createDataSource(storageContainer.getActualDataSourceMap(), new File(ScenarioEnvironmentPath.getRulesConfigurationFile(scenario))));
                 } catch (final SQLException | IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -74,7 +74,7 @@ public final class ShardingSphereJDBCContainer implements EmbeddedITContainer, A
     
     @SneakyThrows({SQLException.class, IOException.class})
     private DataSource createGovernanceClientDataSource(final String serverLists) {
-        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(new File(EnvironmentPath.getRulesConfigurationFile(scenario)), YamlRootConfiguration.class);
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(new File(ScenarioEnvironmentPath.getRulesConfigurationFile(scenario)), YamlRootConfiguration.class);
         rootConfig.setMode(createYamlModeConfiguration(serverLists));
         return YamlShardingSphereDataSourceFactory.createDataSource(storageContainer.getActualDataSourceMap(), YamlEngine.marshal(rootConfig).getBytes(StandardCharsets.UTF_8));
     }

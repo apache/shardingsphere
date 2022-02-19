@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.framework.container.atomic.st
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
+import org.apache.shardingsphere.test.integration.env.ScenarioEnvironmentPath;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.EmbeddedStorageContainer;
 import org.h2.tools.RunScript;
 
@@ -43,14 +43,14 @@ public final class H2Container extends EmbeddedStorageContainer {
     @Override
     @SneakyThrows({IOException.class, SQLException.class})
     public void start() {
-        File initSQLFile = new File(EnvironmentPath.getInitSQLFile(getDatabaseType(), getScenario()));
+        File initSQLFile = new File(ScenarioEnvironmentPath.getInitSQLFile(getDatabaseType(), getScenario()));
         for (Entry<String, DataSource> entry : getActualDataSourceMap().entrySet()) {
             String dbInitSQLFileName = "init-" + entry.getKey() + ".sql";
             try (
                     Connection connection = entry.getValue().getConnection();
                     FileReader reader = new FileReader(initSQLFile)) {
                 RunScript.execute(connection, reader);
-                if (EnvironmentPath.checkSQLFileExist(getDatabaseType(), getScenario(), dbInitSQLFileName)) {
+                if (ScenarioEnvironmentPath.checkSQLFileExist(getDatabaseType(), getScenario(), dbInitSQLFileName)) {
                     executeDataInitFile(connection, dbInitSQLFileName);
                 }
             }
@@ -58,7 +58,7 @@ public final class H2Container extends EmbeddedStorageContainer {
     }
     
     private void executeDataInitFile(final Connection connection, final String dataInitFileName) throws IOException, SQLException {
-        File dataInitFile = new File(EnvironmentPath.getInitSQLFile(getDatabaseType(), getScenario(), dataInitFileName));
+        File dataInitFile = new File(ScenarioEnvironmentPath.getInitSQLFile(getDatabaseType(), getScenario(), dataInitFileName));
         try (FileReader reader = new FileReader(dataInitFile)) {
             RunScript.execute(connection, reader);
         }

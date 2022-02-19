@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
+import org.apache.shardingsphere.test.integration.env.ScenarioEnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.param.model.CaseParameterizedArray;
 import org.junit.Before;
@@ -70,7 +70,7 @@ public abstract class BatchITCase extends BaseITCase {
         for (IntegrationTestCaseAssertion each : getIntegrationTestCase().getAssertions()) {
             dataSets.add(DataSetLoader.load(getParentPath(), getScenario(), getDatabaseType(), each.getExpectedDataFile()));
         }
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getScenario()), getActualDataSourceMap());
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(ScenarioEnvironmentPath.getDataSetFile(getScenario()), getActualDataSourceMap());
         dataSetEnvironmentManager.fillData();
     }
     
