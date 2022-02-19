@@ -122,7 +122,7 @@ public final class JDBCDatabaseCommunicationEngineTest {
             
             @Override
             protected List<MemoryQueryResultRow> init(final ShardingSphereRule rule, final ShardingSphereSchema schema,
-                                                      final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) {
+                                                      final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) {
                 memoryQueryResultRow = mock(MemoryQueryResultRow.class);
                 return Collections.singletonList(memoryQueryResultRow);
             }

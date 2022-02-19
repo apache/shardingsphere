@@ -41,8 +41,11 @@ public final class CosIdModShardingAlgorithm<T extends Number & Comparable<T>> i
     private volatile ModCycle<T> modCycle;
     
     @Override
-    public String getType() {
-        return TYPE;
+    public void init() {
+        String divisorStr = PropertiesUtil.getRequiredValue(getProps(), MODULO_KEY);
+        int divisor = Integer.parseInt(divisorStr);
+        String logicNamePrefix = PropertiesUtil.getRequiredValue(getProps(), CosIdAlgorithm.LOGIC_NAME_PREFIX_KEY);
+        modCycle = new ModCycle<>(divisor, logicNamePrefix);
     }
     
     @Override
@@ -56,10 +59,7 @@ public final class CosIdModShardingAlgorithm<T extends Number & Comparable<T>> i
     }
     
     @Override
-    public void init() {
-        String divisorStr = PropertiesUtil.getRequiredValue(getProps(), MODULO_KEY);
-        int divisor = Integer.parseInt(divisorStr);
-        String logicNamePrefix = PropertiesUtil.getRequiredValue(getProps(), CosIdAlgorithm.LOGIC_NAME_PREFIX_KEY);
-        modCycle = new ModCycle<>(divisor, logicNamePrefix);
+    public String getType() {
+        return TYPE;
     }
 }

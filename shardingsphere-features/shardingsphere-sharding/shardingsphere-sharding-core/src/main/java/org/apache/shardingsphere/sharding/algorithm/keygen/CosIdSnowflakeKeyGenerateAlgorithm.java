@@ -52,6 +52,12 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
     private Properties props = new Properties();
     
     @Override
+    public void init() {
+        String asStringStr = getProps().getProperty(AS_STRING_KEY, Boolean.FALSE.toString());
+        asString = Boolean.parseBoolean(asStringStr);
+    }
+    
+    @Override
     public Comparable<?> generateKey() {
         if (asString) {
             return getSnowflakeId().generateAsString();
@@ -62,12 +68,6 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
     private SnowflakeId getSnowflakeId() {
         Preconditions.checkNotNull(snowflakeId, "Instance context not set yet.");
         return snowflakeId;
-    }
-    
-    @Override
-    public void init() {
-        String asStringStr = getProps().getProperty(AS_STRING_KEY, Boolean.FALSE.toString());
-        asString = Boolean.parseBoolean(asStringStr);
     }
     
     @Override

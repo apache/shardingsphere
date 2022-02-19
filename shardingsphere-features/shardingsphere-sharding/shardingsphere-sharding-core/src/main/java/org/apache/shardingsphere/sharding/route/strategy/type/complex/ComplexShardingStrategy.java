@@ -52,7 +52,7 @@ public final class ComplexShardingStrategy implements ShardingStrategy {
         this.shardingAlgorithm = shardingAlgorithm;
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingConditionValue> shardingConditionValues, final ConfigurationProperties props) {
         Map<String, Collection<Comparable<?>>> columnShardingValues = new HashMap<>(shardingConditionValues.size(), 1);
