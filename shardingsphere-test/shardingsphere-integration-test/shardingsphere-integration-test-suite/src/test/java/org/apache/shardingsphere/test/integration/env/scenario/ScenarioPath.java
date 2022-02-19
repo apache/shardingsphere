@@ -40,7 +40,7 @@ public final class ScenarioPath {
     
     private static final String DATASET_FILE = "dataset.xml";
     
-    private static final String RULES_CONFIG_FILE = "rules.yaml";
+    private static final String RULE_CONFIG_FILE = "rules.yaml";
     
     private static final String AUTHORITY_FILE = "authority.xml";
     
@@ -122,12 +122,12 @@ public final class ScenarioPath {
     }
     
     /**
-     * Get rules configuration file.
+     * Get rule configuration file.
      *
-     * @return rules configuration file
+     * @return rule configuration file
      */
-    public String getRulesConfigurationFile() {
-        return getFile(RULES_CONFIG_FILE);
+    public String getRuleConfigurationFile() {
+        return getFile(RULE_CONFIG_FILE);
     }
     
     /**
