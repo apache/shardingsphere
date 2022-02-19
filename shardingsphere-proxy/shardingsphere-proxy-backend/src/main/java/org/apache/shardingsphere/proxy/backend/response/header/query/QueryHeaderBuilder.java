@@ -70,6 +70,6 @@ public abstract class QueryHeaderBuilder implements DatabaseTypeAwareSPI {
         return projection instanceof ColumnProjection ? ((ColumnProjection) projection).getName() : queryResultMetaData.getColumnName(columnIndex);
     }
     
-    protected abstract QueryHeader doBuild(final QueryResultMetaData queryResultMetaData, final ShardingSphereMetaData metaData,
-                                           final String columnName, final int columnIndex, final LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException;
+    protected abstract QueryHeader doBuild(QueryResultMetaData queryResultMetaData, ShardingSphereMetaData metaData, String columnName, int columnIndex,
+                                           LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException;
 }
