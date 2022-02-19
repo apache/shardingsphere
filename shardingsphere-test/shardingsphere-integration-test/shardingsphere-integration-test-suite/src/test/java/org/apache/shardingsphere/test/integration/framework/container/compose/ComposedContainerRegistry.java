@@ -60,8 +60,9 @@ public final class ComposedContainerRegistry implements AutoCloseable {
     }
     
     private boolean isMemoryMode(final ParameterizedArray parameterizedArray) {
-        // TODO fix empty_rules
-        return "H2".equals(parameterizedArray.getDatabaseType().getName()) || "empty_rules".equals(parameterizedArray.getScenario());
+        // TODO memory always throw exception, need to fix
+        return true;
+//        return "H2".equals(parameterizedArray.getDatabaseType().getName());
     }
     
     @Override
