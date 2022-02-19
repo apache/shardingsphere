@@ -28,10 +28,11 @@ import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
 import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
-import org.apache.shardingsphere.infra.datasource.utils.DataSourceClassNameGenerator;
-import org.apache.shardingsphere.infra.datasource.utils.DataSourceClassNameGeneratorFactory;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -176,9 +177,10 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
     
     private String getDataSourceClassNameByJdbcUrl(final String jdbcUrl) {
         DatabaseType type = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl);
-        Optional<DataSourceClassNameGenerator> dataSourceClassNameGenerator = DataSourceClassNameGeneratorFactory.newInstance(type);
-        if (dataSourceClassNameGenerator.isPresent()) {
-            return dataSourceClassNameGenerator.get().getDataSourceClassName();
+        if (type instanceof MySQLDatabaseType || type instanceof OpenGaussDatabaseType || type instanceof PostgreSQLDatabaseType) {
+            if (type.getDataSourceClassName().isPresent()) {
+                return type.getDataSourceClassName().get();
+            }
         }
         throw new UnsupportedOperationException(String.format("Cannot support database type: `%s` as narayana recovery store", type));
     }
