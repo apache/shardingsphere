@@ -23,7 +23,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.env.scenario.ScenarioEnvironmentPath;
+import org.apache.shardingsphere.test.integration.env.scenario.ScenarioPath;
 import org.apache.shardingsphere.test.integration.env.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
 import org.testcontainers.containers.BindMode;
@@ -55,7 +55,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     @Override
     protected void configure() {
-        withClasspathResourceMapping(new ScenarioEnvironmentPath(scenario).getInitSQLResourcePath(databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
+        withClasspathResourceMapping(new ScenarioPath(scenario).getInitSQLResourcePath(databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
     }
     
     @Override

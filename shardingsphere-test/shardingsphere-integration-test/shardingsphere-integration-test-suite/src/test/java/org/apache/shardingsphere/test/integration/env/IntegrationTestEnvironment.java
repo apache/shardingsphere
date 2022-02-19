@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.env;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import org.apache.shardingsphere.test.integration.env.cluster.ClusterEnvironment;
-import org.apache.shardingsphere.test.integration.env.scenario.ScenarioEnvironmentPath;
+import org.apache.shardingsphere.test.integration.env.scenario.ScenarioPath;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -68,7 +68,7 @@ public final class IntegrationTestEnvironment {
     private Collection<String> getScenarios(final Properties envProps) {
         Collection<String> result = Splitter.on(",").trimResults().splitToList(envProps.getProperty("it.scenarios"));
         for (String each : result) {
-            new ScenarioEnvironmentPath(each).checkDirectoryExist();
+            new ScenarioPath(each).checkDirectoryExist();
         }
         return result;
     }

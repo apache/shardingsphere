@@ -25,10 +25,10 @@ import java.net.URL;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * Scenario environment path.
+ * Scenario path.
  */
 @RequiredArgsConstructor
-public final class ScenarioEnvironmentPath {
+public final class ScenarioPath {
     
     private static final String ROOT_PATH = "env/scenario";
     
@@ -49,7 +49,7 @@ public final class ScenarioEnvironmentPath {
      */
     public void checkDirectoryExist() {
         String scenarioDirectory = String.join("/", ROOT_PATH, scenario);
-        URL url = ScenarioEnvironmentPath.class.getClassLoader().getResource(scenarioDirectory);
+        URL url = ScenarioPath.class.getClassLoader().getResource(scenarioDirectory);
         assertNotNull(String.format("Scenario directory `%s` must exist.", scenarioDirectory), url);
     }
     
@@ -122,14 +122,14 @@ public final class ScenarioEnvironmentPath {
     
     private String getFile(final String fileName) {
         String path = String.join("/", ROOT_PATH, scenario, fileName);
-        URL url = ScenarioEnvironmentPath.class.getClassLoader().getResource(path);
+        URL url = ScenarioPath.class.getClassLoader().getResource(path);
         assertNotNull(String.format("File `%s` must exist.", path), url);
         return url.getFile();
     }
     
     private String getFile(final DatabaseType databaseType, final String fileName) {
         String path = getPath(databaseType, fileName);
-        URL url = ScenarioEnvironmentPath.class.getClassLoader().getResource(path);
+        URL url = ScenarioPath.class.getClassLoader().getResource(path);
         assertNotNull(String.format("File `%s` must exist.", path), url);
         return url.getFile();
     }
@@ -146,6 +146,6 @@ public final class ScenarioEnvironmentPath {
      * @return weather SQL file exist or not
      */
     public boolean checkSQLFileExist(final DatabaseType databaseType, final String fileName) {
-        return null != ScenarioEnvironmentPath.class.getClassLoader().getResource(getPath(databaseType, fileName));
+        return null != ScenarioPath.class.getClassLoader().getResource(getPath(databaseType, fileName));
     }
 }
