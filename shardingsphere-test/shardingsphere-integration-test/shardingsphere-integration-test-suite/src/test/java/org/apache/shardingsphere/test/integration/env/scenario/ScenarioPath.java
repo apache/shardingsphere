@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import java.net.URL;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -64,31 +66,35 @@ public final class ScenarioPath {
     }
     
     /**
-     * Get init SQL file.
+     * Get init SQL files.
      *
+     * @param databaseName database name
      * @param databaseType database type
-     * @return init SQL file
+     * @return init SQL files
      */
-    public String getInitSQLFile(final DatabaseType databaseType) {
-        return getInitSQLFile(databaseType, INIT_SQL_FILE);
+    public Collection<String> getInitSQLFiles(final String databaseName, final DatabaseType databaseType) {
+        Collection<String> result = new LinkedList<>();
+        result.add(getInitSQLFile(databaseType, INIT_SQL_FILE));
+        String dbInitSQLFileName = "init-" + databaseName + ".sql";
+        if (isInitSQLFileExist(databaseType, dbInitSQLFileName)) {
+            result.add(getInitSQLFile(databaseType, dbInitSQLFileName));
+        }
+        return result;
     }
     
-    /**
-     * Get init SQL file.
-     *
-     * @param databaseType database type
-     * @param fileName file name
-     * @return init SQL file
-     */
-    public String getInitSQLFile(final DatabaseType databaseType, final String fileName) {
-        String path = getInitSQLResourcePath(databaseType, fileName);
-        URL url = ScenarioPath.class.getClassLoader().getResource(path);
-        assertNotNull(String.format("File `%s` must exist.", path), url);
+    private String getInitSQLFile(final DatabaseType databaseType, final String fileName) {
+        String resourceFile = getInitSQLResourceFile(databaseType, fileName);
+        URL url = ScenarioPath.class.getClassLoader().getResource(resourceFile);
+        assertNotNull(String.format("File `%s` must exist.", resourceFile), url);
         return url.getFile();
     }
     
-    private String getInitSQLResourcePath(final DatabaseType databaseType, final String fileName) {
+    private String getInitSQLResourceFile(final DatabaseType databaseType, final String fileName) {
         return String.join("/", ROOT_PATH, scenario, INIT_SQL_PATH, databaseType.getName().toLowerCase(), fileName);
+    }
+    
+    private boolean isInitSQLFileExist(final DatabaseType databaseType, final String fileName) {
+        return null != ScenarioPath.class.getClassLoader().getResource(getInitSQLResourceFile(databaseType, fileName));
     }
     
     /**
@@ -99,17 +105,6 @@ public final class ScenarioPath {
      */
     public String getInitSQLResourcePath(final DatabaseType databaseType) {
         return String.join("/", "", ROOT_PATH, scenario, INIT_SQL_PATH, databaseType.getName().toLowerCase());
-    }
-    
-    /**
-     * Judge weather init SQL file exist.
-     *
-     * @param databaseType database type
-     * @param fileName file name
-     * @return init SQL file exist or not
-     */
-    public boolean isInitSQLFileExist(final DatabaseType databaseType, final String fileName) {
-        return null != ScenarioPath.class.getClassLoader().getResource(getInitSQLResourcePath(databaseType, fileName));
     }
     
     /**

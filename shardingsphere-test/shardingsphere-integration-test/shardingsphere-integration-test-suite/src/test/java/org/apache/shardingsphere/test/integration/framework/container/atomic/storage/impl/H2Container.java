@@ -24,7 +24,6 @@ import org.apache.shardingsphere.test.integration.framework.container.atomic.sto
 import org.h2.tools.RunScript;
 
 import javax.sql.DataSource;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
@@ -46,23 +45,17 @@ public final class H2Container extends EmbeddedStorageContainer {
     @Override
     @SneakyThrows({IOException.class, SQLException.class})
     public void start() {
-        File initSQLFile = new File(scenarioPath.getInitSQLFile(getDatabaseType()));
         for (Entry<String, DataSource> entry : getActualDataSourceMap().entrySet()) {
-            String dbInitSQLFileName = "init-" + entry.getKey() + ".sql";
-            try (
-                    Connection connection = entry.getValue().getConnection();
-                    FileReader reader = new FileReader(initSQLFile)) {
-                RunScript.execute(connection, reader);
-                if (scenarioPath.isInitSQLFileExist(getDatabaseType(), dbInitSQLFileName)) {
-                    executeDataInitFile(connection, dbInitSQLFileName);
-                }
+            for (String each : scenarioPath.getInitSQLFiles(entry.getKey(), getDatabaseType())) {
+                executeInitSQL(entry.getValue(), each);
             }
         }
     }
     
-    private void executeDataInitFile(final Connection connection, final String dataInitFileName) throws IOException, SQLException {
-        File dataInitFile = new File(scenarioPath.getInitSQLFile(getDatabaseType(), dataInitFileName));
-        try (FileReader reader = new FileReader(dataInitFile)) {
+    private void executeInitSQL(final DataSource dataSource, final String initSQLFile) throws SQLException, IOException {
+        try (
+                Connection connection = dataSource.getConnection();
+                FileReader reader = new FileReader(initSQLFile)) {
             RunScript.execute(connection, reader);
         }
     }
