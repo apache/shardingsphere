@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.infra.datasource.utils;
 
-public class MySQLDataSourceClassNameGenerator implements DataSourceClassNameGenerator {
+/**
+ * MySQL data source class name generator.
+ */
+public final class MySQLDataSourceClassNameGenerator implements DataSourceClassNameGenerator {
     
     @Override
     public String getDataSourceClassName() {

@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.infra.datasource.utils;
 
-public class OpenGaussDataSourceClassNameGenerator implements DataSourceClassNameGenerator {
+/**
+ * OpenGauss data source class name generator.
+ */
+public final class OpenGaussDataSourceClassNameGenerator implements DataSourceClassNameGenerator {
     
     @Override
     public String getDataSourceClassName() {

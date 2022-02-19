@@ -24,17 +24,23 @@ import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import java.util.Optional;
 import java.util.Properties;
 
-public class DataSourceClassNameGeneratorFactory {
+/**
+ * Data source class name generator factory.
+ */
+public final class DataSourceClassNameGeneratorFactory {
     
     static {
         ShardingSphereServiceLoader.register(DataSourceClassNameGenerator.class);
     }
     
+    private DataSourceClassNameGeneratorFactory() {
+    }
+    
     /**
-     * Create new instance of datasource class name generator.
+     * Create new instance of data source class name generator.
      *
      * @param databaseType database type
-     * @return new instance of datasource class name generator
+     * @return new instance of data source class name generator
      */
     public static Optional<DataSourceClassNameGenerator> newInstance(final DatabaseType databaseType) {
         return null == databaseType ? Optional.empty() : TypedSPIRegistry.findRegisteredService(DataSourceClassNameGenerator.class, databaseType.getName(), new Properties());

@@ -166,7 +166,7 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
                 String jdbcUrl = poolMetaData.get().getJdbcUrlMetaData().getJdbcUrl(dataSource.get());
                 int endIndex = jdbcUrl.indexOf("?");
                 jdbcUrl = jdbcUrl.substring(0, endIndex);
-                String user = poolMetaData.get().getJdbcUrlMetaData().getUserName(dataSource.get());
+                String user = poolMetaData.get().getJdbcUrlMetaData().getUsername(dataSource.get());
                 String password = poolMetaData.get().getJdbcUrlMetaData().getPassword(dataSource.get());
                 String dataSourceClassName = getDataSourceClassNameByJdbcUrl(jdbcUrl);
                 generateTransactionProps(jdbcUrl, user, password, dataSourceClassName, props);

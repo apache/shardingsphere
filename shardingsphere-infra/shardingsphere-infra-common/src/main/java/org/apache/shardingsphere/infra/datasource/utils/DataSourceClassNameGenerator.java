@@ -19,12 +19,15 @@ package org.apache.shardingsphere.infra.datasource.utils;
 
 import org.apache.shardingsphere.spi.typed.TypedSPI;
 
+/**
+ * Data source class name generator.
+ */
 public interface DataSourceClassNameGenerator extends TypedSPI {
     
     /**
-     * Get datasource class name.
+     * Get data source class name.
      *
-     * @return datasource class name
+     * @return data source class name
      */
     String getDataSourceClassName();
 }

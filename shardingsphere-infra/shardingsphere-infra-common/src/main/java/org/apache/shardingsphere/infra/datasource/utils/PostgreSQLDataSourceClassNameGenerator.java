@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.infra.datasource.utils;
 
-public class PostgreSQLDataSourceClassNameGenerator implements DataSourceClassNameGenerator {
+/**
+ * PostgreSQL data source class name generator.
+ */
+public final class PostgreSQLDataSourceClassNameGenerator implements DataSourceClassNameGenerator {
     
     @Override
     public String getDataSourceClassName() {

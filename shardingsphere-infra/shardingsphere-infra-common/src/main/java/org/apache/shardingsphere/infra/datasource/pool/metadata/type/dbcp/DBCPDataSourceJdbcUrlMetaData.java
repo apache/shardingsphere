@@ -35,7 +35,7 @@ public final class DBCPDataSourceJdbcUrlMetaData implements DataSourceJdbcUrlMet
     }
     
     @Override
-    public String getUserName(final BasicDataSource targetDataSource) {
+    public String getUsername(final BasicDataSource targetDataSource) {
         return targetDataSource.getUsername();
     }
     
