@@ -89,6 +89,11 @@ public final class ResultSetUtilTest {
         assertThat(ResultSetUtil.convertValue(new Date(0L), Date.class), is(new Date(0L)));
         assertThat(ResultSetUtil.convertValue((short) 1, Object.class), is(Short.valueOf("1")));
         assertThat(ResultSetUtil.convertValue((short) 1, String.class), is("1"));
+        assertThat(ResultSetUtil.convertValue(1, Byte.class), is(Byte.valueOf("1")));
+        assertThat(ResultSetUtil.convertValue(1, Short.class), is(Short.valueOf("1")));
+        assertThat(ResultSetUtil.convertValue(1, Long.class), is(Long.valueOf("1")));
+        assertThat(ResultSetUtil.convertValue(1, Double.class), is(Double.valueOf("1")));
+        assertThat(ResultSetUtil.convertValue(1, Float.class), is(Float.valueOf("1")));
     }
     
     @Test(expected = ShardingSphereException.class)
