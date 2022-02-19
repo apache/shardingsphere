@@ -1,4 +1,10 @@
-# Apache ShardingSphere 5.1.0 Now Avaliable
++++
+title = "Apache ShardingSphere 5.1.0 Now Available"
+weight = 35
+chapter = true
++++
+
+# Apache ShardingSphere 5.1.0 Now Available
 ![1](https://shardingsphere.apache.org/blog/img/Apache_ShardingSphere_releases_5.1.0.png)
 
 [Apache ShardingSphere 5.1.0](https://github.com/apache/shardingsphere) is officially released and available. The previous 5.0.0 GA version was launched in November last year, and marked ShardingSphere’s evolution from middleware to an ecosystem.
