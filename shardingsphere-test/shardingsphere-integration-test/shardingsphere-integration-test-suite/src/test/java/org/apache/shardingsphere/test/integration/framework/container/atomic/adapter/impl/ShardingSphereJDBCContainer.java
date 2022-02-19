@@ -85,7 +85,7 @@ public final class ShardingSphereJDBCContainer implements EmbeddedITContainer, A
         YamlPersistRepositoryConfiguration repositoryConfig = new YamlPersistRepositoryConfiguration();
         // TODO process more types
         repositoryConfig.setType("ZooKeeper");
-        repositoryConfig.getProps().setProperty("namespace", scenario);
+        repositoryConfig.getProps().setProperty("namespace", "it_db");
         repositoryConfig.getProps().setProperty("server-lists", serverLists);
         repositoryConfig.getProps().setProperty("timeToLiveSeconds", "60");
         repositoryConfig.getProps().setProperty("operationTimeoutMilliseconds", "500");

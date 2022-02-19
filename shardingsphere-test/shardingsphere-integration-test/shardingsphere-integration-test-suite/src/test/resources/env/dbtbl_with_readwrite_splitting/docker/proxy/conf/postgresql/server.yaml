@@ -20,8 +20,8 @@ mode:
   repository:
     type: ZooKeeper
     props:
-      namespace: dbtbl_with_readwrite_splitting
-      server-lists: zk.dbtbl_with_readwrite_splitting.host:2181
+      namespace: it_db
+      server-lists: zk.host:2181
       timeToLiveSeconds: 60
       operationTimeoutMilliseconds: 500
       retryIntervalMilliseconds: 500
