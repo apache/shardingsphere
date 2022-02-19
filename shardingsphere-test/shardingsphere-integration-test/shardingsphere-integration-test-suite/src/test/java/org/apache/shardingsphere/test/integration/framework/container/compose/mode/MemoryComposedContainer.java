@@ -40,11 +40,11 @@ public final class MemoryComposedContainer implements ComposedContainer {
     
     private final AdapterContainer adapterContainer;
     
-    public MemoryComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
+    public MemoryComposedContainer(final ParameterizedArray parameterizedArray) {
         containers = new ITContainers(parameterizedArray.getScenario());
-        storageContainer = containers.registerContainer(testSuiteName, StorageContainerFactory.newInstance(
+        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(
                 parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getDatabaseType().getName());
-        adapterContainer = containers.registerContainer(testSuiteName, AdapterContainerFactory.newInstance(
+        adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(
                 parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), storageContainer, parameterizedArray.getScenario()), parameterizedArray.getAdapter());
         if (adapterContainer instanceof DockerITContainer) {
             ((DockerITContainer) adapterContainer).dependsOn(storageContainer);

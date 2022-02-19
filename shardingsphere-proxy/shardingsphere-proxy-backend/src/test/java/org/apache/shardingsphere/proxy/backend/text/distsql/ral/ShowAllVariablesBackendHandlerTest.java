@@ -26,7 +26,8 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.ShowDistSQLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowAllVariablesHandler;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
 
@@ -53,7 +54,8 @@ public final class ShowAllVariablesBackendHandlerTest {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        ShowDistSQLBackendHandler backendHandler = new ShowDistSQLBackendHandler(new ShowAllVariablesStatement(), connectionSession);
+        ShowAllVariablesHandler backendHandler = new ShowAllVariablesHandler()
+                .init(new HandlerParameter<ShowAllVariablesStatement>().setStatement(new ShowAllVariablesStatement()).setConnectionSession(connectionSession));
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));

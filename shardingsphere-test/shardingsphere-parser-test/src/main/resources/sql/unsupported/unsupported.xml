@@ -5913,10 +5913,6 @@
     <sql-case id="delete_by_postgresql_source_test_case17" value="DELETE FROM uctest WHERE CURRENT OF c;" db-types="PostgreSQL"/>
     <sql-case id="delete_by_postgresql_source_test_case18" value="DELETE FROM uctest WHERE CURRENT OF cx;" db-types="PostgreSQL"/>
     <sql-case id="delete_by_postgresql_source_test_case19" value="DELETE FROM ucview WHERE CURRENT OF c1;" db-types="PostgreSQL"/>
-    <sql-case id="discard_by_postgresql_source_test_case1" value="DISCARD ALL;" db-types="PostgreSQL"/>
-    <sql-case id="discard_by_postgresql_source_test_case2" value="DISCARD SEQUENCES;" db-types="PostgreSQL"/>
-    <sql-case id="discard_by_postgresql_source_test_case3" value="DISCARD SEQUENCES;" db-types="PostgreSQL"/>
-    <sql-case id="discard_by_postgresql_source_test_case4" value="DISCARD TEMP;" db-types="PostgreSQL"/>
     <sql-case id="do_by_postgresql_source_test_case1" value="DO $$   declare r boolean;   begin     execute $e$ select 2 !=-- comment       1 $e$ into r;     raise info &apos;r = %&apos;, r;   end; $$;" db-types="PostgreSQL"/>
     <sql-case id="do_by_postgresql_source_test_case2" value="DO $$ BEGIN 	EXECUTE &apos;EXPLAIN ANALYZE SELECT * INTO TABLE easi FROM int8_tbl&apos;; 	EXECUTE &apos;EXPLAIN ANALYZE CREATE TABLE easi2 AS SELECT * FROM int8_tbl WITH NO DATA&apos;; END$$;" db-types="PostgreSQL"/>
     <sql-case id="do_by_postgresql_source_test_case3" value="DO $$ BEGIN     FOR r IN 1..1350 LOOP         DELETE FROM dedup_unique_test_table;         INSERT INTO dedup_unique_test_table SELECT 1;     END LOOP; END$$;" db-types="PostgreSQL"/>
@@ -9275,9 +9271,6 @@
     <sql-case id="low_create_by_postgresql_source_test_case561" value="create view view_of_joins_2d as select * from (tbl1 join tbl1a using (a) as x) as y;" db-types="PostgreSQL"/>
     <sql-case id="low_declare_by_postgresql_source_test_case13" value="declare rf_cur scroll cursor for select * from rows from(generate_series(1,5),generate_series(1,2)) with ordinality as g(i,j,o);" db-types="PostgreSQL"/>
     <sql-case id="low_delete_by_postgresql_source_test_case1" value="delete from;" db-types="PostgreSQL"/>
-    <sql-case id="low_discard_by_postgresql_source_test_case1" value="discard all;" db-types="PostgreSQL"/>
-    <sql-case id="low_discard_by_postgresql_source_test_case2" value="discard all;" db-types="PostgreSQL"/>
-    <sql-case id="low_discard_by_postgresql_source_test_case3" value="discard temp;" db-types="PostgreSQL"/>
     <sql-case id="low_do_by_postgresql_source_test_case1" value="do $$   declare r integer;   begin     select dfunc(a=&gt;-- comment       1) into r;     raise info &apos;r = %&apos;, r;   end; $$;" db-types="PostgreSQL"/>
     <sql-case id="low_do_by_postgresql_source_test_case2" value="do $$ BEGIN   EXECUTE &apos;CREATE COLLATION test0 (provider = icu, locale = &apos; ||           quote_literal(current_setting(&apos;lc_collate&apos;)) || &apos;);&apos;; END $$;" db-types="PostgreSQL"/>
     <sql-case id="low_do_by_postgresql_source_test_case3" value="do $$ BEGIN   EXECUTE &apos;CREATE COLLATION test1 (provider = icu, lc_collate = &apos; ||           quote_literal(current_setting(&apos;lc_collate&apos;)) ||           &apos;, lc_ctype = &apos; ||           quote_literal(current_setting(&apos;lc_ctype&apos;)) || &apos;);&apos;; END $$;" db-types="PostgreSQL"/>

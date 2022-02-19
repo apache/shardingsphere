@@ -19,12 +19,10 @@ package org.apache.shardingsphere.test.integration.engine.ddl;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRegistry;
 import org.apache.shardingsphere.test.integration.framework.param.array.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
-import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -40,20 +38,13 @@ import static org.junit.Assert.assertFalse;
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDDLIT extends BaseDDLIT {
     
-    private static final ComposedContainerRegistry COMPOSED_CONTAINER_REGISTRY = new ComposedContainerRegistry();
-    
     public GeneralDDLIT(final AssertionParameterizedArray parameterizedArray) {
-        super(parameterizedArray, COMPOSED_CONTAINER_REGISTRY.getComposedContainer(GeneralDDLIT.class.getSimpleName(), parameterizedArray));
+        super(parameterizedArray);
     }
     
     @Parameters(name = "{0}")
     public static Collection<AssertionParameterizedArray> getParameters() {
         return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DDL);
-    }
-    
-    @AfterClass
-    public static void closeContainers() {
-        COMPOSED_CONTAINER_REGISTRY.close();
     }
     
     @Test

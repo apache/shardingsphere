@@ -70,4 +70,27 @@ public final class SchemaVersionPersistService {
         }
         return Optional.empty();
     }
+    
+    /**
+     * Persist active schema version.
+     * 
+     * @param schemaName schema name
+     * @param version version
+     */
+    public void persistActiveVersion(final String schemaName, final String version) {
+        Optional<String> activeVersion = getSchemaActiveVersion(schemaName);
+        if (activeVersion.isPresent() && !activeVersion.get().equals(version)) {
+            repository.persist(SchemaMetaDataNode.getActiveVersionPath(schemaName), version);
+        }
+    }
+    
+    /**
+     * Delete schema version.
+     * 
+     * @param schemaName schema name
+     * @param version version
+     */
+    public void deleteVersion(final String schemaName, final String version) {
+        repository.delete(SchemaMetaDataNode.getSchemaVersionPath(schemaName, version));
+    }
 }

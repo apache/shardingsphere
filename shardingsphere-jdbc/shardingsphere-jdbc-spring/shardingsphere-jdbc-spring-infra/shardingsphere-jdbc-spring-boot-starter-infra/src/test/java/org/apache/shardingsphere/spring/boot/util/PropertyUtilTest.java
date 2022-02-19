@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.spring.boot.util;
 
 import org.junit.Test;
+import org.springframework.mock.env.MockEnvironment;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class PropertyUtilTest {
     
@@ -31,12 +33,12 @@ public final class PropertyUtilTest {
     public void assertGetCamelCaseKeys() {
         assertThat(PropertyUtil.getCamelCaseKeys(createToBeConvertedMap()), is(createConvertedMap()));
     }
-
+    
     @Test
-    public void assertToDashedForm() throws Exception {
-        assertThat(PropertyUtil.toDashedForm("fooKey"), is("foo-key"));
-        assertThat(PropertyUtil.toDashedForm("foo_key"), is("foo-key"));
-        assertThat(PropertyUtil.toDashedForm("foo_Key"), is("foo-key"));
+    public void test() throws Exception {
+        MockEnvironment mockEnvironment = new MockEnvironment();
+        mockEnvironment.setProperty("spring.shardingsphere.rules.sharding.sharding-algorithms.table-inline.type", "INLINE");
+        assertTrue(PropertyUtil.containPropertyPrefix(mockEnvironment, "spring.shardingsphere.rules.sharding.sharding-algorithms.table-inline"));
     }
     
     private Map<String, Object> createToBeConvertedMap() {

@@ -47,20 +47,19 @@ public final class ITContainers implements Startable {
     /**
      * Register container.
      * 
-     * @param testSuiteName test suite name
      * @param container container to be registered
      * @param containerType container type
      * @param <T> type of ShardingSphere container
      * @return registered container
      */
-    public <T extends ITContainer> T registerContainer(final String testSuiteName, final T container, final String containerType) {
+    public <T extends ITContainer> T registerContainer(final T container, final String containerType) {
         if (container instanceof EmbeddedITContainer) {
             embeddedContainers.add((EmbeddedITContainer) container);
         } else {
             DockerITContainer dockerContainer = (DockerITContainer) container;
             dockerContainer.setNetwork(network);
             dockerContainer.setNetworkAliases(Collections.singletonList(String.join(".", containerType.toLowerCase(), scenario, "host")));
-            String loggerName = String.join(":", testSuiteName, dockerContainer.getName());
+            String loggerName = String.join(":", scenario, dockerContainer.getName());
             dockerContainer.withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger(loggerName), true));
             dockerContainers.add(dockerContainer);
         }

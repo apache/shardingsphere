@@ -66,6 +66,7 @@ public final class PropertyUtil {
     
     /**
      * Spring Boot 1.x is compatible with Spring Boot 2.x by Using Java Reflect.
+     *
      * @param environment : the environment context
      * @param prefix : the prefix part of property key
      * @param targetClass : the target class type of result
@@ -131,10 +132,11 @@ public final class PropertyUtil {
 
     /**
      * Return the specified Java Bean property name in dashed form.
+     *
      * @param name the source name
      * @return the dashed from
      */
-    static String toDashedForm(final String name) {
+    private static String toDashedForm(final String name) {
         StringBuilder result = new StringBuilder(name.length());
         boolean inIndex = false;
         for (int i = 0; i < name.length(); i++) {

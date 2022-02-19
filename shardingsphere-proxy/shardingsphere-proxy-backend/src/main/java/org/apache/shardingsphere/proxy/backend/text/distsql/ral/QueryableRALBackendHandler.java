@@ -46,7 +46,7 @@ public abstract class QueryableRALBackendHandler<E extends RALStatement, R exten
     @Override
     protected final ResponseHeader handle(final ContextManager contextManager, final E sqlStatement) {
         queryHeaders = createQueryHeader(getColumnNames());
-        mergedResult = createMergedResult(getRows());
+        mergedResult = createMergedResult(getRows(contextManager));
         return new QueryResponseHeader(queryHeaders);
     }
     
@@ -60,9 +60,9 @@ public abstract class QueryableRALBackendHandler<E extends RALStatement, R exten
         return createQueryResponseRow(queryHeaders.size(), mergedResult).getData();
     }
     
-    protected abstract Collection<List<Object>> getRows();
-    
     protected abstract Collection<String> getColumnNames();
+    
+    protected abstract Collection<List<Object>> getRows(ContextManager contextManager);
     
     private MultipleLocalDataMergedResult createMergedResult(final Collection<List<Object>> rows) {
         return new MultipleLocalDataMergedResult(rows);

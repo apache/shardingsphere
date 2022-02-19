@@ -49,7 +49,6 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
@@ -312,11 +311,8 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
                 throw new PipelineDataConsistencyCheckFailedException("Data consistency check not finished or failed.");
             }
         }
-        YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(jobConfig.getPipelineConfig().getTarget().getParameter(), YamlRootConfiguration.class, true);
         WorkflowConfiguration workflowConfig = jobConfig.getWorkflowConfig();
-        String schemaName = workflowConfig.getSchemaName();
-        String ruleCacheId = workflowConfig.getRuleCacheId();
-        ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(schemaName, yamlRootConfig, ruleCacheId);
+        ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(workflowConfig.getSchemaName(), workflowConfig.getSchemaVersion());
         ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
         PipelineAPIFactory.getGovernanceRepositoryAPI().renewJobStatus(JobStatus.FINISHED, jobId);
         stop(jobId);

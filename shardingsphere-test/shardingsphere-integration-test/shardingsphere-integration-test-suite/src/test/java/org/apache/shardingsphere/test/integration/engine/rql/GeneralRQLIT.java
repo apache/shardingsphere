@@ -19,12 +19,10 @@ package org.apache.shardingsphere.test.integration.engine.rql;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRegistry;
 import org.apache.shardingsphere.test.integration.framework.param.array.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
-import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -39,10 +37,8 @@ import java.util.stream.Collectors;
 @ParallelRuntimeStrategy(ParallelLevel.CASE)
 public final class GeneralRQLIT extends BaseRQLIT {
     
-    private static final ComposedContainerRegistry COMPOSED_CONTAINER_REGISTRY = new ComposedContainerRegistry();
-    
     public GeneralRQLIT(final AssertionParameterizedArray parameterizedArray) {
-        super(parameterizedArray, COMPOSED_CONTAINER_REGISTRY.getComposedContainer(GeneralRQLIT.class.getSimpleName(), parameterizedArray));
+        super(parameterizedArray);
     }
     
     @Parameters(name = "{0}")
@@ -51,11 +47,6 @@ public final class GeneralRQLIT extends BaseRQLIT {
                 .filter(each -> SQLExecuteType.Literal == each.getSqlExecuteType())
                 .filter(each -> "proxy".equals(each.getAdapter()))
                 .collect(Collectors.toList());
-    }
-    
-    @AfterClass
-    public static void closeContainers() {
-        COMPOSED_CONTAINER_REGISTRY.close();
     }
     
     @Test
