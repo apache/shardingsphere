@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.authority;
+package org.apache.shardingsphere.test.integration.env.scenario.authority;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 

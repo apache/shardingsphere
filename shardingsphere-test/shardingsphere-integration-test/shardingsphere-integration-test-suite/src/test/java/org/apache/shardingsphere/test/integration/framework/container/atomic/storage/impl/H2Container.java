@@ -19,12 +19,11 @@ package org.apache.shardingsphere.test.integration.framework.container.atomic.st
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.test.integration.env.ScenarioEnvironmentPath;
+import org.apache.shardingsphere.test.integration.env.scenario.ScenarioPath;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.EmbeddedStorageContainer;
 import org.h2.tools.RunScript;
 
 import javax.sql.DataSource;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
@@ -36,30 +35,27 @@ import java.util.Map.Entry;
  */
 public final class H2Container extends EmbeddedStorageContainer {
     
+    private final ScenarioPath scenarioPath;
+    
     public H2Container(final String scenario) {
         super(DatabaseTypeRegistry.getActualDatabaseType("H2"), scenario);
+        scenarioPath = new ScenarioPath(scenario);
     }
     
     @Override
     @SneakyThrows({IOException.class, SQLException.class})
     public void start() {
-        File initSQLFile = new File(ScenarioEnvironmentPath.getInitSQLFile(getDatabaseType(), getScenario()));
         for (Entry<String, DataSource> entry : getActualDataSourceMap().entrySet()) {
-            String dbInitSQLFileName = "init-" + entry.getKey() + ".sql";
-            try (
-                    Connection connection = entry.getValue().getConnection();
-                    FileReader reader = new FileReader(initSQLFile)) {
-                RunScript.execute(connection, reader);
-                if (ScenarioEnvironmentPath.checkSQLFileExist(getDatabaseType(), getScenario(), dbInitSQLFileName)) {
-                    executeDataInitFile(connection, dbInitSQLFileName);
-                }
+            for (String each : scenarioPath.getInitSQLFiles(entry.getKey(), getDatabaseType())) {
+                executeInitSQL(entry.getValue(), each);
             }
         }
     }
     
-    private void executeDataInitFile(final Connection connection, final String dataInitFileName) throws IOException, SQLException {
-        File dataInitFile = new File(ScenarioEnvironmentPath.getInitSQLFile(getDatabaseType(), getScenario(), dataInitFileName));
-        try (FileReader reader = new FileReader(dataInitFile)) {
+    private void executeInitSQL(final DataSource dataSource, final String initSQLFile) throws SQLException, IOException {
+        try (
+                Connection connection = dataSource.getConnection();
+                FileReader reader = new FileReader(initSQLFile)) {
             RunScript.execute(connection, reader);
         }
     }
