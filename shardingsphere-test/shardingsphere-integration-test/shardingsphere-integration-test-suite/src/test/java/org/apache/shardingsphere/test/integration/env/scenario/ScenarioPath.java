@@ -45,9 +45,9 @@ public final class ScenarioPath {
     private final String scenario;
     
     /**
-     * Check directory exist.
+     * Check folder exist.
      */
-    public void checkDirectoryExist() {
+    public void checkFolderExist() {
         String scenarioDirectory = String.join("/", ROOT_PATH, scenario);
         URL url = ScenarioPath.class.getClassLoader().getResource(scenarioDirectory);
         assertNotNull(String.format("Scenario directory `%s` must exist.", scenarioDirectory), url);
