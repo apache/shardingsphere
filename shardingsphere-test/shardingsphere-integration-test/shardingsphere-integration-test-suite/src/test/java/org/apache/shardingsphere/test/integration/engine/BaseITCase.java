@@ -74,7 +74,7 @@ public abstract class BaseITCase {
         databaseType = parameterizedArray.getDatabaseType();
         sqlCommandType = parameterizedArray.getSqlCommandType();
         integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
-        this.composedContainer = COMPOSED_CONTAINER_REGISTRY.getComposedContainer(parameterizedArray);
+        composedContainer = COMPOSED_CONTAINER_REGISTRY.getComposedContainer(parameterizedArray);
     }
     
     @Before
