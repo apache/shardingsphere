@@ -15,18 +15,18 @@
 # limitations under the License.
 #
 
-#mode:
-#  type: Cluster
-#  repository:
-#    type: ZooKeeper
-#    props:
-#      namespace: governance_ds
-#      server-lists: zk:2181
-#      retryIntervalMilliseconds: 500
-#      timeToLiveSeconds: 60
-#      maxRetries: 3
-#      operationTimeoutMilliseconds: 500
-#  overwrite: true
+mode:
+  type: Cluster
+  repository:
+    type: ZooKeeper
+    props:
+      namespace: dbtbl_with_readwrite_splitting_and_encrypt
+      server-lists: zk.dbtbl_with_readwrite_splitting_and_encrypt.host:2181
+      timeToLiveSeconds: 60
+      operationTimeoutMilliseconds: 500
+      retryIntervalMilliseconds: 500
+      maxRetries: 3
+  overwrite: false
 
 rules:
   - !AUTHORITY

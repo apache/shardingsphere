@@ -20,13 +20,13 @@
 #  repository:
 #    type: ZooKeeper
 #    props:
-#      namespace: governance_ds
-#      server-lists: zk:2181
-#      retryIntervalMilliseconds: 500
+#      namespace: empty_rules
+#      server-lists: zk.empty_rules.host:2181
 #      timeToLiveSeconds: 60
-#      maxRetries: 3
 #      operationTimeoutMilliseconds: 500
-#  overwrite: true
+#      retryIntervalMilliseconds: 500
+#      maxRetries: 3
+#  overwrite: false
 
 rules:
   - !AUTHORITY
