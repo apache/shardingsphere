@@ -112,9 +112,6 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
         result.setPassword(userConfig.getPassword());
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        if ("MySQL".equals(databaseType.getName())) {
-            result.setConnectionInitSql("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
-        }
         return result;
     }
     
