@@ -74,8 +74,8 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
     
     private void mapConfigurationFiles() {
         String containerPath = "/opt/shardingsphere-proxy/conf";
-        withCopyFileToContainer(MountableFile.forClasspathResource("/env/docker/proxy/conf/"), containerPath);
-        withCopyFileToContainer(MountableFile.forClasspathResource("/env/" + scenario + "/docker/proxy/conf/" + databaseType.getName().toLowerCase()), containerPath);
+        withCopyFileToContainer(MountableFile.forClasspathResource("/env/common/proxy/conf/"), containerPath);
+        withCopyFileToContainer(MountableFile.forClasspathResource("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getName().toLowerCase()), containerPath);
     }
     
     @Override

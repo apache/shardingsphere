@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.env.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
+import org.apache.shardingsphere.test.integration.env.ScenarioEnvironmentPath;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -42,7 +42,7 @@ public final class DatabaseEnvironmentManager {
      * @throws JAXBException JAXB exception
      */
     public static Collection<String> getDatabaseNames(final String scenario) throws IOException, JAXBException {
-        return unmarshal(EnvironmentPath.getDatabasesFile(scenario)).getDatabases();
+        return unmarshal(ScenarioEnvironmentPath.getDatabasesFile(scenario)).getDatabases();
     }
     
     private static DatabaseNameEnvironment unmarshal(final String databasesFile) throws IOException, JAXBException {

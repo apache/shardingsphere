@@ -42,7 +42,7 @@ public final class IntegrationTestEnvironment {
     private final ClusterEnvironment clusterEnvironment;
     
     private IntegrationTestEnvironment() {
-        Properties envProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
+        Properties envProps = EnvironmentProperties.loadProperties("env/it-env.properties");
         runModes = Splitter.on(",").trimResults().splitToList(envProps.getProperty("it.run.modes"));
         runAdditionalTestCases = Boolean.parseBoolean(envProps.getProperty("it.run.additional.cases"));
         scenarios = getScenarios(envProps);
@@ -52,7 +52,7 @@ public final class IntegrationTestEnvironment {
     private Collection<String> getScenarios(final Properties envProps) {
         Collection<String> result = Splitter.on(",").trimResults().splitToList(envProps.getProperty("it.scenarios"));
         for (String each : result) {
-            EnvironmentPath.assertScenarioDirectoryExisted(each);
+            ScenarioEnvironmentPath.assertScenarioDirectoryExisted(each);
         }
         return result;
     }

@@ -26,12 +26,12 @@ import java.net.URL;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * Environment path.
+ * Scenario environment path.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EnvironmentPath {
+public final class ScenarioEnvironmentPath {
     
-    private static final String ROOT_PATH = "env";
+    private static final String ROOT_PATH = "env/scenario";
     
     private static final String DATABASES_FILE = "databases.xml";
     
@@ -50,7 +50,7 @@ public final class EnvironmentPath {
      */
     public static void assertScenarioDirectoryExisted(final String scenario) {
         String scenarioDirectory = String.join("/", ROOT_PATH, scenario);
-        URL url = EnvironmentPath.class.getClassLoader().getResource(scenarioDirectory);
+        URL url = ScenarioEnvironmentPath.class.getClassLoader().getResource(scenarioDirectory);
         assertNotNull(String.format("Scenario directory `%s` must exist.", scenarioDirectory), url);
     }
     
@@ -130,14 +130,14 @@ public final class EnvironmentPath {
     
     private static String getFile(final String scenario, final String fileName) {
         String path = String.join("/", ROOT_PATH, scenario, fileName);
-        URL url = EnvironmentPath.class.getClassLoader().getResource(path);
+        URL url = ScenarioEnvironmentPath.class.getClassLoader().getResource(path);
         assertNotNull(String.format("File `%s` must exist.", path), url);
         return url.getFile();
     }
     
     private static String getFile(final DatabaseType databaseType, final String scenario, final String fileName) {
         String path = getPath(databaseType, scenario, fileName);
-        URL url = EnvironmentPath.class.getClassLoader().getResource(path);
+        URL url = ScenarioEnvironmentPath.class.getClassLoader().getResource(path);
         assertNotNull(String.format("File `%s` must exist.", path), url);
         return url.getFile();
     }
@@ -155,6 +155,6 @@ public final class EnvironmentPath {
      * @return weather SQL file exist or not
      */
     public static boolean checkSQLFileExist(final DatabaseType databaseType, final String scenario, final String fileName) {
-        return null != EnvironmentPath.class.getClassLoader().getResource(getPath(databaseType, scenario, fileName));
+        return null != ScenarioEnvironmentPath.class.getClassLoader().getResource(getPath(databaseType, scenario, fileName));
     }
 }
