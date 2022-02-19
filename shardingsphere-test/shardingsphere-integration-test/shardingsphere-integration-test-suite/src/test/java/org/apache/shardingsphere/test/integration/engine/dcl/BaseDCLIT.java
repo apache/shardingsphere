@@ -33,7 +33,7 @@ public abstract class BaseDCLIT extends SingleITCase {
     
     @Before
     public final void init() throws Exception {
-        authorityEnvironmentManager = new AuthorityEnvironmentManager(ScenarioEnvironmentPath.getAuthorityFile(getScenario()), getActualDataSourceMap(), getDatabaseType());
+        authorityEnvironmentManager = new AuthorityEnvironmentManager(new ScenarioEnvironmentPath(getScenario()).getAuthorityFile(), getActualDataSourceMap(), getDatabaseType());
         authorityEnvironmentManager.initialize();
     }
     

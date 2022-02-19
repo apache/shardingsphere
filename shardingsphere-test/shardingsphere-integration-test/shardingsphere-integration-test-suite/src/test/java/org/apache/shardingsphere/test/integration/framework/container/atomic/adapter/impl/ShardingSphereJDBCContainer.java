@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl;
 
 import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
@@ -41,14 +40,18 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * ShardingSphere JDBC container.
  */
-@RequiredArgsConstructor
 public final class ShardingSphereJDBCContainer implements EmbeddedITContainer, AdapterContainer {
     
     private final StorageContainer storageContainer;
     
-    private final String scenario;
+    private final ScenarioEnvironmentPath scenarioEnvironmentPath;
     
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
+    
+    public ShardingSphereJDBCContainer(final StorageContainer storageContainer, final String scenario) {
+        this.storageContainer = storageContainer;
+        scenarioEnvironmentPath = new ScenarioEnvironmentPath(scenario);
+    }
     
     @Override
     public void start() {
@@ -61,7 +64,7 @@ public final class ShardingSphereJDBCContainer implements EmbeddedITContainer, A
             if (Strings.isNullOrEmpty(serverLists)) {
                 try {
                     targetDataSourceProvider.set(
-                            YamlShardingSphereDataSourceFactory.createDataSource(storageContainer.getActualDataSourceMap(), new File(ScenarioEnvironmentPath.getRulesConfigurationFile(scenario))));
+                            YamlShardingSphereDataSourceFactory.createDataSource(storageContainer.getActualDataSourceMap(), new File(scenarioEnvironmentPath.getRulesConfigurationFile())));
                 } catch (final SQLException | IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -74,7 +77,7 @@ public final class ShardingSphereJDBCContainer implements EmbeddedITContainer, A
     
     @SneakyThrows({SQLException.class, IOException.class})
     private DataSource createGovernanceClientDataSource(final String serverLists) {
-        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(new File(ScenarioEnvironmentPath.getRulesConfigurationFile(scenario)), YamlRootConfiguration.class);
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(new File(scenarioEnvironmentPath.getRulesConfigurationFile()), YamlRootConfiguration.class);
         rootConfig.setMode(createYamlModeConfiguration(serverLists));
         return YamlShardingSphereDataSourceFactory.createDataSource(storageContainer.getActualDataSourceMap(), YamlEngine.marshal(rootConfig).getBytes(StandardCharsets.UTF_8));
     }

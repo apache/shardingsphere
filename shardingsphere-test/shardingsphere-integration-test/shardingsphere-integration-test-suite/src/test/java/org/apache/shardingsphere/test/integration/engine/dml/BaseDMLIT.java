@@ -55,7 +55,7 @@ public abstract class BaseDMLIT extends SingleITCase {
     
     @Before
     public final void init() throws Exception {
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(ScenarioEnvironmentPath.getDataSetFile(getScenario()), getActualDataSourceMap());
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(new ScenarioEnvironmentPath(getScenario()).getDataSetFile(), getActualDataSourceMap());
         dataSetEnvironmentManager.fillData();
     }
     

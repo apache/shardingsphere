@@ -36,21 +36,24 @@ import java.util.Map.Entry;
  */
 public final class H2Container extends EmbeddedStorageContainer {
     
+    private final ScenarioEnvironmentPath scenarioEnvironmentPath;
+    
     public H2Container(final String scenario) {
         super(DatabaseTypeRegistry.getActualDatabaseType("H2"), scenario);
+        scenarioEnvironmentPath = new ScenarioEnvironmentPath(scenario);
     }
     
     @Override
     @SneakyThrows({IOException.class, SQLException.class})
     public void start() {
-        File initSQLFile = new File(ScenarioEnvironmentPath.getInitSQLFile(getDatabaseType(), getScenario()));
+        File initSQLFile = new File(scenarioEnvironmentPath.getInitSQLFile(getDatabaseType()));
         for (Entry<String, DataSource> entry : getActualDataSourceMap().entrySet()) {
             String dbInitSQLFileName = "init-" + entry.getKey() + ".sql";
             try (
                     Connection connection = entry.getValue().getConnection();
                     FileReader reader = new FileReader(initSQLFile)) {
                 RunScript.execute(connection, reader);
-                if (ScenarioEnvironmentPath.checkSQLFileExist(getDatabaseType(), getScenario(), dbInitSQLFileName)) {
+                if (scenarioEnvironmentPath.checkSQLFileExist(getDatabaseType(), dbInitSQLFileName)) {
                     executeDataInitFile(connection, dbInitSQLFileName);
                 }
             }
@@ -58,7 +61,7 @@ public final class H2Container extends EmbeddedStorageContainer {
     }
     
     private void executeDataInitFile(final Connection connection, final String dataInitFileName) throws IOException, SQLException {
-        File dataInitFile = new File(ScenarioEnvironmentPath.getInitSQLFile(getDatabaseType(), getScenario(), dataInitFileName));
+        File dataInitFile = new File(scenarioEnvironmentPath.getInitSQLFile(getDatabaseType(), dataInitFileName));
         try (FileReader reader = new FileReader(dataInitFile)) {
             RunScript.execute(connection, reader);
         }

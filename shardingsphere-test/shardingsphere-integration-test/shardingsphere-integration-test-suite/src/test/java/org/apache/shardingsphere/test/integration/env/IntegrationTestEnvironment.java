@@ -68,7 +68,7 @@ public final class IntegrationTestEnvironment {
     private Collection<String> getScenarios(final Properties envProps) {
         Collection<String> result = Splitter.on(",").trimResults().splitToList(envProps.getProperty("it.scenarios"));
         for (String each : result) {
-            ScenarioEnvironmentPath.assertScenarioDirectoryExisted(each);
+            new ScenarioEnvironmentPath(each).checkDirectoryExist();
         }
         return result;
     }

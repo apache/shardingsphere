@@ -42,7 +42,7 @@ public final class DatabaseEnvironmentManager {
      * @throws JAXBException JAXB exception
      */
     public static Collection<String> getDatabaseNames(final String scenario) throws IOException, JAXBException {
-        return unmarshal(ScenarioEnvironmentPath.getDatabasesFile(scenario)).getDatabases();
+        return unmarshal(new ScenarioEnvironmentPath(scenario).getDatabasesFile()).getDatabases();
     }
     
     private static DatabaseNameEnvironment unmarshal(final String databasesFile) throws IOException, JAXBException {

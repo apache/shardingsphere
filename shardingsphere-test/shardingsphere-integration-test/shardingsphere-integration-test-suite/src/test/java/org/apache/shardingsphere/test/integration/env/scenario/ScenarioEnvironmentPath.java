@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.env.scenario;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import java.net.URL;
@@ -28,7 +27,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Scenario environment path.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public final class ScenarioEnvironmentPath {
     
     private static final String ROOT_PATH = "env/scenario";
@@ -43,12 +42,12 @@ public final class ScenarioEnvironmentPath {
     
     private static final String AUTHORITY_FILE = "authority.xml";
     
+    private final String scenario;
+    
     /**
-     * Assert scenario directory existed.
-     * 
-     * @param scenario scenario
+     * Check directory exist.
      */
-    public static void assertScenarioDirectoryExisted(final String scenario) {
+    public void checkDirectoryExist() {
         String scenarioDirectory = String.join("/", ROOT_PATH, scenario);
         URL url = ScenarioEnvironmentPath.class.getClassLoader().getResource(scenarioDirectory);
         assertNotNull(String.format("Scenario directory `%s` must exist.", scenarioDirectory), url);
@@ -57,21 +56,19 @@ public final class ScenarioEnvironmentPath {
     /**
      * Get databases file.
      * 
-     * @param scenario scenario
      * @return databases file
      */
-    public static String getDatabasesFile(final String scenario) {
-        return getFile(scenario, DATABASES_FILE);
+    public String getDatabasesFile() {
+        return getFile(DATABASES_FILE);
     }
     
     /**
      * Get init SQL resource path.
      *
      * @param databaseType database type
-     * @param scenario scenario
      * @return init SQL resource path
      */
-    public static String getInitSQLResourcePath(final DatabaseType databaseType, final String scenario) {
+    public String getInitSQLResourcePath(final DatabaseType databaseType) {
         return String.join("/", "", ROOT_PATH, scenario, "init-sql", databaseType.getName().toLowerCase());
     }
     
@@ -79,70 +76,65 @@ public final class ScenarioEnvironmentPath {
      * Get init SQL file.
      *
      * @param databaseType database type
-     * @param scenario scenario
      * @return init SQL file
      */
-    public static String getInitSQLFile(final DatabaseType databaseType, final String scenario) {
-        return getFile(databaseType, scenario, INIT_SQL_FILE);
+    public String getInitSQLFile(final DatabaseType databaseType) {
+        return getFile(databaseType, INIT_SQL_FILE);
     }
     
     /**
      * Get init SQL file.
      *
      * @param databaseType database type
-     * @param scenario scenario
      * @param fileName file name
      * @return init SQL file
      */
-    public static String getInitSQLFile(final DatabaseType databaseType, final String scenario, final String fileName) {
-        return getFile(databaseType, scenario, fileName);
+    public String getInitSQLFile(final DatabaseType databaseType, final String fileName) {
+        return getFile(databaseType, fileName);
     }
     
     /**
      * Get data set file.
      *
-     * @param scenario scenario
      * @return data set file
      */
-    public static String getDataSetFile(final String scenario) {
-        return getFile(scenario, DATASET_FILE);
+    public String getDataSetFile() {
+        return getFile(DATASET_FILE);
     }
     
     /**
      * Get rules configuration file.
      *
-     * @param scenario scenario
      * @return rules configuration file
      */
-    public static String getRulesConfigurationFile(final String scenario) {
-        return getFile(scenario, RULES_CONFIG_FILE);
+    public String getRulesConfigurationFile() {
+        return getFile(RULES_CONFIG_FILE);
     }
     
     /**
      * Get authority file.
      *
-     * @param scenario scenario
      * @return authority file
      */
-    public static String getAuthorityFile(final String scenario) {
-        return getFile(scenario, AUTHORITY_FILE);
+    public String getAuthorityFile() {
+        return getFile(AUTHORITY_FILE);
     }
     
-    private static String getFile(final String scenario, final String fileName) {
+    private String getFile(final String fileName) {
         String path = String.join("/", ROOT_PATH, scenario, fileName);
         URL url = ScenarioEnvironmentPath.class.getClassLoader().getResource(path);
         assertNotNull(String.format("File `%s` must exist.", path), url);
         return url.getFile();
     }
     
-    private static String getFile(final DatabaseType databaseType, final String scenario, final String fileName) {
-        String path = getPath(databaseType, scenario, fileName);
+    private String getFile(final DatabaseType databaseType, final String fileName) {
+        String path = getPath(databaseType, fileName);
         URL url = ScenarioEnvironmentPath.class.getClassLoader().getResource(path);
         assertNotNull(String.format("File `%s` must exist.", path), url);
         return url.getFile();
     }
     
-    private static String getPath(final DatabaseType databaseType, final String scenario, final String fileName) {
+    private String getPath(final DatabaseType databaseType, final String fileName) {
         return String.join("/", ROOT_PATH, scenario, "init-sql", databaseType.getName().toLowerCase(), fileName);
     }
     
@@ -150,11 +142,10 @@ public final class ScenarioEnvironmentPath {
      * check SQL file exist.
      * 
      * @param databaseType database type
-     * @param scenario scenario
      * @param fileName file name
      * @return weather SQL file exist or not
      */
-    public static boolean checkSQLFileExist(final DatabaseType databaseType, final String scenario, final String fileName) {
-        return null != ScenarioEnvironmentPath.class.getClassLoader().getResource(getPath(databaseType, scenario, fileName));
+    public boolean checkSQLFileExist(final DatabaseType databaseType, final String fileName) {
+        return null != ScenarioEnvironmentPath.class.getClassLoader().getResource(getPath(databaseType, fileName));
     }
 }
