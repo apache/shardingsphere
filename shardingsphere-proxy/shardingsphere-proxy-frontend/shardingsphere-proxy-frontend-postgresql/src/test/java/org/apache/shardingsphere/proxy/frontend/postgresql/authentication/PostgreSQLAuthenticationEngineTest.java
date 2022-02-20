@@ -138,7 +138,7 @@ public final class PostgreSQLAuthenticationEngineTest {
     @SneakyThrows(ReflectiveOperationException.class)
     public void assertGetIdentifierPacket() {
         PostgreSQLAuthenticationHandler authenticationHandler = mock(PostgreSQLAuthenticationHandler.class);
-        when(authenticationHandler.getAuthenticator(anyString(),anyString())).thenReturn(new PostgreSQLMD5PasswordAuthenticator());
+        when(authenticationHandler.getAuthenticator(anyString(), anyString())).thenReturn(new PostgreSQLMD5PasswordAuthenticator());
         Method method = PostgreSQLAuthenticationEngine.class.getDeclaredMethod("getIdentifierPacket", String.class);
         method.setAccessible(true);
         PostgreSQLIdentifierPacket packet = (PostgreSQLIdentifierPacket) method.invoke(new PostgreSQLAuthenticationEngine(), username);
