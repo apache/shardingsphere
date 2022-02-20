@@ -24,6 +24,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
@@ -41,6 +42,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLAuthenticator;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLMD5PasswordAuthenticator;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,6 +55,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -120,6 +123,13 @@ public final class PostgreSQLAuthenticationHandlerTest {
         String database = "non_exist_database";
         PostgreSQLLoginResult postgreSQLLoginResult = authenticationHandler.login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_CATALOG_NAME));
+    }
+    
+    @Test
+    public void assertGetAuthenticator() {
+        PostgreSQLAuthenticator authenticator = authenticationHandler.getAuthenticator("root", "");
+        assertThat(authenticator, instanceOf(PostgreSQLMD5PasswordAuthenticator.class));
+        assertThat(authenticator.getAuthenticationMethodName(), is(PostgreSQLAuthenticationMethod.MD5.getMethodName()));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
