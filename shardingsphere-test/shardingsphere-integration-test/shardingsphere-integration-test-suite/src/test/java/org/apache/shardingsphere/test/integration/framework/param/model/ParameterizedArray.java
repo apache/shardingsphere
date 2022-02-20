@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.integration.framework.param.model;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
-import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 
 /**
  * Parameterized array.
@@ -53,11 +52,4 @@ public interface ParameterizedArray {
      * @return database type
      */
     DatabaseType getDatabaseType();
-    
-    /**
-     * Get SQL command type.
-     *
-     * @return SQL command type
-     */
-    SQLCommandType getSqlCommandType();
 }

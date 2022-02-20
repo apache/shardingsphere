@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.integration.engine;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRegistry;
@@ -58,8 +57,6 @@ public abstract class BaseITCase {
     
     private final DatabaseType databaseType;
     
-    private final SQLCommandType sqlCommandType;
-    
     private final IntegrationTestCase integrationTestCase;
     
     private final ComposedContainer composedContainer;
@@ -72,7 +69,6 @@ public abstract class BaseITCase {
         adapter = parameterizedArray.getAdapter();
         scenario = parameterizedArray.getScenario();
         databaseType = parameterizedArray.getDatabaseType();
-        sqlCommandType = parameterizedArray.getSqlCommandType();
         integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
         composedContainer = COMPOSED_CONTAINER_REGISTRY.getComposedContainer(parameterizedArray);
     }
