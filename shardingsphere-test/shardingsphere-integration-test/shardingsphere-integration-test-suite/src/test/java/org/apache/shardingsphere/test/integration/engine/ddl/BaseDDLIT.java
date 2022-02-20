@@ -30,6 +30,7 @@ import org.junit.Before;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -63,7 +64,9 @@ public abstract class BaseDDLIT extends SingleITCase {
     public final void tearDown() throws Exception {
         try (Connection connection = getTargetDataSource().getConnection()) {
             String dropSql = String.format("DROP TABLE %s", getAssertion().getInitialSQL().getAffectedTable());
-            executeUpdateForPrepareStatement(connection, dropSql);
+            try (PreparedStatement preparedStatement = connection.prepareStatement(dropSql)) {
+                preparedStatement.executeUpdate();
+            }
         } catch (final SQLException | NoSuchTableException ignored) {
         }
         super.tearDown();
@@ -74,7 +77,9 @@ public abstract class BaseDDLIT extends SingleITCase {
             return;
         }
         for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getInitialSQL().getSql())) {
-            executeUpdateForPrepareStatement(connection, each);
+            try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
+                preparedStatement.executeUpdate();
+            }
         }
     }
     

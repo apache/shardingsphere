@@ -31,10 +31,6 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -96,28 +92,4 @@ public abstract class BaseITCase {
     }
     
     protected abstract String getSQL() throws ParseException;
-    
-    protected void executeUpdateForStatement(final Connection connection, final String sql) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            statement.executeUpdate(sql);
-        }
-    }
-    
-    protected void executeUpdateForPrepareStatement(final Connection connection, final String sql) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.executeUpdate();
-        }
-    }
-    
-    protected void executeForStatement(final Connection connection, final String sql) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            statement.execute(sql);
-        }
-    }
-    
-    protected void executeForPrepareStatement(final Connection connection, final String sql) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.execute();
-        }
-    }
 }
