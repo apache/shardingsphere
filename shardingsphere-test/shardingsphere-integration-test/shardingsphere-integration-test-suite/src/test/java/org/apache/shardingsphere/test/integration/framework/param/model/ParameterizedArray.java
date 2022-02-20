@@ -33,6 +33,13 @@ public interface ParameterizedArray {
     IntegrationTestCaseContext getTestCaseContext();
     
     /**
+     * Get scenario.
+     *
+     * @return scenario
+     */
+    String getScenario();
+    
+    /**
      * Get adapter.
      * 
      * @return adapter
@@ -40,16 +47,18 @@ public interface ParameterizedArray {
     String getAdapter();
     
     /**
-     * Get scenario.
-     * 
-     * @return scenario
-     */
-    String getScenario();
-    
-    /**
      * Get database type.
      *
      * @return database type
      */
     DatabaseType getDatabaseType();
+    
+    /**
+     * Get key.
+     * 
+     * @return key of parameterized array
+     */
+    default String getKey() {
+        return String.join("-", getScenario(), getAdapter(), getDatabaseType().getName());
+    }
 }
