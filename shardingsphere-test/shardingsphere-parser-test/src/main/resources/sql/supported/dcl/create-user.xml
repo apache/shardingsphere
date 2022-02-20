@@ -56,7 +56,7 @@
     <sql-case id="create_user_with_from_login" value="CREATE USER [Domain1\WindowsGroupManagers] FROM LOGIN [Domain1\WindowsGroupManagers]" db-types="SQLServer" />
     <sql-case id="create_user_with_password_default_language" value="CREATE USER user1 WITH PASSWORD='RN92piTCh%$!~3K9844 Bl*', DEFAULT_LANGUAGE=[Brazilian], DEFAULT_SCHEMA=[dbo]" db-types="SQLServer" />
     <sql-case id="create_user_with_domain_login" value="CREATE USER [Contoso\Fritz]" db-types="SQLServer" />
-    <sql-case id="create_user_with_sid" value="CREATE USER CarmenW WITH PASSWORD = 'a8ea v*(Rd##+', SID = 0x01050000000000090300000063FF0451A9E7664BA705B10E37DDC4B7" db-types="SQLServer" />
+    <sql-case id="create_user_with_sid" value="CREATE USER user1 WITH PASSWORD = 'a8ea v*(Rd##+', SID = 0x01050000000000090300000063FF0451A9E7664BA705B10E37DDC4B7" db-types="SQLServer" />
     <sql-case id="create_user_to_copy_encrypted_data" value="CREATE USER [User1] WITH DEFAULT_SCHEMA = dbo, ALLOW_ENCRYPTED_VALUE_MODIFICATIONS = ON" db-types="SQLServer" />
     <sql-case id="create_azure_ad_user_with_login" value="CREATE USER [bob@contoso.com] FROM LOGIN [bob@contoso.com]" db-types="SQLServer" />
     <sql-case id="create_azure_ad_user_as_group_from_login" value="CREATE USER [AAD group] FROM LOGIN [AAD group]" db-types="SQLServer" />

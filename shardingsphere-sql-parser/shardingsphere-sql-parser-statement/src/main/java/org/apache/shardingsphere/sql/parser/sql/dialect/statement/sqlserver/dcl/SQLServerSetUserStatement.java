@@ -22,6 +22,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.UserSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
@@ -32,5 +33,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 @Setter
 public final class SQLServerSetUserStatement extends AbstractSQLStatement implements DCLStatement, SQLServerStatement {
     
-    private String userName;
+    private UserSegment user;
 }

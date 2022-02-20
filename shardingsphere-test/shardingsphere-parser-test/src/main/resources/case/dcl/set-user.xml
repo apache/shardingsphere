@@ -18,5 +18,7 @@
 
 <sql-parser-test-cases>
     <set-user sql-case-id="set_user" />
-    <set-user sql-case-id="set_user_with_username" user-name="mary" />
+    <set-user sql-case-id="set_user_with_username">
+        <user name="mary" start-index="8" stop-index="13" />
+    </set-user>
 </sql-parser-test-cases>

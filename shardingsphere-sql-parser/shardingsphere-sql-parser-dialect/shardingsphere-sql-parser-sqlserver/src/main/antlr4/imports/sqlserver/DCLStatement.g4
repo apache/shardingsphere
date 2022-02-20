@@ -227,15 +227,19 @@ createUserWithAzureActiveDirectoryPrincipalClause
     ;
 
 windowsPrincipal
-    : identifier
+    : userName
     ;
 
 azureActiveDirectoryPrincipal
-    : NAME_
+    : userName
     ;
 
 userName
-    : identifier (DOT_ identifier)? | NAME_
+    : ignoredNameIdentifier | NAME_
+    ;
+
+ignoredNameIdentifier
+    : identifier (DOT_ identifier)?
     ;
 
 dropUser
@@ -256,7 +260,7 @@ setItem
     ;
 
 loginName
-    : identifier (DOT_ identifier)? | NAME_
+    : ignoredNameIdentifier | NAME_
     ;
 
 createRole

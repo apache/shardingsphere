@@ -20,9 +20,8 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.user.ExpectedUser;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Set user statement test case.
@@ -32,6 +31,5 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class SetUserStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "user-name")
-    private String userName;
+    private ExpectedUser user;
 }
