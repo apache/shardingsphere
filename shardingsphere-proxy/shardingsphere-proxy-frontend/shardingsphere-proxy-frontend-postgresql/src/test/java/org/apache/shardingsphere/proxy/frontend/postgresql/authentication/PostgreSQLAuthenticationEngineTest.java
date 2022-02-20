@@ -29,13 +29,14 @@ import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.authentication.PostgreSQLMD5PasswordAuthenticationPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -60,9 +61,11 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -129,6 +132,17 @@ public final class PostgreSQLAuthenticationEngineTest {
     @Test(expected = PostgreSQLAuthenticationException.class)
     public void assertLoginFailed() {
         assertLogin("wrong" + password);
+    }
+    
+    @Test
+    @SneakyThrows(ReflectiveOperationException.class)
+    public void assertGetIdentifierPacket() {
+        PostgreSQLAuthenticationHandler authenticationHandler = mock(PostgreSQLAuthenticationHandler.class);
+        when(authenticationHandler.getAuthenticator(anyString(),anyString())).thenReturn(new PostgreSQLMD5PasswordAuthenticator());
+        Method method = PostgreSQLAuthenticationEngine.class.getDeclaredMethod("getIdentifierPacket", String.class);
+        method.setAccessible(true);
+        PostgreSQLIdentifierPacket packet = (PostgreSQLIdentifierPacket) method.invoke(new PostgreSQLAuthenticationEngine(), username);
+        assertThat(packet, instanceOf(PostgreSQLMD5PasswordAuthenticationPacket.class));
     }
     
     private void assertLogin(final String inputPassword) {
