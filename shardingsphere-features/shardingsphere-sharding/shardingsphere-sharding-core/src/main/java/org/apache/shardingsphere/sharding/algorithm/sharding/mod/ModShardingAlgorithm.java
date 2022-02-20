@@ -43,7 +43,7 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     
     private static final String SHARDING_COUNT_KEY = "sharding-count";
     
-    private static final Pattern SUFFIX_PATTERN = Pattern.compile(".*\\D+(\\d+)$");
+    private static final Pattern ACTUAL_TABLE_NAME_SUFFIX_PATTERN = Pattern.compile(".*\\D+(\\d+)$");
     
     private Properties props = new Properties();
     
@@ -63,9 +63,9 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         long suffix = getLongValue(shardingValue.getValue()) % shardingCount;
         for (String each : availableTargetNames) {
-            Optional<String> matchedTargetName = findMatchedTargetName(suffix, each);
-            if (matchedTargetName.isPresent()) {
-                return matchedTargetName.get();
+            Optional<String> matchedActualTableName = findMatchedActualTableName(suffix, each);
+            if (matchedActualTableName.isPresent()) {
+                return matchedActualTableName.get();
             }
         }
         return null;
@@ -86,17 +86,17 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
         for (long i = getLongValue(shardingValue.getValueRange().lowerEndpoint()); i <= getLongValue(shardingValue.getValueRange().upperEndpoint()); i++) {
             long suffix = i % shardingCount;
             for (String each : availableTargetNames) {
-                findMatchedTargetName(suffix, each).ifPresent(result::add);
+                findMatchedActualTableName(suffix, each).ifPresent(result::add);
             }
         }
         return result;
     }
     
-    private Optional<String> findMatchedTargetName(final long suffix, final String each) {
-        Matcher matcher = SUFFIX_PATTERN.matcher(each);
-        Long targetNameSuffix = matcher.matches() ? Longs.tryParse(matcher.group(1)) : null;
-        if (null != targetNameSuffix && targetNameSuffix.equals(suffix)) {
-            return Optional.of(each);
+    private Optional<String> findMatchedActualTableName(final long suffix, final String tableName) {
+        Matcher matcher = ACTUAL_TABLE_NAME_SUFFIX_PATTERN.matcher(tableName);
+        Long actualTableNameSuffix = matcher.matches() ? Longs.tryParse(matcher.group(1)) : null;
+        if (null != actualTableNameSuffix && actualTableNameSuffix.equals(suffix)) {
+            return Optional.of(tableName);
         }
         return Optional.empty();
     }
