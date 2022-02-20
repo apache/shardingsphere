@@ -21,6 +21,8 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereInstanceRequiredAlgorithm;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.util.Calendar;
@@ -37,11 +39,9 @@ import java.util.Properties;
  *     12 bits auto increment offset in one mills
  * </pre>
  */
-public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
+public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm, ShardingSphereInstanceRequiredAlgorithm {
     
     public static final long EPOCH;
-    
-    private static final String WORKER_ID_KEY = "worker-id";
     
     private static final String MAX_VIBRATION_OFFSET_KEY = "max-vibration-offset";
     
@@ -59,11 +59,11 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     private static final long WORKER_ID_MAX_VALUE = 1L << WORKER_ID_BITS;
     
-    private static final long WORKER_ID = 0;
-    
     private static final int DEFAULT_VIBRATION_VALUE = 1;
     
     private static final int MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS = 10;
+    
+    private static final long DEFAULT_WORKER_ID = 0;
     
     @Setter
     private static TimeService timeService = new TimeService();
@@ -71,8 +71,6 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     @Getter
     @Setter
     private Properties props = new Properties();
-    
-    private long workerId;
     
     private int maxVibrationOffset;
     
@@ -83,6 +81,8 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     private long sequence;
     
     private long lastMilliseconds;
+    
+    private InstanceContext instanceContext;
     
     static {
         Calendar calendar = Calendar.getInstance();
@@ -96,15 +96,8 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     @Override
     public void init() {
-        workerId = getWorkerId();
         maxVibrationOffset = getMaxVibrationOffset();
         maxTolerateTimeDifferenceMilliseconds = getMaxTolerateTimeDifferenceMilliseconds();
-    }
-    
-    private long getWorkerId() {
-        long result = Long.parseLong(props.getOrDefault(WORKER_ID_KEY, WORKER_ID).toString());
-        Preconditions.checkArgument(result >= 0L && result < WORKER_ID_MAX_VALUE, "Illegal worker id.");
-        return result;
     }
     
     private int getMaxVibrationOffset() {
@@ -132,7 +125,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
             sequence = sequenceOffset;
         }
         lastMilliseconds = currentMilliseconds;
-        return ((currentMilliseconds - EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | (workerId << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
+        return ((currentMilliseconds - EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | (getWorkerId() << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
     }
     
     @SneakyThrows(InterruptedException.class)
@@ -159,6 +152,15 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
         sequenceOffset = sequenceOffset >= maxVibrationOffset ? 0 : sequenceOffset + 1;
     }
     
+    private long getWorkerId() {
+        if (null == instanceContext) {
+            return DEFAULT_WORKER_ID;
+        }
+        long result = instanceContext.getWorkerId();
+        Preconditions.checkArgument(result >= 0L && result < WORKER_ID_MAX_VALUE, "Illegal worker id.");
+        return result;
+    }
+    
     @Override
     public String getType() {
         return "SNOWFLAKE";
@@ -167,5 +169,10 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     @Override
     public boolean isDefault() {
         return true;
+    }
+    
+    @Override
+    public void setInstanceContext(final InstanceContext instanceContext) {
+        this.instanceContext = instanceContext;
     }
 }

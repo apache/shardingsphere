@@ -19,7 +19,6 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
 import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 
@@ -32,23 +31,31 @@ public final class PostgreSQLReadyForQueryPacketTest {
     
     @Test
     public void assertReadWriteWithInTransaction() {
-        ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(1);
+        ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(6);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
-        PostgreSQLReadyForQueryPacket packet = new PostgreSQLReadyForQueryPacket(true);
-        assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.READY_FOR_QUERY));
+        PostgreSQLReadyForQueryPacket packet = PostgreSQLReadyForQueryPacket.IN_TRANSACTION;
         packet.write(payload);
-        assertThat(byteBuf.writerIndex(), is(1));
-        assertThat(byteBuf.readByte(), is((byte) 'T'));
+        assertThat(byteBuf.writerIndex(), is(6));
+        assertThat(byteBuf.getByte(5), is((byte) 'T'));
     }
     
     @Test
     public void assertReadWriteWithNotInTransaction() {
-        ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(1);
+        ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(6);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
-        PostgreSQLReadyForQueryPacket packet = new PostgreSQLReadyForQueryPacket(false);
-        assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.READY_FOR_QUERY));
+        PostgreSQLReadyForQueryPacket packet = PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION;
         packet.write(payload);
-        assertThat(byteBuf.writerIndex(), is(1));
-        assertThat(byteBuf.readByte(), is((byte) 'I'));
+        assertThat(byteBuf.writerIndex(), is(6));
+        assertThat(byteBuf.getByte(5), is((byte) 'I'));
+    }
+    
+    @Test
+    public void assertReadWriteWithTransactionFailed() {
+        ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(6);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
+        PostgreSQLReadyForQueryPacket packet = PostgreSQLReadyForQueryPacket.TRANSACTION_FAILED;
+        packet.write(payload);
+        assertThat(byteBuf.writerIndex(), is(6));
+        assertThat(byteBuf.getByte(5), is((byte) 'E'));
     }
 }

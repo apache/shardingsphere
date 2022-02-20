@@ -23,6 +23,14 @@ execute
     : (createDatabaseDiscoveryRule
     | alterDatabaseDiscoveryRule
     | dropDatabaseDiscoveryRule
+    | showDatabaseDiscoveryTypes
+    | showDatabaseDiscoveryHeartbeats
     | showDatabaseDiscoveryRules
+    | createDatabaseDiscoveryType
+    | createDatabaseDiscoveryHeartbeat
+    | alterDatabaseDiscoveryHeartbeat
+    | dropDatabaseDiscoveryType
+    | dropDatabaseDiscoveryHeartbeat
+    | alterDatabaseDiscoveryType
     ) SEMI?
     ;

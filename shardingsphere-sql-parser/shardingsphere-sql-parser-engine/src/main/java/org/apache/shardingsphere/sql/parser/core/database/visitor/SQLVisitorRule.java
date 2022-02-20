@@ -30,6 +30,8 @@ public enum SQLVisitorRule {
     
     SELECT("Select", SQLStatementType.DML),
     
+    TABLE("Table", SQLStatementType.DML),
+    
     INSERT("Insert", SQLStatementType.DML),
     
     UPDATE("Update", SQLStatementType.DML),
@@ -40,9 +42,27 @@ public enum SQLVisitorRule {
     
     REPLACE("Replace", SQLStatementType.DML),
     
+    COPY("Copy", SQLStatementType.DML),
+    
     CREATE_TABLE("CreateTable", SQLStatementType.DDL),
     
+    RENAME_TABLE("RenameTable", SQLStatementType.DDL),
+    
     ALTER_TABLE("AlterTable", SQLStatementType.DDL),
+    
+    ALTER_AGGREGATE("AlterAggregate", SQLStatementType.DDL),
+    
+    ALTER_COLLATION("AlterCollation", SQLStatementType.DDL),
+    
+    ALTER_DEFAULT_PRIVILEGES("AlterDefaultPrivileges", SQLStatementType.DDL),
+    
+    ALTER_FOREIGN_DATA_WRAPPER("AlterForeignDataWrapper", SQLStatementType.DDL),
+    
+    ALTER_FOREIGN_TABLE("AlterForeignTable", SQLStatementType.DDL),
+    
+    ALTER_GROUP("AlterGroup", SQLStatementType.DDL),
+    
+    ALTER_MATERIALIZED_VIEW("AlterMaterializedView", SQLStatementType.DDL),
     
     DROP_TABLE("DropTable", SQLStatementType.DDL),
     
@@ -70,9 +90,17 @@ public enum SQLVisitorRule {
     
     CREATE_DATABASE("CreateDatabase", SQLStatementType.DDL),
 
+    CREATE_DATABASE_LINK("CreateDatabaseLink", SQLStatementType.DDL),
+    
     ALTER_DATABASE("AlterDatabase", SQLStatementType.DDL),
     
     DROP_DATABASE("DropDatabase", SQLStatementType.DDL),
+    
+    CREATE_DIMENSION("CreateDimension", SQLStatementType.DDL),
+
+    ALTER_DIMENSION("AlterDimension", SQLStatementType.DDL),
+
+    DROP_DIMENSION("DropDimension", SQLStatementType.DDL),
     
     CREATE_EVENT("CreateEvent", SQLStatementType.DDL),
     
@@ -150,6 +178,16 @@ public enum SQLVisitorRule {
 
     RENAME("Rename", SQLStatementType.DDL),
     
+    CREATE_EXTENSION("CreateExtension", SQLStatementType.DDL),
+    
+    ALTER_EXTENSION("AlterExtension", SQLStatementType.DDL),
+    
+    DROP_EXTENSION("DropExtension", SQLStatementType.DDL),
+    
+    DECLARE("Declare", SQLStatementType.DDL),
+    
+    DISCARD("Discard", SQLStatementType.DDL),
+    
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
     
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),
@@ -179,6 +217,10 @@ public enum SQLVisitorRule {
     RELEASE_SAVEPOINT("ReleaseSavepoint", SQLStatementType.TCL),
     
     ROLLBACK_TO_SAVEPOINT("RollbackToSavepoint", SQLStatementType.TCL),
+    
+    LOCK("Lock", SQLStatementType.TCL),
+    
+    UNLOCK("Unlock", SQLStatementType.TCL),
     
     GRANT("Grant", SQLStatementType.DCL),
     
@@ -227,6 +269,8 @@ public enum SQLVisitorRule {
     USE("Use", SQLStatementType.DAL),
     
     DESC("Desc", SQLStatementType.DAL),
+
+    HELP("Help", SQLStatementType.DAL),
     
     EXPLAIN("Explain", SQLStatementType.DAL),
     
@@ -330,6 +374,8 @@ public enum SQLVisitorRule {
     
     ALTER_RESOURCE_GROUP("AlterResourceGroup", SQLStatementType.DAL),
     
+    DELIMITER("Delimiter", SQLStatementType.DAL),
+    
     CALL("Call", SQLStatementType.DML),
     
     CHANGE_MASTER("ChangeMaster", SQLStatementType.RL), 
@@ -352,7 +398,37 @@ public enum SQLVisitorRule {
 
     ALTER_SERVICE("AlterService", SQLStatementType.DDL),
 
-    DROP_SERVICE("DropService", SQLStatementType.DDL);
+    DROP_SERVICE("DropService", SQLStatementType.DDL),
+    
+    DROP_DOMAIN("DropDomain", SQLStatementType.DDL),
+    
+    CREATE_DOMAIN("CreateDomain", SQLStatementType.DDL),
+    
+    CREATE_RULE("CreateRule", SQLStatementType.DDL),
+    
+    CREATE_LANGUAGE("CreateLanguage", SQLStatementType.DDL),
+    
+    ALTER_LANGUAGE("AlterLanguage", SQLStatementType.DDL),
+    
+    DROP_LANGUAGE("DropLanguage", SQLStatementType.DDL),
+    
+    CREATE_CONVERSION("CreateConversion", SQLStatementType.DDL),
+    
+    CREATE_TYPE("CreateType", SQLStatementType.DDL),
+    
+    DROP_CONVERSION("DropConversion", SQLStatementType.DDL),
+    
+    ALTER_DOMAIN("AlterDomain", SQLStatementType.DDL),
+    
+    ALTER_CONVERSION("AlterConversion", SQLStatementType.DDL),
+    
+    CREATE_TEXT_SEARCH("CreateTextSearch", SQLStatementType.DDL),
+    
+    ALTER_TEXT_SEARCH_DICTIONARY("AlterTextSearchDictionary", SQLStatementType.DDL),
+    
+    ALTER_TEXT_SEARCH_TEMPLATE("AlterTextSearchTemplate", SQLStatementType.DDL),
+    
+    ALTER_TEXT_SEARCH_PARSER("AlterTextSearchParser", SQLStatementType.DDL);
 
     private final String name;
     

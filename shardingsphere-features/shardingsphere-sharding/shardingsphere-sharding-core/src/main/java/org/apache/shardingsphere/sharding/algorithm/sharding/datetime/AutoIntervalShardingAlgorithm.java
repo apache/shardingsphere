@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingVal
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
 import java.text.DecimalFormat;
+import java.text.ParsePosition;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -62,18 +63,18 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     
     @Override
     public void init() {
-        dateTimeLower = getDateTime(DATE_TIME_LOWER_KEY);
+        dateTimeLower = getDateTime();
         shardingSeconds = getShardingSeconds();
-        autoTablesAmount = (int) (Math.ceil(parseDate(props.getProperty(DATE_TIME_UPPER_KEY)) / shardingSeconds) + 2);
+        autoTablesAmount = (int) (Math.ceil((double) (parseDate(props.getProperty(DATE_TIME_UPPER_KEY)) / shardingSeconds)) + 2);
     }
     
-    private LocalDateTime getDateTime(final String dateTimeKey) {
-        String value = props.getProperty(dateTimeKey);
-        Preconditions.checkNotNull(value, "%s cannot be null.", dateTimeKey);
+    private LocalDateTime getDateTime() {
+        String value = props.getProperty(DATE_TIME_LOWER_KEY);
+        Preconditions.checkNotNull(value, "%s cannot be null.", DATE_TIME_LOWER_KEY);
         try {
             return LocalDateTime.parse(value, DATE_TIME_FORMAT);
         } catch (final DateTimeParseException ex) {
-            throw new ShardingSphereConfigurationException("Invalid %s, datetime pattern should be `yyyy-MM-dd HH:mm:ss`, value is `%s`", dateTimeKey, value);
+            throw new ShardingSphereConfigurationException("Invalid %s, datetime pattern should be `yyyy-MM-dd HH:mm:ss`, value is `%s`", DATE_TIME_LOWER_KEY, value);
         }
     }
     
@@ -113,8 +114,8 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     }
     
     private int doSharding(final long shardingValue) {
-        String position = new DecimalFormat("0.00").format((float) shardingValue / shardingSeconds);
-        return Math.min(Math.max(0, (int) Math.ceil(Float.parseFloat(position))), autoTablesAmount - 1);
+        String position = new DecimalFormat("0.00").format((double) shardingValue / shardingSeconds);
+        return Math.min(Math.max(0, (int) Math.ceil(Double.parseDouble(position))), autoTablesAmount - 1);
     }
     
     private int getFirstPartition(final Range<Comparable<?>> valueRange) {
@@ -126,7 +127,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     }
     
     private long parseDate(final Comparable<?> shardingValue) {
-        LocalDateTime dateValue = LocalDateTime.parse(shardingValue.toString(), DATE_TIME_FORMAT);
+        LocalDateTime dateValue = LocalDateTime.from(DATE_TIME_FORMAT.parse(shardingValue.toString(), new ParsePosition(0)));
         return Duration.between(dateTimeLower, dateValue).toMillis() / 1000;
     }
     

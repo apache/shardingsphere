@@ -35,8 +35,8 @@ PASSWORD=root
 CREATE SHADOW RULE group_0(
 SOURCE=ds_0,
 SHADOW=ds_1,
-t_order((simple_note_algorithm, TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", foo="bar"))),(TYPE(NAME=COLUMN_REGEX_MATCH, PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
-t_order_item((TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", "foo"="bar")))));
+t_order((simple_note_algorithm, TYPE(NAME=SIMPLE_HINT, PROPERTIES("foo"="bar"))),(TYPE(NAME=REGEX_MATCH, PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
+t_order_item((TYPE(NAME=SIMPLE_HINT, PROPERTIES("foo"="bar")))));
 ```
 
 - Alter shadow rule
@@ -45,7 +45,7 @@ t_order_item((TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", "foo"="bar"))))
 ALTER SHADOW RULE group_0(
 SOURCE=ds_0,
 SHADOW=ds_2,
-t_order_item((TYPE(NAME=SIMPLE_NOTE, PROPERTIES("shadow"="true", "foo"="bar")))));
+t_order_item((TYPE(NAME=SIMPLE_HINT, PROPERTIES("foo"="bar")))));
 ```
 
 - Drop shadow rule

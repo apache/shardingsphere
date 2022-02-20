@@ -27,10 +27,10 @@ import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.migration.common.api.ScalingWorker;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Proxy context.
@@ -100,8 +100,8 @@ public final class ProxyContext {
      * 
      * @return state context
      */
-    public StateContext getStateContext() {
-        return contextManager.getStateContext();
+    public Optional<StateContext> getStateContext() {
+        return null == contextManager.getInstanceContext() ? Optional.empty() : Optional.ofNullable(contextManager.getInstanceContext().getState());
     }
     
     /**
@@ -118,14 +118,5 @@ public final class ProxyContext {
         }
         result.addAll(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getRules());
         return result;
-    }
-    
-    /**
-     * Check if scaling is enabled.
-     * 
-     * @return true if scaling enabled, false if not
-     */
-    public boolean isScalingEnabled() {
-        return ScalingWorker.isEnabled();
     }
 }

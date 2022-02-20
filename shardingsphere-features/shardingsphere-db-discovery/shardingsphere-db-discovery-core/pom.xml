@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-db-discovery</artifactId>
-        <version>5.0.1-SNAPSHOT</version>
+        <version>5.1.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-db-discovery-core</artifactId>
     <name>${project.artifactId}</name>
@@ -59,7 +59,11 @@
             <artifactId>shardingsphere-infra-route</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-schedule-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>

@@ -20,19 +20,19 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLParseCompletePacket;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +46,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -61,30 +61,30 @@ public final class PostgreSQLComParseExecutorTest {
     private PostgreSQLComParsePacket parsePacket;
     
     @Mock
-    private BackendConnection backendConnection;
+    private ConnectionSession connectionSession;
     
     @Before
     public void setup() {
         PostgreSQLPreparedStatementRegistry.getInstance().register(1);
         PostgreSQLPreparedStatementRegistry.getInstance().register(1, "2", "", new EmptyStatement(), Collections.emptyList());
-        when(backendConnection.getConnectionId()).thenReturn(1);
+        when(connectionSession.getConnectionId()).thenReturn(1);
     }
     
     @Test
     public void assertNewInstance() throws NoSuchFieldException, IllegalAccessException {
         when(parsePacket.getSql()).thenReturn("SELECT 1");
         when(parsePacket.getStatementId()).thenReturn("2");
-        when(backendConnection.getSchemaName()).thenReturn("schema");
+        when(connectionSession.getSchemaName()).thenReturn("schema");
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(),
-                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizerContext.class));
+                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(sqlParserRule));
-        PostgreSQLComParseExecutor actual = new PostgreSQLComParseExecutor(parsePacket, backendConnection);
-        assertThat(actual.execute().iterator().next(), instanceOf(PostgreSQLParseCompletePacket.class));
+        PostgreSQLComParseExecutor actual = new PostgreSQLComParseExecutor(parsePacket, connectionSession);
+        assertThat(actual.execute().iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
@@ -97,7 +97,7 @@ public final class PostgreSQLComParseExecutorTest {
     public void assertGetSqlWithNull() {
         when(parsePacket.getStatementId()).thenReturn("");
         when(parsePacket.getSql()).thenReturn("");
-        PostgreSQLComParseExecutor actual = new PostgreSQLComParseExecutor(parsePacket, backendConnection);
-        assertThat(actual.execute().iterator().next(), instanceOf(PostgreSQLParseCompletePacket.class));
+        PostgreSQLComParseExecutor actual = new PostgreSQLComParseExecutor(parsePacket, connectionSession);
+        assertThat(actual.execute().iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
     }
 }

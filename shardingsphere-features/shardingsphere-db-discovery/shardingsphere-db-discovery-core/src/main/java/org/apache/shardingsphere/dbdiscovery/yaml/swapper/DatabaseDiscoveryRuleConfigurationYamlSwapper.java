@@ -48,7 +48,7 @@ public final class DatabaseDiscoveryRuleConfigurationYamlSwapper
     public YamlDatabaseDiscoveryRuleConfiguration swapToYamlConfiguration(final DatabaseDiscoveryRuleConfiguration data) {
         YamlDatabaseDiscoveryRuleConfiguration result = new YamlDatabaseDiscoveryRuleConfiguration();
         result.setDataSources(data.getDataSources().stream().collect(
-                Collectors.toMap(DatabaseDiscoveryDataSourceRuleConfiguration::getName, this::swapToYamlConfiguration, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
+                Collectors.toMap(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName, this::swapToYamlConfiguration, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         if (null != data.getDiscoveryHeartbeats()) {
             data.getDiscoveryHeartbeats().forEach((key, value) -> result.getDiscoveryHeartbeats().put(key, swapToYamlConfiguration(value)));
         }

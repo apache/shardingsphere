@@ -25,7 +25,7 @@
 
     <fileSets>
         <fileSet>
-            <directory>${project.basedir}/../../../../shardingsphere-agent/shardingsphere-agent-distribution/target/shardingsphere-agent/plugins</directory>
+            <directory>${project.basedir}/../../../../shardingsphere-agent/shardingsphere-agent-plugins/shardingsphere-agent-plugin-tracing/shardingsphere-agent-tracing-jaeger/target</directory>
             <outputDirectory>./plugins</outputDirectory>
             <includes>
                 <include>shardingsphere-agent-tracing-jaeger-*.jar</include>

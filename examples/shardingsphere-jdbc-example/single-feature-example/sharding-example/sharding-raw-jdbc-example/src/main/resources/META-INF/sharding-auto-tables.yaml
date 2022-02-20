@@ -37,7 +37,7 @@ rules:
       shardingStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: auto_mod
+          shardingAlgorithmName: auto-mod
       keyGenerateStrategy:
         column: order_id
         keyGeneratorName: snowflake
@@ -46,7 +46,7 @@ rules:
       shardingStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: auto_mod
+          shardingAlgorithmName: auto-mod
       keyGenerateStrategy:
         column: order_item_id
         keyGeneratorName: snowflake
@@ -54,13 +54,13 @@ rules:
       actualDataSources: ds_0,ds_1
       shardingStrategy:
         standard:
-          shardingAlgorithmName: auto_mod
+          shardingAlgorithmName: auto-mod
       keyGenerateStrategy:
         column: account_id
         keyGeneratorName: snowflake
   defaultShardingColumn: account_id
   shardingAlgorithms:
-    auto_mod:
+    auto-mod:
       type: MOD
       props:
         sharding-count: 4
@@ -68,8 +68,6 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-          worker-id: 123
 
 props:
   sql-show: true

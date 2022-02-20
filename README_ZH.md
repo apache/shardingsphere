@@ -1,4 +1,4 @@
-# [ShardingSphere - 构建多模数据库上层的标准和生态](https://shardingsphere.apache.org/index_zh.html)
+# [ShardingSphere - 构建异构数据库上层的标准和生态](https://shardingsphere.apache.org/index_zh.html)
 
 **官方网站: https://shardingsphere.apache.org/**
 
@@ -21,7 +21,7 @@
 
 ## 概述
 
-Apache ShardingSphere 产品定位为 `Database Plus`，旨在构建多模数据库上层的标准和生态。
+Apache ShardingSphere 产品定位为 `Database Plus`，旨在构建异构数据库上层的标准和生态。
 它关注如何充分合理地利用数据库的计算和存储能力，而并非实现一个全新的数据库。ShardingSphere 站在数据库的上层视角，关注他们之间的协作多于数据库自身。
 
 `连接`、`增量`和`可插拔`是 Apache ShardingSphere 的核心概念。
@@ -71,8 +71,8 @@ Apache ShardingSphere 由 JDBC、Proxy 和 Sidecar（规划中）这 3 款既能
 
 ### ShardingSphere-Proxy
 
-[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://apache.org/dyn/closer.cgi?path=shardingsphere/5.0.0-beta/apache-shardingsphere-5.0.0-beta-shardingsphere-proxy-bin.tar.gz)
-[![Docker Pulls](https://img.shields.io/docker/pulls/apache/sharding-proxy.svg)](https://store.docker.com/community/images/apache/sharding-proxy)
+[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://apache.org/dyn/closer.cgi?path=shardingsphere/5.1.0/apache-shardingsphere-5.1.0-shardingsphere-proxy-bin.tar.gz)
+[![Docker Pulls](https://img.shields.io/docker/pulls/apache/shardingsphere-proxy.svg)](https://store.docker.com/community/images/apache/shardingsphere-proxy)
 
 定位为透明化的数据库代理端，提供封装了数据库二进制协议的服务端版本，用于完成对异构语言的支持。
 目前提供 MySQL 和 PostgreSQL 版本，它可以使用任何兼容 MySQL/PostgreSQL 协议的访问客户端操作数据，对 DBA 更加友好。
@@ -110,7 +110,7 @@ Apache ShardingSphere 是多接入端共同组成的生态圈。
 
 ## 线路规划
 
-![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap.png)
+![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap_v2.png)
 
 ## 如何构建 Apache ShardingSphere:
 

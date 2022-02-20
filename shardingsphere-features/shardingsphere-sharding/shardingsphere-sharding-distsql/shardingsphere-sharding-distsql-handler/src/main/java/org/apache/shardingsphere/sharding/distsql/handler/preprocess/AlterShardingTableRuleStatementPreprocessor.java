@@ -28,7 +28,7 @@ public final class AlterShardingTableRuleStatementPreprocessor implements RuleDe
     
     @Override
     public String getType() {
-        return AlterShardingTableRuleStatement.class.getCanonicalName();
+        return AlterShardingTableRuleStatement.class.getName();
     }
     
     @Override
@@ -44,6 +44,8 @@ public final class AlterShardingTableRuleStatementPreprocessor implements RuleDe
         result.setBroadcastTables(currentRuleConfig.getBroadcastTables());
         result.setDefaultKeyGenerateStrategy(currentRuleConfig.getDefaultKeyGenerateStrategy());
         result.setKeyGenerators(currentRuleConfig.getKeyGenerators());
+        result.setScalingName(currentRuleConfig.getScalingName());
+        result.setScaling(currentRuleConfig.getScaling());
         return result;
     }
 }

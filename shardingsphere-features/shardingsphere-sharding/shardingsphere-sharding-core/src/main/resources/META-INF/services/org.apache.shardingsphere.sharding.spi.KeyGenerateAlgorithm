@@ -17,3 +17,5 @@
 
 org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm
 org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm
+org.apache.shardingsphere.sharding.algorithm.keygen.CosIdKeyGenerateAlgorithm
+org.apache.shardingsphere.sharding.algorithm.keygen.CosIdSnowflakeKeyGenerateAlgorithm

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.parser.yaml.swapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.constant.SQLParserOrder;
+import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 
@@ -34,15 +35,17 @@ public final class SQLParserRuleConfigurationYamlSwapper implements YamlRuleConf
     public YamlSQLParserRuleConfiguration swapToYamlConfiguration(final SQLParserRuleConfiguration data) {
         YamlSQLParserRuleConfiguration result = new YamlSQLParserRuleConfiguration();
         result.setSqlCommentParseEnabled(data.isSqlCommentParseEnabled());
-        result.setParserTreeCache(cacheOptionSwapper.swapToYamlConfiguration(data.getParseTreeCacheOption()));
-        result.setSqlStatementCache(cacheOptionSwapper.swapToYamlConfiguration(data.getSqlStatementCacheOption()));
+        result.setParseTreeCache(cacheOptionSwapper.swapToYamlConfiguration(data.getParseTreeCache()));
+        result.setSqlStatementCache(cacheOptionSwapper.swapToYamlConfiguration(data.getSqlStatementCache()));
         return result;
     }
 
     @Override
     public SQLParserRuleConfiguration swapToObject(final YamlSQLParserRuleConfiguration yamlConfig) {
-        CacheOption parseTreeCacheOption = cacheOptionSwapper.swapToObject(yamlConfig.getParserTreeCache());
-        CacheOption sqlStatementCacheOption = cacheOptionSwapper.swapToObject(yamlConfig.getSqlStatementCache());
+        CacheOption parseTreeCacheOption = null == yamlConfig.getParseTreeCache() 
+                ? DefaultSQLParserRuleConfigurationBuilder.PARSE_TREE_CACHE_OPTION : cacheOptionSwapper.swapToObject(yamlConfig.getParseTreeCache());
+        CacheOption sqlStatementCacheOption = null == yamlConfig.getSqlStatementCache()
+                ? DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION : cacheOptionSwapper.swapToObject(yamlConfig.getSqlStatementCache());
         return new SQLParserRuleConfiguration(yamlConfig.isSqlCommentParseEnabled(), parseTreeCacheOption, sqlStatementCacheOption);
     }
     

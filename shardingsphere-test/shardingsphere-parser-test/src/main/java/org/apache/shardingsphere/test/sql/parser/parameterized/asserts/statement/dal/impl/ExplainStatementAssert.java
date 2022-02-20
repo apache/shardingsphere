@@ -20,12 +20,15 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLExplainStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.column.ColumnAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.SQLStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ExplainStatementTestCase;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Explain statement assert.
@@ -56,8 +59,23 @@ public final class ExplainStatementAssert {
         } else if (null != expected.getCreateTableAsSelectClause()) {
             assertTrue(assertContext.getText("Actual statement should exist."), actual.getStatement().isPresent());
             SQLStatementAssert.assertIs(assertContext, actual.getStatement().get(), expected.getCreateTableAsSelectClause());
+        } else if (actual instanceof MySQLExplainStatement && null != expected.getTable()) {
+            mysqlExplainStatementAssert(assertContext, (MySQLExplainStatement) actual, expected);
         } else {
             assertFalse(assertContext.getText("Actual statement should not exist."), actual.getStatement().isPresent());
+        }
+    }
+    
+    private static void mysqlExplainStatementAssert(final SQLCaseAssertContext assertContext, final MySQLExplainStatement actual, final ExplainStatementTestCase expected) {
+        if (actual.getTable().isPresent()) {
+            TableAssert.assertIs(assertContext, actual.getTable().get(), expected.getTable());
+            if (actual.getColumnWild().isPresent()) {
+                ColumnAssert.assertIs(assertContext, actual.getColumnWild().get(), expected.getColumn());
+            } else {
+                assertFalse(assertContext.getText("Actual column wild should not exist."), actual.getColumnWild().isPresent());
+            }
+        } else {
+            assertFalse(assertContext.getText("Actual table should not exist."), actual.getTable().isPresent());
         }
     }
 }

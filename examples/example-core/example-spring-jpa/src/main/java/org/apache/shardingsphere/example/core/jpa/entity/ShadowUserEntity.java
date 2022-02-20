@@ -43,10 +43,10 @@ public final class ShadowUserEntity extends ShadowUser {
         return super.getUserType();
     }
     
-    @Column(name = "user_name")
+    @Column(name = "username")
     @Override
-    public String getUserName() {
-        return super.getUserName();
+    public String getUsername() {
+        return super.getUsername();
     }
     
     @Column(name = "pwd")

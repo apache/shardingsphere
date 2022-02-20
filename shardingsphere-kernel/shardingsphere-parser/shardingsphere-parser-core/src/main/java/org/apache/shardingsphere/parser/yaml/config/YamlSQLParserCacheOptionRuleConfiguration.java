@@ -34,4 +34,3 @@ public final class YamlSQLParserCacheOptionRuleConfiguration implements YamlConf
 
     private int concurrencyLevel;
 }
-

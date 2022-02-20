@@ -22,14 +22,13 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.yaml.YamlScalingConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Properties;
 
 /**
- * Server configuration for YAML.
+ * YAML server configuration for ShardingSphere-Proxy.
  */
 @Getter
 @Setter
@@ -39,7 +38,29 @@ public final class YamlProxyServerConfiguration implements YamlConfiguration {
     
     private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
     
-    private YamlScalingConfiguration scaling;
-    
     private Properties props = new Properties();
+    
+    private Collection<String> labels;
+    
+    /**
+     * Set rules if the param rules is not null.
+     *
+     * @param rules the rules to set
+     */
+    public void setRules(final Collection<YamlRuleConfiguration> rules) {
+        if (null != rules) {
+            this.rules = rules;
+        }
+    }
+    
+    /**
+     * Set props if the param props is not null.
+     *
+     * @param props the props to set
+     */
+    public void setProps(final Properties props) {
+        if (null != props) {
+            this.props = props;
+        }
+    }
 }

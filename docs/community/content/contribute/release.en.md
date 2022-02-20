@@ -19,7 +19,7 @@ and shall be classified according to the following labels:
 
 **2. Confirm issue list**
 
-Open [GitHub issues](https://github.com/apache/shardingsphere/issues), filter the issue whose milestone is `${release. Version}` and status is open:
+Open [GitHub issues](https://github.com/apache/shardingsphere/issues), filter the issue whose milestone is `${RELEASE.VERSION}` and status is open:
 
 1. Close the completed issue
 1. For outstanding issues, communicate with the developer in charge. If this release is not affected, modify milestone to the next version
@@ -27,7 +27,7 @@ Open [GitHub issues](https://github.com/apache/shardingsphere/issues), filter th
 
 **3. Confirm pull request list**
 
-Open [GitHub pull requests](https://github.com/apache/shardingsphere/pulls), filter pull requests whose milestone is `${release. Version}` and status is open:
+Open [GitHub pull requests](https://github.com/apache/shardingsphere/pulls), filter pull requests whose milestone is `${RELEASE.VERSION}` and status is open:
 
 1. Review the open pull request and merge 
 1. For pull requests that cannot merge and do not affect this release, modify milestone to the next version
@@ -37,7 +37,7 @@ Open [GitHub pull requests](https://github.com/apache/shardingsphere/pulls), fil
 
 Open [GitHub milestone](https://github.com/apache/shardingsphere/milestones)
 
-1. Confirm that the milestone completion status of `${release. Version}` is 100%
+1. Confirm that the milestone completion status of `${RELEASE.VERSION}` is 100%
 1. Click `close` to close milestone
 
 **5. Call for a discussion**
@@ -135,10 +135,10 @@ Among them, 700E6065 is public key ID.
 The command is as follows:
 
 ```shell
-gpg --keyserver hkp://pool.sks-keyservers.net --send-key 700E6065
+gpg --keyserver hkp://keyserver.ubuntu.com --send-key 700E6065
 ```
 
-`pool.sks-keyservers.net` is randomly chosen from [public key server](https://sks-keyservers.net/status/). 
+`keyserver.ubuntu.com` is randomly chosen from public key server. 
 Each server will automatically synchronize with one another, so it would be okay to choose any one.
 
 ## Apache Maven Central Repository Release
@@ -278,6 +278,7 @@ Add source code packages, binary packages and executable binary packages of Shar
 cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-src-distribution/target/*.zip* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-jdbc-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/shardingsphere-agent/shardingsphere-agent-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 ```
 
 **4. Commit to Apache SVN**
@@ -326,6 +327,7 @@ Then, check the gpg signature.
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-src.zip.asc apache-shardingsphere-${RELEASE.VERSION}-src.zip
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz
+gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-agent-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-agent-bin.tar.gz
 ```
 
 **Check Released Files**
@@ -351,7 +353,10 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-src-release shardingsphere-${RE
 
 **Check binary packages**
 
-Decompress `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz`, `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz`
+Decompress 
+`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz`, 
+`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz`,
+`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-agent-bin.tar.gz`
 to check the following items:
 
 *   `LICENSE` and `NOTICE` files exist
@@ -544,7 +549,30 @@ GPG signatures and hashes (SHA* etc) should use URL start with `https://download
 
 Keep one latest versions in `Latest releases`. Incubating stage versions will be archived automatically in [Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
 
-**8. Announce release completed by email**
+**8. Upload xsd files of Spring namespace to official website**
+
+Submit a pull request to upload the xsd files of Spring namespace to https://github.com/apache/shardingsphere-doc/tree/asf-site/schema/shardingsphere
+
+The list of files to be uploaded is as follows:
+
+- datasource.xsd
+- datasource-${RELEASE.VERSION}.xsd
+- mode/standalone/repository.xsd
+- mode/standalone/repository-${RELEASE.VERSION}.xsd
+- mode/cluster/repository.xsd
+- mode/cluster/repository-${RELEASE.VERSION}.xsd
+- sharding.xsd
+- sharding-${RELEASE.VERSION}.xsd
+- encrypt.xsd
+- encrypt-${RELEASE.VERSION}.xsd
+- readwrite-splitting.xsd
+- readwrite-splitting-${RELEASE.VERSION}.xsd
+- shadow.xsd
+- shadow-${RELEASE.VERSION}.xsd
+- database-discovery.xsd
+- database-discovery-${RELEASE.VERSION}.xsd
+
+**9. Announce release completed by email**
 
 Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
 

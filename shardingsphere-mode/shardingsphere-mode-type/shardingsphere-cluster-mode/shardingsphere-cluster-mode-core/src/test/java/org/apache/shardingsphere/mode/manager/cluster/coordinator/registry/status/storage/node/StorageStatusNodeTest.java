@@ -31,23 +31,23 @@ public final class StorageStatusNodeTest {
     
     @Test
     public void assertGetRootPath() {
-        assertThat(StorageStatusNode.getRootPath(), is("/status/storage_nodes"));
+        assertThat(StorageStatusNode.getRootPath(), is("/nodes/storage_nodes"));
     }
     
     @Test
     public void assertGetStatusPath() {
-        assertThat(StorageStatusNode.getStatusPath(StorageNodeStatus.DISABLE), is("/status/storage_nodes/disable"));
+        assertThat(StorageStatusNode.getStatusPath(StorageNodeStatus.DISABLE), is("/nodes/storage_nodes/disable"));
     }
     
     @Test
     public void assertGetStatusPathWithSchema() {
         assertThat(StorageStatusNode.getStatusPath(StorageNodeStatus.PRIMARY, new QualifiedSchema("replica_query_db.replica_ds_0")), 
-                is("/status/storage_nodes/primary/replica_query_db.replica_ds_0"));
+                is("/nodes/storage_nodes/primary/replica_query_db.replica_ds_0"));
     }
     
     @Test
     public void assertExtractQualifiedSchema() {
-        Optional<QualifiedSchema> actual = StorageStatusNode.extractQualifiedSchema(StorageNodeStatus.DISABLE, "/status/storage_nodes/disable/replica_query_db.replica_ds_0");
+        Optional<QualifiedSchema> actual = StorageStatusNode.extractQualifiedSchema(StorageNodeStatus.DISABLE, "/nodes/storage_nodes/disable/replica_query_db.replica_ds_0");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getSchemaName(), is("replica_query_db"));
         assertThat(actual.get().getDataSourceName(), is("replica_ds_0"));

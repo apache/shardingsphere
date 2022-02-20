@@ -19,19 +19,19 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine.impl;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
+import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.datetime.DatetimeService;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
-import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -88,12 +88,12 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
         ShardingCondition result = new ShardingCondition();
         DatetimeService datetimeService = RequiredSPIRegistry.getRegisteredService(DatetimeService.class);
         for (ExpressionSegment each : insertValueContext.getValueExpressions()) {
-            String columnName = columnNames.next();
-            if (shardingRule.isShardingColumn(columnName, tableName)) {
+            Optional<String> shardingColumn = shardingRule.findShardingColumn(columnNames.next(), tableName);
+            if (shardingColumn.isPresent()) {
                 if (each instanceof SimpleExpressionSegment) {
-                    result.getValues().add(new ListShardingConditionValue<>(columnName, tableName, Collections.singletonList(getShardingValue((SimpleExpressionSegment) each, parameters))));
+                    result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(getShardingValue((SimpleExpressionSegment) each, parameters))));
                 } else if (ExpressionConditionUtils.isNowExpression(each)) {
-                    result.getValues().add(new ListShardingConditionValue<>(columnName, tableName, Collections.singletonList(datetimeService.getDatetime())));
+                    result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(datetimeService.getDatetime())));
                 } else if (ExpressionConditionUtils.isNullExpression(each)) {
                     throw new ShardingSphereException("Insert clause sharding column can't be null.");
                 }
@@ -102,6 +102,7 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
         return result;
     }
     
+    @SuppressWarnings("rawtypes")
     private Comparable<?> getShardingValue(final SimpleExpressionSegment expressionSegment, final List<Object> parameters) {
         Object result;
         if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
@@ -123,7 +124,7 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         if (generatedKey.isPresent() && generatedKey.get().isGenerated() && shardingRule.findTableRule(tableName).isPresent()) {
             generatedKey.get().getGeneratedValues().addAll(generateKeys(tableName, sqlStatementContext.getValueListCount()));
-            if (shardingRule.isShardingColumn(generatedKey.get().getColumnName(), tableName)) {
+            if (shardingRule.findShardingColumn(generatedKey.get().getColumnName(), tableName).isPresent()) {
                 appendGeneratedKeyCondition(generatedKey.get(), tableName, shardingConditions);
             }
         }

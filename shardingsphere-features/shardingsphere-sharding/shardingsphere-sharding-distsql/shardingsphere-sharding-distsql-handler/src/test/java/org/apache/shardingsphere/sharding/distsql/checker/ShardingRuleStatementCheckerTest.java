@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissed
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -36,7 +35,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.sharding.distsql.handler.checker.ShardingTableRuleStatementChecker;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AbstractTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.KeyGenerateSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.KeyGenerateStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
@@ -81,7 +80,7 @@ public final class ShardingRuleStatementCheckerTest {
         when(shardingSphereMetaData.getName()).thenReturn("schema");
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
-        when(shardingSphereRuleMetaData.getRules()).thenReturn(createShardingSphereRule());
+        when(shardingSphereRuleMetaData.getRules()).thenReturn(Collections.emptyList());
     }
     
     @Test
@@ -127,7 +126,7 @@ public final class ShardingRuleStatementCheckerTest {
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckCreationWithInvalidKeyGenerateAlgorithm() throws DistSQLException {
         AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
-        autoTableRuleSegment.setKeyGenerateSegment(new KeyGenerateSegment("product_id", new AlgorithmSegment("invalid", newProperties("invalid", "invalid"))));
+        autoTableRuleSegment.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("invalid", newProperties("invalid", "invalid"))));
         List<AbstractTableRuleSegment> rules = Arrays.asList(autoTableRuleSegment);
         ShardingTableRuleStatementChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
     }
@@ -144,7 +143,23 @@ public final class ShardingRuleStatementCheckerTest {
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckTableWithInvalidShardingStrategyType() throws DistSQLException {
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
-        tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("invalid", "product_id", "t_order_algorithm"));
+        tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("invalid", "product_id", "t_order_algorithm", null));
+        List<AbstractTableRuleSegment> rules = Arrays.asList(tableRuleSegment);
+        ShardingTableRuleStatementChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
+    }
+    
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    public void assertCheckTableWithUnmatchedShardingStrategyType1() throws DistSQLException {
+        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
+        tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("complex", "product_id", "t_order_algorithm", null));
+        List<AbstractTableRuleSegment> rules = Arrays.asList(tableRuleSegment);
+        ShardingTableRuleStatementChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
+    }
+    
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    public void assertCheckTableWithUnmatchedShardingStrategyType2() throws DistSQLException {
+        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
+        tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("standard", "product_id,user_id", "t_order_algorithm", null));
         List<AbstractTableRuleSegment> rules = Arrays.asList(tableRuleSegment);
         ShardingTableRuleStatementChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
     }
@@ -152,7 +167,7 @@ public final class ShardingRuleStatementCheckerTest {
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckTableWithInvalidAlgorithmName() throws DistSQLException {
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
-        tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("hint", "product_id", "invalid"));
+        tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("hint", "product_id", "invalid", null));
         List<AbstractTableRuleSegment> rules = Arrays.asList(tableRuleSegment);
         ShardingTableRuleStatementChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
     }
@@ -160,9 +175,26 @@ public final class ShardingRuleStatementCheckerTest {
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckTableWithInvalidAlgorithmNameWhenCurrentRuleConfigIsNull() throws DistSQLException {
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
-        tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("hint", "product_id", "invalid"));
+        tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("hint", "product_id", "invalid", null));
         List<AbstractTableRuleSegment> rules = Arrays.asList(tableRuleSegment);
         ShardingTableRuleStatementChecker.checkCreation(shardingSphereMetaData, rules, null);
+    }
+    
+    @Test
+    public void assertCheckNullAlgorithmNameAndAlgorithmSegment() throws DistSQLException {
+        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
+        AlgorithmSegment databaseAlgorithmSegment = getAutoCreativeAlgorithmSegment("inline", newProperties("algorithm-expression", "ds_${product_id% 2}"));
+        tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("standard", "product_id", null, databaseAlgorithmSegment));
+        List<AbstractTableRuleSegment> rules = Arrays.asList(tableRuleSegment);
+        ShardingTableRuleStatementChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
+    }
+    
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    public void assertCheckNullAlgorithmNameAndNullAlgorithmSegment() throws DistSQLException {
+        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
+        tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("standard", "product_id", null, null));
+        List<AbstractTableRuleSegment> rules = Arrays.asList(tableRuleSegment);
+        ShardingTableRuleStatementChecker.checkCreation(shardingSphereMetaData, rules, shardingRuleConfiguration);
     }
     
     private static ShardingRuleConfiguration createShardingRuleConfiguration() {
@@ -179,14 +211,18 @@ public final class ShardingRuleStatementCheckerTest {
         return result;
     }
     
+    private AlgorithmSegment getAutoCreativeAlgorithmSegment(final String name, final Properties props) {
+        return new AlgorithmSegment(name, props);
+    }
+    
     private static Properties newProperties(final String key, final String value) {
-        Properties properties = new Properties();
-        properties.put(key, value);
-        return properties;
+        Properties result = new Properties();
+        result.put(key, value);
+        return result;
     }
     
     private static Map<String, DataSource> createDataSource() {
-        Map<String, DataSource> result = new HashMap<>();
+        Map<String, DataSource> result = new HashMap<>(2, 1);
         result.put("ds_0", mock(DataSource.class));
         result.put("ds_1", mock(DataSource.class));
         return result;
@@ -194,7 +230,7 @@ public final class ShardingRuleStatementCheckerTest {
     
     private AutoTableRuleSegment createCompleteAutoTableRule() {
         AutoTableRuleSegment result = new AutoTableRuleSegment("t_product_0", Arrays.asList("ds_0", "ds_1"));
-        result.setKeyGenerateSegment(new KeyGenerateSegment("product_id", new AlgorithmSegment("snowflake_test", newProperties("work", "123"))));
+        result.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("snowflake_test", newProperties("work", "123"))));
         result.setShardingColumn("product_id");
         result.setShardingAlgorithmSegment(new AlgorithmSegment("MOD_TEST", newProperties("", "")));
         return result;
@@ -202,13 +238,9 @@ public final class ShardingRuleStatementCheckerTest {
     
     private TableRuleSegment createCompleteTableRule() {
         TableRuleSegment result = new TableRuleSegment("t_product_1", Collections.singletonList("ds_${0..1}.t_order${0..1}"));
-        result.setTableStrategySegment(new ShardingStrategySegment("hint", "product_id", "t_order_algorithm"));
-        result.setDatabaseStrategySegment(new ShardingStrategySegment("hint", "product_id", "t_order_algorithm"));
-        result.setKeyGenerateSegment(new KeyGenerateSegment("product_id", new AlgorithmSegment("SNOWFLAKE_TEST", newProperties("work", "123"))));
+        result.setTableStrategySegment(new ShardingStrategySegment("hint", "product_id", "t_order_algorithm", null));
+        result.setDatabaseStrategySegment(new ShardingStrategySegment("hint", "product_id", "t_order_algorithm", null));
+        result.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("SNOWFLAKE_TEST", newProperties("work", "123"))));
         return result;
-    }
-    
-    private static Collection<ShardingSphereRule> createShardingSphereRule() {
-        return Collections.emptyList();
     }
 }

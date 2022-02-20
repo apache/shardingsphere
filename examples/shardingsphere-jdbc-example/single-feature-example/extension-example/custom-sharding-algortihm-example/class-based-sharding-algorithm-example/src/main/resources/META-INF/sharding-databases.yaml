@@ -49,22 +49,21 @@ rules:
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      shardingAlgorithmName: database_classbased
+      shardingAlgorithmName: database-classbased
   defaultTableStrategy:
     none:
   
   shardingAlgorithms:
-    database_classbased:
+    database-classbased:
       type: CLASS_BASED
       props:
         strategy: standard
         algorithmClassName: org.apache.shardingsphere.example.extension.sharding.algortihm.classbased.fixture.ClassBasedStandardShardingAlgorithmFixture
+        sharding-count: 2
     
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-          worker-id: 123
 
 props:
   sql-show: false

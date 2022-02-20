@@ -75,35 +75,39 @@ public class ShadowRuleStatementChecker {
     
     /**
      * Check if the rules exist.
+     * 
      * @param requireRules require rules
      * @param currentRules current rules
      * @param thrower thrower
      * @throws DistSQLException DistSQL exception
      */
-    public static void checkRulesExist(final Collection<String> requireRules, final Collection<String> currentRules, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
+    public static void checkRulesExist(final Collection<String> requireRules, final Collection<String> currentRules, 
+                                       final Function<Collection<String>, DistSQLException> thrower) throws DistSQLException {
         ShadowRuleStatementChecker.checkAnyDifferent(requireRules, currentRules, thrower);
     }
     
     /**
      * Check if the algorithms exist.
+     * 
      * @param requireAlgorithms require algorithms
      * @param currentAlgorithms current algorithms
      * @param thrower thrower
      * @throws DistSQLException DistSQL exception
      */
     public static void checkAlgorithmExist(final Collection<String> requireAlgorithms, final Collection<String> currentAlgorithms, 
-                                           final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
+                                           final Function<Collection<String>, DistSQLException> thrower) throws DistSQLException {
         ShadowRuleStatementChecker.checkAnyDifferent(requireAlgorithms, currentAlgorithms, thrower);
     }
     
     /**
      * Check for any duplicate data in the rules, and throw the specified exception.
+     * 
      * @param rules rules to be checked
      * @param thrower exception thrower
      * @throws DistSQLException DistSQL exception
      */
-    public static void checkAnyDuplicate(final Collection<String> rules, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
-        Set<String> duplicateRequire = getDuplicate(rules);
+    public static void checkAnyDuplicate(final Collection<String> rules, final Function<Collection<String>, DistSQLException> thrower) throws DistSQLException {
+        Collection<String> duplicateRequire = getDuplicate(rules);
         DistSQLException.predictionThrow(duplicateRequire.isEmpty(), thrower.apply(duplicateRequire));
     }
     
@@ -115,8 +119,9 @@ public class ShadowRuleStatementChecker {
      * @param thrower exception thrower
      * @throws DistSQLException DistSQL exception
      */
-    public static void checkAnyDuplicate(final Collection<String> requireRules, final Collection<String> currentRules, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
-        Set<String> identical = getIdentical(requireRules, currentRules);
+    public static void checkAnyDuplicate(final Collection<String> requireRules, final Collection<String> currentRules, 
+                                         final Function<Collection<String>, DistSQLException> thrower) throws DistSQLException {
+        Collection<String> identical = getIdentical(requireRules, currentRules);
         DistSQLException.predictionThrow(identical.isEmpty(), thrower.apply(identical));
     }
     
@@ -128,21 +133,22 @@ public class ShadowRuleStatementChecker {
      * @param thrower exception thrower
      * @throws DistSQLException DistSQL exception
      */
-    public static void checkAnyDifferent(final Collection<String> requireRules, final Collection<String> currentRules, final Function<Set<String>, DistSQLException> thrower) throws DistSQLException {
-        Set<String> different = getDifferent(requireRules, currentRules);
+    public static void checkAnyDifferent(final Collection<String> requireRules, final Collection<String> currentRules, 
+                                         final Function<Collection<String>, DistSQLException> thrower) throws DistSQLException {
+        Collection<String> different = getDifferent(requireRules, currentRules);
         DistSQLException.predictionThrow(different.isEmpty(), thrower.apply(different));
     }
     
-    private static Set<String> getDuplicate(final Collection<String> require) {
+    private static Collection<String> getDuplicate(final Collection<String> require) {
         return require.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
                 .filter(each -> each.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
     }
     
-    private static Set<String> getDifferent(final Collection<String> require, final Collection<String> current) {
+    private static Collection<String> getDifferent(final Collection<String> require, final Collection<String> current) {
         return require.stream().filter(each -> !current.contains(each)).collect(Collectors.toSet());
     }
     
-    private static Set<String> getIdentical(final Collection<String> require, final Collection<String> current) {
+    private static Collection<String> getIdentical(final Collection<String> require, final Collection<String> current) {
         return require.stream().filter(current::contains).collect(Collectors.toSet());
     }
 }

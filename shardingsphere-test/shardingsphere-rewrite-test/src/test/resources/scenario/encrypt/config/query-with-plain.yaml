@@ -50,6 +50,11 @@ rules:
           assistedQueryColumn: assisted_query_password
           plainColumn: plain_password
           encryptorName: assisted_query
+        password_new:
+          cipherColumn: password_new_cipher
+          assistedQueryColumn: password_new_assisted
+          plainColumn: password_new_plain
+          encryptorName: assisted_query
         amount:
           cipherColumn: cipher_amount
           plainColumn: plain_amount
@@ -70,9 +75,17 @@ rules:
           plainColumn: plain_amount
           encryptorName: normal
       queryWithCipherColumn: true
+    t_order:
+      columns:
+        content:
+          cipherColumn: cipher_content
+          plainColumn: plain_content
+          encryptorName: schema_based
   encryptors:
     normal:
       type: NORMAL_ENCRYPT
+    schema_based:
+      type: SCHEMA_BASED_ENCRYPT
     assisted_query:
       type: ASSISTED_QUERY_ENCRYPT
   queryWithCipherColumn: false

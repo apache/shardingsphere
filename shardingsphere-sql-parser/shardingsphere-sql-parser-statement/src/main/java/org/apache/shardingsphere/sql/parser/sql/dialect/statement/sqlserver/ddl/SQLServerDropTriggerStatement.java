@@ -26,5 +26,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
  * SQLServer drop trigger statement.
  */
 @ToString
-public class SQLServerDropTriggerStatement extends AbstractSQLStatement implements DDLStatement, SQLServerStatement {
+public final class SQLServerDropTriggerStatement extends AbstractSQLStatement implements DDLStatement, SQLServerStatement {
 }

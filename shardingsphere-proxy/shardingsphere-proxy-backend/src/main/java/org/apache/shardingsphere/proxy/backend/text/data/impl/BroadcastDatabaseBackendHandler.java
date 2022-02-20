@@ -17,17 +17,21 @@
 
 package org.apache.shardingsphere.proxy.backend.text.data.impl;
 
+import io.vertx.core.CompositeFuture;
+import io.vertx.core.Future;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,19 +48,37 @@ public final class BroadcastDatabaseBackendHandler implements DatabaseBackendHan
     
     private final String sql;
     
-    private final BackendConnection backendConnection;
+    private final ConnectionSession connectionSession;
+    
+    @SuppressWarnings("rawtypes")
+    @Override
+    public Future<ResponseHeader> executeFuture() {
+        List<String> schemaNames = getSchemaNamesWithDataSource().orElseThrow(DatabaseNotExistedException::new);
+        String originalSchema = connectionSession.getSchemaName();
+        List<Future> futures = new ArrayList<>(schemaNames.size());
+        for (String each : schemaNames) {
+            connectionSession.setCurrentSchema(each);
+            futures.add(databaseCommunicationEngineFactory.<VertxDatabaseCommunicationEngine>newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection()).execute());
+        }
+        return CompositeFuture.all(futures)
+                .compose(unused -> Future.succeededFuture((ResponseHeader) new UpdateResponseHeader(sqlStatementContext.getSqlStatement())))
+                .eventually(unused -> {
+                    connectionSession.setCurrentSchema(originalSchema);
+                    return Future.succeededFuture();
+                });
+    }
     
     @Override
     public ResponseHeader execute() throws SQLException {
         List<String> schemaNames = getSchemaNamesWithDataSource().orElseThrow(DatabaseNotExistedException::new);
-        String originalSchema = backendConnection.getSchemaName();
+        String originalSchema = connectionSession.getSchemaName();
         try {
             for (String each : schemaNames) {
-                backendConnection.setCurrentSchema(each);
-                databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, backendConnection).execute();
+                connectionSession.setCurrentSchema(each);
+                databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection()).execute();
             }
         } finally {
-            backendConnection.setCurrentSchema(originalSchema);
+            connectionSession.setCurrentSchema(originalSchema);
         }
         return new UpdateResponseHeader(sqlStatementContext.getSqlStatement());
     }

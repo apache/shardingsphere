@@ -109,7 +109,7 @@ public final class ProcessRegistrySubscriberTest {
         YamlExecuteProcessUnit yamlExecuteProcessUnit = new YamlExecuteProcessUnit();
         yamlExecuteProcessUnit.setUnitID("159917166");
         yamlExecuteProcessUnit.setStatus(ExecuteProcessConstants.EXECUTE_STATUS_DONE);
-        Collection<YamlExecuteProcessUnit> unitStatuses = Collections.singleton(yamlExecuteProcessUnit);
+        Collection<YamlExecuteProcessUnit> unitStatuses = Collections.singletonList(yamlExecuteProcessUnit);
         YamlExecuteProcessContext yamlExecuteProcessContext = new YamlExecuteProcessContext();
         yamlExecuteProcessContext.setUnitStatuses(unitStatuses);
         return YamlEngine.marshal(yamlExecuteProcessContext);

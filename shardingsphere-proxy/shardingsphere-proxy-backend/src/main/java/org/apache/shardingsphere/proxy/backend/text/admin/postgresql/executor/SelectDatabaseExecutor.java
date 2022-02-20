@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor;
 
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
@@ -79,8 +80,8 @@ public final class SelectDatabaseExecutor extends DefaultDatabaseMetadataExecuto
     }
     
     @Override
-    protected List<String> getSchemaNames() {
-        Collection<String> schemaNames = ProxyContext.getInstance().getAllSchemaNames();
+    protected List<String> getSchemaNames(final ConnectionSession connectionSession) {
+        Collection<String> schemaNames = ProxyContext.getInstance().getAllSchemaNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee())).collect(Collectors.toList());
         return schemaNames.stream().filter(AbstractDatabaseMetadataExecutor::hasDatasource).collect(Collectors.toList());
     }
     

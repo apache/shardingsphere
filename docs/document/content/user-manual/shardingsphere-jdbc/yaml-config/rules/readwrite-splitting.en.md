@@ -10,9 +10,11 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     <data-source-name> (+): # Logic data source name of readwrite-splitting
-      writeDataSourceName: # Write data source name
-      readDataSourceNames: 
-        - <read-data-source-name> (+) # Read data source name
+      type: # Readwrite-splitting type, such as: Static, Dynamic
+      props:
+        auto-aware-data-source-name: # Auto aware data source name(Use with database discovery)
+        write-data-source-name: # Write data source name
+        read-data-source-names: # Read data source names, multiple data source names separated with comma
       loadBalancerName: # Load balance algorithm name
   
   # Load balance algorithm configuration

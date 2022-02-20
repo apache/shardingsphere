@@ -153,7 +153,7 @@ queryExpressionParens
 queryPrimary
     : querySpecification
     | tableValueConstructor
-    | explicitTable
+    | tableStatement
     ;
 
 querySpecification
@@ -225,7 +225,7 @@ loadXmlStatement
       (setAssignmentsClause)?
     ;
 
-explicitTable
+tableStatement
     : TABLE tableName
     ;
 
@@ -266,7 +266,7 @@ unqualifiedShorthand
     ;
 
 qualifiedShorthand
-    : identifier DOT_ASTERISK_
+    : (identifier DOT_)? identifier DOT_ASTERISK_
     ;
 
 fromClause

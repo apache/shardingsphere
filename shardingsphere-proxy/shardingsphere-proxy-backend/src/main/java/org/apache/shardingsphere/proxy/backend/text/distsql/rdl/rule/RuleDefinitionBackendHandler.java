@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule;
 
+import com.google.common.collect.Sets;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
@@ -25,12 +28,20 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionUpdater;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.SchemaVersionPreparedEvent;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterDefaultShardingStrategyStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingAlgorithmStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBroadcastTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
@@ -38,12 +49,14 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Rule definition backend handler.
  *
  * @param <T> type of SQL statement
  */
+@Slf4j
 public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatement> extends SchemaRequiredBackendHandler<T> {
     
     static {
@@ -51,8 +64,11 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         ShardingSphereServiceLoader.register(RuleDefinitionAlterPreprocessor.class);
     }
     
-    public RuleDefinitionBackendHandler(final T sqlStatement, final BackendConnection backendConnection) {
-        super(sqlStatement, backendConnection);
+    private static final Set<String> RULE_ALTERED_ACTION_LIST = Sets.newHashSet(AlterShardingTableRuleStatement.class.getName(), AlterShardingAlgorithmStatement.class.getName(),
+            AlterDefaultShardingStrategyStatement.class.getName(), AlterShardingBindingTableRulesStatement.class.getName(), AlterShardingBroadcastTableRulesStatement.class.getName());
+    
+    public RuleDefinitionBackendHandler(final T sqlStatement, final ConnectionSession connectionSession) {
+        super(sqlStatement, connectionSession);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -65,8 +81,13 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         ruleDefinitionUpdater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentRuleConfig);
         Optional<RuleDefinitionAlterPreprocessor> preprocessor = TypedSPIRegistry.findRegisteredService(RuleDefinitionAlterPreprocessor.class, sqlStatement.getClass().getCanonicalName(), 
                 new Properties());
-        if (ProxyContext.getInstance().isScalingEnabled() && preprocessor.isPresent()) {
-            processCache(shardingSphereMetaData, sqlStatement, (RuleDefinitionAlterUpdater) ruleDefinitionUpdater, currentRuleConfig, preprocessor.get());
+        if (!RuleAlteredJobWorker.isOnRuleAlteredActionEnabled(currentRuleConfig)) {
+            if (RULE_ALTERED_ACTION_LIST.contains(sqlStatement.getClass().getCanonicalName())) {
+                // TODO throw new RuntimeException("scaling is not enabled");
+                log.warn("rule altered and scaling is not enabled.");
+            }
+        } else if (preprocessor.isPresent()) {
+            prepareScaling(shardingSphereMetaData, sqlStatement, (RuleDefinitionAlterUpdater) ruleDefinitionUpdater, currentRuleConfig, preprocessor.get());
             return new UpdateResponseHeader(sqlStatement);
         }
         processSQLStatement(shardingSphereMetaData, sqlStatement, ruleDefinitionUpdater, currentRuleConfig);
@@ -120,15 +141,18 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         }
     }
     
-    private void processCache(final ShardingSphereMetaData shardingSphereMetaData, final T sqlStatement, final RuleDefinitionAlterUpdater updater, final RuleConfiguration currentRuleConfig, 
+    private void prepareScaling(final ShardingSphereMetaData shardingSphereMetaData, final T sqlStatement, final RuleDefinitionAlterUpdater updater, final RuleConfiguration currentRuleConfig,
                               final RuleDefinitionAlterPreprocessor preprocessor) {
-        RuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(sqlStatement);
-        RuleConfiguration alteredRuleConfig = preprocessor.preprocess(currentRuleConfig, toBeAlteredRuleConfig);
-        updater.updateCurrentRuleConfiguration(alteredRuleConfig, toBeAlteredRuleConfig);
-        Collection<RuleConfiguration> alteredConfigs = new LinkedList<>(shardingSphereMetaData.getRuleMetaData().getConfigurations());
-        alteredConfigs.remove(currentRuleConfig);
-        alteredConfigs.add(alteredRuleConfig);
-        cacheRuleConfigurationChange(shardingSphereMetaData.getName(), alteredConfigs);
+        Optional<MetaDataPersistService> metaDataPersistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
+        if (metaDataPersistService.isPresent()) {
+            Optional<String> newVersion = metaDataPersistService.get().getSchemaVersionPersistService().createNewVersion(shardingSphereMetaData.getName());
+            if (!newVersion.isPresent()) {
+                throw new RuntimeException(String.format("Unable to get a new version for schema: %s", shardingSphereMetaData.getName()));
+            }
+            metaDataPersistService.get().getSchemaRuleService().persist(shardingSphereMetaData.getName(), newVersion.get(), buildAlteredRuleConfigurations(shardingSphereMetaData, sqlStatement, 
+                    updater, currentRuleConfig, preprocessor));
+            ShardingSphereEventBus.getInstance().post(new SchemaVersionPreparedEvent(newVersion.get(), shardingSphereMetaData.getName()));
+        }
     }
     
     private void persistRuleConfigurationChange(final ShardingSphereMetaData shardingSphereMetaData) {
@@ -136,8 +160,15 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
                 shardingSphereMetaData.getName(), shardingSphereMetaData.getRuleMetaData().getConfigurations()));
     }
     
-    private void cacheRuleConfigurationChange(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
-        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService().ifPresent(optional -> optional.getSchemaRuleService().cache(
-                schemaName, ruleConfigurations));
+    private Collection<RuleConfiguration> buildAlteredRuleConfigurations(final ShardingSphereMetaData shardingSphereMetaData, final T sqlStatement, final RuleDefinitionAlterUpdater updater, 
+                                                final RuleConfiguration currentRuleConfig, 
+                                                final RuleDefinitionAlterPreprocessor preprocessor) {
+        RuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(sqlStatement);
+        RuleConfiguration alteredRuleConfig = preprocessor.preprocess(currentRuleConfig, toBeAlteredRuleConfig);
+        updater.updateCurrentRuleConfiguration(alteredRuleConfig, toBeAlteredRuleConfig);
+        Collection<RuleConfiguration> result = new LinkedList<>(shardingSphereMetaData.getRuleMetaData().getConfigurations());
+        result.remove(currentRuleConfig);
+        result.add(alteredRuleConfig);
+        return result;
     }
 }

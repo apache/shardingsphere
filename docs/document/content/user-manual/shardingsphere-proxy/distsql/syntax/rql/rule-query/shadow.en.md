@@ -43,7 +43,14 @@ shadowRule:
 | --------------------- | --------------------------- |
 | shadow_algorithm_name | Shadow algorithm name       |
 | type                  | Shadow algorithm type       |
-| properties            | Shadow algorithm parameters |
+| props                 | Shadow algorithm properties |
+| is_default            | Default                     |
+
+### Shadow Rule status
+
+| Column                | Description  |
+| -------------------   | ------------ |
+| status                | Enable       |
 
 ## Example
 
@@ -87,11 +94,11 @@ mysql> show shadow table rules;
 
 ```sql
 mysql> show shadow algorithms;
-+-------------------------+--------------------+-------------------------------------------+
-| shadow_algorithm_name   | type               | properties                                |
-+-------------------------+--------------------+-------------------------------------------+
-| user_id_match_algorithm | COLUMN_REGEX_MATCH | operation=insert,column=user_id,regex=[1] |
-| simple_note_algorithm_1 | SIMPLE_NOTE        | shadow=true,foo=bar                       |
-+-------------------------+--------------------+-------------------------------------------+
++-------------------------+--------------------+-------------------------------------------+----------------+
+| shadow_algorithm_name   | type               | props                                     | is_default     |
++-------------------------+--------------------+-------------------------------------------+----------------+
+| user_id_match_algorithm | COLUMN_REGEX_MATCH | operation=insert,column=user_id,regex=[1] | false          |
+| simple_note_algorithm_1 | SIMPLE_NOTE        | shadow=true,foo=bar                       | false          |
++-------------------------+--------------------+-------------------------------------------+----------------+
 2 rows in set (0.01 sec)
 ```

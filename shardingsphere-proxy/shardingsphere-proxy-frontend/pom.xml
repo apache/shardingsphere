@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-proxy</artifactId>
-        <version>5.0.1-SNAPSHOT</version>
+        <version>5.1.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-proxy-frontend</artifactId>
     <packaging>pom</packaging>
@@ -33,5 +33,8 @@
         <module>shardingsphere-proxy-frontend-mysql</module>
         <module>shardingsphere-proxy-frontend-postgresql</module>
         <module>shardingsphere-proxy-frontend-opengauss</module>
+        <module>shardingsphere-proxy-frontend-reactive-core</module>
+        <module>shardingsphere-proxy-frontend-reactive-mysql</module>
+        <module>shardingsphere-proxy-frontend-reactive-spi</module>
     </modules>
 </project>

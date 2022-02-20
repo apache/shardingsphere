@@ -18,4 +18,5 @@
 
 <sql-cases>
     <sql-case id="drop_schema" value="DROP schema Sprockets" db-types="SQLServer" />
+    <sql-case id="drop_schema_behavior" value="DROP SCHEMA alt_nsp1 CASCADE" db-types="SQLServer,PostgreSQL,openGauss" />
 </sql-cases>

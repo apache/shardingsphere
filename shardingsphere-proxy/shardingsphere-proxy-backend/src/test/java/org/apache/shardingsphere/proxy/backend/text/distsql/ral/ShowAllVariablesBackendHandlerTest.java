@@ -19,14 +19,15 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
 import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAllVariablesStatement;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.ShowDistSQLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowAllVariablesHandler;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
 
@@ -43,17 +44,18 @@ import static org.mockito.Mockito.when;
 
 public final class ShowAllVariablesBackendHandlerTest {
     
-    private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL, new DefaultAttributeMap());
+    private final ConnectionSession connectionSession = new ConnectionSession(TransactionType.LOCAL, new DefaultAttributeMap());
     
     @Test
     public void assertShowPropsVariable() throws SQLException {
-        backendConnection.setCurrentSchema("schema");
+        connectionSession.setCurrentSchema("schema");
         ContextManager contextManager = mock(ContextManager.class);
         ProxyContext.getInstance().init(contextManager);
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        ShowDistSQLBackendHandler backendHandler = new ShowDistSQLBackendHandler(new ShowAllVariablesStatement(), backendConnection);
+        ShowAllVariablesHandler backendHandler = new ShowAllVariablesHandler()
+                .init(new HandlerParameter<ShowAllVariablesStatement>().setStatement(new ShowAllVariablesStatement()).setConnectionSession(connectionSession));
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));

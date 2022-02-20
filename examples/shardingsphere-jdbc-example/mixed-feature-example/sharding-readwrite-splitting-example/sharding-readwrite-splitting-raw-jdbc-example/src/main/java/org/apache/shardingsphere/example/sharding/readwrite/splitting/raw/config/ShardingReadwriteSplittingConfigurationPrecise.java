@@ -65,7 +65,7 @@ public final class ShardingReadwriteSplittingConfigurationPrecise implements Exa
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "standard_test_tbl"));
         result.getShardingAlgorithms().put("standard_test_db", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST_DB", new Properties()));
         result.getShardingAlgorithms().put("standard_test_tbl", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
-        result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", getProperties()));
+        result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties()));
         return result;
     }
     
@@ -83,15 +83,16 @@ public final class ShardingReadwriteSplittingConfigurationPrecise implements Exa
     
     private static ReadwriteSplittingRuleConfiguration createReadwriteSplittingConfiguration() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration1 = new ReadwriteSplittingDataSourceRuleConfiguration(
-                "ds_0", "", "demo_write_ds_0", Arrays.asList("demo_write_ds_0_read_0", "demo_write_ds_0_read_1"), null);
+                "ds_0", "Static", getReadwriteProperties(), "");
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration2 = new ReadwriteSplittingDataSourceRuleConfiguration(
-                "ds_1", "", "demo_write_ds_1", Arrays.asList("demo_write_ds_1_read_0", "demo_write_ds_1_read_1"), null);
+                "ds_1", "Static", getReadwriteProperties(), "");
         return new ReadwriteSplittingRuleConfiguration(Arrays.asList(dataSourceConfiguration1, dataSourceConfiguration2), Collections.emptyMap());
     }
     
-    private static Properties getProperties() {
+    private static Properties getReadwriteProperties() {
         Properties result = new Properties();
-        result.setProperty("worker-id", "123");
+        result.setProperty("write-data-source-name", "demo_write_ds_0");
+        result.setProperty("read-data-source-names", "demo_write_ds_1_read_0, demo_write_ds_0_read_1");
         return result;
     }
 }

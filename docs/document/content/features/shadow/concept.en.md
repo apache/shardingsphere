@@ -3,10 +3,6 @@ title = "Core Concept"
 weight = 1
 +++
 
-## Pressure Testing Switcher
-
-Pressure testing is a requirement for a specific period, turned on when needed.
-
 ## Production Database
 
 The database used for production data.

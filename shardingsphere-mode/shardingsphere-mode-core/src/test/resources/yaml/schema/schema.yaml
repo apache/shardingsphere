@@ -14,16 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-tables:
-  t_order:
-    columns:
-      id:
-        caseSensitive: false
-        dataType: 0
-        generated: false
-        name: id
-        primaryKey: true
-    indexes:
-       primary:
-          name: PRIMARY
+name: t_order
+columns:
+  id:
+    caseSensitive: false
+    dataType: 0
+    generated: false
+    name: id
+    primaryKey: true
+indexes:
+   primary:
+      name: PRIMARY

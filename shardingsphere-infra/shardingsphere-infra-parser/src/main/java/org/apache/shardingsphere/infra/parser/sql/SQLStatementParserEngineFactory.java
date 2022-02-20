@@ -40,6 +40,10 @@ public final class SQLStatementParserEngineFactory {
      * @return SQL statement parser engine
      */
     public static SQLStatementParserEngine getSQLStatementParserEngine(final String databaseType, final SQLParserRule sqlParserRule) {
-        return ENGINES.getOrDefault(databaseType, ENGINES.computeIfAbsent(databaseType, key -> new SQLStatementParserEngine(key, sqlParserRule)));
+        SQLStatementParserEngine result = ENGINES.get(databaseType);
+        if (null == result) {
+            result = ENGINES.computeIfAbsent(databaseType, key -> new SQLStatementParserEngine(key, sqlParserRule));
+        }
+        return result;
     }
 }

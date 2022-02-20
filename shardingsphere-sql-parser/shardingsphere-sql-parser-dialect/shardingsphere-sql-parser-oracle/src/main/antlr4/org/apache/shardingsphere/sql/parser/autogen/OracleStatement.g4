@@ -62,5 +62,9 @@ execute
     | purge
     | rename
     | createDatabase
+    | createDatabaseLink
+    | createDimension
+    | alterDimension
+    | dropDimension
     ) SEMI_?
     ;

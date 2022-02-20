@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.shadow.rule.builder;
 
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -32,7 +30,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
 public final class ShadowRuleBuilderTest {
     
@@ -43,9 +40,8 @@ public final class ShadowRuleBuilderTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertBuild() {
-        ShadowRuleConfiguration ruleConfig = mock(ShadowRuleConfiguration.class);
+        ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
-        assertThat(builder.build(new SchemaRulesBuilderMaterials("", Collections.emptyList(), mock(DatabaseType.class), 
-                Collections.emptyMap(), new ConfigurationProperties(new Properties())), ruleConfig, Collections.emptyList()), instanceOf(ShadowRule.class));
+        assertThat(builder.build(ruleConfig, "", Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties())), instanceOf(ShadowRule.class));
     }
 }

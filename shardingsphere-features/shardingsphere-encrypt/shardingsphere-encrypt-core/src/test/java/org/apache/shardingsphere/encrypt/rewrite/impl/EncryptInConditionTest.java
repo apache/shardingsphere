@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.rewrite.impl;
 
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.junit.Test;
 
@@ -32,8 +33,8 @@ public final class EncryptInConditionTest {
     
     @Test
     public void assertGetConditionValues() {
-        List<Object> actual = new EncryptInCondition(
-                "col", null, 0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2))).getValues(Collections.emptyList());
+        List<ExpressionSegment> expressions = Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2));
+        List<Object> actual = new EncryptInCondition("col", null, 0, 0, expressions).getValues(Collections.emptyList());
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0), is(1));
         assertThat(actual.get(1), is(2));

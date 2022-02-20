@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Database type.
@@ -58,6 +59,13 @@ public interface DatabaseType {
      * @return data source meta data
      */
     DataSourceMetaData getDataSourceMetaData(String url, String username);
+    
+    /**
+     * Get data source class name.
+     *
+     * @return data source class name
+     */
+    Optional<String> getDataSourceClassName();
     
     /**
      * Get schema.

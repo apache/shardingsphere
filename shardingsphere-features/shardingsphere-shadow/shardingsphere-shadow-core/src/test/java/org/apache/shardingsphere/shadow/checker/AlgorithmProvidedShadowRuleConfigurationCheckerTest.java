@@ -52,7 +52,6 @@ public final class AlgorithmProvidedShadowRuleConfigurationCheckerTest {
     
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
         AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
-        result.setEnable(true);
         result.setShadowAlgorithms(createShadowAlgorithms());
         result.setDataSources(createDataSources());
         result.setTables(createTables());

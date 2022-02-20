@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere</artifactId>
-        <version>5.0.1-SNAPSHOT</version>
+        <version>5.1.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent</artifactId>
     <packaging>pom</packaging>
@@ -38,7 +38,7 @@
     </modules>
     
     <properties>
-        <maven-shade-plugin.version>3.1.1</maven-shade-plugin.version>
+        <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
         <shade.package>org.apache.shardingsphere.dependencies</shade.package>
     </properties>
     

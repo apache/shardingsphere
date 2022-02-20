@@ -22,6 +22,8 @@ import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
+import java.util.Properties;
+
 /**
  * Transaction rule.
  */
@@ -32,9 +34,12 @@ public final class TransactionRule implements GlobalRule {
     
     private final String providerType;
     
+    private final Properties props;
+    
     public TransactionRule(final TransactionRuleConfiguration ruleConfig) {
-        defaultType = TransactionType.valueOf(ruleConfig.getDefaultType());
+        defaultType = TransactionType.valueOf(ruleConfig.getDefaultType().toUpperCase());
         providerType = ruleConfig.getProviderType();
+        props = ruleConfig.getProps();
     }
     
     @Override

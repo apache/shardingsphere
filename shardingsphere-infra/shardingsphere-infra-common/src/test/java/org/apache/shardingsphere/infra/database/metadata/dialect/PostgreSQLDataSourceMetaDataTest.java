@@ -23,34 +23,29 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class PostgreSQLDataSourceMetaDataTest {
     
     @Test
-    public void assertNewConstructorWithPort() {
-        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:postgresql://127.0.0.1:9999/ds_0");
-        assertThat(actual.getHostName(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(9999));
-        assertThat(actual.getCatalog(), is("ds_0"));
+    public void assertNewConstructorWithSimpleJdbcUrl() {
+        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:postgresql://127.0.0.1/foo_ds");
+        assertThat(actual.getHostname(), is("127.0.0.1"));
+        assertThat(actual.getPort(), is(5432));
+        assertThat(actual.getCatalog(), is("foo_ds"));
         assertNull(actual.getSchema());
+        assertTrue(actual.getQueryProperties().isEmpty());
     }
     
     @Test
-    public void assertNewConstructorWithDefaultPort() {
-        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:postgresql://127.0.0.1/ds_0");
-        assertThat(actual.getHostName(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(5432));
-        assertThat(actual.getCatalog(), is("ds_0"));
+    public void assertNewConstructorWithComplexJdbcUrl() {
+        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:postgresql://127.0.0.1:9999,127.0.0.2:9999,127.0.0.3:9999/foo_ds?targetServerType=master");
+        assertThat(actual.getHostname(), is("127.0.0.1"));
+        assertThat(actual.getPort(), is(9999));
+        assertThat(actual.getCatalog(), is("foo_ds"));
         assertNull(actual.getSchema());
-    }
-
-    @Test
-    public void assertMultipleDatabases() {
-        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:postgresql://127.0.0.1:5432,127.0.0.1:5433,127.0.0.1:5434/ds_0?targetServerType=master");
-        assertThat(actual.getHostName(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(5432));
-        assertThat(actual.getCatalog(), is("ds_0"));
-        assertNull(actual.getSchema());
+        assertThat(actual.getQueryProperties().size(), is(1));
+        assertThat(actual.getQueryProperties().getProperty("targetServerType"), is("master"));
     }
     
     @Test(expected = UnrecognizedDatabaseURLException.class)

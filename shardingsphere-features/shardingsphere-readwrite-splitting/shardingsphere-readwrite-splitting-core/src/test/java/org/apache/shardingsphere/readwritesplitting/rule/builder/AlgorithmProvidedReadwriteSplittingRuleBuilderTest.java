@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule.builder;
 
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilderMaterials;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -33,8 +31,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class AlgorithmProvidedReadwriteSplittingRuleBuilderTest {
     
@@ -45,13 +41,16 @@ public final class AlgorithmProvidedReadwriteSplittingRuleBuilderTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertBuild() {
-        AlgorithmProvidedReadwriteSplittingRuleConfiguration algorithmProvidedRuleConfig = mock(AlgorithmProvidedReadwriteSplittingRuleConfiguration.class);
-        ReadwriteSplittingDataSourceRuleConfiguration ruleConfig = new ReadwriteSplittingDataSourceRuleConfiguration(
-                "name", "pr_ds", "writeDataSourceName", Collections.singletonList("name"), "loadBalancerName");
-        when(algorithmProvidedRuleConfig.getDataSources()).thenReturn(Collections.singletonList(ruleConfig));
-        SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(
-                SchemaRuleBuilder.class, Collections.singletonList(algorithmProvidedRuleConfig)).get(algorithmProvidedRuleConfig);
-        assertThat(builder.build(new SchemaRulesBuilderMaterials("", Collections.emptyList(), mock(DatabaseType.class), 
-                Collections.emptyMap(), new ConfigurationProperties(new Properties())), algorithmProvidedRuleConfig, Collections.emptyList()), instanceOf(ReadwriteSplittingRule.class));
+        AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfig = new AlgorithmProvidedReadwriteSplittingRuleConfiguration(
+                Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("name", "Static", createProperties(), "loadBalancerName")), Collections.emptyMap());
+        SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
+        assertThat(builder.build(ruleConfig, "", Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties())), instanceOf(ReadwriteSplittingRule.class));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("write-data-source-name", "writeDataSourceName");
+        result.setProperty("read-data-source-names", "readDataSourceName");
+        return result;
     }
 }

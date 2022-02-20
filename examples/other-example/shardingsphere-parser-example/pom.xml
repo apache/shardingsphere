@@ -53,5 +53,9 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-sql-parser-sqlserver</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-parser-opengauss</artifactId>
+        </dependency>
     </dependencies>
 </project>

@@ -50,7 +50,7 @@ public final class PostgreSQLAuthenticationHandler {
      * @return PostgreSQL login result
      */
     public static PostgreSQLLoginResult loginWithMd5Password(final String username, final String databaseName, final byte[] md5Salt, final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
-        String md5Digest = passwordMessagePacket.getMd5Digest();
+        String md5Digest = passwordMessagePacket.getDigest();
         Grantee grantee = new Grantee(username, "%");
         if (!Strings.isNullOrEmpty(databaseName) && !ProxyContext.getInstance().schemaExists(databaseName)) {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_CATALOG_NAME, String.format("database \"%s\" does not exist", databaseName));

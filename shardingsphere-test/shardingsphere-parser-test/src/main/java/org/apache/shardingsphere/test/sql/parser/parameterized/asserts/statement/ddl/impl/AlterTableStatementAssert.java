@@ -21,19 +21,25 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ChangeColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.charset.CharsetAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.definition.ColumnDefinitionAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.definition.ColumnPositionAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.definition.ConstraintDefinitionAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.definition.ExpectedAddColumnDefinition;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.definition.ExpectedChangeColumnDefinition;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.definition.ExpectedColumnDefinition;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.definition.ExpectedModifyColumnDefinition;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTableStatementTestCase;
@@ -69,7 +75,25 @@ public final class AlterTableStatementAssert {
         assertAddColumnDefinitions(assertContext, actual, expected);
         assertAddConstraintDefinitions(assertContext, actual, expected);
         assertModifyColumnDefinitions(assertContext, actual, expected);
+        assertChangeColumnDefinitions(assertContext, actual, expected);
         assertDropColumns(assertContext, actual, expected);
+        assertConvertTable(assertContext, actual, expected);
+    }
+    
+    private static void assertConvertTable(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        Optional<ConvertTableDefinitionSegment> convertTable = actual.getConvertTableDefinition();
+        if (null != expected.getConvertTable()) {
+            assertTrue(assertContext.getText("Actual convert table segment should exist."), convertTable.isPresent());
+            CharsetAssert.assertIs(assertContext, convertTable.get().getCharsetName(), expected.getConvertTable().getCharsetName());
+            if (null != expected.getConvertTable().getCollateExpression()) {
+                ExpressionAssert.assertExpression(assertContext, convertTable.get().getCollateValue(), expected.getConvertTable().getCollateExpression().getCollateName());
+            } else {
+                assertNull(assertContext.getText("Actual collate expression should not exist."), convertTable.get().getCollateValue());
+            }
+            SQLSegmentAssert.assertIs(assertContext, convertTable.get(), expected.getConvertTable());
+        } else {
+            assertFalse(assertContext.getText("Actual convert table segment should not exist."), convertTable.isPresent());
+        }
     }
     
     private static void assertRenameTable(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
@@ -129,6 +153,25 @@ public final class AlterTableStatementAssert {
                 ColumnPositionAssert.assertIs(assertContext, each.getColumnPosition().get(), expectedModifyColumnDefinition.getColumnPosition());
             } else {
                 assertNull(assertContext.getText("Column position should not exist."), expectedModifyColumnDefinition.getColumnPosition());
+            }
+            count++;
+        }
+    }
+    
+    private static void assertChangeColumnDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Change column definitions size assertion error: "), actual.getChangeColumnDefinitions().size(), is(expected.getChangeColumns().size()));
+        int count = 0;
+        for (ChangeColumnDefinitionSegment each : actual.getChangeColumnDefinitions()) {
+            ExpectedChangeColumnDefinition expectedChangeColumnDefinition = expected.getChangeColumns().get(count);
+            ColumnDefinitionAssert.assertIs(assertContext, each.getColumnDefinition(), expectedChangeColumnDefinition.getColumnDefinition());
+            if (each.getColumnPosition().isPresent()) {
+                assertNotNull(assertContext.getText("Column position should exist."), expectedChangeColumnDefinition.getColumnPosition());
+                ColumnPositionAssert.assertIs(assertContext, each.getColumnPosition().get(), expectedChangeColumnDefinition.getColumnPosition());
+            } else {
+                assertNull(assertContext.getText("Column position should not exist."), expectedChangeColumnDefinition.getColumnPosition());
+            }
+            if (null != each.getPreviousColumn()) {
+                ColumnAssert.assertIs(assertContext, each.getPreviousColumn(), expectedChangeColumnDefinition.getPreviousColumn());
             }
             count++;
         }

@@ -19,11 +19,12 @@ package org.apache.shardingsphere.dbdiscovery.route;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -74,11 +75,12 @@ public final class DatabaseDiscoverySQLRouterTest {
     @Before
     public void setUp() {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig 
-                = new DatabaseDiscoveryDataSourceRuleConfiguration(DATA_SOURCE_NAME, Collections.singletonList(PRIMARY_DATA_SOURCE), "ha_heartbeat", "TEST");
+                = new DatabaseDiscoveryDataSourceRuleConfiguration(DATA_SOURCE_NAME, Collections.singletonList(PRIMARY_DATA_SOURCE), "", "TEST");
         ShardingSphereAlgorithmConfiguration algorithmConfig = new ShardingSphereAlgorithmConfiguration("TEST", new Properties());
-        DatabaseDiscoveryRuleConfiguration config = new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap(),
+        DatabaseDiscoveryRuleConfiguration config = new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceConfig),
+                Collections.singletonMap("ha_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
                 Collections.singletonMap("TEST", algorithmConfig));
-        rule = new DatabaseDiscoveryRule(config, "TEST", Collections.singletonMap("ds", mock(DataSource.class)));
+        rule = new DatabaseDiscoveryRule("TEST", Collections.singletonMap("ds", mock(DataSource.class)), config);
         sqlRouter = (DatabaseDiscoverySQLRouter) OrderedSPIRegistry.getRegisteredServices(SQLRouter.class, Collections.singleton(rule)).get(rule);
     }
     

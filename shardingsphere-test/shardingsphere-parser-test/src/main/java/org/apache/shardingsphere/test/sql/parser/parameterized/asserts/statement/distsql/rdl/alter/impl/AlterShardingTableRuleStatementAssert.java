@@ -66,7 +66,6 @@ public final class AlterShardingTableRuleStatementAssert {
                 LinkedList<TableRuleSegment> actualTableRules = actual.getRules().stream().map(each -> (TableRuleSegment) each).collect(Collectors.toCollection(LinkedList::new));
                 assertShardingTableRules(assertContext, actualTableRules, tableRuleStatementTestCase.getRules());
             }
-            
         }
     }
     

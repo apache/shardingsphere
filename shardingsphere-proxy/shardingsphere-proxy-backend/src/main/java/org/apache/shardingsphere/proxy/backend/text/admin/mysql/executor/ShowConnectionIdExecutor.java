@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
 
@@ -40,8 +40,8 @@ public final class ShowConnectionIdExecutor implements DatabaseAdminQueryExecuto
     private MergedResult mergedResult;
     
     @Override
-    public void execute(final BackendConnection backendConnection) {
-        mergedResult = new SingleLocalDataMergedResult(Collections.singleton(backendConnection.getConnectionId()));
+    public void execute(final ConnectionSession connectionSession) {
+        mergedResult = new SingleLocalDataMergedResult(Collections.singleton(connectionSession.getConnectionId()));
     }
     
     @Override

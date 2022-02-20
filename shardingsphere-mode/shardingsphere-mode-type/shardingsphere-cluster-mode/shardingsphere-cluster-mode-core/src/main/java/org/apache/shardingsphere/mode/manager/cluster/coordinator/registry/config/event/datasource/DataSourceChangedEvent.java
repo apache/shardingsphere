@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.conf
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 
 import java.util.Map;
 
@@ -33,5 +33,7 @@ public final class DataSourceChangedEvent implements GovernanceEvent {
     
     private final String schemaName;
     
-    private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
+    private final String schemaVersion;
+    
+    private final Map<String, DataSourceProperties> dataSourcePropertiesMap;
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.DropTableStatementContext;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -72,7 +72,7 @@ public final class ShardingDropTableStatementValidatorTest {
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertValidateDropTableForMySQL() {
+    public void assertPreValidateDropTableForMySQL() {
         MySQLDropTableStatement sqlStatement = new MySQLDropTableStatement();
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
         SQLStatementContext<DropTableStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);

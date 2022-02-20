@@ -33,8 +33,8 @@ spring.shardingsphere.mode.overwrite= # 是否使用本地配置覆盖持久化�
 ```properties
 spring.shardingsphere.mode.type=Cluster
 spring.shardingsphere.mode.repository.type= # 持久化仓库类型
-spring.shardingsphere.mode.repository.namespace= # 注册中心命名空间
-spring.shardingsphere.mode.repository.serverLists= # 注册中心连接地址
+spring.shardingsphere.mode.repository.props.namespace= # 注册中心命名空间
+spring.shardingsphere.mode.repository.props.server-lists= # 注册中心连接地址
 spring.shardingsphere.mode.repository.props.<key>= # 持久化仓库所需属性
 spring.shardingsphere.mode.overwrite= # 是否使用本地配置覆盖持久化配置
 ```

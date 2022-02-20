@@ -20,13 +20,23 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
+import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.instance.definition.InstanceId;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
@@ -41,6 +51,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -51,7 +62,9 @@ import java.util.Random;
  */
 public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseable {
     
-    private final Map<String, DataSource> dataSourceMap;
+    private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
+    
+    private final Map<String, DataSource> physicalDataSourceMap = new LinkedHashMap<>();
     
     @Getter
     private final ConnectionTransaction connectionTransaction;
@@ -65,8 +78,51 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
     private final Random random = new SecureRandom();
     
     public ConnectionManager(final String schema, final ContextManager contextManager) {
-        dataSourceMap = contextManager.getDataSourceMap(schema);
+        dataSourceMap.putAll(contextManager.getDataSourceMap(schema));
+        dataSourceMap.putAll(getTrafficDataSourceMap(schema, contextManager));
+        physicalDataSourceMap.putAll(contextManager.getDataSourceMap(schema));
         connectionTransaction = createConnectionTransaction(schema, contextManager);
+    }
+    
+    private Map<String, DataSource> getTrafficDataSourceMap(final String schema, final ContextManager contextManager) {
+        Optional<TrafficRule> trafficRule = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TrafficRule.class);
+        Optional<MetaDataPersistService> metaDataPersistService = contextManager.getMetaDataContexts().getMetaDataPersistService();
+        if (!trafficRule.isPresent() || !metaDataPersistService.isPresent()) {
+            return Collections.emptyMap();
+        }
+        Map<String, DataSourceProperties> dataSourcePropsMap = metaDataPersistService.get().getDataSourceService().load(schema);
+        Preconditions.checkState(!dataSourcePropsMap.isEmpty(), "Can not get data source properties from meta data.");
+        DataSourceProperties dataSourcePropsSample = dataSourcePropsMap.values().iterator().next();
+        Collection<ShardingSphereUser> users = metaDataPersistService.get().getGlobalRuleService().loadUsers();
+        Collection<ComputeNodeInstance> instances = metaDataPersistService.get().getComputeNodePersistService().loadComputeNodeInstances(InstanceType.PROXY, trafficRule.get().getLabels());
+        return DataSourcePoolCreator.create(createDataSourcePropertiesMap(instances, users, dataSourcePropsSample, schema));
+    }
+    
+    private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Collection<ComputeNodeInstance> instances, final Collection<ShardingSphereUser> users,
+                                                                            final DataSourceProperties dataSourcePropsSample, final String schema) {
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>();
+        for (ComputeNodeInstance each : instances) {
+            result.put(each.getInstanceDefinition().getInstanceId().getId(), createDataSourceProperties(each, users, dataSourcePropsSample, schema));
+        }
+        return result;
+    }
+    
+    private DataSourceProperties createDataSourceProperties(final ComputeNodeInstance instance, final Collection<ShardingSphereUser> users,
+                                                            final DataSourceProperties dataSourcePropsSample, final String schema) {
+        Map<String, Object> props = dataSourcePropsSample.getAllLocalProperties();
+        props.put("jdbcUrl", createJdbcUrl(instance, schema, props));
+        ShardingSphereUser user = users.iterator().next();
+        props.put("username", user.getGrantee().getUsername());
+        props.put("password", user.getPassword());
+        return new DataSourceProperties(HikariDataSource.class.getName(), props);
+    }
+    
+    private String createJdbcUrl(final ComputeNodeInstance instance, final String schema, final Map<String, Object> props) {
+        String jdbcUrl = String.valueOf(props.get("jdbcUrl"));
+        InstanceId instanceId = instance.getInstanceDefinition().getInstanceId();
+        String jdbcUrlPrefix = jdbcUrl.substring(0, jdbcUrl.indexOf("//"));
+        String jdbcUrlSuffix = jdbcUrl.contains("?") ? jdbcUrl.substring(jdbcUrl.indexOf("?")) : "";
+        return String.format("%s//%s:%s/%s%s", jdbcUrlPrefix, instanceId.getIp(), instanceId.getUniqueSign(), schema, jdbcUrlSuffix);
     }
     
     private ConnectionTransaction createConnectionTransaction(final String schemaName, final ContextManager contextManager) {
@@ -76,11 +132,7 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
             return transactionRule.map(optional -> new ConnectionTransaction(schemaName, optional, contextManager.getTransactionContexts()))
                     .orElseGet(() -> new ConnectionTransaction(schemaName, contextManager.getTransactionContexts()));
         }
-        ConnectionTransaction result = new ConnectionTransaction(schemaName, type, contextManager.getTransactionContexts());
-        if (null == result) {
-            throw new RuntimeException(String.format("Get connectionTransaction error for transaction type %s", type.name()));
-        }
-        return result;
+        return new ConnectionTransaction(schemaName, type, contextManager.getTransactionContexts());
     }
     
     /**
@@ -174,7 +226,8 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
      * @return random physical data source name
      */
     public String getRandomPhysicalDataSourceName() {
-        Collection<String> datasourceNames = cachedConnections.isEmpty() ? dataSourceMap.keySet() : cachedConnections.keySet();
+        Collection<String> cachedPhysicalDataSourceNames = Sets.intersection(physicalDataSourceMap.keySet(), cachedConnections.keySet());
+        Collection<String> datasourceNames = cachedPhysicalDataSourceNames.isEmpty() ? physicalDataSourceMap.keySet() : cachedPhysicalDataSourceNames;
         return new ArrayList<>(datasourceNames).get(random.nextInt(datasourceNames.size()));
     }
     

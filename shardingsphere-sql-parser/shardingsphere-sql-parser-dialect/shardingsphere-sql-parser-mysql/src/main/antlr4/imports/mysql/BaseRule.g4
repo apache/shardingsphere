@@ -162,6 +162,7 @@ identifierKeywordsUnambiguous
     | CONSTRAINT_SCHEMA
     | CONTEXT
     | CPU
+    | CREATE
     | CURRENT
     | CURSOR_NAME
     | DATAFILE
@@ -565,6 +566,7 @@ variable
     
 userVariable
     : AT_ textOrIdentifier
+    | textOrIdentifier
     ;
     
 systemVariable
@@ -615,7 +617,7 @@ schemaNames
     ;
     
 charsetName
-    : textOrIdentifier | BINARY
+    : textOrIdentifier | BINARY | DEFAULT
     ;
     
 schemaPairs
@@ -642,16 +644,20 @@ constraintName
     : identifier
     ;
 
+delimiterName
+    : textOrIdentifier | ('\\'. | ~('\'' | '"' | '`' | '\\'))+
+    ; 
+
 userIdentifierOrText
     : textOrIdentifier (AT_ textOrIdentifier)?
     ;
     
-userName
+username
     : userIdentifierOrText | CURRENT_USER (LP_ RP_)?
     ;
     
 eventName
-    : identifier (DOT_ identifier)?
+    : (owner DOT_)? identifier
     ;
     
 serverName
@@ -663,13 +669,15 @@ wrapperName
     ;
     
 functionName
-    : identifier
-    | (owner DOT_)? identifier
+    : (owner DOT_)? identifier
     ;
-    
+
+procedureName
+    : (owner DOT_)? identifier
+    ;
+
 viewName
-    : identifier
-    | (owner DOT_)? identifier
+    : (owner DOT_)? identifier
     ;
     
 owner
@@ -716,7 +724,7 @@ pluginName
     : identifier
     ;
     
-hostName
+hostname
     : string_
     ;
     
@@ -725,7 +733,7 @@ port
     ;
     
 cloneInstance
-    : userName AT_ hostName COLON_ port
+    : username AT_ hostname COLON_ port
     ;
     
 cloneDir
@@ -765,7 +773,7 @@ tableOrTables
     ;
     
 userOrRole
-    : userName | roleName
+    : username | roleName
     ;
     
 partitionName
@@ -858,7 +866,7 @@ simpleExpr
     | parameterMarker
     | literals
     | columnRef
-    | simpleExpr COLLATE textOrIdentifier
+    | simpleExpr collateClause
     | variable
     | simpleExpr OR_ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | notOperator | BINARY) simpleExpr
@@ -866,9 +874,18 @@ simpleExpr
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
     | identifier (JSON_SEPARATOR | JSON_UNQUOTED_SEPARATOR) string_
+    | path (RETURNING dataType)? onEmptyError? 
     | matchExpression
     | caseExpression
     | intervalExpression
+    ;
+    
+path
+    : string_
+    ;
+
+onEmptyError
+    : (NULL | ERROR | DEFAULT literals) ON (EMPTY | ERROR)
     ;
     
 columnRef
@@ -884,7 +901,7 @@ functionCall
     ;
     
 aggregationFunction
-    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ overClause?
+    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? collateClause? RP_ overClause?
     ;
     
 aggregationFunctionName
@@ -1110,7 +1127,7 @@ dataType
     | dataTypeName = (BOOL | BOOLEAN)
     | dataTypeName = CHAR fieldLength? charsetWithOptBinary?
     | (dataTypeName = NCHAR | dataTypeName = NATIONAL CHAR) fieldLength? BINARY?
-    | dataTypeName = SIGNED
+    | dataTypeName = SIGNED (INTEGER | INT)?
     | dataTypeName = BINARY fieldLength?
     | (dataTypeName = CHAR VARYING | dataTypeName = VARCHAR) fieldLength charsetWithOptBinary?
     | (dataTypeName = NATIONAL VARCHAR | dataTypeName = NVARCHAR | dataTypeName = NCHAR VARCHAR | dataTypeName = NATIONAL CHAR VARYING | dataTypeName = NCHAR VARYING) fieldLength BINARY?
@@ -1118,7 +1135,7 @@ dataType
     | dataTypeName = YEAR fieldLength? fieldOptions?
     | dataTypeName = DATE
     | dataTypeName = TIME typeDatetimePrecision?
-    | dataTypeName = UNSIGNED
+    | dataTypeName = UNSIGNED (INTEGER | INT)?
     | dataTypeName = TIMESTAMP typeDatetimePrecision?
     | dataTypeName = DATETIME typeDatetimePrecision?
     | dataTypeName = TINYBLOB
@@ -1234,7 +1251,7 @@ characterSet
     ;
     
 collateClause
-    : COLLATE collationName
+    : COLLATE (collationName | parameterMarker)
     ;
     
 fieldOrVarSpec
@@ -1276,18 +1293,4 @@ noWriteToBinLog
     
 channelOption
     : FOR CHANNEL string_
-    ;
-    
-preparedStatement
-    : PREPARE identifier FROM (stringLiterals | userVariable)
-    | executeStatement
-    | (DEALLOCATE | DROP) PREPARE identifier
-    ;
-    
-executeStatement
-    : EXECUTE identifier (USING executeVarList)?
-    ;
-    
-executeVarList
-    : userVariable (COMMA_ userVariable)*
     ;

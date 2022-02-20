@@ -27,9 +27,9 @@ public class ShadowUser implements Serializable {
     
     private int userType;
     
-    private String userName;
+    private String username;
     
-    private String userNamePlain;
+    private String usernamePlain;
     
     private String pwd;
     
@@ -51,20 +51,20 @@ public class ShadowUser implements Serializable {
         this.userType = userType;
     }
     
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
     
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
     
-    public String getUserNamePlain() {
-        return userNamePlain;
+    public String getUsernamePlain() {
+        return usernamePlain;
     }
     
-    public void setUserNamePlain(String userNamePlain) {
-        this.userNamePlain = userNamePlain;
+    public void setUsernamePlain(String usernamePlain) {
+        this.usernamePlain = usernamePlain;
     }
     
     public String getPwd() {
@@ -85,7 +85,7 @@ public class ShadowUser implements Serializable {
     
     @Override
     public String toString() {
-        return String.format("user_id: %d, user_type: %d, user_name: %s, user_name_plain: %s, pwd: %s, assisted_query_pwd: %s", userId, userType, userName, userNamePlain, pwd,
+        return String.format("user_id: %d, user_type: %d, username: %s, username_plain: %s, pwd: %s, assisted_query_pwd: %s", userId, userType, username, usernamePlain, pwd,
                 assistedQueryPwd);
     }
 }

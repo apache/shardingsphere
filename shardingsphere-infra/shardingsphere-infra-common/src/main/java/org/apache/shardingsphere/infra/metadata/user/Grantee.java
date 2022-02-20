@@ -52,6 +52,7 @@ public final class Grantee {
     
     /**
      * Get host name.
+     * 
      * @return host name
      */
     public String getHostname() {

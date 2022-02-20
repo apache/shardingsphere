@@ -22,14 +22,14 @@ weight = 1
 
 ### Using openGauss
 
-1. Copy openGauss's JDBC driver to folder `ext-lib/`.
+1. Copy openGauss's JDBC driver whose package prefixed with `org.opengauss` to folder `ext-lib/`.
 1. Use any openGauss terminal to connect, such as `gsql -U root -h 127.0.0.1 -p 3307`.
 
 ## Using metadata persist repository
 
 ### Using ZooKeeper
 
-Default integration.
+Integrated ZooKeeper Curator client by default.
 
 ### Using Etcd
 
@@ -45,6 +45,9 @@ please refer to [Distributed Transaction](/en/user-manual/shardingsphere-jdbc/sp
 When developer need to use user-defined algorithm, should use the way below to configure algorithm, use sharding algorithm as example. 
 
 1. Implement `ShardingAlgorithm` interface.
+1. Create `META-INF/services` directory in the `resources` directory.
+1. Create a new file `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm` in the `META-INF/services` directory.
+1. Absolute path of the implementation class are write to the file `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm`
 1. Package Java file to jar.
 1. Copy jar to ShardingSphere-Proxy's `ext-lib/` folder.
 1. Configure user-defined Java class into YAML file. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/yaml-config/) for more details.

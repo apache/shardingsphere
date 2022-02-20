@@ -22,14 +22,14 @@ weight = 1
 
 ### 使用 openGauss
 
-1. 将 openGauss 的 JDBC 驱动程序复制至目录 `ext-lib/`。
+1. 将以 `org.opengauss` 包名为前缀的 openGauss 的 JDBC 驱动程序复制至目录 `ext-lib/`。
 1. 使用任何 openGauss 的客户端连接。如: `gsql -U root -h 127.0.0.1 -p 3307`
 
 ## 选择元数据持久化仓库
 
 ### 使用 ZooKeeper
 
-默认集成。
+默认集成 ZooKeeper Curator 客户端。
 
 ### 使用 Etcd
 
@@ -45,6 +45,9 @@ weight = 1
 当用户需要使用自定义的算法类时，可通过以下方式配置使用自定义算法，以分片为例：
 
 1. 实现 `ShardingAlgorithm` 接口定义的算法实现类。
+1. 在项目 `resources` 目录下创建 `META-INF/services` 目录。
+1. 在 `META-INF/services` 目录下新建文件 `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm`
+1. 将实现类的绝对路径写入至文件 `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm`
 1. 将上述 Java 文件打包成 jar 包。
 1. 将上述 jar 包拷贝至 ShardingSphere-Proxy 解压后的 `ext-lib/` 目录。
 1. 将上述自定义算法实现类的 Java 文件引用配置在 YAML 文件中，具体可参考[配置规则](/cn/user-manual/shardingsphere-proxy/yaml-config/)。

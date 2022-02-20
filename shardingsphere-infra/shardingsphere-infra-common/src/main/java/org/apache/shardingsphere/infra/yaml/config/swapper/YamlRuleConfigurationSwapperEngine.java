@@ -25,6 +25,7 @@ import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -42,7 +43,7 @@ public final class YamlRuleConfigurationSwapperEngine {
     
     /**
      * Swap to YAML rule configurations.
-     * 
+     *
      * @param ruleConfigs rule configurations
      * @return YAML rule configurations
      */
@@ -90,5 +91,19 @@ public final class YamlRuleConfigurationSwapperEngine {
             result.put(String.format("!%s", each.getRuleTagName()), yamlRuleConfigurationClass);
         }
         return result;
+    }
+    
+    /**
+     * Swap from YAML rule configuration to rule configuration.
+     *
+     * @param yamlRuleConfig YAML rule configuration
+     * @return rule configuration
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public RuleConfiguration swapToRuleConfiguration(final YamlRuleConfiguration yamlRuleConfig) {
+        Collection<Class<?>> types = Collections.singletonList(yamlRuleConfig.getRuleConfigurationType());
+        Map<Class<?>, YamlRuleConfigurationSwapper> typeSwapperMap = OrderedSPIRegistry.getRegisteredServicesByClass(YamlRuleConfigurationSwapper.class, types);
+        YamlRuleConfigurationSwapper swapper = typeSwapperMap.get(yamlRuleConfig.getRuleConfigurationType());
+        return (RuleConfiguration) swapper.swapToObject(yamlRuleConfig);
     }
 }

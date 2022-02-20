@@ -106,3 +106,19 @@ TRUE
 FALSE
     : F A L S E
     ;    
+
+DATA_TYPE
+    : D A T A UL_ T Y P E
+    ;
+    
+PLAIN_DATA_TYPE
+    : P L A I N UL_ D A T A UL_ T Y P E
+    ;
+
+CIPHER_DATA_TYPE
+    : C I P H E R UL_ D A T A UL_ T Y P E
+    ;
+
+ASSISTED_QUERY_DATA_TYPE
+    : A S S I S T E D UL_ Q U E R Y UL_ D A T A UL_ T Y P E
+    ;

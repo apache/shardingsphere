@@ -20,26 +20,30 @@ package org.apache.shardingsphere.readwritesplitting.rule;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
+import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
+import org.apache.shardingsphere.readwritesplitting.algorithm.DynamicReadwriteSplittingType;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingRuleConstants;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadwriteSplittingType;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Map.Entry;
+import java.util.function.Supplier;
 
 /**
  * Readwrite-splitting rule.
@@ -48,7 +52,12 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     
     static {
         ShardingSphereServiceLoader.register(ReplicaLoadBalanceAlgorithm.class);
+        ShardingSphereServiceLoader.register(ReadwriteSplittingType.class);
     }
+    
+    private static final String DYNAMIC = "DYNAMIC";
+    
+    private static final String STATIC = "STATIC";
     
     private final Map<String, ReplicaLoadBalanceAlgorithm> loadBalancers = new LinkedHashMap<>();
     
@@ -89,7 +98,7 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     
     /**
      * Find data source rule.
-     * 
+     *
      * @param dataSourceName data source name
      * @return replica query data source rule
      */
@@ -116,15 +125,34 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     }
     
     @Override
-    public Map<String, Object> export() {
-        Map<String, Object> result = new HashMap<>(1, 1);
-        result.put(ReadwriteSplittingRuleConstants.AUTO_AWARE_DATA_SOURCE_KEY, exportAutoAwareDataSourceMap());
+    public Map<String, Supplier<Object>> getExportedMethods() {
+        Map<String, Supplier<Object>> result = new HashMap<>(3, 1);
+        result.put(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, () -> exportDataSource(DYNAMIC));
+        result.put(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_NAME, this::exportAutoAwareDataSourceNames);
+        result.put(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE, () -> exportDataSource(STATIC));
         return result;
     }
-
-    private Map<String, Map<String, String>> exportAutoAwareDataSourceMap() {
+    
+    private Map<String, Map<String, String>> exportDataSource(final String readwriteSplittingType) {
         Map<String, Map<String, String>> result = new HashMap<>(dataSourceRules.size(), 1);
-        dataSourceRules.forEach((name, dataSourceRule) -> result.put(dataSourceRule.getName(), dataSourceRule.getAutoAwareDataSources()));
+        dataSourceRules.forEach((name, dataSourceRule) -> {
+            if (readwriteSplittingType.equalsIgnoreCase(dataSourceRule.getReadwriteSplittingType().getType())) {
+                Map<String, String> dataSources = dataSourceRule.getDataSources();
+                if (!dataSources.isEmpty()) {
+                    result.put(dataSourceRule.getName(), dataSources);
+                }
+            }
+        });
+        return result;
+    }
+    
+    private Collection<String> exportAutoAwareDataSourceNames() {
+        Collection<String> result = new ArrayList<>();
+        for (ReadwriteSplittingDataSourceRule each : dataSourceRules.values()) {
+            if (each.getReadwriteSplittingType() instanceof DynamicReadwriteSplittingType) {
+                result.add(((DynamicReadwriteSplittingType) each.getReadwriteSplittingType()).getAutoAwareDataSourceName());
+            }
+        }
         return result;
     }
     

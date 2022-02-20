@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.config;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
-import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
+import org.apache.shardingsphere.proxy.config.yaml.YamlProxyDataSourceConfiguration;
+import org.apache.shardingsphere.proxy.config.yaml.YamlProxySchemaConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
@@ -47,17 +47,17 @@ public final class ProxyConfigurationLoaderTest {
         // TODO assert mode
         // TODO assert authority rule
         actualGlobalRules.next();
-        assertThat(actual.getRuleConfigurations().size(), is(3));
-        assertShardingRuleConfiguration(actual.getRuleConfigurations().get("sharding_db"));
-        assertReadwriteSplittingRuleConfiguration(actual.getRuleConfigurations().get("readwrite_splitting_db"));
-        assertEncryptRuleConfiguration(actual.getRuleConfigurations().get("encrypt_db"));
+        assertThat(actual.getSchemaConfigurations().size(), is(3));
+        assertShardingRuleConfiguration(actual.getSchemaConfigurations().get("sharding_db"));
+        assertReadwriteSplittingRuleConfiguration(actual.getSchemaConfigurations().get("readwrite_splitting_db"));
+        assertEncryptRuleConfiguration(actual.getSchemaConfigurations().get("encrypt_db"));
     }
     
-    private void assertShardingRuleConfiguration(final YamlProxyRuleConfiguration actual) {
+    private void assertShardingRuleConfiguration(final YamlProxySchemaConfiguration actual) {
         assertThat(actual.getSchemaName(), is("sharding_db"));
         assertThat(actual.getDataSources().size(), is(2));
-        assertDataSourceParameter(actual.getDataSources().get("ds_0"), "jdbc:mysql://127.0.0.1:3306/ds_0");
-        assertDataSourceParameter(actual.getDataSources().get("ds_1"), "jdbc:mysql://127.0.0.1:3306/ds_1");
+        assertDataSourceConfiguration(actual.getDataSources().get("ds_0"), "jdbc:mysql://127.0.0.1:3306/ds_0");
+        assertDataSourceConfiguration(actual.getDataSources().get("ds_1"), "jdbc:mysql://127.0.0.1:3306/ds_1");
         Optional<YamlShardingRuleConfiguration> shardingRuleConfig = actual.getRules().stream().filter(
             each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(config -> (YamlShardingRuleConfiguration) config);
         assertTrue(shardingRuleConfig.isPresent());
@@ -76,12 +76,12 @@ public final class ProxyConfigurationLoaderTest {
         assertNotNull(actual.getDefaultDatabaseStrategy().getNone());
     }
     
-    private void assertReadwriteSplittingRuleConfiguration(final YamlProxyRuleConfiguration actual) {
+    private void assertReadwriteSplittingRuleConfiguration(final YamlProxySchemaConfiguration actual) {
         assertThat(actual.getSchemaName(), is("readwrite_splitting_db"));
         assertThat(actual.getDataSources().size(), is(3));
-        assertDataSourceParameter(actual.getDataSources().get("write_ds"), "jdbc:mysql://127.0.0.1:3306/write_ds");
-        assertDataSourceParameter(actual.getDataSources().get("read_ds_0"), "jdbc:mysql://127.0.0.1:3306/read_ds_0");
-        assertDataSourceParameter(actual.getDataSources().get("read_ds_1"), "jdbc:mysql://127.0.0.1:3306/read_ds_1");
+        assertDataSourceConfiguration(actual.getDataSources().get("write_ds"), "jdbc:mysql://127.0.0.1:3306/write_ds");
+        assertDataSourceConfiguration(actual.getDataSources().get("read_ds_0"), "jdbc:mysql://127.0.0.1:3306/read_ds_0");
+        assertDataSourceConfiguration(actual.getDataSources().get("read_ds_1"), "jdbc:mysql://127.0.0.1:3306/read_ds_1");
         assertFalse(actual.getRules().stream().filter(
             each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(configuration -> (YamlShardingRuleConfiguration) configuration).isPresent());
         assertFalse(actual.getRules().stream().filter(
@@ -95,17 +95,15 @@ public final class ProxyConfigurationLoaderTest {
     }
     
     private void assertReadwriteSplittingRuleConfiguration(final YamlReadwriteSplittingDataSourceRuleConfiguration actual) {
-        assertThat(actual.getWriteDataSourceName(), is("write_ds"));
-        assertThat(actual.getReadDataSourceNames().size(), is(2));
-        Iterator<String> replicaDataSourceNames = actual.getReadDataSourceNames().iterator();
-        assertThat(replicaDataSourceNames.next(), is("read_ds_0"));
-        assertThat(replicaDataSourceNames.next(), is("read_ds_1"));
+        assertNotNull(actual.getProps());
+        assertThat(actual.getProps().get("write-data-source-name"), is("write_ds"));
+        assertThat(actual.getProps().get("read-data-source-names"), is("read_ds_0,read_ds_1"));
     }
     
-    private void assertEncryptRuleConfiguration(final YamlProxyRuleConfiguration actual) {
+    private void assertEncryptRuleConfiguration(final YamlProxySchemaConfiguration actual) {
         assertThat(actual.getSchemaName(), is("encrypt_db"));
         assertThat(actual.getDataSources().size(), is(1));
-        assertDataSourceParameter(actual.getDataSources().get("ds_0"), "jdbc:mysql://127.0.0.1:3306/encrypt_ds");
+        assertDataSourceConfiguration(actual.getDataSources().get("ds_0"), "jdbc:mysql://127.0.0.1:3306/encrypt_ds");
         assertFalse(actual.getRules().stream().filter(
             each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(configuration -> (YamlShardingRuleConfiguration) configuration).isPresent());
         Optional<YamlEncryptRuleConfiguration> encryptRuleConfig = actual.getRules().stream().filter(
@@ -125,7 +123,7 @@ public final class ProxyConfigurationLoaderTest {
         assertThat(md5EncryptAlgorithmConfig.getType(), is("MD5"));
     }
     
-    private void assertDataSourceParameter(final YamlDataSourceParameter actual, final String expectedURL) {
+    private void assertDataSourceConfiguration(final YamlProxyDataSourceConfiguration actual, final String expectedURL) {
         assertThat(actual.getUrl(), is(expectedURL));
         assertThat(actual.getUsername(), is("root"));
         assertNull(actual.getPassword());

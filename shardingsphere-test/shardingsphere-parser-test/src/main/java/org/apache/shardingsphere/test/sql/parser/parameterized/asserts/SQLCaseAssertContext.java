@@ -41,6 +41,8 @@ public final class SQLCaseAssertContext {
     @Getter
     private final SQLCaseType sqlCaseType;
     
+    private final String databaseType;
+    
     /**
      * Get message text.
      * 
@@ -64,13 +66,13 @@ public final class SQLCaseAssertContext {
     private void appendSQL(final StringBuilder builder) {
         builder.append("SQL         : ");
         if (SQLCaseType.Placeholder == sqlCaseType) {
-            builder.append(casesLoader.getCaseValue(sqlCaseId, sqlCaseType, Collections.emptyList()));
+            builder.append(casesLoader.getCaseValue(sqlCaseId, sqlCaseType, Collections.emptyList(), databaseType));
             builder.append(System.lineSeparator());
             builder.append("SQL Params  : ");
             builder.append(SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
             builder.append(System.lineSeparator());
         } else {
-            builder.append(casesLoader.getCaseValue(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters()));
+            builder.append(casesLoader.getCaseValue(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters(), databaseType));
         }
     }
     

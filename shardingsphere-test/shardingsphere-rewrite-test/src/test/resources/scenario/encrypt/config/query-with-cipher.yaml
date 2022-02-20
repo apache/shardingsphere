@@ -39,6 +39,9 @@ rules:
         amount:
           cipherColumn: cipher_amount
           encryptorName: normal
+        amount_new:
+          cipherColumn: amount_new_cipher
+          encryptorName: normal
     t_account_bak:
       columns:
         certificate_number:
@@ -72,8 +75,16 @@ rules:
           plainColumn: plain_amount
           encryptorName: normal
       queryWithCipherColumn: false
+    t_order:
+      columns:
+        content:
+          cipherColumn: cipher_content
+          plainColumn: plain_content
+          encryptorName: schema_based
   encryptors:
     normal:
       type: NORMAL_ENCRYPT
+    schema_based:
+      type: SCHEMA_BASED_ENCRYPT
     assisted_query:
       type: ASSISTED_QUERY_ENCRYPT

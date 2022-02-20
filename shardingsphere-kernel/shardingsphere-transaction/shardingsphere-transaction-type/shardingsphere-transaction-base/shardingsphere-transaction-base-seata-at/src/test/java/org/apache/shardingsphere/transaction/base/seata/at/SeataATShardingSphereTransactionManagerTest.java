@@ -17,23 +17,19 @@
 
 package org.apache.shardingsphere.transaction.base.seata.at;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.sql.DataSource;
-
+import io.seata.core.context.RootContext;
+import io.seata.core.protocol.MergeResultMessage;
+import io.seata.core.protocol.MergedWarpMessage;
+import io.seata.core.protocol.RegisterRMRequest;
+import io.seata.core.protocol.RegisterRMResponse;
+import io.seata.core.protocol.RegisterTMRequest;
+import io.seata.core.protocol.RegisterTMResponse;
+import io.seata.core.rpc.netty.RmNettyRemotingClient;
+import io.seata.core.rpc.netty.TmNettyRemotingClient;
+import io.seata.rm.datasource.ConnectionProxy;
+import io.seata.rm.datasource.DataSourceProxy;
+import io.seata.tm.api.GlobalTransactionContext;
+import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
@@ -50,19 +46,22 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import io.seata.core.context.RootContext;
-import io.seata.core.protocol.MergedWarpMessage;
-import io.seata.core.protocol.MergeResultMessage;
-import io.seata.core.protocol.RegisterRMRequest;
-import io.seata.core.protocol.RegisterRMResponse;
-import io.seata.core.protocol.RegisterTMRequest;
-import io.seata.core.protocol.RegisterTMResponse;
-import io.seata.core.rpc.netty.RmNettyRemotingClient;
-import io.seata.core.rpc.netty.TmNettyRemotingClient;
-import io.seata.rm.datasource.ConnectionProxy;
-import io.seata.rm.datasource.DataSourceProxy;
-import io.seata.tm.api.GlobalTransactionContext;
-import lombok.SneakyThrows;
+import javax.sql.DataSource;
+import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Queue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SeataATShardingSphereTransactionManagerTest {
@@ -86,7 +85,7 @@ public final class SeataATShardingSphereTransactionManagerTest {
             }
         }
     }
-
+    
     @AfterClass
     public static void after() {
         MOCK_SEATA_SERVER.shutdown();
@@ -94,7 +93,8 @@ public final class SeataATShardingSphereTransactionManagerTest {
     
     @Before
     public void setUp() {
-        seataTransactionManager.init(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), getResourceDataSources(), new TransactionRule(new TransactionRuleConfiguration("BASE", "Seata")));
+        TransactionRuleConfiguration transactionRuleConfiguration = new TransactionRuleConfiguration("BASE", "Seata", new Properties());
+        seataTransactionManager.init(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), getResourceDataSources(), new TransactionRule(transactionRuleConfiguration));
     }
     
     @After
@@ -137,6 +137,13 @@ public final class SeataATShardingSphereTransactionManagerTest {
     @Test
     public void assertBegin() {
         seataTransactionManager.begin();
+        assertTrue(seataTransactionManager.isInTransaction());
+        assertResult();
+    }
+    
+    @Test
+    public void assertBeginTimeout() {
+        seataTransactionManager.begin(30);
         assertTrue(seataTransactionManager.isInTransaction());
         assertResult();
     }

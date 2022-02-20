@@ -52,7 +52,9 @@ execute
     | alterResourceGroup
     | createResourceGroup
     | dropResourceGroup
-    | preparedStatement
+    | prepare
+    | executeStmt
+    | deallocate
     | setTransaction
     | beginTransaction
     | setAutoCommit
@@ -120,6 +122,7 @@ execute
     | createTablespace
     | alterTablespace
     | dropTablespace
+    | delimiter
     ) (SEMI_ EOF? | EOF)
     | EOF
     ;

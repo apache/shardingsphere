@@ -21,6 +21,7 @@ import Keyword, PostgreSQLKeyword, Symbol, Literals;
 
 parameterMarker
     : QUESTION_ literalsType?
+    | DOLLAR_ numberLiterals
     ;
 
 reservedKeyword
@@ -204,6 +205,7 @@ unreservedWord
     | EXECUTE
     | EXPLAIN
     | EXPRESSION
+    | EXTENDED
     | EXTENSION
     | EXTERNAL
     | FAMILY
@@ -256,6 +258,7 @@ unreservedWord
     | LOCK
     | LOCKED
     | LOGGED
+    | MAIN
     | MAPPING
     | MATCH
     | MATERIALIZED
@@ -300,6 +303,7 @@ unreservedWord
     | PARTITION
     | PASSING
     | PASSWORD
+    | PLAIN
     | PLANS
     | POLICY
     | PRECEDING

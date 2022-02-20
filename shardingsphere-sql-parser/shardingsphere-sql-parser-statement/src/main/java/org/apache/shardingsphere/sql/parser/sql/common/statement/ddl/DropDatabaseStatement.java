@@ -30,5 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 @ToString
 public abstract class DropDatabaseStatement extends AbstractSQLStatement implements DDLStatement {
     
+    private boolean containsExistClause;
+    
     private String databaseName;
 }

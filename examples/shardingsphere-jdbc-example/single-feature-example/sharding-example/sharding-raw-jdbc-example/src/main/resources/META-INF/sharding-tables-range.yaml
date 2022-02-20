@@ -31,7 +31,7 @@ rules:
       tableStrategy: 
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: standard_test_tbl
+          shardingAlgorithmName: standard-test-tbl
       keyGenerateStrategy:
         column: order_id
         keyGeneratorName: snowflake
@@ -40,7 +40,7 @@ rules:
       tableStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: standard_test_tbl
+          shardingAlgorithmName: standard-test-tbl
       keyGenerateStrategy:
         column: order_item_id
         keyGeneratorName: snowflake
@@ -48,7 +48,7 @@ rules:
       actualDataNodes: ds.t_account_${0..1}
       tableStrategy:
         standard:
-          shardingAlgorithmName: standard_test_tbl
+          shardingAlgorithmName: standard-test-tbl
       keyGenerateStrategy:
         column: account_id
         keyGeneratorName: snowflake
@@ -59,14 +59,12 @@ rules:
     - t_address
   
   shardingAlgorithms:
-    standard_test_tbl:
+    standard-test-tbl:
       type: STANDARD_TEST_TBL
     
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-          worker-id: 123
 
 props:
   sql-show: false

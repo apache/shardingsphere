@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.metadata;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
@@ -68,6 +68,20 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
         return getTableMetaDataMap(tableMetaDataList, rule);
     }
     
+    @Override
+    public Map<String, TableMetaData> decorate(final Map<String, TableMetaData> tableMetaDataMap, final ShardingRule rule, final SchemaBuilderMaterials materials) {
+        Map<String, TableMetaData> result = new LinkedHashMap<>();
+        for (Entry<String, TableMetaData> entry : tableMetaDataMap.entrySet()) {
+            result.put(entry.getKey(), decorate(entry.getKey(), entry.getValue(), rule));
+        }
+        return result;
+    }  
+
+    private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final ShardingRule shardingRule) {
+        return shardingRule.findTableRule(tableName).map(
+            tableRule -> new TableMetaData(tableName, getColumnMetaDataList(tableMetaData, tableRule), getIndexMetaDataList(tableMetaData, tableRule))).orElse(tableMetaData);
+    }
+    
     private void checkTableMetaData(final Collection<TableMetaData> tableMetaDataList, final ShardingRule rule) {
         Map<String, Collection<TableMetaData>> logicTableMetaDataMap = new LinkedHashMap<>();
         for (TableMetaData each : tableMetaDataList) {
@@ -86,7 +100,12 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
     private Map<String, TableMetaData> getTableMetaDataMap(final Collection<TableMetaData> tableMetaDataList, final ShardingRule rule) {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         for (TableMetaData each : tableMetaDataList) {
-            result.putIfAbsent(rule.findLogicTableByActualTable(each.getName()).orElse(each.getName()), each);
+            Collection<String> logicTables = rule.getLogicTablesByActualTable(each.getName());
+            if (!logicTables.isEmpty()) {
+                logicTables.forEach(logicTable -> result.putIfAbsent(logicTable, each));
+            } else {
+                result.putIfAbsent(each.getName(), each);
+            }
         }
         return result;
     }
@@ -108,12 +127,6 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
             }
             throw new ShardingSphereException(errorMessage.toString(), logicTableName);
         }
-    }
-
-    @Override
-    public TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final ShardingRule shardingRule) {
-        return shardingRule.findTableRule(tableName).map(
-            tableRule -> new TableMetaData(tableName, getColumnMetaDataList(tableMetaData, tableRule), getIndexMetaDataList(tableMetaData, tableRule))).orElse(tableMetaData);
     }
     
     private Collection<ColumnMetaData> getColumnMetaDataList(final TableMetaData tableMetaData, final TableRule tableRule) {

@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-encrypt</artifactId>
-        <version>5.0.1-SNAPSHOT</version>
+        <version>5.1.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-encrypt-core</artifactId>
     <name>${project.artifactId}</name>
@@ -54,6 +54,11 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-infra-merge</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
         </dependency>
         
         <dependency>

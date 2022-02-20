@@ -34,6 +34,7 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -87,7 +88,18 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     public void begin() {
         xaTransactionManagerProvider.getTransactionManager().begin();
     }
-    
+
+    @Override
+    @SneakyThrows({SystemException.class, NotSupportedException.class})
+    public void begin(final int timeout) {
+        if (timeout < 0) {
+            throw new NotSupportedException("timeout should more than 0s");
+        }
+        TransactionManager transactionManager = xaTransactionManagerProvider.getTransactionManager();
+        transactionManager.setTransactionTimeout(timeout);
+        transactionManager.begin();
+    }
+
     @SneakyThrows({SystemException.class, RollbackException.class, HeuristicMixedException.class, HeuristicRollbackException.class})
     @Override
     public void commit() {

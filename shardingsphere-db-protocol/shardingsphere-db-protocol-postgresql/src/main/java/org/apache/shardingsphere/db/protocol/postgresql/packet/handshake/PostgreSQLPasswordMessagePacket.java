@@ -29,11 +29,11 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 @Getter
 public final class PostgreSQLPasswordMessagePacket implements PostgreSQLIdentifierPacket {
     
-    private final String md5Digest;
+    private final String digest;
     
     public PostgreSQLPasswordMessagePacket(final PostgreSQLPacketPayload payload) {
         payload.readInt4();
-        md5Digest = payload.readStringNul();
+        digest = payload.readStringNul();
     }
     
     @Override

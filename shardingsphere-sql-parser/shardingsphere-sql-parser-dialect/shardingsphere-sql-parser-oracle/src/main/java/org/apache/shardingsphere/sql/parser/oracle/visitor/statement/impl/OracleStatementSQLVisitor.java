@@ -68,6 +68,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Unrese
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ViewNameContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndextypeSegment;
@@ -131,7 +132,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
-        return new ParameterMarkerValue(currentParameterIndex++);
+        return new ParameterMarkerValue(currentParameterIndex++, ParameterMarkerType.QUESTION);
     }
     
     @Override
@@ -416,7 +417,8 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
             return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((BooleanLiteralValue) astNode).getValue());
         }
         if (astNode instanceof ParameterMarkerValue) {
-            return new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((ParameterMarkerValue) astNode).getValue());
+            ParameterMarkerValue parameterMarker = (ParameterMarkerValue) astNode;
+            return new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), parameterMarker.getValue(), parameterMarker.getType());
         }
         if (astNode instanceof SubquerySegment) {
             return new SubqueryExpressionSegment((SubquerySegment) astNode);
@@ -435,7 +437,8 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
             return new SubquerySegment(startIndex, stopIndex, (OracleSelectStatement) visit(ctx.subquery()));
         }
         if (null != ctx.parameterMarker()) {
-            return new ParameterMarkerExpressionSegment(startIndex, stopIndex, ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
+            ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
+            return new ParameterMarkerExpressionSegment(startIndex, stopIndex, parameterMarker.getValue(), parameterMarker.getType());
         }
         if (null != ctx.literals()) {
             return SQLUtil.createLiteralExpression(visit(ctx.literals()), startIndex, stopIndex, ctx.literals().start.getInputStream().getText(new Interval(startIndex, stopIndex)));
@@ -501,7 +504,15 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     @Override
     public final ASTNode visitCastFunction(final CastFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
-        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CAST().getText(), getOriginalText(ctx));
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CAST().getText(), getOriginalText(ctx));
+        ASTNode exprSegment = visit(ctx.expr());
+        if (exprSegment instanceof ColumnSegment) {
+            result.getParameters().add((ColumnSegment) exprSegment);
+        } else if (exprSegment instanceof LiteralExpressionSegment) {
+            result.getParameters().add((LiteralExpressionSegment) exprSegment);
+        }
+        result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
+        return result;
     }
     
     @Override

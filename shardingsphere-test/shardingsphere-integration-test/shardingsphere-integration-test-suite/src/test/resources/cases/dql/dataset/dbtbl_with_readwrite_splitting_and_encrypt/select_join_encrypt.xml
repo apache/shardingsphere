@@ -22,18 +22,10 @@
         <column name="pwd" />
         <column name="status" />
         <column name="item_id" />
-        <column name="user_id" />
-        <column name="status" />
+        <column name="user_id0" />
+        <column name="status0" />
         <column name="creation_date" />
     </metadata>
     <row values="0, 10000, a00, init_read, 100000, 0, init_read, 2017-08-08" />
     <row values="11, 11001, b11, init_read, 110001, 11, init_read, 2017-08-08" />
-    <row values="22, 12002, c22, init_read, 120002, 22, init_read, 2017-08-08" />
-    <row values="33, 13003, d33, init_read, 130003, 33, init_read, 2017-08-08" />
-    <row values="44, 14004, e44, init_read, 140004, 44, init_read, 2017-08-08" />
-    <row values="55, 15005, f55, init_read, 150005, 55, init_read, 2017-08-08" />
-    <row values="66, 16006, g66, init_read, 160006, 66, init_read, 2017-08-08" />
-    <row values="77, 17007, h77, init_read, 170007, 77, init_read, 2017-08-08" />
-    <row values="88, 18008, i88, init_read, 180008, 88, init_read, 2017-08-08" />
-    <row values="99, 19009, j99, init_read, 190009, 99, init_read, 2017-08-08" />
 </dataset>

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfigurationValidator;
+import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
@@ -27,10 +27,10 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,13 +53,13 @@ import static org.mockito.Mockito.when;
 public final class AddResourceBackendHandlerTest {
     
     @Mock
-    private DataSourceConfigurationValidator dataSourceConfigurationValidator;
+    private DataSourcePropertiesValidator validator;
     
     @Mock
     private AddResourceStatement addResourceStatement;
     
     @Mock
-    private BackendConnection backendConnection;
+    private ConnectionSession connectionSession;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private MetaDataContexts metaDataContexts;
@@ -74,10 +74,10 @@ public final class AddResourceBackendHandlerTest {
     
     @Before
     public void setUp() throws Exception {
-        addResourceBackendHandler = new AddResourceBackendHandler(new MySQLDatabaseType(), addResourceStatement, backendConnection);
-        Field field = addResourceBackendHandler.getClass().getDeclaredField("dataSourceConfigValidator");
+        addResourceBackendHandler = new AddResourceBackendHandler(new MySQLDatabaseType(), addResourceStatement, connectionSession);
+        Field field = addResourceBackendHandler.getClass().getDeclaredField("validator");
         field.setAccessible(true);
-        field.set(addResourceBackendHandler, dataSourceConfigurationValidator);
+        field.set(addResourceBackendHandler, validator);
     }
     
     @Test

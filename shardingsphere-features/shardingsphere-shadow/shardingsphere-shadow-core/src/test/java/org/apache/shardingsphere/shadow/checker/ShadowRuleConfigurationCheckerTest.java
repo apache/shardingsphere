@@ -51,7 +51,6 @@ public final class ShadowRuleConfigurationCheckerTest {
     
     private ShadowRuleConfiguration createShadowRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.setEnable(true);
         result.setShadowAlgorithms(createShadowAlgorithmConfigurations());
         result.setDataSources(createDataSources());
         result.setTables(createTables());

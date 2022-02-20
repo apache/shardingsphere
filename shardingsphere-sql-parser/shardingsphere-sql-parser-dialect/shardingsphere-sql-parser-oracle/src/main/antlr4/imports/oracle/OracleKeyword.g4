@@ -611,6 +611,10 @@ SEGMENT
     : S E G M E N T
     ;
 
+RESTRICT
+    : R E S T R I C T
+    ;
+
 RESTRICTED
     : R E S T R I C T E D
     ;
@@ -1221,6 +1225,10 @@ INCLUDING
 
 OVERFLOW
     : O V E R F L O W
+    ;
+
+ATTRIBUTE
+    : A T T R I B U T E
     ;
 
 ATTRIBUTES
@@ -2613,4 +2621,20 @@ ALLOCATE
 
 DEALLOCATE
     : D E A L L O C A T E
+    ;
+
+SHARED
+    : S H A R E D
+    ;
+
+AUTHENTICATED
+    : A U T H E N T I C A T E D
+    ;
+
+CHILD
+    : C H I L D
+    ;
+
+DETERMINES
+    : D E T E R M I N E S
     ;

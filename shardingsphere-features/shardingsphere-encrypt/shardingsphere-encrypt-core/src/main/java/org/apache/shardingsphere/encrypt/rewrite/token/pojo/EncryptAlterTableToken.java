@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 /**
  * Alter table token for encrypt.
  */
-
 @Getter
 public final class EncryptAlterTableToken extends SQLToken implements Substitutable {
     
@@ -43,6 +42,10 @@ public final class EncryptAlterTableToken extends SQLToken implements Substituta
     
     @Override
     public String toString() {
-        return String.format(" %s %s ", operationType, columnName);
+        if (null == operationType) {
+            return columnName;
+        }
+        // TODO refactor alter table token
+        return String.format("%s %s", operationType, columnName);
     }
 }

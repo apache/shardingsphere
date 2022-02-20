@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
@@ -228,7 +228,7 @@ public final class ShardingRouteEngineFactory {
         if (select.getPaginationContext().isHasPagination() || (shardingConditions.isNeedMerge() && shardingConditions.isSameShardingCondition())) {
             return false;
         }
-        if (select.isContainsSubquery() || select.isContainsHaving() || select.isContainsPartialDistinctAggregation()) {
+        if (select.isContainsSubquery() || select.isContainsHaving() || select.isContainsUnion() || select.isContainsPartialDistinctAggregation()) {
             return true;
         }
         if (!select.isContainsJoinQuery() || shardingRule.isAllTablesInSameDataSource(tableNames)) {

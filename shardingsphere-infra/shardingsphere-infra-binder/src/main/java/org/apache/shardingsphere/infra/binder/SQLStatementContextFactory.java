@@ -45,8 +45,10 @@ import org.apache.shardingsphere.infra.binder.statement.ddl.DropIndexStatementCo
 import org.apache.shardingsphere.infra.binder.statement.ddl.DropTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.DropViewStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.PrepareStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.RenameTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.TruncateStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.CallStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.CopyStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -73,8 +75,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexSt
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.PrepareStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CopyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
@@ -129,16 +133,19 @@ public final class SQLStatementContextFactory {
             return new SelectStatementContext(metaDataMap, parameters, (SelectStatement) sqlStatement, defaultSchemaName);
         }
         if (sqlStatement instanceof UpdateStatement) {
-            return new UpdateStatementContext((UpdateStatement) sqlStatement, defaultSchemaName);
+            return new UpdateStatementContext((UpdateStatement) sqlStatement);
         }
         if (sqlStatement instanceof DeleteStatement) {
-            return new DeleteStatementContext((DeleteStatement) sqlStatement, defaultSchemaName);
+            return new DeleteStatementContext((DeleteStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
             return new InsertStatementContext(metaDataMap, parameters, (InsertStatement) sqlStatement, defaultSchemaName);
         }
         if (sqlStatement instanceof CallStatement) {
-            return new CallStatementContext((CallStatement) sqlStatement, defaultSchemaName);
+            return new CallStatementContext((CallStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof CopyStatement) {
+            return new CopyStatementContext((CopyStatement) sqlStatement);
         }
         throw new UnsupportedOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }
@@ -149,6 +156,9 @@ public final class SQLStatementContextFactory {
         }
         if (sqlStatement instanceof AlterTableStatement) {
             return new AlterTableStatementContext((AlterTableStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof RenameTableStatement) {
+            return new RenameTableStatementContext((RenameTableStatement) sqlStatement);
         }
         if (sqlStatement instanceof DropTableStatement) {
             return new DropTableStatementContext((DropTableStatement) sqlStatement);

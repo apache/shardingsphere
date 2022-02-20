@@ -28,9 +28,11 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
@@ -51,18 +53,13 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
     }
     
     @Override
-    public MySQLCommandPacket getCommandPacket(final PacketPayload payload, final CommandPacketType type, final BackendConnection backendConnection) throws SQLException {
-        return MySQLCommandPacketFactory.newInstance((MySQLCommandPacketType) type, (MySQLPacketPayload) payload, backendConnection.getConnectionId());
+    public MySQLCommandPacket getCommandPacket(final PacketPayload payload, final CommandPacketType type, final ConnectionSession connectionSession) throws SQLException {
+        return MySQLCommandPacketFactory.newInstance((MySQLCommandPacketType) type, (MySQLPacketPayload) payload, connectionSession.getConnectionId());
     }
     
     @Override
-    public CommandExecutor getCommandExecutor(final CommandPacketType type, final CommandPacket packet, final BackendConnection backendConnection) throws SQLException {
-        return MySQLCommandExecutorFactory.newInstance((MySQLCommandPacketType) type, packet, backendConnection);
-    }
-    
-    @Override
-    public DatabasePacket<?> getErrorPacket(final Exception cause, final BackendConnection backendConnection) {
-        return MySQLErrPacketFactory.newInstance(cause);
+    public CommandExecutor getCommandExecutor(final CommandPacketType type, final CommandPacket packet, final ConnectionSession connectionSession) throws SQLException {
+        return MySQLCommandExecutorFactory.newInstance((MySQLCommandPacketType) type, packet, connectionSession);
     }
     
     @Override
@@ -71,7 +68,7 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
     }
     
     @Override
-    public Optional<DatabasePacket<?>> getOtherPacket(final BackendConnection backendConnection) {
+    public Optional<DatabasePacket<?>> getOtherPacket(final ConnectionSession connectionSession) {
         return Optional.empty();
     }
     
@@ -88,7 +85,7 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
                 context.flush();
-                backendConnection.getResourceLock().doAwait();
+                ((JDBCBackendConnection) backendConnection).getResourceLock().doAwait();
             }
             DatabasePacket<?> dataValue = queryCommandExecutor.getQueryRowPacket();
             context.write(dataValue);

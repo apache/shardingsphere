@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.parser.segment;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -50,5 +51,14 @@ public final class ReadwriteSplittingRuleSegment implements ASTNode {
     
     public ReadwriteSplittingRuleSegment(final String name, final String writeDataSource, final Collection<String> readDataSources, final String loadBalancer, final Properties props) {
         this(name, null, writeDataSource, readDataSources, loadBalancer, props);
+    }
+    
+    /**
+     * Is it an auto aware type.
+     * 
+     * @return is auto ware or not
+     */
+    public boolean isAutoAware() {
+        return !Strings.isNullOrEmpty(autoAwareResource);
     }
 }

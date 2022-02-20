@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
@@ -42,13 +42,13 @@ public final class ShardingCreateProcedureStatementValidator extends ShardingDDL
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateProcedureStatement> sqlStatementContext, 
                             final List<Object> parameters, final ShardingSphereSchema schema) {
         Optional<RoutineBodySegment> routineBodySegment = CreateProcedureStatementHandler.getRoutineBodySegment(sqlStatementContext.getSqlStatement());
-        routineBodySegment.ifPresent(routineBody -> {
+        if (routineBodySegment.isPresent()) {
             TableExtractor extractor = new TableExtractor();
-            validateTableNotExist(schema, extractor.extractNotExistTableFromRoutineBody(routineBody));
-            Collection<SimpleTableSegment> existTables = extractor.extractExistTableFromRoutineBody(routineBody);
-            validateShardingTable(schema, existTables);
+            validateTableNotExist(schema, extractor.extractNotExistTableFromRoutineBody(routineBodySegment.get()));
+            Collection<SimpleTableSegment> existTables = extractor.extractExistTableFromRoutineBody(routineBodySegment.get());
+            validateShardingTable(shardingRule, existTables);
             validateTableExist(schema, existTables);
-        });
+        }
     }
     
     @Override

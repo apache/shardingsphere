@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Properties;
 
 /**
- * Database discovery heartbeat configuration.
+ * Database discovery heartbeat config.
  */
 @RequiredArgsConstructor
 @Getter

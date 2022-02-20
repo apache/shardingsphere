@@ -40,8 +40,6 @@ public final class ModifyColumnDefinitionSegment implements AlterDefinitionSegme
     
     private final ColumnDefinitionSegment columnDefinition;
     
-    private ColumnDefinitionSegment previousColumnDefinition;
-    
     private ColumnPositionSegment columnPosition;
     
     /**
