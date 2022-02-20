@@ -21,9 +21,9 @@ import lombok.Builder;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
@@ -37,9 +37,7 @@ public final class ContextManagerBuilderParameter {
     
     private final ModeConfiguration modeConfig;
     
-    private final Map<String, Map<String, DataSource>> dataSourcesMap;
-    
-    private final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs;
+    private final Map<String, ? extends SchemaConfiguration> schemaConfigs;
     
     private final Collection<RuleConfiguration> globalRuleConfigs;
     
@@ -48,4 +46,14 @@ public final class ContextManagerBuilderParameter {
     private final Collection<String> labels;
     
     private final InstanceDefinition instanceDefinition;
+    
+    /**
+     * Whether is empty or not.
+     * 
+     * @return is empty or not
+     */
+    public boolean isEmpty() {
+        return props.isEmpty() && globalRuleConfigs.isEmpty()
+                && schemaConfigs.entrySet().stream().allMatch(entry -> entry.getValue().getDataSources().isEmpty() && entry.getValue().getRuleConfigurations().isEmpty());
+    }
 }

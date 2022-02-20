@@ -142,7 +142,7 @@ DROP SHARDING BROADCAST TABLE RULES (tableName [, tableName] ...)
 ### Sharding Scaling Rule
 
 ```sql
-CREATE SHARDING SCALING RULE scalingName [scalingDefinition]
+CREATE SHARDING SCALING RULE scalingName [scalingRuleDefinition]
 
 DROP SHARDING SCALING RULE scalingName
 
@@ -150,23 +150,14 @@ ENABLE SHARDING SCALING RULE scalingName
 
 DISABLE SHARDING SCALING RULE scalingName
 
-scalingDefinition:
-    (minimumAutoDefinition | completeAutoDefinition | manualDefinition)
-
-minimumAutoDefinition:
-    completionDetector, dataConsistencyChecker
-
-completeAutoDefinition:
-    inputDefinition, outputDefinition, streamChannel, completionDetector, dataConsistencyChecker
-
-manualDefinition:
-    inputDefinition, outputDefinition, streamChannel
+scalingRuleDefinition:
+    [inputDefinition] [, outputDefinition] [, streamChannel] [, completionDetector] [, dataConsistencyChecker]
 
 inputDefinition:
-    INPUT (workerThread, batchSize, rateLimiter)
+    INPUT ([workerThread] [, batchSize] [, rateLimiter])
 
 outputDefinition:
-    INPUT (workerThread, batchSize, rateLimiter)
+    OUTPUT ([workerThread] [, batchSize] [, rateLimiter])
 
 completionDetector:
     COMPLETION_DETECTOR (algorithmDefinition)
@@ -302,13 +293,11 @@ DROP SHARDING BROADCAST TABLE RULES t_b;
 CREATE SHARDING SCALING RULE sharding_scaling(
 INPUT(
   WORKER_THREAD=40,
-  BATCH_SIZE=1000,
-  RATE_LIMITER(TYPE(NAME=QPS, PROPERTIES("qps"=50)))
+  BATCH_SIZE=1000
 ),
 OUTPUT(
   WORKER_THREAD=40,
-  BATCH_SIZE=1000,
-  RATE_LIMITER(TYPE(NAME=TPS, PROPERTIES("tps"=2000)))
+  BATCH_SIZE=1000
 ),
 STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
 COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-minute-threshold"=30))),

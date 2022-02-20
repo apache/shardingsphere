@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql;
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.mysql.codec.MySQLPacketCodecEngine;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -43,6 +44,11 @@ public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine
     private final CommandExecuteEngine commandExecuteEngine = new MySQLCommandExecuteEngine();
     
     private final DatabasePacketCodecEngine<MySQLPacket> codecEngine = new MySQLPacketCodecEngine();
+    
+    @Override
+    public void setDatabaseVersion(final String databaseVersion) {
+        MySQLServerInfo.setServerVersion(databaseVersion);
+    }
     
     @Override
     public void release(final ConnectionSession connectionSession) {

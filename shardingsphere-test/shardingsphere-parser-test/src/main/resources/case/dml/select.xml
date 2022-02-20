@@ -897,7 +897,18 @@
                                     <right>
                                         <list-expression start-index="67" stop-index="87" literal-stop-index="92">
                                             <items>
-                                                <function function-name="CONCAT" literal-text="CONCAT('%%', 'init', '%%')" start-index="67" stop-index="87" literal-stop-index="92" text="CONCAT('%%', ?, '%%')" />
+                                                <function function-name="CONCAT" literal-text="CONCAT('%%', 'init', '%%')" start-index="67" stop-index="87" literal-stop-index="92" text="CONCAT('%%', ?, '%%')">
+                                                    <parameter>
+                                                        <literal-expression value="%%" literal-start-index="74" literal-stop-index="77" start-index="74" stop-index="77"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value="init" literal-start-index="80" literal-stop-index="85"/>
+                                                        <parameter-marker-expression parameter-index="0" start-index="80" stop-index="80"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value="%%" literal-start-index="88" literal-stop-index="91" start-index="83" stop-index="86"/>
+                                                    </parameter>
+                                                </function>
                                             </items>
                                         </list-expression>
                                     </right>
@@ -1001,7 +1012,18 @@
                                     <right>
                                         <list-expression start-index="65" stop-index="85" literal-stop-index="90">
                                             <items>
-                                                <function function-name="CONCAT" text="CONCAT('%%', ?, '%%')" literal-text="CONCAT('%%', 'init', '%%')" start-index="65" stop-index="85" literal-stop-index="90"/>
+                                                <function function-name="CONCAT" text="CONCAT('%%', ?, '%%')" literal-text="CONCAT('%%', 'init', '%%')" start-index="65" stop-index="85" literal-stop-index="90">
+                                                    <parameter>
+                                                        <literal-expression value="%%" literal-start-index="72" literal-stop-index="75" start-index="72" stop-index="75"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value="init" literal-start-index="78" literal-stop-index="83"/>
+                                                        <parameter-marker-expression parameter-index="0" start-index="78" stop-index="78"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value="%%" literal-start-index="86" literal-stop-index="89" start-index="81" stop-index="84"/>
+                                                    </parameter>
+                                                </function>
                                             </items>
                                         </list-expression>
                                     </right>
@@ -1913,7 +1935,25 @@
                                             </left>
                                             <operator>=</operator>
                                             <right>
-                                                <function function-name="ST_GeographyFromText" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="60" stop-index="115" literal-start-index="78" literal-stop-index="137" />
+                                                <function function-name="ST_GeographyFromText" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="60" stop-index="115" literal-start-index="78" literal-stop-index="137">
+                                                    <parameter>
+                                                        <literal-expression value="SRID=4326;POINT(" literal-start-index="99" start-index="81" literal-stop-index="116" stop-index="98"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value="100" literal-start-index="119" literal-stop-index="121"/>
+                                                        <parameter-marker-expression parameter-index="1" start-index="101" stop-index="101"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value=" " literal-start-index="124" literal-stop-index="126" start-index="104" stop-index="106"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value="200" literal-start-index="129" literal-stop-index="131"/>
+                                                        <parameter-marker-expression parameter-index="2" start-index="109" stop-index="109"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value=")" literal-start-index="134" literal-stop-index="136" start-index="112" stop-index="114"/>
+                                                    </parameter>
+                                                </function>
                                             </right>
                                         </binary-operation-expression>
                                     </right>
@@ -1994,7 +2034,25 @@
                                             </left>
                                             <operator>=</operator>
                                             <right>
-                                                <function function-name="ST_GeographyFromText" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="73" stop-index="128" literal-start-index="109" literal-stop-index="168" />
+                                                <function function-name="ST_GeographyFromText" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="73" stop-index="128" literal-start-index="109" literal-stop-index="168">
+                                                    <parameter>
+                                                        <literal-expression value="SRID=4326;POINT(" literal-start-index="130" start-index="94" literal-stop-index="147" stop-index="111"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value="100" literal-start-index="150" literal-stop-index="152"/>
+                                                        <parameter-marker-expression parameter-index="2" start-index="114" stop-index="114"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value=" " literal-start-index="155" literal-stop-index="157" start-index="117" stop-index="119"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value="200" literal-start-index="160" literal-stop-index="162"/>
+                                                        <parameter-marker-expression parameter-index="3" start-index="122" stop-index="122"/>
+                                                    </parameter>
+                                                    <parameter>
+                                                        <literal-expression value=")" literal-start-index="165" literal-stop-index="167" start-index="125" stop-index="127"/>
+                                                    </parameter>
+                                                </function>
                                             </right>
                                         </binary-operation-expression>
                                     </right>
@@ -2077,7 +2135,25 @@
                                     </left>
                                     <operator>=</operator>
                                     <right>
-                                        <function function-name="ST_GeographyFromText" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" start-index="79" stop-index="134" literal-start-index="115" literal-stop-index="174" />
+                                        <function function-name="ST_GeographyFromText" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" start-index="79" stop-index="134" literal-start-index="115" literal-stop-index="174">
+                                            <parameter>
+                                                <literal-expression value="SRID=4326;POINT(" literal-start-index="136" start-index="100" literal-stop-index="153" stop-index="117"/>
+                                            </parameter>
+                                            <parameter>
+                                                <literal-expression value="100" literal-start-index="156" literal-stop-index="158"/>
+                                                <parameter-marker-expression parameter-index="2" start-index="120" stop-index="120"/>
+                                            </parameter>
+                                            <parameter>
+                                                <literal-expression value=" " literal-start-index="161" literal-stop-index="163" start-index="123" stop-index="125"/>
+                                            </parameter>
+                                            <parameter>
+                                                <literal-expression value="200" literal-start-index="166" literal-stop-index="168"/>
+                                                <parameter-marker-expression parameter-index="3" start-index="128" stop-index="128"/>
+                                            </parameter>
+                                            <parameter>
+                                                <literal-expression value=")" literal-start-index="171" literal-stop-index="173" start-index="131" stop-index="133"/>
+                                            </parameter>
+                                        </function>
                                     </right>
                                 </binary-operation-expression>
                             </right>
@@ -2983,6 +3059,35 @@
                     <operator>=</operator>
                     <right>
                         <literal-expression value="1" start-index="119" stop-index="119" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_json_value_return_type">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="86">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="86">
+                    <left>
+                        <function start-index="28" stop-index="77" function-name="JSON_VALUE" text="JSON_VALUE(items, '$.name' RETURNING VARCHAR(100))">
+                            <parameter>
+                                <column name="items" start-index="39" stop-index="43"/>
+                            </parameter>
+                            <parameter>
+                                <common-expression text="'$.name' RETURNING VARCHAR(100)" start-index="46" stop-index="76" />
+                            </parameter>
+                        </function>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="jack" start-index="81" stop-index="86" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -3947,5 +4052,93 @@
             <expression-projection text="position(binary 'll' in 'hello')" start-index="7" stop-index="38" />
             <expression-projection text="position('a' in binary 'hello')" start-index="40" stop-index="70" />
         </projections>
+    </select>
+
+    <select sql-case-id="select_with_schema_name_in_shorthand_projection" parameters="1, 1">
+        <from>
+            <simple-table name="t_order" start-index="34" stop-index="40" />
+        </from>
+        <projections start-index="7" stop-index="27">
+            <shorthand-projection start-index="7" stop-index="27">
+                <owner name="t_order" start-index="19" stop-index="25">
+                    <owner name="sharding_db" start-index="7" stop-index="17" />
+                </owner>
+            </shorthand-projection>
+        </projections>
+        <where start-index="42" stop-index="75">
+            <expr>
+                <binary-operation-expression start-index="48" stop-index="75">
+                    <left>
+                        <binary-operation-expression start-index="48" stop-index="58">
+                            <left>
+                                <column name="user_id" start-index="48" stop-index="54" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="58" stop-index="58" />
+                                <parameter-marker-expression parameter-index="0" start-index="58" stop-index="58" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="64" stop-index="75">
+                            <left>
+                                <column name="order_id" start-index="64" stop-index="71" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="75" stop-index="75" />
+                                <parameter-marker-expression parameter-index="1" start-index="75" stop-index="75" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_schema_name_in_column_projection" parameters="1, 1">
+        <from>
+            <simple-table name="t_order" start-index="41" stop-index="47" />
+        </from>
+        <projections start-index="7" stop-index="34">
+            <column-projection name="order_id" start-index="7" stop-index="34">
+                <owner name="t_order" start-index="19" stop-index="25">
+                    <owner name="sharding_db" start-index="7" stop-index="17" />
+                </owner>
+            </column-projection>
+        </projections>
+        <where start-index="49" stop-index="82">
+            <expr>
+                <binary-operation-expression start-index="55" stop-index="82">
+                    <left>
+                        <binary-operation-expression start-index="55" stop-index="65">
+                            <left>
+                                <column name="user_id" start-index="55" stop-index="61" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="65" stop-index="65" />
+                                <parameter-marker-expression parameter-index="0" start-index="65" stop-index="65" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="71" stop-index="82">
+                            <left>
+                                <column name="order_id" start-index="71" stop-index="78" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="82" stop-index="82" />
+                                <parameter-marker-expression parameter-index="1" start-index="82" stop-index="82" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
     </select>
 </sql-parser-test-cases>

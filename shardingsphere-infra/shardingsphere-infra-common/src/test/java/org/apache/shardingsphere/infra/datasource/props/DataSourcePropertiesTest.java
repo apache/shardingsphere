@@ -48,14 +48,13 @@ public final class DataSourcePropertiesTest {
     @Test
     public void assertGetDataSourceConfigurationWithConnectionInitSqls() {
         BasicDataSource actualDataSource = new BasicDataSource();
-        actualDataSource.setDriverClassName(MockedDataSource.class.getCanonicalName());
+        actualDataSource.setDriverClassName(MockedDataSource.class.getName());
         actualDataSource.setUrl("jdbc:mock://127.0.0.1/foo_ds");
         actualDataSource.setUsername("root");
         actualDataSource.setPassword("root");
         actualDataSource.setConnectionInitSqls(Arrays.asList("set names utf8mb4;", "set names utf8;"));
         DataSourceProperties actual = DataSourcePropertiesCreator.create(actualDataSource);
         assertThat(actual.getDataSourceClassName(), is(BasicDataSource.class.getName()));
-        assertThat(actual.getAllLocalProperties().get("driverClassName").toString(), is(MockedDataSource.class.getCanonicalName()));
         assertThat(actual.getAllLocalProperties().get("url").toString(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getAllLocalProperties().get("username").toString(), is("root"));
         assertThat(actual.getAllLocalProperties().get("password").toString(), is("root"));
@@ -67,7 +66,7 @@ public final class DataSourcePropertiesTest {
     }
 
     @Test
-    public void assertgetAllLocalProperties() {
+    public void assertGetAllLocalProperties() {
         DataSourceProperties originalDataSourceProps = new DataSourceProperties(MockedDataSource.class.getName(), getProperties());
         Map<String, Object> actualAllProperties = originalDataSourceProps.getAllLocalProperties();
         assertNotNull(actualAllProperties);
@@ -90,7 +89,7 @@ public final class DataSourcePropertiesTest {
 
     private Map<String, Object> getProperties() {
         Map<String, Object> result = new HashMap<>(7, 1);
-        result.put("driverClassName", MockedDataSource.class.getCanonicalName());
+        result.put("driverClassName", MockedDataSource.class.getName());
         result.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
         result.put("username", "root");
         result.put("password", "root");

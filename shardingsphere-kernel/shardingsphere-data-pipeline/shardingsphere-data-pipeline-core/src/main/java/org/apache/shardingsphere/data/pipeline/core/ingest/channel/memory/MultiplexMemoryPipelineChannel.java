@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.EmptyAckCallback;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,11 +36,17 @@ import java.util.Map;
 @Slf4j
 public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
     
+    private static final EmptyAckCallback EMPTY_ACK_CALLBACK = new EmptyAckCallback();
+    
     private final int channelNumber;
     
     private final PipelineChannel[] channels;
     
     private final Map<String, Integer> channelAssignment = new HashMap<>();
+    
+    public MultiplexMemoryPipelineChannel() {
+        this(EMPTY_ACK_CALLBACK);
+    }
     
     public MultiplexMemoryPipelineChannel(final AckCallback ackCallback) {
         this(10000, ackCallback);

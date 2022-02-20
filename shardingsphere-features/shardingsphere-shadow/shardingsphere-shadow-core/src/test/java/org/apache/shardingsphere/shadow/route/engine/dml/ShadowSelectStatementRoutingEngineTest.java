@@ -71,7 +71,7 @@ public final class ShadowSelectStatementRoutingEngineTest {
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("user_id")));
         when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, "1"));
         WhereSegment whereSegment = new WhereSegment(0, 0, binaryOperationExpression);
-        when(result.getWhere()).thenReturn(Optional.of(whereSegment));
+        when(result.getWhereSegments()).thenReturn(Collections.singletonList(whereSegment));
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         Collection<CommentSegment> commentSegments = new LinkedList<>();
         commentSegments.add(new CommentSegment("/*shadow:true,foo:bar*/", 0, 20));

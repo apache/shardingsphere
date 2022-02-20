@@ -21,7 +21,7 @@ notifications:
   pullrequests: notifications@shardingsphere.apache.org
 
 github:
-  description: Building a Standard Layer & Ecosystem Above Heterogeneous Databases
+  description: Ecosystem to transform any database into a distributed database system, and enhance it with sharding, elastic scaling, encryption features & more
   labels:
     - database-plus
     - database
@@ -42,6 +42,7 @@ github:
     issues: true
     projects: true
     wiki: true
+  protected_branches:
     master:
       required_status_checks:
         strict: true

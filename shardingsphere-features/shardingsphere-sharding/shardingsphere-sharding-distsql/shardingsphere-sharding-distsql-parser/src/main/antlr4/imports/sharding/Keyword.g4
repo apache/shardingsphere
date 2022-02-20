@@ -194,3 +194,7 @@ KEY_GENERATOR
 UNUSED
     : U N U S E D
     ;
+
+USED
+    : U S E D
+    ;

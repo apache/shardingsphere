@@ -37,7 +37,7 @@ import org.apache.shardingsphere.spi.singleton.SingletonSPI;
 import org.apache.shardingsphere.spi.singleton.TypedSingletonSPIHolder;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -61,7 +61,7 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
         String schemaName = shardingSphereMetaData.getName();
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkDuplicate(schemaName, sqlStatement, currentRuleConfig);
-        checkAlgorithms(sqlStatement);
+        checkAlgorithms(sqlStatement.getConfigurationSegment());
     }
     
     private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
@@ -72,18 +72,18 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
     
     private void checkDuplicate(final String schemaName, final CreateShardingScalingRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         if (currentRuleConfig.getScaling().containsKey(sqlStatement.getScalingName())) {
-            throw new DuplicateRuleException("Scaling", schemaName, Arrays.asList(sqlStatement.getScalingName()));
+            throw new DuplicateRuleException("Scaling", schemaName, Collections.singletonList(sqlStatement.getScalingName()));
         }
     }
     
-    private void checkAlgorithms(final CreateShardingScalingRuleStatement sqlStatement) throws DistSQLException {
-        if (null == sqlStatement.getConfigurationSegment()) {
+    private void checkAlgorithms(final ShardingScalingRuleConfigurationSegment segment) throws DistSQLException {
+        if (null == segment) {
             return;
         }
-        checkRateLimiterExist(sqlStatement.getConfigurationSegment());
-        checkStreamChannelExist(sqlStatement.getConfigurationSegment());
-        checkCompletionDetectorExist(sqlStatement.getConfigurationSegment());
-        checkDataConsistencyCheckerExist(sqlStatement.getConfigurationSegment());
+        checkRateLimiterExist(segment);
+        checkStreamChannelExist(segment);
+        checkCompletionDetectorExist(segment);
+        checkDataConsistencyCheckerExist(segment);
     }
     
     private void checkRateLimiterExist(final ShardingScalingRuleConfigurationSegment segment) throws DistSQLException {
@@ -96,7 +96,9 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
     }
     
     private void checkRateLimiterAlgorithm(final AlgorithmSegment rateLimiter) throws DistSQLException {
-        checkAlgorithm(RATE_LIMIT_ALGORITHM_HOLDER, "rate limiter", rateLimiter);
+        if (null != rateLimiter) {
+            checkAlgorithm(RATE_LIMIT_ALGORITHM_HOLDER, "rate limiter", rateLimiter);
+        }
     }
     
     private void checkStreamChannelExist(final ShardingScalingRuleConfigurationSegment segment) throws DistSQLException {
@@ -160,6 +162,6 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
     
     @Override
     public String getType() {
-        return CreateShardingScalingRuleStatement.class.getCanonicalName();
+        return CreateShardingScalingRuleStatement.class.getName();
     }
 }

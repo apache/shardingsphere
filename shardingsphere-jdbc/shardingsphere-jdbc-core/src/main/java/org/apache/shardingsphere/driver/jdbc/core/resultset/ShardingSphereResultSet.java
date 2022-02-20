@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URL;
 import java.sql.Array;
 import java.sql.Blob;
@@ -367,10 +368,17 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getObject(final int columnIndex, final Class<T> type) throws SQLException {
-        if (LocalDateTime.class.equals(type) || LocalDate.class.equals(type) || LocalTime.class.equals(type)) {
+        if (BigInteger.class.equals(type)) {
+            return (T) BigInteger.valueOf(getLong(columnIndex));
+        } else if (Blob.class.equals(type)) {
+            return (T) getBlob(columnIndex);
+        } else if (Clob.class.equals(type)) {
+            return (T) getClob(columnIndex);
+        } else if (LocalDateTime.class.equals(type) || LocalDate.class.equals(type) || LocalTime.class.equals(type)) {
             return (T) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), type);
+        } else {
+            return (T) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, type), type);
         }
-        throw new SQLFeatureNotSupportedException("getObject with type");
     }
     
     @Override

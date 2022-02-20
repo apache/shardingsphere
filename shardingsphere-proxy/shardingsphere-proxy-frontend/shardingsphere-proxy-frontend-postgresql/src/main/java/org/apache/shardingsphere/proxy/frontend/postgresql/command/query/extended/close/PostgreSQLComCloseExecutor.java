@@ -46,7 +46,7 @@ public final class PostgreSQLComCloseExecutor implements CommandExecutor {
     public Collection<DatabasePacket<?>> execute() throws SQLException {
         switch (packet.getType()) {
             case PREPARED_STATEMENT:
-                PostgreSQLPreparedStatementRegistry.getInstance().unregister(connectionSession.getConnectionId(), packet.getName());
+                PostgreSQLPreparedStatementRegistry.getInstance().closeStatement(connectionSession.getConnectionId(), packet.getName());
                 break;
             case PORTAL:
                 closePortal();

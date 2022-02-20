@@ -345,7 +345,7 @@ dataSources: # 配置数据源列表,必须是有效的 jdbc 配置,目前仅支
     password: password
 masterSlaveRule: # 这里配置这个规则的话,相当于是全局读写分离配置
   name: ds_rw # 名称,合法的字符串即可,但如果涉及到在读写分离的基础上设置分库分表,则名称需要有意义才可以,另外,虽然目前没有强制要求,但主从库配置需要配置在实际关联的主从库上,如果配置的数据源之间主从是断开的状态,那么可能会发生写入的数据对于只读会话无法读取到的问题
-  # 如果一个会话发生了写入并且没有提交(显式打开事务),sharding sphere 在后续的路由中,select 都会在主库执行,直到会话提交
+  # 如果一个会话发生了写入并且没有提交(显式打开事务)， ShardingSphere 在后续的路由中,select 都会在主库执行,直到会话提交
   masterDataSourceName: master_ds_0 # 主库的 DataSource 名称
   slaveDataSourceNames: # 从库的 DataSource 列表,至少需要有一个
     - slave_ds_0

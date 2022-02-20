@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.mysql.importer;
 
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
@@ -44,10 +45,13 @@ public final class MySQLImporterTest {
     @Mock
     private PipelineDataSourceManager dataSourceManager;
     
+    @Mock
+    private PipelineChannel channel;
+    
     @Test
     public void assertCreateSqlBuilder() {
         when(importerConfig.getDataSourceConfig()).thenReturn(mock(PipelineDataSourceConfiguration.class));
-        MySQLImporter mysqlImporter = new MySQLImporter(importerConfig, dataSourceManager);
+        MySQLImporter mysqlImporter = new MySQLImporter(importerConfig, dataSourceManager, channel);
         String insertSQL = mysqlImporter.createSQLBuilder(Collections.emptyMap()).buildInsertSQL(mockDataRecord());
         assertThat(insertSQL, is("INSERT INTO `t_order`(`id`,`name`) VALUES(?,?) ON DUPLICATE KEY UPDATE `name`=VALUES(`name`)"));
     }

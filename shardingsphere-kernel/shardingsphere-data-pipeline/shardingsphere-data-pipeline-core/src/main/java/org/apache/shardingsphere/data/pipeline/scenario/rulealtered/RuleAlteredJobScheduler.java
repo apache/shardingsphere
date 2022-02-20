@@ -25,7 +25,8 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
-import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseSchemaNameLockEvent;
 
 /**
  * Rule altered job scheduler.
@@ -50,22 +51,17 @@ public final class RuleAlteredJobScheduler implements Runnable {
      */
     public void stop() {
         log.info("stop job {}", jobContext.getJobId());
-        final boolean almostFinished = jobContext.getStatus() == JobStatus.ALMOST_FINISHED;
-        for (PipelineTask each : jobContext.getInventoryTasks()) {
+        for (InventoryTask each : jobContext.getInventoryTasks()) {
             log.info("stop inventory task {} - {}", jobContext.getJobId(), each.getTaskId());
             each.stop();
+            each.close();
         }
-        for (PipelineTask each : jobContext.getIncrementalTasks()) {
+        for (IncrementalTask each : jobContext.getIncrementalTasks()) {
             log.info("stop incremental task {} - {}", jobContext.getJobId(), each.getTaskId());
             each.stop();
+            each.close();
         }
-        if (almostFinished) {
-            log.info("almost finished, preparer cleanup, job {}", jobContext.getJobId());
-            RuleAlteredJobPreparer jobPreparer = jobContext.getJobPreparer();
-            if (null != jobPreparer) {
-                jobPreparer.cleanup(jobContext);
-            }
-        }
+        jobContext.close();
     }
     
     @Override
@@ -108,6 +104,8 @@ public final class RuleAlteredJobScheduler implements Runnable {
                 log.error("Inventory task execute failed.", throwable);
                 stop();
                 jobContext.setStatus(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE);
+                ScalingReleaseSchemaNameLockEvent event = new ScalingReleaseSchemaNameLockEvent(jobContext.getJobConfig().getWorkflowConfig().getSchemaName());
+                ShardingSphereEventBus.getInstance().post(event);
             }
         };
     }
@@ -140,6 +138,8 @@ public final class RuleAlteredJobScheduler implements Runnable {
                 log.error("Incremental task execute failed.", throwable);
                 stop();
                 jobContext.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE);
+                ScalingReleaseSchemaNameLockEvent event = new ScalingReleaseSchemaNameLockEvent(jobContext.getJobConfig().getWorkflowConfig().getSchemaName());
+                ShardingSphereEventBus.getInstance().post(event);
             }
         };
     }

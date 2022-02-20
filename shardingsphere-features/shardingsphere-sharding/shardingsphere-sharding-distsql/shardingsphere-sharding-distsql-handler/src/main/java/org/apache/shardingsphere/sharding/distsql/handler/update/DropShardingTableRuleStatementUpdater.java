@@ -107,6 +107,6 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
     
     @Override
     public String getType() {
-        return DropShardingTableRuleStatement.class.getCanonicalName();
+        return DropShardingTableRuleStatement.class.getName();
     }
 }

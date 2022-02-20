@@ -167,7 +167,7 @@ ShardingSphere-Proxy 示例模块，包含了分库分表、读写分离和强�
 在以 Java 作为主要语言的专业开发者中，Java 8 LTS（长期支持版本）仍然是最受欢迎的版本。
 
 
-![](../../static/img/Blog_20_img_1_a_Photo.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_20_img_1_a_Photo.png)
 
 来源《JetBrains 公司 2020 关于 Java 的报告》：
 https://blog.jetbrains.com/zh-hans/idea/2020/10/java-2020/

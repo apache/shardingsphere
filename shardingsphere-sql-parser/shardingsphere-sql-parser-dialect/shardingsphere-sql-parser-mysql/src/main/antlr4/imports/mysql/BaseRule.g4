@@ -162,6 +162,7 @@ identifierKeywordsUnambiguous
     | CONSTRAINT_SCHEMA
     | CONTEXT
     | CPU
+    | CREATE
     | CURRENT
     | CURSOR_NAME
     | DATAFILE
@@ -565,6 +566,7 @@ variable
     
 userVariable
     : AT_ textOrIdentifier
+    | textOrIdentifier
     ;
     
 systemVariable
@@ -872,9 +874,18 @@ simpleExpr
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
     | identifier (JSON_SEPARATOR | JSON_UNQUOTED_SEPARATOR) string_
+    | path (RETURNING dataType)? onEmptyError? 
     | matchExpression
     | caseExpression
     | intervalExpression
+    ;
+    
+path
+    : string_
+    ;
+
+onEmptyError
+    : (NULL | ERROR | DEFAULT literals) ON (EMPTY | ERROR)
     ;
     
 columnRef
@@ -1282,18 +1293,4 @@ noWriteToBinLog
     
 channelOption
     : FOR CHANNEL string_
-    ;
-    
-preparedStatement
-    : PREPARE identifier FROM (stringLiterals | userVariable)
-    | executeStatement
-    | (DEALLOCATE | DROP) PREPARE identifier
-    ;
-    
-executeStatement
-    : EXECUTE identifier (USING executeVarList)?
-    ;
-    
-executeVarList
-    : userVariable (COMMA_ userVariable)*
     ;

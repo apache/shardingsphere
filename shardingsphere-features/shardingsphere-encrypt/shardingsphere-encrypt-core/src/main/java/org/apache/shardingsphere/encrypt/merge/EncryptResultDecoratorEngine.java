@@ -38,12 +38,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 public final class EncryptResultDecoratorEngine implements ResultDecoratorEngine<EncryptRule> {
     
     @Override
-    public ResultDecorator newInstance(final DatabaseType databaseType, final ShardingSphereSchema schema,
-                                       final EncryptRule encryptRule, final ConfigurationProperties props, final SQLStatementContext sqlStatementContext) {
+    public ResultDecorator<?> newInstance(final DatabaseType databaseType, final String schemaName, final ShardingSphereSchema schema,
+                                       final EncryptRule encryptRule, final ConfigurationProperties props, final SQLStatementContext<?> sqlStatementContext) {
         if (sqlStatementContext instanceof SelectStatementContext) {
-            EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(schema, encryptRule, (SelectStatementContext) sqlStatementContext);
+            EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(schemaName, schema, encryptRule, (SelectStatementContext) sqlStatementContext);
             return new EncryptDQLResultDecorator(metaData);
-        } 
+        }
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
             return new EncryptDALResultDecorator();
         }

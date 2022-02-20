@@ -17,7 +17,7 @@
 
 grammar RALStatement;
 
-import Keyword, Literals, Symbol, BaseRule;
+import BaseRule;
 
 setVariable
     : SET VARIABLE variableName EQ variableValue
@@ -32,11 +32,11 @@ showAllVariables
     ;
 
 enableInstance
-    :ENABLE INSTANCE (instanceId | instanceDefination)
+    : ENABLE INSTANCE (instanceId | instanceDefination)
     ;
 
 disableInstance
-    :DISABLE INSTANCE (instanceId | instanceDefination)
+    : DISABLE INSTANCE (instanceId | instanceDefination)
     ;
 
 showInstance
@@ -79,6 +79,62 @@ showInstanceMode
     : SHOW INSTANCE MODE
     ;
 
+createTrafficRule
+    : CREATE TRAFFIC RULE trafficRuleDefinition (COMMA trafficRuleDefinition)* 
+    ;
+
+alterTrafficRule
+    : ALTER TRAFFIC RULE trafficRuleDefinition (COMMA trafficRuleDefinition)* 
+    ;
+
+showTrafficRules
+    : SHOW TRAFFIC (RULES | RULE ruleName)
+    ;
+
+dropTrafficRule
+    : DROP TRAFFIC RULE ifExists? ruleName (COMMA ruleName)*
+    ;
+
+labelInstance
+    : (LABEL | RELABEL) INSTANCE (instanceDefination | instanceId) WITH label (COMMA label)*
+    ;
+
+unlabelInstance
+    : UNLABEL INSTANCE (instanceDefination | instanceId) (WITH label (COMMA label)*)?
+    ;
+    
+trafficRuleDefinition
+    : ruleName LP (labelDefinition COMMA)? trafficAlgorithmDefinition (COMMA loadBalancerDefinition)? RP
+    ;
+
+labelDefinition
+    : LABELS LP label (COMMA label)* RP
+    ;
+
+trafficAlgorithmDefinition
+    : TRAFFIC_ALGORITHM LP algorithmDefinition RP 
+    ;
+
+loadBalancerDefinition
+    : LOAD_BALANCER LP algorithmDefinition RP
+    ;
+
+algorithmDefinition
+    : TYPE LP NAME EQ typeName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
+    ;
+
+typeName
+    : IDENTIFIER
+    ;
+
+exportSchemaConfiguration
+    : EXPORT SCHEMA (CONFIGURATION | CONFIG) (FROM schemaName)? (COMMA? FILE EQ filePath)?
+    ;
+
+filePath
+    : STRING
+    ;
+
 transactionRuleDefinition
     : LP DEFAULT EQ defaultType COMMA providerDefinition
     ;
@@ -115,24 +171,8 @@ instanceId
     : ip AT port
     ;
 
-ip
-    : IDENTIFIER | NUMBER+
-    ;
-
-port
-    : INT
-    ;
-
 refreshScope
     : tableName | tableName FROM RESOURCE resourceName
-    ;
-
-resourceName
-    : IDENTIFIER | STRING
-    ;
-
-tableName
-    : IDENTIFIER
     ;
 
 sqlCommentParseEnable
@@ -163,6 +203,22 @@ concurrencyLevel
     : INT
     ;
 
-schemaName
+ruleName
     : IDENTIFIER
+    ;
+
+label
+    : IDENTIFIER
+    ;
+
+algorithmProperties
+    : algorithmProperty (COMMA algorithmProperty)*
+    ;
+
+algorithmProperty
+    : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | IDENTIFIER | STRING)
+    ;
+
+ifExists
+    : IF EXISTS
     ;

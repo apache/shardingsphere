@@ -15,10 +15,11 @@
 # limitations under the License.
 #
 
+product: jdbc
 mode: memory
 transaction: local
-feature: sharding,readwrite-splitting,encrypt
-framework: jdbc
+features: sharding,readwrite-splitting,encrypt
+frameworks: jdbc,spring-boot-starter-jdbc
 
 host: localhost
 port: 3306

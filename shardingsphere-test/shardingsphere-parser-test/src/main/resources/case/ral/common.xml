@@ -44,7 +44,57 @@
     <alter-sql-parser-rule sql-case-id="alter-sql-parser-rule">
         <sql-parser sqlCommentParseEnabled="false">
             <parse-tree-cache initial-capacity="10" maximum-size="11" concurrency-level="1" />
-            <sql-statement-cache initial-capacity="11" maximum-size="11" concurrency-level="100"  />
+            <sql-statement-cache initial-capacity="11" maximum-size="11" concurrency-level="100" />
         </sql-parser>
     </alter-sql-parser-rule>
+    <show-traffic-rules sql-case-id="show-traffic-rules" rule-name="rule_name"/>
+    <drop-traffic-rule sql-case-id="drop-traffic-rule" >
+        <rule-name>rule_name</rule-name>
+    </drop-traffic-rule>
+    <export-schema-config sql-case-id="export-schema-config">
+        <schema name="schema_name" start-index="26" stop-index="36" />
+    </export-schema-config>
+    <create-traffic-rule sql-case-id="create-traffic-rule" >
+        <rule name="sql_match_traffic">
+            <label>OLTP</label>
+            <traffic-algorithm algorithm-name="SQL_MATCH">
+                <properties>
+                    <property key="sql" value="SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;"/>
+                </properties>
+            </traffic-algorithm>
+            <load-balancer algorithm-name="RANDOM">
+                <properties>
+                    <property key="key" value="value"/>
+                </properties>
+            </load-balancer>
+        </rule>
+    </create-traffic-rule>
+    <alter-traffic-rule sql-case-id="alter-traffic-rule" >
+        <rule name="sql_match_traffic">
+            <label>OLTP</label>
+            <traffic-algorithm algorithm-name="SQL_MATCH">
+                <properties>
+                    <property key="sql" value="SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;"/>
+                </properties>
+            </traffic-algorithm>
+            <load-balancer algorithm-name="RANDOM">
+                <properties>
+                    <property key="key" value="value"/>
+                </properties>
+            </load-balancer>
+        </rule>
+    </alter-traffic-rule>
+    <label-instance sql-case-id="label-instance" ip="127.0.0.1" port="3309" overwrite="false">
+        <label>OLAP_1</label>
+        <label>OLAP_2</label>
+    </label-instance>
+    <label-instance sql-case-id="relabel-instance" ip="127.0.0.1" port="3309" overwrite="true">
+        <label>OLAP_1</label>
+        <label>OLAP_2</label>
+    </label-instance>
+    <unlabel-instance sql-case-id="unlabel-instance" ip="127.0.0.1" port="3309">
+        <label>OLAP_1</label>
+    </unlabel-instance>
+    <unlabel-instance sql-case-id="unlabel-instance-without-label" ip="127.0.0.1" port="3309">
+    </unlabel-instance>
 </sql-parser-test-cases>

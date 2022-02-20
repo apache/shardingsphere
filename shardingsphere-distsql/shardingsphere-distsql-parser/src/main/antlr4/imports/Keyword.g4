@@ -218,7 +218,7 @@ CONCURRENCY_LEVEL
 TYPE
     : T Y P E
     ;
-    
+
 MODE
     : M O D E
     ;
@@ -226,3 +226,64 @@ MODE
 COUNT
     : C O U N T
     ;
+
+TRAFFIC
+    : T R A F F I C
+    ;
+
+LABEL
+    : L A B E L
+    ;
+
+RELABEL
+    : R E L A B E L
+    ;
+
+UNLABEL
+    : U N L A B E L
+    ;
+
+LABELS
+    : L A B E L S 
+    ;
+
+TRAFFIC_ALGORITHM
+    : T R A F F I C UL_ A L G O R I T H M
+    ;
+
+LOAD_BALANCER
+    : L O A D UL_ B A L A N C E R
+    ;
+
+IF  
+    : I F
+    ;
+
+EXISTS
+    : E X I S T S
+    ;
+
+EXPORT
+    : E X P O R T
+    ;
+
+CONFIGURATION
+    : C O N F I G U R A T I O N
+    ;
+
+CONFIG
+    : C O N F I G
+    ;
+
+FILE
+    : F I L E
+    ;
+
+USED
+    : U S E D
+    ;
+
+WITH
+    : W I T H
+    ;
+

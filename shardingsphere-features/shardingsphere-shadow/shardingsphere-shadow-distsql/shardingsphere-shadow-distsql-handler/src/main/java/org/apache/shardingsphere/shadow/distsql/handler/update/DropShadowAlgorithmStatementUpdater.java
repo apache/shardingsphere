@@ -94,6 +94,6 @@ public final class DropShadowAlgorithmStatementUpdater implements RuleDefinition
     
     @Override
     public String getType() {
-        return DropShadowAlgorithmStatement.class.getCanonicalName();
+        return DropShadowAlgorithmStatement.class.getName();
     }
 }

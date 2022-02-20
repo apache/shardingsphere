@@ -18,6 +18,8 @@ SHOW SHARDING KEY GENERATORS [FROM schemaName]
 
 SHOW UNUSED SHARDING KEY GENERATORS [FROM schemaName]
 
+SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName [FROM schemaName]
+
 SHOW DEFAULT SHARDING STRATEGY 
 
 SHOW SHARDING TABLE NODES;
@@ -214,6 +216,17 @@ mysql> SHOW UNUSED SHARDING KEY GENERATORS;
 1 row in set (0.01 sec)
 ```
 
+*SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName*
+```sql
+mysql> SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName;
++------------------------+-----------+-----------------+
+| schema                 | type      | name            |
++------------------------+-----------+-----------------+
+| sharding_db            | table     | t_order         |
++------------------------+-----------+-----------------+
+1 row in set (0.01 sec)
+```
+
 *SHOW DEFAULT SHARDING STRATEGY*
 ```sql
 mysql> SHOW DEFAULT SHARDING STRATEGY ;
@@ -272,7 +285,7 @@ mysql> SHOW SHARDING SCALING RULES;
 +------------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+--------------------------------------------------------+-------------------------------------------------------------------------+-----------------------------------------------------+
 | name             | input                                                                                  | output                                                                                   | stream_channel                                         | completion_detector                                                     | data_consistency_checker                            |
 +------------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+--------------------------------------------------------+-------------------------------------------------------------------------+-----------------------------------------------------+
-| sharding_scaling | {"workerThread":40,"batchSize":1000,"rateLimiter":{"type":"QPS","props":{"qps":"50"}}} | {"workerThread":40,"batchSize":1000,"rateLimiter":{"type":"TPS","props":{"tps":"2000"}}} | {"type":"MEMORY","props":{"block-queue-size":"10000"}} | {"type":"IDLE","props":{"incremental-task-idle-minute-threshold":"30"}} | {"type":"DATA_MATCH","props":{"chunk-size":"1000"}} |
+| sharding_scaling | {"workerThread":40,"batchSize":1000} | {"workerThread":40,"batchSize":1000} | {"type":"MEMORY","props":{"block-queue-size":"10000"}} | {"type":"IDLE","props":{"incremental-task-idle-minute-threshold":"30"}} | {"type":"DATA_MATCH","props":{"chunk-size":"1000"}} |
 +------------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+--------------------------------------------------------+-------------------------------------------------------------------------+-----------------------------------------------------+
 1 row in set (0.00 sec)
 ```

@@ -181,12 +181,12 @@
 
     <rewrite-assertion id="select_not_nested_subquery_in_tablesegment_from_alias" db-types="MySQL">
         <input sql="SELECT b.certificate_number, b.amount FROM (SELECT a.certificate_number as certificate_number, a.amount FROM t_account a WHERE a.amount = 1373) b" />
-        <output sql="SELECT b.cipher_certificate_number AS certificate_number, b.cipher_amount AS amount FROM (SELECT a.cipher_certificate_number, a.assisted_query_certificate_number, a.cipher_amount FROM t_account a WHERE a.cipher_amount = 1373) b" />
+        <output sql="SELECT b.cipher_certificate_number AS certificate_number, b.cipher_amount AS amount FROM (SELECT a.cipher_certificate_number, a.assisted_query_certificate_number, a.cipher_amount FROM t_account a WHERE a.cipher_amount = 'encrypt_1373') b" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_not_nested_subquery_in_tablesegment_ref_shorthand" db-types="MySQL">
         <input sql="SELECT b.* FROM (SELECT a.certificate_number as certificate_number, a.amount FROM t_account a WHERE a.amount = 1373) b" />
-        <output sql="SELECT `b`.`cipher_certificate_number` AS `certificate_number`, `b`.`cipher_amount` AS `amount` FROM (SELECT a.cipher_certificate_number, a.assisted_query_certificate_number, a.cipher_amount FROM t_account a WHERE a.cipher_amount = 1373) b" />
+        <output sql="SELECT `b`.`cipher_certificate_number` AS `certificate_number`, `b`.`cipher_amount` AS `amount` FROM (SELECT a.cipher_certificate_number, a.assisted_query_certificate_number, a.cipher_amount FROM t_account a WHERE a.cipher_amount = 'encrypt_1373') b" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_plain_with_table_level_query_with_cipher_column_for_parameters" db-types="MySQL">
@@ -207,5 +207,25 @@
     <rewrite-assertion id="select_sub_query_with_order_by" db-types="MySQL">
         <input sql="SELECT COUNT(1) AS cnt FROM (SELECT a.amount FROM t_account a ORDER BY a.amount DESC ) AS tmp" />
         <output sql="SELECT COUNT(1) AS cnt FROM (SELECT a.cipher_amount FROM t_account a ORDER BY a.cipher_amount DESC ) AS tmp" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_schema_name_in_shorthand_projection" db-types="MySQL">
+        <input sql="SELECT logic_db.t_account.* FROM t_account WHERE account_id = ?" parameters="100" />
+        <output sql="SELECT `t_account`.`account_id`, `t_account`.`cipher_certificate_number` AS `certificate_number`, `t_account`.`cipher_password` AS `password`, `t_account`.`cipher_amount` AS `amount`, `t_account`.`status` FROM t_account WHERE account_id = ?" parameters="100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_schema_name_in_column_projection" db-types="MySQL">
+        <input sql="SELECT logic_db.t_account.account_id FROM t_account WHERE account_id = ?" parameters="100" />
+        <output sql="SELECT t_account.account_id FROM t_account WHERE account_id = ?" parameters="100" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_schema_based_algorithm_for_plain" db-types="MySQL">
+        <input sql="SELECT * FROM t_order WHERE content = 'TEST'" />
+        <output sql="SELECT `t_order`.`order_id`, `t_order`.`user_id`, `t_order`.`cipher_content` AS `content` FROM t_order WHERE cipher_content = 'encrypt_TEST_t_order'" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_with_schema_based_algorithm_for_parameters" db-types="MySQL">
+        <input sql="SELECT * FROM t_order WHERE content = ?" parameters="TEST" />
+        <output sql="SELECT `t_order`.`order_id`, `t_order`.`user_id`, `t_order`.`cipher_content` AS `content` FROM t_order WHERE cipher_content = ?" parameters="encrypt_TEST_t_order" />
     </rewrite-assertion>
 </rewrite-assertions>

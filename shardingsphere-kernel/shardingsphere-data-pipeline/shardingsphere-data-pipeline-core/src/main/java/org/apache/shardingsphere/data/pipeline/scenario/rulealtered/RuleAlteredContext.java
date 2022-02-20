@@ -33,10 +33,11 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmF
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration.InputConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration.OutputConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rulealtered.YamlOnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rulealtered.YamlOnRuleAlteredActionConfiguration.YamlInputConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rulealtered.YamlOnRuleAlteredActionConfiguration.YamlOutputConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rulealtered.OnRuleAlteredActionConfigurationYamlSwapper.InputConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rulealtered.OnRuleAlteredActionConfigurationYamlSwapper.OutputConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rulealtered.OnRuleAlteredActionConfigurationYamlSwapper;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.Properties;
@@ -48,6 +49,8 @@ import java.util.Properties;
 @Slf4j
 // TODO extract Pipeline Context
 public final class RuleAlteredContext {
+    
+    private static final OnRuleAlteredActionConfigurationYamlSwapper ACTION_CONFIG_YAML_SWAPPER = new OnRuleAlteredActionConfigurationYamlSwapper();
     
     static {
         ShardingSphereServiceLoader.register(JobRateLimitAlgorithm.class);
@@ -80,24 +83,16 @@ public final class RuleAlteredContext {
     
     private final ExecuteEngine importerExecuteEngine;
     
-    public RuleAlteredContext(final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
+    public RuleAlteredContext(final OnRuleAlteredActionConfiguration actionConfig) {
+        OnRuleAlteredActionConfiguration onRuleAlteredActionConfig = convertActionConfig(actionConfig);
         this.onRuleAlteredActionConfig = onRuleAlteredActionConfig;
         InputConfiguration inputConfig = onRuleAlteredActionConfig.getInput();
-        if (null == inputConfig) {
-            inputConfig = new InputConfigurationSwapper().swapToObject(new YamlInputConfiguration());
-        }
         ShardingSphereAlgorithmConfiguration inputRateLimiter = inputConfig.getRateLimiter();
         inputRateLimitAlgorithm = null != inputRateLimiter ? ShardingSphereAlgorithmFactory.createAlgorithm(inputRateLimiter, JobRateLimitAlgorithm.class) : null;
         OutputConfiguration outputConfig = onRuleAlteredActionConfig.getOutput();
-        if (null == outputConfig) {
-            outputConfig = new OutputConfigurationSwapper().swapToObject(new YamlOutputConfiguration());
-        }
         ShardingSphereAlgorithmConfiguration outputRateLimiter = outputConfig.getRateLimiter();
         outputRateLimitAlgorithm = null != outputRateLimiter ? ShardingSphereAlgorithmFactory.createAlgorithm(outputRateLimiter, JobRateLimitAlgorithm.class) : null;
         ShardingSphereAlgorithmConfiguration streamChannel = onRuleAlteredActionConfig.getStreamChannel();
-        if (null == streamChannel) {
-            streamChannel = new ShardingSphereAlgorithmConfiguration(MemoryPipelineChannelFactory.TYPE, new Properties());
-        }
         pipelineChannelFactory = ShardingSphereAlgorithmFactory.createAlgorithm(streamChannel, PipelineChannelFactory.class);
         ShardingSphereAlgorithmConfiguration completionDetector = onRuleAlteredActionConfig.getCompletionDetector();
         completionDetectAlgorithm = null != completionDetector ? ShardingSphereAlgorithmFactory.createAlgorithm(completionDetector, JobCompletionDetectAlgorithm.class) : null;
@@ -108,5 +103,19 @@ public final class RuleAlteredContext {
         inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(inputConfig.getWorkerThread());
         incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance();
         importerExecuteEngine = ExecuteEngine.newFixedThreadInstance(outputConfig.getWorkerThread());
+    }
+    
+    private OnRuleAlteredActionConfiguration convertActionConfig(final OnRuleAlteredActionConfiguration actionConfig) {
+        YamlOnRuleAlteredActionConfiguration yamlActionConfig = ACTION_CONFIG_YAML_SWAPPER.swapToYamlConfiguration(actionConfig);
+        if (null == yamlActionConfig.getInput()) {
+            yamlActionConfig.setInput(YamlInputConfiguration.buildWithDefaultValue());
+        }
+        if (null == yamlActionConfig.getOutput()) {
+            yamlActionConfig.setOutput(YamlOutputConfiguration.buildWithDefaultValue());
+        }
+        if (null == yamlActionConfig.getStreamChannel()) {
+            yamlActionConfig.setStreamChannel(new YamlShardingSphereAlgorithmConfiguration(MemoryPipelineChannelFactory.TYPE, new Properties()));
+        }
+        return ACTION_CONFIG_YAML_SWAPPER.swapToObject(yamlActionConfig);
     }
 }

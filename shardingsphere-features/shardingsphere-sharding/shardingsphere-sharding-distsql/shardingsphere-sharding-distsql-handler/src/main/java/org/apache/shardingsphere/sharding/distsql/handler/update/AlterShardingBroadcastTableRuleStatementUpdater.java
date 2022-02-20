@@ -69,6 +69,6 @@ public final class AlterShardingBroadcastTableRuleStatementUpdater implements Ru
     
     @Override
     public String getType() {
-        return AlterShardingBroadcastTableRulesStatement.class.getCanonicalName();
+        return AlterShardingBroadcastTableRulesStatement.class.getName();
     }
 }

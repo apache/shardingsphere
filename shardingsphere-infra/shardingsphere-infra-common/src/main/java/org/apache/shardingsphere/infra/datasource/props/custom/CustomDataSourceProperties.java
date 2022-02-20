@@ -23,6 +23,8 @@ import lombok.Getter;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * Custom data source properties.
@@ -35,9 +37,29 @@ public final class CustomDataSourceProperties {
     
     public CustomDataSourceProperties(final Map<String, Object> props, 
                                       final Collection<String> standardPropertyKeys, final Collection<String> transientFieldNames, final Map<String, String> propertySynonyms) {
-        properties = new LinkedHashMap<>(props);
+        properties = getProperties(props);
         standardPropertyKeys.forEach(properties::remove);
         transientFieldNames.forEach(properties::remove);
         propertySynonyms.values().forEach(properties::remove);
+    }
+    
+    private Map<String, Object> getProperties(final Map<String, Object> props) {
+        Map<String, Object> result = new LinkedHashMap<>(props.size(), 1);
+        for (Entry<String, Object> entry : props.entrySet()) {
+            if (!entry.getKey().contains(".")) {
+                result.put(entry.getKey(), entry.getValue());
+                continue;
+            }
+            String[] complexKeys = entry.getKey().split("\\.");
+            if (2 != complexKeys.length) {
+                result.put(entry.getKey(), entry.getValue());
+                continue;
+            }
+            if (!result.containsKey(complexKeys[0])) {
+                result.put(complexKeys[0], new Properties());
+            }
+            ((Properties) result.get(complexKeys[0])).setProperty(complexKeys[1], entry.getValue().toString());
+        }
+        return result;
     }
 }

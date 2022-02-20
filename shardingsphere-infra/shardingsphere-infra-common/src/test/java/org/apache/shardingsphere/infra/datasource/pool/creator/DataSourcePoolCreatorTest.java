@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.creator;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
@@ -48,13 +47,11 @@ public final class DataSourcePoolCreatorTest {
     @Test
     public void assertCreate() {
         MockedDataSource actual = (MockedDataSource) DataSourcePoolCreator.create(new DataSourceProperties(MockedDataSource.class.getName(), createProperties()));
-        assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getName()));
         assertDataSource(actual);
     }
     
     private Map<String, Object> createProperties() {
         Map<String, Object> result = new LinkedHashMap<>();
-        result.put("driverClassName", MockedDataSource.class.getName());
         result.put("url", "jdbc:mock://127.0.0.1/foo_ds");
         result.put("username", "root");
         result.put("password", "root");
@@ -76,22 +73,7 @@ public final class DataSourcePoolCreatorTest {
     
     private Map<String, Object> createDefaultProperties() {
         Map<String, Object> result = new HashMap<>();
-        result.put("driverClassName", MockedDataSource.class.getName());
         result.put("url", "jdbc:mock://127.0.0.1/foo_ds");
-        result.put("username", "root");
-        result.put("password", "root");
-        return result;
-    }
-    
-    @Test
-    public void assertCreateHikariDataSource() {
-        assertThat(DataSourcePoolCreator.create(new DataSourceProperties(HikariDataSource.class.getName(), createHikariProperties())), instanceOf(HikariDataSource.class));
-    }
-    
-    private Map<String, Object> createHikariProperties() {
-        Map<String, Object> result = new HashMap<>();
-        result.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
-        result.put("driverClassName", MockedDataSource.class.getName());
         result.put("username", "root");
         result.put("password", "root");
         return result;

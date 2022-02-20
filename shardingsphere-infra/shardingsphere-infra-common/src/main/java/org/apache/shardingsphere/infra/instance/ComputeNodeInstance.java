@@ -32,6 +32,8 @@ public final class ComputeNodeInstance {
     
     private InstanceDefinition instanceDefinition;
     
+    private String xaRecoveryId;
+    
     private Collection<String> labels;
     
     private Collection<String> status;

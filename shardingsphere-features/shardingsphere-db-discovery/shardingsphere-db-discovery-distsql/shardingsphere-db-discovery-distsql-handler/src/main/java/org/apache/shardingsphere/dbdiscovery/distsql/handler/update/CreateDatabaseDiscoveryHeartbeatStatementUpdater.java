@@ -77,6 +77,6 @@ public final class CreateDatabaseDiscoveryHeartbeatStatementUpdater implements R
     
     @Override
     public String getType() {
-        return CreateDatabaseDiscoveryHeartbeatStatement.class.getCanonicalName();
+        return CreateDatabaseDiscoveryHeartbeatStatement.class.getName();
     }
 }

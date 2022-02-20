@@ -24,17 +24,16 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 | 语句                                                 | 说明                                                           | 示例                                            |
 |:--------------------------------------------------- |:------------------------------------------------------------- |:----------------------------------------------- |
 | show scaling list                                   | 查询运行列表                                                    | show scaling list                               |
-| show scaling status xx                              | 查询任务状态，xx：任务id                                         | show scaling status 1234                        |
-| start scaling xx                                    | 开始运行任务，xx：任务id                                         | start scaling 1234                              |
-| stop scaling xx                                     | 停止运行任务，xx：任务id                                         | stop scaling 12345                              |
-| drop scaling xx                                     | 移除任务，xx：任务id                                            | drop scaling 1234                               |
-| reset scaling xx                                    | 重置任务进度，xx：任务id                                         | reset scaling 1234                              |
-| check scaling xx                                    | 数据一致性校验，使用`server.yaml`里的校验算法，xx：任务id            | check scaling 1234                              |
+| show scaling status xx                              | 查询任务状态，xx：任务 id                                         | show scaling status 1234                        |
+| start scaling xx                                    | 开始运行任务，xx：任务 id                                         | start scaling 1234                              |
+| stop scaling xx                                     | 停止运行任务，xx：任务 id                                         | stop scaling 12345                              |
+| drop scaling xx                                     | 移除任务，xx：任务 id                                            | drop scaling 1234                               |
+| reset scaling xx                                    | 重置任务进度，xx：任务 id                                         | reset scaling 1234                              |
+| check scaling xx                                    | 数据一致性校验，使用 `server.yaml` 里的校验算法，xx：任务 id            | check scaling 1234                              |
 | show scaling check algorithms                       | 展示可用的一致性校验算法                                          | show scaling check algorithms                   |
 | check scaling {jobId} by type(name={algorithmType}) | 数据一致性校验，使用指定的校验算法                                  | check scaling 1234 by type(name=DEFAULT)        |
-| stop scaling source writing xx                      | 旧的 ShardingSphere 数据源停写，xx：任务id                        | stop scaling source writing 1234                |
-| apply scaling xx                                    | 切换至新的 ShardingSphere 元数据，xx：任务id                      | apply scaling 1234                              |
-
+| stop scaling source writing xx                      | 旧的 ShardingSphere 数据源停写，xx：任务 id                        | stop scaling source writing 1234                |
+| apply scaling xx                                    | 切换至新的 ShardingSphere 元数据，xx：任务 id                      | apply scaling 1234                              |
 
 ## 熔断
 
@@ -44,7 +43,6 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 | [enable / disable] instance [IP=xxx, PORT=xxx / instanceId]   | 启用 / 禁用 proxy 实例                               | disable instance 127.0.0.1@3307            |
 | show instance list                                            | 查询 proxy 实例信息                                  | show instance list                              |
 | show readwrite_splitting read resources [from schema]         | 查询所有读库的状态                                    | show readwrite_splitting read resources         |
-
 
 ## 全局规则
 
@@ -71,7 +69,9 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 | parse SQL                                                                   | 解析 SQL 并输出抽象语法树                                        parse select * from t_order                      |
 | refresh table metadata                                                      | 刷新所有表的元数据                                              | refresh table metadata                          |
 | refresh table metadata [tableName / tableName from resource resourceName]   | 刷新指定表的元数据                                              | refresh table metadata t_order from resource ds_1 |
-| show table metadata tableName [, tableName] ...                             | 查询表的元数据                                                 | show table metadata t_order                                |
+| show table metadata tableName [, tableName] ...                             | 查询表的元数据                                                 | show table metadata t_order                       |
+| export schema config [from schema_name] [, file="file_path"]                | 查询 / 导出 schema 中的资源和规则配置                            | export schema config from readwrite_splitting_db  |
+| show rules used resource resourceName [from schema]                         | 查询 schema 中使用指定资源的规则                                 | show rules used resource ds_0 from schemaName     |
 
 ## 注意事项
 

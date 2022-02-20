@@ -48,11 +48,6 @@ public enum JobStatus {
     EXECUTE_INCREMENTAL_TASK(true),
     
     /**
-     * Job is almost finished.
-     */
-    ALMOST_FINISHED(true),
-    
-    /**
      * Job is finished.
      */
     FINISHED(false),

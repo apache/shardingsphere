@@ -17,7 +17,7 @@
 
 grammar RQLStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 showShardingTableRules
     : SHOW SHARDING TABLE (tableRule | RULES) (FROM schemaName)?
@@ -55,12 +55,12 @@ showUnusedShardingKeyGenerators
     : SHOW UNUSED SHARDING KEY GENERATORS (FROM schemaName)?
     ;
 
+showShardingTableRulesUsedKeyGenerator
+    : SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName (FROM schemaName)?
+    ;
+ 
 tableRule
     : RULE tableName
-    ;
-
-tableName
-    : IDENTIFIER
     ;
 
 schemaName

@@ -46,7 +46,7 @@ public final class ProjectionsContext {
     
     private final Collection<Projection> projections;
     
-    private final Collection<AggregationDistinctProjection> aggregationDistinctProjections = new LinkedList<>();
+    private final Collection<AggregationDistinctProjection> aggregationDistinctProjections;
     
     private final List<Projection> expandProjections;
     
@@ -55,7 +55,7 @@ public final class ProjectionsContext {
         this.stopIndex = stopIndex;
         this.distinctRow = distinctRow;
         this.projections = projections;
-        aggregationDistinctProjections.addAll(createAggregationDistinctProjections());
+        aggregationDistinctProjections = createAggregationDistinctProjections();
         expandProjections = expandProjections();
     }
     

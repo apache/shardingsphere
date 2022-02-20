@@ -17,7 +17,7 @@
 
 grammar RDLStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 createReadwriteSplittingRule
     : CREATE READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA readwriteSplittingRuleDefinition)*
@@ -53,10 +53,6 @@ writeResourceName
 
 readResourceNames
     : resourceName (COMMA resourceName)*
-    ;
-
-resourceName
-    : IDENTIFIER
     ;
 
 algorithmDefinition

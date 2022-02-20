@@ -286,7 +286,6 @@ props:
   max-connections-size-per-query: 1
   kernel-executor-size: 16  # Infinite by default.
   proxy-frontend-flush-threshold: 128  # The default value is 128.
-  proxy-opentracing-enabled: false
   proxy-hint-enabled: false
   sql-show: false
   check-table-metadata-enabled: false
@@ -486,7 +485,7 @@ dataSources:
 rules:
 - !READWRITE_SPLITTING
   dataSources:
-    pr_ds:
+    readwrite_ds:
       primaryDataSourceName: ds_0
       replicaDataSourceNames:
         - ds_0
@@ -784,7 +783,7 @@ dataSources:
 rules:
 - !DB_DISCOVERY
   dataSources:
-    pr_ds:
+    readwrite_ds:
       dataSourceNames:
         - ds_0
         - ds_1

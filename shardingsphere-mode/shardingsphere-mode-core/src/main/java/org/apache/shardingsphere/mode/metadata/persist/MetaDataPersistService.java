@@ -19,16 +19,25 @@ package org.apache.shardingsphere.mode.metadata.persist;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
+import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyerFactory;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.mode.metadata.persist.service.ComputeNodePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.SchemaVersionPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.GlobalRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
+import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -53,6 +62,8 @@ public final class MetaDataPersistService {
     
     private final ComputeNodePersistService computeNodePersistService;
     
+    private final SchemaVersionPersistService schemaVersionPersistService;
+    
     public MetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
         dataSourceService = new DataSourcePersistService(repository);
@@ -61,36 +72,93 @@ public final class MetaDataPersistService {
         globalRuleService = new GlobalRulePersistService(repository);
         propsService = new PropertiesPersistService(repository);
         computeNodePersistService = new ComputeNodePersistService(repository);
+        schemaVersionPersistService = new SchemaVersionPersistService(repository);
     }
     
     /**
      * Persist configurations.
      *
-     * @param dataSourcePropsMaps schema and data source properties maps
-     * @param schemaRuleConfigs schema and rule configuration map
+     * @param schemaConfigs schema configurations
      * @param globalRuleConfigs global rule configurations
      * @param props properties
      * @param isOverwrite whether overwrite registry center's configuration if existed
      */
-    public void persistConfigurations(final Map<String, Map<String, DataSourceProperties>> dataSourcePropsMaps, final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs,
+    public void persistConfigurations(final Map<String, ? extends SchemaConfiguration> schemaConfigs,
                                       final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
         globalRuleService.persist(globalRuleConfigs, isOverwrite);
         propsService.persist(props, isOverwrite);
-        for (Entry<String, Map<String, DataSourceProperties>> entry : dataSourcePropsMaps.entrySet()) {
+        for (Entry<String, ? extends SchemaConfiguration> entry : schemaConfigs.entrySet()) {
             String schemaName = entry.getKey();
-            dataSourceService.persist(schemaName, dataSourcePropsMaps.get(schemaName), isOverwrite);
-            schemaRuleService.persist(schemaName, schemaRuleConfigs.get(schemaName), isOverwrite);
+            dataSourceService.persist(schemaName, getDataSourcePropertiesMap(entry.getValue().getDataSources()), isOverwrite);
+            schemaRuleService.persist(schemaName, entry.getValue().getRuleConfigurations(), isOverwrite);
         }
     }
     
+    private Map<String, DataSourceProperties> getDataSourcePropertiesMap(final Map<String, DataSource> dataSourceMap) {
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(dataSourceMap.size(), 1);
+        for (Entry<String, DataSource> each : dataSourceMap.entrySet()) {
+            result.put(each.getKey(), DataSourcePropertiesCreator.create(each.getValue()));
+        }
+        return result;
+    }
+    
     /**
-     * Persist instance configurations.
+     * Persist instance labels.
      * 
      * @param instanceId instance id
-     * @param labels collection of label
-     * @param isOverwrite whether overwrite registry center's configuration if existed               
+     * @param labels labels
+     * @param isOverwrite whether overwrite registry center's configuration if existed
      */
-    public void persistInstanceConfigurations(final String instanceId, final Collection<String> labels, final boolean isOverwrite) {
+    public void persistInstanceLabels(final String instanceId, final Collection<String> labels, final boolean isOverwrite) {
         computeNodePersistService.persistInstanceLabels(instanceId, labels, isOverwrite);
+    }
+    
+    /**
+     * Get effective data sources.
+     * 
+     * @param schemaName schema name
+     * @param schemaConfigs schema configurations
+     * @return effective data sources
+     * @throws SQLException SQL exception
+     */
+    public Map<String, DataSource> getEffectiveDataSources(final String schemaName, final Map<String, ? extends SchemaConfiguration> schemaConfigs) throws SQLException {
+        Map<String, DataSourceProperties> persistedDataPropsMap = dataSourceService.load(schemaName);
+        return schemaConfigs.containsKey(schemaName)
+                ? mergeEffectiveDataSources(persistedDataPropsMap, schemaConfigs.get(schemaName).getDataSources()) : DataSourcePoolCreator.create(persistedDataPropsMap);
+    }
+    
+    private Map<String, DataSource> mergeEffectiveDataSources(
+            final Map<String, DataSourceProperties> persistedDataSourcePropsMap, final Map<String, DataSource> localConfiguredDataSources) throws SQLException {
+        Map<String, DataSource> result = new LinkedHashMap<>(persistedDataSourcePropsMap.size(), 1);
+        for (Entry<String, DataSourceProperties> entry : persistedDataSourcePropsMap.entrySet()) {
+            String dataSourceName = entry.getKey();
+            DataSourceProperties persistedDataSourceProps = entry.getValue();
+            DataSource localConfiguredDataSource = localConfiguredDataSources.get(dataSourceName);
+            if (null == localConfiguredDataSource) {
+                result.put(dataSourceName, DataSourcePoolCreator.create(persistedDataSourceProps));
+            } else if (DataSourcePropertiesCreator.create(localConfiguredDataSource).equals(persistedDataSourceProps)) {
+                result.put(dataSourceName, localConfiguredDataSource);
+            } else {
+                result.put(dataSourceName, DataSourcePoolCreator.create(persistedDataSourceProps));
+                DataSourcePoolDestroyerFactory.destroy(localConfiguredDataSource);
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Persist transaction rule.
+     *
+     * @param props transaction props
+     * @param isOverwrite whether overwrite registry center's configuration if existed
+     */
+    public void persistTransactionRule(final Properties props, final boolean isOverwrite) {
+        Collection<RuleConfiguration> ruleConfigurations = globalRuleService.load();
+        for (RuleConfiguration each : ruleConfigurations) {
+            if (each instanceof TransactionRuleConfiguration) {
+                ((TransactionRuleConfiguration) each).getProps().putAll(props);
+            }
+        }
+        globalRuleService.persist(ruleConfigurations, isOverwrite);
     }
 }

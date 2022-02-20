@@ -4,7 +4,7 @@ weight = 24
 chapter = true
 +++
 
-![](../../static/img/Blog_24_img_1_ShardingSphere_GSoC.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_24_img_1_ShardingSphere_GSoC.png)
 
 Apache ShardingSphere 社区有幸参与 Google 编程之夏（Google Summer of Code, 以下简称 GSoC)，指导年轻一代参与开源程序代码设计。GSoC 是 Google 公司主办的年度开源程序设计项目，第一届从 2005 年开始，主要目的是鼓励世界各地的学生参与开放源代码的程序设计。而 Apache ShardingSphere 项目也被选中成为 GSoC 一部分，为学生带来开源软件开发的有趣体验。
 
@@ -13,7 +13,7 @@ Apache ShardingSphere 社区有幸参与 Google 编程之夏（Google Summer of 
 
 						<个人简介>
 
-![](../../static/img/Blog_24_img_3_Thanoshan_Photo.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_24_img_3_Thanoshan_Photo.png)
 
 **Thanoshan**
 
@@ -21,7 +21,7 @@ Apache ShardingSphere 社区有幸参与 Google 编程之夏（Google Summer of 
 院校：斯里兰卡萨巴拉加穆瓦大学
 专业：计算机与信息系统
 
-![](../../static/img/Blog_24_img_4_Liangda_Photo.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_24_img_4_Liangda_Photo.png)
 
 **Liangda**
 
