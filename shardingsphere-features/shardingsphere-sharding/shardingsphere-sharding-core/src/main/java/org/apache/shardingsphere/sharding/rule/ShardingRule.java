@@ -224,8 +224,8 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     private void checkSameActualDatasourceNamesAndActualTableIndex(final TableRule sampleTableRule, final TableRule tableRule, final String bindingTableGroup) {
-        if (!sampleTableRule.getActualDatasourceNames().containsAll(tableRule.getActualDatasourceNames()) || 
-                !tableRule.getActualDatasourceNames().containsAll(sampleTableRule.getActualDatasourceNames())) {
+        if (!sampleTableRule.getActualDatasourceNames().containsAll(tableRule.getActualDatasourceNames()) 
+                || !tableRule.getActualDatasourceNames().containsAll(sampleTableRule.getActualDatasourceNames())) {
             throw new ShardingSphereConfigurationException("The %s on bindingTableGroup `%s` are inconsistent", "actualDatasourceNames", bindingTableGroup);
         }
         checkSameAlgorithmOnDatabase(sampleTableRule, tableRule, sampleTableRule.getActualDatasourceNames().stream().findFirst().get(), bindingTableGroup);
