@@ -19,79 +19,88 @@ package org.apache.shardingsphere.infra.context.refresher.type;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
-import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL92CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
-import javax.sql.DataSource;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 public final class CreateTableStatementSchemaRefresherTest {
     
     @Test
-    public void refreshForMySQL(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners,
-                                final Collection<String> logicDataSourceNames, final ConfigurationProperties props) throws SQLException {
+    public void refreshForMySQL() throws SQLException {
         MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
         createTableStatement.setContainsNotExistClause(false);
-        refresh(schemaMetaData, schema, optimizerPlanners, logicDataSourceNames, createTableStatement, props);
+        refresh(createTableStatement);
     }
     
     @Test
-    public void refreshForOracle(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners,
-                                 final Collection<String> logicDataSourceNames, final ConfigurationProperties props) throws SQLException {
+    public void refreshForOracle() throws SQLException {
         OracleCreateTableStatement createTableStatement = new OracleCreateTableStatement();
-        refresh(schemaMetaData, schema, optimizerPlanners, logicDataSourceNames, createTableStatement, props);
+        refresh(createTableStatement);
     }
     
     @Test
-    public void refreshForPostgreSQL(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners,
-                                     final Collection<String> logicDataSourceNames, final ConfigurationProperties props) throws SQLException {
+    public void refreshForPostgreSQL() throws SQLException {
         PostgreSQLCreateTableStatement createTableStatement = new PostgreSQLCreateTableStatement();
         createTableStatement.setContainsNotExistClause(false);
-        refresh(schemaMetaData, schema, optimizerPlanners, logicDataSourceNames, createTableStatement, props);
+        refresh(createTableStatement);
     }
     
     @Test
-    public void refreshForSQL92(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners,
-                                final Collection<String> logicDataSourceNames, final ConfigurationProperties props) throws SQLException {
+    public void refreshForSQL92() throws SQLException {
         SQL92CreateTableStatement createTableStatement = new SQL92CreateTableStatement();
-        refresh(schemaMetaData, schema, optimizerPlanners, logicDataSourceNames, createTableStatement, props);
+        refresh(createTableStatement);
     }
     
     @Test
-    public void refreshForSQLServer(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners,
-                                    final Collection<String> logicDataSourceNames, final ConfigurationProperties props) throws SQLException {
+    public void refreshForSQLServer() throws SQLException {
         SQLServerCreateTableStatement createTableStatement = new SQLServerCreateTableStatement();
-        refresh(schemaMetaData, schema, optimizerPlanners, logicDataSourceNames, createTableStatement, props);
+        refresh(createTableStatement);
     }
     
-    private void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
-                         final Collection<String> logicDataSourceNames, final CreateTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+    private void refresh(final CreateTableStatement sqlStatement) throws SQLException {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))));
-        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
-        when(dataSource.getConnection().getMetaData().getTables(any(), any(), any(), any())).thenReturn(mock(ResultSet.class));
+        ShardingSphereMetaData schemaMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        ShardingSphereSchema shardingSphereSchema = new ShardingSphereSchema(getTableMetaDataMap("t_order_0"));
+        when(schemaMetaData.getSchema()).thenReturn(shardingSphereSchema);
+        FederationSchemaMetaData federationSchemaMetaData = mock(FederationSchemaMetaData.class);
+        when(federationSchemaMetaData.getName()).thenReturn("sharding_db");
         MetaDataRefresher<CreateTableStatement> schemaRefresher = new CreateTableStatementSchemaRefresher();
-        schemaRefresher.refresh(schemaMetaData, schema, optimizerPlanners, Collections.singleton("ds"), sqlStatement, props);
-        assertTrue(schemaMetaData.containsTable("t_order_0"));
+        try(MockedStatic<TableMetaDataBuilder> tableMetaDataBuilder = mockStatic(TableMetaDataBuilder.class)) {
+            tableMetaDataBuilder.when(() -> TableMetaDataBuilder.load(any(), any())).thenReturn(getTableMetaDataMap("t_order_0"));
+            schemaRefresher.refresh(schemaMetaData, federationSchemaMetaData, new HashMap<>(), Collections.emptyList(), sqlStatement, mock(ConfigurationProperties.class));
+            assertTrue(shardingSphereSchema.containsTable("t_order_0"));
+        }
+    }
+    
+    private Map<String, TableMetaData> getTableMetaDataMap(final String tableName) {
+        Map<String, TableMetaData> result = new LinkedHashMap<>();
+        result.put(tableName, mock(TableMetaData.class));
+        return result;
     }
 }
