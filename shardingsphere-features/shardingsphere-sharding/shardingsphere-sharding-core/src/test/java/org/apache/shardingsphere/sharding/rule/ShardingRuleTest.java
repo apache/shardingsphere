@@ -284,6 +284,16 @@ public final class ShardingRuleTest {
         createMaximumShardingRule().generateKey("table_0");
     }
     
+    @Test(expected = ShardingSphereConfigurationException.class)
+    public void assertCreateInconsistentActualDatasourceNamesFailure() {
+        createInconsistentActualDatasourceNamesShardingRule();
+    }
+    
+    @Test(expected = ShardingSphereConfigurationException.class)
+    public void assertCreateInconsistentActualTableNames() {
+        createInconsistentActualTableNamesShardingRule();
+    }
+    
     @Test
     public void assertGenerateKeyWithDefaultKeyGenerator() {
         assertThat(createMinimumShardingRule().generateKey("logic_table"), instanceOf(Long.class));
@@ -367,6 +377,28 @@ public final class ShardingRuleTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, createDataSourceNames());
         assertThat(shardingRule.getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1", "resource0", "resource1")));
+    }
+    
+    private ShardingRule createInconsistentActualDatasourceNamesShardingRule() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..2}.table_${0..2}");
+        shardingTableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "increment"));
+        ShardingTableRuleConfiguration subTableRuleConfig = createTableRuleConfiguration("SUB_LOGIC_TABLE", "ds_${0..1}.sub_table_${0..2}");
+        shardingRuleConfig.getTables().add(shardingTableRuleConfig);
+        shardingRuleConfig.getTables().add(subTableRuleConfig);
+        shardingRuleConfig.getBindingTableGroups().add(shardingTableRuleConfig.getLogicTable() + "," + subTableRuleConfig.getLogicTable());
+        return new ShardingRule(shardingRuleConfig, createDataSourceNames());
+    }
+    
+    private ShardingRule createInconsistentActualTableNamesShardingRule() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..3}");
+        shardingTableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "increment"));
+        ShardingTableRuleConfiguration subTableRuleConfig = createTableRuleConfiguration("SUB_LOGIC_TABLE", "ds_${0..1}.sub_table_${0..2}");
+        shardingRuleConfig.getTables().add(shardingTableRuleConfig);
+        shardingRuleConfig.getTables().add(subTableRuleConfig);
+        shardingRuleConfig.getBindingTableGroups().add(shardingTableRuleConfig.getLogicTable() + "," + subTableRuleConfig.getLogicTable());
+        return new ShardingRule(shardingRuleConfig, createDataSourceNames());
     }
     
     private ShardingRule createMaximumShardingRule() {

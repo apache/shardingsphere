@@ -224,16 +224,16 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     private void checkSameActualDatasourceNamesAndActualTableIndex(final TableRule sampleTableRule, final TableRule tableRule, final String bindingTableGroup) {
-        if (!sampleTableRule.getActualDatasourceNames().containsAll(tableRule.getActualDatasourceNames())) {
+        if (!sampleTableRule.getActualDatasourceNames().containsAll(tableRule.getActualDatasourceNames()) || !tableRule.getActualDatasourceNames().containsAll(sampleTableRule.getActualDatasourceNames())) {
             throw new ShardingSphereConfigurationException("The %s on bindingTableGroup `%s` are inconsistent", "actualDatasourceNames", bindingTableGroup);
         }
         checkSameAlgorithmOnDatabase(sampleTableRule, tableRule, sampleTableRule.getActualDatasourceNames().stream().findFirst().get(), bindingTableGroup);
         for (String each : sampleTableRule.getActualDatasourceNames()) {
-            Collection<String> savedActualTableNames = sampleTableRule.getActualTableNames(each).stream().map(optional -> substring(optional)[1])
+            Collection<String> sampleActualTableNames = sampleTableRule.getActualTableNames(each).stream().map(optional -> substring(optional)[1])
                     .filter(optional -> !optional.isEmpty()).collect(Collectors.toList());
-            Collection<String> newOneActualTableNames = tableRule.getActualTableNames(each).stream().map(optional -> substring(optional)[1])
+            Collection<String> actualTableNames = tableRule.getActualTableNames(each).stream().map(optional -> substring(optional)[1])
                     .filter(optional -> !optional.isEmpty()).collect(Collectors.toList());
-            if (!savedActualTableNames.containsAll(newOneActualTableNames)) {
+            if (!sampleActualTableNames.containsAll(actualTableNames) || !actualTableNames.containsAll(sampleActualTableNames)) {
                 throw new ShardingSphereConfigurationException("The %s on bindingTableGroup `%s` are inconsistent", "actualTableNames", bindingTableGroup);
             }
             checkSameAlgorithmOnTable(sampleTableRule, sampleTableRule.getActualTableNames(each).stream().findFirst().get(), tableRule,
