@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.engine;
 
-import lombok.AccessLevel;
-import lombok.Getter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
@@ -51,7 +49,6 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@Getter(AccessLevel.PROTECTED)
 public abstract class BatchITCase extends BaseITCase {
     
     private final Collection<DataSet> dataSets = new LinkedList<>();
@@ -62,13 +59,13 @@ public abstract class BatchITCase extends BaseITCase {
     
     public BatchITCase(final CaseParameterizedArray parameterizedArray) {
         super(parameterizedArray);
-        this.parentPath = parameterizedArray.getTestCaseContext().getParentPath();
+        parentPath = parameterizedArray.getTestCaseContext().getParentPath();
     }
     
     @Before
     public void init() throws Exception {
-        for (IntegrationTestCaseAssertion each : getIntegrationTestCase().getAssertions()) {
-            dataSets.add(DataSetLoader.load(getParentPath(), getScenario(), getDatabaseType(), each.getExpectedDataFile()));
+        for (IntegrationTestCaseAssertion each : getItCase().getAssertions()) {
+            dataSets.add(DataSetLoader.load(parentPath, getScenario(), getDatabaseType(), each.getExpectedDataFile()));
         }
         dataSetEnvironmentManager = new DataSetEnvironmentManager(new ScenarioPath(getScenario()).getDataSetFile(), getActualDataSourceMap());
         dataSetEnvironmentManager.fillData();
@@ -76,7 +73,7 @@ public abstract class BatchITCase extends BaseITCase {
     
     @Override
     protected String getSQL() throws ParseException {
-        return getIntegrationTestCase().getSql();
+        return getItCase().getSql();
     }
     
     @Override

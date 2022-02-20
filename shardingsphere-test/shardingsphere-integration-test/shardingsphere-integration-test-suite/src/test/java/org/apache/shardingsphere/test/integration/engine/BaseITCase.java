@@ -53,11 +53,11 @@ public abstract class BaseITCase {
     
     private final String scenario;
     
-    private final String adapter;
-    
     private final DatabaseType databaseType;
     
-    private final IntegrationTestCase integrationTestCase;
+    private final String itKey;
+    
+    private final IntegrationTestCase itCase;
     
     private final ComposedContainer composedContainer;
     
@@ -66,10 +66,10 @@ public abstract class BaseITCase {
     private DataSource targetDataSource;
     
     public BaseITCase(final ParameterizedArray parameterizedArray) {
-        adapter = parameterizedArray.getAdapter();
         scenario = parameterizedArray.getScenario();
         databaseType = parameterizedArray.getDatabaseType();
-        integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
+        itKey = parameterizedArray.getKey();
+        itCase = parameterizedArray.getTestCaseContext().getTestCase();
         composedContainer = COMPOSED_CONTAINER_REGISTRY.getComposedContainer(parameterizedArray);
     }
     

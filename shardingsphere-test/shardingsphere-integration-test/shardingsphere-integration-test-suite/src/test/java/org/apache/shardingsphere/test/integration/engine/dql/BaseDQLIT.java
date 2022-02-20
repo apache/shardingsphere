@@ -57,12 +57,11 @@ public abstract class BaseDQLIT extends SingleITCase {
     }
     
     private void fillDataOnlyOnce() throws SQLException, ParseException, IOException, JAXBException {
-        String key = String.join("-", getAdapter(), getScenario(), getDatabaseType().getName());
-        if (!FILLED_SUITES.contains(key)) {
+        if (!FILLED_SUITES.contains(getItKey())) {
             synchronized (FILLED_SUITES) {
                 if (!FILLED_SUITES.contains(getScenario())) {
                     new DataSetEnvironmentManager(new ScenarioPath(getScenario()).getDataSetFile(), getActualDataSourceMap()).fillData();
-                    FILLED_SUITES.add(key);
+                    FILLED_SUITES.add(getItKey());
                 }
             }
         }
