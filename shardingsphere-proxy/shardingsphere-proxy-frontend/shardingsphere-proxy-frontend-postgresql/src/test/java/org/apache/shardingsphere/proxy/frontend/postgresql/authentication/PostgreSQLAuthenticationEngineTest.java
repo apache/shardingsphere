@@ -65,7 +65,6 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -137,8 +136,6 @@ public final class PostgreSQLAuthenticationEngineTest {
     @Test
     @SneakyThrows(ReflectiveOperationException.class)
     public void assertGetIdentifierPacket() {
-        PostgreSQLAuthenticationHandler authenticationHandler = mock(PostgreSQLAuthenticationHandler.class);
-        when(authenticationHandler.getAuthenticator(anyString(), anyString())).thenReturn(new PostgreSQLMD5PasswordAuthenticator());
         Method method = PostgreSQLAuthenticationEngine.class.getDeclaredMethod("getIdentifierPacket", String.class);
         method.setAccessible(true);
         PostgreSQLIdentifierPacket packet = (PostgreSQLIdentifierPacket) method.invoke(new PostgreSQLAuthenticationEngine(), username);
