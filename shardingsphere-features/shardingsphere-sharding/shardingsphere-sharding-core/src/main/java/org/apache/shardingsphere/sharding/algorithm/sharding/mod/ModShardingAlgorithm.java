@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 
 import com.google.common.base.Preconditions;
+import com.google.common.primitives.Longs;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
@@ -28,7 +29,10 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Modulo sharding algorithm.
@@ -38,6 +42,8 @@ import java.util.Properties;
 public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
     private static final String SHARDING_COUNT_KEY = "sharding-count";
+    
+    private static final Pattern SUFFIX_PATTERN = Pattern.compile(".*\\D+(\\d+)$");
     
     private Properties props = new Properties();
     
@@ -55,10 +61,11 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
-        String suffix = String.valueOf(getLongValue(shardingValue.getValue()) % shardingCount);
+        long suffix = getLongValue(shardingValue.getValue()) % shardingCount;
         for (String each : availableTargetNames) {
-            if (each.endsWith(suffix)) {
-                return each;
+            Optional<String> matchedTargetName = findMatchedTargetName(suffix, each);
+            if (matchedTargetName.isPresent()) {
+                return matchedTargetName.get();
             }
         }
         return null;
@@ -77,14 +84,21 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     private Collection<String> getAvailableTargetNames(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         for (long i = getLongValue(shardingValue.getValueRange().lowerEndpoint()); i <= getLongValue(shardingValue.getValueRange().upperEndpoint()); i++) {
-            String suffix = String.valueOf(i % shardingCount);
+            long suffix = i % shardingCount;
             for (String each : availableTargetNames) {
-                if (each.endsWith(suffix)) {
-                    result.add(each);
-                }
+                findMatchedTargetName(suffix, each).ifPresent(result::add);
             }
         }
         return result;
+    }
+    
+    private Optional<String> findMatchedTargetName(final long suffix, final String each) {
+        Matcher matcher = SUFFIX_PATTERN.matcher(each);
+        Long targetNameSuffix = matcher.matches() ? Longs.tryParse(matcher.group(1)) : null;
+        if (null != targetNameSuffix && targetNameSuffix.equals(suffix)) {
+            return Optional.of(each);
+        }
+        return Optional.empty();
     }
     
     private long getLongValue(final Comparable<?> value) {
