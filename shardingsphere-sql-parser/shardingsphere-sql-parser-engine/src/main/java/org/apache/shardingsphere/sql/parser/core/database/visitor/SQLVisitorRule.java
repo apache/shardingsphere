@@ -204,6 +204,8 @@ public enum SQLVisitorRule {
     
     RENAME_USER("RenameUser", SQLStatementType.DCL),
     
+    SET_USER("SetUser", SQLStatementType.DCL),
+    
     CREATE_ROLE("CreateRole", SQLStatementType.DCL),
     
     ALTER_ROLE("AlterRole", SQLStatementType.DCL),

@@ -65,4 +65,8 @@
     <sql-case id="alter_user_set_default_schema" value="ALTER USER user1 WITH DEFAULT_SCHEMA = schema" db-types="SQLServer" />
     <sql-case id="alter_user_rename" value="ALTER USER user1_bak WITH NAME = user1" db-types="SQLServer" />
     <sql-case id="alter_user_in_database" value="ALTER USER user1 IN DATABASE ds SET arg1='val1'" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_user_set_schema_password_language" value="ALTER USER user1 WITH NAME = user1_new, DEFAULT_SCHEMA = Development, PASSWORD = 'W1r77TT98%ab@#' OLD_PASSWORD = 'New Devel0per', DEFAULT_LANGUAGE= French" db-types="SQLServer" />
+    <sql-case id="alter_azure_ad_user_with_login" value="ALTER USER [westus/joe] WITH LOGIN = joe@westus.com" db-types="SQLServer" />
+    <sql-case id="alter_azure_ad_user_without_login" value="ALTER USER [westus/joe] FROM EXTERNAL PROVIDER" db-types="SQLServer" />
+    <sql-case id="alter_user_alias_to_existing_azure_id" value="ALTER USER [westus/joe] WITH LOGIN = joe@westus.com, name= joe_alias" db-types="SQLServer" />
 </sql-cases>
