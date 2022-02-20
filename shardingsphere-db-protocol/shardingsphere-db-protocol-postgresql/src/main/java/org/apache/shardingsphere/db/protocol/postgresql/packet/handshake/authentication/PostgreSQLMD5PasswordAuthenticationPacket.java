@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.handshake;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.authentication;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
@@ -24,10 +24,10 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.Postgr
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
- * AuthenticationMD5Password (backend) packet for PostgreSQL.
+ * MD5Password authentication (backend) packet for PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLAuthenticationMD5PasswordPacket implements PostgreSQLIdentifierPacket {
+public final class PostgreSQLMD5PasswordAuthenticationPacket implements PostgreSQLIdentifierPacket {
     
     private static final int AUTH_REQ_MD5 = 5;
     
