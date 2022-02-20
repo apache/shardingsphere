@@ -127,7 +127,7 @@ public final class PostgreSQLAuthenticationHandlerTest {
     
     @Test
     public void assertGetAuthenticator() {
-        PostgreSQLAuthenticator authenticator = authenticationHandler.getAuthenticator("root", "");
+        PostgreSQLAuthenticator authenticator = authenticationHandler.getAuthenticator(username, "");
         assertThat(authenticator, instanceOf(PostgreSQLMD5PasswordAuthenticator.class));
         assertThat(authenticator.getAuthenticationMethodName(), is(PostgreSQLAuthenticationMethod.MD5.getMethodName()));
     }
