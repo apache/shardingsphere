@@ -91,7 +91,7 @@ public final class CreateTableStatementSchemaRefresherTest {
         FederationSchemaMetaData federationSchemaMetaData = mock(FederationSchemaMetaData.class);
         when(federationSchemaMetaData.getName()).thenReturn("sharding_db");
         MetaDataRefresher<CreateTableStatement> schemaRefresher = new CreateTableStatementSchemaRefresher();
-        try(MockedStatic<TableMetaDataBuilder> tableMetaDataBuilder = mockStatic(TableMetaDataBuilder.class)) {
+        try (MockedStatic<TableMetaDataBuilder> tableMetaDataBuilder = mockStatic(TableMetaDataBuilder.class)) {
             tableMetaDataBuilder.when(() -> TableMetaDataBuilder.load(any(), any())).thenReturn(getTableMetaDataMap("t_order_0"));
             schemaRefresher.refresh(schemaMetaData, federationSchemaMetaData, new HashMap<>(), Collections.emptyList(), sqlStatement, mock(ConfigurationProperties.class));
             assertTrue(shardingSphereSchema.containsTable("t_order_0"));
