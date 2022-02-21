@@ -47,15 +47,11 @@ public final class GeneralRDLIT extends BaseRDLIT {
     @Test
     public void assertExecute() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
-            assertExecuteForStatement(connection);
-        }
-    }
-    
-    private void assertExecuteForStatement(final Connection connection) throws SQLException, ParseException {
-        try (
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(getSQL())) {
-            assertResultSet(resultSet);
+            try (
+                    Statement statement = connection.createStatement();
+                    ResultSet resultSet = statement.executeQuery(getSQL())) {
+                assertResultSet(resultSet);
+            }
         }
     }
 }
