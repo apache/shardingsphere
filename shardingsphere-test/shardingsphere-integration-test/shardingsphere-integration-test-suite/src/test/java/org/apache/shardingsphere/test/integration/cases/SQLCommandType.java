@@ -46,7 +46,7 @@ public enum SQLCommandType {
      * 
      * <p>Such as {@code SELECT}.</p>
      */
-    DQL(SelectStatement.class, "dql-integration-test-cases", true, Arrays.asList("jdbc", "proxy")),
+    DQL(SelectStatement.class, "dql-integration-test-cases", false, Arrays.asList("jdbc", "proxy")),
     
     /**
      * Data Manipulation Language.
