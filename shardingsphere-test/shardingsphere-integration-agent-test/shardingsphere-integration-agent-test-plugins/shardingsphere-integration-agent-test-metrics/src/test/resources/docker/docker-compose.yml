@@ -1,0 +1,63 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+version: "2.1"
+
+services:
+  mysql:
+    image: "mysql/mysql-server:5.7"
+    container_name: agent-metrics-mysql
+    command: ['--sql_mode=', '--default-authentication-plugin=mysql_native_password']
+    volumes:
+      - ../env/mysql:/docker-entrypoint-initdb.d/
+    ports:
+      - "43060:3306"
+    environment:
+      - LANG=C.UTF-8
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: agent-prometheus
+    restart: always
+    volumes:
+      - ./prometheus/conf:/config
+    ports:
+      - '19090:9090'
+    links:
+      - "shardingsphere-proxy-agent-metrics:shardingsphere.proxy.host"
+    command: ['--config.file=/config/prometheus.yml']
+    depends_on:
+      - shardingsphere-proxy-agent-metrics
+
+  shardingsphere-proxy-agent-metrics:
+    image: apache/shardingsphere-proxy-agent-metrics-test
+    container_name: shardingsphere-proxy-agent-metrics
+    ports:
+      - "43070:3307"
+      - "43080:3308"
+      - "18090:18090"
+    links:
+      - "mysql:mysql.agent.metrics.host"
+    volumes:
+      - ./proxy/conf:/opt/shardingsphere-proxy-agent-metrics/conf
+    depends_on:
+      - mysql
+    environment:
+      - WAIT_HOSTS=mysql:3306
+      - WAIT_HOSTS_TIMEOUT=300
+      - WAIT_SLEEP_INTERVAL=5
+      - WAIT_HOST_CONNECT_TIMEOUT=30

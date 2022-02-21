@@ -1,0 +1,58 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+version: '3'
+services:
+  mysql:
+    ## for different MySQL version, you could get more at here : https://hub.docker.com/_/mysql?tab=tags
+    image: "mysql:5.7"
+    ## port binding to 3306, you could change to 13306:3306 or any other available port you want
+    ports:
+      - "3306:3306"
+    container_name: shardingsphere-example-mysql
+    ## launch MySQL without password
+    ## you could access MySQL like `mysql -h127.0.0.1 -P3306 -uroot`
+    ## if you insist to access MySQL with password, remove `MYSQL_ALLOW_EMPTY_PASSWORD=yes` and then use MYSQL_ROOT_PASSWORD argument
+    #  - MYSQL_ROOT_PASSWORD=root
+    environment:
+     - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    ## copy the manual_schema.sql to /docker-entrypoint-initdb.d/ . this will init the sql file when the MySQL in container start up
+    volumes:
+      - ../../../src/resources/manual_schema.sql:/docker-entrypoint-initdb.d/manual_schema.sql
+
+  proxy:
+    ## get more versions of proxy here : https://hub.docker.com/r/apache/sharding-proxy/tags
+    image: "apache/sharding-proxy:4.1.1"
+    container_name: shardingsphere-example-proxy
+    depends_on:
+     - mysql
+    ## wait-for-it.sh will make proxy entry point wait until MySQL container 3306 port open
+    entrypoint: >
+     /bin/sh -c "/opt/wait-for-it.sh shardingsphere-example-mysql:3306 --timeout=20 --strict --
+     && /opt/sharding-proxy/bin/start.sh 3308 
+     && tail -f /opt/sharding-proxy/logs/stdout.log"
+    ports: 
+     - "3308:3308"
+    links:
+     - "mysql:mysql"
+    volumes:
+     - ./conf/:/opt/sharding-proxy/conf
+     - ../../tools/wait-for-it.sh:/opt/wait-for-it.sh
+    environment:
+     - JVM_OPTS="-Djava.awt.headless=true"
+    
+

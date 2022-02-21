@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="SQLServer" namespace="sqlserver.dcl.grant">
-    <sql-case id="grant_select" value="GRANT SELECT ON database1 TO user1" />
-    <sql-case id="grant_select_column" value="GRANT SELECT (order_id) ON database1 TO user1" />
-    <sql-case id="grant_select_to_users" value="GRANT SELECT (order_id) ON database1 TO user1, user2" />
-    <sql-case id="grant_crud" value="GRANT INSERT, SELECT, UPDATE, DELETE ON database1 TO user1" />
-    <sql-case id="grant_all" value="GRANT ALL PRIVILEGES ON database1 TO user1" />
-</sql-cases>

@@ -1,0 +1,8 @@
++++
+title = "Rules"
+weight = 3
+chapter = true
++++
+
+Rules are pluggable part of Apache ShardingSphere.
+This chapter is a Spring Boot Starter rule configuration manual for ShardingSphere-JDBC.

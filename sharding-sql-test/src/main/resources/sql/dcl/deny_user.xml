@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases>
-    <sql-case id="deny_user" value="DENY UPDATE ON t_order TO user_dev CASCADEK" db-types="SQLServer"/>
-</sql-cases>

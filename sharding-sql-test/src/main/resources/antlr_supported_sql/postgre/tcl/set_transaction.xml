@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="PostgreSQL" namespace="postgre.tcl.setTransaction">
-    <sql-case id="set_transaction" value="SET TRANSACTION ISOLATION LEVEL READ COMMITTED" />
-    <sql-case id="set_transaction_read_only" value="SET TRANSACTION READ ONLY" />
-    <sql-case id="set_transaction_snapshot" value="SET TRANSACTION SNAPSHOT snapshot1" />
-    <sql-case id="set_session_transaction" value="SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL READ COMMITTED" />
-</sql-cases>

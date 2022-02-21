@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<parser-result-sets namespace="sqlserver.tcl.setAutoCommit">
-    <parser-result sql-case-id="set_auto_commit_on" tcl-actual-statement-class-type="io.shardingsphere.core.parsing.antlr.sql.statement.tcl.SetAutoCommitStatement" />
-    <parser-result sql-case-id="set_auto_commit_off" tcl-actual-statement-class-type="io.shardingsphere.core.parsing.antlr.sql.statement.tcl.SetAutoCommitStatement" />
-</parser-result-sets>

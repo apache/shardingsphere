@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="SQLServer" namespace="sqlserver.tcl.savepoint">
-    <sql-case id="savepoint" value="SAVE TRANSACTION transaction1" />
-</sql-cases>

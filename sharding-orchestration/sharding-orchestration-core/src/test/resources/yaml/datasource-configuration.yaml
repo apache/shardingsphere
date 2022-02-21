@@ -1,6 +1,0 @@
-dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-properties:
-  driverClassName: org.h2.Driver
-  jdbcUrl: jdbc:h2:mem:test_ds;
-  username: root
-  password: 

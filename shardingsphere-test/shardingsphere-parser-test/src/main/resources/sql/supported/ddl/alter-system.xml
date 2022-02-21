@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="alter_system_archive_log_change" value="ALTER SYSTEM ARCHIVE LOG CHANGE 9356083" db-types="Oracle" />
+    <sql-case id="alter_system_archive_log_logfile" value="ALTER SYSTEM ARCHIVE LOG LOGFILE 'diskl:log6.log' TO 'diska:[arch$]'" db-types="Oracle" />
+    <sql-case id="alter_system_check_datafiles" value="ALTER SYSTEM CHECK DATAFILES" db-types="Oracle" />
+    <sql-case id="alter_system_quiesce_restricted" value="ALTER SYSTEM QUIESCE RESTRICTED" db-types="Oracle" />
+    <sql-case id="alter_system_start_rolling_migration" value="ALTER SYSTEM START ROLLING MIGRATION TO '11.2.0.0.0'" db-types="Oracle" />
+    <sql-case id="alter_system_start_rolling_patch" value="ALTER SYSTEM START ROLLING PATCH" db-types="Oracle" />
+    <sql-case id="alter_system_enable_affinity_service" value="ALTER SYSTEM ENABLE AFFINITY uwclass.servers SERVICE pdbdev" db-types="Oracle" />
+    <sql-case id="alter_system_shutdown_immediate" value="ALTER SYSTEM SHUTDOWN IMMEDIATE 'D000'" db-types="Oracle" />
+    <sql-case id="alter_system_set_comment_container_scope" value="ALTER SYSTEM SET audit_sys_operations = TRUE COMMENT = 'Begin auditing SYS' CONTAINER = ALL SCOPE = SPFILE" db-types="Oracle" />
+    <sql-case id="alter_system_set_query_rewrite_enabled" value="ALTER SYSTEM SET QUERY_REWRITE_ENABLED = TRUE" db-types="Oracle" />
+    <sql-case id="alter_system_reset_parameter_scope" value="ALTER SYSTEM RESET plsql_code_type SCOPE = SPFILE" db-types="Oracle" />
+    <sql-case id="alter_system_relocate_client" value="ALTER SYSTEM RELOCATE CLIENT '-MGMTDB:_mgmtdb'" db-types="Oracle" />
+    <sql-case id="alter_system_enable_restricted_session" value="ALTER SYSTEM ENABLE RESTRICTED SESSION" db-types="Oracle" />
+    <sql-case id="alter_system_encryption_wallet_open_identified_by_password" value="ALTER SYSTEM SET ENCRYPTION WALLET OPEN IDENTIFIED BY &quot;password&quot;" db-types="Oracle" />
+    <sql-case id="alter_system_encryption_key_identified_by_password" value="ALTER SYSTEM SET ENCRYPTION KEY IDENTIFIED BY &quot;password&quot;" db-types="Oracle" />
+    <sql-case id="alter_system_flush_shared_pool" value="ALTER SYSTEM FLUSH SHARED_POOL" db-types="Oracle" />
+    <sql-case id="alter_system_checkpoint" value="ALTER SYSTEM CHECKPOINT" db-types="Oracle" />
+    <sql-case id="alter_system_set_dispatchers" value="ALTER SYSTEM SET DISPATCHERS = '(INDEX=0)(PROTOCOL=TCP)(DISPATCHERS=5)','(INDEX=1)(PROTOCOL=ipc)(DISPATCHERS=10)'" db-types="Oracle" />
+    <sql-case id="alter_system_switch_logfile" value="ALTER SYSTEM SWITCH LOGFILE" db-types="Oracle" />
+    <sql-case id="alter_system_enable_distributed_recovery" value="ALTER SYSTEM ENABLE DISTRIBUTED RECOVERY" db-types="Oracle" />
+    <sql-case id="alter_system_flush_passwordfile_metada_cache" value="ALTER SYSTEM FLUSH PASSWORDFILE_METADATA_CACHE" db-types="Oracle" />
+</sql-cases>

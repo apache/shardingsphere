@@ -1,0 +1,30 @@
+<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		{{- if .IsHome }}
+			<meta name="description" content="{{ .Site.Params.Description }}">
+		{{- else if .Description }}
+			<meta name="description" content="{{ .Description }}">
+		{{- end }}
+
+		<title>{{- if .IsHome }}{{ .Site.Title }}{{- else }}{{ .Title }} &middot; {{ .Site.Title }}{{- end }}</title>
+
+		<!-- CSS -->
+		{{- $inServerMode	:= .Site.IsServer }}
+		{{- $cssTarget		:= "css/style.css" }}
+		{{- $cssOptions		:= cond ($inServerMode) (dict "targetPath" $cssTarget "enableSourceMap" true) (dict "targetPath" $cssTarget "outputStyle" "compressed") }}
+		{{- $style			:= resources.Get "scss/tale.scss" | toCSS $cssOptions }}
+  		<link rel="stylesheet" href="{{ $style.RelPermalink }}">
+		<link rel="stylesheet" href="{{ "css/fonts.css" | relURL }}">
+		{{ range .Site.Params.css -}}
+			<link rel="stylesheet" href="{{ . | relURL }}">
+		{{ end -}}
+
+		<!-- Favicon -->
+		<link rel="icon" type="image/png" sizes="32x32" href="{{ "images/favicon-32x32.png" | relURL }}">
+		<link rel="icon" type="image/png" sizes="16x16" href="{{ "images/favicon-16x16.png" | relURL }}">
+		<link rel="apple-touch-icon" sizes="180x180" href="{{ "images/apple-touch-icon.png" | relURL }}">
+
+		<!-- RSS -->
+		<link href="{{ with .OutputFormats.Get "RSS" }}{{ .RelPermalink }}{{ end }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
+	</head>

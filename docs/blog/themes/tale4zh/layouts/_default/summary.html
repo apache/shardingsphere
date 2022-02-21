@@ -1,0 +1,11 @@
+<a href="{{ .Permalink }}" class="catalogue-item">
+    <div>
+        <!-- <time datetime="{{ .PublishDate }}" class="catalogue-time">{{ i18n "publishdate" . }}</time> -->
+        <h2 class="catalogue-title">{{ .Title }}</h2>
+        <div class="catalogue-line"></div>
+
+        <p>
+            {{ if isset .Params "summary" }}{{ .Params.Summary | markdownify }}{{ else }}{{ substr .Summary 0 310 }}{{ end }}
+        </p>
+    </div>
+</a>

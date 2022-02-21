@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="MySQL" namespace="mysql.tcl.rollback">
-    <sql-case id="rollback" value="ROLLBACK" />
-    <sql-case id="rollback_to_savepoint" value="ROLLBACK TO savepoint1" />
-</sql-cases>

@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases>
-    <sql-case id="show_table_status" value="SHOW TABLE STATUS" db-types="MySQL" />
-</sql-cases>

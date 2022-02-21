@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="SQLServer" namespace="sqlserver.dcl.deny">
-    <sql-case id="deny_select" value="DENY SELECT ON database1 TO user1" />
-    <sql-case id="deny_select_column" value="DENY SELECT (order_id) ON database1 TO user1" />
-    <sql-case id="deny_select_to_users" value="DENY SELECT (order_id) ON database1 TO user1, user2" />
-    <sql-case id="deny_crud" value="DENY INSERT, SELECT, UPDATE, DELETE ON database1 TO user1" />
-    <sql-case id="deny_all" value="DENY ALL PRIVILEGES ON database1 TO user1" />
-</sql-cases>

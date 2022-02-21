@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="SQLServer" namespace="sqlserver.dcl.createRole">
-    <sql-case id="create_role" value="CREATE ROLE role1 AUTHORIZATION authorization" />
-</sql-cases>

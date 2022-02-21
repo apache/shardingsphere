@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases>
-    <sql-case id="drop_user_without_hostname" value="DROP USER user_dev" db-types="H2,Oracle,PostgreSQL,SQLServer"/>
-    <sql-case id="drop_user_with_hostname" value="DROP USER user_dev@localhost" db-types="MySQL" />
-    <sql-case id="drop_user_cascade" value="DROP USER user_dev CASCADE" db-types="Oracle" />
-    <sql-case id="drop_role" value="DROP ROLE role_dev" db-types="H2,Oracle,PostgreSQL,SQLServer" />
-    <sql-case id="drop_login" value="DROP LOGIN login_dev" db-types="SQLServer" />
-</sql-cases>

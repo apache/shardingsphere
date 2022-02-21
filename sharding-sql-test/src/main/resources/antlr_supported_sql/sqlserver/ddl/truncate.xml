@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="SQLServer" namespace="sqlserver.ddl.truncate">
-    <sql-case id="truncate_table" value="TRUNCATE TABLE t_order" />
-    <sql-case id="truncate_table_with_space" value="    TRUNCATE TABLE
-        t_order    " />
-    <sql-case id="truncate_table_with_bracket" value="TRUNCATE TABLE [t_order]" />
-</sql-cases>

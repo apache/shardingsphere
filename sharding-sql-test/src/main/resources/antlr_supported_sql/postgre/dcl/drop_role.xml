@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="PostgreSQL" namespace="postgre.dcl.dropRole">
-    <sql-case id="drop_role" value="DROP ROLE role1" />
-    <sql-case id="drop_roles" value="DROP ROLE role1, role2" />
-    <sql-case id="drop_role_if_exists" value="DROP ROLE IF EXISTS role1" />
-</sql-cases>

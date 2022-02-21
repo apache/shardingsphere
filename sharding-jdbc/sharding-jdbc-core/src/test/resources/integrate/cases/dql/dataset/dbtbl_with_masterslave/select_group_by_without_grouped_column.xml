@@ -1,7 +1,0 @@
-<dataset>
-    <metadata>
-        <column name="items_count" />
-    </metadata>
-    <row values="20" />
-    <row values="20" />
-</dataset>

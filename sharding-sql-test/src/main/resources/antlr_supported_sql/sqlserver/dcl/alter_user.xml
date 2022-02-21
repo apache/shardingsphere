@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="SQLServer" namespace="sqlserver.dcl.alterUser">
-    <sql-case id="alter_user_set_password" value="ALTER USER user1 WITH PASSWORD = 'password'" />
-    <sql-case id="alter_user_set_login" value="ALTER USER user1 WITH LOGIN = login1" />
-    <sql-case id="alter_user_set_default_schema" value="ALTER USER user1 WITH DEFAULT_SCHEMA = schema" />
-    <sql-case id="alter_user_rename" value="ALTER USER user1_bak WITH NAME = user1" />
-</sql-cases>

@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="SQLServer" namespace="sqlserver.tcl.setTransaction">
-    <sql-case id="set_transaction" value="SET TRANSACTION ISOLATION LEVEL READ COMMITTED" />
-</sql-cases>
