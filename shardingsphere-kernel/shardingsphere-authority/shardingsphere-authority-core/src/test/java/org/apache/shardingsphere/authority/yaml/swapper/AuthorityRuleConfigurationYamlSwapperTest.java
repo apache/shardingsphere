@@ -59,7 +59,6 @@ public final class AuthorityRuleConfigurationYamlSwapperTest {
         YamlShardingSphereAlgorithmConfiguration configuration = mock(YamlShardingSphereAlgorithmConfiguration.class);
         when(authorityRuleConfiguration.getUsers()).thenReturn(Collections.singletonList("root@localhost:pass"));
         when(authorityRuleConfiguration.getProvider()).thenReturn(configuration);
-        when(authorityRuleConfiguration.getProvider()).thenReturn(configuration);
         when(configuration.getType()).thenReturn("type");
         when(configuration.getProps()).thenReturn(new Properties());
         AuthorityRuleConfiguration resultConfig = swapper.swapToObject(authorityRuleConfiguration);
@@ -67,6 +66,19 @@ public final class AuthorityRuleConfigurationYamlSwapperTest {
         assertNotNull(resultConfig.getUsers());
         assertThat(resultConfig.getUsers().size(), is(1));
         assertNotNull(resultConfig.getProvider());
+    }
+    
+    @Test
+    public void assertSwapToObjectWithDefaultProvider() {
+        YamlAuthorityRuleConfiguration authorityRuleConfiguration = mock(YamlAuthorityRuleConfiguration.class);
+        when(authorityRuleConfiguration.getUsers()).thenReturn(Collections.singletonList("root@localhost:pass"));
+        when(authorityRuleConfiguration.getProvider()).thenReturn(null);
+        AuthorityRuleConfiguration resultConfig = swapper.swapToObject(authorityRuleConfiguration);
+        assertNotNull(resultConfig);
+        assertNotNull(resultConfig.getUsers());
+        assertThat(resultConfig.getUsers().size(), is(1));
+        assertNotNull(resultConfig.getProvider());
+        assertThat(resultConfig.getProvider().getType(), is("ALL_PRIVILEGES_PERMITTED"));
     }
     
     @Test

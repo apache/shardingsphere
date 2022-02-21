@@ -20,13 +20,10 @@ name: ISSUE Standardized Process
 on:
   schedule:
     - cron: '0 0 */1 * *'  # once a day
-
   issue_comment:
     types: [created,edited]
-
   issues:
     types: [labeled,reopened]
-  
 
 jobs:
   comment-action:
@@ -36,7 +33,6 @@ jobs:
       - name: Print Issue Comment
         run: |
           echo ${{ github.event.comment.body }}
-
       - name: Trigger The CI Workflow
         if: ${{ contains( github.event.comment.body , '/run ci') }} 
         uses: mvasigh/dispatch-action@main
@@ -45,7 +41,6 @@ jobs:
           repo: shardingsphere
           owner: ${{ github.actor }}
           event_type: rerun-ci
-
   remove-inactive:
     runs-on: ubuntu-latest
     if: ${{  github.event_name == 'issues' && github.event.action == 'reopened'  }}
@@ -58,8 +53,6 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         issue-number: ${{ github.event.issue.number }}
         labels: "status: inactive"
-
-  
   check-inactive-issue:
     runs-on: ubuntu-latest
     concurrency: check-inactive  # singleton-run-stage
@@ -76,7 +69,6 @@ jobs:
             Hello ${{ github.event.issue.user.login }}, this issue has not received a reply for serveral days.
             This issue is supposed to be closed.
           contents: "heart"
-  
   close-issue:
     runs-on: ubuntu-latest
     concurrency:    # singleton-run-stage

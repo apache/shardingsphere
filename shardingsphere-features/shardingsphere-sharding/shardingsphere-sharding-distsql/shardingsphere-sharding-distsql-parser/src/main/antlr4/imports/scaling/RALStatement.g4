@@ -17,7 +17,7 @@
 
 grammar RALStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 showScalingList
     : SHOW SCALING LIST
@@ -55,26 +55,14 @@ stopScalingSourceWriting
     : STOP SCALING SOURCE WRITING jobId
     ;
 
-checkoutScaling
-    : CHECKOUT SCALING jobId
+restoreScalingSourceWriting
+    : RESTORE SCALING SOURCE WRITING jobId
+    ;
+
+applyScaling
+    : APPLY SCALING jobId
     ;
 
 jobId
-    : INT
+    : INT | IDENTIFIER
     ;
-
-algorithmDefinition
-    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
-    ;
-
-algorithmName
-    : IDENTIFIER
-    ;
-
-algorithmProperties
-    : algorithmProperty (COMMA algorithmProperty)*
-    ;
-
-algorithmProperty
-    : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
-    ;  

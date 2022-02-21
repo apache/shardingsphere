@@ -24,15 +24,7 @@ import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 
 public final class FixtureImporter implements Importer {
     
-    public FixtureImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
-    }
-    
-    @Override
-    public void setChannel(final PipelineChannel channel) {
-    }
-    
-    @Override
-    public void write() {
+    public FixtureImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
     }
     
     @Override
@@ -46,6 +38,5 @@ public final class FixtureImporter implements Importer {
     @Override
     public void run() {
         start();
-        write();
     }
 }

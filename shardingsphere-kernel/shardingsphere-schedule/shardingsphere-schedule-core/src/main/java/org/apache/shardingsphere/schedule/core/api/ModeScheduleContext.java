@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.schedule.core.api;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.concurrent.ConcurrentException;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
@@ -44,14 +47,25 @@ public final class ModeScheduleContext {
     
     private static final Map<String, ScheduleJobBootstrap> SCHEDULE_JOB_BOOTSTRAP_MAP = new HashMap<>(16, 1);
     
-    private final CoordinatorRegistryCenter registryCenter;
+    private final ModeConfiguration modeConfig;
     
-    private final JobConfigurationAPI jobConfigAPI;
+    private final LazyInitializer<CoordinatorRegistryCenter> registryCenterLazyInitializer = new LazyInitializer<CoordinatorRegistryCenter>() {
+        @Override
+        protected CoordinatorRegistryCenter initialize() {
+            return initRegistryCenter(modeConfig);
+        }
+    };
+    
+    private final LazyInitializer<JobConfigurationAPI> jobConfigAPILazyInitializer = new LazyInitializer<JobConfigurationAPI>() {
+        @Override
+        protected JobConfigurationAPI initialize() throws ConcurrentException {
+            CoordinatorRegistryCenter registryCenter = registryCenterLazyInitializer.get();
+            return null != registryCenter ? new JobConfigurationAPIImpl(registryCenter) : null;
+        }
+    };
     
     public ModeScheduleContext(final ModeConfiguration modeConfig) {
-        CoordinatorRegistryCenter registryCenter = initRegistryCenter(modeConfig);
-        this.registryCenter = registryCenter;
-        this.jobConfigAPI = null != registryCenter ? new JobConfigurationAPIImpl(registryCenter) : null;
+        this.modeConfig = modeConfig;
     }
     
     private CoordinatorRegistryCenter initRegistryCenter(final ModeConfiguration modeConfig) {
@@ -80,6 +94,7 @@ public final class ModeScheduleContext {
         // TODO do not hard-code cluster type and property key, refactor later
         if ("ZooKeeper".equalsIgnoreCase(clusterType)) {
             ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(props.getProperty("server-lists"), props.getProperty("namespace"));
+            // TODO add timeout settings; CoordinatorRegistryCenterInitializer could not be used for now since dependency;
             CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(zkConfig);
             result.init();
             return result;
@@ -96,6 +111,7 @@ public final class ModeScheduleContext {
      * @param cron cron expression
      */
     public void scheduleWithCron(final String jobName, final Consumer<JobParameter> job, final String cron) {
+        CoordinatorRegistryCenter registryCenter = getRegistryCenter();
         if (null == registryCenter) {
             log.warn("registryCenter is null, ignore, jobName={}, cron={}", job, cron);
             return;
@@ -105,6 +121,11 @@ public final class ModeScheduleContext {
         bootstrap.schedule();
     }
     
+    @SneakyThrows(ConcurrentException.class)
+    private CoordinatorRegistryCenter getRegistryCenter() {
+        return registryCenterLazyInitializer.get();
+    }
+    
     /**
      * Start cron job.
      *
@@ -112,6 +133,7 @@ public final class ModeScheduleContext {
      */
     @SuppressWarnings("all")
     public void startCronJob(final CronJob job) {
+        CoordinatorRegistryCenter registryCenter = getRegistryCenter();
         if (null == registryCenter) {
             log.warn("registryCenter is null, ignore, jobName={}, cron={}", job.getJobName(), job.getCron());
             return;
@@ -132,6 +154,7 @@ public final class ModeScheduleContext {
      * @param cron cron expression
      */
     public void updateJobCron(final String jobName, final String cron) {
+        JobConfigurationAPI jobConfigAPI = getJobConfigAPI();
         if (null == jobConfigAPI) {
             log.warn("jobConfigAPI is null, ignore, jobName={}, cron={}", jobName, cron);
             return;
@@ -141,6 +164,11 @@ public final class ModeScheduleContext {
         jobConfig.setCron(cron);
         jobConfig.setShardingTotalCount(1);
         jobConfigAPI.updateJobConfiguration(jobConfig);
+    }
+    
+    @SneakyThrows(ConcurrentException.class)
+    private JobConfigurationAPI getJobConfigAPI() {
+        return jobConfigAPILazyInitializer.get();
     }
     
     private static final class ConsumerSimpleJob implements SimpleJob {

@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 
 import java.util.Optional;
 
@@ -35,6 +36,8 @@ import java.util.Optional;
 public final class ParameterMarkerProjection implements Projection {
 
     private final int parameterMarkerIndex;
+    
+    private final ParameterMarkerType parameterMarkerType;
 
     private final String alias;
 

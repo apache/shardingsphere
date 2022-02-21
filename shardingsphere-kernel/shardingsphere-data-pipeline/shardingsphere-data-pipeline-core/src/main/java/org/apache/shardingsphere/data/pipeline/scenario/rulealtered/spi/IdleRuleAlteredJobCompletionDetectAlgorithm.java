@@ -35,12 +35,16 @@ import java.util.stream.Collectors;
  */
 public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCompletionDetectAlgorithm<RuleAlteredJobAlmostCompletedParameter> {
     
-    public static final String IDLE_THRESHOLD_KEY = "incremental-task-idle-minute-threshold";
+    public static final String IDLE_MINUTE_THRESHOLD_KEY = "incremental-task-idle-minute-threshold";
+    
+    public static final String IDLE_SECOND_THRESHOLD_KEY = "incremental-task-idle-second-threshold";
+    
+    public static final long DEFAULT_IDLE_SECOND_THRESHOLD = TimeUnit.MINUTES.toSeconds(30);
     
     private Properties props = new Properties();
     
     @Getter
-    private long incrementalTaskIdleMinuteThreshold = 30;
+    private long incrementalTaskIdleSecondThreshold = DEFAULT_IDLE_SECOND_THRESHOLD;
     
     @Override
     public Properties getProps() {
@@ -54,9 +58,13 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCom
     
     @Override
     public void init() {
-        Preconditions.checkArgument(props.containsKey(IDLE_THRESHOLD_KEY), "%s can not be null.", IDLE_THRESHOLD_KEY);
-        incrementalTaskIdleMinuteThreshold = Long.parseLong(props.getProperty(IDLE_THRESHOLD_KEY));
-        Preconditions.checkArgument(incrementalTaskIdleMinuteThreshold > 0, "%s value must be positive.", IDLE_THRESHOLD_KEY);
+        Preconditions.checkArgument(props.containsKey(IDLE_MINUTE_THRESHOLD_KEY) || props.containsKey(IDLE_SECOND_THRESHOLD_KEY), "incremental task idle threshold can not be null.");
+        if (props.containsKey(IDLE_SECOND_THRESHOLD_KEY)) {
+            incrementalTaskIdleSecondThreshold = Long.parseLong(props.getProperty(IDLE_SECOND_THRESHOLD_KEY));
+        } else {
+            incrementalTaskIdleSecondThreshold = TimeUnit.MINUTES.toSeconds(Long.parseLong(props.getProperty(IDLE_MINUTE_THRESHOLD_KEY)));
+        }
+        Preconditions.checkArgument(incrementalTaskIdleSecondThreshold > 0, "incremental task idle threshold must be positive.");
     }
     
     @Override
@@ -74,8 +82,8 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCom
         if (!isAllInventoryTasksCompleted(jobProgresses)) {
             return false;
         }
-        Collection<Long> incrementalTasksIdleMinutes = getIncrementalTasksIdleMinutes(jobProgresses);
-        return incrementalTasksIdleMinutes.stream().allMatch(idleMinute -> idleMinute >= incrementalTaskIdleMinuteThreshold);
+        Collection<Long> incrementalTasksIdleSeconds = getIncrementalTasksIdleSeconds(jobProgresses);
+        return incrementalTasksIdleSeconds.stream().allMatch(each -> each >= incrementalTaskIdleSecondThreshold);
     }
     
     private static boolean isAllProgressesFilled(final int jobShardingCount, final Collection<JobProgress> jobProgresses) {
@@ -89,12 +97,12 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCom
                 .allMatch(each -> each.getPosition() instanceof FinishedPosition);
     }
     
-    private static Collection<Long> getIncrementalTasksIdleMinutes(final Collection<JobProgress> jobProgresses) {
+    private static Collection<Long> getIncrementalTasksIdleSeconds(final Collection<JobProgress> jobProgresses) {
         long currentTimeMillis = System.currentTimeMillis();
         return jobProgresses.stream().flatMap(each -> each.getIncrementalTaskProgressMap().values().stream())
                 .map(each -> {
                     long latestActiveTimeMillis = each.getIncrementalTaskDelay().getLatestActiveTimeMillis();
-                    return latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toMinutes(currentTimeMillis - latestActiveTimeMillis) : 0;
+                    return latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis) : 0;
                 })
                 .collect(Collectors.toList());
     }

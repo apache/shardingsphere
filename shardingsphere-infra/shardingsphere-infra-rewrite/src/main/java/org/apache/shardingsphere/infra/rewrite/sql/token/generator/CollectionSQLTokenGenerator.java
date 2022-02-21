@@ -27,7 +27,7 @@ import java.util.Collection;
  * 
  * @param <T> type of SQL statement context
  */
-public interface CollectionSQLTokenGenerator<T extends SQLStatementContext> extends SQLTokenGenerator {
+public interface CollectionSQLTokenGenerator<T extends SQLStatementContext<?>> extends SQLTokenGenerator {
     
     /**
      * Generate SQL tokens.

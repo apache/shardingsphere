@@ -24,7 +24,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
@@ -63,9 +62,6 @@ public final class FrontendChannelInboundHandlerTest {
     private FrontendChannelInboundHandler frontendChannelInboundHandler;
     
     private ConnectionSession connectionSession;
-    
-    @Mock
-    private BackendConnection backendConnection;
     
     @Before
     public void setup() {
@@ -108,7 +104,7 @@ public final class FrontendChannelInboundHandlerTest {
         RuntimeException cause = new RuntimeException("assertChannelReadNotAuthenticatedAndExceptionOccur");
         doThrow(cause).when(authenticationEngine).authenticate(any(ChannelHandlerContext.class), any(PacketPayload.class));
         DatabasePacket expectedPacket = mock(DatabasePacket.class);
-        when(frontendEngine.getCommandExecuteEngine().getErrorPacket(cause, connectionSession)).thenReturn(expectedPacket);
+        when(frontendEngine.getCommandExecuteEngine().getErrorPacket(cause)).thenReturn(expectedPacket);
         channel.writeInbound(Unpooled.EMPTY_BUFFER);
         assertThat(channel.readOutbound(), is(expectedPacket));
     }

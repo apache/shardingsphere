@@ -17,75 +17,52 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatement;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
-import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPortal;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
 
-import java.sql.SQLException;
-import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
  * PostgreSQL connection context.
  */
-@Getter
-@Setter
 public final class PostgreSQLConnectionContext {
     
-    @Getter(AccessLevel.NONE)
-    private final Map<String, PostgreSQLPortal> portals = new LinkedHashMap<>();
-    
-    private final Collection<CommandExecutor> pendingExecutors = new LinkedList<>();
-    
-    private PostgreSQLCommandPacketType currentPacketType;
-    
-    private boolean errorOccurred;
+    private final Map<String, Portal<?>> portals = new LinkedHashMap<>();
     
     /**
      * Create a portal.
      *
      * @param portal portal name
-     * @param preparedStatement prepared statement
-     * @param parameters bind parameters
-     * @param resultFormats result formats
-     * @param backendConnection backend connection
-     * @return a new portal
-     * @throws SQLException SQL exception
      */
-    public PostgreSQLPortal createPortal(final String portal, final PostgreSQLPreparedStatement preparedStatement, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats,
-                                         final JDBCBackendConnection backendConnection) throws SQLException {
-        PostgreSQLPortal result = new PostgreSQLPortal(preparedStatement, parameters, resultFormats, backendConnection);
-        portals.put(portal, result);
-        return result;
+    public void addPortal(final Portal<?> portal) {
+        boolean isNamedPortal = !portal.getName().isEmpty();
+        if (isNamedPortal && portals.containsKey(portal.getName())) {
+            throw new IllegalStateException("Named portal [" + portal.getName() + "] must be explicitly closed");
+        }
+        Portal<?> previousPortal = portals.put(portal.getName(), portal);
+        if (null != previousPortal) {
+            previousPortal.close();
+        }
     }
     
     /**
      * Get portal.
      *
+     * @param <T> type of Portal
      * @param portal portal name
      * @return portal
      */
-    public PostgreSQLPortal getPortal(final String portal) {
-        return portals.get(portal);
+    public <T extends Portal<?>> T getPortal(final String portal) {
+        return (T) portals.get(portal);
     }
     
     /**
      * Close portal.
      *
      * @param portal portal name
-     * @throws SQLException SQL exception
      */
-    public void closePortal(final String portal) throws SQLException {
-        PostgreSQLPortal result = portals.remove(portal);
+    public void closePortal(final String portal) {
+        Portal<?> result = portals.remove(portal);
         if (null != result) {
             result.close();
         }
@@ -93,33 +70,11 @@ public final class PostgreSQLConnectionContext {
     
     /**
      * Close all portals.
-     * 
-     * @throws SQLException SQL exception
      */
-    public void closeAllPortals() throws SQLException {
-        Collection<SQLException> result = new LinkedList<>();
-        for (PostgreSQLPortal each : portals.values()) {
-            try {
-                each.close();
-            } catch (final SQLException ex) {
-                result.add(ex);
-            }
+    public void closeAllPortals() {
+        for (Portal<?> each : portals.values()) {
+            each.close();
         }
         portals.clear();
-        if (result.isEmpty()) {
-            return;
-        }
-        SQLException ex = new SQLException("Close all portals failed.");
-        result.forEach(ex::setNextException);
-        throw ex;
-    }
-    
-    /**
-     * Clear context.
-     */
-    public void clearContext() {
-        pendingExecutors.clear();
-        currentPacketType = null;
-        errorOccurred = false;
     }
 }

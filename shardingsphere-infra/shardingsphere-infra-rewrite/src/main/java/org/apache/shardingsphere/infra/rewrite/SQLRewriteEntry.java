@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.rewrite;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
@@ -44,6 +44,8 @@ public final class SQLRewriteEntry {
         ShardingSphereServiceLoader.register(SQLRewriteContextDecorator.class);
     }
     
+    private final String schemaName;
+    
     private final ShardingSphereSchema schema;
     
     private final ConfigurationProperties props;
@@ -51,7 +53,8 @@ public final class SQLRewriteEntry {
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, SQLRewriteContextDecorator> decorators;
     
-    public SQLRewriteEntry(final ShardingSphereSchema schema, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
+    public SQLRewriteEntry(final String schemaName, final ShardingSphereSchema schema, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
+        this.schemaName = schemaName;
         this.schema = schema;
         this.props = props;
         decorators = OrderedSPIRegistry.getRegisteredServices(SQLRewriteContextDecorator.class, rules);
@@ -73,7 +76,7 @@ public final class SQLRewriteEntry {
     }
     
     private SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> parameters, final SQLStatementContext<?> sqlStatementContext, final RouteContext routeContext) {
-        SQLRewriteContext result = new SQLRewriteContext(schema, sqlStatementContext, sql, parameters);
+        SQLRewriteContext result = new SQLRewriteContext(schemaName, schema, sqlStatementContext, sql, parameters);
         decorate(decorators, result, routeContext);
         result.generateSQLTokens();
         return result;

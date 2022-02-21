@@ -85,6 +85,6 @@ public final class AlterDatabaseDiscoveryHeartbeatStatementUpdater implements Ru
     
     @Override
     public String getType() {
-        return AlterDatabaseDiscoveryHeartbeatStatement.class.getCanonicalName();
+        return AlterDatabaseDiscoveryHeartbeatStatement.class.getName();
     }
 }

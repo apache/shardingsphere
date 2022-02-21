@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.scaling.core.job.check;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCheckerImpl;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
-import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.DataSourcePreparer;
+import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 
@@ -34,23 +33,11 @@ public final class EnvironmentCheckerFactory {
     /**
      * Create data consistency checker instance.
      *
-     * @param jobContext job context
+     * @param jobConfig job configuration
      * @return data consistency checker
      */
-    public static DataConsistencyChecker newInstance(final RuleAlteredJobContext jobContext) {
-        return new DataConsistencyCheckerImpl(jobContext);
-    }
-    
-    /**
-     * Create data source checker instance.
-     *
-     * @param databaseType database type
-     * @return data source checker
-     */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static DataSourceChecker newInstance(final String databaseType) {
-        ScalingEntry scalingEntry = ScalingEntryLoader.getInstance(databaseType);
-        return scalingEntry.getEnvironmentCheckerClass().getConstructor().newInstance().getDataSourceCheckerClass().getConstructor().newInstance();
+    public static DataConsistencyChecker newInstance(final JobConfiguration jobConfig) {
+        return new DataConsistencyCheckerImpl(jobConfig);
     }
     
     /**

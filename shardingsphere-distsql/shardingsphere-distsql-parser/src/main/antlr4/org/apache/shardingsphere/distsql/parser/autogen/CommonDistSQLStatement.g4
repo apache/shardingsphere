@@ -32,16 +32,27 @@ execute
     | enableInstance
     | disableInstance
     | showInstance
+    | showInstanceMode
+    | labelInstance
+    | unlabelInstance
+    | countSchemaRules
     | showSingleTable
     | showSingleTableRules
     | createDefaultSingleTableRule
     | alterDefaultSingleTableRule
     | dropDefaultSingleTableRule
     | refreshTableMetadata
+    | showTableMetadata
     | showSQLParserRule
     | alterSQLParserRule
     | showAuthorityRule
     | showTransactionRule
-    | showTableMetadata
+    | alterTransactionRule
+    | showTrafficRules
+    | dropTrafficRule
+    | createTrafficRule
+    | alterTrafficRule
+    | exportSchemaConfiguration
+    | showRulesUsedResource
     ) SEMI?
     ;

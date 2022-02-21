@@ -30,6 +30,9 @@ import java.util.Set;
  */
 public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
+    public PostgreSQLPipelineSQLBuilder() {
+    }
+    
     public PostgreSQLPipelineSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
         super(shardingColumnsMap);
     }
@@ -57,5 +60,10 @@ public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuild
         result.setLength(result.length() - 1);
         result.append(") DO NOTHING");
         return result.toString();
+    }
+    
+    @Override
+    public String getType() {
+        return "PostgreSQL";
     }
 }

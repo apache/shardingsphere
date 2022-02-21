@@ -23,10 +23,6 @@
         <column name="sharding_type"/>
     </metadata>
     <row values="t_single_table| 100| | databases_only"/>
-    <row values="t_user_0| 100| | databases_only"/>
+    <row values="t_user| 100| | databases_only"/>
     <row values="t_user_item| 100| | databases_only"/>
-    <row values="t_broadcast_table| 100| | databases_only"/>
-    <row values="t_user_3| 100| | databases_only"/>
-    <row values="t_user_2| 100| | databases_only"/>
-    <row values="t_user_1| 100| | databases_only"/>
 </dataset>

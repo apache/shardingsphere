@@ -20,8 +20,11 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.SimpleMemoryPipelineChannel;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,27 +39,29 @@ import static org.junit.Assert.assertThat;
 
 public final class PostgreSQLJdbcDumperTest {
     
-    private PipelineDataSourceManager dataSourceManager;
+    private PipelineDataSourceWrapper dataSource;
     
     private PostgreSQLInventoryDumper jdbcDumper;
     
     @Before
     public void setUp() {
-        dataSourceManager = new PipelineDataSourceManager();
-        jdbcDumper = new PostgreSQLInventoryDumper(mockInventoryDumperConfiguration(), dataSourceManager);
+        PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
+        InventoryDumperConfiguration dumperConfig = mockInventoryDumperConfiguration();
+        dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
+        jdbcDumper = new PostgreSQLInventoryDumper(mockInventoryDumperConfiguration(), new SimpleMemoryPipelineChannel(100),
+                dataSource, new PipelineTableMetaDataLoader(dataSource));
+        initTableData(dataSource);
     }
     
     private InventoryDumperConfiguration mockInventoryDumperConfiguration() {
         DumperConfiguration dumperConfig = mockDumperConfiguration();
-        initTableData(dumperConfig);
         InventoryDumperConfiguration result = new InventoryDumperConfiguration(dumperConfig);
         result.setTableName("t_order");
         return result;
     }
     
     @SneakyThrows(SQLException.class)
-    private void initTableData(final DumperConfiguration dumperConfig) {
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
+    private void initTableData(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -67,7 +72,6 @@ public final class PostgreSQLJdbcDumperTest {
     
     @Test
     public void assertCreatePreparedStatement() throws SQLException {
-        DataSource dataSource = dataSourceManager.getDataSource(mockDumperConfiguration().getDataSourceConfig());
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = jdbcDumper.createPreparedStatement(connection, "SELECT * FROM t_order")) {
             assertThat(preparedStatement.getFetchSize(), is(1));

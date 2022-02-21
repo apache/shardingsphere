@@ -17,7 +17,7 @@
 
 grammar RDLStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 createShardingTableRule
     : CREATE SHARDING TABLE RULE shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)*
@@ -152,7 +152,7 @@ autoCreativeAlgorithm
     ;
 
 keyGenerator
-    : GENERATED_KEY_ALGORITHM EQ shardingAlgorithmName
+    : KEY_GENERATOR EQ shardingAlgorithmName
     ;
 
 shardingStrategy
@@ -172,19 +172,15 @@ keyGenerateDeclaration
     ;
 
 keyGenerateDefinition
-    : GENERATED_KEY LP COLUMN EQ columnName COMMA algorithmDefinition RP
+    : KEY_GENERATE_STRATEGY LP COLUMN EQ columnName COMMA algorithmDefinition RP
     ;
 
 keyGenerateStrategy
-    : GENERATED_KEY LP COLUMN EQ columnName COMMA keyGenerator RP
+    : KEY_GENERATE_STRATEGY LP COLUMN EQ columnName COMMA keyGenerator RP
     ;
 
 algorithmDefinition
     : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
-    ;
-
-tableName
-    : IDENTIFIER
     ;
 
 columnName

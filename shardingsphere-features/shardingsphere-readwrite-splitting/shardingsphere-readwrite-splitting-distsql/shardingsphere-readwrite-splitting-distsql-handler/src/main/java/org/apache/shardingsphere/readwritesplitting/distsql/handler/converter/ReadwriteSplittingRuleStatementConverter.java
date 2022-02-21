@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.converter;
 
-import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
@@ -26,10 +25,10 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Readwrite splitting rule statement converter.
@@ -50,18 +49,17 @@ public final class ReadwriteSplittingRuleStatementConverter {
             if (null != each.getLoadBalancer()) {
                 String loadBalancerName = getLoadBalancerName(each.getName(), each.getLoadBalancer());
                 loadBalancers.put(loadBalancerName, createLoadBalancer(each));
-                dataSources.add(createDataSourceRuleConfiguration(each.getName(), loadBalancerName, each));
+                dataSources.add(createDataSourceRuleConfiguration(each.getName(), createProperties(each), loadBalancerName, each.isAutoAware()));
             } else {
-                dataSources.add(createDataSourceRuleConfiguration(each.getName(), null, each));
+                dataSources.add(createDataSourceRuleConfiguration(each.getName(), createProperties(each), null, each.isAutoAware()));
             }
         }
         return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancers);
     }
     
-    private static ReadwriteSplittingDataSourceRuleConfiguration createDataSourceRuleConfiguration(final String name, final String loadBalancerName, final ReadwriteSplittingRuleSegment ruleSegment) {
-        return Strings.isNullOrEmpty(ruleSegment.getAutoAwareResource())
-                ? new ReadwriteSplittingDataSourceRuleConfiguration(name, null, ruleSegment.getWriteDataSource(), new LinkedList<>(ruleSegment.getReadDataSources()), loadBalancerName)
-                : new ReadwriteSplittingDataSourceRuleConfiguration(name, ruleSegment.getAutoAwareResource(), null, Collections.emptyList(), loadBalancerName);
+    private static ReadwriteSplittingDataSourceRuleConfiguration createDataSourceRuleConfiguration(final String name, final Properties prop, final String loadBalancerName, final boolean isAutoAware) {
+        return isAutoAware ? new ReadwriteSplittingDataSourceRuleConfiguration(name, "Dynamic", prop, loadBalancerName)
+                : new ReadwriteSplittingDataSourceRuleConfiguration(name, "Static", prop, loadBalancerName);
     }
     
     private static ShardingSphereAlgorithmConfiguration createLoadBalancer(final ReadwriteSplittingRuleSegment ruleSegment) {
@@ -70,5 +68,16 @@ public final class ReadwriteSplittingRuleStatementConverter {
     
     private static String getLoadBalancerName(final String ruleName, final String type) {
         return String.format("%s_%s", ruleName, type);
+    }
+    
+    private static Properties createProperties(final ReadwriteSplittingRuleSegment segment) {
+        Properties result = new Properties();
+        if (segment.isAutoAware()) {
+            result.setProperty("auto-aware-data-source-name", segment.getAutoAwareResource());
+        } else {
+            result.setProperty("write-data-source-name", segment.getWriteDataSource());
+            result.setProperty("read-data-source-names", String.join(",", segment.getReadDataSources()));
+        }
+        return result;
     }
 }

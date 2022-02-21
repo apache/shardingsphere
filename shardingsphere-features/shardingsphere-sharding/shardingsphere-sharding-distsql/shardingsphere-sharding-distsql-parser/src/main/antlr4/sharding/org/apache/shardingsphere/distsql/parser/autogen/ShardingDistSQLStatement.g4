@@ -31,6 +31,7 @@ execute
     | dropShardingBindingTableRules
     | dropShardingBroadcastTableRules
     | dropShardingAlgorithm
+    | showShardingTableRulesUsedKeyGenerator
     | showShardingTableRules
     | showShardingBindingTableRules
     | showShardingBroadcastTableRules
@@ -51,5 +52,6 @@ execute
     | alterDefaultShardingStrategy
     | dropDefaultShardingStrategy
     | showUnusedShardingAlgorithms
+    | showUnusedShardingKeyGenerators
     ) SEMI?
     ;

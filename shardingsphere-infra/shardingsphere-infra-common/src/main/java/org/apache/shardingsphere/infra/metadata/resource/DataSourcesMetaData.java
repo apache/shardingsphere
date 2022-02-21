@@ -19,14 +19,14 @@ package org.apache.shardingsphere.infra.metadata.resource;
 
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * Data sources meta data.
@@ -35,10 +35,12 @@ public final class DataSourcesMetaData {
     
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     
-    public DataSourcesMetaData(final DatabaseType databaseType, final Map<String, DatabaseAccessConfiguration> databaseAccessConfigs) {
-        dataSourceMetaDataMap = databaseAccessConfigs.entrySet().stream().collect(
-                Collectors.toMap(Entry::getKey, entry -> databaseType.getDataSourceMetaData(entry.getValue().getUrl(),
-                        entry.getValue().getUsername()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    public DataSourcesMetaData(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+        dataSourceMetaDataMap = new LinkedHashMap<>(dataSourceMap.size(), 1);
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            Map<String, Object> standardProps = DataSourcePropertiesCreator.create(entry.getValue()).getConnectionPropertySynonyms().getStandardProperties();
+            dataSourceMetaDataMap.put(entry.getKey(), databaseType.getDataSourceMetaData(standardProps.get("url").toString(), standardProps.get("username").toString()));
+        }
     }
     
     /**

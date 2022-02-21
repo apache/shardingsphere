@@ -19,11 +19,8 @@ package org.apache.shardingsphere.infra.federation.executor.original.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-
-import java.util.List;
-import java.util.Map;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 
 /**
  * Filterable table scan executor context.
@@ -34,9 +31,7 @@ public final class FilterableTableScanExecutorContext {
     
     private final String schemaName;
     
-    private final List<Object> parameters;
-
     private final ConfigurationProperties props;
     
-    private final Map<String, ShardingSphereMetaData> metaDataMap;
+    private final FederationContext federationContext;
 }

@@ -46,14 +46,17 @@ public final class ProjectionsContext {
     
     private final Collection<Projection> projections;
     
-    private final Collection<AggregationDistinctProjection> aggregationDistinctProjections = new LinkedList<>();
+    private final Collection<AggregationDistinctProjection> aggregationDistinctProjections;
+    
+    private final List<Projection> expandProjections;
     
     public ProjectionsContext(final int startIndex, final int stopIndex, final boolean distinctRow, final Collection<Projection> projections) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         this.distinctRow = distinctRow;
         this.projections = projections;
-        aggregationDistinctProjections.addAll(createAggregationDistinctProjections());
+        aggregationDistinctProjections = createAggregationDistinctProjections();
+        expandProjections = expandProjections();
     }
     
     private Collection<AggregationDistinctProjection> createAggregationDistinctProjections() {
@@ -61,6 +64,18 @@ public final class ProjectionsContext {
         for (Projection each : projections) {
             if (each instanceof AggregationDistinctProjection) {
                 result.add((AggregationDistinctProjection) each);
+            }
+        }
+        return result;
+    }
+    
+    private List<Projection> expandProjections() {
+        List<Projection> result = new ArrayList<>();
+        for (Projection each : projections) {
+            if (each instanceof ShorthandProjection) {
+                result.addAll(((ShorthandProjection) each).getActualColumns().values());
+            } else if (!(each instanceof DerivedProjection)) {
+                result.add(each);
             }
         }
         return result;
@@ -126,23 +141,6 @@ public final class ProjectionsContext {
                 AggregationProjection aggregationProjection = (AggregationProjection) each;
                 result.add(aggregationProjection);
                 result.addAll(aggregationProjection.getDerivedAggregationProjections());
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Get expand projections with shorthand projections.
-     * 
-     * @return expand projections
-     */
-    public List<Projection> getExpandProjections() {
-        List<Projection> result = new ArrayList<>();
-        for (Projection each : projections) {
-            if (each instanceof ShorthandProjection) {
-                result.addAll(((ShorthandProjection) each).getActualColumns().values());
-            } else if (!(each instanceof DerivedProjection)) {
-                result.add(each);
             }
         }
         return result;

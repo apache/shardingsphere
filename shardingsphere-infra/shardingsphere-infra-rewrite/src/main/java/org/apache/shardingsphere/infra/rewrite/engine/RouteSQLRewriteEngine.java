@@ -67,15 +67,20 @@ public final class RouteSQLRewriteEngine {
     private SQLRewriteUnit createSQLRewriteUnit(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext, final Collection<RouteUnit> routeUnits) {
         Collection<String> sql = new LinkedList<>();
         List<Object> parameters = new LinkedList<>();
+        boolean containsDollarMarker = sqlRewriteContext.getSqlStatementContext() instanceof SelectStatementContext 
+                && ((SelectStatementContext) (sqlRewriteContext.getSqlStatementContext())).isContainsDollarParameterMarker();
         for (RouteUnit each : routeUnits) {
             sql.add(SQLUtil.trimSemicolon(new RouteSQLBuilder(sqlRewriteContext, each).toSQL()));
+            if (containsDollarMarker && !parameters.isEmpty()) {
+                continue;
+            }
             parameters.addAll(getParameters(sqlRewriteContext.getParameterBuilder(), routeContext, each));
         }
         return new SQLRewriteUnit(String.join(" UNION ALL ", sql), parameters);
     }
     
     private Map<RouteUnit, SQLRewriteUnit> createSQLRewriteUnits(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext, final Collection<RouteUnit> routeUnits) {
-        Map<RouteUnit, SQLRewriteUnit> result = new LinkedHashMap<>(routeContext.getRouteUnits().size(), 1);
+        Map<RouteUnit, SQLRewriteUnit> result = new LinkedHashMap<>(routeUnits.size(), 1);
         for (RouteUnit each : routeUnits) {
             result.put(each, new SQLRewriteUnit(new RouteSQLBuilder(sqlRewriteContext, each).toSQL(), getParameters(sqlRewriteContext.getParameterBuilder(), routeContext, each)));
         }

@@ -17,21 +17,13 @@
 
 package org.apache.shardingsphere.scaling.core.job.check;
 
-import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.DataSourcePreparer;
+import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
 
 /**
  * Environment checker.
  */
 // TODO separate all methods to SPI
 public interface EnvironmentChecker {
-    
-    /**
-     * Get data source checker type.
-     *
-     * @return data source checker type.
-     */
-    Class<? extends DataSourceChecker> getDataSourceCheckerClass();
     
     /**
      * Get data source preparer type.

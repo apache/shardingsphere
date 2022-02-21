@@ -18,17 +18,20 @@
 package org.apache.shardingsphere.db.protocol.postgresql.codec;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.nio.charset.Charset;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -36,32 +39,68 @@ import java.util.List;
  */
 public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEngine<PostgreSQLPacket> {
     
+    private static final int SSL_REQUEST_PAYLOAD_LENGTH = 8;
+    
+    private static final int SSL_REQUEST_CODE = (1234 << 16) + 5679;
+    
     private static final int MESSAGE_TYPE_LENGTH = 1;
     
     private static final int PAYLOAD_LENGTH = 4;
     
+    private boolean startupPhase = true;
+    
+    private final List<ByteBuf> pendingMessages = new LinkedList<>();
+    
     @Override
     public boolean isValidHeader(final int readableBytes) {
-        return readableBytes >= MESSAGE_TYPE_LENGTH + PAYLOAD_LENGTH;
+        return readableBytes >= (startupPhase ? 0 : MESSAGE_TYPE_LENGTH) + PAYLOAD_LENGTH;
     }
     
     @Override
     public void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
         while (isValidHeader(in.readableBytes())) {
-            int messageTypeLength = 0;
-            if ('\0' == in.markReaderIndex().readByte()) {
-                in.resetReaderIndex();
-            } else {
-                messageTypeLength = MESSAGE_TYPE_LENGTH;
-            }
-            int remainPayloadLength = in.readInt() - PAYLOAD_LENGTH;
-            if (in.readableBytes() < remainPayloadLength) {
-                in.resetReaderIndex();
+            if (startupPhase) {
+                handleStartupPhase(in, out);
                 return;
             }
-            in.resetReaderIndex();
-            out.add(in.readRetainedSlice(messageTypeLength + PAYLOAD_LENGTH + remainPayloadLength));
+            int payloadLength = in.getInt(in.readerIndex() + 1);
+            if (in.readableBytes() < MESSAGE_TYPE_LENGTH + payloadLength) {
+                return;
+            }
+            byte type = in.getByte(in.readerIndex());
+            PostgreSQLCommandPacketType commandPacketType = PostgreSQLCommandPacketType.valueOf(type);
+            if (requireAggregation(commandPacketType)) {
+                pendingMessages.add(in.readRetainedSlice(MESSAGE_TYPE_LENGTH + payloadLength));
+            } else if (!pendingMessages.isEmpty()) {
+                handlePendingMessages(context, in, out, payloadLength);
+            } else {
+                out.add(in.readRetainedSlice(MESSAGE_TYPE_LENGTH + payloadLength));
+            }
         }
+    }
+    
+    private void handleStartupPhase(final ByteBuf in, final List<Object> out) {
+        int readerIndex = in.readerIndex();
+        if (in.readableBytes() == SSL_REQUEST_PAYLOAD_LENGTH && SSL_REQUEST_PAYLOAD_LENGTH == in.getInt(readerIndex) && SSL_REQUEST_CODE == in.getInt(readerIndex + 4)) {
+            out.add(in.readRetainedSlice(SSL_REQUEST_PAYLOAD_LENGTH));
+            return;
+        }
+        if (in.readableBytes() == in.getInt(readerIndex)) {
+            out.add(in.readRetainedSlice(in.readableBytes()));
+            startupPhase = false;
+        }
+    }
+    
+    private boolean requireAggregation(final PostgreSQLCommandPacketType commandPacketType) {
+        return PostgreSQLCommandPacketType.isExtendedProtocolPacketType(commandPacketType)
+                && PostgreSQLCommandPacketType.SYNC_COMMAND != commandPacketType && PostgreSQLCommandPacketType.FLUSH_COMMAND != commandPacketType;
+    }
+    
+    private void handlePendingMessages(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out, final int payloadLength) {
+        CompositeByteBuf result = context.alloc().compositeBuffer(pendingMessages.size() + 1);
+        result.addComponents(true, pendingMessages).addComponent(true, in.readRetainedSlice(MESSAGE_TYPE_LENGTH + payloadLength));
+        out.add(result);
+        pendingMessages.clear();
     }
     
     @Override

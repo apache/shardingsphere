@@ -16,7 +16,6 @@
 #
 
 foo_ds:
-  driverClassName: com.mysql.jdbc.Driver
   password: root
   dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
   connectionInitSqls:

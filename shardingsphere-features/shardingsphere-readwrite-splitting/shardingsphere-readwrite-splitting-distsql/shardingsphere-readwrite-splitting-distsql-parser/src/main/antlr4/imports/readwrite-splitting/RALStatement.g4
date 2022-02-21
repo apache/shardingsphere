@@ -17,7 +17,7 @@
 
 grammar RALStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 setReadwriteSplittingHintSource
     : SET READWRITE_SPLITTING HINT SOURCE EQ sourceValue
@@ -44,13 +44,5 @@ showReadwriteSplittingReadResources
     ;
 
 sourceValue
-    : IDENTIFIER
-    ;
-
-resourceName
-    : IDENTIFIER
-    ;
-
-schemaName
     : IDENTIFIER
     ;

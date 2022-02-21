@@ -30,9 +30,9 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Substitutable column name token.
@@ -85,7 +85,11 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
     }
     
     private Map<String, String> getLogicAndActualTables(final RouteUnit routeUnit) {
-        return routeUnit.getTableMappers().stream().collect(Collectors.toMap(RouteMapper::getLogicName, RouteMapper::getActualName, (oldValue, currentValue) -> oldValue));
+        Map<String, String> result = new LinkedHashMap<>();
+        for (RouteMapper each : routeUnit.getTableMappers()) {
+            result.put(each.getLogicName(), each.getActualName());
+        }
+        return result;
     }
     
     private String getColumnName(final ColumnProjection columnProjection, final Map<String, String> logicActualTableNames) {

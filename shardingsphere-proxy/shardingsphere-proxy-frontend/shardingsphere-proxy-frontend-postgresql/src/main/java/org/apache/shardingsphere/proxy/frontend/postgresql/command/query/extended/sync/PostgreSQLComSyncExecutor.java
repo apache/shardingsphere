@@ -21,11 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
+import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -33,30 +30,12 @@ import java.util.Collections;
  * Command sync executor for PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLComSyncExecutor implements QueryCommandExecutor {
-    
-    private final PostgreSQLConnectionContext connectionContext;
+public final class PostgreSQLComSyncExecutor implements CommandExecutor {
     
     private final ConnectionSession connectionSession;
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
-        connectionContext.clearContext();
-        return Collections.singleton(new PostgreSQLReadyForQueryPacket(connectionSession.getTransactionStatus().isInTransaction()));
-    }
-    
-    @Override
-    public ResponseType getResponseType() {
-        return ResponseType.UPDATE;
-    }
-    
-    @Override
-    public boolean next() throws SQLException {
-        return false;
-    }
-    
-    @Override
-    public DatabasePacket<?> getQueryRowPacket() {
-        throw new UnsupportedOperationException("PostgreSQLComSyncExecutor returns no query row packet.");
+        return Collections.singletonList(connectionSession.getTransactionStatus().isInTransaction() ? PostgreSQLReadyForQueryPacket.IN_TRANSACTION : PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
     }
 }

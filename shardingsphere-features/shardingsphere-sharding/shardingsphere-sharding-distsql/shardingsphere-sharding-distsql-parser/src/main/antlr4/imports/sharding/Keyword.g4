@@ -55,8 +55,8 @@ RESOURCES
     : R E S O U R C E S
     ;
 
-GENERATED_KEY
-    : G E N E R A T E D UL_ K E Y
+KEY_GENERATE_STRATEGY
+    : K E Y UL_ G E N E R A T E UL_ S T R A T E G Y
     ;
 
 DEFAULT_TABLE_STRATEGY
@@ -187,10 +187,14 @@ GENERATORS
     : G E N E R A T O R S
     ;
 
-GENERATED_KEY_ALGORITHM
-    : G E N E R A T E D UL_ K E Y UL_ A L G O R I T H M
+KEY_GENERATOR
+    : K E Y UL_ G E N E R A T O R
     ;
 
 UNUSED
     : U N U S E D
+    ;
+
+USED
+    : U S E D
     ;

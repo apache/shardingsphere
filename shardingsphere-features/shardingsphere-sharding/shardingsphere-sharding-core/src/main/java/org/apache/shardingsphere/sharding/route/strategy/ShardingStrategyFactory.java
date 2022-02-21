@@ -46,6 +46,7 @@ public final class ShardingStrategyFactory {
      * @param defaultShardingColumn default sharding column
      * @return sharding strategy instance
      */
+    @SuppressWarnings("rawtypes")
     public static ShardingStrategy newInstance(final ShardingStrategyConfiguration shardingStrategyConfig, final ShardingAlgorithm shardingAlgorithm, final String defaultShardingColumn) {
         if (shardingStrategyConfig instanceof StandardShardingStrategyConfiguration && shardingAlgorithm instanceof StandardShardingAlgorithm) {
             String shardingColumn = ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn();

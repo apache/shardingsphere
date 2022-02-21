@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateKeyGeneratorException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.KeyGeneratorInUsedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredKeyGeneratorMissedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingKeyGeneratorStatementUpdater;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingKeyGeneratorSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingKeyGeneratorStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,7 +62,7 @@ public final class DropShardingKeyGeneratorStatementUpdaterTest {
     public void assertExecuteWithNotExist() throws DistSQLException {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("uuid_key_generator"), new ShardingRuleConfiguration());
     }
-
+    
     @Test
     public void assertDropSpecifiedKeyGenerator() {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
@@ -70,17 +71,27 @@ public final class DropShardingKeyGeneratorStatementUpdaterTest {
         assertTrue(currentRuleConfig.getKeyGenerators().isEmpty());
     }
     
+    @Test(expected = KeyGeneratorInUsedException.class)
+    public void assertExecuteWithUsed() throws DistSQLException {
+        ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
+        currentRuleConfig.getKeyGenerators().put("uuid_key_generator", new ShardingSphereAlgorithmConfiguration("UUID", null));
+        currentRuleConfig.getAutoTables().add(createShardingAutoTableRuleConfiguration());
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("uuid_key_generator"), currentRuleConfig);
+    }
+    
+    private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {
+        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("auto_table");
+        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "uuid_key_generator"));
+        return result;
+    }
+    
     private DropShardingKeyGeneratorStatement createSQLStatement(final String... keyGeneratorNames) {
         return new DropShardingKeyGeneratorStatement(Arrays.asList(keyGeneratorNames));
     }
-
-    private ShardingKeyGeneratorSegment buildShardingKeyGeneratorSegment() {
-        return new ShardingKeyGeneratorSegment("uuid_key_generator", new AlgorithmSegment("uuid", buildProps()));
-    }
-
+    
     private Properties buildProps() {
-        Properties props = new Properties();
-        props.put("worker-id", "123");
-        return props;
+        Properties result = new Properties();
+        result.put("worker-id", "123");
+        return result;
     }
 }

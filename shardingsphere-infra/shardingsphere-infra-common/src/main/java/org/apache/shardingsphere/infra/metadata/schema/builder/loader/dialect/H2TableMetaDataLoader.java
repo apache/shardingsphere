@@ -104,8 +104,7 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
         String columnName = resultSet.getString("COLUMN_NAME");
         String typeName = resultSet.getString("TYPE_NAME");
         boolean primaryKey = primaryKeys.contains(columnName);
-        // tableGenerated.getOrDefault(columnName, Boolean.FALSE);
-        boolean generated = false;
+        boolean generated = tableGenerated.getOrDefault(columnName, Boolean.FALSE);
         // H2 database case sensitive is always true
         return new ColumnMetaData(columnName, dataTypeMap.get(typeName), primaryKey, generated, true);
     }

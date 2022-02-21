@@ -19,14 +19,18 @@ package org.apache.shardingsphere.data.pipeline.core.execute;
 
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
+import org.apache.shardingsphere.data.pipeline.core.lock.PipelineSimpleLock;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobSchedulerCenter;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseSchemaNameLockEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
 import java.util.Optional;
@@ -44,9 +48,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     private static final Set<String> EXECUTING_JOBS = Sets.newConcurrentHashSet();
     
     @Override
-    public void start() {
-        super.start();
-        log.info("Start scaling job executor.");
+    protected void doStart() {
         watchGovernanceRepositoryConfiguration();
     }
     
@@ -61,12 +63,18 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
                 log.info("remove and stop {}", jobConfigPOJO.getJobName());
                 EXECUTING_JOBS.remove(jobConfigPOJO.getJobName());
                 RuleAlteredJobSchedulerCenter.stop(jobConfigPOJO.getJobName());
+                JobConfiguration jobConfig = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), JobConfiguration.class, true);
+                ScalingReleaseSchemaNameLockEvent releaseLockEvent = new ScalingReleaseSchemaNameLockEvent(jobConfig.getWorkflowConfig().getSchemaName());
+                ShardingSphereEventBus.getInstance().post(releaseLockEvent);
                 return;
             }
             switch (event.getType()) {
                 case ADDED:
                 case UPDATED:
-                    execute(jobConfigPOJO);
+                    JobConfiguration jobConfig = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), JobConfiguration.class, true);
+                    if (PipelineSimpleLock.getInstance().tryLock(jobConfig.getWorkflowConfig().getSchemaName(), 1000)) {
+                        execute(jobConfigPOJO);
+                    }
                     break;
                 default:
                     break;
@@ -95,5 +103,9 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
         } else {
             log.info("{} added to executing jobs failed since it already exists", jobConfigPOJO.getJobName());
         }
+    }
+    
+    @Override
+    protected void doStop() {
     }
 }

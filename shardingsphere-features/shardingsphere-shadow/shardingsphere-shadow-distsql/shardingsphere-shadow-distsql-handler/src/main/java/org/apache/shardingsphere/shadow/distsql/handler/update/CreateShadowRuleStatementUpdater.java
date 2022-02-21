@@ -32,7 +32,6 @@ import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowRuleSegment
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateShadowRuleStatement;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -70,23 +69,23 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
     }
     
     private void checkRuleNames(final String schemaName, final Collection<ShadowRuleSegment> rules, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        List<String> requireRuleNames = ShadowRuleStatementSupporter.getRuleNames(rules);
+        Collection<String> requireRuleNames = ShadowRuleStatementSupporter.getRuleNames(rules);
         ShadowRuleStatementChecker.checkAnyDuplicate(requireRuleNames, duplicate -> new DuplicateRuleException(SHADOW, schemaName, duplicate));
-        List<String> currentRuleName = ShadowRuleStatementSupporter.getRuleNames(currentRuleConfig);
+        Collection<String> currentRuleName = ShadowRuleStatementSupporter.getRuleNames(currentRuleConfig);
         ShadowRuleStatementChecker.checkAnyDuplicate(requireRuleNames, currentRuleName, identical -> new DuplicateRuleException(SHADOW, schemaName, identical));
     }
     
     private void checkResources(final String schemaName, final Collection<ShadowRuleSegment> rules, final ShardingSphereMetaData metaData) throws DistSQLException {
-        List<String> requireResource = ShadowRuleStatementSupporter.getResourceNames(rules);
+        Collection<String> requireResource = ShadowRuleStatementSupporter.getResourceNames(rules);
         ShadowRuleStatementChecker.checkResourceExist(requireResource, metaData, schemaName);
     }
     
     private void checkAlgorithms(final String schemaName, final Collection<ShadowRuleSegment> rules, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        List<ShadowAlgorithmSegment> requireAlgorithms = ShadowRuleStatementSupporter.getShadowAlgorithmSegment(rules);
+        Collection<ShadowAlgorithmSegment> requireAlgorithms = ShadowRuleStatementSupporter.getShadowAlgorithmSegment(rules);
         ShadowRuleStatementChecker.checkAlgorithmCompleteness(requireAlgorithms);
-        List<String> requireAlgorithmNames = ShadowRuleStatementSupporter.getAlgorithmNames(rules);
+        Collection<String> requireAlgorithmNames = ShadowRuleStatementSupporter.getAlgorithmNames(rules);
         ShadowRuleStatementChecker.checkAnyDuplicate(requireAlgorithmNames, duplicate -> new DuplicateRuleException(SHADOW, schemaName, duplicate));
-        List<String> currentAlgorithmNames = ShadowRuleStatementSupporter.getAlgorithmNames(currentRuleConfig);
+        Collection<String> currentAlgorithmNames = ShadowRuleStatementSupporter.getAlgorithmNames(currentRuleConfig);
         ShadowRuleStatementChecker.checkAnyDuplicate(requireAlgorithmNames, currentAlgorithmNames, duplicate -> new DuplicateRuleException(SHADOW, schemaName, duplicate));
     }
     
@@ -97,6 +96,6 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
     
     @Override
     public String getType() {
-        return CreateShadowRuleStatement.class.getCanonicalName();
+        return CreateShadowRuleStatement.class.getName();
     }
 }

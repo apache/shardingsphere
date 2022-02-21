@@ -19,16 +19,17 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import com.google.common.collect.Sets;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.pool.creator.DataSourcePoolCreatorUtil;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.InstanceType;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.After;
@@ -60,7 +61,7 @@ public final class ConnectionManagerTest {
     
     private ConnectionManager connectionManager;
     
-    private MockedStatic<DataSourcePoolCreatorUtil> dataSourcePoolCreatorUtil;
+    private MockedStatic<DataSourcePoolCreator> dataSourcePoolCreator;
     
     @Before
     public void setUp() throws SQLException {
@@ -69,9 +70,10 @@ public final class ConnectionManagerTest {
     
     @After
     public void cleanUp() {
-        dataSourcePoolCreatorUtil.close();
+        dataSourcePoolCreator.close();
     }
     
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private ContextManager mockContextManager() throws SQLException {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSourceMap = mockDataSourceMap();
@@ -81,38 +83,42 @@ public final class ConnectionManagerTest {
         when(result.getMetaDataContexts().getMetaDataPersistService()).thenReturn(Optional.of(metaDataPersistService));
         when(result.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.empty());
         when(result.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TrafficRule.class)).thenReturn(Optional.of(trafficRule));
-        dataSourcePoolCreatorUtil = mockStatic(DataSourcePoolCreatorUtil.class);
+        dataSourcePoolCreator = mockStatic(DataSourcePoolCreator.class);
         Map<String, DataSource> trafficDataSourceMap = mockTrafficDataSourceMap();
-        when(DataSourcePoolCreatorUtil.getDataSourceMap(any())).thenReturn(trafficDataSourceMap);
+        when(DataSourcePoolCreator.create((Map) any())).thenReturn(trafficDataSourceMap);
         return result;
     }
     
     private Map<String, DataSource> mockTrafficDataSourceMap() {
-        Map<String, DataSource> trafficDataSourceMap = new LinkedHashMap<>();
-        trafficDataSourceMap.put("127.0.0.1@3307", mock(DataSource.class));
-        return trafficDataSourceMap;
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        result.put("127.0.0.1@3307", new MockedDataSource());
+        return result;
     }
     
     private MetaDataPersistService mockMetaDataPersistService() {
         MetaDataPersistService result = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
-        when(result.getDataSourceService().load(DefaultSchema.LOGIC_NAME)).thenReturn(mockDataSourceConfigMap());
-        when(result.loadComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(Collections.singletonList(mockComputeNodeInstance()));
+        when(result.getDataSourceService().load(DefaultSchema.LOGIC_NAME)).thenReturn(createDataSourcePropertiesMap());
+        when(result.getComputeNodePersistService().loadComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(Collections.singletonList(mockComputeNodeInstance()));
+        when(result.getGlobalRuleService().loadUsers()).thenReturn(Collections.singletonList(new ShardingSphereUser("root", "root", "localhost")));
         return result;
     }
     
-    private Map<String, DataSourceConfiguration> mockDataSourceConfigMap() {
-        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>();
-        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
-        result.put(DefaultSchema.LOGIC_NAME, dataSourceConfig);
-        dataSourceConfig.getProps().put("jdbcUrl", "jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false");
-        dataSourceConfig.getProps().put("username", "root");
-        dataSourceConfig.getProps().put("password", "123456");
+    private Map<String, DataSourceProperties> createDataSourcePropertiesMap() {
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(1, 1);
+        result.put(DefaultSchema.LOGIC_NAME, new DataSourceProperties(HikariDataSource.class.getName(), createProperties()));
+        return result;
+    }
+    
+    private Map<String, Object> createProperties() {
+        Map<String, Object> result = new LinkedHashMap<>(3, 1);
+        result.put("jdbcUrl", "jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false");
+        result.put("username", "root");
+        result.put("password", "123456");
         return result;
     }
     
     private ComputeNodeInstance mockComputeNodeInstance() {
         ComputeNodeInstance result = new ComputeNodeInstance();
-        result.setUsers(Collections.singletonList(new ShardingSphereUser("root", "root", "localhost")));
         result.setLabels(Collections.singletonList("OLTP"));
         result.setInstanceDefinition(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
         return result;
@@ -126,7 +132,7 @@ public final class ConnectionManagerTest {
     
     private Map<String, DataSource> mockDataSourceMap() throws SQLException {
         Map<String, DataSource> result = new HashMap<>(2, 1);
-        result.put("ds", mock(DataSource.class, RETURNS_DEEP_STUBS));
+        result.put("ds", new MockedDataSource());
         DataSource invalidDataSource = mock(DataSource.class);
         when(invalidDataSource.getConnection()).thenThrow(new SQLException());
         result.put("invalid_ds", invalidDataSource);
@@ -154,8 +160,10 @@ public final class ConnectionManagerTest {
     
     @Test
     public void assertGetConnectionWhenConfigTrafficRule() throws SQLException {
-        assertThat(connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY),
-                is(connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY)));
+        List<Connection> actual = connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY);
+        assertThat(actual, is(connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY)));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mock://127.0.0.1/foo_ds"));
     }
     
     @Test
@@ -172,6 +180,7 @@ public final class ConnectionManagerTest {
         List<Connection> actual = connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.CONNECTION_STRICTLY);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), is(expected));
+        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mock://127.0.0.1/foo_ds"));
     }
     
     @Test
@@ -184,6 +193,7 @@ public final class ConnectionManagerTest {
     public void assertGetConnectionsWhenConfigTrafficRuleAndEmptyCache() throws SQLException {
         List<Connection> actual = connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mock://127.0.0.1/foo_ds"));
     }
     
     @Test

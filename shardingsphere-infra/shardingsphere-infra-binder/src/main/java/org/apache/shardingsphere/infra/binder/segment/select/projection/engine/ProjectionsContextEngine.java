@@ -118,11 +118,13 @@ public final class ProjectionsContextEngine {
         if (columns.isEmpty()) {
             return false;
         }
-        if (columnSegment.getOwner().isPresent()) {
-            return columns.stream().anyMatch(each -> isSameQualifiedName(each, columnSegment.getQualifiedName()));
-        } else {
-            return columns.stream().anyMatch(each -> isSameName(each, columnSegment.getQualifiedName()));
+        boolean columnSegmentPresent = columnSegment.getOwner().isPresent();
+        for (ColumnProjection each : columns) {
+            if (columnSegmentPresent ? isSameQualifiedName(each, columnSegment.getQualifiedName()) : isSameName(each, columnSegment.getQualifiedName())) {
+                return true;
+            }
         }
+        return false;
     }
     
     private Collection<ColumnProjection> getColumnProjections(final Projection projection) {

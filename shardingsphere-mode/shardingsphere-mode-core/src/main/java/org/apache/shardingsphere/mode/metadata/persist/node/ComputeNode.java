@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.node;
 
-import org.apache.shardingsphere.infra.instance.InstanceType;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,9 +35,11 @@ public final class ComputeNode {
     
     private static final String ATTRIBUTES_NODE = "attributes";
     
-    private static final String LABEL_NODE = "label";
+    private static final String LABELS_NODE = "labels";
     
     private static final String STATUS_NODE = "status";
+    
+    private static final String WORKER_ID = "worker_id";
     
     /**
      * Get online compute node path.
@@ -61,13 +63,13 @@ public final class ComputeNode {
     }
     
     /**
-     * Get compute node instance label path.
+     * Get compute node instance labels path.
      *
      * @param instanceId instance id
-     * @return path of compute node instance label
+     * @return path of compute node instance labels
      */
-    public static String getInstanceLabelNodePath(final String instanceId) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ATTRIBUTES_NODE, instanceId, LABEL_NODE);
+    public static String getInstanceLabelsNodePath(final String instanceId) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ATTRIBUTES_NODE, instanceId, LABELS_NODE);
     }
     
     /**
@@ -80,14 +82,24 @@ public final class ComputeNode {
     }
     
     /**
+     * Get instance worker id node path.
+     *
+     * @param instanceId instance id
+     * @return worker id path
+     */
+    public static String getInstanceWorkerIdNodePath(final String instanceId) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ATTRIBUTES_NODE, instanceId, WORKER_ID);
+    }
+    
+    /**
      * Get instance id by status path.
      * 
-     * @param statusPath status path
+     * @param attributesPath attributes path
      * @return instance id
      */
-    public static String getInstanceIdByStatus(final String statusPath) {
-        Pattern pattern = Pattern.compile(getAttributesNodePath() + "/([\\S]+)/status$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(statusPath);
+    public static String getInstanceIdByAttributes(final String attributesPath) {
+        Pattern pattern = Pattern.compile(getAttributesNodePath() + "/([\\S]+)" + "(/status|/worker_id|/labels)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(attributesPath);
         return matcher.find() ? matcher.group(1) : "";
     }
     

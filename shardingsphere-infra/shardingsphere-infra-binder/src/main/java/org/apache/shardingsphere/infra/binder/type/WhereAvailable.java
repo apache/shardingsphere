@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.type;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 
-import java.util.Optional;
+import java.util.Collection;
 
 /**
  * Where available.
@@ -27,9 +27,9 @@ import java.util.Optional;
 public interface WhereAvailable {
     
     /**
-     * Get where segment.
-     *
-     * @return where segment
+     * Get where segments.
+     * 
+     * @return where segments
      */
-    Optional<WhereSegment> getWhere();
+    Collection<WhereSegment> getWhereSegments();
 }

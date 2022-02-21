@@ -21,7 +21,11 @@
         <job-id>123</job-id>
     </stop-scaling-source-writing>
 
-    <checkout-scaling sql-case-id="checkout-scaling">
+    <restore-scaling-source-writing sql-case-id="restore-scaling-source-writing">
         <job-id>123</job-id>
-    </checkout-scaling>
+    </restore-scaling-source-writing>
+
+    <apply-scaling sql-case-id="apply-scaling">
+        <job-id>123</job-id>
+    </apply-scaling>
 </sql-parser-test-cases>

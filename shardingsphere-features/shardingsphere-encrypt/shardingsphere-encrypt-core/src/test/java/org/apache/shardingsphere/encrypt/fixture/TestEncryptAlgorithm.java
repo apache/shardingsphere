@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.fixture;
 
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
 public final class TestEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
@@ -26,12 +27,12 @@ public final class TestEncryptAlgorithm implements EncryptAlgorithm<Object, Stri
     }
     
     @Override
-    public String encrypt(final Object plainValue) {
+    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return "encryptValue";
     }
     
     @Override
-    public Object decrypt(final String cipherValue) {
+    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
         return "decryptValue";
     }
     

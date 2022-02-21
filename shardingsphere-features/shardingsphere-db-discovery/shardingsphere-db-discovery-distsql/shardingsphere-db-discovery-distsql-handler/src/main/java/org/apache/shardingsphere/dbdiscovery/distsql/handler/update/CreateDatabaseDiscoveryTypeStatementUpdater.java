@@ -32,7 +32,6 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -74,7 +73,7 @@ public final class CreateDatabaseDiscoveryTypeStatementUpdater implements RuleDe
     }
     
     private void checkInvalidDiscoverType(final CreateDatabaseDiscoveryTypeStatement sqlStatement) throws DistSQLException {
-        List<String> invalidType = sqlStatement.getTypes().stream().map(each -> each.getAlgorithmSegment().getName()).distinct()
+        Collection<String> invalidType = sqlStatement.getTypes().stream().map(each -> each.getAlgorithmSegment().getName()).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryType.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         DistSQLException.predictionThrow(invalidType.isEmpty(), new InvalidAlgorithmConfigurationException(RULE_TYPE, invalidType));
     }
@@ -98,6 +97,6 @@ public final class CreateDatabaseDiscoveryTypeStatementUpdater implements RuleDe
     
     @Override
     public String getType() {
-        return CreateDatabaseDiscoveryTypeStatement.class.getCanonicalName();
+        return CreateDatabaseDiscoveryTypeStatement.class.getName();
     }
 }

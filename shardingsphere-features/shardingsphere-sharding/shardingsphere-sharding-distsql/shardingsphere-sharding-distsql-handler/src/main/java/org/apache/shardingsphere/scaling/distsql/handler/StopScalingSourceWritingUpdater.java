@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.distsql.handler;
 
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.scaling.distsql.statement.StopScalingSourceWritingStatement;
 
@@ -26,13 +27,15 @@ import org.apache.shardingsphere.scaling.distsql.statement.StopScalingSourceWrit
  */
 public final class StopScalingSourceWritingUpdater implements RALUpdater<StopScalingSourceWritingStatement> {
     
+    private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = PipelineJobAPIFactory.getRuleAlteredJobAPI();
+    
     @Override
     public void executeUpdate(final StopScalingSourceWritingStatement sqlStatement) {
-        PipelineJobAPIFactory.getPipelineJobAPI().stopClusterWriteDB(sqlStatement.getJobId());
+        RULE_ALTERED_JOB_API.stopClusterWriteDB(sqlStatement.getJobId());
     }
     
     @Override
     public String getType() {
-        return StopScalingSourceWritingStatement.class.getCanonicalName();
+        return StopScalingSourceWritingStatement.class.getName();
     }
 }

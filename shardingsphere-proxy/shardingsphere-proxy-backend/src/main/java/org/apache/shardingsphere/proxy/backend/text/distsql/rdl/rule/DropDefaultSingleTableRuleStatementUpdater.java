@@ -53,6 +53,6 @@ public final class DropDefaultSingleTableRuleStatementUpdater implements RuleDef
     
     @Override
     public String getType() {
-        return DropDefaultSingleTableRuleStatement.class.getCanonicalName();
+        return DropDefaultSingleTableRuleStatement.class.getName();
     }
 }

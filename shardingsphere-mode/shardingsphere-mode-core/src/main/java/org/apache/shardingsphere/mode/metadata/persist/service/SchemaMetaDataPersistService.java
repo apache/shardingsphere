@@ -47,11 +47,11 @@ public final class SchemaMetaDataPersistService {
         if (null != schema) {
             Optional<ShardingSphereSchema> originalSchema = load(schemaName);
             if (originalSchema.isPresent()) {
-                originalSchema.get().getTables().entrySet().stream().filter(entry -> !schema.getTables().keySet().contains(entry.getKey()))
+                originalSchema.get().getTables().entrySet().stream().filter(entry -> !schema.getTables().containsKey(entry.getKey()))
                         .forEach(entry -> repository.delete(SchemaMetaDataNode.getTableMetaDataPath(schemaName, entry.getKey())));
             }
-            schema.getTables().entrySet().forEach(entry -> repository.persist(SchemaMetaDataNode.getTableMetaDataPath(schemaName, entry.getKey()), 
-                    YamlEngine.marshal(new TableMetaDataYamlSwapper().swapToYamlConfiguration(entry.getValue()))));
+            schema.getTables().forEach(
+                (key, value) -> repository.persist(SchemaMetaDataNode.getTableMetaDataPath(schemaName, key), YamlEngine.marshal(new TableMetaDataYamlSwapper().swapToYamlConfiguration(value))));
         }
     }
     

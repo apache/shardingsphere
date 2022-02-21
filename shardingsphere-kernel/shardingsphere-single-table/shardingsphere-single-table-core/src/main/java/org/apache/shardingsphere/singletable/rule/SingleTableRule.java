@@ -18,15 +18,17 @@
 package org.apache.shardingsphere.singletable.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
@@ -34,19 +36,21 @@ import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TreeSet;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
  * Single table rule.
  */
 @Getter
-public final class SingleTableRule implements SchemaRule, DataNodeContainedRule, TableContainedRule, MutableDataNodeRule {
+public final class SingleTableRule implements SchemaRule, DataNodeContainedRule, TableContainedRule, MutableDataNodeRule, ExportableRule {
     
     private String defaultDataSource;
     
@@ -194,6 +198,11 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     }
     
     @Override
+    public Collection<DataNode> getDataNodesByTableName(final String tableName) {
+        return singleTableDataNodes.getOrDefault(tableName.toLowerCase(), Collections.emptyList());
+    }
+    
+    @Override
     public Collection<String> getAllActualTables() {
         return Collections.emptyList();
     }
@@ -231,5 +240,12 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     @Override
     public String getType() {
         return SingleTableRule.class.getSimpleName();
+    }
+    
+    @Override
+    public Map<String, Supplier<Object>> getExportedMethods() {
+        Map<String, Supplier<Object>> result = new HashMap<>(1, 1);
+        result.put(ExportableConstants.EXPORTABLE_KEY_SINGLE_TABLES, tableNames::keySet);
+        return result;
     }
 }

@@ -17,7 +17,7 @@
 
 grammar RDLStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 addResource
     : ADD RESOURCE dataSource (COMMA dataSource)*
@@ -44,7 +44,7 @@ dropDefaultSingleTableRule
     ;
 
 dataSource
-    : dataSourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password+)? (COMMA PROPERTIES LP poolProperties? RP)? RP
+    : dataSourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password+)? propertiesDefinition? RP
     ;
 
 dataSourceName
@@ -61,14 +61,6 @@ urlSource
 
 hostname
     : IDENTIFIER | ip
-    ;
-
-ip
-    : NUMBER+
-    ;
-
-port
-    : INT
     ;
 
 dbName
@@ -89,14 +81,6 @@ password
     | AMPERSAND | ASTERISK | LP | RP | UL | MINUS | PLUS 
     | EQ| LBE | RBE | LBT | RBT | SLASH | LT | GT | COMMA 
     | DOT | SEMI | QUESTION | SQ | COLON | VERTICALBAR                    
-    ;
-
-poolProperties
-    : poolProperty (COMMA poolProperty)*
-    ;
-
-poolProperty
-    : key=(IDENTIFIER | STRING) EQ value=(INT | IDENTIFIER | STRING)
     ;
 
 ignoreSingleTables

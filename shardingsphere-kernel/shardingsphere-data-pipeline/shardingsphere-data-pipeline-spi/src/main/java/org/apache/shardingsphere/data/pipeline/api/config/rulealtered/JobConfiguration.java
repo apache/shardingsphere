@@ -28,7 +28,6 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
 import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 
-import java.util.Collection;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -81,15 +80,5 @@ public final class JobConfiguration {
         if (null == handleConfig.getJobShardingItem()) {
             handleConfig.setJobShardingItem(0);
         }
-    }
-    
-    /**
-     * Split job configuration to task configurations.
-     *
-     * @return task configurations
-     */
-    public Collection<TaskConfiguration> buildTaskConfigs() {
-        RuleAlteredJobConfigurationPreparer preparer = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobConfigurationPreparer.class);
-        return preparer.createTaskConfigurations(pipelineConfig, handleConfig);
     }
 }

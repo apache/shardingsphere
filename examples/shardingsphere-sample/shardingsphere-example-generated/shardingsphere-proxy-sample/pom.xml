@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache.shardingsphere.example</groupId>
+        <artifactId>shardingsphere-example-generated</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <artifactId>shardingsphere-proxy-sample</artifactId>
+    <packaging>pom</packaging>
+    <name>${project.artifactId}</name>
+    
+    <modules>
+        <module>shardingsphere-proxy-memory-local-sharding-example</module>
+        <module>shardingsphere-proxy-memory-local-readwrite-splitting-example</module>
+        <module>shardingsphere-proxy-memory-local-db-discovery-example</module>
+        <module>shardingsphere-proxy-memory-local-encrypt-example</module>
+        <module>shardingsphere-proxy-memory-local-shadow-example</module>
+        
+        <module>shardingsphere-proxy-memory-xa-atomikos-sharding-example</module>
+        <module>shardingsphere-proxy-memory-xa-atomikos-readwrite-splitting-example</module>
+        <module>shardingsphere-proxy-memory-xa-atomikos-db-discovery-example</module>
+        <module>shardingsphere-proxy-memory-xa-atomikos-encrypt-example</module>
+        <module>shardingsphere-proxy-memory-xa-atomikos-shadow-example</module>
+        
+        <module>shardingsphere-proxy-memory-xa-narayana-sharding-example</module>
+        <module>shardingsphere-proxy-memory-xa-narayana-readwrite-splitting-example</module>
+        <module>shardingsphere-proxy-memory-xa-narayana-db-discovery-example</module>
+        <module>shardingsphere-proxy-memory-xa-narayana-encrypt-example</module>
+        <module>shardingsphere-proxy-memory-xa-narayana-shadow-example</module>
+        
+        <module>shardingsphere-proxy-memory-xa-bitronix-sharding-example</module>
+        <module>shardingsphere-proxy-memory-xa-bitronix-readwrite-splitting-example</module>
+        <module>shardingsphere-proxy-memory-xa-bitronix-db-discovery-example</module>
+        <module>shardingsphere-proxy-memory-xa-bitronix-encrypt-example</module>
+        <module>shardingsphere-proxy-memory-xa-bitronix-shadow-example</module>
+        
+        <module>shardingsphere-proxy-memory-base-seata-sharding-example</module>
+        <module>shardingsphere-proxy-memory-base-seata-readwrite-splitting-example</module>
+        <module>shardingsphere-proxy-memory-base-seata-db-discovery-example</module>
+        <module>shardingsphere-proxy-memory-base-seata-encrypt-example</module>
+        <module>shardingsphere-proxy-memory-base-seata-shadow-example</module>
+        
+        <module>shardingsphere-proxy-standalone-file-local-sharding-example</module>
+        <module>shardingsphere-proxy-standalone-file-local-readwrite-splitting-example</module>
+        <module>shardingsphere-proxy-standalone-file-local-db-discovery-example</module>
+        <module>shardingsphere-proxy-standalone-file-local-encrypt-example</module>
+        <module>shardingsphere-proxy-standalone-file-local-shadow-example</module>
+        
+        <module>shardingsphere-proxy-standalone-file-xa-atomikos-sharding-example</module>
+        <module>shardingsphere-proxy-standalone-file-xa-atomikos-readwrite-splitting-example</module>
+        <module>shardingsphere-proxy-standalone-file-xa-atomikos-db-discovery-example</module>
+        <module>shardingsphere-proxy-standalone-file-xa-atomikos-encrypt-example</module>
+        <module>shardingsphere-proxy-standalone-file-xa-atomikos-shadow-example</module>
+        
+        <module>shardingsphere-proxy-standalone-file-xa-narayana-sharding-example</module>
+        <module>shardingsphere-proxy-standalone-file-xa-narayana-readwrite-splitting-example</module>
+        <module>shardingsphere-proxy-standalone-file-xa-narayana-db-discovery-example</module>
+        <module>shardingsphere-proxy-standalone-file-xa-narayana-encrypt-example</module>
+        <module>shardingsphere-proxy-standalone-file-xa-narayana-shadow-example</module>
+        
+        <module>shardingsphere-proxy-standalone-file-xa-bitronix-sharding-example</module>
+        <module>shardingsphere-proxy-standalone-file-xa-bitronix-readwrite-splitting-example</module>
+        <module>shardingsphere-proxy-standalone-file-xa-bitronix-db-discovery-example</module>
+        <module>shardingsphere-proxy-standalone-file-xa-bitronix-encrypt-example</module>
+        <module>shardingsphere-proxy-standalone-file-xa-bitronix-shadow-example</module>
+        
+        <module>shardingsphere-proxy-standalone-file-base-seata-sharding-example</module>
+        <module>shardingsphere-proxy-standalone-file-base-seata-readwrite-splitting-example</module>
+        <module>shardingsphere-proxy-standalone-file-base-seata-db-discovery-example</module>
+        <module>shardingsphere-proxy-standalone-file-base-seata-encrypt-example</module>
+        <module>shardingsphere-proxy-standalone-file-base-seata-shadow-example</module>
+        
+        <module>shardingsphere-proxy-cluster-zookeeper-local-sharding-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-local-readwrite-splitting-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-local-db-discovery-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-local-encrypt-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-local-shadow-example</module>
+        
+        <module>shardingsphere-proxy-cluster-zookeeper-xa-atomikos-sharding-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-xa-atomikos-readwrite-splitting-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-xa-atomikos-db-discovery-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-xa-atomikos-encrypt-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-xa-atomikos-shadow-example</module>
+        
+        <module>shardingsphere-proxy-cluster-zookeeper-xa-narayana-sharding-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-xa-narayana-readwrite-splitting-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-xa-narayana-db-discovery-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-xa-narayana-encrypt-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-xa-narayana-shadow-example</module>
+        
+        <module>shardingsphere-proxy-cluster-zookeeper-xa-bitronix-sharding-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-xa-bitronix-readwrite-splitting-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-xa-bitronix-db-discovery-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-xa-bitronix-encrypt-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-xa-bitronix-shadow-example</module>
+        
+        <module>shardingsphere-proxy-cluster-zookeeper-base-seata-sharding-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-base-seata-readwrite-splitting-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-base-seata-db-discovery-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-base-seata-encrypt-example</module>
+        <module>shardingsphere-proxy-cluster-zookeeper-base-seata-shadow-example</module>
+        
+        <module>shardingsphere-proxy-cluster-etcd-local-sharding-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-local-readwrite-splitting-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-local-db-discovery-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-local-encrypt-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-local-shadow-example</module>
+        
+        <module>shardingsphere-proxy-cluster-etcd-xa-atomikos-sharding-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-xa-atomikos-readwrite-splitting-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-xa-atomikos-db-discovery-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-xa-atomikos-encrypt-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-xa-atomikos-shadow-example</module>
+        
+        <module>shardingsphere-proxy-cluster-etcd-xa-narayana-sharding-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-xa-narayana-readwrite-splitting-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-xa-narayana-db-discovery-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-xa-narayana-encrypt-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-xa-narayana-shadow-example</module>
+        
+        <module>shardingsphere-proxy-cluster-etcd-xa-bitronix-sharding-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-xa-bitronix-readwrite-splitting-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-xa-bitronix-db-discovery-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-xa-bitronix-encrypt-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-xa-bitronix-shadow-example</module>
+        
+        <module>shardingsphere-proxy-cluster-etcd-base-seata-sharding-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-base-seata-readwrite-splitting-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-base-seata-db-discovery-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-base-seata-encrypt-example</module>
+        <module>shardingsphere-proxy-cluster-etcd-base-seata-shadow-example</module>
+    </modules>
+</project>

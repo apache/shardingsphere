@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.singletable.rule;
 
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -228,6 +228,18 @@ public final class SingleTableRuleTest {
     }
     
     @Test
+    public void assertGetDataNodesByTableName() {
+        DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), dataSourceMap,
+                Collections.singletonList(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
+        Collection<DataNode> actual = singleTableRule.getDataNodesByTableName("EMPLOYEE");
+        assertThat(actual.size(), is(1));
+        DataNode dataNode = actual.iterator().next();
+        assertThat(dataNode.getDataSourceName(), is("ds_0"));
+        assertThat(dataNode.getTableName(), is("employee"));
+    }
+    
+    @Test
     public void assertGetAllActualTables() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), dataSourceMap, 
@@ -249,8 +261,7 @@ public final class SingleTableRuleTest {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), dataSourceMap, 
                 Collections.singletonList(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
-        Collection<String> tables = new LinkedList<>();
-        assertFalse(singleTableRule.isNeedAccumulate(tables));
+        assertFalse(singleTableRule.isNeedAccumulate(Collections.emptyList()));
     }
     
     @Test

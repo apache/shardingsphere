@@ -38,7 +38,7 @@ it.run.additional.cases=false
 it.scenarios=db,tbl,dbtbl_with_replica_query,replica_query
 
 # database type, could define multiple databases(H2,MySQL,Oracle,SQLServer,PostgreSQL)
-it.databases=MySQL,PostgreSQL
+it.cluster.databases=MySQL,PostgreSQL
 
 # MySQL configuration
 it.mysql.host=127.0.0.1
