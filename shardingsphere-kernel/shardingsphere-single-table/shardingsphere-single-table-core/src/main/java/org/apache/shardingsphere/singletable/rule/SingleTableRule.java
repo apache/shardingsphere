@@ -193,12 +193,8 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     }
     
     @Override
-    public Collection<DataNode> getAllDataNodes() {
-        Collection<DataNode> result = new LinkedList<>();
-        for (Collection<DataNode> each : singleTableDataNodes.values()) {
-            result.addAll(each);
-        }
-        return result;
+    public Map<String, Collection<DataNode>> getAllDataNodes() {
+        return singleTableDataNodes;
     }
     
     @Override

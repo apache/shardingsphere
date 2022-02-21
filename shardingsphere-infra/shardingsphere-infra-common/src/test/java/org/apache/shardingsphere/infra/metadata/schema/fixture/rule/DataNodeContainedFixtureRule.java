@@ -40,8 +40,8 @@ public final class DataNodeContainedFixtureRule implements DataNodeContainedRule
     }
     
     @Override
-    public Collection<DataNode> getAllDataNodes() {
-        return Collections.emptyList();
+    public Map<String, Collection<DataNode>> getAllDataNodes() {
+        return Collections.emptyMap();
     }
     
     @Override

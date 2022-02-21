@@ -120,8 +120,8 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
     
     private Set<String> getInUsedResourceNames(final DataNodeContainedRule rule) {
         Set<String> result = new HashSet<>();
-        for (DataNode each : rule.getAllDataNodes()) {
-            result.add(each.getDataSourceName());
+        for (Collection<DataNode> each : rule.getAllDataNodes().values()) {
+            result.addAll(each.stream().map(DataNode::getDataSourceName).collect(Collectors.toList()));
         }
         return result;
     }
