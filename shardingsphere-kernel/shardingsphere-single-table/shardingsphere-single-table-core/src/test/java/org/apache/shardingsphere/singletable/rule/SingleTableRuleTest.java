@@ -33,7 +33,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -223,8 +222,6 @@ public final class SingleTableRuleTest {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), dataSourceMap, 
                 Collections.singletonList(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
-        assertThat(singleTableRule.getDataSourceNames().size(), is(2));
-        Iterator<String> iterator = singleTableRule.getDataSourceNames().iterator();
         assertTrue(singleTableRule.getAllDataNodes().containsKey("employee"));
         assertTrue(singleTableRule.getAllDataNodes().containsKey("student"));
         assertTrue(singleTableRule.getAllDataNodes().containsKey("t_order_0"));
