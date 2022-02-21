@@ -15,57 +15,24 @@
  * limitations under the License.
  */
 
-lexer grammar Literals;
+package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator;
 
-import Alphabet, Symbol;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 
-IDENTIFIER_
-    : LBT_? DQ_? [a-zA-Z_$#\u0080-\uFFFF][a-zA-Z0-9_$#\u0080-\uFFFF\\@/]* DQ_? RBT_?
-    ;
-
-STRING_
-    : (DQ_ ( '\\'. | '""' | ~('"'| '\\') )* DQ_)
-    | (SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_)
-    ;
-
-NUMBER_
-    : INT_NUM_
-    | FLOAT_NUM_
-    | DECIMAL_NUM_
-    ;
-
-INT_NUM_
-    : DIGIT+
-    ;
-
-FLOAT_NUM_
-    : INT_NUM_? DOT_? INT_NUM_ E (PLUS_ | MINUS_)? INT_NUM_
-    ;
-
-DECIMAL_NUM_
-    : INT_NUM_? DOT_ INT_NUM_
-    ;
-
-HEX_DIGIT_
-    : '0x' HEX_+ | 'X' SQ_ HEX_+ SQ_
-    ;
-
-BIT_NUM_
-    : '0b' ('0' | '1')+ | B SQ_ ('0' | '1')+ SQ_
-    ;
-
-NCHAR_TEXT
-    : N STRING_
-    ;
-
-fragment DIGIT
-    : [0-9]
-    ;
-
-fragment HEX_
-    : [0-9a-fA-F]
-    ;
-
-NAME_
-    : LBT_ [a-zA-Z_$#\\/@. ]+ RBT_
-    ;
+/**
+ * PostgreSQL authenticator.
+ * 
+ * @see <a href="https://www.postgresql.org/docs/14/auth-password.html">Password Authentication</a>
+ */
+public interface PostgreSQLAuthenticator extends Authenticator {
+    
+    /**
+     * Authenticate.
+     *
+     * @param user ShardingSphere user
+     * @param args arguments for user authentication
+     * @return authentication success or not
+     */
+    boolean authenticate(ShardingSphereUser user, Object[] args);
+}

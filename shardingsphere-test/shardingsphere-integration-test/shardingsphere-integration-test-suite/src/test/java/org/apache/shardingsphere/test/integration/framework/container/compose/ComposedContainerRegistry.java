@@ -39,7 +39,7 @@ public final class ComposedContainerRegistry implements AutoCloseable {
      * @return composed container
      */
     public ComposedContainer getComposedContainer(final ParameterizedArray parameterizedArray) {
-        String key = generateKey(parameterizedArray);
+        String key = parameterizedArray.getKey();
         if (composedContainers.containsKey(key)) {
             return composedContainers.get(key);
         }
@@ -49,10 +49,6 @@ public final class ComposedContainerRegistry implements AutoCloseable {
             }
             return composedContainers.get(key);
         }
-    }
-    
-    private String generateKey(final ParameterizedArray parameterizedArray) {
-        return String.join("-", parameterizedArray.getScenario(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType().getName());
     }
     
     private ComposedContainer createComposedContainer(final ParameterizedArray parameterizedArray) {

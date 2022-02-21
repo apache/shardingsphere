@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl;
 
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterLoginContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterRoleContext;
@@ -29,13 +29,21 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Cla
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateLoginContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateUserContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateUserLoginWindowsPrincipalClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateUserWindowsPrincipalClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DenyContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropLoginContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GrantContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.IgnoredNameIdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RevokeContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetUserContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UserNameContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.UserSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerAlterLoginStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerAlterRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerAlterUserStatement;
@@ -48,6 +56,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDropUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerGrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerRevokeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerSetUserStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -105,12 +114,67 @@ public final class SQLServerDCLStatementSQLVisitor extends SQLServerStatementSQL
     
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
-        return new SQLServerCreateUserStatement();
+        SQLServerCreateUserStatement result = new SQLServerCreateUserStatement();
+        if (null != ctx.createUserLoginClause()) {
+            result.getUsers().add((UserSegment) visit(ctx.createUserLoginClause().userName()));
+        } else if (null != ctx.createUserWindowsPrincipalClause()) {
+            result.getUsers().add((UserSegment) visit(ctx.createUserWindowsPrincipalClause()));
+        } else if (null != ctx.createUserLoginWindowsPrincipalClause()) {
+            result.getUsers().add((UserSegment) visit(ctx.createUserLoginWindowsPrincipalClause()));
+        } else if (null != ctx.createUserWithoutLoginClause()) {
+            result.getUsers().add((UserSegment) visit(ctx.createUserWithoutLoginClause().userName()));
+        } else if (null != ctx.createUserFromExternalProviderClause()) {
+            result.getUsers().add((UserSegment) visit(ctx.createUserFromExternalProviderClause().userName()));
+        } else if (null != ctx.createUserWithDefaultSchema()) {
+            result.getUsers().add((UserSegment) visit(ctx.createUserWithDefaultSchema().userName()));
+        } else if (null != ctx.createUserWithAzureActiveDirectoryPrincipalClause()) {
+            result.getUsers().add((UserSegment) visit(ctx.createUserWithAzureActiveDirectoryPrincipalClause().azureActiveDirectoryPrincipal().userName()));
+        } else {
+            result.getUsers().add((UserSegment) visit(ctx.userName()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitUserName(final UserNameContext ctx) {
+        UserSegment result = new UserSegment();
+        String user = null != ctx.ignoredNameIdentifier() ? ((IdentifierValue) visit(ctx.ignoredNameIdentifier())).getValue() : (new IdentifierValue(ctx.NAME_().getText())).getValue();
+        result.setUser(user);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitIgnoredNameIdentifier(final IgnoredNameIdentifierContext ctx) {
+        int identifierCount = ctx.identifier().size();
+        IdentifierValue result = 1 == identifierCount ? (IdentifierValue) visit(ctx.identifier(0)) : new IdentifierValue(ctx.getText());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateUserWindowsPrincipalClause(final CreateUserWindowsPrincipalClauseContext ctx) {
+        UserSegment result;
+        if (null != ctx.windowsPrincipal()) {
+            result = (UserSegment) visit(ctx.windowsPrincipal().userName());
+        } else if (null != ctx.azureActiveDirectoryPrincipal()) {
+            result = (UserSegment) visit(ctx.azureActiveDirectoryPrincipal().userName());
+        } else {
+            result = (UserSegment) visit(ctx.userName());
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateUserLoginWindowsPrincipalClause(final CreateUserLoginWindowsPrincipalClauseContext ctx) {
+        UserSegment result;
+        result = null != ctx.userName() ? (UserSegment) visit(ctx.userName()) : (UserSegment) visit(ctx.windowsPrincipal(0));
+        return result;
     }
     
     @Override
     public ASTNode visitAlterUser(final AlterUserContext ctx) {
-        return new SQLServerAlterUserStatement();
+        SQLServerAlterUserStatement result = new SQLServerAlterUserStatement();
+        result.setUser((UserSegment) visit(ctx.userName()));
+        return result;
     }
     
     @Override
@@ -162,5 +226,18 @@ public final class SQLServerDCLStatementSQLVisitor extends SQLServerStatementSQL
     @Override
     public ASTNode visitDropLogin(final DropLoginContext ctx) {
         return new SQLServerDropLoginStatement();
+    }
+    
+    @Override
+    public ASTNode visitSetUser(final SetUserContext ctx) {
+        SQLServerSetUserStatement result = new SQLServerSetUserStatement();
+        if (null != ctx.stringLiterals()) {
+            UserSegment userSegment = new UserSegment();
+            userSegment.setUser(((StringLiteralValue) visit(ctx.stringLiterals())).getValue());
+            userSegment.setStartIndex(ctx.stringLiterals().start.getStartIndex());
+            userSegment.setStopIndex(ctx.stringLiterals().stop.getStopIndex());
+            result.setUser(userSegment); 
+        }
+        return result;
     }
 }

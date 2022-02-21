@@ -26,6 +26,7 @@ import org.apache.shardingsphere.test.integration.framework.param.model.Assertio
 import org.junit.Before;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -67,7 +68,9 @@ public abstract class BaseRDLIT extends SingleITCase {
             return;
         }
         for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getInitialSQL().getSql())) {
-            executeUpdateForPrepareStatement(connection, each);
+            try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
+                preparedStatement.executeUpdate();
+            }
         }
     }
     
@@ -76,7 +79,9 @@ public abstract class BaseRDLIT extends SingleITCase {
             return;
         }
         for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getDestroySQL().getSql())) {
-            executeUpdateForPrepareStatement(connection, each);
+            try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
+                preparedStatement.executeUpdate();
+            }
         }
     }
     

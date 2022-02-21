@@ -69,7 +69,6 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
     protected void configure() {
         mapConfigurationFiles();
         setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*ShardingSphere-Proxy .* mode started successfully.*"));
-        super.configure();
     }
     
     private void mapConfigurationFiles() {
