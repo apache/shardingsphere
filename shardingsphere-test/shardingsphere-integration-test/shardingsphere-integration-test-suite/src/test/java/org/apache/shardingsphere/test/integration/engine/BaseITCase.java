@@ -31,7 +31,6 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 
 import javax.sql.DataSource;
-import java.text.ParseException;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -90,6 +89,4 @@ public abstract class BaseITCase {
             COMPOSED_CONTAINER_REGISTRY.close();
         }
     }
-    
-    protected abstract String getSQL() throws ParseException;
 }
