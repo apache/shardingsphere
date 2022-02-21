@@ -29,11 +29,11 @@ import java.util.Optional;
 public interface DataNodeContainedRule extends ShardingSphereRule {
     
     /**
-     * Get data source names.
+     * Get all data nodes.
      *
-     * @return data source names
+     * @return all data nodes
      */
-    Collection<String> getDataSourceNames();
+    Collection<DataNode> getAllDataNodes();
     
     /**
      * Get data nodes by table name.

@@ -40,7 +40,7 @@ public final class DataNodeContainedFixtureRule implements DataNodeContainedRule
     }
     
     @Override
-    public Collection<String> getDataSourceNames() {
+    public Collection<DataNode> getAllDataNodes() {
         return Collections.emptyList();
     }
     

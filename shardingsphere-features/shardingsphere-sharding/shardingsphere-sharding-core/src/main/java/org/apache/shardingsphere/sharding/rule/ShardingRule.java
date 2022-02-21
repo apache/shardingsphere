@@ -561,6 +561,15 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     @Override
+    public Collection<DataNode> getAllDataNodes() {
+        Collection<DataNode> result = new LinkedList<>();
+        for (Collection<DataNode> each : shardingTableDataNodes.values()) {
+            result.addAll(each);
+        }
+        return result;
+    }
+    
+    @Override
     public Collection<DataNode> getDataNodesByTableName(final String tableName) {
         return shardingTableDataNodes.getOrDefault(tableName.toLowerCase(), Collections.emptyList());
     }

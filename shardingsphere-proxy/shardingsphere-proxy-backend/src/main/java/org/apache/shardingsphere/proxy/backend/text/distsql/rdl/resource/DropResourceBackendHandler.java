@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceDefinitionViolationException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceInUsedException;
@@ -102,7 +103,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
                 inUsedResourceNames.forEach(eachResource -> result.put(eachResource, each.getType()));
             }
             if (each instanceof DataNodeContainedRule) {
-                Collection<String> inUsedResourceNames = ((DataNodeContainedRule) each).getDataSourceNames();
+                Set<String> inUsedResourceNames = getInUsedResourceNames((DataNodeContainedRule) each);
                 inUsedResourceNames.forEach(eachResource -> result.put(eachResource, each.getType()));
             }
         }
@@ -113,6 +114,14 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         Set<String> result = new HashSet<>();
         for (Collection<String> each : rule.getDataSourceMapper().values()) {
             result.addAll(each);
+        }
+        return result;
+    }
+    
+    private Set<String> getInUsedResourceNames(final DataNodeContainedRule rule) {
+        Set<String> result = new HashSet<>();
+        for (DataNode each : rule.getAllDataNodes()) {
+            result.add(each.getDataSourceName());
         }
         return result;
     }
