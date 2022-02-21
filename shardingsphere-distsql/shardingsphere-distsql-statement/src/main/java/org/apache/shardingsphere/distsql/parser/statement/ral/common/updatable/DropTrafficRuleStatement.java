@@ -15,12 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.show;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+
+import java.util.Collection;
 
 /**
- * Show transaction rule statement.
+ * Drop traffic rule statement.
  */
-public final class ShowTransactionRuleStatement extends ShowDistSQLStatement {
+@Setter
+@Getter
+public final class DropTrafficRuleStatement extends UpdatableRALStatement {
+    
+    private boolean containsIfExistClause;
+    
+    private Collection<String> ruleNames;
 }

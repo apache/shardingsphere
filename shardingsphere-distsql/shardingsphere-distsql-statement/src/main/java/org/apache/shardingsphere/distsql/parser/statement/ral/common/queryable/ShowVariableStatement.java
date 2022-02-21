@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.alter;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.distsql.parser.segment.CacheOptionSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.AlterDistSQLStatement;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * Alter SQL parser rule statement.
+ * Show variable statement.
  */
-@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
-public final class AlterSQLParserRuleStatement extends AlterDistSQLStatement {
+public final class ShowVariableStatement extends QueryableRALStatement {
     
-    private Boolean sqlCommentParseEnable;
-    
-    private CacheOptionSegment parseTreeCache;
-    
-    private CacheOptionSegment sqlStatementCache;
+    private String name;
 }

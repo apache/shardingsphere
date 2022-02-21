@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * Alter dist sql statement.
+ * Show authority rule statement.
  */
-public abstract class AlterDistSQLStatement extends CommonDistSQLStatement {
+@NoArgsConstructor
+public final class ShowAuthorityRuleStatement extends QueryableRALStatement {
 }

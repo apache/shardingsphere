@@ -15,14 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.show;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.parser.segment.CacheOptionSegment;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
 /**
- * Show instance mode statement.
+ * Alter SQL parser rule statement.
  */
+@Setter
 @Getter
-public final class ShowInstanceModeStatement extends ShowDistSQLStatement {
+public final class AlterSQLParserRuleStatement extends UpdatableRALStatement {
+    
+    private Boolean sqlCommentParseEnable;
+    
+    private CacheOptionSegment parseTreeCache;
+    
+    private CacheOptionSegment sqlStatementCache;
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.LabelInstanceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.LabelInstanceStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceId;

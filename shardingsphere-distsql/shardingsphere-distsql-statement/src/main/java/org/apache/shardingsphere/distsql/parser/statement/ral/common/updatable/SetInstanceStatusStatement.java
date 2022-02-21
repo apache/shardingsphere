@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.alter;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.TransactionProviderSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.AlterDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
 /**
- * Alter Transaction rule statement.
+ * Set instance status statement.
  */
-@RequiredArgsConstructor
 @Getter
-public final class AlterTransactionRuleStatement extends AlterDistSQLStatement {
+@RequiredArgsConstructor
+public class SetInstanceStatusStatement extends UpdatableRALStatement {
     
-    private final String defaultType;
+    private final String status;
     
-    private final TransactionProviderSegment provider;
+    private final String ip;
+    
+    private final String port;
 }

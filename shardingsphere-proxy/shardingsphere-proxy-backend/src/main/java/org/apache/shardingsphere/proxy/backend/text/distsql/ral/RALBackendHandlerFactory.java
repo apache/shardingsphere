@@ -19,13 +19,32 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.parse.ParseStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.preview.PreviewStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.ExportSchemaConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ExportSchemaConfigurationStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowAllVariablesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowAuthorityRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowInstanceModeStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowInstanceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowSQLParserRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTableMetadataStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTrafficRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTransactionRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterSQLParserRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterTrafficRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterTransactionRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.CreateTrafficRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.DropTrafficRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.LabelInstanceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.RefreshTableMetadataStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.SetInstanceStatusStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.SetVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.UnlabelInstanceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.RefreshTableMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterTransactionRuleStatement;
@@ -139,11 +158,11 @@ public final class RALBackendHandlerFactory {
         if (sqlStatement instanceof HintDistSQLStatement) {
             return new HintDistSQLBackendHandler((HintDistSQLStatement) sqlStatement, connectionSession);
         }
-        if (sqlStatement instanceof QueryableRALStatement) {
-            result = QueryableScalingRALBackendHandlerFactory.newInstance((QueryableRALStatement) sqlStatement, connectionSession);
+        if (sqlStatement instanceof QueryableScalingRALStatement) {
+            result = QueryableScalingRALBackendHandlerFactory.newInstance((QueryableScalingRALStatement) sqlStatement, connectionSession);
         }
-        if (sqlStatement instanceof UpdatableRALStatement) {
-            result = UpdatableScalingRALBackendHandlerFactory.newInstance((UpdatableRALStatement) sqlStatement);
+        if (sqlStatement instanceof UpdatableScalingRALStatement) {
+            result = UpdatableScalingRALBackendHandlerFactory.newInstance((UpdatableScalingRALStatement) sqlStatement);
         }
         if (result == null) {
             HandlerParameter parameter = new HandlerParameter(sqlStatement, databaseType, connectionSession);

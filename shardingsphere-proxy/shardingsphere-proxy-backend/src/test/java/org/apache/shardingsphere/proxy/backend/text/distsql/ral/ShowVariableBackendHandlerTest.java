@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
 import io.netty.util.DefaultAttributeMap;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;

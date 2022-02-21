@@ -15,24 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.set;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
-
-import java.util.Collection;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * Unlabel instance statement.
+ * Show instance statement.
  */
-@Getter
-@RequiredArgsConstructor
-public class UnlabelInstanceStatement extends SetDistSQLStatement {
-    
-    private final String ip;
-    
-    private final String port;
-    
-    private final Collection<String> labels;
+public final class ShowInstanceStatement extends QueryableRALStatement {
 }

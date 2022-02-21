@@ -15,20 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.set;
+package org.apache.shardingsphere.distsql.parser.statement.ral.scaling;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 
 /**
- * Set variable statement.
+ * Queryable RAL statement.
  */
-@Getter
-@RequiredArgsConstructor
-public class SetVariableStatement extends SetDistSQLStatement {
-    
-    private final String name;
-    
-    private final String value;
+public abstract class QueryableScalingRALStatement extends RALStatement {
 }

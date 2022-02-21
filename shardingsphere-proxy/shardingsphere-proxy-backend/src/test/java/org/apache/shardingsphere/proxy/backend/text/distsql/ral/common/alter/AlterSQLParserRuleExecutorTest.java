@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.alter;
 
 import org.apache.shardingsphere.distsql.parser.segment.CacheOptionSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.alter.AlterSQLParserRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;

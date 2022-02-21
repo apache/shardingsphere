@@ -15,14 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.show;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable;
 
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+
+import java.util.Collection;
 
 /**
- * Show authority rule statement.
+ * Create traffic rule statement.
  */
-@NoArgsConstructor
-public final class ShowAuthorityRuleStatement extends ShowDistSQLStatement {
+@RequiredArgsConstructor
+@Getter
+public final class CreateTrafficRuleStatement extends UpdatableRALStatement {
+    
+    private final Collection<TrafficRuleSegment> segments;
 }

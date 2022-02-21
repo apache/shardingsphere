@@ -15,12 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.show;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * Show SQL parser rule statement.
+ * Show traffic rules statement.
  */
-public final class ShowSQLParserRuleStatement extends ShowDistSQLStatement {
+public final class ShowTrafficRulesStatement extends QueryableRALStatement {
+    
+    @Getter
+    @Setter
+    private String ruleName;
 }

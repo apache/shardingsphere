@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
 import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AlterTrafficRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterTrafficRuleStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;

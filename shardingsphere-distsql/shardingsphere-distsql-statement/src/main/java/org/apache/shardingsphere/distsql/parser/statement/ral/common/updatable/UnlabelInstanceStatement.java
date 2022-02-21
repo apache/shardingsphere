@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.drop;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
 import java.util.Collection;
 
 /**
- * Drop traffic rule statement.
+ * Unlabel instance statement.
  */
-@Setter
 @Getter
-public final class DropTrafficRuleStatement extends CommonDistSQLStatement {
+@RequiredArgsConstructor
+public class UnlabelInstanceStatement extends UpdatableRALStatement {
     
-    private boolean containsIfExistClause;
+    private final String ip;
     
-    private Collection<String> ruleNames;
+    private final String port;
+    
+    private final Collection<String> labels;
 }

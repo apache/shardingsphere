@@ -15,22 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Refresh table metadata statement.
+ * Show table metadata statement.
  */
-@Setter
-@Getter
-public final class RefreshTableMetadataStatement extends CommonDistSQLStatement {
+@RequiredArgsConstructor
+public final class ShowTableMetadataStatement extends QueryableRALStatement implements FromSchemaAvailable {
     
-    private Optional<String> tableName;
+    @Getter
+    private final Collection<String> tableNames;
     
-    private Optional<String> resourceName;
+    private final SchemaSegment schema;
+    
+    @Override
+    public Optional<SchemaSegment> getSchema() {
+        return Optional.ofNullable(schema);
+    }
 }

@@ -19,14 +19,14 @@ package org.apache.shardingsphere.distsql.parser.statement.ral.advanced.preview;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.AdvancedDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
  * Preview statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class PreviewStatement extends AdvancedDistSQLStatement {
+public final class PreviewStatement extends QueryableRALStatement {
     
     private final String sql;
 }

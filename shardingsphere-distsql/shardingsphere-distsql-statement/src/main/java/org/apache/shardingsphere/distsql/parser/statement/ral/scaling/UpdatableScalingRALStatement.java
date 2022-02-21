@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.set;
+package org.apache.shardingsphere.distsql.parser.statement.ral.scaling;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.SetDistSQLStatement;
-
-import java.util.Collection;
+import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 
 /**
- * Label instance statement.
+ * Updatable RAL statement.
  */
-@Getter
-@RequiredArgsConstructor
-public class LabelInstanceStatement extends SetDistSQLStatement {
-    
-    private final boolean overwrite;
-    
-    private final String ip;
-    
-    private final String port;
-    
-    private final Collection<String> labels;
+public abstract class UpdatableScalingRALStatement extends RALStatement {
 }

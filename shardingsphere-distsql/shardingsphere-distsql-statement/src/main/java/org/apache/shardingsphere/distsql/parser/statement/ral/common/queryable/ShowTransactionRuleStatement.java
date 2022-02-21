@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.show;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * Show instance statement.
+ * Show transaction rule statement.
  */
-public final class ShowInstanceStatement extends ShowDistSQLStatement {
+public final class ShowTransactionRuleStatement extends QueryableRALStatement {
 }

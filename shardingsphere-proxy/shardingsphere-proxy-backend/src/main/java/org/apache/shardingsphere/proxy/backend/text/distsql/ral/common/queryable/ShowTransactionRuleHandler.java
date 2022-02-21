@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryabl
 
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTransactionRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;

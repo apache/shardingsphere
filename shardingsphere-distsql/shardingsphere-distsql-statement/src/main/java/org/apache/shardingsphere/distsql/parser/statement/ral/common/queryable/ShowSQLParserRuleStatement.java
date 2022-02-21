@@ -15,21 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.create;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
-
-import java.util.Collection;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * Create traffic rule statement.
+ * Show SQL parser rule statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class CreateTrafficRuleStatement extends CommonDistSQLStatement {
-    
-    private final Collection<TrafficRuleSegment> segments;
+public final class ShowSQLParserRuleStatement extends QueryableRALStatement {
 }

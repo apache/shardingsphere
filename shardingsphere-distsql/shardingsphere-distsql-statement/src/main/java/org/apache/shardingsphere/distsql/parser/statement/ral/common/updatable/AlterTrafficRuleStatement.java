@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.show;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+
+import java.util.Collection;
 
 /**
- * Show variable statement.
+ * Alter traffic rule statement.
  */
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Getter
-public final class ShowVariableStatement extends ShowDistSQLStatement {
+public final class AlterTrafficRuleStatement extends UpdatableRALStatement {
     
-    private String name;
+    private final Collection<TrafficRuleSegment> segments;
 }

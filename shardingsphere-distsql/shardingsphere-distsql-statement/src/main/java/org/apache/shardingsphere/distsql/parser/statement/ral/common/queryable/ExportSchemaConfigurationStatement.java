@@ -15,21 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.create;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.AlterDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
 
-import java.util.Collection;
+import java.util.Optional;
 
 /**
- * Alter traffic rule statement.
+ * Export schema configuration statement.
  */
 @RequiredArgsConstructor
-@Getter
-public final class AlterTrafficRuleStatement extends AlterDistSQLStatement {
+public final class ExportSchemaConfigurationStatement extends QueryableRALStatement implements FromSchemaAvailable {
     
-    private final Collection<TrafficRuleSegment> segments;
+    private final SchemaSegment schema;
+    
+    @Getter
+    private final Optional<String> filePath;
+    
+    @Override
+    public Optional<SchemaSegment> getSchema() {
+        return Optional.ofNullable(schema);
+    }
 }

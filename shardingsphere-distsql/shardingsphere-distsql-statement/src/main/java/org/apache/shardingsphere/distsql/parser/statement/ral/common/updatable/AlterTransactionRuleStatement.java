@@ -15,12 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.TransactionProviderSegment;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
 /**
- * Show dist sql statement.
+ * Alter Transaction rule statement.
  */
-public abstract class ShowDistSQLStatement extends CommonDistSQLStatement {
+@RequiredArgsConstructor
+@Getter
+public final class AlterTransactionRuleStatement extends UpdatableRALStatement {
+    
+    private final String defaultType;
+    
+    private final TransactionProviderSegment provider;
 }
