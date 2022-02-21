@@ -40,18 +40,13 @@ public final class DataNodeContainedFixtureRule implements DataNodeContainedRule
     }
     
     @Override
-    public Map<String, Collection<DataNode>> getAllDataNodes() {
-        return Collections.emptyMap();
+    public Collection<String> getDataSourceNames() {
+        return Collections.emptyList();
     }
     
     @Override
     public Collection<DataNode> getDataNodesByTableName(final String tableName) {
         return Collections.emptyList();
-    }
-    
-    @Override
-    public Collection<String> getAllActualTables() {
-        return actualTableNameMaps.keySet();
     }
     
     @Override

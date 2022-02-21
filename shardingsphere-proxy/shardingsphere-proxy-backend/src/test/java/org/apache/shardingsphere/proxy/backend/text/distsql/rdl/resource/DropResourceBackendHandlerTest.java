@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -135,9 +134,7 @@ public final class DropResourceBackendHandlerTest {
     public void assertResourceNameInUseWithoutIgnoreSingleTables() {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(singleTableRule));
         when(singleTableRule.getType()).thenReturn("SingleTableRule");
-        DataNode dataNode = mock(DataNode.class);
-        when(dataNode.getDataSourceName()).thenReturn("test0");
-        when(singleTableRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
+        when(singleTableRule.getDataSourceNames()).thenReturn(Collections.singletonList("test0"));
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("test0", dataSource));
         try {
             dropResourceBackendHandler.execute("test", createDropResourceStatement());
@@ -150,9 +147,7 @@ public final class DropResourceBackendHandlerTest {
     public void assertResourceNameInUseIgnoreSingleTables() throws ResourceDefinitionViolationException {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(singleTableRule));
         when(singleTableRule.getType()).thenReturn("SingleTableRule");
-        DataNode dataNode = mock(DataNode.class);
-        when(dataNode.getDataSourceName()).thenReturn("test0");
-        when(singleTableRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
+        when(singleTableRule.getDataSourceNames()).thenReturn(Collections.singletonList("test0"));
         when(resource.getDataSources()).thenReturn(getDataSourceMapForSupportRemove());
         DropResourceStatement dropResourceStatement = createDropResourceStatementIgnoreSingleTables();
         ResponseHeader responseHeader = dropResourceBackendHandler.execute("test", dropResourceStatement);

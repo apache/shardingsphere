@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -30,11 +29,11 @@ import java.util.Optional;
 public interface DataNodeContainedRule extends ShardingSphereRule {
     
     /**
-     * Get all data nodes.
+     * Get data source names.
      *
-     * @return all data nodes map, key is logic table name, values are data node collection belong to the key
+     * @return data source names
      */
-    Map<String, Collection<DataNode>> getAllDataNodes();
+    Collection<String> getDataSourceNames();
     
     /**
      * Get data nodes by table name.
@@ -43,13 +42,6 @@ public interface DataNodeContainedRule extends ShardingSphereRule {
      * @return data nodes
      */
     Collection<DataNode> getDataNodesByTableName(String tableName);
-    
-    /**
-     * Get all actual tables.
-     * 
-     * @return all actual tables
-     */
-    Collection<String> getAllActualTables();
     
     /**
      * Find first actual table name.

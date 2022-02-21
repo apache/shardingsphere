@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceDefinitionViolationException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceInUsedException;
@@ -100,11 +99,11 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         for (ShardingSphereRule each : ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getRules()) {
             if (each instanceof DataSourceContainedRule) {
                 Set<String> inUsedResourceNames = getInUsedResourceNames((DataSourceContainedRule) each);
-                inUsedResourceNames.stream().forEach(eachResource -> result.put(eachResource, each.getType()));
+                inUsedResourceNames.forEach(eachResource -> result.put(eachResource, each.getType()));
             }
             if (each instanceof DataNodeContainedRule) {
-                Set<String> inUsedResourceNames = getInUsedResourceNames((DataNodeContainedRule) each);
-                inUsedResourceNames.stream().forEach(eachResource -> result.put(eachResource, each.getType()));
+                Collection<String> inUsedResourceNames = ((DataNodeContainedRule) each).getDataSourceNames();
+                inUsedResourceNames.forEach(eachResource -> result.put(eachResource, each.getType()));
             }
         }
         return result;
@@ -114,14 +113,6 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         Set<String> result = new HashSet<>();
         for (Collection<String> each : rule.getDataSourceMapper().values()) {
             result.addAll(each);
-        }
-        return result;
-    }
-    
-    private Set<String> getInUsedResourceNames(final DataNodeContainedRule rule) {
-        Set<String> result = new HashSet<>();
-        for (Collection<DataNode> each : rule.getAllDataNodes().values()) {
-            result.addAll(each.stream().map(DataNode::getDataSourceName).collect(Collectors.toList()));
         }
         return result;
     }
