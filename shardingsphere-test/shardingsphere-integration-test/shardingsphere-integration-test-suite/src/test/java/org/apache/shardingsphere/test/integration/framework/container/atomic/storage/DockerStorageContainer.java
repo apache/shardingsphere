@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.env.scenario.ScenarioPath;
 import org.apache.shardingsphere.test.integration.env.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
-import org.testcontainers.containers.BindMode;
+import org.testcontainers.utility.MountableFile;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
@@ -55,7 +55,8 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     @Override
     protected void configure() {
-        withClasspathResourceMapping(new ScenarioPath(scenario).getInitSQLResourcePath(databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
+        withCopyFileToContainer(MountableFile.forClasspathResource(new ScenarioPath(scenario).getInitSQLResourcePath(databaseType)), "/docker-entrypoint-initdb.d/");
+        withCopyFileToContainer(MountableFile.forClasspathResource("/env/common/assertion/init-sql/"), "/docker-entrypoint-initdb.d/");
     }
     
     @Override
