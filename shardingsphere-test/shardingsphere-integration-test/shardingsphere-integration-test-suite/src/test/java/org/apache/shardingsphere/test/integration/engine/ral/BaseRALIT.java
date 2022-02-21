@@ -22,11 +22,12 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
-import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.junit.After;
 import org.junit.Before;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -40,8 +41,8 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseRALIT extends SingleITCase {
     
-    public BaseRALIT(final AssertionParameterizedArray parameterizedArray, final ComposedContainer composedContainer) {
-        super(parameterizedArray, composedContainer);
+    public BaseRALIT(final AssertionParameterizedArray parameterizedArray) {
+        super(parameterizedArray);
     }
     
     @Before
@@ -53,14 +54,13 @@ public abstract class BaseRALIT extends SingleITCase {
         }
     }
     
-    @Override
+    @After
     public final void tearDown() throws Exception {
         if (getAssertion().getDestroySQL() != null) {
             try (Connection connection = getTargetDataSource().getConnection()) {
                 executeDestroySQLs(connection);
             }
         }
-        super.tearDown();
     }
     
     private void executeInitSQLs(final Connection connection) throws SQLException {
@@ -68,7 +68,9 @@ public abstract class BaseRALIT extends SingleITCase {
             return;
         }
         for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getInitialSQL().getSql())) {
-            executeUpdateForPrepareStatement(connection, each);
+            try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
+                preparedStatement.executeUpdate();
+            }
         }
     }
     
@@ -77,7 +79,9 @@ public abstract class BaseRALIT extends SingleITCase {
             return;
         }
         for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getDestroySQL().getSql())) {
-            executeUpdateForPrepareStatement(connection, each);
+            try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
+                preparedStatement.executeUpdate();
+            }
         }
     }
     

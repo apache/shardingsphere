@@ -44,14 +44,14 @@ public final class ClusterComposedContainer implements ComposedContainer {
     
     private final AdapterContainer adapterContainer;
     
-    public ClusterComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
+    public ClusterComposedContainer(final ParameterizedArray parameterizedArray) {
         containers = new ITContainers(parameterizedArray.getScenario());
         // TODO support other types of governance
-        governanceContainer = containers.registerContainer(testSuiteName, GovernanceContainerFactory.newInstance("ZooKeeper"), "zk");
-        storageContainer = containers.registerContainer(testSuiteName, StorageContainerFactory.newInstance(
-                parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getDatabaseType().getName());
-        adapterContainer = containers.registerContainer(testSuiteName, AdapterContainerFactory.newInstance(
-                parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), storageContainer, parameterizedArray.getScenario()), parameterizedArray.getAdapter());
+        governanceContainer = containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper"), "zk", false);
+        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(
+                parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getDatabaseType().getName(), true);
+        adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(
+                parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), storageContainer, parameterizedArray.getScenario()), parameterizedArray.getAdapter(), true);
         if (adapterContainer instanceof DockerITContainer) {
             ((DockerITContainer) adapterContainer).dependsOn(governanceContainer, storageContainer);
         }

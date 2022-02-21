@@ -17,7 +17,7 @@
 
 grammar DCLStatement;
 
-import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule, DDLStatement;
+import BaseRule, DDLStatement;
 
 grant
     : GRANT (privilegeClause | roleClause)

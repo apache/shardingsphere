@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import Symbol, Keyword, MySQLKeyword, Literals, BaseRule, DMLStatement, DALStatement;
+import BaseRule, DMLStatement, DALStatement;
 
 alterStatement
     : alterTable

@@ -21,9 +21,8 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
-import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
-import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
+import org.apache.shardingsphere.test.integration.env.scenario.ScenarioPath;
+import org.apache.shardingsphere.test.integration.env.scenario.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.junit.Before;
 
@@ -46,10 +45,10 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseDQLIT extends SingleITCase {
     
-    private static final Collection<String> FILLED_SCENARIOS = new HashSet<>();
+    private static final Collection<String> FILLED_SUITES = new HashSet<>();
     
-    public BaseDQLIT(final AssertionParameterizedArray parameterizedArray, final ComposedContainer composedContainer) {
-        super(parameterizedArray, composedContainer);
+    public BaseDQLIT(final AssertionParameterizedArray parameterizedArray) {
+        super(parameterizedArray);
     }
     
     @Before
@@ -58,11 +57,11 @@ public abstract class BaseDQLIT extends SingleITCase {
     }
     
     private void fillDataOnlyOnce() throws SQLException, ParseException, IOException, JAXBException {
-        if (!FILLED_SCENARIOS.contains(getScenario())) {
-            synchronized (FILLED_SCENARIOS) {
-                if (!FILLED_SCENARIOS.contains(getScenario())) {
-                    new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getScenario()), getActualDataSourceMap()).fillData();
-                    FILLED_SCENARIOS.add(getScenario());
+        if (!FILLED_SUITES.contains(getItKey())) {
+            synchronized (FILLED_SUITES) {
+                if (!FILLED_SUITES.contains(getScenario())) {
+                    new DataSetEnvironmentManager(new ScenarioPath(getScenario()).getDataSetFile(), getActualDataSourceMap()).fillData();
+                    FILLED_SUITES.add(getItKey());
                 }
             }
         }

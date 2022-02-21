@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
-import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 
@@ -43,8 +42,6 @@ public final class AssertionParameterizedArray implements ParameterizedArray {
     private final DatabaseType databaseType;
     
     private final SQLExecuteType sqlExecuteType;
-    
-    private final SQLCommandType sqlCommandType;
     
     @Override
     public String toString() {

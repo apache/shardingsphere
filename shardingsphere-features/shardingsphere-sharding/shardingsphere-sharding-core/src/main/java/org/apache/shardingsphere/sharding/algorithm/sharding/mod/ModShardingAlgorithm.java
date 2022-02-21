@@ -77,8 +77,9 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     private Collection<String> getAvailableTargetNames(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         for (long i = getLongValue(shardingValue.getValueRange().lowerEndpoint()); i <= getLongValue(shardingValue.getValueRange().upperEndpoint()); i++) {
+            String suffix = String.valueOf(i % shardingCount);
             for (String each : availableTargetNames) {
-                if (each.endsWith(String.valueOf(i % shardingCount))) {
+                if (each.endsWith(suffix)) {
                     result.add(each);
                 }
             }

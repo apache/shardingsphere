@@ -27,9 +27,9 @@ import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.show.executor.ExportSchemaConfigurationExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ExportSchemaConfigurationHandler;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -73,11 +73,10 @@ public final class ExportSchemaConfigurationExecutorTest {
     
     @Test
     public void assertExportSchemaExecutor() throws SQLException {
-        ExportSchemaConfigurationExecutor executor = new ExportSchemaConfigurationExecutor(createSqlStatement(), mockConnectionSession());
-        executor.execute();
-        executor.next();
-        QueryResponseRow queryResponseRow = executor.getQueryResponseRow();
-        List<Object> data = new ArrayList<>(queryResponseRow.getData());
+        ExportSchemaConfigurationHandler handler = new ExportSchemaConfigurationHandler().init(getParameter(createSqlStatement(), mockConnectionSession()));
+        handler.execute();
+        handler.next();
+        List<Object> data = new ArrayList<>(handler.getRowData());
         assertThat(data.size(), is(1));
     }
     
@@ -136,5 +135,9 @@ public final class ExportSchemaConfigurationExecutorTest {
     
     private ConnectionSession mockConnectionSession() {
         return mock(ConnectionSession.class);
+    }
+    
+    private HandlerParameter<ExportSchemaConfigurationStatement> getParameter(final ExportSchemaConfigurationStatement statement, final ConnectionSession connectionSession) {
+        return new HandlerParameter<ExportSchemaConfigurationStatement>().setStatement(statement).setConnectionSession(connectionSession);
     }
 }

@@ -127,7 +127,7 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     @Override
     public ASTNode visitDropShadowAlgorithm(final DropShadowAlgorithmContext ctx) {
         return new DropShadowAlgorithmStatement(null == ctx.algorithmName() ? Collections.emptyList()
-                : ctx.algorithmName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toSet()));
+                : ctx.algorithmName().stream().map(this::getIdentifierValue).collect(Collectors.toSet()));
     }
     
     @Override

@@ -5894,84 +5894,6 @@
     <sql-case id="create_by_postgresql_source_test_case877" value="CREATE VIEW tableam_view_heap2 USING heap2 AS SELECT * FROM tableam_tbl_heap2;" db-types="PostgreSQL"/>
     <sql-case id="create_by_postgresql_source_test_case878" value="CREATE foo;" db-types="PostgreSQL"/>
     <sql-case id="ddd	42_by_postgresql_source_test_case1" value="DDD	42 drop trigger child1_insert_trig on child1;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case1" value="DECLARE bc BINARY CURSOR FOR SELECT * FROM tenk1;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case2" value="DECLARE c CURSOR FOR SELECT * FROM tenk1 JOIN tenk2 USING (unique1);" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case3" value="DECLARE c CURSOR FOR SELECT * FROM tenk2 FOR SHARE;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case4" value="DECLARE c CURSOR FOR SELECT * FROM tenk2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case5" value="DECLARE c CURSOR FOR SELECT * from hash_split_heap WHERE keycol = 1;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case6" value="DECLARE c CURSOR FOR SELECT ctid, * FROM tidscan WHERE ctid = ANY(ARRAY[&apos;(0,1)&apos;, &apos;(0,2)&apos;]::tid[]);" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case7" value="DECLARE c CURSOR FOR SELECT ctid, * FROM tidscan;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case8" value="DECLARE c CURSOR FOR SELECT ctid,cmin,* FROM combocidtest;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case9" value="DECLARE c CURSOR FOR SELECT f1,count(*) FROM uctest GROUP BY f1;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case10" value="DECLARE c SCROLL CURSOR FOR SELECT ctid FROM tidrangescan WHERE ctid &lt; &apos;(1,0)&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case11" value="DECLARE c SCROLL CURSOR FOR SELECT noabort_decreasing FROM abbrev_abort_uuids ORDER BY noabort_decreasing;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case12" value="DECLARE c SCROLL CURSOR FOR SELECT noabort_decreasing FROM abbrev_abort_uuids ORDER BY noabort_decreasing;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case13" value="DECLARE c1 CURSOR FOR SELECT * FROM uctest FOR UPDATE;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case14" value="DECLARE c1 CURSOR FOR SELECT * FROM uctest FOR UPDATE;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case15" value="DECLARE c1 CURSOR FOR SELECT * FROM uctest FOR UPDATE;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case16" value="DECLARE c1 CURSOR FOR SELECT * FROM uctest a, uctest b WHERE a.f1 = b.f1 + 5 FOR SHARE OF a;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case17" value="DECLARE c1 CURSOR FOR SELECT * FROM uctest a, uctest b WHERE a.f1 = b.f1 + 5 FOR UPDATE;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case18" value="DECLARE c1 CURSOR FOR SELECT * FROM uctest a, uctest b WHERE a.f1 = b.f1 + 5;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case19" value="DECLARE c1 CURSOR FOR SELECT * FROM uctest;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case20" value="DECLARE c1 CURSOR FOR SELECT * FROM uctest;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case21" value="DECLARE c1 CURSOR FOR SELECT * FROM uctest;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case22" value="DECLARE c1 CURSOR FOR SELECT * FROM ucview;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case23" value="DECLARE c1 CURSOR FOR SELECT MIN(f1) FROM uctest FOR UPDATE;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case24" value="DECLARE c1 CURSOR FOR SELECT stringu1 FROM onek WHERE stringu1 = &apos;DZAAAA&apos;;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case25" value="DECLARE c1 INSENSITIVE CURSOR FOR SELECT * FROM uctest;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case26" value="DECLARE c1 NO SCROLL CURSOR FOR SELECT * FROM cursor FOR UPDATE;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case27" value="DECLARE c1 SCROLL CURSOR FOR SELECT * FROM current_check;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case28" value="DECLARE current_check_cursor SCROLL CURSOR FOR SELECT * FROM current_check;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case29" value="DECLARE cx CURSOR WITH HOLD FOR SELECT * FROM uctest;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case30" value="DECLARE foo CURSOR FOR SELECT * FROM pxtest4;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case31" value="DECLARE foo CURSOR FOR SELECT 1 INTO b;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case32" value="DECLARE foo CURSOR WITH HOLD FOR SELECT 1;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case33" value="DECLARE foo1 CURSOR WITH HOLD FOR SELECT 1;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case34" value="DECLARE foo1 SCROLL CURSOR FOR SELECT * FROM tenk1 ORDER BY unique2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case35" value="DECLARE foo10 SCROLL CURSOR FOR SELECT * FROM tenk2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case36" value="DECLARE foo11 SCROLL CURSOR FOR SELECT * FROM tenk1 ORDER BY unique2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case37" value="DECLARE foo12 SCROLL CURSOR FOR SELECT * FROM tenk2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case38" value="DECLARE foo13 CURSOR FOR    SELECT * FROM onek WHERE unique1 = 50;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case39" value="DECLARE foo13 SCROLL CURSOR FOR SELECT * FROM tenk1 ORDER BY unique2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case40" value="DECLARE foo14 CURSOR FOR    SELECT * FROM onek WHERE unique1 = 51;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case41" value="DECLARE foo14 SCROLL CURSOR FOR SELECT * FROM tenk2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case42" value="DECLARE foo15 CURSOR FOR    SELECT * FROM onek WHERE unique1 = 52;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case43" value="DECLARE foo15 SCROLL CURSOR FOR SELECT * FROM tenk1 ORDER BY unique2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case44" value="DECLARE foo16 CURSOR FOR    SELECT * FROM onek WHERE unique1 = 53;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case45" value="DECLARE foo16 SCROLL CURSOR FOR SELECT * FROM tenk2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case46" value="DECLARE foo17 CURSOR FOR    SELECT * FROM onek WHERE unique1 = 54;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case47" value="DECLARE foo17 SCROLL CURSOR FOR SELECT * FROM tenk1 ORDER BY unique2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case48" value="DECLARE foo18 CURSOR FOR    SELECT * FROM onek WHERE unique1 = 55;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case49" value="DECLARE foo18 SCROLL CURSOR FOR SELECT * FROM tenk2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case50" value="DECLARE foo19 CURSOR FOR    SELECT * FROM onek WHERE unique1 = 56;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case51" value="DECLARE foo19 SCROLL CURSOR FOR SELECT * FROM tenk1 ORDER BY unique2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case52" value="DECLARE foo2 CURSOR WITHOUT HOLD FOR SELECT 1;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case53" value="DECLARE foo2 SCROLL CURSOR FOR SELECT * FROM tenk2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case54" value="DECLARE foo20 CURSOR FOR    SELECT * FROM onek WHERE unique1 = 57;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case55" value="DECLARE foo20 SCROLL CURSOR FOR SELECT * FROM tenk2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case56" value="DECLARE foo21 CURSOR FOR    SELECT * FROM onek WHERE unique1 = 58;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case57" value="DECLARE foo21 SCROLL CURSOR FOR SELECT * FROM tenk1 ORDER BY unique2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case58" value="DECLARE foo22 CURSOR FOR    SELECT * FROM onek WHERE unique1 = 59;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case59" value="DECLARE foo22 SCROLL CURSOR FOR SELECT * FROM tenk2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case60" value="DECLARE foo23 CURSOR FOR    SELECT * FROM onek WHERE unique1 = 60;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case61" value="DECLARE foo23 SCROLL CURSOR FOR SELECT * FROM tenk1 ORDER BY unique2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case62" value="DECLARE foo24 CURSOR FOR    SELECT * FROM onek2 WHERE unique1 = 50;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case63" value="DECLARE foo24 NO SCROLL CURSOR FOR SELECT * FROM tenk1 ORDER BY unique2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case64" value="DECLARE foo24 NO SCROLL CURSOR FOR SELECT * FROM tenk1 ORDER BY unique2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case65" value="DECLARE foo25 CURSOR FOR    SELECT * FROM onek2 WHERE unique1 = 60;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case66" value="DECLARE foo25 SCROLL CURSOR WITH HOLD FOR SELECT * FROM tenk2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case67" value="DECLARE foo25ns NO SCROLL CURSOR WITH HOLD FOR SELECT * FROM tenk2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case68" value="DECLARE foo26 CURSOR WITH HOLD FOR SELECT * FROM tenk1 ORDER BY unique2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case69" value="DECLARE foo3 SCROLL CURSOR FOR SELECT * FROM tenk1 ORDER BY unique2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case70" value="DECLARE foo4 SCROLL CURSOR FOR SELECT * FROM tenk2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case71" value="DECLARE foo5 SCROLL CURSOR FOR SELECT * FROM tenk1 ORDER BY unique2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case72" value="DECLARE foo6 SCROLL CURSOR FOR SELECT * FROM tenk2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case73" value="DECLARE foo7 SCROLL CURSOR FOR SELECT * FROM tenk1 ORDER BY unique2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case74" value="DECLARE foo8 SCROLL CURSOR FOR SELECT * FROM tenk2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case75" value="DECLARE foo9 SCROLL CURSOR FOR SELECT * FROM tenk1 ORDER BY unique2;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case76" value="DECLARE hsc CURSOR FOR select * from hs3;" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case77" value="DECLARE tablesample_cur SCROLL CURSOR FOR   SELECT id FROM test_tablesample TABLESAMPLE SYSTEM (50) REPEATABLE (0);" db-types="PostgreSQL"/>
-    <sql-case id="declare_by_postgresql_source_test_case78" value="DECLARE xc CURSOR WITH HOLD FOR SELECT * FROM testxmlschema.test1 ORDER BY 1, 2;" db-types="PostgreSQL"/>
     <sql-case id="delete_by_postgresql_source_test_case1" value="DELETE FROM arrtest WHERE a[2] IS NULL AND b IS NULL;" db-types="PostgreSQL"/>
     <sql-case id="delete_by_postgresql_source_test_case2" value="DELETE FROM current_check WHERE CURRENT OF c1 RETURNING *;" db-types="PostgreSQL"/>
     <sql-case id="delete_by_postgresql_source_test_case3" value="DELETE FROM current_check WHERE CURRENT OF c1 RETURNING *;" db-types="PostgreSQL"/>
@@ -5991,10 +5913,6 @@
     <sql-case id="delete_by_postgresql_source_test_case17" value="DELETE FROM uctest WHERE CURRENT OF c;" db-types="PostgreSQL"/>
     <sql-case id="delete_by_postgresql_source_test_case18" value="DELETE FROM uctest WHERE CURRENT OF cx;" db-types="PostgreSQL"/>
     <sql-case id="delete_by_postgresql_source_test_case19" value="DELETE FROM ucview WHERE CURRENT OF c1;" db-types="PostgreSQL"/>
-    <sql-case id="discard_by_postgresql_source_test_case1" value="DISCARD ALL;" db-types="PostgreSQL"/>
-    <sql-case id="discard_by_postgresql_source_test_case2" value="DISCARD SEQUENCES;" db-types="PostgreSQL"/>
-    <sql-case id="discard_by_postgresql_source_test_case3" value="DISCARD SEQUENCES;" db-types="PostgreSQL"/>
-    <sql-case id="discard_by_postgresql_source_test_case4" value="DISCARD TEMP;" db-types="PostgreSQL"/>
     <sql-case id="do_by_postgresql_source_test_case1" value="DO $$   declare r boolean;   begin     execute $e$ select 2 !=-- comment       1 $e$ into r;     raise info &apos;r = %&apos;, r;   end; $$;" db-types="PostgreSQL"/>
     <sql-case id="do_by_postgresql_source_test_case2" value="DO $$ BEGIN 	EXECUTE &apos;EXPLAIN ANALYZE SELECT * INTO TABLE easi FROM int8_tbl&apos;; 	EXECUTE &apos;EXPLAIN ANALYZE CREATE TABLE easi2 AS SELECT * FROM int8_tbl WITH NO DATA&apos;; END$$;" db-types="PostgreSQL"/>
     <sql-case id="do_by_postgresql_source_test_case3" value="DO $$ BEGIN     FOR r IN 1..1350 LOOP         DELETE FROM dedup_unique_test_table;         INSERT INTO dedup_unique_test_table SELECT 1;     END LOOP; END$$;" db-types="PostgreSQL"/>
@@ -9351,23 +9269,8 @@
     <sql-case id="low_create_by_postgresql_source_test_case559" value="create view tt201v as select   extract(day from now()) as extr,   (now(), &apos;1 day&apos;::interval) overlaps     (current_timestamp(2), &apos;1 day&apos;::interval) as o,   &apos;foo&apos; is normalized isn,   &apos;foo&apos; is nfkc normalized isnn,   normalize(&apos;foo&apos;) as n,   normalize(&apos;foo&apos;, nfkd) as nfkd,   overlay(&apos;foo&apos; placing &apos;bar&apos; from 2) as ovl,   overlay(&apos;foo&apos; placing &apos;bar&apos; from 2 for 3) as ovl2,   position(&apos;foo&apos; in &apos;foobar&apos;) as p,   substring(&apos;foo&apos; from 2 for 3) as s,   substring(&apos;foo&apos; similar &apos;f&apos; escape &apos;#&apos;) as ss,   substring(&apos;foo&apos; from &apos;oo&apos;) as ssf   trim(&apos; &apos; from &apos; foo &apos;) as bt,   trim(leading &apos; &apos; from &apos; foo &apos;) as lt,   trim(trailing &apos; foo &apos;) as rt,   trim(E&apos;\\000&apos;::bytea from E&apos;\\000Tom\\000&apos;::bytea) as btb,   trim(leading E&apos;\\000&apos;::bytea from E&apos;\\000Tom\\000&apos;::bytea) as ltb,   trim(trailing E&apos;\\000&apos;::bytea from E&apos;\\000Tom\\000&apos;::bytea) as rtb;" db-types="PostgreSQL"/>
     <sql-case id="low_create_by_postgresql_source_test_case560" value="create view tt26v as select x + y + z as c1,        (x * y) + z as c2,        x + (y * z) as c3,        (x + y) * z as c4,        x * (y + z) as c5,        x + (y + z) as c6,        x + (y # z) as c7,        (x &gt; y) AND (y &gt; z OR x &gt; z) as c8,        (x &gt; y) OR (y &gt; z AND NOT (x &gt; z)) as c9,        (x,y) &lt;&gt; ALL (values(1,2),(3,4)) as c10,        (x,y) &lt;= ANY (values(1,2),(3,4)) as c11 from (values(1,2,3)) v(x,y,z);" db-types="PostgreSQL"/>
     <sql-case id="low_create_by_postgresql_source_test_case561" value="create view view_of_joins_2d as select * from (tbl1 join tbl1a using (a) as x) as y;" db-types="PostgreSQL"/>
-    <sql-case id="low_declare_by_postgresql_source_test_case1" value="declare c cursor for select * from int8_tbl limit nochange(3);" db-types="PostgreSQL"/>
-    <sql-case id="low_declare_by_postgresql_source_test_case2" value="declare c1 cursor for select * from int8_tbl limit 10;" db-types="PostgreSQL"/>
-    <sql-case id="low_declare_by_postgresql_source_test_case3" value="declare c1 cursor for select count_tt1_v(), count_tt1_s();" db-types="PostgreSQL"/>
-    <sql-case id="low_declare_by_postgresql_source_test_case4" value="declare c1 scroll cursor for  select * from generate_series(1,4) i   where i &lt;&gt; all (values (2),(3));" db-types="PostgreSQL"/>
-    <sql-case id="low_declare_by_postgresql_source_test_case5" value="declare c1 scroll cursor for select (select 42) as x;" db-types="PostgreSQL"/>
-    <sql-case id="low_declare_by_postgresql_source_test_case6" value="declare c2 cursor for select * from int8_tbl limit 3;" db-types="PostgreSQL"/>
-    <sql-case id="low_declare_by_postgresql_source_test_case7" value="declare c2 cursor with hold for select count_tt1_v(), count_tt1_s();" db-types="PostgreSQL"/>
-    <sql-case id="low_declare_by_postgresql_source_test_case8" value="declare c2 scroll cursor for select generate_series(1,3) as g;" db-types="PostgreSQL"/>
-    <sql-case id="low_declare_by_postgresql_source_test_case9" value="declare c3 cursor for select * from int8_tbl offset 3;" db-types="PostgreSQL"/>
-    <sql-case id="low_declare_by_postgresql_source_test_case10" value="declare c4 cursor for select * from int8_tbl offset 10;" db-types="PostgreSQL"/>
-    <sql-case id="low_declare_by_postgresql_source_test_case11" value="declare c5 cursor for select * from int8_tbl order by q1 fetch first 2 rows with ties;" db-types="PostgreSQL"/>
-    <sql-case id="low_declare_by_postgresql_source_test_case12" value="declare cur SCROLL CURSOR for select 1 from list_part where a &gt; (select 1) and a &lt; (select 4);" db-types="PostgreSQL"/>
     <sql-case id="low_declare_by_postgresql_source_test_case13" value="declare rf_cur scroll cursor for select * from rows from(generate_series(1,5),generate_series(1,2)) with ordinality as g(i,j,o);" db-types="PostgreSQL"/>
     <sql-case id="low_delete_by_postgresql_source_test_case1" value="delete from;" db-types="PostgreSQL"/>
-    <sql-case id="low_discard_by_postgresql_source_test_case1" value="discard all;" db-types="PostgreSQL"/>
-    <sql-case id="low_discard_by_postgresql_source_test_case2" value="discard all;" db-types="PostgreSQL"/>
-    <sql-case id="low_discard_by_postgresql_source_test_case3" value="discard temp;" db-types="PostgreSQL"/>
     <sql-case id="low_do_by_postgresql_source_test_case1" value="do $$   declare r integer;   begin     select dfunc(a=&gt;-- comment       1) into r;     raise info &apos;r = %&apos;, r;   end; $$;" db-types="PostgreSQL"/>
     <sql-case id="low_do_by_postgresql_source_test_case2" value="do $$ BEGIN   EXECUTE &apos;CREATE COLLATION test0 (provider = icu, locale = &apos; ||           quote_literal(current_setting(&apos;lc_collate&apos;)) || &apos;);&apos;; END $$;" db-types="PostgreSQL"/>
     <sql-case id="low_do_by_postgresql_source_test_case3" value="do $$ BEGIN   EXECUTE &apos;CREATE COLLATION test1 (provider = icu, lc_collate = &apos; ||           quote_literal(current_setting(&apos;lc_collate&apos;)) ||           &apos;, lc_ctype = &apos; ||           quote_literal(current_setting(&apos;lc_ctype&apos;)) || &apos;);&apos;; END $$;" db-types="PostgreSQL"/>

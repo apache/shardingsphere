@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
+import org.apache.shardingsphere.test.integration.env.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.EmbeddedITContainer;
 
 import javax.sql.DataSource;
@@ -61,12 +61,11 @@ public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, S
     private DataSource createDataSource(final String dataSourceName) {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
-        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, null, getPort(), dataSourceName));
-        result.setUsername(getUsername());
-        result.setPassword(getPassword());
+        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, null, 0, dataSourceName));
+        result.setUsername("root");
+        result.setPassword("root");
         result.setMaximumPoolSize(4);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        getConnectionInitSQL().ifPresent(result::setConnectionInitSql);
         return result;
     }
 }

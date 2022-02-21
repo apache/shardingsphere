@@ -27,6 +27,8 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -47,8 +49,12 @@ public final class ResultSetUtil {
      * @param value original value
      * @param convertType expected class type
      * @return converted value
+     * @throws SQLException SQL exception
      */
-    public static Object convertValue(final Object value, final Class<?> convertType) {
+    public static Object convertValue(final Object value, final Class<?> convertType) throws SQLException {
+        if (null == convertType) {
+            throw new SQLException("Type cannot be null");
+        }
         if (null == value) {
             return convertNullValue(convertType);
         }
@@ -78,9 +84,8 @@ public final class ResultSetUtil {
         }
         if (String.class.equals(convertType)) {
             return value.toString();
-        } else {
-            return value;
         }
+        throw new SQLFeatureNotSupportedException("getObject with type");
     }
     
     private static Object convertURL(final Object value) {
@@ -187,6 +192,18 @@ public final class ResultSetUtil {
                 return number.floatValue();
             case "java.math.BigDecimal":
                 return new BigDecimal(number.toString());
+            case "java.lang.Byte":
+                return Byte.valueOf(number.byteValue());
+            case "java.lang.Short":
+                return Short.valueOf(number.shortValue());
+            case "java.lang.Integer":
+                return Integer.valueOf(number.intValue());
+            case "java.lang.Long":
+                return Long.valueOf(number.longValue());
+            case "java.lang.Double":
+                return Double.valueOf(number.doubleValue());
+            case "java.lang.Float":
+                return Float.valueOf(number.floatValue());
             case "java.lang.Object":
                 return value;
             case "java.lang.String":

@@ -78,6 +78,8 @@ execute
     | createSchema
     | createType
     | createTextSearch
+    | declare
+    | discard
     | dropDatabase
     | dropFunction
     | dropProcedure

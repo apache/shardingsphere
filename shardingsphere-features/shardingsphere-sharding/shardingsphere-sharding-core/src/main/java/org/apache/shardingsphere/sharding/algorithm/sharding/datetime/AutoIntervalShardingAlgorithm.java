@@ -63,18 +63,18 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     
     @Override
     public void init() {
-        dateTimeLower = getDateTime(DATE_TIME_LOWER_KEY);
+        dateTimeLower = getDateTime();
         shardingSeconds = getShardingSeconds();
         autoTablesAmount = (int) (Math.ceil((double) (parseDate(props.getProperty(DATE_TIME_UPPER_KEY)) / shardingSeconds)) + 2);
     }
     
-    private LocalDateTime getDateTime(final String dateTimeKey) {
-        String value = props.getProperty(dateTimeKey);
-        Preconditions.checkNotNull(value, "%s cannot be null.", dateTimeKey);
+    private LocalDateTime getDateTime() {
+        String value = props.getProperty(DATE_TIME_LOWER_KEY);
+        Preconditions.checkNotNull(value, "%s cannot be null.", DATE_TIME_LOWER_KEY);
         try {
             return LocalDateTime.parse(value, DATE_TIME_FORMAT);
         } catch (final DateTimeParseException ex) {
-            throw new ShardingSphereConfigurationException("Invalid %s, datetime pattern should be `yyyy-MM-dd HH:mm:ss`, value is `%s`", dateTimeKey, value);
+            throw new ShardingSphereConfigurationException("Invalid %s, datetime pattern should be `yyyy-MM-dd HH:mm:ss`, value is `%s`", DATE_TIME_LOWER_KEY, value);
         }
     }
     

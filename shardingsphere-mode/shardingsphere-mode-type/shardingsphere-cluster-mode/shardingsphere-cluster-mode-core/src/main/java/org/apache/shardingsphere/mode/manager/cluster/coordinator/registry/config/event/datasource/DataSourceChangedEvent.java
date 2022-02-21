@@ -33,5 +33,7 @@ public final class DataSourceChangedEvent implements GovernanceEvent {
     
     private final String schemaName;
     
+    private final String schemaVersion;
+    
     private final Map<String, DataSourceProperties> dataSourcePropertiesMap;
 }

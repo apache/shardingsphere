@@ -35,7 +35,7 @@ public final class IntegrationTestEnvironment {
     
     private final boolean isEnvironmentPrepared;
     
-    private Properties engineEnvProps;
+    private final Properties engineEnvProps;
     
     @SneakyThrows
     private IntegrationTestEnvironment() {
@@ -58,11 +58,11 @@ public final class IntegrationTestEnvironment {
      */
     public void waitForEnvironmentReady() {
         log.info("wait begin scaling environment");
-        new ExecuteUtil(() -> isScalingReady(engineEnvProps), Integer.parseInt(engineEnvProps.getProperty("scaling.retry", "30")),
+        new ExecuteUtil(this::isScalingReady, Integer.parseInt(engineEnvProps.getProperty("scaling.retry", "30")),
                 Long.parseLong(engineEnvProps.getProperty("scaling.waitMs", "1000"))).execute();
     }
     
-    private boolean isScalingReady(final Properties engineEnvProps) {
+    private boolean isScalingReady() {
         try {
             ScalingUtil.getInstance().getJobList();
         } catch (final IOException ignore) {

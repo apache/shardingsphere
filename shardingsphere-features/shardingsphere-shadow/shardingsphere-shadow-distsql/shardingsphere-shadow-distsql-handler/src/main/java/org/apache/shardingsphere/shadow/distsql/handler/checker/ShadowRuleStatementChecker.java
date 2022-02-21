@@ -75,6 +75,7 @@ public class ShadowRuleStatementChecker {
     
     /**
      * Check if the rules exist.
+     * 
      * @param requireRules require rules
      * @param currentRules current rules
      * @param thrower thrower
@@ -87,6 +88,7 @@ public class ShadowRuleStatementChecker {
     
     /**
      * Check if the algorithms exist.
+     * 
      * @param requireAlgorithms require algorithms
      * @param currentAlgorithms current algorithms
      * @param thrower thrower
@@ -99,6 +101,7 @@ public class ShadowRuleStatementChecker {
     
     /**
      * Check for any duplicate data in the rules, and throw the specified exception.
+     * 
      * @param rules rules to be checked
      * @param thrower exception thrower
      * @throws DistSQLException DistSQL exception

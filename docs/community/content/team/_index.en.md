@@ -54,6 +54,9 @@ chapter = true
 | Chengxiang Lan  | lanchengx               |
 | Xiao Yang       | yx9o                    |
 | Guocheng Tang   | totalo                  |
+| Guoping Li      | LeeGuoPing              |
+| Jinchao Zhao    | zjcnb                   |
+| Chuxin Chen     | tuichenchuxin           |
 
 ## Contributors
 

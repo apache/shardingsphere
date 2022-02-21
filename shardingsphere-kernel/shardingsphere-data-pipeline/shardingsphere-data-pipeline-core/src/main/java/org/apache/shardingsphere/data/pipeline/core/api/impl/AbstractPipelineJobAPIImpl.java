@@ -29,7 +29,7 @@ import java.time.format.DateTimeFormatter;
 @Slf4j
 public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    protected static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
     @Override
     public void startDisabledJob(final String jobId) {
@@ -56,11 +56,11 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         PipelineAPIFactory.getGovernanceRepositoryAPI().deleteJob(jobId);
     }
     
-    private JobConfigurationPOJO getElasticJobConfigPOJO(final String jobId) {
-        try {
-            return PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
-        } catch (final NullPointerException ex) {
-            throw new PipelineJobNotFoundException(String.format("Can not find pipeline job %s", jobId), jobId);
+    protected JobConfigurationPOJO getElasticJobConfigPOJO(final String jobId) {
+        JobConfigurationPOJO result = PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
+        if (null == result) {
+            throw new PipelineJobNotFoundException(String.format("Can not find scaling job %s", jobId), jobId);
         }
+        return result;
     }
 }

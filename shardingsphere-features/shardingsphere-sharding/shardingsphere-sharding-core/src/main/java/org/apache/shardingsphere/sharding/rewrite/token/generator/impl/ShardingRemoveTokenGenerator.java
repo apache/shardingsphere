@@ -33,7 +33,7 @@ import java.util.LinkedList;
 public final class ShardingRemoveTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext<?>>, IgnoreForSingleRoute {
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
         return isContainsAggregationDistinctProjection(sqlStatementContext);
     }
     

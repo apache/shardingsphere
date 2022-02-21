@@ -41,11 +41,11 @@ public final class ConstraintToken extends SQLToken implements Substitutable, Ro
     
     private final IdentifierValue identifier;
     
-    private final SQLStatementContext sqlStatementContext;
+    private final SQLStatementContext<?> sqlStatementContext;
     
     private final ShardingRule shardingRule;
     
-    public ConstraintToken(final int startIndex, final int stopIndex, final IdentifierValue identifier, final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule) {
+    public ConstraintToken(final int startIndex, final int stopIndex, final IdentifierValue identifier, final SQLStatementContext<?> sqlStatementContext, final ShardingRule shardingRule) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.identifier = identifier;

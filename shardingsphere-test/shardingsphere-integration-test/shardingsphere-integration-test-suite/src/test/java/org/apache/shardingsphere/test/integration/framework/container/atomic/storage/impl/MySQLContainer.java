@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.DockerStorageContainer;
 
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  * MySQL container.
@@ -40,22 +39,7 @@ public final class MySQLContainer extends DockerStorageContainer {
     }
     
     @Override
-    public String getUsername() {
-        return "root";
-    }
-    
-    @Override
-    public String getPassword() {
-        return "root";
-    }
-    
-    @Override
-    public Optional<String> getConnectionInitSQL() {
-        return Optional.of("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
-    }
-    
-    @Override
-    public int getPort() {
-        return getMappedPort(3306);
+    protected int getPort() {
+        return 3306;
     }
 }

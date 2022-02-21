@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.compose;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.integration.framework.container.compose.mode.ClusterComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.container.compose.mode.MemoryComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
-import org.testcontainers.lifecycle.Startable;
 
+import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,35 +36,58 @@ public final class ComposedContainerRegistry implements AutoCloseable {
     /**
      * Get composed container.
      *
-     * @param testSuiteName test suite name
      * @param parameterizedArray parameterized array
      * @return composed container
      */
-    public ComposedContainer getComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
-        String key = generateKey(testSuiteName, parameterizedArray);
+    public ComposedContainer getComposedContainer(final ParameterizedArray parameterizedArray) {
+        String key = parameterizedArray.getKey();
         if (composedContainers.containsKey(key)) {
             return composedContainers.get(key);
         }
         synchronized (composedContainers) {
             if (!composedContainers.containsKey(key)) {
-                composedContainers.put(key, createComposedContainer(testSuiteName, parameterizedArray));
+                composedContainers.put(key, createComposedContainer(parameterizedArray));
             }
             return composedContainers.get(key);
         }
     }
     
-    private String generateKey(final String testSuiteName, final ParameterizedArray parameterizedArray) {
-        return String.join("-", testSuiteName, parameterizedArray.getScenario(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType().getName());
+    private ComposedContainer createComposedContainer(final ParameterizedArray parameterizedArray) {
+        return isMemoryMode(parameterizedArray) ? new MemoryComposedContainer(parameterizedArray) : new ClusterComposedContainer(parameterizedArray);
     }
     
-    private ComposedContainer createComposedContainer(final String testSuiteName, final ParameterizedArray parameterizedArray) {
-        // TODO fix sharding_governance
-        return "sharding_governance".equals(parameterizedArray.getScenario())
-                ? new ClusterComposedContainer(testSuiteName, parameterizedArray) : new MemoryComposedContainer(testSuiteName, parameterizedArray);
+    private boolean isMemoryMode(final ParameterizedArray parameterizedArray) {
+        // TODO cluster mode often throw exception sometimes, issue is #15517
+        return true;
+//        return "H2".equals(parameterizedArray.getDatabaseType().getName());
     }
     
     @Override
     public void close() {
-        composedContainers.values().forEach(Startable::close);
+        for (ComposedContainer each : composedContainers.values()) {
+            closeTargetDataSource(each.getTargetDataSource());
+            closeActualDataSourceMap(each.getActualDataSourceMap());
+            closeContainer(each);
+        }
+    }
+    
+    @SneakyThrows
+    private void closeTargetDataSource(final DataSource targetDataSource) {
+        if (targetDataSource instanceof AutoCloseable) {
+            ((AutoCloseable) targetDataSource).close();
+        }
+    }
+    
+    @SneakyThrows
+    private void closeActualDataSourceMap(final Map<String, DataSource> actualDataSourceMap) {
+        for (DataSource each : actualDataSourceMap.values()) {
+            if (each instanceof AutoCloseable) {
+                ((AutoCloseable) each).close();
+            }
+        }
+    }
+    
+    private void closeContainer(final ComposedContainer composedContainer) {
+        composedContainer.close();
     }
 }

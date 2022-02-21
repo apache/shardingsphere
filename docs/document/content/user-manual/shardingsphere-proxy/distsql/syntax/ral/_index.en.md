@@ -70,6 +70,7 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 | refresh table metadata [tableName / tableName from resource resourceName]   | Refresh the metadata of a table                                                    | refresh table metadata t_order from resource ds_1  |
 | show table metadata tableName [, tableName] ...                             | Query table metadata                                                               | show table metadata t_order                        |
 | export schema config [from schema_name] [, file="file_path"]                | Query / export resources and rule configuration in schema                          | export schema config from readwrite_splitting_db   |
+| show rules used resource resourceName [from schema]                         | Query the rules for using the specified resource in schema                         | show rules used resource ds_0 from schemaName  |
 
 ## Notice
 

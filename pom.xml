@@ -25,7 +25,7 @@
     </parent>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere</artifactId>
-    <version>5.0.1-SNAPSHOT</version>
+    <version>5.1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
@@ -111,8 +111,6 @@
         <elasticjob.version>3.0.1</elasticjob.version>
         
         <calcite.version>1.27.0</calcite.version>
-        <embedded-mysql.version>4.6.1</embedded-mysql.version>
-        <embedded-postgresql.version>2.10</embedded-postgresql.version>
         
         <jaxb.version>2.3.0</jaxb.version>
         <annotation-api.version>1.3.2</annotation-api.version>
@@ -581,18 +579,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
                 <version>${spring-boot.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.wix</groupId>
-                <artifactId>wix-embedded-mysql</artifactId>
-                <version>${embedded-mysql.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>ru.yandex.qatools.embed</groupId>
-                <artifactId>postgresql-embedded</artifactId>
-                <version>${embedded-postgresql.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

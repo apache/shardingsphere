@@ -51,6 +51,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
@@ -664,13 +665,13 @@ public final class ShardingRuleTest {
         String owner = segment.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(null);
         return new ColumnProjection(owner, segment.getIdentifier().getValue(), null);
     }
-
+    
     @Test
     public void assertGetLogicTablesByActualTable() {
         assertThat(createShardingRuleWithSameActualTablesButDifferentLogicTables().getLogicTablesByActualTable("table_0"),
                 is(new LinkedHashSet<>(Arrays.asList("ID_STRATEGY_LOGIC_TABLE", "HINT_STRATEGY_LOGIC_TABLE"))));
     }
-
+    
     private ShardingRule createShardingRuleWithSameActualTablesButDifferentLogicTables() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration idTableRuleConfig = createTableRuleConfiguration("ID_STRATEGY_LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
@@ -679,5 +680,30 @@ public final class ShardingRuleTest {
         shardingRuleConfig.getTables().add(hintTableRuleConfig);
         return new ShardingRule(shardingRuleConfig, createDataSourceNames());
     }
-
+    
+    @Test
+    public void assertGetDataNodesByTableName() {
+        ShardingRule shardingRule = createMinimumShardingRule();
+        Collection<DataNode> actual = shardingRule.getDataNodesByTableName("logic_table");
+        assertThat(actual.size(), is(6));
+        Iterator<DataNode> iterator = actual.iterator();
+        DataNode firstDataNode = iterator.next();
+        assertThat(firstDataNode.getDataSourceName(), is("ds_0"));
+        assertThat(firstDataNode.getTableName(), is("table_0"));
+        DataNode secondDataNode = iterator.next();
+        assertThat(secondDataNode.getDataSourceName(), is("ds_0"));
+        assertThat(secondDataNode.getTableName(), is("table_1"));
+        DataNode thirdDataNode = iterator.next();
+        assertThat(thirdDataNode.getDataSourceName(), is("ds_0"));
+        assertThat(thirdDataNode.getTableName(), is("table_2"));
+        DataNode fourthDataNode = iterator.next();
+        assertThat(fourthDataNode.getDataSourceName(), is("ds_1"));
+        assertThat(fourthDataNode.getTableName(), is("table_0"));
+        DataNode fifthDataNode = iterator.next();
+        assertThat(fifthDataNode.getDataSourceName(), is("ds_1"));
+        assertThat(fifthDataNode.getTableName(), is("table_1"));
+        DataNode sixthDataNode = iterator.next();
+        assertThat(sixthDataNode.getDataSourceName(), is("ds_1"));
+        assertThat(sixthDataNode.getTableName(), is("table_2"));
+    }
 }

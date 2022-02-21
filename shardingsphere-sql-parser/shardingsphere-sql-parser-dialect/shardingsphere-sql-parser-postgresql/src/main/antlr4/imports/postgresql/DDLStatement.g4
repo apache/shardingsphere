@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule, DMLStatement;
+import BaseRule, DMLStatement;
 
 createTable
     : CREATE createTableSpecification TABLE notExistClause? tableName

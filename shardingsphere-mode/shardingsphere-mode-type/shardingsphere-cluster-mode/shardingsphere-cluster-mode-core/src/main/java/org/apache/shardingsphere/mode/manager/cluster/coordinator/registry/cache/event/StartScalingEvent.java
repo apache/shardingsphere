@@ -37,14 +37,10 @@ public final class StartScalingEvent {
     
     private final String targetRule;
     
-    private final String ruleCacheId;
-    
-    public StartScalingEvent(final String schemaName, final String sourceDataSource, final String sourceRule, final String targetRule, final String ruleCacheId) {
-        this(schemaName, sourceDataSource, sourceRule, sourceDataSource, targetRule, ruleCacheId);
-    }
+    private final String schemaVersion;
     
     @Override
     public String toString() {
-        return "StartScalingEvent{" + "schemaName='" + schemaName + '\'' + ", ruleCacheId='" + ruleCacheId + '\'' + '}';
+        return "StartScalingEvent{" + "schemaName='" + schemaName + '\'' + ", schemaVersion='" + schemaVersion + '\'' + '}';
     }
 }

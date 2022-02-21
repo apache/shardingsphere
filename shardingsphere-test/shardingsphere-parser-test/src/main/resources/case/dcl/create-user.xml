@@ -54,4 +54,13 @@
     <create-user sql-case-id="create_user_with_asym_key" />
     <create-user sql-case-id="create_user_with_sysid" />
     <create-user sql-case-id="create_user_with_group" />
+    <create-user sql-case-id="create_user_with_for_login" />
+    <create-user sql-case-id="create_user_with_from_login" />
+    <create-user sql-case-id="create_user_with_password_default_language" />
+    <create-user sql-case-id="create_user_with_domain_login" />
+    <create-user sql-case-id="create_user_with_sid" />
+    <create-user sql-case-id="create_user_to_copy_encrypted_data" />
+    <create-user sql-case-id="create_azure_ad_user_with_login" />
+    <create-user sql-case-id="create_azure_ad_user_as_group_from_login" />
+    <create-user sql-case-id="create_azure_ad_user_without_login" />
 </sql-parser-test-cases>

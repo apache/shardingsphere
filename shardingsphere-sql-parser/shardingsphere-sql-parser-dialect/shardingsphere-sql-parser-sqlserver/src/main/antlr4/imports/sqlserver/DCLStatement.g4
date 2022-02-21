@@ -17,7 +17,7 @@
 
 grammar DCLStatement;
 
-import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule;
+import BaseRule;
 
 grant
     : GRANT (classPrivilegesClause | classTypePrivilegesClause | roleClause)
@@ -164,8 +164,82 @@ roleClause
     : ignoredIdentifiers
     ;
 
+setUser
+    : SETUSER (stringLiterals (WITH NORESET)?)?
+    ;
+
 createUser
     : CREATE USER
+    (createUserLoginClause 
+    | createUserWindowsPrincipalClause 
+    | createUserLoginWindowsPrincipalClause
+    | createUserWithoutLoginClause
+    | createUserFromExternalProviderClause
+    | createUserWithDefaultSchema
+    | createUserWithAzureActiveDirectoryPrincipalClause
+    | userName)?
+    ;
+
+createUserLoginClause
+    : userName ((FOR | FROM) LOGIN loginName)? (WITH limitedOptionsList (COMMA_ limitedOptionsList)*)?
+    ;
+
+createUserWindowsPrincipalClause
+    : windowsPrincipal (WITH optionsList (COMMA_ optionsList)*)?
+    | userName WITH PASSWORD EQ_ stringLiterals (COMMA_ optionsList (COMMA_ optionsList)*)?
+    | azureActiveDirectoryPrincipal FROM EXTERNAL PROVIDER
+    ;
+
+createUserLoginWindowsPrincipalClause
+    : ((windowsPrincipal ((FOR | FROM) LOGIN windowsPrincipal)?) | (userName (FOR | FROM) LOGIN windowsPrincipal))
+    (WITH limitedOptionsList (COMMA_ limitedOptionsList)*)?
+    ;
+
+createUserWithoutLoginClause
+    : userName (WITHOUT LOGIN (WITH limitedOptionsList (COMMA_ limitedOptionsList)*)?
+    | (FOR | FROM) CERTIFICATE identifier
+    | (FOR | FROM) ASYMMETRIC KEY identifier)
+    ;
+
+optionsList
+    : DEFAULT_SCHEMA EQ_ schemaName
+    | DEFAULT_LANGUAGE EQ_ (NONE | identifier)
+    | SID EQ_ (NCHAR_TEXT | HEX_DIGIT_)
+    | ALLOW_ENCRYPTED_VALUE_MODIFICATIONS EQ_ (ON | OFF)?
+    ;
+
+limitedOptionsList
+    : DEFAULT_SCHEMA EQ_ schemaName
+    | DEFAULT_LANGUAGE EQ_ (NONE | identifier)
+    | ALLOW_ENCRYPTED_VALUE_MODIFICATIONS EQ_ (ON | OFF)?
+    ;
+
+createUserFromExternalProviderClause
+    : userName ((FOR | FROM) LOGIN loginName)? | FROM EXTERNAL PROVIDER (WITH limitedOptionsList (COMMA_ limitedOptionsList)*)?
+    ;
+
+createUserWithDefaultSchema
+    : userName ((FOR | FROM) LOGIN loginName | WITHOUT LOGIN)? (WITH DEFAULT_SCHEMA EQ_ schemaName)?
+    ;
+
+createUserWithAzureActiveDirectoryPrincipalClause
+    : azureActiveDirectoryPrincipal FROM EXTERNAL PROVIDER (WITH DEFAULT_SCHEMA EQ_ schemaName)?
+    ;
+
+windowsPrincipal
+    : userName
+    ;
+
+azureActiveDirectoryPrincipal
+    : userName
+    ;
+
+userName
+    : ignoredNameIdentifier | NAME_
+    ;
+
+ignoredNameIdentifier
+    : identifier (DOT_ identifier)?
     ;
 
 dropUser
@@ -173,7 +247,20 @@ dropUser
     ;
 
 alterUser
-    : ALTER USER
+    : ALTER USER userName (WITH setItem (COMMA_ setItem)* | FROM EXTERNAL PROVIDER)
+    ;
+
+setItem
+    : NAME EQ_ userName
+    | DEFAULT_SCHEMA EQ_ (schemaName | NULL)
+    | LOGIN EQ_ loginName
+    | PASSWORD EQ_ stringLiterals (OLD_PASSWORD EQ_ stringLiterals)?
+    | DEFAULT_LANGUAGE EQ_ (NONE | identifier)
+    | ALLOW_ENCRYPTED_VALUE_MODIFICATIONS EQ_ (ON | OFF)?
+    ;
+
+loginName
+    : ignoredNameIdentifier | NAME_
     ;
 
 createRole

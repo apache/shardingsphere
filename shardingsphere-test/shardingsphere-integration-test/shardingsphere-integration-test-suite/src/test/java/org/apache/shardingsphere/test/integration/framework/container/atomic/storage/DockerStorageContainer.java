@@ -23,8 +23,8 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
-import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
+import org.apache.shardingsphere.test.integration.env.scenario.ScenarioPath;
+import org.apache.shardingsphere.test.integration.env.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
 import org.testcontainers.containers.BindMode;
 
@@ -38,9 +38,9 @@ import java.util.Map;
 /**
  * Docker storage container.
  */
-@Getter(AccessLevel.PROTECTED)
 public abstract class DockerStorageContainer extends DockerITContainer implements StorageContainer {
     
+    @Getter(AccessLevel.PROTECTED)
     private final DatabaseType databaseType;
     
     private final String scenario;
@@ -55,7 +55,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     @Override
     protected void configure() {
-        withClasspathResourceMapping(EnvironmentPath.getInitSQLResourcePath(databaseType, scenario), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
+        withClasspathResourceMapping(new ScenarioPath(scenario).getInitSQLResourcePath(databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
     }
     
     @Override
@@ -72,12 +72,13 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     private DataSource createDataSource(final String dataSourceName) {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
-        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getPort(), dataSourceName));
-        result.setUsername(getUsername());
-        result.setPassword(getPassword());
+        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(getPort()), dataSourceName));
+        result.setUsername("root");
+        result.setPassword("root");
         result.setMaximumPoolSize(4);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        getConnectionInitSQL().ifPresent(result::setConnectionInitSql);
         return result;
     }
+    
+    protected abstract int getPort();
 }

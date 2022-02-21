@@ -20,10 +20,11 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 import com.google.common.base.Preconditions;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -48,7 +49,7 @@ public abstract class RALBackendHandler<E extends RALStatement, R extends RALBac
         return handle(contextManager, sqlStatement);
     }
     
-    protected abstract ResponseHeader handle(ContextManager contextManager, E sqlStatement) throws DistSQLException;
+    protected abstract ResponseHeader handle(ContextManager contextManager, E sqlStatement) throws SQLException;
     
     /**
      * Method to initialize handler, this method needs to be rewritten when the handler has properties other than sql statement.
@@ -73,7 +74,9 @@ public abstract class RALBackendHandler<E extends RALStatement, R extends RALBac
     
     @Getter
     @Setter
+    @Accessors(chain = true)
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class HandlerParameter<E extends RALStatement> {
         
         private E statement;
