@@ -139,14 +139,14 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
     }
     
     @Override
-    public Properties getTransactionProps(final TransactionRuleConfiguration transactionRuleConfiguration, final SchemaConfiguration schemaConfiguration) {
+    public Optional<Properties> getTransactionProps(final TransactionRuleConfiguration transactionRuleConfiguration, final Optional<SchemaConfiguration> schemaConfiguration) {
         Properties result = new Properties();
         if (!transactionRuleConfiguration.getProps().isEmpty()) {
             generateUserDefinedJdbcStoreConfiguration(transactionRuleConfiguration, result);
-        } else {
-            generateDefaultJdbcStoreConfiguration(schemaConfiguration, result);
+        } else if (schemaConfiguration.isPresent()){
+            generateDefaultJdbcStoreConfiguration(schemaConfiguration.get(), result);
         }
-        return result;
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
     
     private void generateUserDefinedJdbcStoreConfiguration(final TransactionRuleConfiguration transactionRuleConfiguration, final Properties props) {

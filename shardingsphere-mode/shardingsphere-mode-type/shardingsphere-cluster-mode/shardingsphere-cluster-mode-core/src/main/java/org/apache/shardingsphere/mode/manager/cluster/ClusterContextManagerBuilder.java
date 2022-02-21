@@ -45,6 +45,8 @@ import org.apache.shardingsphere.transaction.context.TransactionContextsBuilder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGenerator;
 import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGeneratorFactory;
+import org.apache.zookeeper.Op;
+import org.checkerframework.checker.nullness.Opt;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -79,18 +81,16 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Collection<String> schemaNames = InstanceType.JDBC == parameter.getInstanceDefinition().getInstanceType()
                 ? parameter.getSchemaConfigs().keySet() : metaDataPersistService.getSchemaMetaDataService().loadAllNames();
         Optional<String> schemaName = schemaNames.stream().findFirst();
-        if (!schemaName.isPresent()) {
-            return;
-        }
         Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
         Optional<TransactionRuleConfiguration> transactionRuleConfiguration =
                 globalRuleConfigs.stream().filter(each -> each instanceof TransactionRuleConfiguration).map(each -> (TransactionRuleConfiguration) each).findFirst();
         if (transactionRuleConfiguration.isPresent()) {
             Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(transactionRuleConfiguration.get().getProviderType());
             if (fileGenerator.isPresent()) {
-                SchemaConfiguration schemaConfiguration = createSchemaConfiguration(schemaName.get(), metaDataPersistService, parameter);
-                Properties transactionProps = fileGenerator.get().getTransactionProps(transactionRuleConfiguration.get(), schemaConfiguration);
-                metaDataPersistService.persistTransactionRule(transactionProps, true);
+                Optional<SchemaConfiguration> schemaConfiguration = createSchemaConfiguration(schemaName, metaDataPersistService, parameter);
+                Optional<Properties> transactionProps = fileGenerator.get().getTransactionProps(transactionRuleConfiguration.get(), schemaConfiguration);
+                transactionProps.ifPresent(optional -> metaDataPersistService.persistTransactionRule(optional, true));
+//                metaDataPersistService.persistTransactionRule(transactionProps, true);
             }
         }
     }
@@ -102,16 +102,23 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Properties props = metaDataPersistService.getPropsService().load();
         MetaDataContextsBuilder result = new MetaDataContextsBuilder(globalRuleConfigs, props);
         for (String each : schemaNames) {
-            result.addSchema(each, createSchemaConfiguration(each, metaDataPersistService, parameter), props);
+            Optional<SchemaConfiguration> schemaConfiguration = createSchemaConfiguration(Optional.of(each), metaDataPersistService, parameter);
+            if (schemaConfiguration.isPresent()) {
+                result.addSchema(each, schemaConfiguration.get(), props);
+            }
         }
         return result;
     }
     
-    private SchemaConfiguration createSchemaConfiguration(final String schemaName, final MetaDataPersistService metaDataPersistService,
-                                                          final ContextManagerBuilderParameter parameter) throws SQLException {
-        Map<String, DataSource> dataSources = metaDataPersistService.getEffectiveDataSources(schemaName, parameter.getSchemaConfigs());
-        Collection<RuleConfiguration> schemaRuleConfigs = metaDataPersistService.getSchemaRuleService().load(schemaName);
-        return new DataSourceProvidedSchemaConfiguration(dataSources, schemaRuleConfigs);
+    private Optional<SchemaConfiguration> createSchemaConfiguration(final Optional<String> schemaName, final MetaDataPersistService metaDataPersistService,
+                                                              final ContextManagerBuilderParameter parameter) throws SQLException {
+        SchemaConfiguration schemaConfiguration = null;
+        if (schemaName.isPresent()) {
+            Map<String, DataSource> dataSources = metaDataPersistService.getEffectiveDataSources(schemaName.get(), parameter.getSchemaConfigs());
+            Collection<RuleConfiguration> schemaRuleConfigs = metaDataPersistService.getSchemaRuleService().load(schemaName.get());
+            schemaConfiguration = new DataSourceProvidedSchemaConfiguration(dataSources, schemaRuleConfigs);
+        }
+        return Optional.ofNullable(schemaConfiguration);
     }
     
     private void persistConfigurations(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) {

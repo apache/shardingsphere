@@ -23,6 +23,7 @@ import org.apache.shardingsphere.spi.typed.TypedSPI;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -45,5 +46,5 @@ public interface TransactionConfigurationFileGenerator extends TypedSPI {
      * @param schemaConfiguration schema configuration
      * @return transaction rule props
      */
-    Properties getTransactionProps(TransactionRuleConfiguration transactionRuleConfiguration, SchemaConfiguration schemaConfiguration);
+    Optional<Properties> getTransactionProps(TransactionRuleConfiguration transactionRuleConfiguration, Optional<SchemaConfiguration> schemaConfiguration);
 }
