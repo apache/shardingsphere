@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -170,6 +171,7 @@ public final class SingleTableRuleTest {
         singleTableRuleConfiguration.setDefaultDataSource("ds_0");
         SingleTableRule singleTableRule = new SingleTableRule(singleTableRuleConfiguration, mock(DatabaseType.class), dataSourceMap, 
                 Collections.singletonList(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
+        assertTrue(singleTableRule.getDefaultDataSource().isPresent());
         assertThat(singleTableRule.getDefaultDataSource().get(), is("ds_0"));
     }
     
@@ -221,10 +223,10 @@ public final class SingleTableRuleTest {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), dataSourceMap, 
                 Collections.singletonList(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
-        assertTrue(singleTableRule.getDataSourceNames().contains("employee"));
-        assertTrue(singleTableRule.getDataSourceNames().contains("student"));
-        assertTrue(singleTableRule.getDataSourceNames().contains("t_order_0"));
-        assertTrue(singleTableRule.getDataSourceNames().contains("t_order_1"));
+        assertThat(singleTableRule.getDataSourceNames().size(), is(2));
+        Iterator<String> iterator = singleTableRule.getDataSourceNames().iterator();
+        assertThat(iterator.next(), is("ds_0"));
+        assertThat(iterator.next(), is("ds_1"));
     }
     
     @Test
