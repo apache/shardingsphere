@@ -66,7 +66,7 @@ public final class BatchDMLIT extends BatchITCase {
     }
     
     private int[] executeBatchForPreparedStatement(final Connection connection) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getItCase().getSql())) {
             for (IntegrationTestCaseAssertion each : getItCase().getAssertions()) {
                 addBatch(preparedStatement, each);
             }
@@ -90,7 +90,7 @@ public final class BatchDMLIT extends BatchITCase {
             default:
         }
         try (Connection connection = getTargetDataSource().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
+             PreparedStatement preparedStatement = connection.prepareStatement(getItCase().getSql())) {
             for (IntegrationTestCaseAssertion each : getItCase().getAssertions()) {
                 addBatch(preparedStatement, each);
             }

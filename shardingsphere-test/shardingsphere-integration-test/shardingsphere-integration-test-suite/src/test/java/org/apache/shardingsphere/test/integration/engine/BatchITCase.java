@@ -37,7 +37,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Comparator;
@@ -69,11 +68,6 @@ public abstract class BatchITCase extends BaseITCase {
         }
         dataSetEnvironmentManager = new DataSetEnvironmentManager(new ScenarioPath(getScenario()).getDataSetFile(), getActualDataSourceMap());
         dataSetEnvironmentManager.fillData();
-    }
-    
-    @Override
-    protected String getSQL() throws ParseException {
-        return getItCase().getSql();
     }
     
     @Override
