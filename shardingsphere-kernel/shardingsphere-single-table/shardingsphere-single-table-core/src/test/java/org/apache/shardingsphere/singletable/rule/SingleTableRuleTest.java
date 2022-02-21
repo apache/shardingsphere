@@ -225,8 +225,10 @@ public final class SingleTableRuleTest {
                 Collections.singletonList(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
         assertThat(singleTableRule.getDataSourceNames().size(), is(2));
         Iterator<String> iterator = singleTableRule.getDataSourceNames().iterator();
-        assertThat(iterator.next(), is("ds_0"));
-        assertThat(iterator.next(), is("ds_1"));
+        assertTrue(singleTableRule.getAllDataNodes().containsKey("employee"));
+        assertTrue(singleTableRule.getAllDataNodes().containsKey("student"));
+        assertTrue(singleTableRule.getAllDataNodes().containsKey("t_order_0"));
+        assertTrue(singleTableRule.getAllDataNodes().containsKey("t_order_1"));
     }
     
     @Test
