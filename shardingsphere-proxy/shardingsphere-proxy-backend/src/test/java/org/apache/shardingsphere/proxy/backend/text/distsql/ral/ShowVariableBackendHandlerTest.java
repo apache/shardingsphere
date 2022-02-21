@@ -38,8 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -72,8 +71,9 @@ public final class ShowVariableBackendHandlerTest {
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
         backendHandler.next();
-        Collection<Object> rowData = backendHandler.getRowData();
-        assertThat(rowData.iterator().next(), is("LOCAL"));
+        ArrayList<Object> rowData = new ArrayList<>(backendHandler.getRowData());
+        assertThat(rowData.get(0), is("transaction_type"));
+        assertThat(rowData.get(1), is("LOCAL"));
     }
     
     @Test
@@ -85,8 +85,9 @@ public final class ShowVariableBackendHandlerTest {
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
         backendHandler.next();
-        Collection<Object> rowData = backendHandler.getRowData();
-        assertThat(rowData.iterator().next(), is(0));
+        ArrayList<Object> rowData = new ArrayList<>(backendHandler.getRowData());
+        assertThat(rowData.get(0), is("cached_connections"));
+        assertThat(rowData.get(1), is("0"));
     }
     
     @Test(expected = UnsupportedVariableException.class)
@@ -107,8 +108,9 @@ public final class ShowVariableBackendHandlerTest {
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
         backendHandler.next();
-        Collection<Object> rowData = backendHandler.getRowData();
-        assertThat(rowData.iterator().next(), is(Boolean.TRUE.toString()));
+        ArrayList<Object> rowData = new ArrayList<>(backendHandler.getRowData());
+        assertThat(rowData.get(0), is("agent_plugins_enabled"));
+        assertThat(rowData.get(1), is(Boolean.TRUE.toString()));
     }
     
     @Test
@@ -128,8 +130,9 @@ public final class ShowVariableBackendHandlerTest {
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
         backendHandler.next();
-        Collection<Object> rowData = backendHandler.getRowData();
-        assertThat(rowData.iterator().next(), is("true"));
+        ArrayList<Object> rowData = new ArrayList<>(backendHandler.getRowData());
+        assertThat(rowData.get(0), is("sql_show"));
+        assertThat(rowData.get(1), is(Boolean.TRUE.toString()));
     }
     
     @Test
@@ -146,10 +149,9 @@ public final class ShowVariableBackendHandlerTest {
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
         backendHandler.next();
-        Collection<Object> rowData = backendHandler.getRowData();
-        Iterator<Object> rowDataIterator = rowData.iterator();
-        assertThat(rowDataIterator.next(), is("sql_show"));
-        assertThat(rowDataIterator.next(), is(Boolean.FALSE.toString()));
+        ArrayList<Object> rowData = new ArrayList<>(backendHandler.getRowData());
+        assertThat(rowData.get(0), is("sql_show"));
+        assertThat(rowData.get(1), is(Boolean.FALSE.toString()));
     }
     
     @After
