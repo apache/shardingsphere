@@ -69,7 +69,7 @@ public final class EncryptRuleQueryResultSet implements DistSQLResultSet {
     }
     
     private Object nullToEmptyString(final Object obj) {
-        return obj == null ? "" : obj;
+        return null == obj ? "" : obj;
     }
     
     @Override
