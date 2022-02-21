@@ -70,7 +70,7 @@ public final class ShowVariableBackendHandlerTest {
                 .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement("transaction_type")).setConnectionSession(connectionSession));
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
-        assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(1));
+        assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
         backendHandler.next();
         Collection<Object> rowData = backendHandler.getRowData();
         assertThat(rowData.iterator().next(), is("LOCAL"));
@@ -83,7 +83,7 @@ public final class ShowVariableBackendHandlerTest {
                 .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement("cached_connections")).setConnectionSession(connectionSession));
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
-        assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(1));
+        assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
         backendHandler.next();
         Collection<Object> rowData = backendHandler.getRowData();
         assertThat(rowData.iterator().next(), is(0));
@@ -105,7 +105,7 @@ public final class ShowVariableBackendHandlerTest {
                 .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name())).setConnectionSession(connectionSession));
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
-        assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(1));
+        assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
         backendHandler.next();
         Collection<Object> rowData = backendHandler.getRowData();
         assertThat(rowData.iterator().next(), is(Boolean.TRUE.toString()));
@@ -126,7 +126,7 @@ public final class ShowVariableBackendHandlerTest {
                 .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement("SQL_SHOW")).setConnectionSession(connectionSession));
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
-        assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(1));
+        assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
         backendHandler.next();
         Collection<Object> rowData = backendHandler.getRowData();
         assertThat(rowData.iterator().next(), is("true"));
