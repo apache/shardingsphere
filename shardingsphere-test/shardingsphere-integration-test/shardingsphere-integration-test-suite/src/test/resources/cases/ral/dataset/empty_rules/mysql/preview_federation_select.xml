@@ -18,7 +18,7 @@
 <dataset>
     <metadata>
         <column name="data_source_name"/>
-        <column name="sql"/>
+        <column name="actual_sql"/>
     </metadata>
     <row values="encrypt_write_ds_0| SELECT * FROM `t_user_item_0` WHERE CAST(`user_id` AS SIGNED) = 1 UNION ALL SELECT * FROM `t_user_item_10` WHERE CAST(`user_id` AS SIGNED) = 1 UNION ALL SELECT * FROM `t_user_item_20` WHERE CAST(`user_id` AS SIGNED) = 1 UNION ALL SELECT * FROM `t_user_item_30` WHERE CAST(`user_id` AS SIGNED) = 1"/>
     <row values="encrypt_write_ds_1| SELECT * FROM `t_user_item_1` WHERE CAST(`user_id` AS SIGNED) = 1 UNION ALL SELECT * FROM `t_user_item_11` WHERE CAST(`user_id` AS SIGNED) = 1 UNION ALL SELECT * FROM `t_user_item_21` WHERE CAST(`user_id` AS SIGNED) = 1 UNION ALL SELECT * FROM `t_user_item_31` WHERE CAST(`user_id` AS SIGNED) = 1"/>
