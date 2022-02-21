@@ -60,8 +60,8 @@ public abstract class BaseDQLIT extends SingleITCase {
             synchronized (FILLED_SUITES) {
                 if (!FILLED_SUITES.contains(getScenario())) {
                     new DataSetEnvironmentManager(new ScenarioPath(getScenario()).getDataSetFile(), getActualDataSourceMap()).fillData();
-                    new DataSetEnvironmentManager(Objects.requireNonNull(ScenarioPath.class.getClassLoader().getResource("env/common/assertion/dataset/mysql/dataset.xml")).getFile(), 
-                            Collections.singletonMap("assertion_dataset", getVerificationDataSource())).fillData();
+                    new DataSetEnvironmentManager(Objects.requireNonNull(ScenarioPath.class.getClassLoader().getResource("env/common/verification/dataset/mysql/dataset.xml")).getFile(), 
+                            Collections.singletonMap("verification_dataset", getVerificationDataSource())).fillData();
                     FILLED_SUITES.add(getItKey());
                 }
             }
