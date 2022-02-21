@@ -198,6 +198,11 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     }
     
     @Override
+    public Collection<DataNode> getDataNodesByTableName(final String tableName) {
+        return singleTableDataNodes.getOrDefault(tableName.toLowerCase(), Collections.emptyList());
+    }
+    
+    @Override
     public Collection<String> getAllActualTables() {
         return Collections.emptyList();
     }

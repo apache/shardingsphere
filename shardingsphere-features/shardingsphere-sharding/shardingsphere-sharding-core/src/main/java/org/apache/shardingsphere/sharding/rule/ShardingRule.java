@@ -59,6 +59,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -104,6 +105,8 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
 
     private final String defaultShardingColumn;
     
+    private final Map<String, Collection<DataNode>> shardingTableDataNodes;
+    
     public ShardingRule(final ShardingRuleConfiguration config, final Collection<String> dataSourceNames) {
         this.dataSourceNames = getDataSourceNames(config.getTables(), config.getAutoTables(), dataSourceNames);
         config.getShardingAlgorithms().forEach((key, value) -> shardingAlgorithms.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, ShardingAlgorithm.class)));
@@ -117,6 +120,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
                 ? RequiredSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
         defaultShardingColumn = config.getDefaultShardingColumn();
+        shardingTableDataNodes = createShardingTableDataNodes(tableRules);
     }
     
     public ShardingRule(final AlgorithmProvidedShardingRuleConfiguration config, final Collection<String> dataSourceNames) {
@@ -132,6 +136,15 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
                 ? RequiredSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
         defaultShardingColumn = config.getDefaultShardingColumn();
+        shardingTableDataNodes = createShardingTableDataNodes(tableRules);
+    }
+    
+    private Map<String, Collection<DataNode>> createShardingTableDataNodes(final Map<String, TableRule> tableRules) {
+        Map<String, Collection<DataNode>> result = new HashMap<>(tableRules.size(), 1);
+        for (TableRule each : tableRules.values()) {
+            result.put(each.getLogicTable().toLowerCase(), each.getActualDataNodes());
+        }
+        return result;
     }
     
     private Collection<String> getDataSourceNames(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs, 
@@ -549,9 +562,12 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     
     @Override
     public Map<String, Collection<DataNode>> getAllDataNodes() {
-        Map<String, Collection<DataNode>> result = new LinkedHashMap<>();
-        result.putAll(tableRules.values().stream().collect(Collectors.toMap(TableRule::getLogicTable, TableRule::getActualDataNodes, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
-        return result;
+        return shardingTableDataNodes;
+    }
+    
+    @Override
+    public Collection<DataNode> getDataNodesByTableName(final String tableName) {
+        return shardingTableDataNodes.getOrDefault(tableName.toLowerCase(), Collections.emptyList());
     }
     
     @Override
