@@ -50,11 +50,6 @@ public final class DataNodeContainedFixtureRule implements DataNodeContainedRule
     }
     
     @Override
-    public Collection<String> getAllActualTables() {
-        return actualTableNameMaps.keySet();
-    }
-    
-    @Override
     public Optional<String> findFirstActualTable(final String logicTable) {
         return Optional.empty();
     }

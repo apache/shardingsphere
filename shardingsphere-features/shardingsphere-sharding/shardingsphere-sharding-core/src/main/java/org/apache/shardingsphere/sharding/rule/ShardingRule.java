@@ -570,8 +570,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         return shardingTableDataNodes.getOrDefault(tableName.toLowerCase(), Collections.emptyList());
     }
     
-    @Override
-    public Collection<String> getAllActualTables() {
+    private Collection<String> getAllActualTables() {
         return tableRules.values().stream().flatMap(each -> each.getActualDataNodes().stream().map(DataNode::getTableName)).collect(Collectors.toSet());
     }
     
