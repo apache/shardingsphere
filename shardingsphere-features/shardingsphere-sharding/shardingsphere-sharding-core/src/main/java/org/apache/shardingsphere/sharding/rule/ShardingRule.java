@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.rule;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import lombok.Getter;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -224,8 +225,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     private void checkSameActualDatasourceNamesAndActualTableIndex(final TableRule sampleTableRule, final TableRule tableRule, final String bindingTableGroup) {
-        if (!sampleTableRule.getActualDatasourceNames().containsAll(tableRule.getActualDatasourceNames()) 
-                || !tableRule.getActualDatasourceNames().containsAll(sampleTableRule.getActualDatasourceNames())) {
+        if (!CollectionUtils.isEqualCollection(sampleTableRule.getActualDatasourceNames(), tableRule.getActualDatasourceNames())) {
             throw new ShardingSphereConfigurationException("The %s on bindingTableGroup `%s` are inconsistent", "actualDatasourceNames", bindingTableGroup);
         }
         checkSameAlgorithmOnDatabase(sampleTableRule, tableRule, sampleTableRule.getActualDatasourceNames().stream().findFirst().get(), bindingTableGroup);
@@ -234,7 +234,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
                     .filter(optional -> !optional.isEmpty()).collect(Collectors.toList());
             Collection<String> actualTableNames = tableRule.getActualTableNames(each).stream().map(optional -> substring(optional)[1])
                     .filter(optional -> !optional.isEmpty()).collect(Collectors.toList());
-            if (!sampleActualTableNames.containsAll(actualTableNames) || !actualTableNames.containsAll(sampleActualTableNames)) {
+            if (!CollectionUtils.isEqualCollection(sampleActualTableNames, actualTableNames)) {
                 throw new ShardingSphereConfigurationException("The %s on bindingTableGroup `%s` are inconsistent", "actualTableNames", bindingTableGroup);
             }
             checkSameAlgorithmOnTable(sampleTableRule, sampleTableRule.getActualTableNames(each).stream().findFirst().get(), tableRule,
@@ -281,12 +281,12 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     
     private void checkSameAlgorithmOnTable(final TableRule sampleTableRule, final String sampleTableName, final TableRule tableRule,
                                            final String tableName, final String bindingTableGroup) {
-        Collection<String[]> args = new ArrayList<>();
-        args.add(new String[] {getAlgorithmExpression(sampleTableRule, false), substring(sampleTableName)[0],
+        Collection<String[]> algorithmExpressions = new ArrayList<>();
+        algorithmExpressions.add(new String[] {getAlgorithmExpression(sampleTableRule, false), substring(sampleTableName)[0],
                 getShardingColumn(sampleTableRule.getTableShardingStrategyConfig())});
-        args.add(new String[] {getAlgorithmExpression(tableRule, false), substring(tableName)[0],
+        algorithmExpressions.add(new String[] {getAlgorithmExpression(tableRule, false), substring(tableName)[0],
                 getShardingColumn(tableRule.getTableShardingStrategyConfig())});
-        checkSameAlgorithmExpression(args, "tableShardingStrategyConfig", bindingTableGroup);
+        checkSameAlgorithmExpression(algorithmExpressions, "tableShardingStrategyConfig", bindingTableGroup);
     }
     
     private void checkSameAlgorithmExpression(final Collection<String[]> algorithmExpressions, final String shardingStrategyConfig, final String bindingTableGroup) {
