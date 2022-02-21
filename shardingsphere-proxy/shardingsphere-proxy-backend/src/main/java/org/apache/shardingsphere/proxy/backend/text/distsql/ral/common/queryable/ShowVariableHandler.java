@@ -89,9 +89,9 @@ public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVa
     
     private Collection<List<Object>> buildSpecifiedRow(final ContextManager contextManager, final String key) {
         if (isConfigurationKey(key)) {
-            return Collections.singletonList(Arrays.asList(key, getConfigurationValue(contextManager, key)));
+            return Collections.singletonList(Arrays.asList(key.toLowerCase(), getConfigurationValue(contextManager, key)));
         } else {
-            return Collections.singletonList(Arrays.asList(key, getSpecialValue(key)));
+            return Collections.singletonList(Arrays.asList(key.toLowerCase(), getSpecialValue(key)));
         }
     }
     
