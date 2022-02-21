@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl;
 
 import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
+import org.apache.shardingsphere.test.integration.env.scenario.ScenarioPath;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.EmbeddedITContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
@@ -41,14 +40,18 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * ShardingSphere JDBC container.
  */
-@RequiredArgsConstructor
 public final class ShardingSphereJDBCContainer implements EmbeddedITContainer, AdapterContainer {
     
     private final StorageContainer storageContainer;
     
-    private final String scenario;
+    private final ScenarioPath scenarioPath;
     
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
+    
+    public ShardingSphereJDBCContainer(final StorageContainer storageContainer, final String scenario) {
+        this.storageContainer = storageContainer;
+        scenarioPath = new ScenarioPath(scenario);
+    }
     
     @Override
     public void start() {
@@ -61,7 +64,7 @@ public final class ShardingSphereJDBCContainer implements EmbeddedITContainer, A
             if (Strings.isNullOrEmpty(serverLists)) {
                 try {
                     targetDataSourceProvider.set(
-                            YamlShardingSphereDataSourceFactory.createDataSource(storageContainer.getActualDataSourceMap(), new File(EnvironmentPath.getRulesConfigurationFile(scenario))));
+                            YamlShardingSphereDataSourceFactory.createDataSource(storageContainer.getActualDataSourceMap(), new File(scenarioPath.getRuleConfigurationFile())));
                 } catch (final SQLException | IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -74,7 +77,7 @@ public final class ShardingSphereJDBCContainer implements EmbeddedITContainer, A
     
     @SneakyThrows({SQLException.class, IOException.class})
     private DataSource createGovernanceClientDataSource(final String serverLists) {
-        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(new File(EnvironmentPath.getRulesConfigurationFile(scenario)), YamlRootConfiguration.class);
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(new File(scenarioPath.getRuleConfigurationFile()), YamlRootConfiguration.class);
         rootConfig.setMode(createYamlModeConfiguration(serverLists));
         return YamlShardingSphereDataSourceFactory.createDataSource(storageContainer.getActualDataSourceMap(), YamlEngine.marshal(rootConfig).getBytes(StandardCharsets.UTF_8));
     }
@@ -85,7 +88,7 @@ public final class ShardingSphereJDBCContainer implements EmbeddedITContainer, A
         YamlPersistRepositoryConfiguration repositoryConfig = new YamlPersistRepositoryConfiguration();
         // TODO process more types
         repositoryConfig.setType("ZooKeeper");
-        repositoryConfig.getProps().setProperty("namespace", scenario);
+        repositoryConfig.getProps().setProperty("namespace", "it_db");
         repositoryConfig.getProps().setProperty("server-lists", serverLists);
         repositoryConfig.getProps().setProperty("timeToLiveSeconds", "60");
         repositoryConfig.getProps().setProperty("operationTimeoutMilliseconds", "500");

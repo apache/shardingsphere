@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.engine;
 
-import lombok.AccessLevel;
-import lombok.Getter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
@@ -27,8 +25,8 @@ import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
-import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
+import org.apache.shardingsphere.test.integration.env.scenario.ScenarioPath;
+import org.apache.shardingsphere.test.integration.env.scenario.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.param.model.CaseParameterizedArray;
 import org.junit.Before;
 
@@ -51,7 +49,6 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@Getter(AccessLevel.PROTECTED)
 public abstract class BatchITCase extends BaseITCase {
     
     private final Collection<DataSet> dataSets = new LinkedList<>();
@@ -62,21 +59,21 @@ public abstract class BatchITCase extends BaseITCase {
     
     public BatchITCase(final CaseParameterizedArray parameterizedArray) {
         super(parameterizedArray);
-        this.parentPath = parameterizedArray.getTestCaseContext().getParentPath();
+        parentPath = parameterizedArray.getTestCaseContext().getParentPath();
     }
     
     @Before
     public void init() throws Exception {
-        for (IntegrationTestCaseAssertion each : getIntegrationTestCase().getAssertions()) {
-            dataSets.add(DataSetLoader.load(getParentPath(), getScenario(), getDatabaseType(), each.getExpectedDataFile()));
+        for (IntegrationTestCaseAssertion each : getItCase().getAssertions()) {
+            dataSets.add(DataSetLoader.load(parentPath, getScenario(), getDatabaseType(), each.getExpectedDataFile()));
         }
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getScenario()), getActualDataSourceMap());
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(new ScenarioPath(getScenario()).getDataSetFile(), getActualDataSourceMap());
         dataSetEnvironmentManager.fillData();
     }
     
     @Override
     protected String getSQL() throws ParseException {
-        return getIntegrationTestCase().getSql();
+        return getItCase().getSql();
     }
     
     @Override

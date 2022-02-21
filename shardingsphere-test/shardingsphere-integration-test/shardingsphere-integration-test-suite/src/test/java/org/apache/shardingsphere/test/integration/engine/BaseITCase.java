@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.integration.engine;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRegistry;
@@ -32,10 +31,6 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -54,13 +49,11 @@ public abstract class BaseITCase {
     
     private final String scenario;
     
-    private final String adapter;
-    
     private final DatabaseType databaseType;
     
-    private final SQLCommandType sqlCommandType;
+    private final String itKey;
     
-    private final IntegrationTestCase integrationTestCase;
+    private final IntegrationTestCase itCase;
     
     private final ComposedContainer composedContainer;
     
@@ -69,12 +62,11 @@ public abstract class BaseITCase {
     private DataSource targetDataSource;
     
     public BaseITCase(final ParameterizedArray parameterizedArray) {
-        adapter = parameterizedArray.getAdapter();
         scenario = parameterizedArray.getScenario();
         databaseType = parameterizedArray.getDatabaseType();
-        sqlCommandType = parameterizedArray.getSqlCommandType();
-        integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
-        this.composedContainer = COMPOSED_CONTAINER_REGISTRY.getComposedContainer(parameterizedArray);
+        itKey = parameterizedArray.getKey();
+        itCase = parameterizedArray.getTestCaseContext().getTestCase();
+        composedContainer = COMPOSED_CONTAINER_REGISTRY.getComposedContainer(parameterizedArray);
     }
     
     @Before
@@ -100,28 +92,4 @@ public abstract class BaseITCase {
     }
     
     protected abstract String getSQL() throws ParseException;
-    
-    protected void executeUpdateForStatement(final Connection connection, final String sql) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            statement.executeUpdate(sql);
-        }
-    }
-    
-    protected void executeUpdateForPrepareStatement(final Connection connection, final String sql) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.executeUpdate();
-        }
-    }
-    
-    protected void executeForStatement(final Connection connection, final String sql) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            statement.execute(sql);
-        }
-    }
-    
-    protected void executeForPrepareStatement(final Connection connection, final String sql) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.execute();
-        }
-    }
 }

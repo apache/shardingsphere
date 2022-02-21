@@ -39,7 +39,7 @@ public final class ComposedContainerRegistry implements AutoCloseable {
      * @return composed container
      */
     public ComposedContainer getComposedContainer(final ParameterizedArray parameterizedArray) {
-        String key = generateKey(parameterizedArray);
+        String key = parameterizedArray.getKey();
         if (composedContainers.containsKey(key)) {
             return composedContainers.get(key);
         }
@@ -51,17 +51,14 @@ public final class ComposedContainerRegistry implements AutoCloseable {
         }
     }
     
-    private String generateKey(final ParameterizedArray parameterizedArray) {
-        return String.join("-", parameterizedArray.getScenario(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType().getName());
-    }
-    
     private ComposedContainer createComposedContainer(final ParameterizedArray parameterizedArray) {
         return isMemoryMode(parameterizedArray) ? new MemoryComposedContainer(parameterizedArray) : new ClusterComposedContainer(parameterizedArray);
     }
     
     private boolean isMemoryMode(final ParameterizedArray parameterizedArray) {
-        // TODO fix empty_rules
-        return "H2".equals(parameterizedArray.getDatabaseType().getName()) || "empty_rules".equals(parameterizedArray.getScenario());
+        // TODO cluster mode often throw exception sometimes, issue is #15517
+        return true;
+//        return "H2".equals(parameterizedArray.getDatabaseType().getName());
     }
     
     @Override

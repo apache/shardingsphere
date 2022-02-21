@@ -75,5 +75,6 @@ execute
     | alterLogin
     | call
     | explain
+    | setUser
     ) SEMI_?
     ;

@@ -91,6 +91,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterAggregateStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterCollationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterConversionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetUserStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDefaultPrivilegesTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDimensionStatementTestCase;
@@ -1120,6 +1121,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "prepared")
     private final List<PreparedStatementTestCase> preparedStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "set-user")
+    private final List<SetUserStatementTestCase> setUserStatementTestCases = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -1399,6 +1403,7 @@ public final class SQLParserTestCases {
         putAll(showRulesUsedResourceStatementTestCases, result);
         putAll(preparedStatementTestCases, result);
         putAll(showShardingTableRulesUsedKeyGeneratorStatementTestCases, result);
+        putAll(setUserStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

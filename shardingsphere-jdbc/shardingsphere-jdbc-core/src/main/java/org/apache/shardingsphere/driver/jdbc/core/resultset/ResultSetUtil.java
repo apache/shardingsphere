@@ -192,6 +192,18 @@ public final class ResultSetUtil {
                 return number.floatValue();
             case "java.math.BigDecimal":
                 return new BigDecimal(number.toString());
+            case "java.lang.Byte":
+                return Byte.valueOf(number.byteValue());
+            case "java.lang.Short":
+                return Short.valueOf(number.shortValue());
+            case "java.lang.Integer":
+                return Integer.valueOf(number.intValue());
+            case "java.lang.Long":
+                return Long.valueOf(number.longValue());
+            case "java.lang.Double":
+                return Double.valueOf(number.doubleValue());
+            case "java.lang.Float":
+                return Float.valueOf(number.floatValue());
             case "java.lang.Object":
                 return value;
             case "java.lang.String":

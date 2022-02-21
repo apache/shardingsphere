@@ -27,7 +27,9 @@ import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Collection;
 
@@ -48,9 +50,13 @@ public final class GeneralDCLIT extends BaseDCLIT {
         String sql = getSQL();
         try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                executeUpdateForStatement(connection, sql);
+                try (Statement statement = connection.createStatement()) {
+                    statement.executeUpdate(sql);
+                }
             } else {
-                executeUpdateForPrepareStatement(connection, sql);
+                try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                    preparedStatement.executeUpdate();
+                }
             }
         }
     }
@@ -60,9 +66,13 @@ public final class GeneralDCLIT extends BaseDCLIT {
         String sql = getSQL();
         try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                executeForStatement(connection, sql);
+                try (Statement statement = connection.createStatement()) {
+                    statement.execute(sql);
+                }
             } else {
-                executeForPrepareStatement(connection, sql);
+                try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                    preparedStatement.execute();
+                }
             }
         }
     }

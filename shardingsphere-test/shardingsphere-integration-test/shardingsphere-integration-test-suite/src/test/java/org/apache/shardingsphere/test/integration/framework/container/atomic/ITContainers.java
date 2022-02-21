@@ -49,16 +49,18 @@ public final class ITContainers implements Startable {
      * 
      * @param container container to be registered
      * @param containerType container type
+     * @param attachScenario whether attach scenario to container network alias
      * @param <T> type of ShardingSphere container
      * @return registered container
      */
-    public <T extends ITContainer> T registerContainer(final T container, final String containerType) {
+    public <T extends ITContainer> T registerContainer(final T container, final String containerType, final boolean attachScenario) {
         if (container instanceof EmbeddedITContainer) {
             embeddedContainers.add((EmbeddedITContainer) container);
         } else {
             DockerITContainer dockerContainer = (DockerITContainer) container;
             dockerContainer.setNetwork(network);
-            dockerContainer.setNetworkAliases(Collections.singletonList(String.join(".", containerType.toLowerCase(), scenario, "host")));
+            String networkAlias = attachScenario ? String.join(".", containerType.toLowerCase(), scenario, "host") : String.join(".", containerType.toLowerCase(), "host");
+            dockerContainer.setNetworkAliases(Collections.singletonList(networkAlias));
             String loggerName = String.join(":", scenario, dockerContainer.getName());
             dockerContainer.withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger(loggerName), true));
             dockerContainers.add(dockerContainer);

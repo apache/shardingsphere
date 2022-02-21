@@ -20,8 +20,10 @@ package org.apache.shardingsphere.test.integration.env;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import org.apache.shardingsphere.test.integration.env.cluster.ClusterEnvironment;
-import org.apache.shardingsphere.test.integration.env.props.EnvironmentProperties;
+import org.apache.shardingsphere.test.integration.env.scenario.ScenarioPath;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Properties;
 
@@ -42,17 +44,31 @@ public final class IntegrationTestEnvironment {
     private final ClusterEnvironment clusterEnvironment;
     
     private IntegrationTestEnvironment() {
-        Properties envProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
-        runModes = Splitter.on(",").trimResults().splitToList(envProps.getProperty("it.run.modes"));
-        runAdditionalTestCases = Boolean.parseBoolean(envProps.getProperty("it.run.additional.cases"));
-        scenarios = getScenarios(envProps);
-        clusterEnvironment = new ClusterEnvironment(envProps);
+        Properties props = loadProperties();
+        runModes = Splitter.on(",").trimResults().splitToList(props.getProperty("it.run.modes"));
+        runAdditionalTestCases = Boolean.parseBoolean(props.getProperty("it.run.additional.cases"));
+        scenarios = getScenarios(props);
+        clusterEnvironment = new ClusterEnvironment(props);
+    }
+    
+    @SuppressWarnings("AccessOfSystemProperties")
+    private Properties loadProperties() {
+        Properties result = new Properties();
+        try (InputStream inputStream = IntegrationTestEnvironment.class.getClassLoader().getResourceAsStream("env/it-env.properties")) {
+            result.load(inputStream);
+        } catch (final IOException ex) {
+            throw new RuntimeException(ex);
+        }
+        for (String each : System.getProperties().stringPropertyNames()) {
+            result.setProperty(each, System.getProperty(each));
+        }
+        return result;
     }
     
     private Collection<String> getScenarios(final Properties envProps) {
         Collection<String> result = Splitter.on(",").trimResults().splitToList(envProps.getProperty("it.scenarios"));
         for (String each : result) {
-            EnvironmentPath.assertScenarioDirectoryExisted(each);
+            new ScenarioPath(each).checkFolderExist();
         }
         return result;
     }

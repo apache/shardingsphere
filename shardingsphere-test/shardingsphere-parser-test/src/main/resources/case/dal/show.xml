@@ -141,7 +141,7 @@
     </show-create-trigger>
 
     <show-create-user sql-case-id="show_create_user">
-        <user name="user1" start-delimiter="`" end-delimiter="`" start-index="17" stop-index="24" />
+        <user name="user1" start-index="17" stop-index="24" />
     </show-create-user>
 
     <show sql-case-id="show_all" />

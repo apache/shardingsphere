@@ -53,6 +53,7 @@ public final class StandardShardingStrategy implements ShardingStrategy {
         this.shardingAlgorithm = shardingAlgorithm;
     }
     
+    @SuppressWarnings("rawtypes")
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingConditionValue> shardingConditionValues, final ConfigurationProperties props) {
         ShardingConditionValue shardingConditionValue = shardingConditionValues.iterator().next();
@@ -63,7 +64,7 @@ public final class StandardShardingStrategy implements ShardingStrategy {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final ListShardingConditionValue<?> shardingValue) {
         Collection<String> result = new LinkedList<>();
         for (Comparable<?> each : shardingValue.getValues()) {
@@ -78,7 +79,7 @@ public final class StandardShardingStrategy implements ShardingStrategy {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingConditionValue<?> shardingValue) {
         return shardingAlgorithm.doSharding(availableTargetNames,
                 new RangeShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), shardingValue.getValueRange()));

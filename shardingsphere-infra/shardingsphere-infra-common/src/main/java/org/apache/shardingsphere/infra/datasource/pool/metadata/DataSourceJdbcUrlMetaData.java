@@ -36,6 +36,22 @@ public interface DataSourceJdbcUrlMetaData<T extends DataSource> {
     String getJdbcUrl(T targetDataSource);
     
     /**
+     * Get username.
+     *
+     * @param targetDataSource target data source
+     * @return username
+     */
+    String getUsername(T targetDataSource);
+    
+    /**
+     * Get password.
+     *
+     * @param targetDataSource target data source
+     * @return password
+     */
+    String getPassword(T targetDataSource);
+    
+    /**
      * Get JDBC URL properties field name.
      *
      * @return JDBC URL properties field name

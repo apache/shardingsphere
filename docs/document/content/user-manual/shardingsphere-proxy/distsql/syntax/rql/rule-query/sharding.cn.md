@@ -18,6 +18,8 @@ SHOW SHARDING KEY GENERATORS [FROM schemaName]
 
 SHOW UNUSED SHARDING KEY GENERATORS [FROM schemaName]
 
+SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName [FROM schemaName]
+
 SHOW DEFAULT SHARDING STRATEGY 
 
 SHOW SHARDING TABLE NODES;
@@ -210,6 +212,17 @@ mysql> SHOW UNUSED SHARDING KEY GENERATORS;
 | name                   | type      | props           |
 +------------------------+-----------+-----------------+
 | uuid_key_generator     | uuid      |                 |
++------------------------+-----------+-----------------+
+1 row in set (0.01 sec)
+```
+
+*SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName*
+```sql
+mysql> SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName;
++------------------------+-----------+-----------------+
+| schema                 | type      | name            |
++------------------------+-----------+-----------------+
+| sharding_db            | table     | t_order         |
 +------------------------+-----------+-----------------+
 1 row in set (0.01 sec)
 ```

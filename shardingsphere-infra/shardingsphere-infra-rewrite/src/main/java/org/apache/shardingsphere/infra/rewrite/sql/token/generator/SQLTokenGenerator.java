@@ -30,5 +30,5 @@ public interface SQLTokenGenerator {
      * @param sqlStatementContext SQL statement context
      * @return is generate SQL token or not
      */
-    boolean isGenerateSQLToken(SQLStatementContext sqlStatementContext);
+    boolean isGenerateSQLToken(SQLStatementContext<?> sqlStatementContext);
 }
