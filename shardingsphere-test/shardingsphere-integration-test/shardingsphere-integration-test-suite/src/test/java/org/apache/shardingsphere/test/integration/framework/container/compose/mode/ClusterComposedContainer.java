@@ -73,6 +73,11 @@ public final class ClusterComposedContainer implements ComposedContainer {
     }
     
     @Override
+    public DataSource getVerificationDataSource() {
+        return storageContainer.getVerificationDataSource();
+    }
+    
+    @Override
     public void stop() {
         containers.stop();
     }

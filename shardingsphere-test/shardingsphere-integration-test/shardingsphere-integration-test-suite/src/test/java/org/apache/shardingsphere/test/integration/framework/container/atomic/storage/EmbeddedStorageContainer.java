@@ -68,4 +68,9 @@ public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, S
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
     }
+    
+    @Override
+    public final DataSource getVerificationDataSource() {
+        return null;
+    }
 }
