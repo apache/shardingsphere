@@ -37,6 +37,14 @@ public interface DataNodeContainedRule extends ShardingSphereRule {
     Map<String, Collection<DataNode>> getAllDataNodes();
     
     /**
+     * Get data nodes by table name.
+     * 
+     * @param tableName table name
+     * @return data nodes
+     */
+    Collection<DataNode> getDataNodesByTableName(String tableName);
+    
+    /**
      * Get all actual tables.
      * 
      * @return all actual tables

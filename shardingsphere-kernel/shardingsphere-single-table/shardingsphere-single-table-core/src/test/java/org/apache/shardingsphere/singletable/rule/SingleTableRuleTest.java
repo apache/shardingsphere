@@ -228,6 +228,18 @@ public final class SingleTableRuleTest {
     }
     
     @Test
+    public void assertGetDataNodesByTableName() {
+        DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), dataSourceMap,
+                Collections.singletonList(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
+        Collection<DataNode> actual = singleTableRule.getDataNodesByTableName("EMPLOYEE");
+        assertThat(actual.size(), is(1));
+        DataNode dataNode = actual.iterator().next();
+        assertThat(dataNode.getDataSourceName(), is("ds_0"));
+        assertThat(dataNode.getTableName(), is("employee"));
+    }
+    
+    @Test
     public void assertGetAllActualTables() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), dataSourceMap, 
