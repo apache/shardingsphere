@@ -269,6 +269,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingScalingRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableNodesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableRulesUsedAlgorithmStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableRulesUsedKeyGeneratorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowSingleTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowSingleTableStatementTestCase;
@@ -1114,6 +1115,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-rules-used-resource")
     private final List<ShowRulesUsedResourceStatementTestCase> showRulesUsedResourceStatementTestCases = new LinkedList<>();
+
+    @XmlElement(name = "show-sharding-table-rules-used-algorithm")
+    private final List<ShowShardingTableRulesUsedAlgorithmStatementTestCase> showShardingTableRulesUsedAlgorithmStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-sharding-table-rules-used-key-generator")
     private final List<ShowShardingTableRulesUsedKeyGeneratorStatementTestCase> showShardingTableRulesUsedKeyGeneratorStatementTestCases = new LinkedList<>();
@@ -1402,6 +1406,7 @@ public final class SQLParserTestCases {
         putAll(exportSchemaConfigurationStatementTestCases, result);
         putAll(showRulesUsedResourceStatementTestCases, result);
         putAll(preparedStatementTestCases, result);
+        putAll(showShardingTableRulesUsedAlgorithmStatementTestCases, result);
         putAll(showShardingTableRulesUsedKeyGeneratorStatementTestCases, result);
         putAll(setUserStatementTestCases, result);
         return result;
