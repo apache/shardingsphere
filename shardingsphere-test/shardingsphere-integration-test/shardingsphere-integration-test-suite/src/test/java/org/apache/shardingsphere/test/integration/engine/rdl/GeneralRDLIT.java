@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.integration.engine.rdl;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.framework.param.array.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
@@ -32,7 +31,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralRDLIT extends BaseRDLIT {
@@ -43,10 +41,7 @@ public final class GeneralRDLIT extends BaseRDLIT {
     
     @Parameters(name = "{0}")
     public static Collection<AssertionParameterizedArray> getParameters() {
-        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.RDL).stream()
-                .filter(each -> SQLExecuteType.Literal == each.getSqlExecuteType())
-                .filter(each -> "proxy".equals(each.getAdapter()))
-                .collect(Collectors.toList());
+        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.RDL);
     }
     
     @Test
