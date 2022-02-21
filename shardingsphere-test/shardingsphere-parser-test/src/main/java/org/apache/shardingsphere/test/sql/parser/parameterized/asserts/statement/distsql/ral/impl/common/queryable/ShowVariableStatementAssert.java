@@ -15,13 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.common;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.common.queryable;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.LabelInstanceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowVariableStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.LabelInstanceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowVariableStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -29,27 +27,23 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Label instance statement assert.
+ * Show variable statement assert.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class LabelInstanceStatementAssert {
+public final class ShowVariableStatementAssert {
     
     /**
-     * Assert label instance statement is correct with expected parser result.
+     * Assert show variable statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual label instance statement
-     * @param expected expected label instance statement test case
+     * @param actual actual show variable statement
+     * @param expected expected show variable statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final LabelInstanceStatement actual, final LabelInstanceStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowVariableStatement actual, final ShowVariableStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertThat(actual.isOverwrite(), is(expected.isOverwrite()));
-            assertThat(actual.getIp(), is(expected.getIp()));
-            assertThat(actual.getPort(), is(expected.getPort()));
-            assertThat(actual.getPort(), is(actual.getPort()));
+            assertThat(actual.getName(), is(expected.getName()));
         }
     }
 }

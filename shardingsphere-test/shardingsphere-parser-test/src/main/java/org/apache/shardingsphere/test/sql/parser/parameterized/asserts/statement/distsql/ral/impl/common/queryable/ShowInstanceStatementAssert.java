@@ -15,29 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.common;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.common.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.ExportSchemaConfigurationStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowInstanceStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ExportSchemaConfigurationStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowInstanceStatementTestCase;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
- * Export schema configuration statement assert.
+ * Show instance statement assert.
  */
-public final class ExportSchemaConfigurationStatementAssert {
-
+public final class ShowInstanceStatementAssert {
+    
     /**
-     * Assert export schema configuration statement is correct with expected parser result.
+     * Assert show instance statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual export schema configuration statement statement
-     * @param expected expected export configuration schema statement statement test case
+     * @param actual actual show instance statement
+     * @param expected expected show instance statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ExportSchemaConfigurationStatement actual,
-                                final ExportSchemaConfigurationStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowInstanceStatement actual, final ShowInstanceStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

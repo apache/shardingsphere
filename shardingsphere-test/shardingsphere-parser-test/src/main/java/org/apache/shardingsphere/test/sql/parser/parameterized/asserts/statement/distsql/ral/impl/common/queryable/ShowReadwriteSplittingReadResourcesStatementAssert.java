@@ -15,28 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.query;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.common.queryable;
 
-import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingCheckAlgorithmsStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingReadResourcesStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ShowScalingCheckAlgorithmsStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowReadwriteSplittingReadResourcesStatementTestCase;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
- * Show scaling check algorithms statement assert.
+ * Show readwrite-splitting read resources statement assert.
  */
-public final class ShowScalingCheckAlgorithmsStatementAssert {
+public final class ShowReadwriteSplittingReadResourcesStatementAssert {
     
     /**
-     * Assert show scaling check algorithms statement is correct with expected parser result.
+     * Assert show readwrite-splitting read resources statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show scaling check algorithms statement
-     * @param expected expected show scaling check algorithms statement test case
+     * @param actual actual show readwrite-splitting read resources statement
+     * @param expected expected show readwrite-splitting read resources statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowScalingCheckAlgorithmsStatement actual, final ShowScalingCheckAlgorithmsStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowReadwriteSplittingReadResourcesStatement actual, 
+                                final ShowReadwriteSplittingReadResourcesStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

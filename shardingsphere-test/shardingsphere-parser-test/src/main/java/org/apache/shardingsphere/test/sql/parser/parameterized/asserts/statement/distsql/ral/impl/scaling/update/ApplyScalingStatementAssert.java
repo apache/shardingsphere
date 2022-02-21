@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.query;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.scaling.update;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.scaling.distsql.statement.CheckScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.ApplyScalingStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedAlgorithm;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.CheckScalingStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ApplyScalingStatementTestCase;
 
 import java.util.List;
 
@@ -32,24 +30,23 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Check scaling statement assert.
+ * Apply scaling statement assert.
  */
-public final class CheckScalingStatementAssert {
+public final class ApplyScalingStatementAssert {
     
     /**
-     * Assert check scaling statement is correct with expected parser result.
+     * Assert apply scaling statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual check scaling statement
-     * @param expected expected check scaling statement test case
+     * @param actual actual apply scaling statement
+     * @param expected expected apply scaling statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final CheckScalingStatement actual, final CheckScalingStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ApplyScalingStatement actual, final ApplyScalingStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
             assertJobIds(assertContext, actual.getJobId(), expected.getJobIds());
-            assertTypeStrategy(assertContext, actual.getTypeStrategy(), expected.getTableStrategies());
         }
     }
     
@@ -59,15 +56,6 @@ public final class CheckScalingStatementAssert {
         } else {
             assertNotNull(assertContext.getText("Actual job id should exist."), actual);
             assertThat(assertContext.getText("Job id assertion error"), actual, is(expected.iterator().next()));
-        }
-    }
-    
-    private static void assertTypeStrategy(final SQLCaseAssertContext assertContext, final AlgorithmSegment actual, final List<ExpectedAlgorithm> expected) {
-        if (CollectionUtils.isEmpty(expected)) {
-            assertNull(assertContext.getText("Actual type strategy should not exist."), actual);
-        } else {
-            assertNotNull(assertContext.getText("Actual type strategy should exist."), actual);
-            assertThat(assertContext.getText("Type strategy assertion error"), actual.getName(), is(expected.iterator().next().getName()));
         }
     }
 }

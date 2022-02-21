@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.update;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.scaling.update;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.shardingsphere.scaling.distsql.statement.ApplyScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.RestoreScalingSourceWritingStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ApplyScalingStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.RestoreScalingSourceWritingStatementTestCase;
 
 import java.util.List;
 
@@ -30,18 +30,18 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Apply scaling statement assert.
+ * Restore scaling source writing statement assert.
  */
-public final class ApplyScalingStatementAssert {
+public final class RestoreScalingSourceWritingStatementAssert {
     
     /**
-     * Assert apply scaling statement is correct with expected parser result.
+     * Assert restore scaling source writing statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual apply scaling statement
-     * @param expected expected apply scaling statement test case
+     * @param actual actual restore scaling source writing statement
+     * @param expected expected restore scaling source writing statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ApplyScalingStatement actual, final ApplyScalingStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final RestoreScalingSourceWritingStatement actual, final RestoreScalingSourceWritingStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

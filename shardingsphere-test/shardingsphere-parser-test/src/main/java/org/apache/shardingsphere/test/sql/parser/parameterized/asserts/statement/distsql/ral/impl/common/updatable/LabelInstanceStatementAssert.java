@@ -15,32 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.common;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.common.updatable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceStatement;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.LabelInstanceStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowInstanceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.LabelInstanceStatementTestCase;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
- * Show instance statement assert.
+ * Label instance statement assert.
  */
-public final class ShowInstanceStatementAssert {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class LabelInstanceStatementAssert {
     
     /**
-     * Assert show instance statement is correct with expected parser result.
+     * Assert label instance statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show instance statement
-     * @param expected expected show instance statement test case
+     * @param actual actual label instance statement
+     * @param expected expected label instance statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowInstanceStatement actual, final ShowInstanceStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final LabelInstanceStatement actual, final LabelInstanceStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertThat(actual.isOverwrite(), is(expected.isOverwrite()));
+            assertThat(actual.getIp(), is(expected.getIp()));
+            assertThat(actual.getPort(), is(expected.getPort()));
+            assertThat(actual.getPort(), is(actual.getPort()));
         }
     }
 }

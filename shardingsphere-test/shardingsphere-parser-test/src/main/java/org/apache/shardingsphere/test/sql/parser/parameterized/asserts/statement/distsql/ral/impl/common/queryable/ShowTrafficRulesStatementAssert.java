@@ -15,32 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.query;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.common.queryable;
 
-import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingListStatement;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowScalingListStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowTrafficRulesStatementTestCase;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
- * Show scaling list statement assert.
+ * Show traffic rules statement assert.
  */
-public final class ShowScalingListStatementAssert {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShowTrafficRulesStatementAssert {
     
     /**
-     * Assert show scaling list statement is correct with expected parser result.
+     * Assert show traffic rules statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show scaling list statement
-     * @param expected expected show scaling list statement test case
+     * @param actual actual show traffic rules statement
+     * @param expected expected show traffic rules statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowScalingListStatement actual, final ShowScalingListStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTrafficRulesStatement actual, final ShowTrafficRulesStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertThat(assertContext.getText("Rule name id assertion error"), actual.getRuleName(), is(expected.getRuleName()));
         }
     }
 }

@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.common;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.common.updatable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTableMetadataStatement;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.DropTrafficRuleStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.schema.SchemaAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowTableMetadataStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.DropTrafficRuleStatementTestCase;
+
+import java.util.ArrayList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -28,25 +31,24 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Show table metadata statement assert.
+ * Drop traffic rule statement assert.
  */
-public final class ShowTableMetadataStatementAssert {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DropTrafficRuleStatementAssert {
     
     /**
-     * Assert show table metadata statement is correct with expected parser result.
+     * Assert drop traffic rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show table metadata statement
-     * @param expected expected show table metadata statement test case
+     * @param actual actual drop traffic rule statement
+     * @param expected expected drop traffic rule statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTableMetadataStatement actual, 
-                                final ShowTableMetadataStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final DropTrafficRuleStatement actual, final DropTrafficRuleStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            SchemaAssert.assertIs(assertContext, actual.getSchema().get(), expected.getSchema());
-            assertThat(assertContext.getText("Table assertion error:"), actual.getTableNames(), is(expected.getTableNames()));
+            assertThat(assertContext.getText("Rule name id assertion error"), new ArrayList<>(actual.getRuleNames()), is(new ArrayList<>(expected.getRuleNames())));
         }
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.update;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.scaling.update;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.scaling.distsql.statement.StopScalingSourceWritingStatement;

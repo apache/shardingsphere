@@ -15,31 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.common;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.common.queryable;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTransactionRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ExportSchemaConfigurationStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowTransactionRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ExportSchemaConfigurationStatementTestCase;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
- * Show transaction rule statement assert.
+ * Export schema configuration statement assert.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShowTransactionRuleStatementAssert {
-    
+public final class ExportSchemaConfigurationStatementAssert {
+
     /**
-     * Assert show transaction rule statement is correct with expected parser result.
+     * Assert export schema configuration statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show transaction rule statement
-     * @param expected expected show transaction rule statement test case
+     * @param actual actual export schema configuration statement statement
+     * @param expected expected export configuration schema statement statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTransactionRuleStatement actual, final ShowTransactionRuleStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ExportSchemaConfigurationStatement actual,
+                                final ExportSchemaConfigurationStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

@@ -15,35 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.common;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.scaling.query;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingListStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowVariableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowScalingListStatementTestCase;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 
 /**
- * Show variable statement assert.
+ * Show scaling list statement assert.
  */
-public final class ShowVariableStatementAssert {
+public final class ShowScalingListStatementAssert {
     
     /**
-     * Assert show variable statement is correct with expected parser result.
+     * Assert show scaling list statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show variable statement
-     * @param expected expected show variable statement test case
+     * @param actual actual show scaling list statement
+     * @param expected expected show scaling list statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowVariableStatement actual, final ShowVariableStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowScalingListStatement actual, final ShowScalingListStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertThat(actual.getName(), is(expected.getName()));
         }
     }
 }

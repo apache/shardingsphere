@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.common;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.common.queryable;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowTrafficRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTableMetadataStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowTrafficRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.schema.SchemaAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowTableMetadataStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -29,24 +28,25 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Show traffic rules statement assert.
+ * Show table metadata statement assert.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShowTrafficRulesStatementAssert {
+public final class ShowTableMetadataStatementAssert {
     
     /**
-     * Assert show traffic rules statement is correct with expected parser result.
+     * Assert show table metadata statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show traffic rules statement
-     * @param expected expected show traffic rules statement test case
+     * @param actual actual show table metadata statement
+     * @param expected expected show table metadata statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTrafficRulesStatement actual, final ShowTrafficRulesStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTableMetadataStatement actual, 
+                                final ShowTableMetadataStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertThat(assertContext.getText("Rule name id assertion error"), actual.getRuleName(), is(expected.getRuleName()));
+            SchemaAssert.assertIs(assertContext, actual.getSchema().get(), expected.getSchema());
+            assertThat(assertContext.getText("Table assertion error:"), actual.getTableNames(), is(expected.getTableNames()));
         }
     }
 }

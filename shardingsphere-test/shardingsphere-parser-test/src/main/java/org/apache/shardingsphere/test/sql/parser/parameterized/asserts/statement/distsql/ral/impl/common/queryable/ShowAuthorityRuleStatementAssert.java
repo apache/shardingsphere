@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.common;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.common.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetVariableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowAuthorityRuleStatementTestCase;
 
 /**
- * Set variable statement assert.
+ * Show authority rule statement assert.
  */
-public final class SetVariableStatementAssert {
+public final class ShowAuthorityRuleStatementAssert {
     
     /**
-     * Assert set variable statement is correct with expected parser result.
+     * Assert show authority rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual set variable statement
-     * @param expected expected set variable statement test case
+     * @param actual actual show authority rule statement
+     * @param expected expected show authority rule statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final SetVariableStatement actual, final SetVariableStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowAuthorityRuleStatement actual, final ShowAuthorityRuleStatementTestCase expected) {
     }
 }
