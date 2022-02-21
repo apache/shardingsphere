@@ -17,7 +17,7 @@
 
 grammar DALStatement;
 
-import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule, DDLStatement;
+import BaseRule, DDLStatement;
 
 show
     : SHOW (varName | TIME ZONE | TRANSACTION ISOLATION LEVEL | SESSION AUTHORIZATION | ALL) EOF
