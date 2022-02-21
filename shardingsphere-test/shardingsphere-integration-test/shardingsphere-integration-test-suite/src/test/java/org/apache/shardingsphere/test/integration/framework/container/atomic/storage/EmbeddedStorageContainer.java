@@ -47,15 +47,37 @@ public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, S
     
     private Map<String, DataSource> actualDataSourceMap;
     
+    private DataSource verificationDataSource;
+    
     @Override
     @SneakyThrows({IOException.class, JAXBException.class})
-    public synchronized Map<String, DataSource> getActualDataSourceMap() {
-        if (null == actualDataSourceMap) {
+    public Map<String, DataSource> getActualDataSourceMap() {
+        if (null != actualDataSourceMap) {
+            return actualDataSourceMap;
+        }
+        synchronized (this) {
+            if (null != actualDataSourceMap) {
+                return actualDataSourceMap;
+            } 
             Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDatabaseNames(scenario);
             actualDataSourceMap = new LinkedHashMap<>(dataSourceNames.size(), 1);
             dataSourceNames.forEach(each -> actualDataSourceMap.put(each, createDataSource(each)));
+            return actualDataSourceMap;
         }
-        return actualDataSourceMap;
+    }
+    
+    @Override
+    public final DataSource getVerificationDataSource() {
+        if (null != verificationDataSource) {
+            return verificationDataSource;
+        }
+        synchronized (this) {
+            if (null != verificationDataSource) {
+                return verificationDataSource;
+            }
+            verificationDataSource = createDataSource("verification_dataset");
+            return verificationDataSource;
+        }
     }
     
     private DataSource createDataSource(final String dataSourceName) {
@@ -67,10 +89,5 @@ public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, S
         result.setMaximumPoolSize(4);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
-    }
-    
-    @Override
-    public final DataSource getVerificationDataSource() {
-        return null;
     }
 }
