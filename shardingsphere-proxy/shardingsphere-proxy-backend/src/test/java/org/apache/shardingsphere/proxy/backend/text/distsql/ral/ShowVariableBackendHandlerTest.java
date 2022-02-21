@@ -39,6 +39,7 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -129,6 +130,26 @@ public final class ShowVariableBackendHandlerTest {
         backendHandler.next();
         Collection<Object> rowData = backendHandler.getRowData();
         assertThat(rowData.iterator().next(), is("true"));
+    }
+    
+    @Test
+    public void assertShowAllVariables() throws SQLException {
+        connectionSession.setCurrentSchema("schema");
+        ContextManager contextManager = mock(ContextManager.class);
+        ProxyContext.getInstance().init(contextManager);
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        ShowVariableHandler backendHandler = new ShowVariableHandler()
+                .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement()).setConnectionSession(connectionSession));
+        ResponseHeader actual = backendHandler.execute();
+        assertThat(actual, instanceOf(QueryResponseHeader.class));
+        assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
+        backendHandler.next();
+        Collection<Object> rowData = backendHandler.getRowData();
+        Iterator<Object> rowDataIterator = rowData.iterator();
+        assertThat(rowDataIterator.next(), is("sql_show"));
+        assertThat(rowDataIterator.next(), is(Boolean.FALSE.toString()));
     }
     
     @After

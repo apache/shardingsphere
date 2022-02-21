@@ -21,6 +21,11 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVa
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowVariableStatementTestCase;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 /**
  * Show variable statement assert.
  */
@@ -34,5 +39,11 @@ public final class ShowVariableStatementAssert {
      * @param expected expected show variable statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowVariableStatement actual, final ShowVariableStatementTestCase expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual statement should not exist."), actual);
+        } else {
+            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertThat(actual.getName(), is(expected.getName()));
+        }
     }
 }

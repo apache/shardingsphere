@@ -17,16 +17,18 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.ral.common.show;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.ShowDistSQLStatement;
 
 /**
  * Show variable statement.
  */
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 public final class ShowVariableStatement extends ShowDistSQLStatement {
     
-    private final String name;
+    private String name;
 }

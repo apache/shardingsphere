@@ -33,7 +33,6 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.LabelIn
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetInstanceStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.SetVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.set.UnlabelInstanceStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAllVariablesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceModeStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowInstanceStatement;
@@ -51,7 +50,6 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandle
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.AdvancedDistSQLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.HintDistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ExportSchemaConfigurationHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowAllVariablesHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowAuthorityRuleHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowInstanceHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowInstanceModeHandler;
@@ -114,7 +112,6 @@ public final class RALBackendHandlerFactory {
         QUERYABLE_HANDLER_MAP.put(ShowInstanceStatement.class.getName(), ShowInstanceHandler.class);
         QUERYABLE_HANDLER_MAP.put(ShowInstanceModeStatement.class.getName(), ShowInstanceModeHandler.class);
         QUERYABLE_HANDLER_MAP.put(ShowVariableStatement.class.getName(), ShowVariableHandler.class);
-        QUERYABLE_HANDLER_MAP.put(ShowAllVariablesStatement.class.getName(), ShowAllVariablesHandler.class);
         QUERYABLE_HANDLER_MAP.put(ShowReadwriteSplittingReadResourcesStatement.class.getName(), ShowReadwriteSplittingReadResourcesHandler.class);
         QUERYABLE_HANDLER_MAP.put(ShowAuthorityRuleStatement.class.getName(), ShowAuthorityRuleHandler.class);
         QUERYABLE_HANDLER_MAP.put(ShowSQLParserRuleStatement.class.getName(), ShowSQLParserRuleHandler.class);
