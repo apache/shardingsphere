@@ -26,6 +26,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.junit.After;
 import org.junit.Before;
 
 import java.sql.Connection;
@@ -60,8 +61,8 @@ public abstract class BaseDDLIT extends SingleITCase {
         }
     }
     
-    @Override
-    public final void tearDown() throws Exception {
+    @After
+    public final void tearDown() {
         try (Connection connection = getTargetDataSource().getConnection()) {
             String dropSql = String.format("DROP TABLE %s", getAssertion().getInitialSQL().getAffectedTable());
             try (PreparedStatement preparedStatement = connection.prepareStatement(dropSql)) {
@@ -69,7 +70,6 @@ public abstract class BaseDDLIT extends SingleITCase {
             }
         } catch (final SQLException | NoSuchTableException ignored) {
         }
-        super.tearDown();
     }
     
     private void executeInitSQLs(final Connection connection) throws SQLException {
