@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSche
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
@@ -85,8 +84,11 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Optional<TransactionConfigurationFileGenerator> fileGenerator = transactionRuleConfiguration.isPresent() ? TransactionConfigurationFileGeneratorFactory
                 .newInstance(transactionRuleConfiguration.get().getProviderType()) : Optional.empty();
         if (fileGenerator.isPresent()) {
-            Optional<SchemaConfiguration> schemaConfiguration = createSchemaConfiguration(schemaName, metaDataPersistService, parameter);
-            Optional<Properties> transactionProps = fileGenerator.get().getTransactionProps(transactionRuleConfiguration.get(), schemaConfiguration);
+            Optional<SchemaConfiguration> schemaConfiguration = Optional.empty();
+            if (schemaName.isPresent()) {
+                schemaConfiguration = createSchemaConfiguration(schemaName.get(), metaDataPersistService, parameter);
+            }
+            Optional<Properties> transactionProps = fileGenerator.get().getTransactionProps(transactionRuleConfiguration.get().getProps(), schemaConfiguration, getType());
             transactionProps.ifPresent(optional -> metaDataPersistService.persistTransactionRule(optional, true));
             String instanceId = parameter.getInstanceDefinition().getInstanceId().getId();
             if (!metaDataPersistService.getComputeNodePersistService().loadXaRecoveryId(instanceId).isPresent()) {
@@ -102,7 +104,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Properties props = metaDataPersistService.getPropsService().load();
         MetaDataContextsBuilder result = new MetaDataContextsBuilder(globalRuleConfigs, props);
         for (String each : schemaNames) {
-            Optional<SchemaConfiguration> schemaConfiguration = createSchemaConfiguration(Optional.of(each), metaDataPersistService, parameter);
+            Optional<SchemaConfiguration> schemaConfiguration = createSchemaConfiguration(each, metaDataPersistService, parameter);
             if (schemaConfiguration.isPresent()) {
                 result.addSchema(each, schemaConfiguration.get(), props);
             }
@@ -110,15 +112,13 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return result;
     }
     
-    private Optional<SchemaConfiguration> createSchemaConfiguration(final Optional<String> schemaName, final MetaDataPersistService metaDataPersistService,
+    private Optional<SchemaConfiguration> createSchemaConfiguration(final String schemaName, final MetaDataPersistService metaDataPersistService,
                                                               final ContextManagerBuilderParameter parameter) throws SQLException {
-        SchemaConfiguration schemaConfiguration = null;
-        if (schemaName.isPresent()) {
-            Map<String, DataSource> dataSources = metaDataPersistService.getEffectiveDataSources(schemaName.get(), parameter.getSchemaConfigs());
-            Collection<RuleConfiguration> schemaRuleConfigs = metaDataPersistService.getSchemaRuleService().load(schemaName.get());
-            schemaConfiguration = new DataSourceProvidedSchemaConfiguration(dataSources, schemaRuleConfigs);
-        }
-        return Optional.ofNullable(schemaConfiguration);
+        SchemaConfiguration schemaConfiguration;
+        Map<String, DataSource> dataSources = metaDataPersistService.getEffectiveDataSources(schemaName, parameter.getSchemaConfigs());
+        Collection<RuleConfiguration> schemaRuleConfigs = metaDataPersistService.getSchemaRuleService().load(schemaName);
+        schemaConfiguration = new DataSourceProvidedSchemaConfiguration(dataSources, schemaRuleConfigs);
+        return Optional.of(schemaConfiguration);
     }
     
     private void persistConfigurations(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) {
@@ -150,8 +150,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private void generateTransactionConfigurationFile(final InstanceContext instanceContext, final MetaDataContexts metaDataContexts) {
         Optional<TransactionRule> transactionRule =
                 metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
-        Optional<ShardingSphereMetaData> shardingSphereMetaData = metaDataContexts.getMetaDataMap().values().stream().findFirst();
-        if (transactionRule.isPresent() && shardingSphereMetaData.isPresent()) {
+        if (transactionRule.isPresent()) {
             Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(transactionRule.get().getProviderType());
             fileGenerator.ifPresent(optional -> optional.generateFile(transactionRule.get(), instanceContext));
         }
