@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.sharding.api.sharding.common.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.junit.Before;
@@ -35,7 +36,7 @@ import static org.mockito.Mockito.mock;
 
 public final class InlineShardingAlgorithmTest {
     
-    private static final String DATA_NODE_PREFIX = "t_order_";
+    private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("t_order_", 1);
     
     private InlineShardingAlgorithm inlineShardingAlgorithm;
     
@@ -64,16 +65,16 @@ public final class InlineShardingAlgorithmTest {
     public void assertDoSharding() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, 
-                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_PREFIX, 0)), is("t_order_0"));
+                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
         inlineShardingAlgorithm.doSharding(availableTargetNames, 
-                new PreciseShardingValue<>("t_order", "non_existent_column1", DATA_NODE_PREFIX, 0));
+                new PreciseShardingValue<>("t_order", "non_existent_column1", DATA_NODE_INFO, 0));
     }
     
     @Test
     public void assertDoShardingWithRangeShardingConditionValue() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         Collection<String> actual = inlineShardingAlgorithm.doSharding(availableTargetNames, 
-                new RangeShardingValue<>("t_order", "order_id", DATA_NODE_PREFIX, mock(Range.class)));
+                new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, mock(Range.class)));
         assertTrue(actual.containsAll(availableTargetNames));
     }
     
@@ -81,8 +82,8 @@ public final class InlineShardingAlgorithmTest {
     public void assertDoShardingWithNonExistNodes() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1");
         assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, 
-                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_PREFIX, 0)), is("t_order_0"));
+                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
         assertThat(inlineShardingAlgorithmWithSimplified.doSharding(availableTargetNames, 
-                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_PREFIX, 0)), is("t_order_0"));
+                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
     }
 }

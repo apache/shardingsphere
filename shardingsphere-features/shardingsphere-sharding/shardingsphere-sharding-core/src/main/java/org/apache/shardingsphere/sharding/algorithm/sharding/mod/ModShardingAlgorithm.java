@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 
 import com.google.common.base.Preconditions;
-import com.google.common.primitives.Longs;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.common.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -40,6 +40,8 @@ import java.util.Properties;
 public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
     private static final String SHARDING_COUNT_KEY = "sharding-count";
+    
+    private static final char PADDING_CHAR = '0';
     
     private Properties props = new Properties();
     
@@ -57,14 +59,8 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
-        long suffix = getLongValue(shardingValue.getValue()) % shardingCount;
-        for (String each : availableTargetNames) {
-            Optional<String> matchedActualTableName = findMatchedActualTableName(each, shardingValue.getDataNodePrefix(), suffix);
-            if (matchedActualTableName.isPresent()) {
-                return matchedActualTableName.get();
-            }
-        }
-        return null;
+        String suffix = String.valueOf(getLongValue(shardingValue.getValue()) % shardingCount);
+        return getTargetName(availableTargetNames, shardingValue.getDataNodeInfo(), suffix);
     }
     
     @Override
@@ -72,12 +68,12 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
         return isContainAllTargets(shardingValue) ? availableTargetNames : getAvailableTargetNames(availableTargetNames, shardingValue);
     }
     
-    private Optional<String> findMatchedActualTableName(final String actualTableName, final String dataNodePrefix, final long suffix) {
-        Long actualTableNameSuffix = Longs.tryParse(actualTableName.substring(dataNodePrefix.length()));
-        if (null != actualTableNameSuffix && actualTableNameSuffix.equals(suffix)) {
-            return Optional.of(actualTableName);
+    private String getTargetName(final Collection<String> availableTargetNames, final DataNodeInfo dataNodeInfo, final String suffix) {
+        String targetName = dataNodeInfo.getPrefix() + Strings.padStart(suffix, dataNodeInfo.getSuffixMinLength(), PADDING_CHAR);
+        if (availableTargetNames.contains(targetName)) {
+            return targetName;
         }
-        return Optional.empty();
+        return null;
     }
     
     private boolean isContainAllTargets(final RangeShardingValue<Comparable<?>> shardingValue) {
@@ -88,9 +84,10 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     private Collection<String> getAvailableTargetNames(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         for (long i = getLongValue(shardingValue.getValueRange().lowerEndpoint()); i <= getLongValue(shardingValue.getValueRange().upperEndpoint()); i++) {
-            long suffix = i % shardingCount;
-            for (String each : availableTargetNames) {
-                findMatchedActualTableName(each, shardingValue.getDataNodePrefix(), suffix).ifPresent(result::add);
+            String suffix = String.valueOf(i % shardingCount);
+            String targetName = getTargetName(availableTargetNames, shardingValue.getDataNodeInfo(), suffix);
+            if (null != targetName) {
+                result.add(targetName);
             }
         }
         return result;

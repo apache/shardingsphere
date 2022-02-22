@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.sharding.api.sharding.common.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -55,23 +56,23 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     
     @SuppressWarnings("rawtypes")
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingConditionValue> shardingConditionValues, 
-                                         final String dataNodePrefix, final ConfigurationProperties props) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingConditionValue> shardingConditionValues,
+                                         final DataNodeInfo dataNodeInfo, final ConfigurationProperties props) {
         ShardingConditionValue shardingConditionValue = shardingConditionValues.iterator().next();
         Collection<String> shardingResult = shardingConditionValue instanceof ListShardingConditionValue
-                ? doSharding(availableTargetNames, (ListShardingConditionValue) shardingConditionValue, dataNodePrefix) 
-                : doSharding(availableTargetNames, (RangeShardingConditionValue) shardingConditionValue, dataNodePrefix);
+                ? doSharding(availableTargetNames, (ListShardingConditionValue) shardingConditionValue, dataNodeInfo) 
+                : doSharding(availableTargetNames, (RangeShardingConditionValue) shardingConditionValue, dataNodeInfo);
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.addAll(shardingResult);
         return result;
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Collection<String> doSharding(final Collection<String> availableTargetNames, final ListShardingConditionValue<?> shardingValue, final String dataNodePrefix) {
+    private Collection<String> doSharding(final Collection<String> availableTargetNames, final ListShardingConditionValue<?> shardingValue, final DataNodeInfo dataNodeInfo) {
         Collection<String> result = new LinkedList<>();
         for (Comparable<?> each : shardingValue.getValues()) {
             String target = shardingAlgorithm.doSharding(availableTargetNames, 
-                    new PreciseShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), dataNodePrefix, each));
+                    new PreciseShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), dataNodeInfo, each));
             if (null != target && availableTargetNames.contains(target)) {
                 result.add(target);
             } else if (null != target && !availableTargetNames.contains(target)) {
@@ -82,8 +83,8 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingConditionValue<?> shardingValue, final String dataNodePrefix) {
+    private Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingConditionValue<?> shardingValue, final DataNodeInfo dataNodeInfo) {
         return shardingAlgorithm.doSharding(availableTargetNames,
-                new RangeShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), dataNodePrefix, shardingValue.getValueRange()));
+                new RangeShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), dataNodeInfo, shardingValue.getValueRange()));
     }
 }

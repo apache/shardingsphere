@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingValue;
+import org.apache.shardingsphere.sharding.api.sharding.common.DataNodeInfo;
 
 /**
  * Sharding value for precise.
@@ -34,7 +35,7 @@ public final class PreciseShardingValue<T extends Comparable<?>> implements Shar
     
     private final String columnName;
     
-    private final String dataNodePrefix;
+    private final DataNodeInfo dataNodeInfo;
     
     private final T value;
 }

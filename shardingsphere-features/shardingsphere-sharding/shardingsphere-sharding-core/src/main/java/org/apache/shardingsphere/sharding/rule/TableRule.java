@@ -31,10 +31,12 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.common.DataNodeInfo;
 import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -51,7 +53,7 @@ import java.util.stream.Collectors;
  * Table rule.
  */
 @Getter
-@ToString(exclude = {"dataNodeIndexMap", "actualTables", "actualDatasourceNames", "datasourceToTablesMap", "dataSourcePrefix", "tablePrefix"})
+@ToString(exclude = {"dataNodeIndexMap", "actualTables", "actualDatasourceNames", "datasourceToTablesMap", "dataSourceDataNode", "tableDataNode"})
 public final class TableRule {
     
     private static final Pattern DATA_NODE_SUFFIX_PATTERN = Pattern.compile("\\d+$");
@@ -79,9 +81,9 @@ public final class TableRule {
     
     private final Map<String, Collection<String>> datasourceToTablesMap = new HashMap<>();
     
-    private final String dataSourcePrefix;
+    private final DataNodeInfo dataSourceDataNode;
     
-    private final String tablePrefix;
+    private final DataNodeInfo tableDataNode;
     
     public TableRule(final Collection<String> dataSourceNames, final String logicTableName) {
         logicTable = logicTableName;
@@ -92,8 +94,8 @@ public final class TableRule {
         tableShardingStrategyConfig = null;
         generateKeyColumn = null;
         keyGeneratorName = null;
-        dataSourcePrefix = actualDataNodes.isEmpty() ? null : getDataNodePrefix(actualDataNodes.iterator().next().getDataSourceName());
-        tablePrefix = actualDataNodes.isEmpty() ? null : getDataNodePrefix(actualDataNodes.iterator().next().getTableName());
+        dataSourceDataNode = actualDataNodes.isEmpty() ? null : createDataSourceDataNode(actualDataNodes);
+        tableDataNode = actualDataNodes.isEmpty() ? null : createTableDataNode(actualDataNodes);
     }
     
     public TableRule(final ShardingTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames, final String defaultGenerateKeyColumn) {
@@ -107,8 +109,8 @@ public final class TableRule {
         KeyGenerateStrategyConfiguration keyGeneratorConfig = tableRuleConfig.getKeyGenerateStrategy();
         generateKeyColumn = null != keyGeneratorConfig && !Strings.isNullOrEmpty(keyGeneratorConfig.getColumn()) ? keyGeneratorConfig.getColumn() : defaultGenerateKeyColumn;
         keyGeneratorName = null == keyGeneratorConfig ? null : keyGeneratorConfig.getKeyGeneratorName();
-        dataSourcePrefix = actualDataNodes.isEmpty() ? "" : getDataNodePrefix(actualDataNodes.iterator().next().getDataSourceName());
-        tablePrefix = actualDataNodes.isEmpty() ? "" : getDataNodePrefix(actualDataNodes.iterator().next().getTableName());
+        dataSourceDataNode = actualDataNodes.isEmpty() ? null : createDataSourceDataNode(actualDataNodes);
+        tableDataNode = actualDataNodes.isEmpty() ? null : createTableDataNode(actualDataNodes);
         checkRule(dataNodes);
     }
     
@@ -124,13 +126,21 @@ public final class TableRule {
         KeyGenerateStrategyConfiguration keyGeneratorConfig = tableRuleConfig.getKeyGenerateStrategy();
         generateKeyColumn = null != keyGeneratorConfig && !Strings.isNullOrEmpty(keyGeneratorConfig.getColumn()) ? keyGeneratorConfig.getColumn() : defaultGenerateKeyColumn;
         keyGeneratorName = null == keyGeneratorConfig ? null : keyGeneratorConfig.getKeyGeneratorName();
-        dataSourcePrefix = actualDataNodes.isEmpty() ? null : getDataNodePrefix(actualDataNodes.iterator().next().getDataSourceName());
-        tablePrefix = actualDataNodes.isEmpty() ? null : getDataNodePrefix(actualDataNodes.iterator().next().getTableName());
+        dataSourceDataNode = actualDataNodes.isEmpty() ? null : createDataSourceDataNode(actualDataNodes);
+        tableDataNode = actualDataNodes.isEmpty() ? null : createTableDataNode(actualDataNodes);
         checkRule(dataNodes);
     }
     
-    private String getDataNodePrefix(final String dataNode) {
-        return DATA_NODE_SUFFIX_PATTERN.matcher(dataNode).replaceAll("");
+    private DataNodeInfo createDataSourceDataNode(final Collection<DataNode> actualDataNodes) {
+        String prefix = DATA_NODE_SUFFIX_PATTERN.matcher(actualDataNodes.iterator().next().getDataSourceName()).replaceAll("");
+        int suffixMinLength = actualDataNodes.stream().map(each -> each.getDataSourceName().length() - prefix.length()).min(Comparator.comparing(Integer::intValue)).orElse(1);
+        return new DataNodeInfo(prefix, suffixMinLength);
+    }
+    
+    private DataNodeInfo createTableDataNode(final Collection<DataNode> actualDataNodes) {
+        String prefix = DATA_NODE_SUFFIX_PATTERN.matcher(actualDataNodes.iterator().next().getTableName()).replaceAll("");
+        int suffixMinLength = actualDataNodes.stream().map(each -> each.getTableName().length() - prefix.length()).min(Comparator.comparing(Integer::intValue)).orElse(1);
+        return new DataNodeInfo(prefix, suffixMinLength);
     }
     
     private List<String> getDataNodes(final ShardingAutoTableRuleConfiguration tableRuleConfig, final ShardingAutoTableAlgorithm shardingAlgorithm, final Collection<String> dataSourceNames) {

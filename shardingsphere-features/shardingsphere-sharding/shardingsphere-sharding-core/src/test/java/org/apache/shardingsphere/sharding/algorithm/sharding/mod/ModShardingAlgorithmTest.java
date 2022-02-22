@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 
 import com.google.common.collect.Range;
+import org.apache.shardingsphere.sharding.api.sharding.common.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.junit.Before;
@@ -32,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class ModShardingAlgorithmTest {
     
-    private static final String DATA_NODE_PREFIX = "t_order_";
+    private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("t_order_", 6);
     
     private ModShardingAlgorithm shardingAlgorithm;
     
@@ -46,13 +47,13 @@ public final class ModShardingAlgorithmTest {
     @Test
     public void assertPreciseDoSharding() {
         assertThat(shardingAlgorithm.doSharding(createAvailableTargetNames(), 
-                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_PREFIX, 17)), is("t_order_1"));
+                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 17)), is("t_order_1"));
     }
     
     @Test
     public void assertRangeDoShardingWithAllTargets() {
         Collection<String> actual = shardingAlgorithm.doSharding(createAvailableTargetNames(), 
-                new RangeShardingValue<>("t_order", "order_id", DATA_NODE_PREFIX, Range.closed(1L, 16L)));
+                new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(1L, 16L)));
         assertThat(actual.size(), is(16));
     }
     
@@ -64,7 +65,7 @@ public final class ModShardingAlgorithmTest {
     @Test
     public void assertRangeDoShardingWithPartTargets() {
         Collection<String> actual = shardingAlgorithm.doSharding(createAvailableTargetNames(), 
-                new RangeShardingValue<>("t_order", "order_id", DATA_NODE_PREFIX, Range.closed(1L, 2L)));
+                new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(1L, 2L)));
         assertThat(actual.size(), is(2));
         assertTrue(actual.contains("t_order_1"));
         assertTrue(actual.contains("t_order_2"));

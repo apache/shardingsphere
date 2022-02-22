@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.strategy.type.complex;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.sharding.api.sharding.common.DataNodeInfo;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
@@ -37,7 +38,7 @@ import static org.junit.Assert.assertThat;
 
 public final class ComplexShardingStrategyTest {
     
-    private static final String DATA_NODE_PREFIX = "logicTable_";
+    private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("logicTable_", 1);
     
     @Test
     public void assertDoSharding() {
@@ -45,7 +46,7 @@ public final class ComplexShardingStrategyTest {
         ComplexShardingStrategy complexShardingStrategy = new ComplexShardingStrategy("column1, column2", new ComplexKeysShardingAlgorithmFixture());
         List<ShardingConditionValue> shardingConditionValues =
             Arrays.asList(new ListShardingConditionValue<>("column1", "logicTable", Collections.singletonList(1)), new RangeShardingConditionValue<>("column2", "logicTable", Range.open(1, 3)));
-        Collection<String> actualSharding = complexShardingStrategy.doSharding(targets, shardingConditionValues, DATA_NODE_PREFIX, new ConfigurationProperties(new Properties()));
+        Collection<String> actualSharding = complexShardingStrategy.doSharding(targets, shardingConditionValues, DATA_NODE_INFO, new ConfigurationProperties(new Properties()));
         assertThat(actualSharding.size(), is(3));
         assertThat(actualSharding, is(targets));
     }
