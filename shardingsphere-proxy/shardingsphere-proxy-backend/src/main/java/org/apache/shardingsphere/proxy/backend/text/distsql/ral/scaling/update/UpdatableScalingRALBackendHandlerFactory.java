@@ -15,38 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.query;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.scaling.update;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
-
-import java.util.Properties;
 
 /**
- * Queryable scaling RAL backend handler factory.
+ *  Updatable scaling RAL backend handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class QueryableScalingRALBackendHandlerFactory {
+public final class UpdatableScalingRALBackendHandlerFactory {
     
     static {
-        ShardingSphereServiceLoader.register(DistSQLResultSet.class);
+        ShardingSphereServiceLoader.register(RALUpdater.class);
     }
     
     /**
      * Create new instance of queryable RAL backend handler.
      * 
      * @param sqlStatement queryable RAL statement
-     * @param connectionSession connection session
      * @return queryable RAL backend handler
      */
-    public static TextProtocolBackendHandler newInstance(final QueryableRALStatement sqlStatement, final ConnectionSession connectionSession) {
-        DistSQLResultSet resultSet = TypedSPIRegistry.getRegisteredService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties());
-        return new QueryableScalingRALBackendHandler(sqlStatement, connectionSession, resultSet);
+    public static TextProtocolBackendHandler newInstance(final UpdatableRALStatement sqlStatement) {
+        UpdatableScalingRALBackendHandler result = new UpdatableScalingRALBackendHandler();
+        result.setSqlStatement(sqlStatement);
+        return result;
     }
 }
