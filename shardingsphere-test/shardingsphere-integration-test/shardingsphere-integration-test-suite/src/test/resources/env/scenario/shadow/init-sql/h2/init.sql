@@ -14,8 +14,8 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 --
-DROP TABLE IF EXISTS t_order;
+DROP TABLE IF EXISTS t_shadow;
 
-CREATE TABLE t_order (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name VARCHAR(32) NOT NULL, type_char CHAR(1) NOT NULL, type_boolean BOOLEAN NOT NULL, type_smallint SMALLINT NOT NULL,
+CREATE TABLE t_shadow (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name VARCHAR(32) NOT NULL, type_char CHAR(1) NOT NULL, type_boolean BOOLEAN NOT NULL, type_smallint SMALLINT NOT NULL,
                          type_enum ENUM('spring', 'summer', 'autumn', 'winter'), type_decimal DECIMAL(18,2) NOT NULL, type_date DATE NOT NULL, type_time TIME NOT NULL, type_timestamp TIMESTAMP NOT NULL,
                          PRIMARY KEY (order_id));

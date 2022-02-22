@@ -48,6 +48,7 @@ CREATE TABLE t_user_item (item_id INT NOT NULL, user_id INT NOT NULL, status VAR
 CREATE TABLE t_user_encrypt_federate (user_id INT NOT NULL, pwd VARCHAR(45) NULL, username VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE t_user_encrypt_federate_sharding (user_id INT NOT NULL, pwd VARCHAR(45) NULL, username VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE t_user_info (user_id INT NOT NULL, information VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE t_shadow (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name VARCHAR(32) NOT NULL, type_char CHAR(1) NOT NULL, type_boolean BOOLEAN NOT NULL, type_smallint SMALLINT NOT NULL, type_enum season DEFAULT 'summer', type_decimal NUMERIC(18,2) DEFAULT NULL, type_date DATE DEFAULT NULL, type_time TIME DEFAULT NULL, type_timestamp TIMESTAMP DEFAULT NULL, PRIMARY KEY (order_id));
 
 CREATE INDEX order_index_t_order ON t_order (order_id);
 CREATE INDEX user_index_t_user ON t_user (user_id);
