@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import BaseRule, DMLStatement, DALStatement;
+import DMLStatement, DALStatement;
 
 alterStatement
     : alterTable
@@ -178,10 +178,6 @@ restrict
 fulltextIndexOption
     : commonIndexOption
     | WITH PARSER identifier
-    ;
-
-partitionNames
-    : partitionName (COMMA_ partitionName)*
     ;
 
 dropTable
