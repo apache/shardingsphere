@@ -93,7 +93,7 @@ public final class UnusedDataSourceQueryResultSetTest {
         return result;
     }
     
-    private MockedDataSource createDataSource(String dataSourceName) {
+    private MockedDataSource createDataSource(final String dataSourceName) {
         MockedDataSource result = new MockedDataSource();
         result.setUrl("jdbc:mysql://localhost:3307/" + dataSourceName);
         result.setUsername("root");
