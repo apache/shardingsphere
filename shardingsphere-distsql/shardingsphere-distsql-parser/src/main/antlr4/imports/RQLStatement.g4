@@ -24,7 +24,7 @@ showResources
     ;
 
 showUnusedResources
-    : SHOW UNUSED RESOURCES (FROM schemaName)?
+    : SHOW UNUSED SCHEMA? RESOURCES (FROM schemaName)?
     ;
 
 showSingleTableRules
@@ -33,9 +33,6 @@ showSingleTableRules
 
 showSingleTable
     : SHOW SINGLE (table | TABLES) (FROM schemaName)?
-
-showAuthorityRule
-    : SHOW AUTHORITY RULE
     ;
 
 countSchemaRules
