@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.scaling.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -38,7 +38,7 @@ public final class UpdatableScalingRALBackendHandler implements TextProtocolBack
         ShardingSphereServiceLoader.register(RALUpdater.class);
     }
     
-    private UpdatableRALStatement sqlStatement;
+    private UpdatableScalingRALStatement sqlStatement;
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override

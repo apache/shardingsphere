@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.scaling.update;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -40,7 +40,7 @@ public final class UpdatableScalingRALBackendHandlerFactory {
      * @param sqlStatement queryable RAL statement
      * @return queryable RAL backend handler
      */
-    public static TextProtocolBackendHandler newInstance(final UpdatableRALStatement sqlStatement) {
+    public static TextProtocolBackendHandler newInstance(final UpdatableScalingRALStatement sqlStatement) {
         UpdatableScalingRALBackendHandler result = new UpdatableScalingRALBackendHandler();
         result.setSqlStatement(sqlStatement);
         return result;
