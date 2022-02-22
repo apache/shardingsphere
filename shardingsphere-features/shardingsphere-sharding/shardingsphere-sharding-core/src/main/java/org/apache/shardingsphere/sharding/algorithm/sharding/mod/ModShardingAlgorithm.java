@@ -73,7 +73,7 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     }
     
     private Optional<String> findMatchedActualTableName(final String actualTableName, final String dataNodePrefix, final long suffix) {
-        Long actualTableNameSuffix = Longs.tryParse(actualTableName.replace(dataNodePrefix, ""));
+        Long actualTableNameSuffix = Longs.tryParse(actualTableName.substring(dataNodePrefix.length()));
         if (null != actualTableNameSuffix && actualTableNameSuffix.equals(suffix)) {
             return Optional.of(actualTableName);
         }
