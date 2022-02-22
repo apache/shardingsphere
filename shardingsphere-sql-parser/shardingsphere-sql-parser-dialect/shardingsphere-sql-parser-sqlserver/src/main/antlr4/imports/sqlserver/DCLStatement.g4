@@ -235,7 +235,7 @@ azureActiveDirectoryPrincipal
     ;
 
 userName
-    : ignoredNameIdentifier | NAME_
+    : ignoredNameIdentifier
     ;
 
 ignoredNameIdentifier
@@ -260,7 +260,7 @@ setItem
     ;
 
 loginName
-    : ignoredNameIdentifier | NAME_
+    : ignoredNameIdentifier | DELIMITED_IDENTIFIER_
     ;
 
 createRole

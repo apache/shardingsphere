@@ -63,7 +63,15 @@ nullValueLiterals
     ;
 
 identifier
+    : regularIdentifier | delimitedIdentifier
+    ;
+
+regularIdentifier
     : IDENTIFIER_ | unreservedWord
+    ;
+
+delimitedIdentifier
+    : DELIMITED_IDENTIFIER_
     ;
 
 unreservedWord
@@ -480,7 +488,7 @@ matchNone
     ;
 
 variableName
-    : AT_ identifier
+    : identifier
     ;
 
 executeAsClause

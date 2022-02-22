@@ -48,6 +48,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Dat
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DeleteContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DelimitedIdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.FromClauseContext;
@@ -81,6 +82,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Pro
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.QualifiedShorthandContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RegularFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RegularIdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SelectContext;
@@ -258,8 +260,21 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     
     @Override
     public final ASTNode visitIdentifier(final IdentifierContext ctx) {
+        IdentifierValue result = (IdentifierValue) (null != ctx.regularIdentifier() ? visit(ctx.regularIdentifier()) : visit(ctx.delimitedIdentifier()));
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitRegularIdentifier(final RegularIdentifierContext ctx) {
         UnreservedWordContext unreservedWord = ctx.unreservedWord();
-        return null != unreservedWord ? visit(unreservedWord) : new IdentifierValue(ctx.getText());
+        IdentifierValue result = null != unreservedWord ? (IdentifierValue) visit(unreservedWord) : new IdentifierValue(ctx.getText());
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitDelimitedIdentifier(final DelimitedIdentifierContext ctx) {
+        IdentifierValue result = new IdentifierValue(ctx.getText());
+        return result;
     }
     
     @Override
