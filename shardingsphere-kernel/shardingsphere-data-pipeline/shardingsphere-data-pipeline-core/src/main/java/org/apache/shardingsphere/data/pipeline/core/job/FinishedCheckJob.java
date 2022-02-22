@@ -23,6 +23,8 @@ import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCompletedParameter;
+import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
@@ -34,6 +36,7 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 public final class FinishedCheckJob implements SimpleJob {
@@ -49,6 +52,9 @@ public final class FinishedCheckJob implements SimpleJob {
                 continue;
             }
             String jobId = jobInfo.getJobId();
+            if (checkJobStatus(jobId)) {
+                continue;
+            }
             try {
                 // TODO refactor: dispatch to different job types
                 JobConfiguration jobConfig = YamlEngine.unmarshal(jobInfo.getJobParameter(), JobConfiguration.class, true);
@@ -91,6 +97,19 @@ public final class FinishedCheckJob implements SimpleJob {
                 log.error("scaling job {} finish check failed!", jobId, ex);
             }
         }
+    }
+    
+    private boolean checkJobStatus(final String jobId) {
+        Map<Integer, JobProgress> jobProgressMap = ruleAlteredJobAPI.getProgress(jobId);
+        final AtomicBoolean flag = new AtomicBoolean(false);
+        for (JobProgress each : jobProgressMap.values()) {
+            if (JobStatus.FINISHED.equals(each.getStatus()) || JobStatus.PREPARING_FAILURE.equals(each.getStatus())
+                    || JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.equals(each.getStatus()) || JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.equals(each.getStatus())) {
+                flag.set(true);
+                break;
+            }
+        }
+        return flag.get();
     }
     
     private boolean dataConsistencyCheck(final JobConfiguration jobConfig) {
