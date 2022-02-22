@@ -73,9 +73,9 @@ public abstract class BaseDQLIT extends SingleITCase {
     
     protected final void assertResultSet(final ResultSet actualResultSet, final ResultSet verificationResultSet) throws SQLException {
         if (isAssertMetaDataByByDataSetFile()) {
-            assertMetaData(actualResultSet.getMetaData(), verificationResultSet.getMetaData());
-        } else {
             assertMetaDataByDataSetFile(actualResultSet.getMetaData(), getExpectedColumns());
+        } else {
+            assertMetaData(actualResultSet.getMetaData(), verificationResultSet.getMetaData());
         }
         if (getDataSet().isIgnoreRowOrder()) {
             assertRowsIgnoreOrder(actualResultSet, getDataSet().getRows());
