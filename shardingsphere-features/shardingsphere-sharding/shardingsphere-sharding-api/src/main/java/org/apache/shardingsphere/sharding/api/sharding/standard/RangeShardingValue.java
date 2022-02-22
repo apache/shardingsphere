@@ -35,5 +35,7 @@ public final class RangeShardingValue<T extends Comparable<?>> implements Shardi
     
     private final String columnName;
     
+    private final String dataNodePrefix;
+    
     private final Range<T> valueRange;
 }

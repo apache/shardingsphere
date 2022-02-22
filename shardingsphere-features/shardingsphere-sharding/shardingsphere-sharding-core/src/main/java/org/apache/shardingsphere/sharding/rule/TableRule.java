@@ -44,14 +44,17 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
  * Table rule.
  */
 @Getter
-@ToString(exclude = {"dataNodeIndexMap", "actualTables", "actualDatasourceNames", "datasourceToTablesMap"})
+@ToString(exclude = {"dataNodeIndexMap", "actualTables", "actualDatasourceNames", "datasourceToTablesMap", "dataSourcePrefix", "tablePrefix"})
 public final class TableRule {
+    
+    private static final Pattern DATA_NODE_SUFFIX_PATTERN = Pattern.compile("\\d+$");
     
     private final String logicTable;
     
@@ -76,6 +79,10 @@ public final class TableRule {
     
     private final Map<String, Collection<String>> datasourceToTablesMap = new HashMap<>();
     
+    private final String dataSourcePrefix;
+    
+    private final String tablePrefix;
+    
     public TableRule(final Collection<String> dataSourceNames, final String logicTableName) {
         logicTable = logicTableName;
         dataNodeIndexMap = new HashMap<>(dataSourceNames.size(), 1);
@@ -85,6 +92,8 @@ public final class TableRule {
         tableShardingStrategyConfig = null;
         generateKeyColumn = null;
         keyGeneratorName = null;
+        dataSourcePrefix = actualDataNodes.isEmpty() ? null : getDataNodePrefix(actualDataNodes.iterator().next().getDataSourceName());
+        tablePrefix = actualDataNodes.isEmpty() ? null : getDataNodePrefix(actualDataNodes.iterator().next().getTableName());
     }
     
     public TableRule(final ShardingTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames, final String defaultGenerateKeyColumn) {
@@ -98,6 +107,8 @@ public final class TableRule {
         KeyGenerateStrategyConfiguration keyGeneratorConfig = tableRuleConfig.getKeyGenerateStrategy();
         generateKeyColumn = null != keyGeneratorConfig && !Strings.isNullOrEmpty(keyGeneratorConfig.getColumn()) ? keyGeneratorConfig.getColumn() : defaultGenerateKeyColumn;
         keyGeneratorName = null == keyGeneratorConfig ? null : keyGeneratorConfig.getKeyGeneratorName();
+        dataSourcePrefix = actualDataNodes.isEmpty() ? null : getDataNodePrefix(actualDataNodes.iterator().next().getDataSourceName());
+        tablePrefix = actualDataNodes.isEmpty() ? null : getDataNodePrefix(actualDataNodes.iterator().next().getTableName());
         checkRule(dataNodes);
     }
     
@@ -113,7 +124,13 @@ public final class TableRule {
         KeyGenerateStrategyConfiguration keyGeneratorConfig = tableRuleConfig.getKeyGenerateStrategy();
         generateKeyColumn = null != keyGeneratorConfig && !Strings.isNullOrEmpty(keyGeneratorConfig.getColumn()) ? keyGeneratorConfig.getColumn() : defaultGenerateKeyColumn;
         keyGeneratorName = null == keyGeneratorConfig ? null : keyGeneratorConfig.getKeyGeneratorName();
+        dataSourcePrefix = actualDataNodes.isEmpty() ? null : getDataNodePrefix(actualDataNodes.iterator().next().getDataSourceName());
+        tablePrefix = actualDataNodes.isEmpty() ? null : getDataNodePrefix(actualDataNodes.iterator().next().getTableName());
         checkRule(dataNodes);
+    }
+    
+    private String getDataNodePrefix(final String dataNode) {
+        return DATA_NODE_SUFFIX_PATTERN.matcher(dataNode).replaceAll("");
     }
     
     private List<String> getDataNodes(final ShardingAutoTableRuleConfiguration tableRuleConfig, final ShardingAutoTableAlgorithm shardingAlgorithm, final Collection<String> dataSourceNames) {

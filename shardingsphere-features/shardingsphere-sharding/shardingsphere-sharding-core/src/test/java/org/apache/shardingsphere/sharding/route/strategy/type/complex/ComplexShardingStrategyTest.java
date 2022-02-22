@@ -37,13 +37,15 @@ import static org.junit.Assert.assertThat;
 
 public final class ComplexShardingStrategyTest {
     
+    private static final String DATA_NODE_PREFIX = "logicTable_";
+    
     @Test
     public void assertDoSharding() {
         Collection<String> targets = Sets.newHashSet("1", "2", "3");
         ComplexShardingStrategy complexShardingStrategy = new ComplexShardingStrategy("column1, column2", new ComplexKeysShardingAlgorithmFixture());
         List<ShardingConditionValue> shardingConditionValues =
             Arrays.asList(new ListShardingConditionValue<>("column1", "logicTable", Collections.singletonList(1)), new RangeShardingConditionValue<>("column2", "logicTable", Range.open(1, 3)));
-        Collection<String> actualSharding = complexShardingStrategy.doSharding(targets, shardingConditionValues, new ConfigurationProperties(new Properties()));
+        Collection<String> actualSharding = complexShardingStrategy.doSharding(targets, shardingConditionValues, DATA_NODE_PREFIX, new ConfigurationProperties(new Properties()));
         assertThat(actualSharding.size(), is(3));
         assertThat(actualSharding, is(targets));
     }

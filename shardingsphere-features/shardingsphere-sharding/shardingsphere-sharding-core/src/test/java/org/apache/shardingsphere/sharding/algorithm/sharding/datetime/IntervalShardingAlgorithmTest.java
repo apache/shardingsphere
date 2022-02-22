@@ -34,6 +34,8 @@ import static org.junit.Assert.assertThat;
 
 public final class IntervalShardingAlgorithmTest {
     
+    private static final String DATA_NODE_PREFIX = "t_order_";
+    
     private final Collection<String> availableTablesForQuarterDataSources = new LinkedList<>();
     
     private final Collection<String> availableTablesForMonthDataSources = new LinkedList<>();
@@ -103,68 +105,74 @@ public final class IntervalShardingAlgorithmTest {
     
     @Test
     public void assertPreciseDoShardingByQuarter() {
-        assertThat(shardingAlgorithmByQuarter.doSharding(availableTablesForQuarterDataSources, new PreciseShardingValue<>("t_order", "create_time", "2020-01-01 00:00:01")), is("t_order_202001"));
-        assertThat(shardingAlgorithmByQuarter.doSharding(availableTablesForQuarterDataSources, new PreciseShardingValue<>("t_order", "create_time", "2020-02-01 00:00:01")), is("t_order_202001"));
+        assertThat(shardingAlgorithmByQuarter.doSharding(availableTablesForQuarterDataSources, 
+                new PreciseShardingValue<>("t_order", "create_time", DATA_NODE_PREFIX, "2020-01-01 00:00:01")), is("t_order_202001"));
+        assertThat(shardingAlgorithmByQuarter.doSharding(availableTablesForQuarterDataSources, 
+                new PreciseShardingValue<>("t_order", "create_time", DATA_NODE_PREFIX, "2020-02-01 00:00:01")), is("t_order_202001"));
     }
     
     @Test
     public void assertRangeDoShardingByQuarter() {
-        Collection<String> actual = shardingAlgorithmByQuarter.doSharding(
-                availableTablesForQuarterDataSources, new RangeShardingValue<>("t_order", "create_time", Range.closed("2019-10-15 10:59:08", "2020-04-08 10:59:08")));
+        Collection<String> actual = shardingAlgorithmByQuarter.doSharding(availableTablesForQuarterDataSources, 
+                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_PREFIX, Range.closed("2019-10-15 10:59:08", "2020-04-08 10:59:08")));
         assertThat(actual.size(), is(3));
     }
     
     @Test
     public void assertPreciseDoShardingByMonth() {
-        assertThat(shardingAlgorithmByMonth.doSharding(availableTablesForMonthDataSources, new PreciseShardingValue<>("t_order", "create_time", "2020-01-01 00:00:01")), is("t_order_202001"));
-        assertNull(shardingAlgorithmByMonth.doSharding(availableTablesForMonthDataSources, new PreciseShardingValue<>("t_order", "create_time", "2030-01-01 00:00:01")));
+        assertThat(shardingAlgorithmByMonth.doSharding(availableTablesForMonthDataSources, 
+                new PreciseShardingValue<>("t_order", "create_time", DATA_NODE_PREFIX, "2020-01-01 00:00:01")), is("t_order_202001"));
+        assertNull(shardingAlgorithmByMonth.doSharding(availableTablesForMonthDataSources, 
+                new PreciseShardingValue<>("t_order", "create_time", DATA_NODE_PREFIX, "2030-01-01 00:00:01")));
     }
     
     @Test
     public void assertRangeDoShardingByMonth() {
-        Collection<String> actual = shardingAlgorithmByMonth.doSharding(
-                availableTablesForMonthDataSources, new RangeShardingValue<>("t_order", "create_time", Range.closed("2019-10-15 10:59:08", "2020-04-08 10:59:08")));
+        Collection<String> actual = shardingAlgorithmByMonth.doSharding(availableTablesForMonthDataSources, 
+                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_PREFIX, Range.closed("2019-10-15 10:59:08", "2020-04-08 10:59:08")));
         assertThat(actual.size(), is(7));
     }
     
     @Test
     public void assertLowerHalfRangeDoSharding() {
-        Collection<String> actual = shardingAlgorithmByQuarter.doSharding(
-                availableTablesForQuarterDataSources, new RangeShardingValue<>("t_order", "create_time", Range.atLeast("2018-10-15 10:59:08")));
+        Collection<String> actual = shardingAlgorithmByQuarter.doSharding(availableTablesForQuarterDataSources, 
+                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_PREFIX, Range.atLeast("2018-10-15 10:59:08")));
         assertThat(actual.size(), is(9));
     }
     
     @Test
     public void assertUpperHalfRangeDoSharding() {
-        Collection<String> actual = shardingAlgorithmByQuarter.doSharding(
-                availableTablesForQuarterDataSources, new RangeShardingValue<>("t_order", "create_time", Range.atMost("2019-09-01 00:00:00")));
+        Collection<String> actual = shardingAlgorithmByQuarter.doSharding(availableTablesForQuarterDataSources, 
+                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_PREFIX, Range.atMost("2019-09-01 00:00:00")));
         assertThat(actual.size(), is(15));
     }
     
     @Test
     public void assertLowerHalfRangeDoShardingByDay() {
-        Collection<String> actual = shardingAlgorithmByDay.doSharding(
-                availableTablesForDayDataSources, new RangeShardingValue<>("t_order", "create_time", Range.atLeast("2021-01-01 00:00:00")));
+        Collection<String> actual = shardingAlgorithmByDay.doSharding(availableTablesForDayDataSources, 
+                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_PREFIX, Range.atLeast("2021-01-01 00:00:00")));
         assertThat(actual.size(), is(31));
     }
     
     @Test
     public void assertUpperHalfRangeDoShardingByDay() {
-        Collection<String> actual = shardingAlgorithmByDay.doSharding(
-                availableTablesForDayDataSources, new RangeShardingValue<>("t_order", "create_time", Range.atMost("2021-07-31 01:00:00")));
+        Collection<String> actual = shardingAlgorithmByDay.doSharding(availableTablesForDayDataSources, 
+                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_PREFIX, Range.atMost("2021-07-31 01:00:00")));
         assertThat(actual.size(), is(31));
     }
     
     @Test
     public void assertPreciseDoShardingByDay() {
-        assertThat(shardingAlgorithmByDay.doSharding(availableTablesForDayDataSources, new PreciseShardingValue<>("t_order", "create_time", "2021-07-01 00:00:01")), is("t_order_20210701"));
-        assertThat(shardingAlgorithmByDay.doSharding(availableTablesForDayDataSources, new PreciseShardingValue<>("t_order", "create_time", "2021-07-02 00:00:01")), is("t_order_20210701"));
+        assertThat(shardingAlgorithmByDay.doSharding(availableTablesForDayDataSources, 
+                new PreciseShardingValue<>("t_order", "create_time", DATA_NODE_PREFIX, "2021-07-01 00:00:01")), is("t_order_20210701"));
+        assertThat(shardingAlgorithmByDay.doSharding(availableTablesForDayDataSources, 
+                new PreciseShardingValue<>("t_order", "create_time", DATA_NODE_PREFIX, "2021-07-02 00:00:01")), is("t_order_20210701"));
     }
     
     @Test
     public void assertRangeDoShardingByDay() {
-        Collection<String> actual = shardingAlgorithmByDay.doSharding(
-                availableTablesForDayDataSources, new RangeShardingValue<>("t_order", "create_time", Range.closed("2021-06-15 00:00:00", "2021-07-31 01:00:00")));
+        Collection<String> actual = shardingAlgorithmByDay.doSharding(availableTablesForDayDataSources, 
+                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_PREFIX, Range.closed("2021-06-15 00:00:00", "2021-07-31 01:00:00")));
         assertThat(actual.size(), is(24));
     }
     

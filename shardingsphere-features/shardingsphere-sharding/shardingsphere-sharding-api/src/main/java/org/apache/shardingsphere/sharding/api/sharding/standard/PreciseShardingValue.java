@@ -34,5 +34,7 @@ public final class PreciseShardingValue<T extends Comparable<?>> implements Shar
     
     private final String columnName;
     
+    private final String dataNodePrefix;
+    
     private final T value;
 }

@@ -32,6 +32,8 @@ import static org.junit.Assert.assertThat;
 
 public final class HashModShardingAlgorithmTest {
     
+    private static final String DATA_NODE_PREFIX = "t_order_";
+    
     private HashModShardingAlgorithm shardingAlgorithm;
     
     @Before
@@ -44,13 +46,15 @@ public final class HashModShardingAlgorithmTest {
     @Test
     public void assertPreciseDoSharding() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        assertThat(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_type", "a")), is("t_order_1"));
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames, 
+                new PreciseShardingValue<>("t_order", "order_type", DATA_NODE_PREFIX, "a")), is("t_order_1"));
     }
     
     @Test
     public void assertRangeDoSharding() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "create_time", Range.closed("a", "f")));
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, 
+                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_PREFIX, Range.closed("a", "f")));
         assertThat(actual.size(), is(4));
     }
 }

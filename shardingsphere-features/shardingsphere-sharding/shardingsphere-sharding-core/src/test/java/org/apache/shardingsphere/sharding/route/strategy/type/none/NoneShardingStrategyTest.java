@@ -41,7 +41,7 @@ public final class NoneShardingStrategyTest {
     @Test
     public void assertGetShardingAlgorithm() {
         Collection<String> targets = Sets.newHashSet("1", "2", "3");
-        Collection<String> actualSharding = noneShardingStrategy.doSharding(targets, Collections.emptySet(), new ConfigurationProperties(new Properties()));
+        Collection<String> actualSharding = noneShardingStrategy.doSharding(targets, Collections.emptySet(), "", new ConfigurationProperties(new Properties()));
         assertThat(actualSharding.size(), is(3));
         assertThat(actualSharding, is(targets));
     }

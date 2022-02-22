@@ -35,6 +35,8 @@ import static org.mockito.Mockito.mock;
 
 public final class InlineShardingAlgorithmTest {
     
+    private static final String DATA_NODE_PREFIX = "t_order_";
+    
     private InlineShardingAlgorithm inlineShardingAlgorithm;
     
     private InlineShardingAlgorithm inlineShardingAlgorithmWithSimplified;
@@ -61,21 +63,26 @@ public final class InlineShardingAlgorithmTest {
     @Test(expected = ShardingSphereException.class)
     public void assertDoSharding() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", 0)), is("t_order_0"));
-        inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "non_existent_column1", 0));
+        assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, 
+                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_PREFIX, 0)), is("t_order_0"));
+        inlineShardingAlgorithm.doSharding(availableTargetNames, 
+                new PreciseShardingValue<>("t_order", "non_existent_column1", DATA_NODE_PREFIX, 0));
     }
     
     @Test
     public void assertDoShardingWithRangeShardingConditionValue() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        Collection<String> actual = inlineShardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "order_id", mock(Range.class)));
+        Collection<String> actual = inlineShardingAlgorithm.doSharding(availableTargetNames, 
+                new RangeShardingValue<>("t_order", "order_id", DATA_NODE_PREFIX, mock(Range.class)));
         assertTrue(actual.containsAll(availableTargetNames));
     }
     
     @Test
     public void assertDoShardingWithNonExistNodes() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1");
-        assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", 0)), is("t_order_0"));
-        assertThat(inlineShardingAlgorithmWithSimplified.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", 0)), is("t_order_0"));
+        assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, 
+                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_PREFIX, 0)), is("t_order_0"));
+        assertThat(inlineShardingAlgorithmWithSimplified.doSharding(availableTargetNames, 
+                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_PREFIX, 0)), is("t_order_0"));
     }
 }

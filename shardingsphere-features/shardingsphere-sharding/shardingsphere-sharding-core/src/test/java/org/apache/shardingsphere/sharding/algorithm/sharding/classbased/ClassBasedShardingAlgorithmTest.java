@@ -37,6 +37,8 @@ import static org.junit.Assert.assertThat;
 
 public final class ClassBasedShardingAlgorithmTest {
     
+    private static final String DATA_NODE_PREFIX = "t_order_";
+    
     @Test
     public void assertStandardStrategyInit() {
         ClassBasedShardingAlgorithm shardingAlgorithm = getStandardShardingAlgorithm();
@@ -86,14 +88,16 @@ public final class ClassBasedShardingAlgorithmTest {
     public void assertPreciseDoSharding() {
         ClassBasedShardingAlgorithm shardingAlgorithm = getStandardShardingAlgorithm();
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        assertThat(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", 0)), is("t_order_0"));
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames, 
+                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_PREFIX, 0)), is("t_order_0"));
     }
     
     @Test
     public void assertRangeDoSharding() {
         ClassBasedShardingAlgorithm shardingAlgorithm = getStandardShardingAlgorithm();
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "order_id", Range.closed(2, 15)));
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, 
+                new RangeShardingValue<>("t_order", "order_id", DATA_NODE_PREFIX, Range.closed(2, 15)));
         assertThat(actual.size(), is(4));
     }
     

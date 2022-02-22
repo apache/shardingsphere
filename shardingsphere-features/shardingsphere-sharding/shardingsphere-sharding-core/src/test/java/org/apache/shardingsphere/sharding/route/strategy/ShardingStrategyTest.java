@@ -40,20 +40,21 @@ import static org.junit.Assert.assertThat;
 
 public final class ShardingStrategyTest {
     
+    private static final String DATA_NODE_PREFIX = "logicTable_";
+    
     private final Collection<String> targets = Arrays.asList("1", "2", "3");
     
     @Test
     public void assertDoShardingWithoutShardingColumns() {
         NoneShardingStrategy strategy = new NoneShardingStrategy();
-        assertThat(strategy.doSharding(targets, Collections.emptySet(), new ConfigurationProperties(new Properties())), is(targets));
+        assertThat(strategy.doSharding(targets, Collections.emptySet(), DATA_NODE_PREFIX, new ConfigurationProperties(new Properties())), is(targets));
     }
     
     @Test
     public void assertDoShardingForBetweenSingleKey() {
         StandardShardingStrategy strategy = new StandardShardingStrategy("column", new StandardShardingAlgorithmFixture());
-        assertThat(strategy.doSharding(targets, 
-                Collections.singleton(new RangeShardingConditionValue<>("column", "logicTable", Range.open(1, 3))), new ConfigurationProperties(new Properties())),
-                is(Collections.singleton("1")));
+        Collection<ShardingConditionValue> shardingConditionValues = Collections.singleton(new RangeShardingConditionValue<>("column", "logicTable", Range.open(1, 3)));
+        assertThat(strategy.doSharding(targets, shardingConditionValues, DATA_NODE_PREFIX, new ConfigurationProperties(new Properties())), is(Collections.singleton("1")));
     }
     
     @Test
@@ -66,6 +67,6 @@ public final class ShardingStrategyTest {
         Collection<ShardingConditionValue> shardingConditionValues = Arrays.asList(
                 new ListShardingConditionValue<>("column1", "logicTable", Collections.singletonList(1)),
                 new RangeShardingConditionValue<>("column2", "logicTable", Range.open(1, 3)));
-        assertThat(strategy.doSharding(targets, shardingConditionValues, new ConfigurationProperties(new Properties())), is(expected));
+        assertThat(strategy.doSharding(targets, shardingConditionValues, DATA_NODE_PREFIX, new ConfigurationProperties(new Properties())), is(expected));
     }
 }

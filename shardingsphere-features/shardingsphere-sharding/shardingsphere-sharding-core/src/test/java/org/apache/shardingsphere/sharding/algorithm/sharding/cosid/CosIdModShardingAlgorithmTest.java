@@ -75,7 +75,7 @@ public final class CosIdModShardingAlgorithmTest {
         
         @Test
         public void assertDoSharding() {
-            PreciseShardingValue<Long> shardingValue = new PreciseShardingValue<>(LOGIC_NAME, COLUMN_NAME, id);
+            PreciseShardingValue<Long> shardingValue = new PreciseShardingValue<>(LOGIC_NAME, COLUMN_NAME, "t_mod_", id);
             String actual = shardingAlgorithm.doSharding(ALL_NODES, shardingValue);
             String expected = LOGIC_NAME_PREFIX + (id % DIVISOR);
             assertThat(actual, is(expected));
@@ -173,7 +173,7 @@ public final class CosIdModShardingAlgorithmTest {
         
         @Test
         public void assertDoSharding() {
-            RangeShardingValue<Long> shardingValue = new RangeShardingValue<>(LOGIC_NAME, COLUMN_NAME, rangeValue);
+            RangeShardingValue<Long> shardingValue = new RangeShardingValue<>(LOGIC_NAME, COLUMN_NAME, "t_mod_", rangeValue);
             Collection<String> actual = shardingAlgorithm.doSharding(ALL_NODES, shardingValue);
             assertThat(actual, is(expected));
         }

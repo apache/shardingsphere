@@ -91,7 +91,8 @@ public final class CosIdSnowflakeIntervalShardingAlgorithmTest {
         
         @Test
         public void assertDoSharding() {
-            PreciseShardingValue shardingValue = new PreciseShardingValue<>(CosIdIntervalShardingAlgorithmTest.LOGIC_NAME, CosIdIntervalShardingAlgorithmTest.COLUMN_NAME, snowflakeId);
+            PreciseShardingValue shardingValue = new PreciseShardingValue<>(CosIdIntervalShardingAlgorithmTest.LOGIC_NAME, 
+                    CosIdIntervalShardingAlgorithmTest.COLUMN_NAME, CosIdIntervalShardingAlgorithmTest.LOGIC_NAME_PREFIX, snowflakeId);
             String actual = shardingAlgorithm.doSharding(CosIdIntervalShardingAlgorithmTest.ALL_NODES, shardingValue);
             assertThat(actual, is(expected));
         }
@@ -123,7 +124,8 @@ public final class CosIdSnowflakeIntervalShardingAlgorithmTest {
         
         @Test
         public void assertDoSharding() {
-            RangeShardingValue shardingValue = new RangeShardingValue<>(CosIdIntervalShardingAlgorithmTest.LOGIC_NAME, CosIdIntervalShardingAlgorithmTest.COLUMN_NAME, rangeValue);
+            RangeShardingValue shardingValue = new RangeShardingValue<>(CosIdIntervalShardingAlgorithmTest.LOGIC_NAME, 
+                    CosIdIntervalShardingAlgorithmTest.COLUMN_NAME, CosIdIntervalShardingAlgorithmTest.LOGIC_NAME_PREFIX, rangeValue);
             Collection<String> actual = shardingAlgorithm.doSharding(CosIdIntervalShardingAlgorithmTest.ALL_NODES, shardingValue);
             assertThat(actual, is(expected));
         }

@@ -33,6 +33,8 @@ import static org.junit.Assert.assertTrue;
 
 public final class BoundaryBasedRangeShardingAlgorithmTest {
     
+    private static final String DATA_NODE_PREFIX = "t_order_";
+    
     private BoundaryBasedRangeShardingAlgorithm shardingAlgorithm;
     
     @Before
@@ -44,7 +46,7 @@ public final class BoundaryBasedRangeShardingAlgorithmTest {
     
     @Test
     public void assertPreciseDoSharding() {
-        assertPreciseDoSharding(new PreciseShardingValue<>("t_order", "order_id", 0L));
+        assertPreciseDoSharding(new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_PREFIX, 0L));
     }
     
     private void assertPreciseDoSharding(final PreciseShardingValue<Comparable<?>> shardingValue) {
@@ -54,12 +56,12 @@ public final class BoundaryBasedRangeShardingAlgorithmTest {
     
     @Test
     public void assertPreciseDoShardingWithIntShardingValue() {
-        assertPreciseDoSharding(new PreciseShardingValue<>("t_order", "order_id", 0));
+        assertPreciseDoSharding(new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_PREFIX, 0));
     }
     
     @Test
     public void assertRangeDoSharding() {
-        assertRangeDoSharding(new RangeShardingValue<>("t_order", "order_id", Range.closed(2L, 15L)));
+        assertRangeDoSharding(new RangeShardingValue<>("t_order", "order_id", DATA_NODE_PREFIX, Range.closed(2L, 15L)));
     }
     
     private void assertRangeDoSharding(final RangeShardingValue<Comparable<?>> shardingValue) {
@@ -73,7 +75,7 @@ public final class BoundaryBasedRangeShardingAlgorithmTest {
     
     @Test
     public void assertRangeDoShardingWithIntShardingValue() {
-        assertRangeDoSharding(new RangeShardingValue<>("t_order", "order_id", Range.closed(2, 15)));
+        assertRangeDoSharding(new RangeShardingValue<>("t_order", "order_id", DATA_NODE_PREFIX, Range.closed(2, 15)));
     }
     
     @Test

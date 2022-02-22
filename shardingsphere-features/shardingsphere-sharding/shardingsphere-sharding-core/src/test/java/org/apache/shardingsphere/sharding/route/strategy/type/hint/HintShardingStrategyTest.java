@@ -18,25 +18,28 @@
 package org.apache.shardingsphere.sharding.route.strategy.type.hint;
 
 import com.google.common.collect.Sets;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Properties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.strategy.fixture.HintShardingAlgorithmFixture;
 import org.junit.Test;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class HintShardingStrategyTest {
     
+    private static final String DATA_NODE_PREFIX = "logicTable_";
+    
     @Test
     public void assertDoSharding() {
         Collection<String> targets = Sets.newHashSet("1", "2", "3");
         HintShardingStrategy hintShardingStrategy = new HintShardingStrategy(new HintShardingAlgorithmFixture());
-        Collection<String> actualSharding = hintShardingStrategy
-            .doSharding(targets, Collections.singletonList(new ListShardingConditionValue<>("column", "logicTable", Collections.singletonList(1))), new ConfigurationProperties(new Properties()));
+        Collection<String> actualSharding = hintShardingStrategy.doSharding(targets, Collections.singletonList(
+                new ListShardingConditionValue<>("column", "logicTable", Collections.singletonList(1))), DATA_NODE_PREFIX, new ConfigurationProperties(new Properties()));
         assertThat(actualSharding.size(), is(1));
         assertThat(actualSharding.iterator().next(), is("1"));
     }
