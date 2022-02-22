@@ -17,7 +17,7 @@
 
 grammar DCLStatement;
 
-import BaseRule, DDLStatement;
+import DDLStatement;
 
 grant
     : GRANT (privilegeClause | roleClause)
