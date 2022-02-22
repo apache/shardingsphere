@@ -15,36 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.update;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.scaling.update;
 
-import lombok.Setter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
-
-import java.util.Properties;
 
 /**
- * Updatable scaling RAL backend handler factory.
+ *  Updatable scaling RAL backend handler factory.
  */
-@Setter
-public final class UpdatableScalingRALBackendHandler implements TextProtocolBackendHandler {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class UpdatableScalingRALBackendHandlerFactory {
     
     static {
         ShardingSphereServiceLoader.register(RALUpdater.class);
     }
     
-    private UpdatableScalingRALStatement sqlStatement;
-    
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    @Override
-    public ResponseHeader execute() {
-        RALUpdater updater = TypedSPIRegistry.getRegisteredService(RALUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties());
-        updater.executeUpdate(sqlStatement);
-        return new UpdateResponseHeader(sqlStatement);
+    /**
+     * Create new instance of queryable RAL backend handler.
+     * 
+     * @param sqlStatement queryable RAL statement
+     * @return queryable RAL backend handler
+     */
+    public static TextProtocolBackendHandler newInstance(final UpdatableScalingRALStatement sqlStatement) {
+        UpdatableScalingRALBackendHandler result = new UpdatableScalingRALBackendHandler();
+        result.setSqlStatement(sqlStatement);
+        return result;
     }
 }
