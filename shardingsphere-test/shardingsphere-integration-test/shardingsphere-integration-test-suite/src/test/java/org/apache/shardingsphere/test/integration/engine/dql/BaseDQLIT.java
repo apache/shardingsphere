@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.engine.dql;
 
-import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
-import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.scenario.ScenarioPath;
@@ -37,7 +35,6 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -72,11 +69,7 @@ public abstract class BaseDQLIT extends SingleITCase {
     }
     
     protected final void assertResultSet(final ResultSet actualResultSet, final ResultSet verificationResultSet) throws SQLException {
-        if (isAssertMetaDataByByDataSetFile()) {
-            assertMetaDataByDataSetFile(actualResultSet.getMetaData(), getExpectedColumns());
-        } else {
-            assertMetaData(actualResultSet.getMetaData(), verificationResultSet.getMetaData());
-        }
+        assertMetaData(actualResultSet.getMetaData(), verificationResultSet.getMetaData());
         if (getDataSet().isIgnoreRowOrder()) {
             assertRowsIgnoreOrder(actualResultSet, getDataSet().getRows());
         } else {
@@ -98,27 +91,6 @@ public abstract class BaseDQLIT extends SingleITCase {
                     assertThat(actualResultSetMetaData.getColumnLabel(i + 1).toLowerCase(), startsWith("expr$"));
                 }
             }
-        }
-    }
-    
-    // TODO should assert it with verification data source for all finally
-    private boolean isAssertMetaDataByByDataSetFile() {
-        return getScenario().equals("encrypt") || getScenario().equals("dbtbl_with_readwrite_splitting_and_encrypt") || getScenario().equals("shadow");
-    }
-    
-    private Collection<DataSetColumn> getExpectedColumns() {
-        Collection<DataSetColumn> result = new LinkedList<>();
-        for (DataSetMetaData each : getDataSet().getMetaDataList()) {
-            result.addAll(each.getColumns());
-        }
-        return result;
-    }
-    
-    private void assertMetaDataByDataSetFile(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {
-        assertThat(actual.getColumnCount(), is(expected.size()));
-        int index = 1;
-        for (DataSetColumn each : expected) {
-            assertThat(actual.getColumnLabel(index++).toLowerCase(), is(each.getName().toLowerCase()));
         }
     }
     
