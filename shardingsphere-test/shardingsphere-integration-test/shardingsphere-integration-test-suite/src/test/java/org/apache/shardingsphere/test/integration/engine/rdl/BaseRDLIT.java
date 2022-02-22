@@ -23,6 +23,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.junit.After;
 import org.junit.Before;
 
 import java.sql.Connection;
@@ -53,14 +54,13 @@ public abstract class BaseRDLIT extends SingleITCase {
         }
     }
     
-    @Override
+    @After
     public final void tearDown() throws Exception {
         if (getAssertion().getDestroySQL() != null) {
             try (Connection connection = getTargetDataSource().getConnection()) {
                 executeDestroySQLs(connection);
             }
         }
-        super.tearDown();
     }
     
     private void executeInitSQLs(final Connection connection) throws SQLException {

@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Compute node persist service.
@@ -80,6 +81,16 @@ public final class ComputeNodePersistService {
     }
     
     /**
+     * Persist instance xa recovery id.
+     *
+     * @param instanceId instance id
+     * @param xaRecoveryId xa recovery id
+     */
+    public void persistInstanceXaRecoveryId(final String instanceId, final String xaRecoveryId) {
+        repository.persist(ComputeNode.getInstanceXaRecoveryIdNodePath(instanceId), xaRecoveryId);
+    }
+    
+    /**
      * Load instance labels.
      * 
      * @param instanceId instance id
@@ -115,6 +126,16 @@ public final class ComputeNodePersistService {
             log.error("Invalid worker id for instance: {}", instanceId);
         }
         return null;
+    }
+    
+    /**
+     * Load instance xa recovery id.
+     * 
+     * @param instanceId instance id
+     * @return xa recovery id
+     */
+    public Optional<String> loadXaRecoveryId(final String instanceId) {
+        return Optional.ofNullable(repository.get(ComputeNode.getInstanceXaRecoveryIdNodePath(instanceId)));
     }
     
     /**
@@ -167,6 +188,7 @@ public final class ComputeNodePersistService {
         result.setLabels(loadInstanceLabels(instanceDefinition.getInstanceId().getId()));
         result.setStatus(loadInstanceStatus(instanceDefinition.getInstanceId().getId()));
         result.setWorkerId(loadInstanceWorkerId(instanceDefinition.getInstanceId().getId()));
+        loadXaRecoveryId(instanceDefinition.getInstanceId().getId()).ifPresent(result::setXaRecoveryId);
         return result;
     }
 }

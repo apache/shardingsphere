@@ -28,6 +28,7 @@ import org.apache.shardingsphere.test.integration.env.scenario.dataset.DataSetEn
 import org.apache.shardingsphere.test.integration.framework.database.DatabaseAssertionMetaData;
 import org.apache.shardingsphere.test.integration.framework.database.DatabaseAssertionMetaDataFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.junit.After;
 import org.junit.Before;
 
 import javax.sql.DataSource;
@@ -59,10 +60,9 @@ public abstract class BaseDMLIT extends SingleITCase {
         dataSetEnvironmentManager.fillData();
     }
     
-    @Override
-    public final void tearDown() throws Exception {
+    @After
+    public final void tearDown() {
         dataSetEnvironmentManager.cleanData();
-        super.tearDown();
     }
     
     protected final void assertDataSet(final int actualUpdateCount) throws SQLException {

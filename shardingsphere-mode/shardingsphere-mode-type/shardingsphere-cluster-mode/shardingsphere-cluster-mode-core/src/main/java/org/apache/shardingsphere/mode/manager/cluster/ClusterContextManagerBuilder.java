@@ -45,8 +45,6 @@ import org.apache.shardingsphere.transaction.context.TransactionContextsBuilder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGenerator;
 import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGeneratorFactory;
-import org.apache.zookeeper.Op;
-import org.checkerframework.checker.nullness.Opt;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -84,13 +82,15 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
         Optional<TransactionRuleConfiguration> transactionRuleConfiguration =
                 globalRuleConfigs.stream().filter(each -> each instanceof TransactionRuleConfiguration).map(each -> (TransactionRuleConfiguration) each).findFirst();
-        if (transactionRuleConfiguration.isPresent()) {
-            Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(transactionRuleConfiguration.get().getProviderType());
-            if (fileGenerator.isPresent()) {
-                Optional<SchemaConfiguration> schemaConfiguration = createSchemaConfiguration(schemaName, metaDataPersistService, parameter);
-                Optional<Properties> transactionProps = fileGenerator.get().getTransactionProps(transactionRuleConfiguration.get(), schemaConfiguration);
-                transactionProps.ifPresent(optional -> metaDataPersistService.persistTransactionRule(optional, true));
-//                metaDataPersistService.persistTransactionRule(transactionProps, true);
+        Optional<TransactionConfigurationFileGenerator> fileGenerator = transactionRuleConfiguration.isPresent() ? TransactionConfigurationFileGeneratorFactory
+                .newInstance(transactionRuleConfiguration.get().getProviderType()) : Optional.empty();
+        if (fileGenerator.isPresent()) {
+            Optional<SchemaConfiguration> schemaConfiguration = createSchemaConfiguration(schemaName, metaDataPersistService, parameter);
+            Optional<Properties> transactionProps = fileGenerator.get().getTransactionProps(transactionRuleConfiguration.get(), schemaConfiguration);
+            transactionProps.ifPresent(optional -> metaDataPersistService.persistTransactionRule(optional, true));
+            String instanceId = parameter.getInstanceDefinition().getInstanceId().getId();
+            if (!metaDataPersistService.getComputeNodePersistService().loadXaRecoveryId(instanceId).isPresent()) {
+                metaDataPersistService.getComputeNodePersistService().persistInstanceXaRecoveryId(instanceId, instanceId);
             }
         }
     }
