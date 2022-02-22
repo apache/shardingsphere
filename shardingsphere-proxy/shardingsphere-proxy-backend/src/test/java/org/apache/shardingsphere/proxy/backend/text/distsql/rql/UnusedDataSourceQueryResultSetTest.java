@@ -87,8 +87,8 @@ public final class UnusedDataSourceQueryResultSetTest {
     
     private Map<String, DataSource> createDataSources() {
         Map<String, DataSource> result = new HashMap<>();
-        for (String dataSourceName : createDataSourceNames()) {
-            result.put(dataSourceName, createDataSource(dataSourceName));
+        for (String each : createDataSourceNames()) {
+            result.put(each, createDataSource(each));
         }
         return result;
     }

@@ -42,6 +42,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -73,7 +74,7 @@ public final class UnusedDataSourceQueryResultSet implements DistSQLResultSet {
         resource = metaData.getResource();
         dataSourcePropsMap = new LinkedHashMap<>(metaData.getResource().getDataSources().size(), 1);
         Multimap<String, String> inUsedMultiMap = getInUsedResources(metaData.getRuleMetaData());
-        for (Map.Entry<String, DataSource> entry : metaData.getResource().getDataSources().entrySet()) {
+        for (Entry<String, DataSource> entry : metaData.getResource().getDataSources().entrySet()) {
             if (inUsedMultiMap.containsKey(entry.getKey())) {
                 continue;
             }
