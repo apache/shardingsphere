@@ -26,6 +26,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQ
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.InvalidAuthorizationSpecificationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.exception.InvalidParameterValueException;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.ServerErrorMessage;
 
@@ -49,6 +50,9 @@ public final class PostgreSQLErrPacketFactory {
         }
         if (cause instanceof SQLException) {
             return createErrorResponsePacket((SQLException) cause);
+        }
+        if (cause instanceof InvalidParameterValueException) {
+            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.INVALID_PARAMETER_VALUE, cause.getMessage()).build();
         }
         if (cause instanceof InvalidAuthorizationSpecificationException) {
             return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION, cause.getMessage()).build();
