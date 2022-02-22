@@ -203,11 +203,6 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     }
     
     @Override
-    public Collection<String> getAllActualTables() {
-        return Collections.emptyList();
-    }
-    
-    @Override
     public Optional<String> findFirstActualTable(final String logicTable) {
         return Optional.empty();
     }

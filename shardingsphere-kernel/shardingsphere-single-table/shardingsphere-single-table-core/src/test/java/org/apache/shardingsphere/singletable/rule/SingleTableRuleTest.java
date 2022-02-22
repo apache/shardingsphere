@@ -170,6 +170,7 @@ public final class SingleTableRuleTest {
         singleTableRuleConfiguration.setDefaultDataSource("ds_0");
         SingleTableRule singleTableRule = new SingleTableRule(singleTableRuleConfiguration, mock(DatabaseType.class), dataSourceMap, 
                 Collections.singletonList(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
+        assertTrue(singleTableRule.getDefaultDataSource().isPresent());
         assertThat(singleTableRule.getDefaultDataSource().get(), is("ds_0"));
     }
     
@@ -237,14 +238,6 @@ public final class SingleTableRuleTest {
         DataNode dataNode = actual.iterator().next();
         assertThat(dataNode.getDataSourceName(), is("ds_0"));
         assertThat(dataNode.getTableName(), is("employee"));
-    }
-    
-    @Test
-    public void assertGetAllActualTables() {
-        DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class), dataSourceMap, 
-                Collections.singletonList(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
-        assertTrue(singleTableRule.getAllActualTables().isEmpty());
     }
     
     @Test
