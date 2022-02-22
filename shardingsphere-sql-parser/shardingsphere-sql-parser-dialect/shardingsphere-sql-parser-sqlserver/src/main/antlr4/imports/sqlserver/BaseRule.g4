@@ -194,7 +194,7 @@ collationName
     ;
 
 alias
-    : IDENTIFIER_
+    : identifier | STRING_
     ;
 
 dataTypeLength
