@@ -24,7 +24,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.Postgr
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
- * MD5Password authentication (backend) packet for PostgreSQL.
+ * MD5 password authentication (backend) packet for PostgreSQL.
  */
 @RequiredArgsConstructor
 public final class PostgreSQLMD5PasswordAuthenticationPacket implements PostgreSQLIdentifierPacket {
