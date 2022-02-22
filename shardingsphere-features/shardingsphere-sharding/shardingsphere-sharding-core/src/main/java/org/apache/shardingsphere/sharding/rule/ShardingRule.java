@@ -123,8 +123,8 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
                 ? RequiredSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
         defaultShardingColumn = config.getDefaultShardingColumn();
-        checkSameBindingTables(config.getBindingTableGroups(), bindingTableRules);
         shardingTableDataNodes = createShardingTableDataNodes(tableRules);
+        checkSameBindingTables(config.getBindingTableGroups(), bindingTableRules);
     }
     
     public ShardingRule(final AlgorithmProvidedShardingRuleConfiguration config, final Collection<String> dataSourceNames) {
@@ -140,8 +140,8 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
                 ? RequiredSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
         defaultShardingColumn = config.getDefaultShardingColumn();
-        checkSameBindingTables(config.getBindingTableGroups(), bindingTableRules);
         shardingTableDataNodes = createShardingTableDataNodes(tableRules);
+        checkSameBindingTables(config.getBindingTableGroups(), bindingTableRules);
     }
     
     private Map<String, Collection<DataNode>> createShardingTableDataNodes(final Map<String, TableRule> tableRules) {
