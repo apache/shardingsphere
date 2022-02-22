@@ -86,14 +86,14 @@ public abstract class BaseDQLIT extends SingleITCase {
     
     private void assertMetaData(final ResultSetMetaData actualResultSetMetaData, final ResultSetMetaData verificationResultSetMetaData) throws SQLException {
         assertThat(actualResultSetMetaData.getColumnCount(), is(verificationResultSetMetaData.getColumnCount()));
-        for (int i = 0; i < actualResultSetMetaData.getColumnCount();i++) {
+        for (int i = 0; i < actualResultSetMetaData.getColumnCount(); i++) {
             try {
                 assertThat(actualResultSetMetaData.getColumnLabel(i + 1).toLowerCase(), is(verificationResultSetMetaData.getColumnLabel(i + 1).toLowerCase()));
             } catch (final AssertionError ex) {
                 // FIXME Expected: is "order_id", but: was "order_id0"
                 try {
                     assertThat(actualResultSetMetaData.getColumnLabel(i + 1).toLowerCase(), is(verificationResultSetMetaData.getColumnLabel(i + 1).toLowerCase() + "0"));
-                } catch (final AssertionError ex0) {
+                } catch (final AssertionError otherEx) {
                     // FIXME Expected: is "sum(order_id_sharding)0", but: was "expr$1"
                     assertThat(actualResultSetMetaData.getColumnLabel(i + 1).toLowerCase(), startsWith("expr$"));
                 }

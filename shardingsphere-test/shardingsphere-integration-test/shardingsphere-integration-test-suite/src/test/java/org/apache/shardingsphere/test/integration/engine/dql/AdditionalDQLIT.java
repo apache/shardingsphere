@@ -171,7 +171,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
                 actualPreparedStatement.setObject(each.getIndex(), each.getValue());
                 verificationPreparedStatement.setObject(each.getIndex(), each.getValue());
             }
-            assertTrue("Not a query statement.", actualPreparedStatement.execute() &&  verificationPreparedStatement.execute());
+            assertTrue("Not a query statement.", actualPreparedStatement.execute() && verificationPreparedStatement.execute());
             try (
                     ResultSet actualResultSet = actualPreparedStatement.getResultSet();
                     ResultSet verificationResultSet = verificationPreparedStatement.getResultSet()) {
