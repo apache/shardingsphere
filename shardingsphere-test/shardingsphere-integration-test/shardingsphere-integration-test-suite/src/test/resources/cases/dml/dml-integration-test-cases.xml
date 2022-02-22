@@ -245,11 +245,11 @@
                    expected-data-file="shadow_update_order_by_user_id.xml" />
     </test-case>
     
-    <test-case sql="DELETE FROM t_order WHERE user_id = ? and order_id in (?, ?)" db-types="MySQL" scenario-types="shadow">
+    <test-case sql="DELETE FROM t_shadow WHERE user_id = ? and order_id in (?, ?)" db-types="MySQL" scenario-types="shadow">
         <assertion parameters="1:int, 4:long, 5:long" expected-data-file="pro_delete_order_by_user_id.xml" />
     </test-case>
     
-    <test-case sql="DELETE FROM t_order WHERE user_id = ? and order_id in (?, ?)" db-types="MySQL" scenario-types="shadow">
+    <test-case sql="DELETE FROM t_shadow WHERE user_id = ? and order_id in (?, ?)" db-types="MySQL" scenario-types="shadow">
         <assertion parameters="0:int, 4:long, 5:long" expected-data-file="shadow_delete_order_by_user_id.xml" />
     </test-case>
     
