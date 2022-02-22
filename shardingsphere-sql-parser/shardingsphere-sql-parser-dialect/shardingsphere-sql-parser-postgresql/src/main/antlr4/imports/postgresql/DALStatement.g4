@@ -17,7 +17,7 @@
 
 grammar DALStatement;
 
-import BaseRule, DDLStatement;
+import DDLStatement;
 
 show
     : SHOW (varName | TIME ZONE | TRANSACTION ISOLATION LEVEL | SESSION AUTHORIZATION | ALL) EOF

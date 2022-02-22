@@ -17,7 +17,7 @@
 
 grammar DALStatement;
 
-import SQLServerKeyword, DMLStatement, DDLStatement;
+import SQLServerKeyword, DDLStatement;
 
 explain
     : EXPLAIN WITH_RECOMMENDATIONS? explainableStatement

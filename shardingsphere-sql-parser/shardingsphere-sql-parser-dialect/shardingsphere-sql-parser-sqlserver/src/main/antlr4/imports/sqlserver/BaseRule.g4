@@ -194,7 +194,7 @@ collationName
     ;
 
 alias
-    : IDENTIFIER_
+    : identifier | STRING_
     ;
 
 dataTypeLength
@@ -325,10 +325,6 @@ caseElse
 
 privateExprOfDb
     : windowedFunction | atTimeZoneExpr | castExpr | convertExpr
-    ;
-
-subquery
-    : matchNone
     ;
 
 orderByClause
