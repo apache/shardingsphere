@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
-import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.parse.ParseStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.ParseStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.advanced.parse;
+package org.apache.shardingsphere.distsql.parser.statement.ral.advanced;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
