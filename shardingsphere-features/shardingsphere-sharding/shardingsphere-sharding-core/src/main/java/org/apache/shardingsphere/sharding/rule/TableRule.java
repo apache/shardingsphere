@@ -107,8 +107,8 @@ public final class TableRule {
         KeyGenerateStrategyConfiguration keyGeneratorConfig = tableRuleConfig.getKeyGenerateStrategy();
         generateKeyColumn = null != keyGeneratorConfig && !Strings.isNullOrEmpty(keyGeneratorConfig.getColumn()) ? keyGeneratorConfig.getColumn() : defaultGenerateKeyColumn;
         keyGeneratorName = null == keyGeneratorConfig ? null : keyGeneratorConfig.getKeyGeneratorName();
-        dataSourcePrefix = actualDataNodes.isEmpty() ? null : getDataNodePrefix(actualDataNodes.iterator().next().getDataSourceName());
-        tablePrefix = actualDataNodes.isEmpty() ? null : getDataNodePrefix(actualDataNodes.iterator().next().getTableName());
+        dataSourcePrefix = actualDataNodes.isEmpty() ? "" : getDataNodePrefix(actualDataNodes.iterator().next().getDataSourceName());
+        tablePrefix = actualDataNodes.isEmpty() ? "" : getDataNodePrefix(actualDataNodes.iterator().next().getTableName());
         checkRule(dataNodes);
     }
     
