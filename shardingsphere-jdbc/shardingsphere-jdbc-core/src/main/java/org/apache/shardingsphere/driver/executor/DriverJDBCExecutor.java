@@ -109,11 +109,20 @@ public final class DriverJDBCExecutor {
     }
     
     private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext<?> sqlStatementContext) {
-        return rules.stream().anyMatch(each -> each instanceof DataNodeContainedRule && ((DataNodeContainedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
+        for (ShardingSphereRule each : rules) {
+            if (each instanceof DataNodeContainedRule && ((DataNodeContainedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames())) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private int accumulate(final List<Integer> updateResults) {
-        return updateResults.stream().mapToInt(each -> null == each ? 0 : each).sum();
+        int result = 0;
+        for (Integer each : updateResults) {
+            result += null != each ? each : 0;
+        }
+        return result;
     }
     
     /**

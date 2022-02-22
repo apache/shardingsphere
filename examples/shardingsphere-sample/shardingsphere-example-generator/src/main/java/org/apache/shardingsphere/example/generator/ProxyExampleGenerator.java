@@ -19,27 +19,19 @@ package org.apache.shardingsphere.example.generator;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
-import org.apache.shardingsphere.example.generator.scenario.ExampleScenarioFactory;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
- * JDBC example generator.
+ * Proxy example generator.
  */
-public final class JDBCExampleGenerator implements ExampleGenerator {
+public final class ProxyExampleGenerator implements ExampleGenerator {
     
     private static final String OUTPUT_PATH = "./examples/shardingsphere-sample/shardingsphere-example-generator/target/shardingsphere-example-generated"
             + "/shardingsphere-${product}-sample/${feature?replace(',', '-')}--${framework}--${mode}--${transaction}/";
-    
-    private static final String JAVA_CLASS_PATH = "src/main/java/org/apache/shardingsphere/example/"
-            + "<#assign package=\"\">"
-            + "<#if feature?split(\",\")?size gt 1>"
-            + "<#assign package=\"mixed\">"
-            + "<#else>"
-            + "<#assign package=feature?replace('-', '/') />"
-            + "</#if>"
-            + "${package}/${framework?replace('-', '/')}";
     
     private static final String RESOURCES_PATH = "src/main/resources";
     
@@ -51,18 +43,23 @@ public final class JDBCExampleGenerator implements ExampleGenerator {
             for (String eachFeature : GenerateUtil.generateCombination(features.split(","))) {
                 dataModel.put("feature", eachFeature);
                 dataModel.put("framework", eachFramework);
-                GenerateUtil.generateDirs(templateConfig, dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getJavaClassPaths(), OUTPUT_PATH + JAVA_CLASS_PATH);
-                GenerateUtil.generateDirs(templateConfig, dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getResourcePaths(), OUTPUT_PATH + RESOURCES_PATH);
-                GenerateUtil.generateFile(templateConfig, getType(), dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getJavaClassTemplateMap(), OUTPUT_PATH + JAVA_CLASS_PATH);
-                GenerateUtil.generateFile(templateConfig, getType(), dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getResourceTemplateMap(), OUTPUT_PATH + RESOURCES_PATH);
+                GenerateUtil.generateDirs(templateConfig, dataModel, Collections.singleton("conf"), OUTPUT_PATH + RESOURCES_PATH);
+                GenerateUtil.generateFile(templateConfig, getType(), dataModel, buildResourceMap(), OUTPUT_PATH + RESOURCES_PATH);
                 String outputPath = GenerateUtil.generatePath(templateConfig, dataModel, OUTPUT_PATH);
                 GenerateUtil.processFile(templateConfig, dataModel, "pom.ftl", outputPath + "pom.xml");
             }
         }
     }
     
+    private Map<String, String> buildResourceMap() {
+        Map<String, String> result = new HashMap<>(2, 1);
+        result.put("config.ftl", "config.yaml");
+        result.put("server.ftl", "server.yaml");
+        return result;
+    }
+    
     @Override
     public String getType() {
-        return "jdbc";
+        return "proxy";
     }
 }

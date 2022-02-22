@@ -41,6 +41,8 @@ public final class ComputeNode {
     
     private static final String WORKER_ID = "worker_id";
     
+    private static final String XA_RECOVERY_ID_NODE = "xa_recovery_id";
+    
     /**
      * Get online compute node path.
      * 
@@ -70,6 +72,16 @@ public final class ComputeNode {
      */
     public static String getInstanceLabelsNodePath(final String instanceId) {
         return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ATTRIBUTES_NODE, instanceId, LABELS_NODE);
+    }
+    
+    /**
+     * Get compute node xa recovery id path.
+     *
+     * @param instanceId instance id
+     * @return path of compute node xa recovery id
+     */
+    public static String getInstanceXaRecoveryIdNodePath(final String instanceId) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ATTRIBUTES_NODE, instanceId, XA_RECOVERY_ID_NODE);
     }
     
     /**

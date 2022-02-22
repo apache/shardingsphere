@@ -85,12 +85,15 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
         Optional<TransactionRuleConfiguration> transactionRuleConfiguration =
                 globalRuleConfigs.stream().filter(each -> each instanceof TransactionRuleConfiguration).map(each -> (TransactionRuleConfiguration) each).findFirst();
-        if (transactionRuleConfiguration.isPresent()) {
-            Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(transactionRuleConfiguration.get().getProviderType());
-            if (fileGenerator.isPresent()) {
-                SchemaConfiguration schemaConfiguration = createSchemaConfiguration(schemaName.get(), metaDataPersistService, parameter);
-                Properties transactionProps = fileGenerator.get().getTransactionProps(transactionRuleConfiguration.get(), schemaConfiguration);
-                metaDataPersistService.persistTransactionRule(transactionProps, true);
+        Optional<TransactionConfigurationFileGenerator> fileGenerator = transactionRuleConfiguration.isPresent() ? TransactionConfigurationFileGeneratorFactory
+                .newInstance(transactionRuleConfiguration.get().getProviderType()) : Optional.empty();
+        if (fileGenerator.isPresent()) {
+            SchemaConfiguration schemaConfiguration = createSchemaConfiguration(schemaName.get(), metaDataPersistService, parameter);
+            Properties transactionProps = fileGenerator.get().getTransactionProps(transactionRuleConfiguration.get(), schemaConfiguration);
+            metaDataPersistService.persistTransactionRule(transactionProps, true);
+            String instanceId = parameter.getInstanceDefinition().getInstanceId().getId();
+            if (!metaDataPersistService.getComputeNodePersistService().loadXaRecoveryId(instanceId).isPresent()) {
+                metaDataPersistService.getComputeNodePersistService().persistInstanceXaRecoveryId(instanceId, instanceId);
             }
         }
     }
