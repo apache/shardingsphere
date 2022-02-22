@@ -193,6 +193,10 @@ collationName
     : STRING_ | IDENTIFIER_
     ;
 
+alias
+    : identifier | STRING_
+    ;
+
 dataTypeLength
     : LP_ (NUMBER_ (COMMA_ NUMBER_)?)? RP_
     ;
