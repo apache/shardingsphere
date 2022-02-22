@@ -15,28 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.sharding.standard;
+package org.apache.shardingsphere.sharding.api.sharding.common;
 
-import com.google.common.collect.Range;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.sharding.api.sharding.ShardingValue;
-import org.apache.shardingsphere.sharding.api.sharding.common.DataNodeInfo;
 
 /**
- * Sharding value for range.
+ * Data node info.
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
-public final class RangeShardingValue<T extends Comparable<?>> implements ShardingValue {
+public final class DataNodeInfo {
     
-    private final String logicTableName;
+    private final String prefix;
     
-    private final String columnName;
-    
-    private final DataNodeInfo dataNodeInfo;
-    
-    private final Range<T> valueRange;
+    private final int suffixMinLength;
 }
