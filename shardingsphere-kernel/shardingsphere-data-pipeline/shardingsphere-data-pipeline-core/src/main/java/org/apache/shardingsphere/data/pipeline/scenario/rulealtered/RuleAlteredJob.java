@@ -53,7 +53,7 @@ public final class RuleAlteredJob implements SimpleJob {
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             log.error("job prepare failed, {}-{}", shardingContext.getJobName(), shardingContext.getShardingItem());
-            jobContext.close();
+            RuleAlteredJobWorker.getPIPELINE_JOB_EXECUTOR().stopJob(shardingContext.getJobName());
             jobContext.setStatus(JobStatus.PREPARING_FAILURE);
             governanceRepositoryAPI.persistJobProgress(jobContext);
             ScalingReleaseSchemaNameLockEvent event = new ScalingReleaseSchemaNameLockEvent(jobConfig.getWorkflowConfig().getSchemaName());

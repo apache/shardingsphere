@@ -60,9 +60,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
             }
             JobConfigurationPOJO jobConfigPOJO = jobConfigPOJOOptional.get();
             if (DataChangedEvent.Type.DELETED == event.getType() || jobConfigPOJO.isDisabled()) {
-                log.info("remove and stop {}", jobConfigPOJO.getJobName());
-                EXECUTING_JOBS.remove(jobConfigPOJO.getJobName());
-                RuleAlteredJobSchedulerCenter.stop(jobConfigPOJO.getJobName());
+                stopJob(jobConfigPOJO.getJobName());
                 JobConfiguration jobConfig = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), JobConfiguration.class, true);
                 ScalingReleaseSchemaNameLockEvent releaseLockEvent = new ScalingReleaseSchemaNameLockEvent(jobConfig.getWorkflowConfig().getSchemaName());
                 ShardingSphereEventBus.getInstance().post(releaseLockEvent);
@@ -103,6 +101,16 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
         } else {
             log.info("{} added to executing jobs failed since it already exists", jobConfigPOJO.getJobName());
         }
+    }
+    
+    /**
+     * stop job.
+     * @param jobId job id
+     */
+    public void stopJob(final String jobId) {
+        log.info("remove and stop {}", jobId);
+        EXECUTING_JOBS.remove(jobId);
+        RuleAlteredJobSchedulerCenter.stop(jobId);
     }
     
     @Override
