@@ -17,5 +17,5 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.ral;
 
-public class UpdatableRALStatement extends RALStatement {
+public abstract class UpdatableRALStatement extends RALStatement {
 }

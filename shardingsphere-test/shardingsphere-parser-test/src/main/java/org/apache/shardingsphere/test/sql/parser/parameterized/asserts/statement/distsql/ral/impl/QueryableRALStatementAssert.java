@@ -57,17 +57,17 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowVariableStatementTestCase;
 
 /**
- * Common dist sql statement assert.
+ * Queryable RAL statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class QueryableRALStatementAssert {
     
     /**
-     * Assert common dist sql statement is correct with expected parser result.
+     * Assert queryable RAL statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual common dist sql statement
-     * @param expected expected common dist sql statement test case
+     * @param actual actual queryable RAL statement
+     * @param expected expected queryable RAL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final QueryableRALStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof ShowVariableStatement) {

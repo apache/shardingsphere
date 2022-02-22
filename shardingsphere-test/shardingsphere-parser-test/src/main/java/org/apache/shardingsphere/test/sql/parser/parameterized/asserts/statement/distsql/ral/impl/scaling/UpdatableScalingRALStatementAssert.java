@@ -33,17 +33,17 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.StopScalingSourceWritingStatementTestCase;
 
 /**
- * Updatable RAL statement assert.
+ * Updatable Scaling RAL statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UpdatableScalingRALStatementAssert {
 
     /**
-     * Assert updatable RAL statement is correct with expected parser result.
+     * Assert updatable scaling RAL statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual updatable RAL statement
-     * @param expected expected updatable RAL statement test case
+     * @param actual actual updatable scaling RAL statement
+     * @param expected expected updatable scaling RAL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final UpdatableScalingRALStatement actual, final SQLParserTestCase expected) {
         // TODO add more test case
