@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class ModShardingAlgorithmTest {
     
-    private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("t_order_", 6);
+    private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("t_order_", 1);
     
     private ModShardingAlgorithm shardingAlgorithm;
     
