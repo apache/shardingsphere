@@ -31,6 +31,7 @@ public enum TransactionIsolationLevel {
     READ_UNCOMMITTED("READ_UNCOMMITTED"),
     READ_COMMITTED("READ_COMMITTED"),
     REPEATABLE_READ("REPEATABLE_READ"),
+    SNAPSHOT("SNAPSHOT"),
     SERIALIZABLE("SERIALIZABLE");
 
     private final String isolationLevel;
