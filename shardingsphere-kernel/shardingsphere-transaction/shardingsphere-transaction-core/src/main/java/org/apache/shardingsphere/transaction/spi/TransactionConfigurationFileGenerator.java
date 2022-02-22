@@ -41,7 +41,7 @@ public interface TransactionConfigurationFileGenerator extends TypedSPI {
     /**
      * Get transaction configuration.
      *
-     * @param originTransactionProps transaction rule props
+     * @param originTransactionProps origin transaction properties
      * @param schemaConfiguration schema configuration
      * @param modeType mode type
      * @return transaction rule props
