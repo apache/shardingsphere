@@ -327,10 +327,6 @@ privateExprOfDb
     : windowedFunction | atTimeZoneExpr | castExpr | convertExpr
     ;
 
-subquery
-    : matchNone
-    ;
-
 orderByClause
     : ORDER BY orderByItem (COMMA_ orderByItem)*
     (OFFSET expr (ROW | ROWS) (FETCH (FIRST | NEXT) expr (ROW | ROWS) ONLY)?)?
