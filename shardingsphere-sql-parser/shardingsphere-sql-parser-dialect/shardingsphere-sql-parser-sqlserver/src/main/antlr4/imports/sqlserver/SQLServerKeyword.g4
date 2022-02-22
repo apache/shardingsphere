@@ -1782,3 +1782,23 @@ PROVIDER
 SID
     : S I D
     ;
+
+STOPLIST
+    : S T O P L I S T
+    ;
+
+SEARCH
+    : S E A R C H
+    ;
+
+PROPERTY
+    : P R O P E R T Y
+    ;
+
+LIST
+    : L I S T
+    ;
+
+SEND
+    : S E N D
+    ;
