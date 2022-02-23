@@ -31,6 +31,8 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.After;
 import org.junit.Before;
@@ -61,11 +63,16 @@ public final class ConnectionManagerTest {
     
     private ConnectionManager connectionManager;
     
+    private ConnectionManager connectionManagerInXaTransaction;
+    
     private MockedStatic<DataSourcePoolCreator> dataSourcePoolCreator;
     
     @Before
     public void setUp() throws SQLException {
-        connectionManager = new ConnectionManager(DefaultSchema.LOGIC_NAME, mockContextManager());
+        ContextManager contextManager = mockContextManager();
+        connectionManager = new ConnectionManager(DefaultSchema.LOGIC_NAME, contextManager);
+        TransactionTypeHolder.set(TransactionType.XA);
+        connectionManagerInXaTransaction = new ConnectionManager(DefaultSchema.LOGIC_NAME, contextManager);
     }
     
     @After
