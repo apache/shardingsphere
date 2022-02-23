@@ -73,7 +73,7 @@ import java.util.stream.Collectors;
 /**
  * Preview dist sql backend handler.
  */
-public final class PreviewDistSQLBackendHandler extends QueryableRALBackendHandler<PreviewStatement, PreviewDistSQLBackendHandler> {
+public final class PreviewHandler extends QueryableRALBackendHandler<PreviewStatement, PreviewHandler> {
     
     private static final String DATA_SOURCE_NAME = "data_source_name";
     
@@ -84,7 +84,7 @@ public final class PreviewDistSQLBackendHandler extends QueryableRALBackendHandl
     private final KernelProcessor kernelProcessor = new KernelProcessor();
     
     @Override
-    public PreviewDistSQLBackendHandler init(final HandlerParameter<PreviewStatement> parameter) {
+    public PreviewHandler init(final HandlerParameter<PreviewStatement> parameter) {
         connectionSession = parameter.getConnectionSession();
         return super.init(parameter);
     }

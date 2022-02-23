@@ -27,7 +27,7 @@ import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigu
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.ParseDistSQLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.ParseHandler;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Before;
@@ -47,7 +47,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ParseDistSQLBackendHandlerTest {
+public final class ParseHandlerTest {
     
     private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
@@ -64,21 +64,21 @@ public final class ParseDistSQLBackendHandlerTest {
     public void assertGetRowData() throws SQLException {
         String sql = "select * from t_order";
         ParseStatement parseStatement = new ParseStatement(sql);
-        ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler()
+        ParseHandler parseHandler = new ParseHandler()
                 .init(new HandlerParameter<ParseStatement>().setStatement(parseStatement).setConnectionSession(mock(ConnectionSession.class)).setDatabaseType(new MySQLDatabaseType()));
-        parseDistSQLBackendHandler.execute();
-        parseDistSQLBackendHandler.next();
+        parseHandler.execute();
+        parseHandler.next();
         SQLStatement statement = new ShardingSphereSQLParserEngine("MySQL", sqlParserRule).parse(sql, false);
-        assertThat(new LinkedList<>(parseDistSQLBackendHandler.getRowData()).getFirst(), is("MySQLSelectStatement"));
-        assertThat(new LinkedList<>(parseDistSQLBackendHandler.getRowData()).getLast(), is(new Gson().toJson(statement)));
+        assertThat(new LinkedList<>(parseHandler.getRowData()).getFirst(), is("MySQLSelectStatement"));
+        assertThat(new LinkedList<>(parseHandler.getRowData()).getLast(), is(new Gson().toJson(statement)));
     }
     
     @Test(expected = SQLParsingException.class)
     public void assertExecute() throws SQLException {
         String sql = "wrong sql";
         ParseStatement parseStatement = new ParseStatement(sql);
-        ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler()
+        ParseHandler parseHandler = new ParseHandler()
                 .init(new HandlerParameter<ParseStatement>().setStatement(parseStatement).setConnectionSession(mock(ConnectionSession.class)).setDatabaseType(new MySQLDatabaseType()));
-        parseDistSQLBackendHandler.execute();
+        parseHandler.execute();
     }
 }
