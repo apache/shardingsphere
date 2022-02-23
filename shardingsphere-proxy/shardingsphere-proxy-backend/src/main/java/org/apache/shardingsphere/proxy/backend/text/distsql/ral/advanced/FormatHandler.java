@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseContext;
+import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -47,7 +48,12 @@ public final class FormatHandler extends QueryableRALBackendHandler<FormatStatem
     protected Collection<List<Object>> getRows(final ContextManager contextManager) throws SQLException {
         CacheOption cacheOption = new CacheOption(128, 1024L, 4);
         SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption, false);
-        ParseContext parseContext = parserEngine.parse(sqlStatement.getSql(), false);
+        ParseContext parseContext;
+        try {
+            parseContext = parserEngine.parse(sqlStatement.getSql(), false);
+        } catch (SQLParsingException ex) {
+            throw new SQLParsingException("You have an error in your SQL syntax that you are formatted");
+        }
         Properties props = new Properties();
         props.setProperty("parameterized", "false");
         SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "FORMAT", props);
