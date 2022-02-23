@@ -75,7 +75,7 @@ public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, S
             if (null != verificationDataSource) {
                 return verificationDataSource;
             }
-            verificationDataSource = createDataSource("verification_dataset");
+            verificationDataSource = createDataSource(scenario + "_verification_dataset");
             return verificationDataSource;
         }
     }

@@ -26,6 +26,7 @@ import org.junit.Before;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -39,6 +40,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -60,8 +62,9 @@ public abstract class BaseDQLIT extends SingleITCase {
             synchronized (FILLED_SUITES) {
                 if (!FILLED_SUITES.contains(getScenario())) {
                     new DataSetEnvironmentManager(new ScenarioPath(getScenario()).getDataSetFile(), getActualDataSourceMap()).fillData();
+                    String verificationDataSourceName = getDatabaseType().getName().equals("H2") ? getScenario() + "_verification_dataset" : "verification_dataset";
                     new DataSetEnvironmentManager(
-                            new ScenarioPath(getScenario()).getVerificationDataSetFile(), Collections.singletonMap("verification_dataset", getVerificationDataSource())).fillData();
+                            new ScenarioPath(getScenario()).getVerificationDataSetFile(), Collections.singletonMap(verificationDataSourceName, getVerificationDataSource())).fillData();
                     FILLED_SUITES.add(getItKey());
                 }
             }
@@ -73,7 +76,11 @@ public abstract class BaseDQLIT extends SingleITCase {
         if (getDataSet().isIgnoreRowOrder()) {
             assertRowsIgnoreOrder(actualResultSet, getDataSet().getRows());
         } else {
-            assertRows(actualResultSet, getDataSet().getRows());
+            if (isAssertRowsByResultSet()) {
+                assertRows(actualResultSet, verificationResultSet);
+            } else {
+                assertRowsByDataSetFile(actualResultSet, getDataSet().getRows());
+            }
         }
     }
     
@@ -94,7 +101,21 @@ public abstract class BaseDQLIT extends SingleITCase {
         }
     }
     
-    private void assertRows(final ResultSet actual, final List<DataSetRow> expected) throws SQLException {
+    private boolean isAssertRowsByResultSet() {
+        return "db".equals(getScenario()) && "tbl".equals(getScenario()) && "encrypt".equals(getScenario()) && "empty_rules".equals(getScenario());
+    }
+    
+    private void assertRows(final ResultSet actualResultSet, final ResultSet verificationResultSet) throws SQLException {
+        ResultSetMetaData actualMetaData = actualResultSet.getMetaData();
+        ResultSetMetaData verificationMetaData = verificationResultSet.getMetaData();
+        while (actualResultSet.next()) {
+            assertTrue("Size of actual result set is different with size of expected result set.", verificationResultSet.next());
+            assertRow(actualResultSet, actualMetaData, verificationResultSet, verificationMetaData);
+        }
+        assertFalse("Size of actual result set is different with size of expected result set.", verificationResultSet.next());
+    }
+    
+    private void assertRowsByDataSetFile(final ResultSet actual, final List<DataSetRow> expected) throws SQLException {
         int rowCount = 0;
         ResultSetMetaData actualMetaData = actual.getMetaData();
         while (actual.next()) {
@@ -159,6 +180,25 @@ public abstract class BaseDQLIT extends SingleITCase {
                 assertObjectValue(actual, columnIndex, columnLabel, each);
             }
             columnIndex++;
+        }
+    }
+    
+    private void assertRow(final ResultSet actualResultSet, final ResultSetMetaData actualMetaData, 
+                           final ResultSet verificationResultSet, final ResultSetMetaData verificationMetaData) throws SQLException {
+        for (int i = 0; i < actualMetaData.getColumnCount(); i++) {
+            try {
+                assertThat(actualResultSet.getObject(i + 1), is(verificationResultSet.getObject(i + 1)));
+                assertThat(actualResultSet.getObject(actualMetaData.getColumnLabel(i + 1)), is(verificationResultSet.getObject(verificationMetaData.getColumnLabel(i + 1))));
+            } catch (AssertionError ex) {
+                // FIXME verify accurate data types
+                Object actualValue = actualResultSet.getObject(i + 1);
+                Object verificationValue = verificationResultSet.getObject(i + 1);
+                if (actualValue instanceof Double || actualValue instanceof Float || actualValue instanceof BigDecimal) {
+                    assertThat(Math.floor(Double.parseDouble(actualValue.toString())), is(Math.floor(Double.parseDouble(verificationValue.toString()))));
+                } else {
+                    assertThat(actualValue.toString(), is(verificationValue.toString()));
+                }
+            }
         }
     }
     
