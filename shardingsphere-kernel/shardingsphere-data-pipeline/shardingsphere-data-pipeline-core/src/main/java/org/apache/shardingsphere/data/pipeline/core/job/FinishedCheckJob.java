@@ -105,9 +105,7 @@ public final class FinishedCheckJob implements SimpleJob {
             if (each == null) {
                 continue;
             }
-            if (JobStatus.FINISHED.equals(each.getStatus()) || JobStatus.PREPARING_FAILURE.equals(each.getStatus())
-                    || JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.equals(each.getStatus())
-                    || JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.equals(each.getStatus())) {
+            if (!JobStatus.EXECUTE_INCREMENTAL_TASK.equals(each.getStatus())) {
                 flag = true;
                 break;
             }
