@@ -30,6 +30,7 @@
     <distsql-case id="show-readwrite-splitting-hint-source" value="SHOW READWRITE_SPLITTING HINT STATUS" />
     <distsql-case id="show-sharding-hint-status" value="SHOW SHARDING HINT STATUS" />
     <distsql-case id="show-instance" value="SHOW INSTANCE LIST" />
+    <distsql-case id="count-instance-rules" value="COUNT INSTANCE RULES" />
     <distsql-case id="show-readwrite-splitting-read-resources" value="show readwrite_splitting read resources" />
     <distsql-case id="show-table-metadata" value="SHOW TABLE METADATA t_order FROM schema_name" />
     <distsql-case id="refresh-table-metadata" value="refresh table metadata" />
