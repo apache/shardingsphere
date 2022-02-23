@@ -43,6 +43,10 @@ showInstance
     : SHOW INSTANCE LIST
     ;
 
+countSchemaRules
+    : COUNT SCHEMA RULES (FROM schemaName)?
+    ;
+
 clearHint
     : CLEAR HINT
     ;
