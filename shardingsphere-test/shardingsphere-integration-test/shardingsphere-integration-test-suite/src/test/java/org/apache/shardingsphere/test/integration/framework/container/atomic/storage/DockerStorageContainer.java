@@ -87,7 +87,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
             if (null != verificationDataSource) {
                 return verificationDataSource;
             }
-            verificationDataSource = createDataSource(scenario + "_verification_dataset");
+            verificationDataSource = createDataSource("verification_dataset");
             return verificationDataSource;
         }
     }

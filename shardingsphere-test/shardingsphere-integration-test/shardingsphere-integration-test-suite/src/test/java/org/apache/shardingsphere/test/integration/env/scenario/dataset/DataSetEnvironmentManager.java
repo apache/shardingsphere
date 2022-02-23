@@ -85,7 +85,7 @@ public final class DataSetEnvironmentManager {
             }
             String insertSQL;
             // TODO use freemarker to instead of ${scenario}_verification_dataset in `env/common/verification/init-sql`
-            String dataSourceName = dataNode.getDataSourceName().equals("verification_dataset") ? actualDataSourceMap.keySet().iterator().next() : dataNode.getDataSourceName();
+            String dataSourceName = dataNode.getDataSourceName().contains("verification_dataset") ? actualDataSourceMap.keySet().iterator().next() : dataNode.getDataSourceName();
             try (Connection connection = actualDataSourceMap.get(dataSourceName).getConnection()) {
                 DatabaseType databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
                 insertSQL = generateInsertSQL(databaseType.getQuoteCharacter().wrap(dataNode.getTableName()), dataSetMetaData.getColumns(), databaseType.getName());
