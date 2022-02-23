@@ -90,11 +90,11 @@ public abstract class BaseDQLIT extends SingleITCase {
             try {
                 assertThat(actualResultSetMetaData.getColumnLabel(i + 1).toLowerCase(), is(verificationResultSetMetaData.getColumnLabel(i + 1).toLowerCase()));
             } catch (final AssertionError ex) {
-                // FIXME Expected: is "order_id", but: was "order_id0"
+                // FIXME #15594 Expected: is "order_id", but: was "order_id0"
                 try {
                     assertThat(actualResultSetMetaData.getColumnLabel(i + 1).toLowerCase(), is(verificationResultSetMetaData.getColumnLabel(i + 1).toLowerCase() + "0"));
                 } catch (final AssertionError otherEx) {
-                    // FIXME Expected: is "sum(order_id_sharding)0", but: was "expr$1"
+                    // FIXME #15594 Expected: is "sum(order_id_sharding)0", but: was "expr$1"
                     assertThat(actualResultSetMetaData.getColumnLabel(i + 1).toLowerCase(), startsWith("expr$"));
                 }
             }
@@ -190,7 +190,7 @@ public abstract class BaseDQLIT extends SingleITCase {
                 assertThat(actualResultSet.getObject(i + 1), is(verificationResultSet.getObject(i + 1)));
                 assertThat(actualResultSet.getObject(actualMetaData.getColumnLabel(i + 1)), is(verificationResultSet.getObject(verificationMetaData.getColumnLabel(i + 1))));
             } catch (AssertionError ex) {
-                // FIXME verify accurate data types
+                // FIXME #15593 verify accurate data types
                 Object actualValue = actualResultSet.getObject(i + 1);
                 Object verificationValue = verificationResultSet.getObject(i + 1);
                 if (actualValue instanceof Double || actualValue instanceof Float || actualValue instanceof BigDecimal) {
