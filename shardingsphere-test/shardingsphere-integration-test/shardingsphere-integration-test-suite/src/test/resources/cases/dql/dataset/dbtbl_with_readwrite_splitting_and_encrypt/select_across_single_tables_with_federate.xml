@@ -25,5 +25,5 @@
         <column name="user_id0" />
         <column name="status0" />
     </metadata>
-    <row values="1000, 10, init, 100000, 1000, 10, init" />
+    <row values="1000, 10, init_read, 100000, 1000, 10, init_read" />
 </dataset>

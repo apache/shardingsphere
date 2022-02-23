@@ -21,6 +21,6 @@
         <column name="user_id" />
         <column name="status" />
     </metadata>
-    <row values="1000, 10, init" />
-    <row values="1001, 11, init" />
+    <row values="1000, 10, init_read" />
+    <row values="1001, 11, init_read" />
 </dataset>
