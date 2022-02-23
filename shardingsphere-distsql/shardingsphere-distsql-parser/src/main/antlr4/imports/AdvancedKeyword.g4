@@ -31,6 +31,10 @@ PARSE
     : P A R S E
     ;
 
+FORMAT
+    : F O R M A T
+    ;
+
 SQLString
     : WS.*
     ;

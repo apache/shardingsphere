@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 /**
  * H2 container.
@@ -50,6 +51,8 @@ public final class H2Container extends EmbeddedStorageContainer {
                 executeInitSQL(entry.getValue(), each);
             }
         }
+        executeInitSQL(getVerificationDataSource(), Objects.requireNonNull(
+                H2Container.class.getClassLoader().getResource("env/common/verification/init-sql/" + getDatabaseType().getName().toLowerCase() + "/verification-init.sql")).getFile());
     }
     
     private void executeInitSQL(final DataSource dataSource, final String initSQLFile) throws SQLException, IOException {

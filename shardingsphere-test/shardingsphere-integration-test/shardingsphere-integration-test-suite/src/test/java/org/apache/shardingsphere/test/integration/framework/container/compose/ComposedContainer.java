@@ -40,4 +40,11 @@ public interface ComposedContainer extends Startable {
      * @return target data source
      */
     DataSource getTargetDataSource();
+    
+    /**
+     * Get verification data source.
+     * 
+     * @return verification data source
+     */
+    DataSource getVerificationDataSource();
 }

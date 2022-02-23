@@ -17,7 +17,7 @@
 
 grammar TCLStatement;
 
-import BaseRule, DMLStatement;
+import DMLStatement;
 
 setTransaction
     : SET (SESSION CHARACTERISTICS AS)? TRANSACTION transactionModeList

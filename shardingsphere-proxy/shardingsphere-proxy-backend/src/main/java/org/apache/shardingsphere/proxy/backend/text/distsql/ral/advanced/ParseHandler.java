@@ -68,7 +68,7 @@ public final class ParseHandler extends QueryableRALBackendHandler<ParseStatemen
         try {
             parsedSqlStatement = new ShardingSphereSQLParserEngine(getBackendDatabaseType(databaseType, connectionSession).getName(), sqlParserRule.orElse(null)).parse(sqlStatement.getSql(), false);
         } catch (SQLParsingException ex) {
-            throw new SQLParsingException("You have an error in your SQL syntax that you are parsed");
+            throw new SQLParsingException("You have a syntax error in your parsed statement");
         }
         return Collections.singleton(Arrays.asList(parsedSqlStatement.getClass().getSimpleName(), new Gson().toJson(parsedSqlStatement)));
     }

@@ -104,10 +104,6 @@ topNum
     : numberLiterals | parameterMarker
     ;
 
-alias
-    : identifier | STRING_
-    ;
-
 unqualifiedShorthand
     : ASTERISK_
     ;

@@ -73,30 +73,30 @@ public final class SchemaRulesCountResultSetTest {
     }
     
     private SingleTableRule mockSingleTableRule() {
-        SingleTableRule singleTableRule = mock(SingleTableRule.class);
-        when(singleTableRule.export(ExportableConstants.EXPORTABLE_KEY_SINGLE_TABLES)).thenReturn(java.util.Optional.of(Arrays.asList("single_table_1", "single_table_2")));
-        return singleTableRule;
+        SingleTableRule result = mock(SingleTableRule.class);
+        when(result.export(ExportableConstants.EXPORTABLE_KEY_SINGLE_TABLES)).thenReturn(java.util.Optional.of(Arrays.asList("single_table_1", "single_table_2")));
+        return result;
     }
     
     private RuleConfiguration mockShardingTableRule() {
-        ShardingRuleConfiguration shardingTableRule = mock(ShardingRuleConfiguration.class);
-        when(shardingTableRule.getTables()).thenReturn(Collections.singletonList(new ShardingTableRuleConfiguration("sharding_table")));
-        when(shardingTableRule.getAutoTables()).thenReturn(Collections.singletonList(new ShardingAutoTableRuleConfiguration("sharding_auto_table")));
-        when(shardingTableRule.getBindingTableGroups()).thenReturn(Collections.singletonList("binding_table_1,binding_table_2"));
-        when(shardingTableRule.getBroadcastTables()).thenReturn(Arrays.asList("broadcast_table_1", "broadcast_table_2"));
-        return shardingTableRule;
+        ShardingRuleConfiguration result = mock(ShardingRuleConfiguration.class);
+        when(result.getTables()).thenReturn(Collections.singletonList(new ShardingTableRuleConfiguration("sharding_table")));
+        when(result.getAutoTables()).thenReturn(Collections.singletonList(new ShardingAutoTableRuleConfiguration("sharding_auto_table")));
+        when(result.getBindingTableGroups()).thenReturn(Collections.singletonList("binding_table_1,binding_table_2"));
+        when(result.getBroadcastTables()).thenReturn(Arrays.asList("broadcast_table_1", "broadcast_table_2"));
+        return result;
     }
     
     private RuleConfiguration mockReadwriteSplittingRule() {
-        ReadwriteSplittingRuleConfiguration configuration = mock(ReadwriteSplittingRuleConfiguration.class);
-        when(configuration.getDataSources()).thenReturn(Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_splitting", "", new Properties(), "")));
-        return configuration;
+        ReadwriteSplittingRuleConfiguration result = mock(ReadwriteSplittingRuleConfiguration.class);
+        when(result.getDataSources()).thenReturn(Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_splitting", "", new Properties(), "")));
+        return result;
     }
     
     private RuleConfiguration mockEncryptRule() {
-        EncryptRuleConfiguration configuration = mock(EncryptRuleConfiguration.class);
-        when(configuration.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("encrypt_table", Collections.emptyList(), false)));
-        return configuration;
+        EncryptRuleConfiguration result = mock(EncryptRuleConfiguration.class);
+        when(result.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("encrypt_table", Collections.emptyList(), false)));
+        return result;
     }
     
     @Test

@@ -17,7 +17,7 @@
 
 grammar DALStatement;
 
-import BaseRule, DMLStatement;
+import DMLStatement;
 
 use
     : USE schemaName
