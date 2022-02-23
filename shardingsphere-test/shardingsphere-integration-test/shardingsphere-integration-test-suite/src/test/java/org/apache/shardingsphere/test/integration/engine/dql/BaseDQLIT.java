@@ -60,7 +60,7 @@ public abstract class BaseDQLIT extends SingleITCase {
     @Before
     public final void init() throws Exception {
         fillDataOnlyOnce();
-        verificationDataSource = null == getAssertion().getExpectedDataSourceName()
+        verificationDataSource = null == getAssertion().getExpectedDataSourceName() || 1 == getVerificationDataSourceMap().size()
                 ? getVerificationDataSourceMap().values().iterator().next() : getVerificationDataSourceMap().get(getAssertion().getExpectedDataSourceName());
     }
     
@@ -69,8 +69,7 @@ public abstract class BaseDQLIT extends SingleITCase {
             synchronized (FILLED_SUITES) {
                 if (!FILLED_SUITES.contains(getScenario())) {
                     new DataSetEnvironmentManager(new ScenarioPath(getScenario()).getDataSetFile(), getActualDataSourceMap()).fillData();
-                    new DataSetEnvironmentManager(
-                            new ScenarioPath(getScenario()).getVerificationDataSetFile(), getVerificationDataSourceMap()).fillData();
+                    new DataSetEnvironmentManager(new ScenarioPath(getScenario()).getVerificationDataSetFile(), getVerificationDataSourceMap()).fillData();
                     FILLED_SUITES.add(getItKey());
                 }
             }
@@ -108,7 +107,7 @@ public abstract class BaseDQLIT extends SingleITCase {
     }
     
     private boolean isAssertRowsByResultSet() {
-        return "db".equals(getScenario()) && "tbl".equals(getScenario()) && "encrypt".equals(getScenario()) && "empty_rules".equals(getScenario());
+        return "db".equals(getScenario()) || "tbl".equals(getScenario()) || "readwrite_splitting".equals(getScenario()) || "empty_rules".equals(getScenario());
     }
     
     private void assertRows(final ResultSet actualResultSet, final ResultSet verificationResultSet) throws SQLException {

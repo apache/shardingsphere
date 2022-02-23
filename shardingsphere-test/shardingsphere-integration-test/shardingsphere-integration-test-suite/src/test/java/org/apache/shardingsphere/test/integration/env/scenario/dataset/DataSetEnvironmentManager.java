@@ -57,13 +57,13 @@ public final class DataSetEnvironmentManager {
     
     private final DataSet dataSet;
     
-    private final Map<String, DataSource> actualDataSourceMap;
+    private final Map<String, DataSource> dataSourceMap;
     
-    public DataSetEnvironmentManager(final String dataSetFile, final Map<String, DataSource> actualDataSourceMap) throws IOException, JAXBException {
+    public DataSetEnvironmentManager(final String dataSetFile, final Map<String, DataSource> dataSourceMap) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(dataSetFile)) {
             dataSet = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
         }
-        this.actualDataSourceMap = actualDataSourceMap;
+        this.dataSourceMap = dataSourceMap;
     }
     
     /**
@@ -84,13 +84,11 @@ public final class DataSetEnvironmentManager {
                 sqlValueGroups.add(new SQLValueGroup(dataSetMetaData, row.splitValues(",")));
             }
             String insertSQL;
-            // TODO use freemarker to instead of ${scenario}_verification_dataset in `env/common/verification/init-sql`
-            String dataSourceName = dataNode.getDataSourceName().contains("verification_dataset") ? actualDataSourceMap.keySet().iterator().next() : dataNode.getDataSourceName();
-            try (Connection connection = actualDataSourceMap.get(dataSourceName).getConnection()) {
+            try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection()) {
                 DatabaseType databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
                 insertSQL = generateInsertSQL(databaseType.getQuoteCharacter().wrap(dataNode.getTableName()), dataSetMetaData.getColumns(), databaseType.getName());
             }
-            fillDataTasks.add(new InsertTask(actualDataSourceMap.get(dataSourceName), insertSQL, sqlValueGroups));
+            fillDataTasks.add(new InsertTask(dataSourceMap.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups));
         }
         try {
             EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(fillDataTasks);
@@ -138,7 +136,7 @@ public final class DataSetEnvironmentManager {
     public void cleanData() {
         List<Callable<Void>> deleteTasks = new LinkedList<>();
         for (Entry<String, Collection<String>> entry : getDataNodeMap().entrySet()) {
-            deleteTasks.add(new DeleteTask(actualDataSourceMap.get(entry.getKey()), entry.getValue()));
+            deleteTasks.add(new DeleteTask(dataSourceMap.get(entry.getKey()), entry.getValue()));
         }
         try {
             EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(deleteTasks);

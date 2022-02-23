@@ -32,7 +32,6 @@ import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -80,6 +79,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     }
     
     @Override
+    @SneakyThrows({IOException.class, JAXBException.class})
     public final Map<String, DataSource> getVerificationDataSourceMap() {
         if (null != verificationDataSourceMap) {
             return verificationDataSourceMap;
@@ -88,7 +88,9 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
             if (null != verificationDataSourceMap) {
                 return verificationDataSourceMap;
             }
-            verificationDataSourceMap = Collections.singletonMap("verification_dataset", createDataSource("verification_dataset"));
+            Collection<String> dataSourceNames = DatabaseEnvironmentManager.getVerificationDatabaseNames(scenario);
+            verificationDataSourceMap = new LinkedHashMap<>(dataSourceNames.size(), 1);
+            dataSourceNames.forEach(each -> verificationDataSourceMap.put(each, createDataSource(each)));
             return verificationDataSourceMap;
         }
     }

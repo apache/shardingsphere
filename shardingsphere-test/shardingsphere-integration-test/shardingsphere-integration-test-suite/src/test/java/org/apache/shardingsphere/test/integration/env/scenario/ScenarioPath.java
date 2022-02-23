@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -35,6 +36,8 @@ public final class ScenarioPath {
     private static final String ROOT_PATH = "env/scenario";
     
     private static final String DATABASES_FILE = "databases.xml";
+    
+    private static final String VERIFICATION_DATABASES_FILE = "verification_databases.xml";
     
     private static final String INIT_SQL_PATH = "init-sql";
     
@@ -65,6 +68,15 @@ public final class ScenarioPath {
      */
     public String getDatabasesFile() {
         return getFile(DATABASES_FILE);
+    }
+    
+    /**
+     * Get verification databases file.
+     *
+     * @return verification databases file
+     */
+    public Optional<String> getVerificationDatabasesFile() {
+        return isFileExist(VERIFICATION_DATABASES_FILE) ? Optional.of(getFile(VERIFICATION_DATABASES_FILE)) : Optional.empty();
     }
     
     /**
@@ -150,5 +162,9 @@ public final class ScenarioPath {
         URL url = ScenarioPath.class.getClassLoader().getResource(path);
         assertNotNull(String.format("File `%s` must exist.", path), url);
         return url.getFile();
+    }
+    
+    private boolean isFileExist(final String fileName) {
+        return null != ScenarioPath.class.getClassLoader().getResource(String.join("/", ROOT_PATH, scenario, fileName));
     }
 }
