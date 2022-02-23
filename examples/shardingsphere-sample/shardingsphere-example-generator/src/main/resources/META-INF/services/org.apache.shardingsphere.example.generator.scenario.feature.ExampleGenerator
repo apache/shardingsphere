@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.example.generator.JDBCExampleGenerator
+org.apache.shardingsphere.example.generator.ProxyExampleGenerator

@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSche
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
@@ -79,18 +78,20 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Collection<String> schemaNames = InstanceType.JDBC == parameter.getInstanceDefinition().getInstanceType()
                 ? parameter.getSchemaConfigs().keySet() : metaDataPersistService.getSchemaMetaDataService().loadAllNames();
         Optional<String> schemaName = schemaNames.stream().findFirst();
-        if (!schemaName.isPresent()) {
-            return;
-        }
         Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
         Optional<TransactionRuleConfiguration> transactionRuleConfiguration =
                 globalRuleConfigs.stream().filter(each -> each instanceof TransactionRuleConfiguration).map(each -> (TransactionRuleConfiguration) each).findFirst();
-        if (transactionRuleConfiguration.isPresent()) {
-            Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(transactionRuleConfiguration.get().getProviderType());
-            if (fileGenerator.isPresent()) {
+        Optional<TransactionConfigurationFileGenerator> fileGenerator = transactionRuleConfiguration.isPresent() ? TransactionConfigurationFileGeneratorFactory
+                .newInstance(transactionRuleConfiguration.get().getProviderType()) : Optional.empty();
+        if (fileGenerator.isPresent()) {
+            if (schemaName.isPresent()) {
                 SchemaConfiguration schemaConfiguration = createSchemaConfiguration(schemaName.get(), metaDataPersistService, parameter);
-                Properties transactionProps = fileGenerator.get().getTransactionProps(transactionRuleConfiguration.get(), schemaConfiguration);
+                Properties transactionProps = fileGenerator.get().getTransactionProps(transactionRuleConfiguration.get().getProps(), schemaConfiguration, getType());
                 metaDataPersistService.persistTransactionRule(transactionProps, true);
+            }
+            String instanceId = parameter.getInstanceDefinition().getInstanceId().getId();
+            if (!metaDataPersistService.getComputeNodePersistService().loadXaRecoveryId(instanceId).isPresent()) {
+                metaDataPersistService.getComputeNodePersistService().persistInstanceXaRecoveryId(instanceId, instanceId);
             }
         }
     }
@@ -108,7 +109,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private SchemaConfiguration createSchemaConfiguration(final String schemaName, final MetaDataPersistService metaDataPersistService,
-                                                          final ContextManagerBuilderParameter parameter) throws SQLException {
+                                                              final ContextManagerBuilderParameter parameter) throws SQLException {
         Map<String, DataSource> dataSources = metaDataPersistService.getEffectiveDataSources(schemaName, parameter.getSchemaConfigs());
         Collection<RuleConfiguration> schemaRuleConfigs = metaDataPersistService.getSchemaRuleService().load(schemaName);
         return new DataSourceProvidedSchemaConfiguration(dataSources, schemaRuleConfigs);
@@ -143,8 +144,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private void generateTransactionConfigurationFile(final InstanceContext instanceContext, final MetaDataContexts metaDataContexts) {
         Optional<TransactionRule> transactionRule =
                 metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
-        Optional<ShardingSphereMetaData> shardingSphereMetaData = metaDataContexts.getMetaDataMap().values().stream().findFirst();
-        if (transactionRule.isPresent() && shardingSphereMetaData.isPresent()) {
+        if (transactionRule.isPresent()) {
             Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(transactionRule.get().getProviderType());
             fileGenerator.ifPresent(optional -> optional.generateFile(transactionRule.get(), instanceContext));
         }

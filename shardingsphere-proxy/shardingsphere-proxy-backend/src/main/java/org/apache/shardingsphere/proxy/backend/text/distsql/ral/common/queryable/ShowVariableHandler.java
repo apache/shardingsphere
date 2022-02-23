@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.show.ShowVariableStatement;
+import com.google.common.base.Strings;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -29,14 +30,20 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Show variable handler.
  */
 public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVariableStatement, ShowVariableHandler> {
+    
+    private static final String VARIABLE_NAME = "variable_name";
+    
+    private static final String VARIABLE_VALUE = "variable_value";
     
     private ConnectionSession connectionSession;
     
@@ -49,31 +56,70 @@ public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVa
     
     @Override
     protected Collection<String> getColumnNames() {
-        return Collections.singletonList(sqlStatement.getName().toLowerCase());
+        return Arrays.asList(VARIABLE_NAME, VARIABLE_VALUE);
     }
     
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
-        if (ConfigurationPropertyKey.getKeyNames().contains(sqlStatement.getName())) {
-            ConfigurationProperties configurationProperties = contextManager.getMetaDataContexts().getProps();
-            String propertyValue = configurationProperties.getValue(ConfigurationPropertyKey.valueOf(sqlStatement.getName())).toString();
-            return Collections.singletonList(Collections.singletonList(propertyValue));
+        if (hasSpecifiedKey()) {
+            return buildSpecifiedRow(contextManager, sqlStatement.getName());
+        } else {
+            return buildAllVariableRows(contextManager);
         }
-        VariableEnum variable = VariableEnum.getValueOf(sqlStatement.getName());
+    }
+    
+    private boolean hasSpecifiedKey() {
+        return !Strings.isNullOrEmpty(sqlStatement.getName());
+    }
+    
+    private Collection<List<Object>> buildAllVariableRows(final ContextManager contextManager) {
+        List<List<Object>> result = new LinkedList<>();
+        ConfigurationProperties configurationProperties = contextManager.getMetaDataContexts().getProps();
+        ConfigurationPropertyKey.getKeyNames().forEach(each -> {
+            String propertyValue = configurationProperties.getValue(ConfigurationPropertyKey.valueOf(each)).toString();
+            result.add(Arrays.asList(each.toLowerCase(), propertyValue));
+        });
+        result.add(Arrays.asList(VariableEnum.AGENT_PLUGINS_ENABLED.name().toLowerCase(), SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString())));
+        if (connectionSession.getBackendConnection() instanceof JDBCBackendConnection) {
+            result.add(Arrays.asList(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), ((JDBCBackendConnection) connectionSession.getBackendConnection()).getConnectionSize()));
+        }
+        result.add(Arrays.asList(VariableEnum.TRANSACTION_TYPE.name().toLowerCase(), connectionSession.getTransactionStatus().getTransactionType().name()));
+        return result;
+    }
+    
+    private Collection<List<Object>> buildSpecifiedRow(final ContextManager contextManager, final String key) {
+        if (isConfigurationKey(key)) {
+            return Collections.singletonList(Arrays.asList(key.toLowerCase(), getConfigurationValue(contextManager, key)));
+        } else {
+            return Collections.singletonList(Arrays.asList(key.toLowerCase(), getSpecialValue(key)));
+        }
+    }
+    
+    private boolean isConfigurationKey(final String key) {
+        return ConfigurationPropertyKey.getKeyNames().contains(key);
+    }
+    
+    private String getConfigurationValue(final ContextManager contextManager, final String key) {
+        ConfigurationProperties configurationProperties = contextManager.getMetaDataContexts().getProps();
+        return configurationProperties.getValue(ConfigurationPropertyKey.valueOf(key)).toString();
+    }
+    
+    private String getSpecialValue(final String key) {
+        VariableEnum variable = VariableEnum.getValueOf(key);
         switch (variable) {
             case AGENT_PLUGINS_ENABLED:
-                return Collections.singletonList(Collections.singletonList(SystemPropertyUtil.getSystemProperty(variable.name(), Boolean.TRUE.toString())));
+                return SystemPropertyUtil.getSystemProperty(variable.name(), Boolean.TRUE.toString());
             case CACHED_CONNECTIONS:
                 if (connectionSession.getBackendConnection() instanceof JDBCBackendConnection) {
                     int connectionSize = ((JDBCBackendConnection) connectionSession.getBackendConnection()).getConnectionSize();
-                    return Collections.singletonList(Collections.singletonList(connectionSize));
+                    return String.valueOf(connectionSize);
                 }
                 break;
             case TRANSACTION_TYPE:
                 TransactionType transactionType = connectionSession.getTransactionStatus().getTransactionType();
-                return Collections.singletonList(Collections.singletonList(transactionType.name()));
+                return transactionType.name();
             default:
         }
-        throw new UnsupportedVariableException(sqlStatement.getName());
+        throw new UnsupportedVariableException(key);
     }
 }

@@ -25,7 +25,6 @@ import org.apache.shardingsphere.test.integration.framework.container.compose.Co
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRegistry;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.ShardingSphereIntegrationTestParameterized;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -60,6 +59,8 @@ public abstract class BaseITCase {
     
     private DataSource targetDataSource;
     
+    private DataSource verificationDataSource;
+    
     public BaseITCase(final ParameterizedArray parameterizedArray) {
         scenario = parameterizedArray.getScenario();
         databaseType = parameterizedArray.getDatabaseType();
@@ -73,14 +74,7 @@ public abstract class BaseITCase {
         composedContainer.start();
         actualDataSourceMap = composedContainer.getActualDataSourceMap();
         targetDataSource = composedContainer.getTargetDataSource();
-    }
-    
-    @After
-    public void tearDown() throws Exception {
-        // TODO Close data sources gracefully.
-//        if (targetDataSource instanceof AutoCloseable) {
-//            ((AutoCloseable) targetDataSource).close();
-//        }
+        verificationDataSource = composedContainer.getVerificationDataSource();
     }
     
     @AfterClass
