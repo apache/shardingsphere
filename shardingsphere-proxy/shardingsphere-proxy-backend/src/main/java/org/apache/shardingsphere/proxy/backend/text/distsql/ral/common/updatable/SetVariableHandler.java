@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableKey;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.InvalidValueException;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
@@ -57,7 +57,7 @@ public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVari
         Enum<?> enumType = getEnumType(sqlStatement.getName());
         if (enumType instanceof ConfigurationPropertyKey) {
             handleConfigurationProperty((ConfigurationPropertyKey) enumType, sqlStatement.getValue());
-        } else if (enumType instanceof VariableEnum) {
+        } else if (enumType instanceof VariableKey) {
             handleVariables(sqlStatement);
         } else {
             throw new UnsupportedVariableException(sqlStatement.getName());
@@ -68,7 +68,7 @@ public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVari
         try {
             return ConfigurationPropertyKey.valueOf(name.toUpperCase());
         } catch (IllegalArgumentException ex) {
-            return VariableEnum.getValueOf(name);
+            return VariableKey.getValueOf(name);
         }
     }
     
@@ -92,7 +92,7 @@ public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVari
     }
     
     private void handleVariables(final SetVariableStatement setVariableStatement) {
-        VariableEnum variable = VariableEnum.getValueOf(setVariableStatement.getName());
+        VariableKey variable = VariableKey.getValueOf(setVariableStatement.getName());
         switch (variable) {
             case AGENT_PLUGINS_ENABLED:
                 Boolean agentPluginsEnabled = BooleanUtils.toBooleanObject(sqlStatement.getValue());

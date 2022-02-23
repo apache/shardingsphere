@@ -36,7 +36,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableKey;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -134,28 +134,28 @@ public final class SetVariableBackendHandlerTest {
     @Test
     public void assertSetAgentPluginsEnabledTrue() throws SQLException {
         connectionSession.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
-        SetVariableHandler handler = new SetVariableHandler().init(getParameter(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString()), null));
+        SetVariableHandler handler = new SetVariableHandler().init(getParameter(new SetVariableStatement(VariableKey.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString()), null));
         ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
-        assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.TRUE.toString()));
+        assertThat(SystemPropertyUtil.getSystemProperty(VariableKey.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.TRUE.toString()));
     }
     
     @Test
     public void assertSetAgentPluginsEnabledFalse() throws SQLException {
         connectionSession.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
-        SetVariableHandler handler = new SetVariableHandler().init(getParameter(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "FALSE"), null));
+        SetVariableHandler handler = new SetVariableHandler().init(getParameter(new SetVariableStatement(VariableKey.AGENT_PLUGINS_ENABLED.name(), "FALSE"), null));
         ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
-        assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
+        assertThat(SystemPropertyUtil.getSystemProperty(VariableKey.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
     }
     
     @Test
     public void assertSetAgentPluginsEnabledFalseWithUnknownValue() throws SQLException {
         connectionSession.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
-        SetVariableHandler handler = new SetVariableHandler().init(getParameter(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "xxx"), connectionSession));
+        SetVariableHandler handler = new SetVariableHandler().init(getParameter(new SetVariableStatement(VariableKey.AGENT_PLUGINS_ENABLED.name(), "xxx"), connectionSession));
         ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
-        assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
+        assertThat(SystemPropertyUtil.getSystemProperty(VariableKey.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
     }
     
     private HandlerParameter<SetVariableStatement> getParameter(final SetVariableStatement statement, final ConnectionSession connectionSession) {

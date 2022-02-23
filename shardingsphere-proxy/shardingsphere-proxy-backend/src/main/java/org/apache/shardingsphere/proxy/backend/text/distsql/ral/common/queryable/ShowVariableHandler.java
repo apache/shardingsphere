@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableKey;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -79,11 +79,11 @@ public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVa
             String propertyValue = configurationProperties.getValue(ConfigurationPropertyKey.valueOf(each)).toString();
             result.add(Arrays.asList(each.toLowerCase(), propertyValue));
         });
-        result.add(Arrays.asList(VariableEnum.AGENT_PLUGINS_ENABLED.name().toLowerCase(), SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString())));
+        result.add(Arrays.asList(VariableKey.AGENT_PLUGINS_ENABLED.name().toLowerCase(), SystemPropertyUtil.getSystemProperty(VariableKey.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString())));
         if (connectionSession.getBackendConnection() instanceof JDBCBackendConnection) {
-            result.add(Arrays.asList(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), ((JDBCBackendConnection) connectionSession.getBackendConnection()).getConnectionSize()));
+            result.add(Arrays.asList(VariableKey.CACHED_CONNECTIONS.name().toLowerCase(), ((JDBCBackendConnection) connectionSession.getBackendConnection()).getConnectionSize()));
         }
-        result.add(Arrays.asList(VariableEnum.TRANSACTION_TYPE.name().toLowerCase(), connectionSession.getTransactionStatus().getTransactionType().name()));
+        result.add(Arrays.asList(VariableKey.TRANSACTION_TYPE.name().toLowerCase(), connectionSession.getTransactionStatus().getTransactionType().name()));
         return result;
     }
     
@@ -105,7 +105,7 @@ public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVa
     }
     
     private String getSpecialValue(final String key) {
-        VariableEnum variable = VariableEnum.getValueOf(key);
+        VariableKey variable = VariableKey.getValueOf(key);
         switch (variable) {
             case AGENT_PLUGINS_ENABLED:
                 return SystemPropertyUtil.getSystemProperty(variable.name(), Boolean.TRUE.toString());

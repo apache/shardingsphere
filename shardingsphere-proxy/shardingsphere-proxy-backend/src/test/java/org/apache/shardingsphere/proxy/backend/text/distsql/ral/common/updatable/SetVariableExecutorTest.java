@@ -24,7 +24,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableKey;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
@@ -59,7 +59,7 @@ public final class SetVariableExecutorTest {
     public void assertExecuteWithAgent() throws SQLException {
         SetVariableStatement statement = new SetVariableStatement("AGENT_PLUGINS_ENABLED", "false");
         new SetVariableHandler().init(getParameter(statement, connectionSession)).execute();
-        String actualValue = SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "default");
+        String actualValue = SystemPropertyUtil.getSystemProperty(VariableKey.AGENT_PLUGINS_ENABLED.name(), "default");
         assertThat(actualValue, is("false"));
     }
     

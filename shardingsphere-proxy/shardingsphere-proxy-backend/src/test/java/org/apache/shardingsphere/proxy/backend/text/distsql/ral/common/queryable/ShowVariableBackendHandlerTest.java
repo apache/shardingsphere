@@ -28,7 +28,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableKey;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -99,10 +99,10 @@ public final class ShowVariableBackendHandlerTest {
     
     @Test
     public void assertShowAgentPluginsEnabled() throws SQLException {
-        SystemPropertyUtil.setSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString());
+        SystemPropertyUtil.setSystemProperty(VariableKey.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString());
         connectionSession.setCurrentSchema("schema");
         ShowVariableHandler backendHandler = new ShowVariableHandler()
-                .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name())).setConnectionSession(connectionSession));
+                .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement(VariableKey.AGENT_PLUGINS_ENABLED.name())).setConnectionSession(connectionSession));
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));

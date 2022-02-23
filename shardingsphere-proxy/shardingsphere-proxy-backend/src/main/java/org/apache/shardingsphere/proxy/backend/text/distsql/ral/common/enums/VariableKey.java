@@ -22,7 +22,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception
 /**
  * Variable enum.
  */
-public enum VariableEnum {
+public enum VariableKey {
     
     AGENT_PLUGINS_ENABLED, 
     
@@ -35,7 +35,7 @@ public enum VariableEnum {
      * @param variableName variable name
      * @return variable constant
      */
-    public static VariableEnum getValueOf(final String variableName) {
+    public static VariableKey getValueOf(final String variableName) {
         try {
             return valueOf(variableName.toUpperCase());
         } catch (IllegalArgumentException ex) {
