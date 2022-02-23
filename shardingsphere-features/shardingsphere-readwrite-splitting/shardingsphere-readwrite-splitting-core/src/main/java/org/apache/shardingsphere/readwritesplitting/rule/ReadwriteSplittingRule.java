@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
@@ -64,7 +63,6 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     private final Map<String, ReadwriteSplittingDataSourceRule> dataSourceRules;
     
     public ReadwriteSplittingRule(final ReadwriteSplittingRuleConfiguration ruleConfig) {
-        Preconditions.checkArgument(!ruleConfig.getDataSources().isEmpty(), "Replica query data source rules can not be empty.");
         ruleConfig.getLoadBalancers().forEach((key, value) -> loadBalancers.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, ReplicaLoadBalanceAlgorithm.class)));
         dataSourceRules = new HashMap<>(ruleConfig.getDataSources().size(), 1);
         for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
@@ -76,7 +74,6 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     }
     
     public ReadwriteSplittingRule(final AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfig) {
-        Preconditions.checkArgument(!ruleConfig.getDataSources().isEmpty(), "Replica query data source rules can not be empty.");
         loadBalancers.putAll(ruleConfig.getLoadBalanceAlgorithms());
         dataSourceRules = new HashMap<>(ruleConfig.getDataSources().size(), 1);
         for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
