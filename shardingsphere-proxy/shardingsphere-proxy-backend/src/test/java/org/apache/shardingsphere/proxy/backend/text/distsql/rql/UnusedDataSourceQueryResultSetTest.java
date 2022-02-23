@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowUnusedResourcesStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
@@ -106,7 +106,7 @@ public final class UnusedDataSourceQueryResultSetTest {
     @Test
     public void assertGetRowData() {
         DistSQLResultSet resultSet = new UnusedDataSourceQueryResultSet();
-        resultSet.init(shardingSphereMetaData, mock(ShowResourcesStatement.class));
+        resultSet.init(shardingSphereMetaData, mock(ShowUnusedResourcesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(12));
         Iterator<Object> rowData = actual.iterator();
