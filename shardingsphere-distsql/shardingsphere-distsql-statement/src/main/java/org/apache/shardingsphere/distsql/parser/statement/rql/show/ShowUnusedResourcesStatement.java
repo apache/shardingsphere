@@ -15,34 +15,25 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
-import BaseRule;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
 
-showResources
-    : SHOW SCHEMA RESOURCES (FROM schemaName)?
-    ;
+import java.util.Optional;
 
-showUnusedResources
-    : SHOW UNUSED SCHEMA? RESOURCES (FROM schemaName)?
-    ;
-
-showSingleTableRules
-    : SHOW SINGLE TABLE RULES (FROM schemaName)?
-    ;
-
-showSingleTable
-    : SHOW SINGLE (table | TABLES) (FROM schemaName)?
-    ;
-
-countSchemaRules
-    : COUNT SCHEMA RULES (FROM schemaName)?
-    ;
-
-showRulesUsedResource
-    : SHOW RULES USED RESOURCE resourceName (FROM schemaName)?
-    ;
-
-table
-    : TABLE tableName
-    ;
+/**
+ * Show unused resources statement.
+ */
+@RequiredArgsConstructor
+public final class ShowUnusedResourcesStatement extends RQLStatement implements FromSchemaAvailable {
+    
+    private final SchemaSegment schema;
+    
+    @Override
+    public Optional<SchemaSegment> getSchema() {
+        return Optional.ofNullable(schema);
+    }
+}

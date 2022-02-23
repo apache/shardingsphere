@@ -244,7 +244,7 @@ UNLABEL
     ;
 
 LABELS
-    : L A B E L S 
+    : L A B E L S
     ;
 
 TRAFFIC_ALGORITHM
@@ -255,7 +255,7 @@ LOAD_BALANCER
     : L O A D UL_ B A L A N C E R
     ;
 
-IF  
+IF
     : I F
     ;
 
@@ -287,6 +287,10 @@ WITH
     : W I T H
     ;
 
+UNUSED
+    : U N U S E D
+    ;
+
 PREPARE
     : P R E P A R E
     ;
@@ -298,7 +302,7 @@ DISTSQL
 APPLY
     : A P P L Y
     ;
-    
+
 DISCARD
     : D I S C A R D
     ;
