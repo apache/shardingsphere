@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.env.scenario.ScenarioPath;
 import org.apache.shardingsphere.test.integration.env.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
-import org.testcontainers.containers.BindMode;
+import org.testcontainers.utility.MountableFile;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
@@ -47,6 +47,8 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     private Map<String, DataSource> actualDataSourceMap;
     
+    private DataSource verificationDataSource;
+    
     public DockerStorageContainer(final DatabaseType databaseType, final String dockerImageName, final String scenario) {
         super(databaseType.getName().toLowerCase(), dockerImageName);
         this.databaseType = databaseType;
@@ -55,18 +57,39 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     @Override
     protected void configure() {
-        withClasspathResourceMapping(new ScenarioPath(scenario).getInitSQLResourcePath(databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
+        withCopyFileToContainer(MountableFile.forClasspathResource(new ScenarioPath(scenario).getInitSQLResourcePath(databaseType)), "/docker-entrypoint-initdb.d/");
+        withCopyFileToContainer(MountableFile.forClasspathResource("/env/common/verification/init-sql/" + databaseType.getName().toLowerCase()), "/docker-entrypoint-initdb.d/");
     }
     
     @Override
     @SneakyThrows({IOException.class, JAXBException.class})
-    public synchronized Map<String, DataSource> getActualDataSourceMap() {
-        if (null == actualDataSourceMap) {
+    public final Map<String, DataSource> getActualDataSourceMap() {
+        if (null != actualDataSourceMap) {
+            return actualDataSourceMap;
+        }
+        synchronized (this) {
+            if (null != actualDataSourceMap) {
+                return actualDataSourceMap;
+            }
             Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDatabaseNames(scenario);
             actualDataSourceMap = new LinkedHashMap<>(dataSourceNames.size(), 1);
             dataSourceNames.forEach(each -> actualDataSourceMap.put(each, createDataSource(each)));
+            return actualDataSourceMap;
         }
-        return actualDataSourceMap;
+    }
+    
+    @Override
+    public final DataSource getVerificationDataSource() {
+        if (null != verificationDataSource) {
+            return verificationDataSource;
+        }
+        synchronized (this) {
+            if (null != verificationDataSource) {
+                return verificationDataSource;
+            }
+            verificationDataSource = createDataSource("verification_dataset");
+            return verificationDataSource;
+        }
     }
     
     private DataSource createDataSource(final String dataSourceName) {

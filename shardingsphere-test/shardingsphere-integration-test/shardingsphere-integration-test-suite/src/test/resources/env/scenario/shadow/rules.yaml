@@ -22,7 +22,7 @@ rules:
       sourceDataSourceName: db
       shadowDataSourceName: shadow_db
   tables:
-    t_order:
+    t_shadow:
       dataSourceNames:
         - shadowDataSource
       shadowAlgorithmNames:

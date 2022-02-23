@@ -28,6 +28,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.env.scenario.ScenarioPath;
 import org.apache.shardingsphere.test.integration.env.scenario.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.param.model.CaseParameterizedArray;
+import org.junit.After;
 import org.junit.Before;
 
 import javax.sql.DataSource;
@@ -70,10 +71,9 @@ public abstract class BatchITCase extends BaseITCase {
         dataSetEnvironmentManager.fillData();
     }
     
-    @Override
-    public void tearDown() throws Exception {
+    @After
+    public void tearDown() {
         dataSetEnvironmentManager.cleanData();
-        super.tearDown();
     }
     
     protected final void assertDataSets(final int[] actualUpdateCounts) throws SQLException {

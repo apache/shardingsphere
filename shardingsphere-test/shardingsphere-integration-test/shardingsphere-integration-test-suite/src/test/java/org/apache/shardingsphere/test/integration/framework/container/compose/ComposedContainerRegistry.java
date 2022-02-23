@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.compose;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.integration.framework.container.compose.mode.ClusterComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.container.compose.mode.MemoryComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
-import org.testcontainers.lifecycle.Startable;
 
+import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,6 +64,30 @@ public final class ComposedContainerRegistry implements AutoCloseable {
     
     @Override
     public void close() {
-        composedContainers.values().forEach(Startable::close);
+        for (ComposedContainer each : composedContainers.values()) {
+            closeTargetDataSource(each.getTargetDataSource());
+            closeActualDataSourceMap(each.getActualDataSourceMap());
+            closeContainer(each);
+        }
+    }
+    
+    @SneakyThrows
+    private void closeTargetDataSource(final DataSource targetDataSource) {
+        if (targetDataSource instanceof AutoCloseable) {
+            ((AutoCloseable) targetDataSource).close();
+        }
+    }
+    
+    @SneakyThrows
+    private void closeActualDataSourceMap(final Map<String, DataSource> actualDataSourceMap) {
+        for (DataSource each : actualDataSourceMap.values()) {
+            if (each instanceof AutoCloseable) {
+                ((AutoCloseable) each).close();
+            }
+        }
+    }
+    
+    private void closeContainer(final ComposedContainer composedContainer) {
+        composedContainer.close();
     }
 }

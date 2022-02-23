@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
-import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.parse.ParseStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.ParseStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -68,7 +68,7 @@ public final class ParseDistSQLBackendHandler extends QueryableRALBackendHandler
         try {
             parsedSqlStatement = new ShardingSphereSQLParserEngine(getBackendDatabaseType(databaseType, connectionSession).getName(), sqlParserRule.orElse(null)).parse(sqlStatement.getSql(), false);
         } catch (SQLParsingException ex) {
-            throw new SQLParsingException("You have an error in your SQL syntax that you are parsed");
+            throw new SQLParsingException("You have a syntax error in your parsed statement");
         }
         return Collections.singleton(Arrays.asList(parsedSqlStatement.getClass().getSimpleName(), new Gson().toJson(parsedSqlStatement)));
     }
