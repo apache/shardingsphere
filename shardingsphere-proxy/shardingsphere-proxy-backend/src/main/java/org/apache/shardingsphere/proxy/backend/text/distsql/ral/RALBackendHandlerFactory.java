@@ -36,9 +36,12 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.S
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterTrafficRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterTransactionRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.ApplyDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.CreateTrafficRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.DiscardDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.DropTrafficRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.LabelInstanceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.PrepareDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.RefreshTableMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.SetInstanceStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.SetVariableStatement;
@@ -66,9 +69,12 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.AlterSQLParserRuleHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.AlterTrafficRuleHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.AlterTransactionRuleHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.ApplyDistSQLHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.CreateTrafficRuleHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.DiscardDistSQLHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.DropTrafficRuleHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.LabelInstanceHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.PrepareDistSQLHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.RefreshTableMetadataHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.SetInstanceStatusHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.SetReadwriteSplittingStatusHandler;
@@ -110,6 +116,9 @@ public final class RALBackendHandlerFactory {
         UPDATABLE_HANDLER_MAP.put(DropTrafficRuleStatement.class.getName(), DropTrafficRuleHandler.class);
         UPDATABLE_HANDLER_MAP.put(AlterSQLParserRuleStatement.class.getName(), AlterSQLParserRuleHandler.class);
         UPDATABLE_HANDLER_MAP.put(AlterTransactionRuleStatement.class.getName(), AlterTransactionRuleHandler.class);
+        UPDATABLE_HANDLER_MAP.put(PrepareDistSQLStatement.class.getName(), PrepareDistSQLHandler.class);
+        UPDATABLE_HANDLER_MAP.put(ApplyDistSQLStatement.class.getName(), ApplyDistSQLHandler.class);
+        UPDATABLE_HANDLER_MAP.put(DiscardDistSQLStatement.class.getName(), DiscardDistSQLHandler.class);
     }
     
     private static void initQueryableHandlerMap() {
