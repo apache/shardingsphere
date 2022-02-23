@@ -58,12 +58,12 @@ CREATE INDEX order_index_t_order ON t_order (order_id);
 CREATE INDEX user_index_t_user ON t_user (user_id);
 
 
-DROP DATABASE IF EXISTS write_ds;
-CREATE DATABASE write_ds;
+DROP DATABASE IF EXISTS write_dataset;
+CREATE DATABASE write_dataset;
 
-GRANT ALL PRIVILEGES ON DATABASE write_ds TO root;
+GRANT ALL PRIVILEGES ON DATABASE write_dataset TO root;
 
-\c write_ds;
+\c write_dataset;
 
 DROP TABLE IF EXISTS t_order;
 DROP TABLE IF EXISTS t_order_item;
@@ -101,12 +101,12 @@ CREATE INDEX order_index_t_order ON t_order (order_id);
 CREATE INDEX user_index_t_user ON t_user (user_id);
 
 
-DROP DATABASE IF EXISTS read_ds;
-CREATE DATABASE read_ds;
+DROP DATABASE IF EXISTS read_dataset;
+CREATE DATABASE read_dataset;
 
-GRANT ALL PRIVILEGES ON DATABASE read_ds TO root;
+GRANT ALL PRIVILEGES ON DATABASE read_dataset TO root;
 
-\c read_ds;
+\c read_dataset;
 
 DROP TABLE IF EXISTS t_order;
 DROP TABLE IF EXISTS t_order_item;

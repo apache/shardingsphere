@@ -17,6 +17,6 @@
   -->
 
 <databases>
-    <database>write_ds</database>
-    <database>read_ds</database>
+    <database>write_dataset</database>
+    <database>read_dataset</database>
 </databases>
