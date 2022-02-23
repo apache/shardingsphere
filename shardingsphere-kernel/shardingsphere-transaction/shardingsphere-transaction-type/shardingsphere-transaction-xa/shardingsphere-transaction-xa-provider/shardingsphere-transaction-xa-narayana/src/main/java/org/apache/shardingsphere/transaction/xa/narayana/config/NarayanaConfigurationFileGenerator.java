@@ -56,7 +56,7 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         String instanceId = instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId();
         String recoveryId = null == instanceContext.getInstance().getXaRecoveryId() ? instanceId : instanceContext.getInstance().getXaRecoveryId();
         NarayanaConfiguration config = createDefaultConfiguration(instanceId, recoveryId);
-        if (null != transactionRule.getProps() && !transactionRule.getProps().isEmpty()) {
+        if (!transactionRule.getProps().isEmpty()) {
             appendUserDefinedJdbcStoreConfiguration(transactionRule, config);
         }
         JAXB.marshal(config, new File(ClassLoader.getSystemResource("").getPath(), "jbossts-properties.xml"));
@@ -138,14 +138,14 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
     }
     
     @Override
-    public Optional<Properties> getTransactionProps(final Properties originTransactionProps, final Optional<SchemaConfiguration> schemaConfiguration, final String modeType) {
+    public Properties getTransactionProps(final Properties originTransactionProps, final SchemaConfiguration schemaConfiguration, final String modeType) {
         Properties result = new Properties();
         if (!originTransactionProps.isEmpty()) {
             generateUserDefinedJdbcStoreConfiguration(originTransactionProps, result);
-        } else if ("Cluster".equalsIgnoreCase(modeType) && schemaConfiguration.isPresent()) {
-            generateDefaultJdbcStoreConfiguration(schemaConfiguration.get(), result);
+        } else if ("Cluster".equals(modeType)) {
+            generateDefaultJdbcStoreConfiguration(schemaConfiguration, result);
         }
-        return result.isEmpty() ? Optional.empty() : Optional.of(result);
+        return result;
     }
     
     private void generateUserDefinedJdbcStoreConfiguration(final Properties originTransactionProps, final Properties props) {

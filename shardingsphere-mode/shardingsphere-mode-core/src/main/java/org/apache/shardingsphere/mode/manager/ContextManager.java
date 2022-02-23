@@ -470,9 +470,8 @@ public final class ContextManager implements AutoCloseable {
     private void persistTransactionConfiguration(final SchemaConfiguration schemaConfiguration, final MetaDataPersistService metaDataPersistService) {
         Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(getTransactionRule().getProviderType());
         if (fileGenerator.isPresent()) {
-            Optional<Properties> transactionProps = fileGenerator.get().getTransactionProps(getTransactionRule().getProps(), Optional.of(schemaConfiguration),
-                    instanceContext.getModeConfiguration().getType());
-            transactionProps.ifPresent(optional -> metaDataPersistService.persistTransactionRule(optional, true));
+            Properties transactionProps = fileGenerator.get().getTransactionProps(getTransactionRule().getProps(), schemaConfiguration, instanceContext.getModeConfiguration().getType());
+            metaDataPersistService.persistTransactionRule(transactionProps, true);
         }
     }
     
