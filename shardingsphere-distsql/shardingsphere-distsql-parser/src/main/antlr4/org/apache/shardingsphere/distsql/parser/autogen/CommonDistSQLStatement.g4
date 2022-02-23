@@ -34,6 +34,7 @@ execute
     | showInstanceMode
     | labelInstance
     | unlabelInstance
+    | countInstanceRule
     | countSchemaRules
     | showSingleTable
     | showSingleTableRules
