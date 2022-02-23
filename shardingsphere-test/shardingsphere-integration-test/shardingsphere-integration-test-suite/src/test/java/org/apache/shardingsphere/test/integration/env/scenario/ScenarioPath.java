@@ -42,6 +42,8 @@ public final class ScenarioPath {
     
     private static final String DATASET_FILE = "dataset.xml";
     
+    private static final String VERIFICATION_DATASET_FILE = "verification_dataset.xml";
+    
     private static final String RULE_CONFIG_FILE = "rules.yaml";
     
     private static final String AUTHORITY_FILE = "authority.xml";
@@ -114,6 +116,15 @@ public final class ScenarioPath {
      */
     public String getDataSetFile() {
         return getFile(DATASET_FILE);
+    }
+    
+    /**
+     * Get verification data set file.
+     *
+     * @return verification data set file
+     */
+    public String getVerificationDataSetFile() {
+        return getFile(VERIFICATION_DATASET_FILE);
     }
     
     /**

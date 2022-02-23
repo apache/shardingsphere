@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import BaseRule, DMLStatement;
+import DMLStatement;
 
 createTable
     : CREATE createTableSpecification? TABLE tableName (createDefinitionClause | createLikeClause)

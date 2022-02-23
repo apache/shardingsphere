@@ -59,6 +59,8 @@ public abstract class BaseITCase {
     
     private DataSource targetDataSource;
     
+    private DataSource verificationDataSource;
+    
     public BaseITCase(final ParameterizedArray parameterizedArray) {
         scenario = parameterizedArray.getScenario();
         databaseType = parameterizedArray.getDatabaseType();
@@ -72,6 +74,7 @@ public abstract class BaseITCase {
         composedContainer.start();
         actualDataSourceMap = composedContainer.getActualDataSourceMap();
         targetDataSource = composedContainer.getTargetDataSource();
+        verificationDataSource = composedContainer.getVerificationDataSource();
     }
     
     @AfterClass

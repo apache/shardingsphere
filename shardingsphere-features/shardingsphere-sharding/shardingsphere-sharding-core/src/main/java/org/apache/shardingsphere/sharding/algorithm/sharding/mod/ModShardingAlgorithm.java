@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.common.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -39,6 +41,8 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     
     private static final String SHARDING_COUNT_KEY = "sharding-count";
     
+    private static final char PADDING_CHAR = '0';
+    
     private Properties props = new Properties();
     
     private int shardingCount;
@@ -56,17 +60,20 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         String suffix = String.valueOf(getLongValue(shardingValue.getValue()) % shardingCount);
-        for (String each : availableTargetNames) {
-            if (each.endsWith(suffix)) {
-                return each;
-            }
-        }
-        return null;
+        return getTargetName(availableTargetNames, shardingValue.getDataNodeInfo(), suffix);
     }
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
         return isContainAllTargets(shardingValue) ? availableTargetNames : getAvailableTargetNames(availableTargetNames, shardingValue);
+    }
+    
+    private String getTargetName(final Collection<String> availableTargetNames, final DataNodeInfo dataNodeInfo, final String suffix) {
+        String targetName = dataNodeInfo.getPrefix() + Strings.padStart(suffix, dataNodeInfo.getSuffixMinLength(), PADDING_CHAR);
+        if (availableTargetNames.contains(targetName)) {
+            return targetName;
+        }
+        return null;
     }
     
     private boolean isContainAllTargets(final RangeShardingValue<Comparable<?>> shardingValue) {
@@ -78,10 +85,9 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         for (long i = getLongValue(shardingValue.getValueRange().lowerEndpoint()); i <= getLongValue(shardingValue.getValueRange().upperEndpoint()); i++) {
             String suffix = String.valueOf(i % shardingCount);
-            for (String each : availableTargetNames) {
-                if (each.endsWith(suffix)) {
-                    result.add(each);
-                }
+            String targetName = getTargetName(availableTargetNames, shardingValue.getDataNodeInfo(), suffix);
+            if (null != targetName) {
+                result.add(targetName);
             }
         }
         return result;

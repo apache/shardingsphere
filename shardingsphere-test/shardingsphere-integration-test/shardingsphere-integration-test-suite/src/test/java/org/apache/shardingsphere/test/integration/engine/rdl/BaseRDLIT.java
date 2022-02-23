@@ -56,7 +56,7 @@ public abstract class BaseRDLIT extends SingleITCase {
     
     @After
     public final void tearDown() throws Exception {
-        if (getAssertion().getDestroySQL() != null) {
+        if (null != getAssertion().getDestroySQL()) {
             try (Connection connection = getTargetDataSource().getConnection()) {
                 executeDestroySQLs(connection);
             }

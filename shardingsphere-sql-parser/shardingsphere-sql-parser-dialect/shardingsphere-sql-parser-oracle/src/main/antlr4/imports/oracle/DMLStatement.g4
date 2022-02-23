@@ -17,7 +17,7 @@
 
 grammar DMLStatement;
 
-import BaseRule, Comments, DDLStatement;
+import Comments, DDLStatement;
 
 insert
     : INSERT hint? (insertSingleTable | insertMultiTable)
