@@ -28,6 +28,6 @@ public final class DiscardDistSQLHandler extends UpdatableRALBackendHandler<Alte
     
     @Override
     protected void update(final ContextManager contextManager, final AlterTransactionRuleStatement sqlStatement) {
-        //TODO Requires metadata to provide API
+        //TODO Metadata support required
     }
 }
