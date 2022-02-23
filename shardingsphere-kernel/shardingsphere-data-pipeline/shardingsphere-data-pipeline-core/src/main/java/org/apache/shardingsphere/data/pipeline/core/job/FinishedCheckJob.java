@@ -36,7 +36,6 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 public final class FinishedCheckJob implements SimpleJob {
@@ -101,15 +100,19 @@ public final class FinishedCheckJob implements SimpleJob {
     
     private boolean checkJobStatus(final String jobId) {
         Map<Integer, JobProgress> jobProgressMap = ruleAlteredJobAPI.getProgress(jobId);
-        final AtomicBoolean flag = new AtomicBoolean(false);
+        boolean flag = false;
         for (JobProgress each : jobProgressMap.values()) {
+            if (each == null) {
+                continue;
+            }
             if (JobStatus.FINISHED.equals(each.getStatus()) || JobStatus.PREPARING_FAILURE.equals(each.getStatus())
-                    || JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.equals(each.getStatus()) || JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.equals(each.getStatus())) {
-                flag.set(true);
+                    || JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.equals(each.getStatus())
+                    || JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.equals(each.getStatus())) {
+                flag = true;
                 break;
             }
         }
-        return flag.get();
+        return flag;
     }
     
     private boolean dataConsistencyCheck(final JobConfiguration jobConfig) {
