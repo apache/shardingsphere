@@ -153,9 +153,7 @@ public final class TablesContext {
             if (null == each.getOwner()) {
                 continue;
             }
-            Collection<String> columnExpressions = result.getOrDefault(each.getOwner(), new LinkedList<>());
-            columnExpressions.add(each.getExpression());
-            result.put(each.getOwner(), columnExpressions);
+            result.computeIfAbsent(each.getOwner(), unused -> new LinkedList<>()).add(each.getExpression());
         }
         return result;
     }
