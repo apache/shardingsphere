@@ -15,6 +15,7 @@
 -- limitations under the License.
 --
 
+DROP DATABASE IF EXISTS verification_dataset;
 CREATE DATABASE verification_dataset;
 
 GRANT ALL PRIVILEGES ON DATABASE verification_dataset TO root;
@@ -57,6 +58,7 @@ CREATE INDEX order_index_t_order ON t_order (order_id);
 CREATE INDEX user_index_t_user ON t_user (user_id);
 
 
+DROP DATABASE IF EXISTS write_ds;
 CREATE DATABASE write_ds;
 
 GRANT ALL PRIVILEGES ON DATABASE write_ds TO root;
@@ -99,6 +101,7 @@ CREATE INDEX order_index_t_order ON t_order (order_id);
 CREATE INDEX user_index_t_user ON t_user (user_id);
 
 
+DROP DATABASE IF EXISTS read_ds;
 CREATE DATABASE read_ds;
 
 GRANT ALL PRIVILEGES ON DATABASE read_ds TO root;
