@@ -28,10 +28,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Delete statement context.
@@ -56,8 +55,10 @@ public final class DeleteStatementContext extends CommonSQLStatementContext<Dele
     }
     
     private Collection<SimpleTableSegment> filterAliasDeleteTable(final Collection<SimpleTableSegment> tableSegments) {
-        Map<String, SimpleTableSegment> aliasTableSegmentMap = tableSegments.stream().filter(each 
-            -> each.getAlias().isPresent()).collect(Collectors.toMap(each -> each.getAlias().get(), Function.identity(), (oldValue, currentValue) -> oldValue));
+        Map<String, SimpleTableSegment> aliasTableSegmentMap = new HashMap<>(tableSegments.size(), 1f);
+        for (SimpleTableSegment each : tableSegments) {
+            each.getAlias().ifPresent(alias -> aliasTableSegmentMap.putIfAbsent(alias, each));
+        }
         Collection<SimpleTableSegment> result = new LinkedList<>();
         for (SimpleTableSegment each : tableSegments) {
             SimpleTableSegment aliasDeleteTable = aliasTableSegmentMap.get(each.getTableName().getIdentifier().getValue());

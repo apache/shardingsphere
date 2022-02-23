@@ -60,8 +60,9 @@ public final class EncryptRuleStatementConverter {
     }
     
     private static EncryptColumnRuleConfiguration createEncryptColumnRuleConfiguration(final String tableName, final EncryptColumnSegment columnSegment) {
-        return new EncryptColumnRuleConfiguration(columnSegment.getName(), columnSegment.getCipherColumn(), columnSegment.getAssistedQueryColumn(),
-                columnSegment.getPlainColumn(), getEncryptorName(tableName, columnSegment.getName()));
+        return new EncryptColumnRuleConfiguration(columnSegment.getName(), columnSegment.getDataType(), columnSegment.getCipherColumn(),
+                columnSegment.getCipherDataType(), columnSegment.getAssistedQueryColumn(), columnSegment.getAssistedQueryDataType(),
+                columnSegment.getPlainColumn(), columnSegment.getPlainDataType(), getEncryptorName(tableName, columnSegment.getName()));
     }
     
     private static Map<String, ShardingSphereAlgorithmConfiguration> createEncryptorConfigurations(final EncryptRuleSegment ruleSegment) {

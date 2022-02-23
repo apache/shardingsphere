@@ -45,9 +45,9 @@ public final class OnRuleAlteredActionConfiguration {
     @ToString
     public static final class InputConfiguration {
         
-        private final int workerThread;
+        private final Integer workerThread;
         
-        private final int batchSize;
+        private final Integer batchSize;
         
         private final ShardingSphereAlgorithmConfiguration rateLimiter;
     }
@@ -57,9 +57,9 @@ public final class OnRuleAlteredActionConfiguration {
     @ToString
     public static final class OutputConfiguration {
         
-        private final int workerThread;
+        private final Integer workerThread;
         
-        private final int batchSize;
+        private final Integer batchSize;
         
         private final ShardingSphereAlgorithmConfiguration rateLimiter;
     }

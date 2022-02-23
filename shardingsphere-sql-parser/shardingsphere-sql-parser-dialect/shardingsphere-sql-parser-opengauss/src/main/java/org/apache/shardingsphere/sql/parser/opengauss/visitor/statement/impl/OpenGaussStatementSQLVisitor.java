@@ -360,19 +360,23 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         if (null != ctx.functionExprCommonSubexpr()) {
             return visit(ctx.functionExprCommonSubexpr());
         }
-        calculateParameterCount(getTargetRuleContextFromParseTree(ctx, CExprContext.class));
+        Collection<ExpressionSegment> expressionSegments = getExpressionSegments(getTargetRuleContextFromParseTree(ctx, CExprContext.class));
         // TODO replace aggregation segment
         String aggregationType = ctx.funcApplication().funcName().getText();
         if (AggregationType.isAggregationType(aggregationType)) {
             return createAggregationSegment(ctx.funcApplication(), aggregationType);
         }
-        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcApplication().funcName().getText(), getOriginalText(ctx));
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcApplication().funcName().getText(), getOriginalText(ctx));
+        result.getParameters().addAll(expressionSegments);
+        return result;
     }
     
     @Override
     public ASTNode visitFunctionExprCommonSubexpr(final FunctionExprCommonSubexprContext ctx) {
-        calculateParameterCount(getTargetRuleContextFromParseTree(ctx, CExprContext.class));
-        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getText(), getOriginalText(ctx));
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getText(), getOriginalText(ctx));
+        Collection<ExpressionSegment> expressionSegments = getExpressionSegments(getTargetRuleContextFromParseTree(ctx, CExprContext.class));
+        result.getParameters().addAll(expressionSegments);
+        return result;
     }
     
     private <T extends ParseTree> Collection<T> getTargetRuleContextFromParseTree(final ParseTree parseTree, final Class<? extends T> clazz) {
@@ -388,10 +392,12 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         return result;
     }
     
-    private void calculateParameterCount(final Collection<CExprContext> cexprContexts) {
+    private Collection<ExpressionSegment> getExpressionSegments(final Collection<CExprContext> cexprContexts) {
+        Collection<ExpressionSegment> result = new LinkedList<>();
         for (CExprContext each : cexprContexts) {
-            visit(each);
+            result.add((ExpressionSegment) visit(each));
         }
+        return result;
     }
     
     @Override

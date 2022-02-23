@@ -26,11 +26,13 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.mode.metadata.persist.service.ComputeNodePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.SchemaVersionPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.GlobalRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -60,6 +62,8 @@ public final class MetaDataPersistService {
     
     private final ComputeNodePersistService computeNodePersistService;
     
+    private final SchemaVersionPersistService schemaVersionPersistService;
+    
     public MetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
         dataSourceService = new DataSourcePersistService(repository);
@@ -68,6 +72,7 @@ public final class MetaDataPersistService {
         globalRuleService = new GlobalRulePersistService(repository);
         propsService = new PropertiesPersistService(repository);
         computeNodePersistService = new ComputeNodePersistService(repository);
+        schemaVersionPersistService = new SchemaVersionPersistService(repository);
     }
     
     /**
@@ -134,9 +139,26 @@ public final class MetaDataPersistService {
             } else if (DataSourcePropertiesCreator.create(localConfiguredDataSource).equals(persistedDataSourceProps)) {
                 result.put(dataSourceName, localConfiguredDataSource);
             } else {
+                result.put(dataSourceName, DataSourcePoolCreator.create(persistedDataSourceProps));
                 DataSourcePoolDestroyerFactory.destroy(localConfiguredDataSource);
             }
         }
         return result;
+    }
+    
+    /**
+     * Persist transaction rule.
+     *
+     * @param props transaction props
+     * @param isOverwrite whether overwrite registry center's configuration if existed
+     */
+    public void persistTransactionRule(final Properties props, final boolean isOverwrite) {
+        Collection<RuleConfiguration> ruleConfigurations = globalRuleService.load();
+        for (RuleConfiguration each : ruleConfigurations) {
+            if (each instanceof TransactionRuleConfiguration) {
+                ((TransactionRuleConfiguration) each).getProps().putAll(props);
+            }
+        }
+        globalRuleService.persist(ruleConfigurations, isOverwrite);
     }
 }

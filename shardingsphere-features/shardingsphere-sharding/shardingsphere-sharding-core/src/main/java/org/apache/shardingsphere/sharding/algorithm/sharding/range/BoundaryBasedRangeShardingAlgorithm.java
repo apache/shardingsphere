@@ -39,6 +39,7 @@ public final class BoundaryBasedRangeShardingAlgorithm extends AbstractRangeShar
     
     private static final String SHARDING_RANGES_KEY = "sharding-ranges";
     
+    @SuppressWarnings("UnstableApiUsage")
     @Override
     public Map<Integer, Range<Comparable<?>>> calculatePartitionRange(final Properties props) {
         Preconditions.checkState(props.containsKey(SHARDING_RANGES_KEY), "Sharding ranges cannot be null.");

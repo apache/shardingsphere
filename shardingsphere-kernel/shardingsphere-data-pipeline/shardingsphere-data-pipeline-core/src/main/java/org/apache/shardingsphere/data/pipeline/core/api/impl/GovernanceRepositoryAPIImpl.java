@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
@@ -103,12 +105,6 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
-    public void deleteJobProgress(final String jobId) {
-        log.info("delete job progress {}", jobId);
-        repository.delete(String.format("%s/%s/offset", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId));
-    }
-    
-    @Override
     public void deleteJob(final String jobId) {
         log.info("delete job {}", jobId);
         repository.delete(String.format("%s/%s", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId));
@@ -127,6 +123,17 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     @Override
     public void persist(final String key, final String value) {
         repository.persist(key, value);
+    }
+    
+    @Override
+    public void renewJobStatus(final JobStatus status, final String jobId) {
+        List<String> offsetKeys = getChildrenKeys(String.format("%s/%s/offset", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId));
+        Map<Integer, JobProgress> progressMap = Maps.newHashMap();
+        offsetKeys.forEach(each -> progressMap.put(Integer.parseInt(each), getJobProgress(jobId, Integer.parseInt(each))));
+        progressMap.forEach((key, value) -> {
+            value.setStatus(status);
+            persist(getOffsetPath(jobId, key), YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(value)));
+        });
     }
     
     private String getOffsetPath(final String jobId, final int shardingItem) {

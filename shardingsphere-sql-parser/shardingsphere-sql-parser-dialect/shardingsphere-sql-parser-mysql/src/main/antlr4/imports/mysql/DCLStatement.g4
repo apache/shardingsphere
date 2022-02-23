@@ -17,7 +17,7 @@
 
 grammar DCLStatement;
 
-import Symbol, Keyword, MySQLKeyword, Literals, BaseRule;
+import BaseRule;
 
 grant
     : GRANT roleOrPrivileges TO userList withGrantOption? # grantRoleOrPrivilegeTo

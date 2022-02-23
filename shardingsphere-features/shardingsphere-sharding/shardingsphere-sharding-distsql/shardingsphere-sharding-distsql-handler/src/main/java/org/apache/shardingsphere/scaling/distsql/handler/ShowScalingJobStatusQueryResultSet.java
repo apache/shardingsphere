@@ -53,7 +53,7 @@ public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSe
                         list.add(entry.getValue().isActive() ? "true" : "false");
                         list.add(entry.getValue().getInventoryFinishedPercentage());
                         long latestActiveTimeMillis = entry.getValue().getIncrementalLatestActiveTimeMillis();
-                        list.add(latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toMinutes(currentTimeMillis - latestActiveTimeMillis) : 0);
+                        list.add(latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis) : 0);
                     } else {
                         list.add("");
                         list.add("");
@@ -67,7 +67,7 @@ public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSe
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("item", "data_source", "status", "active", "inventory_finished_percentage", "incremental_idle_minutes");
+        return Arrays.asList("item", "data_source", "status", "active", "inventory_finished_percentage", "incremental_idle_seconds");
     }
     
     @Override

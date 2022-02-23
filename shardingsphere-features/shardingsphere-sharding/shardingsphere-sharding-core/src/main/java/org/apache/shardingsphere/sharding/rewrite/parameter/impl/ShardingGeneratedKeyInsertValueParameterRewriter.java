@@ -36,7 +36,7 @@ import java.util.List;
 public final class ShardingGeneratedKeyInsertValueParameterRewriter implements ParameterRewriter<InsertStatementContext> {
     
     @Override
-    public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
+    public boolean isNeedRewrite(final SQLStatementContext<?> sqlStatementContext) {
         return sqlStatementContext instanceof InsertStatementContext
                 && ((InsertStatementContext) sqlStatementContext).getGeneratedKeyContext().isPresent()
                 && ((InsertStatementContext) sqlStatementContext).getGeneratedKeyContext().get().isGenerated()

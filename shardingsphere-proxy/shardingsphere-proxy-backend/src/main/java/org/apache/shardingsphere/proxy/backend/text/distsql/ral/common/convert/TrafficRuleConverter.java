@@ -24,6 +24,7 @@ import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Traffic rule converter.
@@ -42,18 +43,21 @@ public final class TrafficRuleConverter {
         return result;
     }
     
-    private static void setConfigurationData(final TrafficRuleConfiguration result, final TrafficRuleSegment each) {
-        ShardingSphereAlgorithmConfiguration trafficAlgorithm = createAlgorithmConfiguration(each.getAlgorithm());
-        ShardingSphereAlgorithmConfiguration loadBalancer = createAlgorithmConfiguration(each.getLoadBalancer());
-        String trafficAlgorithmName = createAlgorithmName(each.getName(), trafficAlgorithm);
-        String loadBalancerName = createAlgorithmName(each.getName(), loadBalancer);
-        TrafficStrategyConfiguration trafficStrategy = createTrafficStrategy(each, trafficAlgorithmName, loadBalancerName);
+    private static void setConfigurationData(final TrafficRuleConfiguration result, final TrafficRuleSegment segment) {
+        ShardingSphereAlgorithmConfiguration trafficAlgorithm = createAlgorithmConfiguration(segment.getAlgorithm());
+        ShardingSphereAlgorithmConfiguration loadBalancer = createAlgorithmConfiguration(segment.getLoadBalancer());
+        String trafficAlgorithmName = createAlgorithmName(segment.getName(), trafficAlgorithm);
+        String loadBalancerName = createAlgorithmName(segment.getName(), loadBalancer);
+        TrafficStrategyConfiguration trafficStrategy = createTrafficStrategy(segment, trafficAlgorithmName, loadBalancerName);
         result.getTrafficStrategies().add(trafficStrategy);
         result.getTrafficAlgorithms().put(trafficAlgorithmName, trafficAlgorithm);
-        result.getLoadBalancers().put(loadBalancerName, loadBalancer);
+        Optional.ofNullable(loadBalancerName).ifPresent(op -> result.getLoadBalancers().put(loadBalancerName, loadBalancer));
     }
     
     private static ShardingSphereAlgorithmConfiguration createAlgorithmConfiguration(final AlgorithmSegment segment) {
+        if (null == segment) {
+            return null;
+        }
         return new ShardingSphereAlgorithmConfiguration(segment.getName(), segment.getProps());
     }
     
@@ -62,6 +66,9 @@ public final class TrafficRuleConverter {
     }
     
     private static String createAlgorithmName(final String ruleName, final ShardingSphereAlgorithmConfiguration algorithm) {
+        if (null == algorithm) {
+            return null;
+        }
         return String.format("%s_%s", ruleName, algorithm.getType()).toLowerCase();
     }
 }

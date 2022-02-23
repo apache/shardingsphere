@@ -20,19 +20,23 @@ package org.apache.shardingsphere.encrypt.distsql.handler.update;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleStatementConverter;
+import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -47,9 +51,10 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     }
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateEncryptRuleStatement sqlStatement, 
-                                  final EncryptRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateEncryptRuleStatement sqlStatement,
+                                  final EncryptRuleConfiguration currentRuleConfig) throws DistSQLException {
         checkDuplicateRuleNames(shardingSphereMetaData.getName(), sqlStatement, currentRuleConfig);
+        checkDataType(sqlStatement);
         checkToBeCreatedEncryptors(sqlStatement);
         // TODO check resource
     }
@@ -62,6 +67,16 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
                 throw new DuplicateRuleException("encrypt", schemaName, toBeCreatedDuplicateRuleNames);
             }
         }
+    }
+    
+    private void checkDataType(final CreateEncryptRuleStatement sqlStatement) throws DistSQLException {
+        Collection<String> invalidRules = sqlStatement.getRules().stream()
+                .map(each -> getInvalidColumns(each.getTableName(), each.getColumns())).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));
+        DistSQLException.predictionThrow(invalidRules.isEmpty(), new InvalidRuleConfigurationException("encrypt", invalidRules, Collections.singleton("incomplete data type")));
+    }
+    
+    private Collection<String> getInvalidColumns(final String tableName, final Collection<EncryptColumnSegment> columns) {
+        return columns.stream().filter(each1 -> !each1.isCorrectDataType()).map(each1 -> String.format("%s.%s", tableName, each1.getName())).collect(Collectors.toCollection(LinkedList::new));
     }
     
     private void checkToBeCreatedEncryptors(final CreateEncryptRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {

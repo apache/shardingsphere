@@ -37,16 +37,17 @@ chapter = true
 | H2TableMetaDataLoader        | Use H2 dialect to load meta data          |
 | OpenGaussTableMetaDataLoader | Use OpenGauss dialect to load meta data   |
 
-## DataSourcePoolCreator
+## DataSourcePoolMetaData
 
-| *SPI Name*                   | *Description*                    |
-| ---------------------------- | -------------------------------- |
-| DataSourcePoolCreator        | Data source pool creator         |
+| *SPI Name*                    | *Description*              |
+| ---------------------------- |----------------------------|
+| DataSourcePoolMetaData        | Data source pool meta data |
 
-| *Implementation Class*       | *Description*                    |
-| ---------------------------- | -------------------------------- |
-| DefaultDataSourcePoolCreator | Default data source pool creator |
-| HikariDataSourcePoolCreator  | Hikari data source pool creator  |
+| *Implementation Class*           | *Description*                   |
+|----------------------------------|---------------------------------|
+| DBCPDataSourcePoolMetaData       | DBCP data source pool meta data |
+| HikariDataSourcePoolMetaData     | Hikari data source pool meta data                |
+| TomcatDBCPDataSourcePoolMetaData | Tomcat DBCP data source pool meta data           |
 
 ## DataSourcePoolDestroyer
 

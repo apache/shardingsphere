@@ -102,7 +102,7 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
     }
     
     private Map<String, String> convertToMap(final Object obj) {
-        if (obj == null) {
+        if (null == obj) {
             return Collections.emptyMap();
         }
         return new Gson().fromJson(new Gson().toJson(obj), LinkedHashMap.class);

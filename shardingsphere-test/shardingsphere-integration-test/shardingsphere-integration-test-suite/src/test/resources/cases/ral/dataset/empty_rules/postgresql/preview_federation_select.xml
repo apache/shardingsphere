@@ -18,7 +18,7 @@
 <dataset>
     <metadata>
         <column name="data_source_name"/>
-        <column name="sql"/>
+        <column name="actual_sql"/>
     </metadata>
     <row values="encrypt_write_ds_0| SELECT * FROM &quot;t_user_item_0&quot; WHERE CAST(&quot;user_id&quot; AS INTEGER) = 1 UNION ALL SELECT * FROM &quot;t_user_item_10&quot; WHERE CAST(&quot;user_id&quot; AS INTEGER) = 1 UNION ALL SELECT * FROM &quot;t_user_item_20&quot; WHERE CAST(&quot;user_id&quot; AS INTEGER) = 1 UNION ALL SELECT * FROM &quot;t_user_item_30&quot; WHERE CAST(&quot;user_id&quot; AS INTEGER) = 1"/>
     <row values="encrypt_write_ds_1| SELECT * FROM &quot;t_user_item_1&quot; WHERE CAST(&quot;user_id&quot; AS INTEGER) = 1 UNION ALL SELECT * FROM &quot;t_user_item_11&quot; WHERE CAST(&quot;user_id&quot; AS INTEGER) = 1 UNION ALL SELECT * FROM &quot;t_user_item_21&quot; WHERE CAST(&quot;user_id&quot; AS INTEGER) = 1 UNION ALL SELECT * FROM &quot;t_user_item_31&quot; WHERE CAST(&quot;user_id&quot; AS INTEGER) = 1"/>

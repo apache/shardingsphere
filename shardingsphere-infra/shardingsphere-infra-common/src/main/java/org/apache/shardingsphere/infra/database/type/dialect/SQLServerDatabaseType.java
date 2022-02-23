@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.infra.database.type.dialect;
 
+import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import org.apache.shardingsphere.infra.database.metadata.dialect.SQLServerDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Database type of SQLServer.
@@ -47,5 +49,10 @@ public final class SQLServerDatabaseType implements DatabaseType {
     @Override
     public SQLServerDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new SQLServerDataSourceMetaData(url);
+    }
+    
+    @Override
+    public Optional<String> getDataSourceClassName() {
+        return Optional.of(SQLServerDataSource.class.getName());
     }
 }

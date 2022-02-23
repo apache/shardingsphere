@@ -36,5 +36,4 @@ public enum ClassBasedShardingAlgorithmStrategyType {
      * The sharding strategy is hint.
      */
     HINT
-
 }

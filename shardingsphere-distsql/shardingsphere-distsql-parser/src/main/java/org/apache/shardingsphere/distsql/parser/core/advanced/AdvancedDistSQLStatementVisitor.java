@@ -20,8 +20,8 @@ package org.apache.shardingsphere.distsql.parser.core.advanced;
 import org.apache.shardingsphere.distsql.parser.autogen.AdvancedDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.AdvancedDistSQLStatementParser.ParseSQLContext;
 import org.apache.shardingsphere.distsql.parser.autogen.AdvancedDistSQLStatementParser.PreviewSQLContext;
-import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.parse.ParseStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.preview.PreviewStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.ParseStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.PreviewStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 

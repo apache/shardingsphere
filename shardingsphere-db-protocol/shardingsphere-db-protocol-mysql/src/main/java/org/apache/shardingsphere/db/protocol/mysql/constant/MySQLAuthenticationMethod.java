@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * MySQL client/server protocol Authentication Method.
+ * MySQL client/server protocol authentication method.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/authentication-method.html">Authentication Method</a>
  */

@@ -47,13 +47,11 @@ public final class DataSourcePoolCreatorTest {
     @Test
     public void assertCreate() {
         MockedDataSource actual = (MockedDataSource) DataSourcePoolCreator.create(new DataSourceProperties(MockedDataSource.class.getName(), createProperties()));
-        assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getName()));
         assertDataSource(actual);
     }
     
     private Map<String, Object> createProperties() {
         Map<String, Object> result = new LinkedHashMap<>();
-        result.put("driverClassName", MockedDataSource.class.getName());
         result.put("url", "jdbc:mock://127.0.0.1/foo_ds");
         result.put("username", "root");
         result.put("password", "root");
@@ -75,7 +73,6 @@ public final class DataSourcePoolCreatorTest {
     
     private Map<String, Object> createDefaultProperties() {
         Map<String, Object> result = new HashMap<>();
-        result.put("driverClassName", MockedDataSource.class.getName());
         result.put("url", "jdbc:mock://127.0.0.1/foo_ds");
         result.put("username", "root");
         result.put("password", "root");

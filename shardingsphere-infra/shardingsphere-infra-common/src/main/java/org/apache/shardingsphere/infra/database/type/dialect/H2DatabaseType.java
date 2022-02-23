@@ -22,9 +22,11 @@ import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+import org.h2.jdbcx.JdbcDataSource;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Database type of H2.
@@ -49,6 +51,11 @@ public final class H2DatabaseType implements BranchDatabaseType {
     @Override
     public H2DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new H2DataSourceMetaData(url);
+    }
+    
+    @Override
+    public Optional<String> getDataSourceClassName() {
+        return Optional.of(JdbcDataSource.class.getName());
     }
     
     @Override

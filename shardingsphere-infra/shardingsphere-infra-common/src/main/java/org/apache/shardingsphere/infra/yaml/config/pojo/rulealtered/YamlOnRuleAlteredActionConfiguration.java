@@ -45,20 +45,44 @@ public final class YamlOnRuleAlteredActionConfiguration implements YamlConfigura
     @Data
     public static final class YamlInputConfiguration implements YamlConfiguration {
         
-        private int workerThread = 40;
+        private Integer workerThread;
         
-        private int batchSize = 1000;
+        private Integer batchSize;
         
         private YamlShardingSphereAlgorithmConfiguration rateLimiter;
+    
+        /**
+         * Build with default value.
+         *
+         * @return input configuration
+         */
+        public static YamlInputConfiguration buildWithDefaultValue() {
+            YamlInputConfiguration result = new YamlInputConfiguration();
+            result.setWorkerThread(40);
+            result.setBatchSize(1000);
+            return result;
+        }
     }
     
     @Data
     public static final class YamlOutputConfiguration implements YamlConfiguration {
         
-        private int workerThread = 40;
+        private Integer workerThread;
         
-        private int batchSize = 1000;
+        private Integer batchSize;
         
         private YamlShardingSphereAlgorithmConfiguration rateLimiter;
+    
+        /**
+         * Build with default value.
+         *
+         * @return output configuration
+         */
+        public static YamlOutputConfiguration buildWithDefaultValue() {
+            YamlOutputConfiguration result = new YamlOutputConfiguration();
+            result.setWorkerThread(40);
+            result.setBatchSize(1000);
+            return result;
+        }
     }
 }
