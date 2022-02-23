@@ -78,6 +78,7 @@ public final class ConnectionManagerTest {
     @After
     public void cleanUp() {
         dataSourcePoolCreator.close();
+        TransactionTypeHolder.clear();
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
