@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.execute;
 
-import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
@@ -34,7 +33,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -44,8 +42,6 @@ import java.util.regex.Pattern;
 public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     
     private static final Pattern CONFIG_PATTERN = Pattern.compile(DataPipelineConstants.DATA_PIPELINE_ROOT + "/(\\d+)/config");
-    
-    private static final Set<String> EXECUTING_JOBS = Sets.newConcurrentHashSet();
     
     @Override
     protected void doStart() {
@@ -60,7 +56,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
             }
             JobConfigurationPOJO jobConfigPOJO = jobConfigPOJOOptional.get();
             if (DataChangedEvent.Type.DELETED == event.getType() || jobConfigPOJO.isDisabled()) {
-                stopJob(jobConfigPOJO.getJobName());
+                RuleAlteredJobSchedulerCenter.stop(jobConfigPOJO.getJobName());
                 JobConfiguration jobConfig = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), JobConfiguration.class, true);
                 ScalingReleaseSchemaNameLockEvent releaseLockEvent = new ScalingReleaseSchemaNameLockEvent(jobConfig.getWorkflowConfig().getSchemaName());
                 ShardingSphereEventBus.getInstance().post(releaseLockEvent);
@@ -95,22 +91,12 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     }
     
     private void execute(final JobConfigurationPOJO jobConfigPOJO) {
-        if (EXECUTING_JOBS.add(jobConfigPOJO.getJobName())) {
+        if (!RuleAlteredJobSchedulerCenter.existJob(jobConfigPOJO.getJobName())) {
             log.info("{} added to executing jobs success", jobConfigPOJO.getJobName());
             new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), new RuleAlteredJob(), jobConfigPOJO.toJobConfiguration()).execute();
         } else {
             log.info("{} added to executing jobs failed since it already exists", jobConfigPOJO.getJobName());
         }
-    }
-    
-    /**
-     * stop job.
-     * @param jobId job id
-     */
-    public void stopJob(final String jobId) {
-        log.info("remove and stop {}", jobId);
-        EXECUTING_JOBS.remove(jobId);
-        RuleAlteredJobSchedulerCenter.stop(jobId);
     }
     
     @Override

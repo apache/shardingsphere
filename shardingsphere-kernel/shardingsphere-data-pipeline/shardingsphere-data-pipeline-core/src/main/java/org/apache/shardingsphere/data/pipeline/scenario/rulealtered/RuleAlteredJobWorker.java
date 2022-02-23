@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
@@ -87,9 +86,6 @@ public final class RuleAlteredJobWorker {
     
     private static final AtomicBoolean WORKER_INITIALIZED = new AtomicBoolean(false);
     
-    @Getter
-    private static final PipelineJobExecutor PIPELINE_JOB_EXECUTOR = new PipelineJobExecutor();
-    
     /**
      * Is on rule altered action enabled.
      *
@@ -118,7 +114,7 @@ public final class RuleAlteredJobWorker {
             log.info("start worker initialization");
             ShardingSphereEventBus.getInstance().register(INSTANCE);
             new FinishedCheckJobExecutor().start();
-            PIPELINE_JOB_EXECUTOR.start();
+            new PipelineJobExecutor().start();
             WORKER_INITIALIZED.set(true);
             log.info("worker initialization done");
         }

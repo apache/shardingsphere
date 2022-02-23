@@ -74,6 +74,7 @@ public final class RuleAlteredJobSchedulerCenter {
      * @param jobId job id
      */
     public static void stop(final String jobId) {
+        log.info("remove and stop {}", jobId);
         Map<Integer, RuleAlteredJobScheduler> schedulerMap = JOB_SCHEDULER_MAP.remove(jobId);
         if (null == schedulerMap) {
             return;
@@ -81,6 +82,15 @@ public final class RuleAlteredJobSchedulerCenter {
         for (Entry<Integer, RuleAlteredJobScheduler> entry : schedulerMap.entrySet()) {
             entry.getValue().stop();
         }
+    }
+    
+    /**
+     * Check whether the same job exists.
+     * @param jobId job id
+     * @return exist then true else false
+     */
+    public static boolean existJob(final String jobId) {
+        return JOB_SCHEDULER_MAP.containsKey(jobId);
     }
     
     private static final class PersistJobContextRunnable implements Runnable {
