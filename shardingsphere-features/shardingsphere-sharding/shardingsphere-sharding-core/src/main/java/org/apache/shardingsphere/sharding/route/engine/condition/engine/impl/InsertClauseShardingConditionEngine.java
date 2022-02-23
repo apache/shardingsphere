@@ -89,17 +89,18 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
         DatetimeService datetimeService = null;
         for (ExpressionSegment each : insertValueContext.getValueExpressions()) {
             Optional<String> shardingColumn = shardingRule.findShardingColumn(columnNames.next(), tableName);
-            if (shardingColumn.isPresent()) {
-                if (each instanceof SimpleExpressionSegment) {
-                    result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(getShardingValue((SimpleExpressionSegment) each, parameters))));
-                } else if (ExpressionConditionUtils.isNowExpression(each)) {
-                    if (null == datetimeService) {
-                        datetimeService = RequiredSPIRegistry.getRegisteredService(DatetimeService.class);
-                    }
-                    result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(datetimeService.getDatetime())));
-                } else if (ExpressionConditionUtils.isNullExpression(each)) {
-                    throw new ShardingSphereException("Insert clause sharding column can't be null.");
+            if (!shardingColumn.isPresent()) {
+                continue;
+            }
+            if (each instanceof SimpleExpressionSegment) {
+                result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(getShardingValue((SimpleExpressionSegment) each, parameters))));
+            } else if (ExpressionConditionUtils.isNowExpression(each)) {
+                if (null == datetimeService) {
+                    datetimeService = RequiredSPIRegistry.getRegisteredService(DatetimeService.class);
                 }
+                result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(datetimeService.getDatetime())));
+            } else if (ExpressionConditionUtils.isNullExpression(each)) {
+                throw new ShardingSphereException("Insert clause sharding column can't be null.");
             }
         }
         return result;
