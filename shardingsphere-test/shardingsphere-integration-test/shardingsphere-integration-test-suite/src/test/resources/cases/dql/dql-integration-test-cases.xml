@@ -135,7 +135,7 @@
         <assertion expected-data-file="select_min.xml" />
     </test-case>
     
-    <!-- FIXME Expected: is "19", but: was "19.5000" in db scenario -->
+    <!-- FIXME #15593 Expected: is "19", but: was "19.5000" in db scenario -->
     <test-case sql="SELECT AVG(user_id) AS user_id_avg FROM t_order" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="select_avg.xml" />
     </test-case>
@@ -455,7 +455,7 @@
         <assertion expected-data-file="select_distinct_function.xml" />
     </test-case>
     
-    <!-- FIXME Expected: is "count(distinct order_id)", but: was "aggregation_distinct_derived_0"-->
+    <!-- FIXME #15591 Expected: is "count(distinct order_id)", but: was "aggregation_distinct_derived_0"-->
 <!--    <test-case sql="SELECT COUNT(DISTINCT order_id), SUM(DISTINCT order_id) FROM t_order WHERE order_id &lt; 1100" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
 <!--        <assertion expected-data-file="select_distinct_with_count_sum.xml" />-->
 <!--    </test-case>-->
@@ -489,7 +489,7 @@
         <assertion expected-data-file="select_with_case_expression.xml" />
     </test-case>
     
-    <!-- FIXME Expected: is "1100", but: was "2000" -->
+    <!-- FIXME #15590 Expected: is "1100", but: was "2000" -->
 <!--    <test-case sql="SELECT * FROM t_order o LEFT JOIN t_order_item m ON o.order_id = m.order_id AND o.user_id = m.user_id" db-types="MySQL,H2" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
 <!--        <assertion expected-data-file="select_for_left_join.xml"/>-->
 <!--    </test-case>-->
@@ -609,12 +609,12 @@
         <assertion expected-data-file="select_with_data_type_across_single_and_sharding_tables.xml"/>
     </test-case>
     
-    <!-- FIXME Expected: is "1000", but: was "10000" -->
+    <!-- FIXME #15592 Expected: is "1000", but: was "10000" -->
 <!--    <test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id AND t_order_item_federate_sharding.remarks = 't_order_item_federate_sharding' " scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">-->
 <!--        <assertion expected-data-file="select_sql_by_id_across_single_and_sharding_tables_rewrite.xml"/>-->
 <!--    </test-case>-->
-
-    <!-- FIXME Expected: is "1000", but: was "10000" -->
+    
+    <!-- FIXME #15592 Expected: is "1000", but: was "10000" -->
 <!--    <test-case sql="select o.*, i.* from t_order_federate o, t_order_item_federate_sharding i where o.order_id = i.item_id " scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">-->
 <!--        <assertion expected-data-file="select_sql_by_id_across_single_and_sharding_tables_alias.xml"/>-->
 <!--    </test-case>-->
