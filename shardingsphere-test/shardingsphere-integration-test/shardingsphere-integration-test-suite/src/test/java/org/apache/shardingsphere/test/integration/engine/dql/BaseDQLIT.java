@@ -39,6 +39,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -73,7 +74,11 @@ public abstract class BaseDQLIT extends SingleITCase {
         if (getDataSet().isIgnoreRowOrder()) {
             assertRowsIgnoreOrder(actualResultSet, getDataSet().getRows());
         } else {
-            assertRows(actualResultSet, getDataSet().getRows());
+            if (isAssertRowsByDataSetFile()) {
+                assertRowsByDataSetFile(actualResultSet, getDataSet().getRows());
+            } else {
+                assertRows(actualResultSet, verificationResultSet);
+            }
         }
     }
     
@@ -94,7 +99,21 @@ public abstract class BaseDQLIT extends SingleITCase {
         }
     }
     
-    private void assertRows(final ResultSet actual, final List<DataSetRow> expected) throws SQLException {
+    private boolean isAssertRowsByDataSetFile() {
+        return true;
+    }
+    
+    private void assertRows(final ResultSet actualResultSet, final ResultSet verificationResultSet) throws SQLException {
+        ResultSetMetaData actualMetaData = actualResultSet.getMetaData();
+        ResultSetMetaData verificationMetaData = verificationResultSet.getMetaData();
+        while (actualResultSet.next()) {
+            assertTrue("Size of actual result set is different with size of expected result set.", verificationResultSet.next());
+            assertRow(actualResultSet, actualMetaData, verificationResultSet, verificationMetaData);
+        }
+        assertFalse("Size of actual result set is different with size of expected result set.", verificationResultSet.next());
+    }
+    
+    private void assertRowsByDataSetFile(final ResultSet actual, final List<DataSetRow> expected) throws SQLException {
         int rowCount = 0;
         ResultSetMetaData actualMetaData = actual.getMetaData();
         while (actual.next()) {
@@ -159,6 +178,14 @@ public abstract class BaseDQLIT extends SingleITCase {
                 assertObjectValue(actual, columnIndex, columnLabel, each);
             }
             columnIndex++;
+        }
+    }
+    
+    private void assertRow(final ResultSet actualResultSet, final ResultSetMetaData actualMetaData, 
+                           final ResultSet verificationResultSet, final ResultSetMetaData verificationMetaData) throws SQLException {
+        for (int i = 0; i < actualMetaData.getColumnCount(); i++) {
+            assertThat(actualResultSet.getObject(i + 1), is(verificationResultSet.getObject(i + 1)));
+            assertThat(actualResultSet.getObject(actualMetaData.getColumnLabel(i + 1)), is(verificationResultSet.getObject(verificationMetaData.getColumnLabel(i + 1))));
         }
     }
     
