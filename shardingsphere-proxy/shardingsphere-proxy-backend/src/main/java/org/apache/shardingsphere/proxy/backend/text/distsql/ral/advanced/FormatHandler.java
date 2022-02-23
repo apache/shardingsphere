@@ -52,7 +52,7 @@ public final class FormatHandler extends QueryableRALBackendHandler<FormatStatem
         try {
             parseContext = parserEngine.parse(sqlStatement.getSql(), false);
         } catch (SQLParsingException ex) {
-            throw new SQLParsingException("you have a syntax error or not supported that you are formatted");
+            throw new SQLParsingException("You have a syntax error in your formatted statement");
         }
         Properties props = new Properties();
         props.setProperty("parameterized", "false");
