@@ -84,11 +84,13 @@ public final class DataSetEnvironmentManager {
                 sqlValueGroups.add(new SQLValueGroup(dataSetMetaData, row.splitValues(",")));
             }
             String insertSQL;
-            try (Connection connection = actualDataSourceMap.get(dataNode.getDataSourceName()).getConnection()) {
+            // TODO use freemarker to instead of ${scenario}_verification_dataset in `env/common/verification/init-sql`
+            String dataSourceName = dataNode.getDataSourceName().equals("verification_dataset") ? actualDataSourceMap.keySet().iterator().next() : dataNode.getDataSourceName();
+            try (Connection connection = actualDataSourceMap.get(dataSourceName).getConnection()) {
                 DatabaseType databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
                 insertSQL = generateInsertSQL(databaseType.getQuoteCharacter().wrap(dataNode.getTableName()), dataSetMetaData.getColumns(), databaseType.getName());
             }
-            fillDataTasks.add(new InsertTask(actualDataSourceMap.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups));
+            fillDataTasks.add(new InsertTask(actualDataSourceMap.get(dataSourceName), insertSQL, sqlValueGroups));
         }
         try {
             EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(fillDataTasks);

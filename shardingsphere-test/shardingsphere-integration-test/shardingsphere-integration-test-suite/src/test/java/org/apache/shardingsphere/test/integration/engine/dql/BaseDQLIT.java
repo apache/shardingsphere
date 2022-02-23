@@ -63,7 +63,7 @@ public abstract class BaseDQLIT extends SingleITCase {
                 if (!FILLED_SUITES.contains(getScenario())) {
                     new DataSetEnvironmentManager(new ScenarioPath(getScenario()).getDataSetFile(), getActualDataSourceMap()).fillData();
                     new DataSetEnvironmentManager(
-                            new ScenarioPath(getScenario()).getVerificationDataSetFile(), Collections.singletonMap("verification_dataset", getVerificationDataSource())).fillData();
+                            new ScenarioPath(getScenario()).getVerificationDataSetFile(), Collections.singletonMap(getScenario() + "_verification_dataset", getVerificationDataSource())).fillData();
                     FILLED_SUITES.add(getItKey());
                 }
             }
@@ -101,7 +101,7 @@ public abstract class BaseDQLIT extends SingleITCase {
     }
     
     private boolean isAssertRowsByResultSet() {
-        return "db".equals(getScenario());
+        return "db".equals(getScenario()) && "tbl".equals(getScenario()) && "encrypt".equals(getScenario()) && "empty_rules".equals(getScenario());
     }
     
     private void assertRows(final ResultSet actualResultSet, final ResultSet verificationResultSet) throws SQLException {
