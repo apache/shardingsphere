@@ -67,8 +67,8 @@ public final class MemoryComposedContainer implements ComposedContainer {
     }
     
     @Override
-    public DataSource getVerificationDataSource() {
-        return storageContainer.getVerificationDataSource();
+    public Map<String, DataSource> getVerificationDataSourceMap() {
+        return storageContainer.getVerificationDataSourceMap();
     }
     
     @Override
