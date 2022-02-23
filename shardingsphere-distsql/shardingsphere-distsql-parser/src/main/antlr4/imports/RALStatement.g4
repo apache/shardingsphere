@@ -103,7 +103,7 @@ unlabelInstance
     : UNLABEL INSTANCE (instanceDefination | instanceId) (WITH label (COMMA label)*)?
     ;
 
-countInstanceRule
+countInstanceRules
     : COUNT INSTANCE RULES (FROM schemaName)?
     ;
 
