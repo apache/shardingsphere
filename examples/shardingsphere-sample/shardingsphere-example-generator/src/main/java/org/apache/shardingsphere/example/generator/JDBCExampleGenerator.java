@@ -29,9 +29,6 @@ import java.util.Map;
  */
 public final class JDBCExampleGenerator implements ExampleGenerator {
     
-    private static final String OUTPUT_PATH = "./examples/shardingsphere-sample/shardingsphere-example-generator/target/generated-sources"
-            + "/shardingsphere-${product}-sample/${feature?replace(',', '-')}--${framework}--${mode}--${transaction}/";
-    
     private static final String JAVA_CLASS_PATH = "src/main/java/org/apache/shardingsphere/example/"
             + "<#assign package=\"\">"
             + "<#if feature?split(\",\")?size gt 1>"
@@ -40,8 +37,6 @@ public final class JDBCExampleGenerator implements ExampleGenerator {
             + "<#assign package=feature?replace('-', '/') />"
             + "</#if>"
             + "${package}/${framework?replace('-', '/')}";
-    
-    private static final String RESOURCES_PATH = "src/main/resources";
     
     @Override
     public void generate(final Configuration templateConfig, final Map<String, String> dataModel) throws IOException, TemplateException {
