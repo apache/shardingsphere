@@ -28,6 +28,6 @@ public final class PrepareDistSQLHandler extends UpdatableRALBackendHandler<Alte
     
     @Override
     protected void update(final ContextManager contextManager, final AlterTransactionRuleStatement sqlStatement) {
-        //TODO Require metadata version
+        //TODO Requires metadata to provide API
     }
 }
