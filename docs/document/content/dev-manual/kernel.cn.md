@@ -29,7 +29,6 @@ chapter = true
 | ---------------------------------- | ------------------------ |
 | ShardingSQLRewriteContextDecorator | 用于处理分片 SQL 改写结果   |
 | EncryptSQLRewriteContextDecorator  | 用于处理加密 SQL 改写结果   |
-| ShadowSQLRewriteContextDecorator   | 用于处理影子库 SQL 改写结果 |
 
 ## SQLExecutionHook
 

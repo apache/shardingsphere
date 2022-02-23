@@ -19,8 +19,6 @@ package org.apache.shardingsphere.test.integration.framework.param.model;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
-import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.framework.compose.ContainerCompose;
 
 /**
  * Parameterized array.
@@ -35,18 +33,18 @@ public interface ParameterizedArray {
     IntegrationTestCaseContext getTestCaseContext();
     
     /**
+     * Get scenario.
+     *
+     * @return scenario
+     */
+    String getScenario();
+    
+    /**
      * Get adapter.
      * 
      * @return adapter
      */
     String getAdapter();
-    
-    /**
-     * Get scenario.
-     * 
-     * @return scenario
-     */
-    String getScenario();
     
     /**
      * Get database type.
@@ -56,23 +54,11 @@ public interface ParameterizedArray {
     DatabaseType getDatabaseType();
     
     /**
-     * Get SQL command type.
-     *
-     * @return SQL command type
+     * Get key.
+     * 
+     * @return key of parameterized array
      */
-    SQLCommandType getSqlCommandType();
-    
-    /**
-     * Get container compose.
-     *
-     * @return container compose
-     */
-    ContainerCompose getCompose();
-    
-    /**
-     * Set container compose.
-     *
-     * @param compose container compose
-     */
-    void setCompose(ContainerCompose compose);
+    default String getKey() {
+        return String.join("-", getScenario(), getAdapter(), getDatabaseType().getName());
+    }
 }

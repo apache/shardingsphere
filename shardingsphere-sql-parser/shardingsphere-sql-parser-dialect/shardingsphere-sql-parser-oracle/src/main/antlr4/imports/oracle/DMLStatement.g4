@@ -17,7 +17,7 @@
 
 grammar DMLStatement;
 
-import Symbol, Keyword, OracleKeyword, Literals, BaseRule, Comments, DDLStatement;
+import Comments, DDLStatement;
 
 insert
     : INSERT hint? (insertSingleTable | insertMultiTable)

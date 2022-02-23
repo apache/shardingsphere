@@ -25,8 +25,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
-import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -121,11 +119,10 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
     
     private String createJdbcUrl(final ComputeNodeInstance instance, final String schema, final Map<String, Object> props) {
         String jdbcUrl = String.valueOf(props.get("jdbcUrl"));
-        String username = String.valueOf(props.get("username"));
-        DataSourceMetaData dataSourceMetaData = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl).getDataSourceMetaData(jdbcUrl, username);
         InstanceId instanceId = instance.getInstanceDefinition().getInstanceId();
-        return jdbcUrl.replace(dataSourceMetaData.getHostname(), instanceId.getIp())
-                .replace(String.valueOf(dataSourceMetaData.getPort()), String.valueOf(instanceId.getUniqueSign())).replace(dataSourceMetaData.getCatalog(), schema);
+        String jdbcUrlPrefix = jdbcUrl.substring(0, jdbcUrl.indexOf("//"));
+        String jdbcUrlSuffix = jdbcUrl.contains("?") ? jdbcUrl.substring(jdbcUrl.indexOf("?")) : "";
+        return String.format("%s//%s:%s/%s%s", jdbcUrlPrefix, instanceId.getIp(), instanceId.getUniqueSign(), schema, jdbcUrlSuffix);
     }
     
     private ConnectionTransaction createConnectionTransaction(final String schemaName, final ContextManager contextManager) {

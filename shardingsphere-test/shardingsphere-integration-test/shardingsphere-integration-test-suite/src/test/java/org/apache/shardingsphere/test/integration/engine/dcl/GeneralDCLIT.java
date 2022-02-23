@@ -18,39 +18,31 @@
 package org.apache.shardingsphere.test.integration.engine.dcl;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.framework.compose.ComposeManager;
-import org.apache.shardingsphere.test.integration.framework.param.ParameterizedArrayFactory;
+import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.framework.param.array.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDCLIT extends BaseDCLIT {
-    
-    @ClassRule
-    public static ComposeManager composeManager = new ComposeManager("GeneralDCLIT");
     
     public GeneralDCLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
     }
     
     @Parameters(name = "{0}")
-    public static Collection<ParameterizedArray> getParameters() {
-        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DCL)
-                .stream()
-                .peek(each -> each.setCompose(composeManager.getOrCreateCompose(each)))
-                .collect(Collectors.toList());
+    public static Collection<AssertionParameterizedArray> getParameters() {
+        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DCL);
     }
     
     @Test
@@ -58,9 +50,13 @@ public final class GeneralDCLIT extends BaseDCLIT {
         String sql = getSQL();
         try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                executeUpdateForStatement(connection, sql);
+                try (Statement statement = connection.createStatement()) {
+                    statement.executeUpdate(sql);
+                }
             } else {
-                executeUpdateForPrepareStatement(connection, sql);
+                try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                    preparedStatement.executeUpdate();
+                }
             }
         }
     }
@@ -70,9 +66,13 @@ public final class GeneralDCLIT extends BaseDCLIT {
         String sql = getSQL();
         try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                executeForStatement(connection, sql);
+                try (Statement statement = connection.createStatement()) {
+                    statement.execute(sql);
+                }
             } else {
-                executeForPrepareStatement(connection, sql);
+                try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                    preparedStatement.execute();
+                }
             }
         }
     }

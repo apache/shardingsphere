@@ -30,6 +30,9 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.TransactionContextsBuilder;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGenerator;
+import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGeneratorFactory;
 
 import java.sql.SQLException;
 import java.util.Map.Entry;
@@ -47,6 +50,8 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
             metaDataContextsBuilder.addSchema(entry.getKey(), entry.getValue(), parameter.getProps());
         }
         MetaDataContexts metaDataContexts = metaDataContextsBuilder.build(null);
+        InstanceContext instanceContext = buildInstanceContext(parameter);
+        generateTransactionConfigurationFile(instanceContext, metaDataContexts);
         TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
         ContextManager result = new ContextManager();
         result.init(metaDataContexts, transactionContexts, buildInstanceContext(parameter));
@@ -59,6 +64,15 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
         instance.setInstanceDefinition(parameter.getInstanceDefinition());
         instance.setLabels(parameter.getLabels());
         return new InstanceContext(instance, new MemoryWorkerIdGenerator(), buildMemoryModeConfiguration(parameter.getModeConfig()));
+    }
+    
+    private void generateTransactionConfigurationFile(final InstanceContext instanceContext, final MetaDataContexts metaDataContexts) {
+        Optional<TransactionRule> transactionRule =
+                metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
+        if (transactionRule.isPresent()) {
+            Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(transactionRule.get().getProviderType());
+            fileGenerator.ifPresent(optional -> optional.generateFile(transactionRule.get(), instanceContext));
+        }
     }
     
     private void setInstanceContext(final ContextManager contextManager) {

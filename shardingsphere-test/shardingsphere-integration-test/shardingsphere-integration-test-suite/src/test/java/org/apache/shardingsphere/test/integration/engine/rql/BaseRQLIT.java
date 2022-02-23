@@ -36,8 +36,8 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseRQLIT extends SingleITCase {
     
-    public BaseRQLIT(final AssertionParameterizedArray parameter) {
-        super(parameter);
+    public BaseRQLIT(final AssertionParameterizedArray parameterizedArray) {
+        super(parameterizedArray);
     }
     
     protected final void assertResultSet(final ResultSet resultSet) throws SQLException {

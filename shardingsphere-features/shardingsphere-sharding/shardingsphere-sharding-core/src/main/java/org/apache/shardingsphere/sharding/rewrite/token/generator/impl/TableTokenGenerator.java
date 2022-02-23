@@ -36,22 +36,23 @@ import java.util.LinkedList;
  * Table token generator.
  */
 @Setter
-public final class TableTokenGenerator implements CollectionSQLTokenGenerator, ShardingRuleAware, RouteContextAware {
+public final class TableTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext<?>>, ShardingRuleAware, RouteContextAware {
     
     private ShardingRule shardingRule;
     
     private RouteContext routeContext;
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
         return routeContext.containsTableSharding();
     }
     
     @Override
-    public Collection<TableToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+    public Collection<TableToken> generateSQLTokens(final SQLStatementContext<?> sqlStatementContext) {
         return sqlStatementContext instanceof TableAvailable ? generateSQLTokens((TableAvailable) sqlStatementContext) : Collections.emptyList();
     }
     
+    @SuppressWarnings("rawtypes")
     private Collection<TableToken> generateSQLTokens(final TableAvailable sqlStatementContext) {
         Collection<TableToken> result = new LinkedList<>();
         for (SimpleTableSegment each : sqlStatementContext.getAllTables()) {

@@ -17,7 +17,7 @@
 
 grammar DMLStatement;
 
-import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule;
+import BaseRule;
 
 insert
     : withClause? INSERT top? INTO? tableName (AS? alias)? (insertDefaultValue | insertValuesClause | insertSelectClause)
@@ -102,10 +102,6 @@ top
 
 topNum
     : numberLiterals | parameterMarker
-    ;
-
-alias
-    : identifier | STRING_
     ;
 
 unqualifiedShorthand

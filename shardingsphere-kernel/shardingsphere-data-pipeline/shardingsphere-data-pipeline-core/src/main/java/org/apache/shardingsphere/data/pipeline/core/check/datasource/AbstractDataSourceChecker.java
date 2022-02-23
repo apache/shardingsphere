@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.check.datasource;
 
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 
@@ -68,5 +69,14 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
         }
     }
     
-    protected abstract PipelineSQLBuilder getSQLBuilder();
+    private PipelineSQLBuilder getSQLBuilder() {
+        return PipelineSQLBuilderFactory.getSQLBuilder(getDatabaseType());
+    }
+    
+    protected abstract String getDatabaseType();
+    
+    @Override
+    public String getType() {
+        return getDatabaseType();
+    }
 }

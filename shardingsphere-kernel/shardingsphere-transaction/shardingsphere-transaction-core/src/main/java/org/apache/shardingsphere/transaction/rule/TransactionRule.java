@@ -34,7 +34,7 @@ public final class TransactionRule implements GlobalRule {
     
     private final String providerType;
     
-    private final Properties props; 
+    private final Properties props;
     
     public TransactionRule(final TransactionRuleConfiguration ruleConfig) {
         defaultType = TransactionType.valueOf(ruleConfig.getDefaultType().toUpperCase());

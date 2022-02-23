@@ -46,6 +46,7 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -67,6 +68,7 @@ import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -88,6 +90,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -191,7 +194,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             LogicSQL logicSQL = createLogicSQL();
             trafficContext = getTrafficContext(logicSQL);
             if (trafficContext.isMatchTraffic()) {
-                JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficContext);
+                JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficContext, logicSQL);
                 return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).executeQuery());
             }
             // TODO move federation route logic to binder
@@ -209,9 +212,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return result;
     }
     
-    private JDBCExecutionUnit createTrafficExecutionUnit(final TrafficContext trafficContext) throws SQLException {
+    private JDBCExecutionUnit createTrafficExecutionUnit(final TrafficContext trafficContext, final LogicSQL logicSQL) throws SQLException {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine();
-        ExecutionGroupContext<JDBCExecutionUnit> context = prepareEngine.prepare(trafficContext.getRouteContext(), trafficContext.getExecutionUnits());
+        ExecutionUnit executionUnit = new ExecutionUnit(trafficContext.getInstanceId(), new SQLUnit(logicSQL.getSql(), logicSQL.getParameters()));
+        ExecutionGroupContext<JDBCExecutionUnit> context = prepareEngine.prepare(trafficContext.getRouteContext(), Collections.singletonList(executionUnit));
         return context.getInputGroups().stream().flatMap(each -> each.getInputs().stream()).findFirst().orElseThrow(() -> new ShardingSphereException("Can not get traffic execution unit."));
     }
     
@@ -244,7 +248,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private List<QueryResult> executeQuery0() throws SQLException {
-        if (metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
+        if (hasRawExecutionRule()) {
             return executor.getRawExecutor().execute(createRawExecutionGroupContext(), executionContext.getLogicSQL(),
                     new RawSQLExecutorCallback()).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
         }
@@ -279,11 +283,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             LogicSQL logicSQL = createLogicSQL();
             trafficContext = getTrafficContext(logicSQL);
             if (trafficContext.isMatchTraffic()) {
-                JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficContext);
+                JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficContext, logicSQL);
                 return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).executeUpdate());
             }
             executionContext = createExecutionContext(logicSQL);
-            if (metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
+            if (hasRawExecutionRule()) {
                 Collection<ExecuteResult> executeResults = executor.getRawExecutor().execute(createRawExecutionGroupContext(), executionContext.getLogicSQL(), new RawSQLExecutorCallback());
                 return accumulate(executeResults);
             }
@@ -331,11 +335,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             LogicSQL logicSQL = createLogicSQL();
             trafficContext = getTrafficContext(logicSQL);
             if (trafficContext.isMatchTraffic()) {
-                JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficContext);
+                JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficContext, logicSQL);
                 return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).execute());
             }
             executionContext = createExecutionContext(logicSQL);
-            if (metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
+            if (hasRawExecutionRule()) {
                 // TODO process getStatement
                 Collection<ExecuteResult> executeResults = executor.getRawExecutor().execute(createRawExecutionGroupContext(), executionContext.getLogicSQL(), new RawSQLExecutorCallback());
                 return executeResults.iterator().next() instanceof QueryResult;
@@ -351,6 +355,15 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         } finally {
             clearBatch();
         }
+    }
+    
+    private boolean hasRawExecutionRule() {
+        for (ShardingSphereRule each : metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getRules()) {
+            if (each instanceof RawExecutionRule) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private ExecutionGroupContext<RawSQLExecutionUnit> createRawExecutionGroupContext() throws SQLException {
@@ -491,7 +504,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 generatedValues.add((Comparable<?>) resultSet.getObject(1));
             }
         }
-        return new GeneratedKeysResultSet(null, generatedValues.iterator(), this);
+        String columnName = generatedKey.map(GeneratedKeyContext::getColumnName).orElse(null);
+        return new GeneratedKeysResultSet(columnName, generatedValues.iterator(), this);
     }
     
     @Override

@@ -62,8 +62,6 @@ public final class TableMetaDataUtilTest {
         Map<String, Collection<DataNode>> dataNodes = new HashMap<>();
         dataNodes.put("t_user", Collections.singletonList(new DataNode("ds0.t_user")));
         dataNodes.put("t_order", Collections.singletonList(new DataNode("ds1.t_order")));
-        when(dataNodeContainedRule.getAllDataNodes()).thenReturn(dataNodes);
-        Map<String, Collection<String>> dataSourceMapper = new HashMap<>();
         Collection<ShardingSphereRule> rules = new LinkedList<>();
         rules.add(dataNodeContainedRule);
         rules.add(dataSourceContainedRule);

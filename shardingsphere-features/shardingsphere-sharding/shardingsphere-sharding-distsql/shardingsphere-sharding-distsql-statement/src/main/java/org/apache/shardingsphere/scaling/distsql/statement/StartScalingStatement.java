@@ -19,14 +19,14 @@ package org.apache.shardingsphere.scaling.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 
 /**
  * Start scaling statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class StartScalingStatement extends UpdatableRALStatement {
+public final class StartScalingStatement extends UpdatableScalingRALStatement {
     
     private final String jobId;
 }

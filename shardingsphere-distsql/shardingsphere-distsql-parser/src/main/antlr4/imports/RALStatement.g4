@@ -17,7 +17,7 @@
 
 grammar RALStatement;
 
-import Keyword, Literals, Symbol, BaseRule;
+import BaseRule;
 
 setVariable
     : SET VARIABLE variableName EQ variableValue
@@ -95,8 +95,16 @@ dropTrafficRule
     : DROP TRAFFIC RULE ifExists? ruleName (COMMA ruleName)*
     ;
 
+labelInstance
+    : (LABEL | RELABEL) INSTANCE (instanceDefination | instanceId) WITH label (COMMA label)*
+    ;
+
+unlabelInstance
+    : UNLABEL INSTANCE (instanceDefination | instanceId) (WITH label (COMMA label)*)?
+    ;
+    
 trafficRuleDefinition
-    : ruleName LP labelDefinition COMMA trafficAlgorithmDefinition COMMA loadBanlanceDefinition RP
+    : ruleName LP (labelDefinition COMMA)? trafficAlgorithmDefinition (COMMA loadBalancerDefinition)? RP
     ;
 
 labelDefinition
@@ -107,7 +115,7 @@ trafficAlgorithmDefinition
     : TRAFFIC_ALGORITHM LP algorithmDefinition RP 
     ;
 
-loadBanlanceDefinition
+loadBalancerDefinition
     : LOAD_BALANCER LP algorithmDefinition RP
     ;
 
@@ -163,24 +171,8 @@ instanceId
     : ip AT port
     ;
 
-ip
-    : IDENTIFIER | NUMBER+
-    ;
-
-port
-    : INT
-    ;
-
 refreshScope
     : tableName | tableName FROM RESOURCE resourceName
-    ;
-
-resourceName
-    : IDENTIFIER | STRING
-    ;
-
-tableName
-    : IDENTIFIER
     ;
 
 sqlCommentParseEnable
@@ -209,10 +201,6 @@ maximumSize
 
 concurrencyLevel
     : INT
-    ;
-
-schemaName
-    : IDENTIFIER
     ;
 
 ruleName

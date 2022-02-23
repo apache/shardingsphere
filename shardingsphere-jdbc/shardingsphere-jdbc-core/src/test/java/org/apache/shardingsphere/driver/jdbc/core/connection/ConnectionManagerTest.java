@@ -160,8 +160,10 @@ public final class ConnectionManagerTest {
     
     @Test
     public void assertGetConnectionWhenConfigTrafficRule() throws SQLException {
-        assertThat(connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY),
-                is(connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY)));
+        List<Connection> actual = connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY);
+        assertThat(actual, is(connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY)));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mock://127.0.0.1/foo_ds"));
     }
     
     @Test
@@ -178,6 +180,7 @@ public final class ConnectionManagerTest {
         List<Connection> actual = connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.CONNECTION_STRICTLY);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), is(expected));
+        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mock://127.0.0.1/foo_ds"));
     }
     
     @Test
@@ -190,6 +193,7 @@ public final class ConnectionManagerTest {
     public void assertGetConnectionsWhenConfigTrafficRuleAndEmptyCache() throws SQLException {
         List<Connection> actual = connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mock://127.0.0.1/foo_ds"));
     }
     
     @Test

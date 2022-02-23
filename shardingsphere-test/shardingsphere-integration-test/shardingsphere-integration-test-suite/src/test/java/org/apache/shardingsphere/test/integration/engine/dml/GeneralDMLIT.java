@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.test.integration.engine.dml;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
+import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
-import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.framework.compose.ComposeManager;
-import org.apache.shardingsphere.test.integration.framework.param.ParameterizedArrayFactory;
+import org.apache.shardingsphere.test.integration.framework.param.array.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -35,15 +33,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertFalse;
 
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDMLIT extends BaseDMLIT {
-    
-    @ClassRule
-    public static ComposeManager composeManager = new ComposeManager("GeneralDMLIT");
     
     public GeneralDMLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
@@ -51,17 +45,13 @@ public final class GeneralDMLIT extends BaseDMLIT {
     
     @Parameters(name = "{0}")
     public static Collection<AssertionParameterizedArray> getParameters() {
-        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DML)
-                .stream()
-                .peek(each -> each.setCompose(composeManager.getOrCreateCompose(each)))
-                .collect(Collectors.toList());
+        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DML);
     }
     
     @Test
     public void assertExecuteUpdate() throws SQLException, ParseException {
         switch (getScenario()) {
             case "replica_query":
-            case "shadow":
             case "encrypt":
                 return;
             default:
@@ -92,7 +82,6 @@ public final class GeneralDMLIT extends BaseDMLIT {
     public void assertExecute() throws SQLException, ParseException {
         switch (getScenario()) {
             case "replica_query":
-            case "shadow":
             case "encrypt":
                 return;
             default:

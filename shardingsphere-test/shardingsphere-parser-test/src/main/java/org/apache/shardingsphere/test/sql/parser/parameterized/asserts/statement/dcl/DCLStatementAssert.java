@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerCreateLoginStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDropLoginStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerSetUserStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.AlterLoginStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.AlterRoleStatementAssert;
@@ -53,6 +54,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.SetDefaultRoleStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.SetPasswordStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.SetRoleStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.sqlserver.SQLServerSetUserStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.AlterLoginStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.AlterRoleStatementTestCase;
@@ -70,6 +72,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetDefaultRoleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetPasswordStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetRoleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetUserStatementTestCase;
 
 /**
  * DCL statement assert.
@@ -117,6 +120,8 @@ public final class DCLStatementAssert {
             SetDefaultRoleStatementAssert.assertIs(assertContext, (MySQLSetDefaultRoleStatement) actual, (SetDefaultRoleStatementTestCase) expected);
         } else if (actual instanceof MySQLSetPasswordStatement) {
             SetPasswordStatementAssert.assertIs(assertContext, (MySQLSetPasswordStatement) actual, (SetPasswordStatementTestCase) expected);
+        } else if (actual instanceof SQLServerSetUserStatement) {
+            SQLServerSetUserStatementAssert.assertIs(assertContext, (SQLServerSetUserStatement) actual, (SetUserStatementTestCase) expected);
         }
     }
 }

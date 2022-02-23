@@ -17,12 +17,8 @@
 
 package org.apache.shardingsphere.traffic.algorithm.context;
 
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.traffic.context.TrafficContext;
 import org.junit.Test;
-
-import java.util.Collections;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -30,14 +26,14 @@ import static org.junit.Assert.assertTrue;
 public final class TrafficContextTest {
     
     @Test
-    public void assertIsMatchTrafficWhenExistExecutionUnit() {
+    public void assertIsMatchTrafficWhenExistInstanceId() {
         TrafficContext trafficContext = new TrafficContext();
-        trafficContext.getExecutionUnits().add(new ExecutionUnit("127.0.0.1@3307", new SQLUnit("SELECT * FROM t_order", Collections.emptyList())));
+        trafficContext.setInstanceId("127.0.0.1@3307");
         assertTrue(trafficContext.isMatchTraffic());
     }
     
     @Test
-    public void assertIsMatchTrafficWhenNotExistExecutionUnit() {
+    public void assertIsMatchTrafficWhenNotExistInstanceId() {
         TrafficContext trafficContext = new TrafficContext();
         assertFalse(trafficContext.isMatchTraffic());
     }

@@ -29,7 +29,6 @@ chapter = true
 | ---------------------------------- | ---------------------------------------------- |
 | ShardingSQLRewriteContextDecorator | Used to process sharding SQL rewrite results   |
 | EncryptSQLRewriteContextDecorator  | Used to process encryption SQL rewrite results |
-| ShadowSQLRewriteContextDecorator   | Used to process shadow SQL rewrite results     |
 
 ## SQLExecutionHook
 

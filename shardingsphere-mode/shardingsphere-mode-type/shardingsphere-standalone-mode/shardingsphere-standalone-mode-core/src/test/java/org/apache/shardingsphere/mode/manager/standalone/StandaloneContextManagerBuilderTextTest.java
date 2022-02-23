@@ -52,8 +52,8 @@ public final class StandaloneContextManagerBuilderTextTest {
         assertTrue(actual.getMetaDataContexts().getMetaDataPersistService().isPresent());
         PersistRepository repository = actual.getMetaDataContexts().getMetaDataPersistService().get().getRepository();
         assertNotNull(repository.get(GlobalNode.getGlobalRuleNode()));
-        assertNotNull(repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath("foo_schema")));
-        assertNotNull(repository.get(SchemaMetaDataNode.getRulePath("foo_schema")));
+        assertNotNull(repository.get(SchemaMetaDataNode.getMetaDataDataSourcePath("foo_schema", "0")));
+        assertNotNull(repository.get(SchemaMetaDataNode.getRulePath("foo_schema", "0")));
         assertNotNull(actual.getTransactionContexts().getEngines().get("foo_schema"));
     }
 }

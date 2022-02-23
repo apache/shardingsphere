@@ -17,17 +17,19 @@
 
 package org.apache.shardingsphere.test.integration.engine.dml;
 
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
-import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
-import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.test.integration.framework.compose.GovernanceContainerCompose;
+import org.apache.shardingsphere.test.integration.env.scenario.ScenarioPath;
+import org.apache.shardingsphere.test.integration.env.scenario.dataset.DataSetEnvironmentManager;
+import org.apache.shardingsphere.test.integration.framework.database.DatabaseAssertionMetaData;
+import org.apache.shardingsphere.test.integration.framework.database.DatabaseAssertionMetaDataFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.junit.After;
+import org.junit.Before;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -35,11 +37,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -52,20 +54,15 @@ public abstract class BaseDMLIT extends SingleITCase {
         super(parameterizedArray);
     }
     
-    @Override
+    @Before
     public final void init() throws Exception {
-        super.init();
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(
-                EnvironmentPath.getDataSetFile(getScenario()),
-                getStorageContainer().getDataSourceMap()
-        );
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(new ScenarioPath(getScenario()).getDataSetFile(), getActualDataSourceMap());
         dataSetEnvironmentManager.fillData();
     }
     
-    @Override
-    public final void tearDown() throws Exception {
-        dataSetEnvironmentManager.clearData();
-        super.tearDown();
+    @After
+    public final void tearDown() {
+        dataSetEnvironmentManager.cleanData();
     }
     
     protected final void assertDataSet(final int actualUpdateCount) throws SQLException {
@@ -74,8 +71,7 @@ public abstract class BaseDMLIT extends SingleITCase {
         DataSetMetaData expectedDataSetMetaData = getDataSet().getMetaDataList().get(0);
         for (String each : new InlineExpressionParser(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
-            DataSource dataSource = getCompose() instanceof GovernanceContainerCompose
-                    ? getDataSourceForReader() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName());
+            DataSource dataSource = getActualDataSourceMap().get(dataNode.getDataSourceName());
             try (
                     Connection connection = dataSource.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(generateFetchActualDataSQL(dataNode))) {
@@ -92,27 +88,12 @@ public abstract class BaseDMLIT extends SingleITCase {
     }
     
     private String generateFetchActualDataSQL(final DataNode dataNode) throws SQLException {
-        if (getStorageContainer().getDatabaseType() instanceof PostgreSQLDatabaseType) {
-            String primaryKeyColumnName = getPrimaryKeyColumnNameForPostgreSQL(dataNode);
+        Optional<DatabaseAssertionMetaData> databaseAssertionMetaData = DatabaseAssertionMetaDataFactory.newInstance(getDatabaseType());
+        if (databaseAssertionMetaData.isPresent()) {
+            String primaryKeyColumnName = databaseAssertionMetaData.get().getPrimaryKeyColumnName(getActualDataSourceMap().get(dataNode.getDataSourceName()), dataNode.getTableName());
             return String.format("SELECT * FROM %s ORDER BY %s ASC", dataNode.getTableName(), primaryKeyColumnName);
         }
         return String.format("SELECT * FROM %s", dataNode.getTableName());
-    }
-    
-    private String getPrimaryKeyColumnNameForPostgreSQL(final DataNode dataNode) throws SQLException {
-        String sql = String.format("SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS data_type "
-                + "FROM pg_index i JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey) WHERE i.indrelid = '%s'::regclass AND i.indisprimary", dataNode.getTableName());
-        DataSource dataSource = getCompose() instanceof GovernanceContainerCompose
-                ? getDataSourceForReader() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName());
-        try (
-                Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(sql)) {
-            if (resultSet.next()) {
-                return resultSet.getString("attname");
-            }
-            throw new SQLException(String.format("Can not get primary key of `%s`", dataNode.getTableName()));
-        }
     }
     
     private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {

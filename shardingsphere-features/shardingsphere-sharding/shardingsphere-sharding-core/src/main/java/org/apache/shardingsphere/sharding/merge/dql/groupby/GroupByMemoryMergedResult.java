@@ -58,7 +58,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     
     @Override
     protected List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final ShardingSphereSchema schema, 
-                                              final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+                                              final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
         Map<GroupByValue, MemoryQueryResultRow> dataMap = new HashMap<>(1024);
         Map<GroupByValue, Map<AggregationProjection, AggregationUnit>> aggregationMap = new HashMap<>(1024);

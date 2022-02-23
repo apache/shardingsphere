@@ -23,6 +23,7 @@ import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.provider.natived.NativeAuthorityProviderAlgorithm;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
@@ -37,6 +38,8 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLAuthenticator;
+import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLNativePasswordAuthenticator;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,6 +53,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -123,6 +127,13 @@ public final class MySQLAuthenticationHandlerTest {
     @Test
     public void assertGetAuthPluginData() {
         assertThat(authenticationHandler.getAuthPluginData().getAuthenticationPluginData(), is(Bytes.concat(part1, part2)));
+    }
+    
+    @Test
+    public void assertGetAuthenticator() {
+        MySQLAuthenticator authenticator = authenticationHandler.getAuthenticator("root", "");
+        assertThat(authenticator, instanceOf(MySQLNativePasswordAuthenticator.class));
+        assertThat(authenticator.getAuthenticationMethodName(), is(MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName()));
     }
     
     private void setAuthority(final ShardingSphereUser user) {

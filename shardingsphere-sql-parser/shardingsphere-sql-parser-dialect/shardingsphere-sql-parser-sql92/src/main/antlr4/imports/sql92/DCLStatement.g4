@@ -17,7 +17,7 @@
 
 grammar DCLStatement;
 
-import Symbol, Keyword, SQL92Keyword, Literals, BaseRule;
+import BaseRule;
 
 grant
     : GRANT privilegeClause TO grantee (COMMA_ grantee)* (WITH GRANT OPTION)?

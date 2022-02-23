@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-integration-test</artifactId>
-        <version>5.0.1-SNAPSHOT</version>
+        <version>5.1.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-integration-test-fixture</artifactId>
     <name>${project.artifactId}</name>
@@ -79,14 +79,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.wix</groupId>
-            <artifactId>wix-embedded-mysql</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ru.yandex.qatools.embed</groupId>
-            <artifactId>postgresql-embedded</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
             <scope>test</scope>
@@ -103,7 +95,7 @@
         <profile>
             <id>it.env.docker</id>
             <properties>
-                <it.env.type>DOCKER</it.env.type>
+                <it.cluster.env.type>DOCKER</it.cluster.env.type>
             </properties>
             <build>
                 <plugins>

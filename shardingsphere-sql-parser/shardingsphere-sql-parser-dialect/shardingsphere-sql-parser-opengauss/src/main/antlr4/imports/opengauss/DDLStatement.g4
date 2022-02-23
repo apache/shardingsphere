@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import Symbol, Keyword, OpenGaussKeyword, Literals, BaseRule, DMLStatement;
+import DMLStatement;
 
 createTable
     : CREATE createTableSpecification TABLE notExistClause? tableName

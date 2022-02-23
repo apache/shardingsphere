@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -44,8 +45,9 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callb
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderFactory;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeaderBuilder;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sharding.merge.dql.iterator.IteratorStreamMergedResult;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
@@ -153,9 +155,10 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         int columnCount = resultSet.getMetaData().getColumnCount();
         setQueryHeaders(new ArrayList<>(columnCount));
         ShardingSphereMetaData metaData = metaDataContexts.getMetaData(backendConnection.getConnectionSession().getSchemaName());
-        DataNodeContainedRule dataNodeContainedRule = null == metaData ? null : metaData.getRuleMetaData().findSingleRule(DataNodeContainedRule.class).orElse(null);
+        LazyInitializer<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleLazyInitializer(metaData);
+        QueryHeaderBuilder queryHeaderBuilder = QueryHeaderBuilderFactory.getQueryHeaderBuilder(null == metaData ? null : metaData.getResource().getDatabaseType());
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            getQueryHeaders().add(QueryHeaderBuilder.build(new JDBCQueryResultMetaData(resultSet.getMetaData()), metaData, columnIndex, dataNodeContainedRule));
+            getQueryHeaders().add(queryHeaderBuilder.build(new JDBCQueryResultMetaData(resultSet.getMetaData()), metaData, columnIndex, dataNodeContainedRule));
         }
         setMergedResult(new IteratorStreamMergedResult(Collections.singletonList(new JDBCStreamQueryResult(resultSet))));
         return new QueryResponseHeader(getQueryHeaders());

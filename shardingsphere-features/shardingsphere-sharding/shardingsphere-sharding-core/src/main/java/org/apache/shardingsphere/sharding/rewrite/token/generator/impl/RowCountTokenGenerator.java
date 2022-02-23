@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.RowCountToken;
 public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext
                 && ((SelectStatementContext) sqlStatementContext).getPaginationContext().getRowCountSegment().isPresent()
                 && ((SelectStatementContext) sqlStatementContext).getPaginationContext().getRowCountSegment().get() instanceof NumberLiteralPaginationValueSegment;

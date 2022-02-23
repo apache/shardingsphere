@@ -34,9 +34,9 @@ import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminUpdateBac
 import org.apache.shardingsphere.proxy.backend.text.data.impl.BroadcastDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.SchemaAssignedDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.UnicastDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.HintDistSQLBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.SetDistSQLBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.ShowDistSQLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.SetVariableHandler;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionAutoCommitHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandler;
@@ -118,13 +118,13 @@ public final class TextProtocolBackendHandlerFactoryTest {
     public void assertNewInstanceWithCommonDistSQL() throws SQLException {
         String sql = "set variable transaction_type=LOCAL";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
-        assertThat(actual, instanceOf(SetDistSQLBackendHandler.class));
+        assertThat(actual, instanceOf(SetVariableHandler.class));
         sql = "show variable transaction_type";
         actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
-        assertThat(actual, instanceOf(ShowDistSQLBackendHandler.class));
+        assertThat(actual, instanceOf(QueryableRALBackendHandler.class));
         sql = "show all variables";
         actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
-        assertThat(actual, instanceOf(ShowDistSQLBackendHandler.class));
+        assertThat(actual, instanceOf(QueryableRALBackendHandler.class));
         sql = "set sharding hint database_value=1";
         actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
         assertThat(actual, instanceOf(HintDistSQLBackendHandler.class));

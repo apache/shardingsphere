@@ -55,6 +55,10 @@ RESET
     : R E S E T
     ;
 
+RESTORE
+    : R E S T O R E
+    ;
+
 CHECK
     : C H E C K
     ;

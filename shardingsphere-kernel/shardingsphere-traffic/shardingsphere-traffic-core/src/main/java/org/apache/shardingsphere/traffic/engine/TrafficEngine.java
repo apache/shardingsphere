@@ -19,8 +19,6 @@ package org.apache.shardingsphere.traffic.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -53,20 +51,19 @@ public final class TrafficEngine {
     public TrafficContext dispatch(final LogicSQL logicSQL) {
         Optional<TrafficStrategyRule> strategyRule = trafficRule.findMatchedStrategyRule(logicSQL);
         TrafficContext result = new TrafficContext();
-        if (!strategyRule.isPresent()) {
+        if (!strategyRule.isPresent() || isInvalidStrategyRule(strategyRule.get())) {
             return result;
         }
         List<String> instanceIds = getInstanceIdsByLabels(strategyRule.get().getLabels());
         if (!instanceIds.isEmpty()) {
-            TrafficLoadBalanceAlgorithm loadBalancer = trafficRule.findLoadBalancer(strategyRule.get().getLoadBalancerName());
-            String instanceId = loadBalancer.getInstanceId(strategyRule.get().getName(), instanceIds);
-            result.getExecutionUnits().add(createExecutionUnit(logicSQL, instanceId));
+            TrafficLoadBalanceAlgorithm loadBalancer = strategyRule.get().getLoadBalancer();
+            result.setInstanceId(loadBalancer.getInstanceId(strategyRule.get().getName(), instanceIds));
         }
         return result;
     }
     
-    private ExecutionUnit createExecutionUnit(final LogicSQL logicSQL, final String instanceId) {
-        return new ExecutionUnit(instanceId, new SQLUnit(logicSQL.getSql(), logicSQL.getParameters()));
+    private boolean isInvalidStrategyRule(final TrafficStrategyRule strategyRule) {
+        return strategyRule.getLabels().isEmpty() || null == strategyRule.getLoadBalancer();
     }
     
     private List<String> getInstanceIdsByLabels(final Collection<String> labels) {

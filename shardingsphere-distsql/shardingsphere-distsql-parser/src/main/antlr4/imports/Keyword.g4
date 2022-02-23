@@ -231,6 +231,18 @@ TRAFFIC
     : T R A F F I C
     ;
 
+LABEL
+    : L A B E L
+    ;
+
+RELABEL
+    : R E L A B E L
+    ;
+
+UNLABEL
+    : U N L A B E L
+    ;
+
 LABELS
     : L A B E L S 
     ;
@@ -270,3 +282,8 @@ FILE
 USED
     : U S E D
     ;
+
+WITH
+    : W I T H
+    ;
+

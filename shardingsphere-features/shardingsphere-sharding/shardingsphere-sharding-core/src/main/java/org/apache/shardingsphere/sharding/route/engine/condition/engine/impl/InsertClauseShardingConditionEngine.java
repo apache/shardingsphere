@@ -102,6 +102,7 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
         return result;
     }
     
+    @SuppressWarnings("rawtypes")
     private Comparable<?> getShardingValue(final SimpleExpressionSegment expressionSegment, final List<Object> parameters) {
         Object result;
         if (expressionSegment instanceof ParameterMarkerExpressionSegment) {

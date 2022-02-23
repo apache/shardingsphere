@@ -17,7 +17,7 @@
 
 grammar PostgreSQLStatement;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement, StoreProcedure;
+import Comments, TCLStatement, DCLStatement, DALStatement, StoreProcedure;
 
 execute
     : (select
@@ -62,6 +62,7 @@ execute
     | alterForeignDataWrapper
     | alterForeignTable
     | alterGroup
+    | alterMaterializedView
     | alterProcedure
     | alterServer
     | alterSequence
@@ -77,6 +78,8 @@ execute
     | createSchema
     | createType
     | createTextSearch
+    | declare
+    | discard
     | dropDatabase
     | dropFunction
     | dropProcedure

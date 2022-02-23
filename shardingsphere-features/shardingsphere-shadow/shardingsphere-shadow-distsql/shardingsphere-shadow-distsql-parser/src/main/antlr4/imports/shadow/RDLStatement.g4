@@ -17,7 +17,7 @@
 
 grammar RDLStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 createShadowRule
     : CREATE SHADOW RULE shadowRuleDefinition (COMMA shadowRuleDefinition)*
@@ -53,10 +53,6 @@ shadowRuleDefinition
 
 shadowTableRule
     : tableName LP shadowAlgorithmDefinition (COMMA shadowAlgorithmDefinition)* RP
-    ;
-
-ruleName
-    : IDENTIFIER
     ;
 
 source
