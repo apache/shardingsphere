@@ -35,6 +35,9 @@ execute
     | labelInstance
     | unlabelInstance
     | countSchemaRules
+    | prepareDistSQL
+    | applyDistSQL
+    | discardDistSQL
     | showSingleTable
     | showSingleTableRules
     | createDefaultSingleTableRule
