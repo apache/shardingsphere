@@ -15,26 +15,18 @@
  * limitations under the License.
  */
 
-lexer grammar AdvancedKeyword;
+package org.apache.shardingsphere.distsql.parser.statement.ral.advanced;
 
-import Alphabet;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
-WS
-    : [ \t\r\n] +
-    ;
-
-PREVIEW
-    : P R E V I E W
-    ;
-
-PARSE
-    : P A R S E
-    ;
-
-FORMAT
-    : F O R M A T
-    ;
-
-SQLString
-    : WS.*
-    ;
+/**
+ * Format statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class FormatStatement extends QueryableRALStatement {
+    
+    private final String sql;
+}
