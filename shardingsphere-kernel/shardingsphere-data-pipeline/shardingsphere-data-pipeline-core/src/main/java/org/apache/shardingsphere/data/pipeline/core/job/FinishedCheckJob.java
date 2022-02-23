@@ -51,7 +51,7 @@ public final class FinishedCheckJob implements SimpleJob {
                 continue;
             }
             String jobId = jobInfo.getJobId();
-            if (isAllowDataCheckJobStatus(jobId)) {
+            if (isNotAllowDataCheck(jobId)) {
                 continue;
             }
             try {
@@ -98,7 +98,7 @@ public final class FinishedCheckJob implements SimpleJob {
         }
     }
     
-    private boolean isAllowDataCheckJobStatus(final String jobId) {
+    private boolean isNotAllowDataCheck(final String jobId) {
         Map<Integer, JobProgress> jobProgressMap = ruleAlteredJobAPI.getProgress(jobId);
         boolean flag = false;
         for (JobProgress each : jobProgressMap.values()) {
