@@ -17,7 +17,7 @@
 
 grammar OpenGaussStatement;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement, StoreProcedure;
+import Comments, TCLStatement, DCLStatement, DALStatement, StoreProcedure;
 
 execute
     : (select

@@ -20,11 +20,15 @@ grammar TCLStatement;
 import BaseRule;
 
 setTransaction
-    : SET TRANSACTION
+    : SET TRANSACTION ISOLATION LEVEL isolationLevel
+    ;
+
+isolationLevel
+    : READ UNCOMMITTED | READ COMMITTED | REPEATABLE READ | SNAPSHOT | SERIALIZABLE
     ;
 
 setImplicitTransactions
-    : (IF AT_ AT_ TRANCOUNT GT_ NUMBER_ COMMIT TRAN)? SET IMPLICIT_TRANSACTIONS implicitTransactionsValue
+    : SET IMPLICIT_TRANSACTIONS implicitTransactionsValue
     ;
 
 implicitTransactionsValue

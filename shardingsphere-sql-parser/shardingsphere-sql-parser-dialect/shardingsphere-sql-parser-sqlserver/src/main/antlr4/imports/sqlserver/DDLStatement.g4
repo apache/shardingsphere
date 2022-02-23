@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import BaseRule, DMLStatement, DCLStatement;
+import DMLStatement, DCLStatement;
 
 createTable
     : createTableClause | createTableAsSelectClause

@@ -46,7 +46,7 @@ public final class PostgreSQLAuthenticationHandler {
      * @return PostgreSQL login result
      */
     public PostgreSQLLoginResult login(final String username, final String databaseName, final byte[] md5Salt, final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
-        String md5Digest = passwordMessagePacket.getDigest();
+        String digest = passwordMessagePacket.getDigest();
         Grantee grantee = new Grantee(username, "%");
         if (!Strings.isNullOrEmpty(databaseName) && !ProxyContext.getInstance().schemaExists(databaseName)) {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_CATALOG_NAME, String.format("database \"%s\" does not exist", databaseName));
@@ -55,7 +55,7 @@ public final class PostgreSQLAuthenticationHandler {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION, String.format("unknown username: %s", username));
         }
         PostgreSQLAuthenticator authenticator = getAuthenticator(username, grantee.getHostname());
-        if (!SQLCheckEngine.check(grantee, (a, b) -> authenticator.authenticate((ShardingSphereUser) a, (Object[]) b), new Object[] {md5Digest, md5Salt}, getRules(databaseName))) {
+        if (!SQLCheckEngine.check(grantee, (a, b) -> authenticator.authenticate((ShardingSphereUser) a, (Object[]) b), new Object[] {digest, md5Salt}, getRules(databaseName))) {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_PASSWORD, String.format("password authentication failed for user \"%s\"", username));
         }
         return null == databaseName || SQLCheckEngine.check(databaseName, getRules(databaseName), grantee)
