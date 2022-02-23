@@ -26,5 +26,5 @@
         <column name="status0"/>
         <column name="remarks"/>
     </metadata>
-    <row values="1001, 11, init, 1001, 10001, 11, init, t_order_item_federate_sharding" />
+    <row values="1001, 11, init_read, 1001, 10001, 11, init_read, t_order_item_federate_sharding" />
 </dataset>

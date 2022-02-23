@@ -47,7 +47,7 @@ public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, S
     
     private Map<String, DataSource> actualDataSourceMap;
     
-    private DataSource verificationDataSource;
+    private Map<String, DataSource> verificationDataSourceMap;
     
     @Override
     @SneakyThrows({IOException.class, JAXBException.class})
@@ -67,23 +67,26 @@ public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, S
     }
     
     @Override
-    public final DataSource getVerificationDataSource() {
-        if (null != verificationDataSource) {
-            return verificationDataSource;
+    @SneakyThrows({IOException.class, JAXBException.class})
+    public final Map<String, DataSource> getVerificationDataSourceMap() {
+        if (null != verificationDataSourceMap) {
+            return verificationDataSourceMap;
         }
         synchronized (this) {
-            if (null != verificationDataSource) {
-                return verificationDataSource;
+            if (null != verificationDataSourceMap) {
+                return verificationDataSourceMap;
             }
-            verificationDataSource = createDataSource(scenario + "_verification_dataset");
-            return verificationDataSource;
+            Collection<String> dataSourceNames = DatabaseEnvironmentManager.getVerificationDatabaseNames(scenario);
+            verificationDataSourceMap = new LinkedHashMap<>(dataSourceNames.size(), 1);
+            dataSourceNames.forEach(each -> verificationDataSourceMap.put(each, createDataSource(each)));
+            return verificationDataSourceMap;
         }
     }
     
     private DataSource createDataSource(final String dataSourceName) {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
-        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, null, 0, dataSourceName));
+        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, null, 0, scenario + dataSourceName));
         result.setUsername("root");
         result.setPassword("root");
         result.setMaximumPoolSize(4);

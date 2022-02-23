@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.integration.engine.dql;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.scenario.ScenarioPath;
@@ -24,6 +26,7 @@ import org.apache.shardingsphere.test.integration.env.scenario.dataset.DataSetEn
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.junit.Before;
 
+import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -34,7 +37,6 @@ import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -44,9 +46,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+@Getter(AccessLevel.PROTECTED)
 public abstract class BaseDQLIT extends SingleITCase {
     
     private static final Collection<String> FILLED_SUITES = new HashSet<>();
+    
+    private DataSource verificationDataSource;
     
     public BaseDQLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
@@ -55,6 +60,8 @@ public abstract class BaseDQLIT extends SingleITCase {
     @Before
     public final void init() throws Exception {
         fillDataOnlyOnce();
+        verificationDataSource = null == getAssertion().getExpectedDataSourceName() || 1 == getVerificationDataSourceMap().size()
+                ? getVerificationDataSourceMap().values().iterator().next() : getVerificationDataSourceMap().get(getAssertion().getExpectedDataSourceName());
     }
     
     private void fillDataOnlyOnce() throws SQLException, ParseException, IOException, JAXBException {
@@ -62,8 +69,7 @@ public abstract class BaseDQLIT extends SingleITCase {
             synchronized (FILLED_SUITES) {
                 if (!FILLED_SUITES.contains(getScenario())) {
                     new DataSetEnvironmentManager(new ScenarioPath(getScenario()).getDataSetFile(), getActualDataSourceMap()).fillData();
-                    new DataSetEnvironmentManager(
-                            new ScenarioPath(getScenario()).getVerificationDataSetFile(), Collections.singletonMap("verification_dataset", getVerificationDataSource())).fillData();
+                    new DataSetEnvironmentManager(new ScenarioPath(getScenario()).getVerificationDataSetFile(), getVerificationDataSourceMap()).fillData();
                     FILLED_SUITES.add(getItKey());
                 }
             }
@@ -101,7 +107,7 @@ public abstract class BaseDQLIT extends SingleITCase {
     }
     
     private boolean isAssertRowsByResultSet() {
-        return "db".equals(getScenario()) && "tbl".equals(getScenario()) && "encrypt".equals(getScenario()) && "empty_rules".equals(getScenario());
+        return "db".equals(getScenario()) || "tbl".equals(getScenario()) || "readwrite_splitting".equals(getScenario()) || "empty_rules".equals(getScenario());
     }
     
     private void assertRows(final ResultSet actualResultSet, final ResultSet verificationResultSet) throws SQLException {

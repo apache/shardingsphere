@@ -47,7 +47,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     private Map<String, DataSource> actualDataSourceMap;
     
-    private DataSource verificationDataSource;
+    private Map<String, DataSource> verificationDataSourceMap;
     
     public DockerStorageContainer(final DatabaseType databaseType, final String dockerImageName, final String scenario) {
         super(databaseType.getName().toLowerCase(), dockerImageName);
@@ -79,16 +79,19 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     }
     
     @Override
-    public final DataSource getVerificationDataSource() {
-        if (null != verificationDataSource) {
-            return verificationDataSource;
+    @SneakyThrows({IOException.class, JAXBException.class})
+    public final Map<String, DataSource> getVerificationDataSourceMap() {
+        if (null != verificationDataSourceMap) {
+            return verificationDataSourceMap;
         }
         synchronized (this) {
-            if (null != verificationDataSource) {
-                return verificationDataSource;
+            if (null != verificationDataSourceMap) {
+                return verificationDataSourceMap;
             }
-            verificationDataSource = createDataSource("verification_dataset");
-            return verificationDataSource;
+            Collection<String> dataSourceNames = DatabaseEnvironmentManager.getVerificationDatabaseNames(scenario);
+            verificationDataSourceMap = new LinkedHashMap<>(dataSourceNames.size(), 1);
+            dataSourceNames.forEach(each -> verificationDataSourceMap.put(each, createDataSource(each)));
+            return verificationDataSourceMap;
         }
     }
     
