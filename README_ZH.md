@@ -120,7 +120,7 @@ Apache ShardingSphere 是多接入端共同组成的生态圈。
 
 ## 贡献者
 
-[shardingsphere-contributors](https://github.com/apache/shardingsphere/graphs/contributors)
+[shardingsphere-contributors](https://shardingsphere.apache.org/community/cn/team)
 
 <p align="center">
 <br/><br/>

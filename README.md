@@ -135,7 +135,7 @@ Check out [Wiki](https://github.com/apache/shardingsphere/wiki) section for deta
 
 ### Contributors
 
-[shardingsphere-contributors](https://github.com/apache/shardingsphere/graphs/contributors)
+[shardingsphere-contributors](https://shardingsphere.apache.org/community/en/team)
 
 <p align="center">
 <br/><br/>
