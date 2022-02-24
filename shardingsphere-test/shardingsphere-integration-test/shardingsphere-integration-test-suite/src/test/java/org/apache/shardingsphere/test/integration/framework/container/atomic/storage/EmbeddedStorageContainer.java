@@ -50,7 +50,7 @@ public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, S
         this.databaseType = databaseType;
         this.scenario = scenario;
         actualDataSourceMap = createActualDataSourceMap();
-        verificationDataSourceMap =createVerificationDataSourceMap();
+        verificationDataSourceMap = createVerificationDataSourceMap();
     }
     
     @SneakyThrows({IOException.class, JAXBException.class})
