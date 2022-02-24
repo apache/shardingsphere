@@ -134,10 +134,9 @@ public final class PostgreSQLPacketPayload implements PacketPayload {
      * @return null terminated string
      */
     public String readStringNul() {
-        byte[] result = new byte[byteBuf.bytesBefore((byte) 0)];
-        byteBuf.readBytes(result);
+        String result = byteBuf.readCharSequence(byteBuf.bytesBefore((byte) 0), charset).toString();
         byteBuf.skipBytes(1);
-        return new String(result, charset);
+        return result;
     }
     
     /**

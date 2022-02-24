@@ -40,4 +40,7 @@
     <distsql-case id="show-sharding-scaling-rules" value="SHOW SHARDING SCALING RULES FROM schemaName" />
     <distsql-case id="show-unused-sharding-algorithms" value="SHOW UNUSED SHARDING ALGORITHMS FROM schemaName" />
     <distsql-case id="show-unused-sharding-key-generators" value="SHOW UNUSED SHARDING KEY GENERATORS FROM schemaName" />
+    <distsql-case id="count-schema-rules" value="COUNT SCHEMA RULES FROM schemaName" />
+    <distsql-case id="show-rules-used-resource" value="SHOW RULES USED RESOURCE ds_0 FROM schemaName" />
+    <distsql-case id="show-sharding-table-rules-used-key-generator" value="SHOW SHARDING TABLE RULES USED KEY GENERATOR snowflake from sharding_db"/>
 </sql-cases>

@@ -63,7 +63,7 @@ keyGenerateDeclaration:
     keyGenerateDefinition | keyGenerateConstruction
 
 keyGenerateDefinition:
-    GENERATED_KEY(COLUMN=columnName, strategyDefinition)
+    KEY_GENERATE_STRATEGY(COLUMN=columnName, strategyDefinition)
 
 shardingScope:
     DATABASE | TABLE
@@ -75,7 +75,7 @@ tableStrategy:
     TABLE_STRATEGY(shardingStrategy)
 
 keyGenerateConstruction
-    GENERATED_KEY(COLUMN=columnName, GENERATED_KEY_ALGORITHM=keyGenerateAlgorithmName)
+    KEY_GENERATE_STRATEGY(COLUMN=columnName, KEY_GENERATOR=keyGenerateAlgorithmName)
 
 shardingStrategy:
     TYPE=strategyType, shardingColumn, shardingAlgorithm
@@ -142,7 +142,7 @@ DROP SHARDING BROADCAST TABLE RULES (tableName [, tableName] ...)
 ### Sharding Scaling Rule
 
 ```sql
-CREATE SHARDING SCALING RULE scalingName [scalingDefinition]
+CREATE SHARDING SCALING RULE scalingName [scalingRuleDefinition]
 
 DROP SHARDING SCALING RULE scalingName
 
@@ -150,23 +150,14 @@ ENABLE SHARDING SCALING RULE scalingName
 
 DISABLE SHARDING SCALING RULE scalingName
 
-scalingDefinition:
-    (minimumAutoDefinition | completeAutoDefinition | manualDefinition)
-
-minimumAutoDefinition:
-    completionDetector, dataConsistencyChecker
-
-completeAutoDefinition:
-    inputDefinition, outputDefinition, streamChannel, completionDetector, dataConsistencyChecker
-
-manualDefinition:
-    inputDefinition, outputDefinition, streamChannel
+scalingRuleDefinition:
+    [inputDefinition] [, outputDefinition] [, streamChannel] [, completionDetector] [, dataConsistencyChecker]
 
 inputDefinition:
-    INPUT (workerThread, batchSize, rateLimiter)
+    INPUT ([workerThread] [, batchSize] [, rateLimiter])
 
 outputDefinition:
-    INPUT (workerThread, batchSize, rateLimiter)
+    OUTPUT ([workerThread] [, batchSize] [, rateLimiter])
 
 completionDetector:
     COMPLETION_DETECTOR (algorithmDefinition)
@@ -216,13 +207,13 @@ DROP SHARDING KEY GENERATOR snowflake_key_generator;
 CREATE SHARDING TABLE RULE t_order (
 RESOURCES(resource_0,resource_1),
 SHARDING_COLUMN=order_id,TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=4)),
-GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake))
+KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME=snowflake))
 );
 
 ALTER SHARDING TABLE RULE t_order (
 RESOURCES(resource_0,resource_1,resource_2,resource_3),
 SHARDING_COLUMN=order_id,TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=16)),
-GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake))
+KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME=snowflake))
 );
 
 DROP SHARDING TABLE RULE t_order;
@@ -241,7 +232,7 @@ CREATE SHARDING TABLE RULE t_order_item (
 DATANODES("resource_${0..1}.t_order_item_${0..1}"),
 DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${user_id % 2}")))),
 TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
-GENERATED_KEY(COLUMN=another_id,GENERATED_KEY_ALGORITHM=snowflake_key_generator)
+KEY_GENERATE_STRATEGY(COLUMN=another_id,KEY_GENERATOR=snowflake_key_generator)
 );
 
 ALTER SHARDING ALGORITHM database_inline (
@@ -254,7 +245,7 @@ ALTER SHARDING TABLE RULE t_order_item (
 DATANODES("resource_${0..3}.t_order_item${0..3}"),
 DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
 TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
-GENERATED_KEY(COLUMN=another_id,GENERATED_KEY_ALGORITHM=snowflake_key_generator)
+KEY_GENERATE_STRATEGY(COLUMN=another_id,KEY_GENERATOR=snowflake_key_generator)
 );
 
 DROP SHARDING TABLE RULE t_order_item;
@@ -302,13 +293,11 @@ DROP SHARDING BROADCAST TABLE RULES t_b;
 CREATE SHARDING SCALING RULE sharding_scaling(
 INPUT(
   WORKER_THREAD=40,
-  BATCH_SIZE=1000,
-  RATE_LIMITER(TYPE(NAME=QPS, PROPERTIES("qps"=50)))
+  BATCH_SIZE=1000
 ),
 OUTPUT(
   WORKER_THREAD=40,
-  BATCH_SIZE=1000,
-  RATE_LIMITER(TYPE(NAME=TPS, PROPERTIES("tps"=2000)))
+  BATCH_SIZE=1000
 ),
 STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
 COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-minute-threshold"=30))),

@@ -30,6 +30,7 @@ import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedExcep
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Proxy context.
@@ -99,8 +100,8 @@ public final class ProxyContext {
      * 
      * @return state context
      */
-    public StateContext getStateContext() {
-        return contextManager.getInstanceContext().getState();
+    public Optional<StateContext> getStateContext() {
+        return null == contextManager.getInstanceContext() ? Optional.empty() : Optional.ofNullable(contextManager.getInstanceContext().getState());
     }
     
     /**

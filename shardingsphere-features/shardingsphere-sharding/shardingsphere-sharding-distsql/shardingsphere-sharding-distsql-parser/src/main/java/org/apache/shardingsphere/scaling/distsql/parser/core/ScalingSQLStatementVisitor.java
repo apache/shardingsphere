@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.scaling.distsql.parser.core;
 
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ApplyScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.BatchSizeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CheckScalingContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CompleteAutoDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CompletionDetectorContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CreateShardingScalingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DataConsistencyCheckerContext;
@@ -31,11 +32,10 @@ import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.D
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DropShardingScalingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.EnableShardingScalingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.InputDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ManualDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.MinimumAutoDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.OutputDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.RateLimiterContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ResetScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.RestoreScalingSourceWritingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ScalingRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingCheckAlgorithmsContext;
@@ -46,6 +46,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.S
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StopScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StopScalingSourceWritingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StreamChannelContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.WorkerThreadContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.scaling.distsql.statement.ApplyScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.CheckScalingStatement;
@@ -55,6 +56,7 @@ import org.apache.shardingsphere.scaling.distsql.statement.DropScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.DropShardingScalingRuleStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.EnableShardingScalingRuleStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ResetScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.RestoreScalingSourceWritingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingCheckAlgorithmsStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingListStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingStatusStatement;
@@ -83,27 +85,27 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitShowScalingStatus(final ShowScalingStatusContext ctx) {
-        return new ShowScalingStatusStatement(ctx.jobId().getText());
+        return new ShowScalingStatusStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
     public ASTNode visitStartScaling(final StartScalingContext ctx) {
-        return new StartScalingStatement(ctx.jobId().getText());
+        return new StartScalingStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
     public ASTNode visitStopScaling(final StopScalingContext ctx) {
-        return new StopScalingStatement(ctx.jobId().getText());
+        return new StopScalingStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
     public ASTNode visitDropScaling(final DropScalingContext ctx) {
-        return new DropScalingStatement(ctx.jobId().getText());
+        return new DropScalingStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
     public ASTNode visitResetScaling(final ResetScalingContext ctx) {
-        return new ResetScalingStatement(ctx.jobId().getText());
+        return new ResetScalingStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
@@ -112,7 +114,7 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
         if (null != ctx.algorithmDefinition()) {
             typeStrategy = (AlgorithmSegment) visit(ctx.algorithmDefinition());
         }
-        return new CheckScalingStatement(ctx.jobId().getText(), typeStrategy);
+        return new CheckScalingStatement(getIdentifierValue(ctx.jobId()), typeStrategy);
     }
     
     @Override
@@ -122,17 +124,22 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitStopScalingSourceWriting(final StopScalingSourceWritingContext ctx) {
-        return new StopScalingSourceWritingStatement(ctx.jobId().getText());
+        return new StopScalingSourceWritingStatement(getIdentifierValue(ctx.jobId()));
+    }
+    
+    @Override
+    public ASTNode visitRestoreScalingSourceWriting(final RestoreScalingSourceWritingContext ctx) {
+        return new RestoreScalingSourceWritingStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
     public ASTNode visitApplyScaling(final ApplyScalingContext ctx) {
-        return new ApplyScalingStatement(ctx.jobId().getText());
+        return new ApplyScalingStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
     public ASTNode visitCreateShardingScalingRule(final CreateShardingScalingRuleContext ctx) {
-        CreateShardingScalingRuleStatement result = new CreateShardingScalingRuleStatement(new IdentifierValue(ctx.scalingName().getText()).getValue());
+        CreateShardingScalingRuleStatement result = new CreateShardingScalingRuleStatement(getIdentifierValue(ctx.scalingName()));
         if (null != ctx.scalingRuleDefinition()) {
             result.setConfigurationSegment((ShardingScalingRuleConfigurationSegment) visit(ctx.scalingRuleDefinition()));
         }
@@ -141,59 +148,59 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitScalingRuleDefinition(final ScalingRuleDefinitionContext ctx) {
-        ShardingScalingRuleConfigurationSegment result = null;
-        if (null != ctx.minimumAutoDefinition()) {
-            result = (ShardingScalingRuleConfigurationSegment) visit(ctx.minimumAutoDefinition());
-        } else if (null != ctx.completeAutoDefinition()) {
-            result = (ShardingScalingRuleConfigurationSegment) visit(ctx.completeAutoDefinition());
-        } else if (null != ctx.manualDefinition()) {
-            result = (ShardingScalingRuleConfigurationSegment) visit(ctx.manualDefinition());
+        ShardingScalingRuleConfigurationSegment result = new ShardingScalingRuleConfigurationSegment();
+        if (null != ctx.inputDefinition()) {
+            result.setInputSegment((InputOrOutputSegment) visit(ctx.inputDefinition()));
+        }
+        if (null != ctx.outputDefinition()) {
+            result.setOutputSegment((InputOrOutputSegment) visit(ctx.outputDefinition()));
+        }
+        if (null != ctx.streamChannel()) {
+            result.setStreamChannel((AlgorithmSegment) visit(ctx.streamChannel()));
+        }
+        if (null != ctx.completionDetector()) {
+            result.setCompletionDetector((AlgorithmSegment) visit(ctx.completionDetector()));
+        }
+        if (null != ctx.dataConsistencyChecker()) {
+            result.setDataConsistencyChecker((AlgorithmSegment) visit(ctx.dataConsistencyChecker()));
         }
         return result;
     }
     
     @Override
-    public ASTNode visitMinimumAutoDefinition(final MinimumAutoDefinitionContext ctx) {
-        ShardingScalingRuleConfigurationSegment result = new ShardingScalingRuleConfigurationSegment();
-        result.setCompletionDetector((AlgorithmSegment) visit(ctx.completionDetector()));
-        result.setDataConsistencyChecker((AlgorithmSegment) visit(ctx.dataConsistencyChecker()));
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitCompleteAutoDefinition(final CompleteAutoDefinitionContext ctx) {
-        ShardingScalingRuleConfigurationSegment result = new ShardingScalingRuleConfigurationSegment();
-        result.setInputSegment((InputOrOutputSegment) visit(ctx.inputDefinition()));
-        result.setOutputSegment((InputOrOutputSegment) visit(ctx.outputDefinition()));
-        result.setStreamChannel((AlgorithmSegment) visit(ctx.streamChannel()));
-        result.setCompletionDetector((AlgorithmSegment) visit(ctx.completionDetector()));
-        result.setDataConsistencyChecker((AlgorithmSegment) visit(ctx.dataConsistencyChecker()));
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitManualDefinition(final ManualDefinitionContext ctx) {
-        ShardingScalingRuleConfigurationSegment result = new ShardingScalingRuleConfigurationSegment();
-        result.setInputSegment((InputOrOutputSegment) visit(ctx.inputDefinition()));
-        result.setOutputSegment((InputOrOutputSegment) visit(ctx.outputDefinition()));
-        result.setStreamChannel((AlgorithmSegment) visit(ctx.streamChannel()));
-        return result;
-    }
-    
-    @Override
     public ASTNode visitInputDefinition(final InputDefinitionContext ctx) {
-        int workerThread = Integer.parseInt(ctx.workerThread().intValue().getText());
-        int batchSize = Integer.parseInt(ctx.batchSize().intValue().getText());
-        AlgorithmSegment rateLimiter = (AlgorithmSegment) visit(ctx.rateLimiter());
+        Integer workerThread = getWorkerThread(ctx.workerThread());
+        Integer batchSize = getBatchSize(ctx.batchSize());
+        AlgorithmSegment rateLimiter = null;
+        if (null != ctx.rateLimiter()) {
+            rateLimiter = (AlgorithmSegment) visit(ctx.rateLimiter());
+        }
         return new InputOrOutputSegment(workerThread, batchSize, rateLimiter);
     }
     
     @Override
     public ASTNode visitOutputDefinition(final OutputDefinitionContext ctx) {
-        int workerThread = Integer.parseInt(ctx.workerThread().intValue().getText());
-        int batchSize = Integer.parseInt(ctx.batchSize().intValue().getText());
-        AlgorithmSegment rateLimiter = (AlgorithmSegment) visit(ctx.rateLimiter());
+        Integer workerThread = getWorkerThread(ctx.workerThread());
+        Integer batchSize = getBatchSize(ctx.batchSize());
+        AlgorithmSegment rateLimiter = null;
+        if (null != ctx.rateLimiter()) {
+            rateLimiter = (AlgorithmSegment) visit(ctx.rateLimiter());
+        }
         return new InputOrOutputSegment(workerThread, batchSize, rateLimiter);
+    }
+    
+    private Integer getWorkerThread(final WorkerThreadContext ctx) {
+        if (null == ctx) {
+            return null;
+        }
+        return Integer.parseInt(ctx.intValue().getText());
+    }
+    
+    private Integer getBatchSize(final BatchSizeContext ctx) {
+        if (null == ctx) {
+            return null;
+        }
+        return Integer.parseInt(ctx.intValue().getText());
     }
     
     @Override
@@ -218,17 +225,17 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitDropShardingScalingRule(final DropShardingScalingRuleContext ctx) {
-        return new DropShardingScalingRuleStatement(new IdentifierValue(ctx.scalingName().getText()).getValue());
+        return new DropShardingScalingRuleStatement(getIdentifierValue(ctx.scalingName()));
     }
     
     @Override
     public ASTNode visitEnableShardingScalingRule(final EnableShardingScalingRuleContext ctx) {
-        return new EnableShardingScalingRuleStatement(new IdentifierValue(ctx.scalingName().getText()).getValue());
+        return new EnableShardingScalingRuleStatement(getIdentifierValue(ctx.scalingName()));
     }
     
     @Override
     public ASTNode visitDisableShardingScalingRule(final DisableShardingScalingRuleContext ctx) {
-        return new DisableShardingScalingRuleStatement(new IdentifierValue(ctx.scalingName().getText()).getValue());
+        return new DisableShardingScalingRuleStatement(getIdentifierValue(ctx.scalingName()));
     }
     
     @Override
@@ -238,7 +245,7 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
-        return new AlgorithmSegment(ctx.algorithmName().getText(), getAlgorithmProperties(ctx));
+        return new AlgorithmSegment(getIdentifierValue(ctx.algorithmName()), getAlgorithmProperties(ctx));
     }
     
     private Properties getAlgorithmProperties(final AlgorithmDefinitionContext ctx) {
@@ -255,5 +262,12 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     @Override
     public ASTNode visitSchemaName(final SchemaNameContext ctx) {
         return new SchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
+    }
+    
+    private String getIdentifierValue(final ParseTree context) {
+        if (null == context) {
+            return null;
+        }
+        return new IdentifierValue(context.getText()).getValue();
     }
 }

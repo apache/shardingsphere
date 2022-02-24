@@ -45,7 +45,7 @@ import java.util.Properties;
  */
 public final class UnusedShardingKeyGeneratorsQueryResultSet implements DistSQLResultSet {
     
-    private static final String TYPE = ShowUnusedShardingKeyGeneratorsStatement.class.getCanonicalName();
+    private static final String TYPE = ShowUnusedShardingKeyGeneratorsStatement.class.getName();
     
     private static final String NAME = "name";
     
@@ -59,7 +59,7 @@ public final class UnusedShardingKeyGeneratorsQueryResultSet implements DistSQLR
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         Optional<ShardingRuleConfiguration> ruleConfig = metaData.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findAny();
-        ruleConfig.ifPresent(rule -> getUnusedKeyGenerators(rule));
+        ruleConfig.ifPresent(this::getUnusedKeyGenerators);
     }
     
     @Override

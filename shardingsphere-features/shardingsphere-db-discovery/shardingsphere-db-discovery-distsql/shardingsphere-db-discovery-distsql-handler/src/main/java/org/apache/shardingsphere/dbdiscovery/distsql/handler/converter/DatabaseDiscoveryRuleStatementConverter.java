@@ -52,12 +52,12 @@ public final class DatabaseDiscoveryRuleStatementConverter {
      */
     public static DatabaseDiscoveryRuleConfiguration convert(final Collection<AbstractDatabaseDiscoverySegment> ruleSegments) {
         Map<String, List<AbstractDatabaseDiscoverySegment>> segmentMap = ruleSegments.stream().collect(Collectors.groupingBy(each -> each.getClass().getSimpleName()));
-        final DatabaseDiscoveryRuleConfiguration configuration = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
+        final DatabaseDiscoveryRuleConfiguration result = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
         segmentMap.getOrDefault(DatabaseDiscoveryDefinitionSegment.class.getSimpleName(), Collections.emptyList())
-                .forEach(each -> addConfiguration(configuration, (DatabaseDiscoveryDefinitionSegment) each));
+                .forEach(each -> addConfiguration(result, (DatabaseDiscoveryDefinitionSegment) each));
         segmentMap.getOrDefault(DatabaseDiscoveryConstructionSegment.class.getSimpleName(), Collections.emptyList())
-                .forEach(each -> addConfiguration(configuration, (DatabaseDiscoveryConstructionSegment) each));
-        return configuration;
+                .forEach(each -> addConfiguration(result, (DatabaseDiscoveryConstructionSegment) each));
+        return result;
     }
     
     private static void addConfiguration(final DatabaseDiscoveryRuleConfiguration configuration, final DatabaseDiscoveryDefinitionSegment segment) {

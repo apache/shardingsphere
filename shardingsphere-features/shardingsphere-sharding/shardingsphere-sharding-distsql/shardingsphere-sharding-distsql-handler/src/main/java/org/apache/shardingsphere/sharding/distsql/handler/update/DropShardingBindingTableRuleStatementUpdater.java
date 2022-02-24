@@ -81,6 +81,6 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
     
     @Override
     public String getType() {
-        return DropShardingBindingTableRulesStatement.class.getCanonicalName();
+        return DropShardingBindingTableRulesStatement.class.getName();
     }
 }

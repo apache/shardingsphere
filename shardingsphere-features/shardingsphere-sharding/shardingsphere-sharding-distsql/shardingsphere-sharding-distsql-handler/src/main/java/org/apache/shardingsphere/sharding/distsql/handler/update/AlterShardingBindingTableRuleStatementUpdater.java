@@ -107,6 +107,6 @@ public final class AlterShardingBindingTableRuleStatementUpdater implements Rule
     
     @Override
     public String getType() {
-        return AlterShardingBindingTableRulesStatement.class.getCanonicalName();
+        return AlterShardingBindingTableRulesStatement.class.getName();
     }
 }

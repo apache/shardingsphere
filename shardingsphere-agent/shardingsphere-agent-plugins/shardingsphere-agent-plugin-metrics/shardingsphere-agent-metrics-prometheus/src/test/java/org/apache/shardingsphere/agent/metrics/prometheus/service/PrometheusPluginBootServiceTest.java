@@ -20,6 +20,7 @@ package org.apache.shardingsphere.agent.metrics.prometheus.service;
 import io.prometheus.client.exporter.HTTPServer;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.manager.memory.workerid.generator.MemoryWorkerIdGenerator;
@@ -45,7 +46,7 @@ public final class PrometheusPluginBootServiceTest {
     @Test
     public void assertStart() {
         ProxyContext.getInstance().getContextManager().init(mock(MetaDataContexts.class), mock(TransactionContexts.class), new InstanceContext(new ComputeNodeInstance(), 
-                new MemoryWorkerIdGenerator()));
+                new MemoryWorkerIdGenerator(), new ModeConfiguration("Memory", null, false)));
         Properties props = new Properties();
         props.setProperty("JVM_INFORMATION_COLLECTOR_ENABLED", "true");
         PluginConfiguration configuration = new PluginConfiguration("localhost", 8090, "", props);

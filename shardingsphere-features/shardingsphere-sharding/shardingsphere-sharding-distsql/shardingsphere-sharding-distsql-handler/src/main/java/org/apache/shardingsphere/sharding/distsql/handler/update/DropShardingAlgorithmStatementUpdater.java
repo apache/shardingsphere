@@ -126,6 +126,6 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
     
     @Override
     public String getType() {
-        return DropShardingAlgorithmStatement.class.getCanonicalName();
+        return DropShardingAlgorithmStatement.class.getName();
     }
 }

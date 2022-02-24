@@ -38,6 +38,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Driver JDBC executor.
@@ -108,11 +109,20 @@ public final class DriverJDBCExecutor {
     }
     
     private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext<?> sqlStatementContext) {
-        return rules.stream().anyMatch(each -> each instanceof DataNodeContainedRule && ((DataNodeContainedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
+        for (ShardingSphereRule each : rules) {
+            if (each instanceof DataNodeContainedRule && ((DataNodeContainedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames())) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private int accumulate(final List<Integer> updateResults) {
-        return updateResults.stream().mapToInt(each -> null == each ? 0 : each).sum();
+        int result = 0;
+        for (Integer each : updateResults) {
+            result += null != each ? each : 0;
+        }
+        return result;
     }
     
     /**
@@ -146,11 +156,7 @@ public final class DriverJDBCExecutor {
     }
     
     private void refreshMetaData(final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
-        List<String> result = new ArrayList<>(routeUnits.size());
-        for (RouteUnit each : routeUnits) {
-            String logicName = each.getDataSourceMapper().getLogicName();
-            result.add(logicName);
-        }
-        metadataRefreshEngine.refresh(sqlStatement, result);
+        metadataRefreshEngine.refresh(sqlStatement,
+            () -> routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toCollection(() -> new ArrayList<>(routeUnits.size()))));
     }
 }

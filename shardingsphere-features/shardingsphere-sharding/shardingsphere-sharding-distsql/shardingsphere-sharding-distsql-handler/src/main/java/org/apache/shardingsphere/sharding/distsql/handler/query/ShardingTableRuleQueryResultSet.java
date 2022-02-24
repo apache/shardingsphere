@@ -58,13 +58,13 @@ public final class ShardingTableRuleQueryResultSet implements DistSQLResultSet {
         Optional<ShardingRuleConfiguration> ruleConfig = metaData.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findAny();
         if (Objects.isNull(tableName)) {
-            tables = ruleConfig.map(optional -> optional.getTables().iterator()).orElse(Collections.emptyIterator());
-            autoTables = ruleConfig.map(optional -> optional.getAutoTables().iterator()).orElse(Collections.emptyIterator());
+            tables = ruleConfig.map(optional -> optional.getTables().iterator()).orElseGet(Collections::emptyIterator);
+            autoTables = ruleConfig.map(optional -> optional.getAutoTables().iterator()).orElseGet(Collections::emptyIterator);
         } else {
             tables = ruleConfig.map(optional
-                -> optional.getTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()).iterator()).orElse(Collections.emptyIterator());
+                -> optional.getTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()).iterator()).orElseGet(Collections::emptyIterator);
             autoTables = ruleConfig.map(optional
-                -> optional.getAutoTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()).iterator()).orElse(Collections.emptyIterator());
+                -> optional.getAutoTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()).iterator()).orElseGet(Collections::emptyIterator);
         }
         shardingRuleConfig = ruleConfig.orElse(null);
     }
@@ -204,6 +204,6 @@ public final class ShardingTableRuleQueryResultSet implements DistSQLResultSet {
     
     @Override
     public String getType() {
-        return ShowShardingTableRulesStatement.class.getCanonicalName();
+        return ShowShardingTableRulesStatement.class.getName();
     }
 }

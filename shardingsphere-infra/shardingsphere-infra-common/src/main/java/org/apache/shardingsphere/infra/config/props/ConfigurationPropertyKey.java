@@ -66,12 +66,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * Flush threshold for every records from databases for ShardingSphere-Proxy.
      */
     PROXY_FRONTEND_FLUSH_THRESHOLD("proxy-frontend-flush-threshold", String.valueOf(128), int.class),
-    
-    /**
-     * Whether enable opentracing for ShardingSphere-Proxy.
-     */
-    PROXY_OPENTRACING_ENABLED("proxy-opentracing-enabled", String.valueOf(Boolean.FALSE), boolean.class),
-    
+      
     /**
      * Whether enable hint for ShardingSphere-Proxy.
      */

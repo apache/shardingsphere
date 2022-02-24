@@ -48,9 +48,9 @@ public final class FileRepositoryTest {
     
     private void assertPersistAndGet() {
         fileRepository.persist(getFilePath(), "test1_content");
-        assertThat(fileRepository.get(getFilePath()), is("test1_content" + System.lineSeparator()));
+        assertThat(fileRepository.get(getFilePath()), is("test1_content"));
         fileRepository.persist(getFilePath(), "modify_content");
-        assertThat(fileRepository.get(getFilePath()), is("modify_content" + System.lineSeparator()));
+        assertThat(fileRepository.get(getFilePath()), is("modify_content"));
     }
     
     private void assertPersistAndGetChildrenKeys() {

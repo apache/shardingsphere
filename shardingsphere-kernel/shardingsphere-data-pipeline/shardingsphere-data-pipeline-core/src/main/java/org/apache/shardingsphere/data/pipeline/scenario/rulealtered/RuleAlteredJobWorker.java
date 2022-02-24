@@ -21,17 +21,24 @@ import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.HandleConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExecutor;
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
+import org.apache.shardingsphere.data.pipeline.core.lock.PipelineSimpleLock;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
+import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -43,7 +50,9 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseSchemaNameLockEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
+import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
 import java.util.ArrayList;
@@ -83,7 +92,7 @@ public final class RuleAlteredJobWorker {
      * @param ruleConfig rule configuration
      * @return enabled or not
      */
-    public static boolean isOnRuleAlteredActionEnabled(final org.apache.shardingsphere.infra.config.RuleConfiguration ruleConfig) {
+    public static boolean isOnRuleAlteredActionEnabled(final RuleConfiguration ruleConfig) {
         if (null == ruleConfig) {
             return false;
         }
@@ -129,7 +138,7 @@ public final class RuleAlteredJobWorker {
         if (null == yamlRuleConfig) {
             throw new PipelineJobCreationException("could not find altered rule");
         }
-        org.apache.shardingsphere.infra.config.RuleConfiguration ruleConfig = SWAPPER_ENGINE.swapToRuleConfiguration(yamlRuleConfig);
+        RuleConfiguration ruleConfig = SWAPPER_ENGINE.swapToRuleConfiguration(yamlRuleConfig);
         RuleAlteredDetector detector = RULE_CLASS_NAME_DETECTOR_MAP.get(ruleConfig.getClass().getName());
         Optional<OnRuleAlteredActionConfiguration> onRuleAlteredActionConfigOptional = detector.getOnRuleAlteredActionConfig(ruleConfig);
         if (!onRuleAlteredActionConfigOptional.isPresent()) {
@@ -163,13 +172,17 @@ public final class RuleAlteredJobWorker {
      */
     @Subscribe
     public void start(final StartScalingEvent event) {
+        if (!isUncompletedJobOfSameSchemaInJobList(event.getSchemaName())) {
+            log.warn("There is an outstanding job with the same schema name");
+            return;
+        }
         log.info("Start scaling job by {}", event);
         Optional<JobConfiguration> jobConfigOptional = createJobConfig(event);
         Optional<String> jobId = jobConfigOptional.isPresent() ? PipelineJobAPIFactory.getRuleAlteredJobAPI().start(jobConfigOptional.get()) : Optional.empty();
         if (!jobId.isPresent()) {
             log.info("Switch rule configuration immediately.");
             YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getTargetDataSource(), event.getTargetRule());
-            ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(event.getSchemaName(), targetRootConfig, event.getRuleCacheId());
+            ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(event.getSchemaName(), event.getSchemaVersion());
             ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
         }
     }
@@ -198,7 +211,7 @@ public final class RuleAlteredJobWorker {
             log.error("more than 1 rule altered");
             throw new PipelineJobCreationException("more than 1 rule altered");
         }
-        WorkflowConfiguration workflowConfig = new WorkflowConfiguration(event.getSchemaName(), new ArrayList<>(alteredRuleYamlClassNames), event.getRuleCacheId());
+        WorkflowConfiguration workflowConfig = new WorkflowConfiguration(event.getSchemaName(), new ArrayList<>(alteredRuleYamlClassNames), event.getSchemaVersion());
         PipelineConfiguration pipelineConfig = getPipelineConfiguration(sourceRootConfig, targetRootConfig);
         return Optional.of(new JobConfiguration(workflowConfig, pipelineConfig));
     }
@@ -248,7 +261,13 @@ public final class RuleAlteredJobWorker {
     }
     
     private void disableSSLForMySQL(final Map<String, Map<String, Object>> yamlDataSources) {
-        String jdbcUrl = (String) yamlDataSources.entrySet().iterator().next().getValue().get("jdbcUrl");
+        Map<String, Object> firstDataSourceProps = yamlDataSources.entrySet().iterator().next().getValue();
+        String jdbcUrlKey = firstDataSourceProps.containsKey("url") ? "url" : "jdbcUrl";
+        String jdbcUrl = (String) firstDataSourceProps.get(jdbcUrlKey);
+        if (null == jdbcUrl) {
+            log.warn("disableSSLForMySQL, could not get jdbcUrl, jdbcUrlKey={}", jdbcUrlKey);
+            return;
+        }
         DatabaseType databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl);
         if (!(databaseType instanceof MySQLDatabaseType)) {
             return;
@@ -256,7 +275,57 @@ public final class RuleAlteredJobWorker {
         Properties queryProps = new Properties();
         queryProps.setProperty("useSSL", Boolean.FALSE.toString());
         for (Entry<String, Map<String, Object>> entry : yamlDataSources.entrySet()) {
-            entry.getValue().put("jdbcUrl", new JdbcUrlAppender().appendQueryProperties((String) entry.getValue().get("jdbcUrl"), queryProps));
+            entry.getValue().put(jdbcUrlKey, new JdbcUrlAppender().appendQueryProperties((String) entry.getValue().get(jdbcUrlKey), queryProps));
         }
+    }
+    
+    /**
+     * Build task configuration.
+     *
+     * @param pipelineConfig pipeline configuration
+     * @param handleConfig handle configuration
+     * @param onRuleAlteredActionConfig action configuration
+     * @return task configuration
+     */
+    public static TaskConfiguration buildTaskConfig(final PipelineConfiguration pipelineConfig, final HandleConfiguration handleConfig,
+                                                    final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
+        RuleAlteredJobConfigurationPreparer preparer = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobConfigurationPreparer.class);
+        return preparer.createTaskConfiguration(pipelineConfig, handleConfig, onRuleAlteredActionConfig);
+    }
+    
+    private boolean isUncompletedJobOfSameSchemaInJobList(final String schema) {
+        boolean isUncompletedJobOfSameSchema = false;
+        for (JobInfo each : PipelineJobAPIFactory.getRuleAlteredJobAPI().list()) {
+            if (PipelineJobAPIFactory.getRuleAlteredJobAPI().getProgress(each.getJobId()).values().stream()
+                    .allMatch(progress -> null != progress && progress.getStatus().equals(JobStatus.FINISHED))) {
+                continue;
+            }
+            JobConfiguration jobConfiguration = YamlEngine.unmarshal(each.getJobParameter(), JobConfiguration.class, true);
+            if (isUncompletedJobOfSameSchema(jobConfiguration, each.getJobId(), schema)) {
+                isUncompletedJobOfSameSchema = true;
+                break;
+            }
+        }
+        return !isUncompletedJobOfSameSchema;
+    }
+    
+    private boolean isUncompletedJobOfSameSchema(final JobConfiguration jobConfig, final String jobId, final String currentSchema) {
+        HandleConfiguration handleConfig = jobConfig.getHandleConfig();
+        WorkflowConfiguration workflowConfig;
+        if (null == handleConfig || null == (workflowConfig = jobConfig.getWorkflowConfig())) {
+            log.warn("handleConfig or workflowConfig null, jobId={}", jobId);
+            return false;
+        }
+        return currentSchema.equals(workflowConfig.getSchemaName());
+    }
+    
+    /**
+     * scaling release schema name lock.
+     *
+     * @param event scaling release schema name lock event
+     */
+    @Subscribe
+    public void scalingReleaseSchemaNameLock(final ScalingReleaseSchemaNameLockEvent event) {
+        PipelineSimpleLock.getInstance().releaseLock(event.getSchemaName());
     }
 }

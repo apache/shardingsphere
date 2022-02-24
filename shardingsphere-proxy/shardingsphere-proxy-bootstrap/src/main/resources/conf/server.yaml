@@ -44,6 +44,12 @@
 #  - !TRANSACTION
 #    defaultType: XA
 #    providerType: Atomikos
+#    # When the provider type is Narayana, the following properties can be configured or not
+#    props:
+#      recoveryStoreUrl: jdbc:mysql://127.0.0.1:3306/jbossts
+#      recoveryStoreDataSource: com.mysql.jdbc.jdbc2.optional.MysqlDataSource
+#      recoveryStoreUser: root
+#      recoveryStorePassword: 12345678
 #  - !SQL_PARSER
 #    sqlCommentParseEnabled: true
 #    sqlStatementCache:
@@ -59,7 +65,6 @@
 #  max-connections-size-per-query: 1
 #  kernel-executor-size: 16  # Infinite by default.
 #  proxy-frontend-flush-threshold: 128  # The default value is 128.
-#  proxy-opentracing-enabled: false
 #  proxy-hint-enabled: false
 #  sql-show: false
 #  check-table-metadata-enabled: false

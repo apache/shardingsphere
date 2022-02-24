@@ -42,7 +42,9 @@ mode:
   overwrite: false
 ```
 
-4. 修改配置文件 `conf/config-sharding.yaml` 的 `scalingName` 和 `scaling` 部分。
+4. 开启 scaling
+
+方法1：修改配置文件 `conf/config-sharding.yaml` 的 `scalingName` 和 `scaling` 部分。
 
 配置项说明：
 ```yaml
@@ -57,16 +59,14 @@ rules:
         workerThread: # 从源端摄取全量数据的线程池大小。如果不配置则使用默认值。
         batchSize: # 一次查询操作返回的最大记录数。如果不配置则使用默认值。
         rateLimiter: # 限流算法。如果不配置则不限流。
-          type: # 算法类型。可选项：QPS
+          type: # 算法类型。可选项：
           props: # 算法属性
-            qps: # qps属性。适用算法类型：QPS
       output: # 数据写入配置。如果不配置则部分参数默认生效。
         workerThread: # 数据写入到目标端的线程池大小。如果不配置则使用默认值。
         batchSize: # 一次批量写入操作的最大记录数。如果不配置则使用默认值。
         rateLimiter: # 限流算法。如果不配置则不限流。
-          type: # 算法类型。可选项：TPS
+          type: # 算法类型。可选项：
           props: # 算法属性
-            tps: # tps属性。适用算法类型：TPS
       streamChannel: # 数据通道，连接生产者和消费者，用于 input 和 output 环节。如果不配置则默认使用 MEMORY 类型
         type: # 算法类型。可选项：MEMORY
         props: # 算法属性
@@ -93,17 +93,9 @@ rules:
       input:
         workerThread: 40
         batchSize: 1000
-        rateLimiter:
-          type: QPS
-          props:
-            qps: 50
       output:
         workerThread: 40
         batchSize: 1000
-        rateLimiter:
-          type: TPS
-          props:
-            tps: 2000
       streamChannel:
         type: MEMORY
         props:
@@ -118,7 +110,28 @@ rules:
           chunk-size: 1000
 ```
 
-以上的 `rateLimiter`，`completionDetector`，`sourceWritingStopper`，`dataConsistencyChecker` 和 `checkoutLocker` 都可以通过实现SPI自定义。可以参考现有实现，详情请参见[开发者手册#弹性伸缩](/cn/dev-manual/scaling/)。
+以上的 `completionDetector`，`dataConsistencyChecker` 都可以通过实现 SPI 自定义。可以参考现有实现，详情请参见[开发者手册#弹性伸缩](/cn/dev-manual/scaling/)。
+
+方法2：通过 DistSQL 配置 scaling
+
+创建 scaling 配置示例：
+```sql
+CREATE SHARDING SCALING RULE default_scaling (
+INPUT(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000
+),
+OUTPUT(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000
+),
+STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
+COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-minute-threshold"=3))),
+DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
+);
+```
+
+详情请参见[RDL#数据分片](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/)。
 
 5. 启动 ShardingSphere-Proxy：
 

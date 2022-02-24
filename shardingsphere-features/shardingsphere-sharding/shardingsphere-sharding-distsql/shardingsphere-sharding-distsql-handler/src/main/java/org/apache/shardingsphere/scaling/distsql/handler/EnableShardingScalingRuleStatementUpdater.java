@@ -76,6 +76,6 @@ public final class EnableShardingScalingRuleStatementUpdater implements RuleDefi
     
     @Override
     public String getType() {
-        return EnableShardingScalingRuleStatement.class.getCanonicalName();
+        return EnableShardingScalingRuleStatement.class.getName();
     }
 }

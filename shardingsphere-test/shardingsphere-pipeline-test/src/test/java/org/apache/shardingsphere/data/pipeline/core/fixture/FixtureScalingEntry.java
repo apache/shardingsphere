@@ -20,8 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.fixture;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
-import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 
@@ -38,11 +36,6 @@ public final class FixtureScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<? extends PositionInitializer> getPositionInitializerClass() {
-        return FixturePositionInitializer.class;
-    }
-    
-    @Override
     public Class<? extends Importer> getImporterClass() {
         return FixtureImporter.class;
     }
@@ -50,11 +43,6 @@ public final class FixtureScalingEntry implements ScalingEntry {
     @Override
     public Class<? extends EnvironmentChecker> getEnvironmentCheckerClass() {
         return FixtureEnvironmentChecker.class;
-    }
-    
-    @Override
-    public Class<? extends PipelineSQLBuilder> getSQLBuilderClass() {
-        return FixturePipelineSQLBuilder.class;
     }
     
     @Override

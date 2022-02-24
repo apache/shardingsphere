@@ -106,11 +106,11 @@ CLEAR
 ENABLE
     : E N A B L E
     ;
-    
+
 DISABLE
    : D I S A B L E
    ;
-   
+
 READ
    : R E A D
    ;

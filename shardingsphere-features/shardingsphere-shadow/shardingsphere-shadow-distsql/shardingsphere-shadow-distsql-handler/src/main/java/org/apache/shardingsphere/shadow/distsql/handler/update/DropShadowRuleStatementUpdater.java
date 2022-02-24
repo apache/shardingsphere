@@ -77,6 +77,6 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
     
     @Override
     public String getType() {
-        return DropShadowRuleStatement.class.getCanonicalName();
+        return DropShadowRuleStatement.class.getName();
     }
 }

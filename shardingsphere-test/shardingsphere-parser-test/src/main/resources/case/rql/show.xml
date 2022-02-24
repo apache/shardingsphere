@@ -110,4 +110,16 @@
     <show-unused-sharding-key-generators sql-case-id="show-unused-sharding-key-generators">
         <schema name="schemaName" start-index="41" stop-index="50"/>
     </show-unused-sharding-key-generators>
+
+    <count-schema-rules sql-case-id="count-schema-rules">
+        <schema name="schemaName" start-index="24" stop-index="33"/>
+    </count-schema-rules>
+
+    <show-rules-used-resource sql-case-id="show-rules-used-resource" resource-name="ds_0">
+        <schema name="schemaName" start-index="35" stop-index="44"/>
+    </show-rules-used-resource>
+    
+    <show-sharding-table-rules-used-key-generator sql-case-id="show-sharding-table-rules-used-key-generator" keyGenerator="snowflake">
+        <schema name="sharding_db" start-index="60" stop-index="70"/>
+    </show-sharding-table-rules-used-key-generator>
 </sql-parser-test-cases>

@@ -18,14 +18,18 @@
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderFactory;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
@@ -61,10 +65,23 @@ public final class DatabaseAdminQueryBackendHandler implements TextProtocolBacke
     private List<QueryHeader> createResponseHeader() throws SQLException {
         List<QueryHeader> result = new ArrayList<>(queryResultMetaData.getColumnCount());
         ShardingSphereMetaData metaData = null == connectionSession.getSchemaName() ? null : ProxyContext.getInstance().getMetaData(connectionSession.getSchemaName());
+        DatabaseType databaseType = null == metaData ? null : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(metaData.getName()).getResource().getDatabaseType();
+        QueryHeaderBuilder queryHeaderBuilder = QueryHeaderBuilderFactory.getQueryHeaderBuilder(databaseType);
+        LazyInitializer<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleLazyInitializer(metaData);
         for (int columnIndex = 1; columnIndex <= queryResultMetaData.getColumnCount(); columnIndex++) {
-            result.add(QueryHeaderBuilder.build(queryResultMetaData, metaData, columnIndex));
+            result.add(queryHeaderBuilder.build(queryResultMetaData, metaData, columnIndex, dataNodeContainedRule));
         }
         return result;
+    }
+    
+    private LazyInitializer<DataNodeContainedRule> getDataNodeContainedRuleLazyInitializer(final ShardingSphereMetaData metaData) {
+        return new LazyInitializer<DataNodeContainedRule>() {
+            
+            @Override
+            protected DataNodeContainedRule initialize() {
+                return null == metaData ? null : metaData.getRuleMetaData().findSingleRule(DataNodeContainedRule.class).orElse(null);
+            }
+        };
     }
     
     @Override

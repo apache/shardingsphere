@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import Symbol, Keyword, MySQLKeyword, Literals, BaseRule, DMLStatement, DALStatement;
+import DMLStatement, DALStatement;
 
 alterStatement
     : alterTable
@@ -178,10 +178,6 @@ restrict
 fulltextIndexOption
     : commonIndexOption
     | WITH PARSER identifier
-    ;
-
-partitionNames
-    : partitionName (COMMA_ partitionName)*
     ;
 
 dropTable
@@ -824,4 +820,20 @@ signalStatement
     
 signalInformationItem
     : conditionInformationItemName EQ_ expr
+    ;
+    
+prepare
+    : PREPARE identifier FROM (stringLiterals | userVariable)
+    ;
+    
+executeStmt
+    : EXECUTE identifier (USING executeVarList)?
+    ;
+    
+executeVarList
+    : userVariable (COMMA_ userVariable)*
+    ;
+    
+deallocate
+    : (DEALLOCATE | DROP) PREPARE identifier
     ;

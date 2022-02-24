@@ -22,12 +22,16 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
+
+import javax.sql.DataSource;
+import java.lang.reflect.Constructor;
 
 /**
  * Dumper factory.
@@ -36,40 +40,39 @@ import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 public final class DumperFactory {
     
     /**
-     * New instance of inventory dumper.
+     * Create inventory dumper.
      *
      * @param inventoryDumperConfig inventory dumper configuration
-     * @param dataSourceManager data source factory
-     * @return JDBC dumper
+     * @param channel channel
+     * @param sourceDataSource data source
+     * @param sourceMetaDataLoader metadata loader
+     * @return inventory dumper
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static InventoryDumper newInstanceJdbcDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineDataSourceManager dataSourceManager) {
+    public static InventoryDumper createInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineChannel channel,
+                                                        final DataSource sourceDataSource, final PipelineTableMetaDataLoader sourceMetaDataLoader) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getInstance(inventoryDumperConfig.getDataSourceConfig().getDatabaseType().getName());
-        return scalingEntry.getInventoryDumperClass().getConstructor(InventoryDumperConfiguration.class, PipelineDataSourceManager.class).newInstance(inventoryDumperConfig, dataSourceManager);
+        Constructor<? extends InventoryDumper> constructor = scalingEntry.getInventoryDumperClass()
+                .getConstructor(InventoryDumperConfiguration.class, PipelineChannel.class, DataSource.class, PipelineTableMetaDataLoader.class);
+        return constructor.newInstance(inventoryDumperConfig, channel, sourceDataSource, sourceMetaDataLoader);
     }
     
     /**
-     * New instance of incremental dumper.
+     * Create incremental dumper.
      *
      * @param dumperConfig dumper configuration
      * @param position position
-     * @return log dumper
-     */
-    public static IncrementalDumper newInstanceLogDumper(final DumperConfiguration dumperConfig, final IngestPosition<?> position) {
-        return newInstanceLogDumper(dumperConfig.getDataSourceConfig().getDatabaseType().getName(), dumperConfig, position);
-    }
-    
-    /**
-     * New instance of incremental dumper.
-     *
-     * @param databaseType database type
-     * @param dumperConfig dumper configuration
-     * @param position position
-     * @return log dumper
+     * @param channel channel
+     * @param sourceMetaDataLoader metadata loader
+     * @return incremental dumper
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static IncrementalDumper newInstanceLogDumper(final String databaseType, final DumperConfiguration dumperConfig, final IngestPosition<?> position) {
+    public static IncrementalDumper createIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<?> position,
+                                                            final PipelineChannel channel, final PipelineTableMetaDataLoader sourceMetaDataLoader) {
+        String databaseType = dumperConfig.getDataSourceConfig().getDatabaseType().getName();
         ScalingEntry scalingEntry = ScalingEntryLoader.getInstance(databaseType);
-        return scalingEntry.getIncrementalDumperClass().getConstructor(DumperConfiguration.class, IngestPosition.class).newInstance(dumperConfig, position);
+        Constructor<? extends IncrementalDumper> constructor = scalingEntry.getIncrementalDumperClass()
+                .getConstructor(DumperConfiguration.class, IngestPosition.class, PipelineChannel.class, PipelineTableMetaDataLoader.class);
+        return constructor.newInstance(dumperConfig, position, channel, sourceMetaDataLoader);
     }
 }

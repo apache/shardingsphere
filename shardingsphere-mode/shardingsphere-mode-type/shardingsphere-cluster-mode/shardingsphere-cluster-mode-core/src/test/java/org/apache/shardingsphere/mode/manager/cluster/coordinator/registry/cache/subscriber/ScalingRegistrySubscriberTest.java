@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.subscriber;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.RegistryCacheManager;
-import org.apache.shardingsphere.mode.metadata.persist.service.impl.SchemaRulePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.SchemaVersionPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,22 +34,16 @@ public final class ScalingRegistrySubscriberTest {
     private ClusterPersistRepository repository;
     
     @Mock
-    private SchemaRulePersistService persistService;
-    
-    @Mock
-    private RegistryCacheManager registryCacheManager;
+    private SchemaVersionPersistService schemaVersionPersistService;
     
     private ScalingRegistrySubscriber scalingRegistrySubscriber;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
         scalingRegistrySubscriber = new ScalingRegistrySubscriber(repository);
-        Field persistServiceField = ScalingRegistrySubscriber.class.getDeclaredField("persistService");
+        Field persistServiceField = ScalingRegistrySubscriber.class.getDeclaredField("schemaVersionPersistService");
         persistServiceField.setAccessible(true);
-        persistServiceField.set(scalingRegistrySubscriber, persistService);
-        Field registryCacheManagerField = ScalingRegistrySubscriber.class.getDeclaredField("registryCacheManager");
-        registryCacheManagerField.setAccessible(true);
-        registryCacheManagerField.set(scalingRegistrySubscriber, registryCacheManager);
+        persistServiceField.set(scalingRegistrySubscriber, schemaVersionPersistService);
     }
     
     @Test

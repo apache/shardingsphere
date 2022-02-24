@@ -97,6 +97,6 @@ public final class DropDatabaseDiscoveryHeartbeatStatementUpdater implements Rul
     
     @Override
     public String getType() {
-        return DropDatabaseDiscoveryHeartbeatStatement.class.getCanonicalName();
+        return DropDatabaseDiscoveryHeartbeatStatement.class.getName();
     }
 }

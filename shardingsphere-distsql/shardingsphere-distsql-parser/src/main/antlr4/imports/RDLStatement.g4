@@ -17,7 +17,7 @@
 
 grammar RDLStatement;
 
-import Keyword, Literals, Symbol, BaseRule;
+import BaseRule;
 
 addResource
     : ADD RESOURCE dataSource (COMMA dataSource)*
@@ -61,14 +61,6 @@ urlSource
 
 hostname
     : IDENTIFIER | ip
-    ;
-
-ip
-    : NUMBER+
-    ;
-
-port
-    : INT
     ;
 
 dbName

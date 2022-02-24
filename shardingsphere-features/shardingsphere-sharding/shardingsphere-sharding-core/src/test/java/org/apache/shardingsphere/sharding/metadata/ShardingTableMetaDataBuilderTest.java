@@ -51,6 +51,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -372,7 +373,9 @@ public class ShardingTableMetaDataBuilderTest {
     public void assertDecorateWithKeyGenerateStrategy() {
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
         ShardingTableMetaDataBuilder builder = (ShardingTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedTableMetaDataBuilder.class, rules).get(shardingRule);
-        Map<String, ColumnMetaData> columns = builder.decorate(TABLE_NAME, createTableMetaData(), shardingRule).getColumns();
+        Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
+        tableMetaDataMap.put(TABLE_NAME, createTableMetaData());
+        Map<String, ColumnMetaData> columns = builder.decorate(tableMetaDataMap, shardingRule, mock(SchemaBuilderMaterials.class)).get(TABLE_NAME).getColumns();
         Iterator<ColumnMetaData> iterator = columns.values().iterator();
         assertFalse(iterator.next().isGenerated());
         assertFalse(iterator.next().isGenerated());

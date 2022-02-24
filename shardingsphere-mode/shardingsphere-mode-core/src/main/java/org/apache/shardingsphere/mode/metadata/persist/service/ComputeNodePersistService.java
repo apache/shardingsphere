@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Compute node persist service.
@@ -46,9 +47,27 @@ public final class ComputeNodePersistService {
      * 
      * @param instanceId instance id
      * @param labels collection of label
+     * @param isOverwrite whether overwrite registry center's configuration if existed              
      */
-    public void persistInstanceLabels(final String instanceId, final Collection<String> labels) {
-        repository.persist(ComputeNode.getInstanceLabelNodePath(instanceId), YamlEngine.marshal(labels));
+    public void persistInstanceLabels(final String instanceId, final Collection<String> labels, final boolean isOverwrite) {
+        if (null != labels && !labels.isEmpty() && (isOverwrite || !isExisted(instanceId))) {
+            repository.persist(ComputeNode.getInstanceLabelsNodePath(instanceId), YamlEngine.marshal(labels));
+        }
+    }
+    
+    /**
+     * Delete instance labels.
+     *
+     * @param instanceId instance id
+     */
+    public void deleteInstanceLabels(final String instanceId) {
+        if (isExisted(instanceId)) {
+            repository.delete(ComputeNode.getInstanceLabelsNodePath(instanceId));
+        }
+    }
+    
+    private boolean isExisted(final String instanceId) {
+        return !Strings.isNullOrEmpty(repository.get(ComputeNode.getInstanceLabelsNodePath(instanceId)));
     }
     
     /**
@@ -62,13 +81,23 @@ public final class ComputeNodePersistService {
     }
     
     /**
+     * Persist instance xa recovery id.
+     *
+     * @param instanceId instance id
+     * @param xaRecoveryId xa recovery id
+     */
+    public void persistInstanceXaRecoveryId(final String instanceId, final String xaRecoveryId) {
+        repository.persist(ComputeNode.getInstanceXaRecoveryIdNodePath(instanceId), xaRecoveryId);
+    }
+    
+    /**
      * Load instance labels.
      * 
      * @param instanceId instance id
-     * @return collection of label
+     * @return labels
      */
     public Collection<String> loadInstanceLabels(final String instanceId) {
-        String yamlContent = repository.get(ComputeNode.getInstanceLabelNodePath(instanceId));
+        String yamlContent = repository.get(ComputeNode.getInstanceLabelsNodePath(instanceId));
         return Strings.isNullOrEmpty(yamlContent) ? new ArrayList<>() : YamlEngine.unmarshal(yamlContent, Collection.class);
     }
     
@@ -76,7 +105,7 @@ public final class ComputeNodePersistService {
      * Load instance status.
      * 
      * @param instanceId instance id
-     * @return collection of status
+     * @return status
      */
     public Collection<String> loadInstanceStatus(final String instanceId) {
         String yamlContent = repository.get(ComputeNode.getInstanceStatusNodePath(instanceId));
@@ -89,22 +118,32 @@ public final class ComputeNodePersistService {
      * @param instanceId instance id
      * @return worker id
      */
-    public Long loadInstanceWorkerId(final String instanceId) {
+    public Optional<Long> loadInstanceWorkerId(final String instanceId) {
         try {
             String workerId = repository.get(ComputeNode.getInstanceWorkerIdNodePath(instanceId));
-            return Strings.isNullOrEmpty(workerId) ? null : Long.valueOf(workerId);
+            return Strings.isNullOrEmpty(workerId) ? Optional.empty() : Optional.of(Long.valueOf(workerId));
         } catch (final NumberFormatException ex) {
             log.error("Invalid worker id for instance: {}", instanceId);
         }
-        return null;
+        return Optional.empty();
+    }
+    
+    /**
+     * Load instance xa recovery id.
+     * 
+     * @param instanceId instance id
+     * @return xa recovery id
+     */
+    public Optional<String> loadXaRecoveryId(final String instanceId) {
+        return Optional.ofNullable(repository.get(ComputeNode.getInstanceXaRecoveryIdNodePath(instanceId)));
     }
     
     /**
      * Load compute node instances by instance type and labels.
      *
      * @param instanceType instance type
-     * @param labels collection of contained label                     
-     * @return collection of compute node instance
+     * @param labels collection of contained label
+     * @return compute node instances
      */
     public Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType instanceType, final Collection<String> labels) {
         Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
@@ -116,7 +155,7 @@ public final class ComputeNodePersistService {
                 instance.setInstanceDefinition(new InstanceDefinition(instanceType, each));
                 instance.setLabels(actualLabels);
                 instance.setStatus(loadInstanceStatus(each));
-                instance.setWorkerId(loadInstanceWorkerId(each));
+                loadInstanceWorkerId(each).ifPresent(instance::setWorkerId);
                 result.add(instance);
             }
         });
@@ -126,7 +165,7 @@ public final class ComputeNodePersistService {
     /**
      * Load all compute node instances.
      *
-     * @return collection of compute node instance
+     * @return compute node instances
      */
     public Collection<ComputeNodeInstance> loadAllComputeNodeInstances() {
         Collection<ComputeNodeInstance> result = new ArrayList<>();
@@ -148,7 +187,8 @@ public final class ComputeNodePersistService {
         result.setInstanceDefinition(instanceDefinition);
         result.setLabels(loadInstanceLabels(instanceDefinition.getInstanceId().getId()));
         result.setStatus(loadInstanceStatus(instanceDefinition.getInstanceId().getId()));
-        result.setWorkerId(loadInstanceWorkerId(instanceDefinition.getInstanceId().getId()));
+        loadInstanceWorkerId(instanceDefinition.getInstanceId().getId()).ifPresent(result::setWorkerId);
+        loadXaRecoveryId(instanceDefinition.getInstanceId().getId()).ifPresent(result::setXaRecoveryId);
         return result;
     }
 }

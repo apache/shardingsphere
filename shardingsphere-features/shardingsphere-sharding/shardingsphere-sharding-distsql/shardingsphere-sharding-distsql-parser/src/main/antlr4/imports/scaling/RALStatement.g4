@@ -17,7 +17,7 @@
 
 grammar RALStatement;
 
-import Keyword, Literals, Symbol, BaseRule;
+import BaseRule;
 
 showScalingList
     : SHOW SCALING LIST
@@ -55,10 +55,14 @@ stopScalingSourceWriting
     : STOP SCALING SOURCE WRITING jobId
     ;
 
+restoreScalingSourceWriting
+    : RESTORE SCALING SOURCE WRITING jobId
+    ;
+
 applyScaling
     : APPLY SCALING jobId
     ;
 
 jobId
-    : INT
+    : INT | IDENTIFIER
     ;

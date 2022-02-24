@@ -23,7 +23,7 @@ import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRu
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * YAML data base discovery rule spring boot configuration.
+ * YAML database discovery rule spring boot configuration.
  */
 @ConfigurationProperties(prefix = "spring.shardingsphere.rules")
 @Getter

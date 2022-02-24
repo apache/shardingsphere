@@ -133,19 +133,19 @@ public final class SQLStatementContextFactory {
             return new SelectStatementContext(metaDataMap, parameters, (SelectStatement) sqlStatement, defaultSchemaName);
         }
         if (sqlStatement instanceof UpdateStatement) {
-            return new UpdateStatementContext((UpdateStatement) sqlStatement, defaultSchemaName);
+            return new UpdateStatementContext((UpdateStatement) sqlStatement);
         }
         if (sqlStatement instanceof DeleteStatement) {
-            return new DeleteStatementContext((DeleteStatement) sqlStatement, defaultSchemaName);
+            return new DeleteStatementContext((DeleteStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
             return new InsertStatementContext(metaDataMap, parameters, (InsertStatement) sqlStatement, defaultSchemaName);
         }
         if (sqlStatement instanceof CallStatement) {
-            return new CallStatementContext((CallStatement) sqlStatement, defaultSchemaName);
+            return new CallStatementContext((CallStatement) sqlStatement);
         }
         if (sqlStatement instanceof CopyStatement) {
-            return new CopyStatementContext((CopyStatement) sqlStatement, defaultSchemaName);
+            return new CopyStatementContext((CopyStatement) sqlStatement);
         }
         throw new UnsupportedOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }

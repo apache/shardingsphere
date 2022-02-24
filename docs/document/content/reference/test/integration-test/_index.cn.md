@@ -124,37 +124,38 @@ SQL 用例在 `resources/cases/${SQL-TYPE}/${SQL-TYPE}-integration-test-cases.xm
 所有的属性值都可以通过 Maven 命令行 `-D` 的方式动态注入。
 
 ```properties
-# 配置环境类型，只支持单值。可选值：docker或空，默认值：空
-it.env.type=${it.env}
-# 待测试的接入端类型，多个值可用逗号分隔。可选值：jdbc, proxy，默认值：jdbc
-it.adapters=jdbc
 
 # 场景类型，多个值可用逗号分隔。可选值：db, tbl, dbtbl_with_replica_query, replica_query
 it.scenarios=db,tbl,dbtbl_with_replica_query,replica_query
 
-# 场景类型，多个值可用逗号分隔。可选值：H2, MySQL, Oracle, SQLServer, PostgreSQL
-it.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
-
 # 是否运行附加测试用例
 it.run.additional.cases=false
+
+# 配置环境类型，只支持单值。可选值：docker或空，默认值：空
+it.cluster.env.type=${it.env}
+# 待测试的接入端类型，多个值可用逗号分隔。可选值：jdbc, proxy，默认值：jdbc
+it.cluster.adapters=jdbc
+
+# 场景类型，多个值可用逗号分隔。可选值：H2, MySQL, Oracle, SQLServer, PostgreSQL
+it.cluster.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
 ```
 
 #### 运行调试模式
 
   - 标准测试引擎
-    运行 `org.apache.shardingsphere.test.integration.engine.it.${SQL-TYPE}.General${SQL-TYPE}IT` 以启动不同 SQL 类型的测试引擎。
+    运行 `org.apache.shardingsphere.test.integration.engine.${SQL-TYPE}.General${SQL-TYPE}IT` 以启动不同 SQL 类型的测试引擎。
 
   - 批量测试引擎
-    运行 `org.apache.shardingsphere.test.integration.engine.it.dml.BatchDMLIT`，以启动为 DML 语句提供的测试 `addBatch()` 的批量测试引擎。
+    运行 `org.apache.shardingsphere.test.integration.engine.dml.BatchDMLIT`，以启动为 DML 语句提供的测试 `addBatch()` 的批量测试引擎。
 
   - 附加测试引擎
-    运行 `org.apache.shardingsphere.test.integration.engine.it.${SQL-TYPE}.Additional${SQL-TYPE}IT` 以启动使用更多 JDBC 方法调用的测试引擎。
+    运行 `org.apache.shardingsphere.test.integration.engine.${SQL-TYPE}.Additional${SQL-TYPE}IT` 以启动使用更多 JDBC 方法调用的测试引擎。
     附加测试引擎需要通过设置 `it.run.additional.cases=true` 开启。
 
 #### 运行 Docker 模式
 
 ```bash
-./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_1,scenario_name_n} -Dit.databases=MySQL
+./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_1,scenario_name_n} -Dit.cluster.databases=MySQL
 ```
 
 #### 注意事项

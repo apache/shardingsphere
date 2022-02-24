@@ -80,7 +80,7 @@ public final class RouteSQLRewriteEngine {
     }
     
     private Map<RouteUnit, SQLRewriteUnit> createSQLRewriteUnits(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext, final Collection<RouteUnit> routeUnits) {
-        Map<RouteUnit, SQLRewriteUnit> result = new LinkedHashMap<>(routeContext.getRouteUnits().size(), 1);
+        Map<RouteUnit, SQLRewriteUnit> result = new LinkedHashMap<>(routeUnits.size(), 1);
         for (RouteUnit each : routeUnits) {
             result.put(each, new SQLRewriteUnit(new RouteSQLBuilder(sqlRewriteContext, each).toSQL(), getParameters(sqlRewriteContext.getParameterBuilder(), routeContext, each)));
         }
@@ -104,10 +104,7 @@ public final class RouteSQLRewriteEngine {
         Map<String, Collection<RouteUnit>> result = new LinkedHashMap<>(routeUnits.size(), 1);
         for (RouteUnit each : routeUnits) {
             String dataSourceName = each.getDataSourceMapper().getActualName();
-            if (!result.containsKey(dataSourceName)) {
-                result.put(dataSourceName, new LinkedList<>());
-            }
-            result.get(dataSourceName).add(each);
+            result.computeIfAbsent(dataSourceName, unused -> new LinkedList<>()).add(each);
         }
         return result;
     }

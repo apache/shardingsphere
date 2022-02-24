@@ -159,7 +159,7 @@ ADD RESOURCE ds_2 (
 
 详情请参见[RDL#数据分片](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/)。
 
-`SHARDING TABLE RULE`支持2种类型：`TableRule`和`AutoTableRule`。以下是两种分片规则的对比：
+`SHARDING TABLE RULE`支持 2 种类型：`TableRule`和`AutoTableRule`。以下是两种分片规则的对比：
 
 | 类型         | AutoTableRule（自动分片）                                      | TableRule（自定义分片）                                        |
 | ----------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -173,7 +173,7 @@ ALTER SHARDING TABLE RULE t_order (
 RESOURCES(ds_2, ds_3, ds_4),
 SHARDING_COLUMN=order_id,
 TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=6)),
-GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake))
+KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
 );
 ```
 
@@ -189,12 +189,12 @@ ALTER SHARDING TABLE RULE t_order (
 DATANODES("ds_${2..4}.t_order_${0..1}"),
 DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
 TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
-GENERATED_KEY(COLUMN=order_id,TYPE(NAME=snowflake))
+KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
 ), t_order_item (
 DATANODES("ds_${2..4}.t_order_item_${0..1}"),
 DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
 TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
-GENERATED_KEY(COLUMN=order_item_id,TYPE(NAME=snowflake))
+KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME=snowflake))
 );
 ```
 
@@ -234,7 +234,7 @@ show scaling status {jobId};
 ```
 mysql> show scaling status 660152090995195904;
 +------+-------------+----------+-------------------------------+--------------------------+
-| item | data_source | status   | inventory_finished_percentage | incremental_idle_minutes |
+| item | data_source | status   | inventory_finished_percentage | incremental_idle_seconds |
 +------+-------------+----------+-------------------------------+--------------------------+
 | 0    | ds_1        | FINISHED | 100                           | 2834                     |
 | 1    | ds_0        | FINISHED | 100                           | 2834                     |

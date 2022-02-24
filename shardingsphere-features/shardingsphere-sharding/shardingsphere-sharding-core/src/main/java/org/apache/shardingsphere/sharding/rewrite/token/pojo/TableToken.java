@@ -42,11 +42,11 @@ public final class TableToken extends SQLToken implements Substitutable, RouteUn
     
     private final IdentifierValue tableName;
     
-    private final SQLStatementContext sqlStatementContext;
+    private final SQLStatementContext<?> sqlStatementContext;
     
     private final ShardingRule shardingRule;
     
-    public TableToken(final int startIndex, final int stopIndex, final SimpleTableSegment tableSegment, final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule) {
+    public TableToken(final int startIndex, final int stopIndex, final SimpleTableSegment tableSegment, final SQLStatementContext<?> sqlStatementContext, final ShardingRule shardingRule) {
         super(startIndex);
         this.stopIndex = stopIndex;
         tableName = tableSegment.getTableName().getIdentifier();

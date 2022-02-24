@@ -32,7 +32,10 @@ import java.util.Set;
  * OpenGauss pipeline SQL builder.
  */
 public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
-
+    
+    public OpenGaussPipelineSQLBuilder() {
+    }
+    
     public OpenGaussPipelineSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
         super(shardingColumnsMap);
     }
@@ -67,5 +70,10 @@ public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilde
     private String buildConflictSQL() {
         // there need return ON DUPLICATE KEY UPDATE NOTHING after support this syntax.
         return "";
+    }
+    
+    @Override
+    public String getType() {
+        return "openGauss";
     }
 }

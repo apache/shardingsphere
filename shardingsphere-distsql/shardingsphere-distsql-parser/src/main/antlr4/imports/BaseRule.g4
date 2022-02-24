@@ -30,3 +30,23 @@ properties
 property
     : key=(IDENTIFIER | STRING) EQ value=(INT | IDENTIFIER | STRING)
     ;
+
+tableName
+    : IDENTIFIER
+    ;
+
+schemaName
+    : IDENTIFIER
+    ;
+
+resourceName
+    : IDENTIFIER | STRING
+    ;
+
+ip
+    : IDENTIFIER | NUMBER+
+    ;
+
+port
+    : INT
+    ;

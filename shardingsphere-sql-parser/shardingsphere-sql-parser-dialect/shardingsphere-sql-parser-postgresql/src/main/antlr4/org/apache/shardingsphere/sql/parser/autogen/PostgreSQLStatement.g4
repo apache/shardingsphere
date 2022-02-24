@@ -17,7 +17,7 @@
 
 grammar PostgreSQLStatement;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement, StoreProcedure;
+import Comments, TCLStatement, DCLStatement, DALStatement, StoreProcedure;
 
 execute
     : (select
@@ -57,6 +57,12 @@ execute
     | alterCollation
     | alterFunction
     | alterDatabase
+    | alterDomain
+    | alterDefaultPrivileges
+    | alterForeignDataWrapper
+    | alterForeignTable
+    | alterGroup
+    | alterMaterializedView
     | alterProcedure
     | alterServer
     | alterSequence
@@ -72,6 +78,8 @@ execute
     | createSchema
     | createType
     | createTextSearch
+    | declare
+    | discard
     | dropDatabase
     | dropFunction
     | dropProcedure
@@ -102,5 +110,8 @@ execute
     | alterTextSearchDictionary
     | alterTextSearchTemplate
     | alterTextSearchParser
+    | createExtension
+    | alterExtension
+    | dropExtension
     ) SEMI_?
     ;

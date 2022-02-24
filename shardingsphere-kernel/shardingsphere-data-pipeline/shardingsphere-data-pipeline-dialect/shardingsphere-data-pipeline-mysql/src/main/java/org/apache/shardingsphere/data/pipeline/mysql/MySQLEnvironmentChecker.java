@@ -17,20 +17,14 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql;
 
-import org.apache.shardingsphere.data.pipeline.mysql.check.datasource.MySQLDataSourceChecker;
+import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.mysql.prepare.datasource.MySQLDataSourcePreparer;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.DataSourcePreparer;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
 
 /**
  * MySQL environment checker.
  */
 public final class MySQLEnvironmentChecker implements EnvironmentChecker {
-    
-    @Override
-    public Class<MySQLDataSourceChecker> getDataSourceCheckerClass() {
-        return MySQLDataSourceChecker.class;
-    }
     
     @Override
     public Class<? extends DataSourcePreparer> getDataSourcePreparerClass() {

@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Insert value context.
@@ -73,10 +74,15 @@ public final class InsertValueContext {
      * @param index index
      * @return value
      */
-    public Object getValue(final int index) {
+    public Optional<Object> getValue(final int index) {
         ExpressionSegment valueExpression = valueExpressions.get(index);
-        return valueExpression instanceof ParameterMarkerExpressionSegment 
-                ? parameters.get(getParameterIndex((ParameterMarkerExpressionSegment) valueExpression)) : ((LiteralExpressionSegment) valueExpression).getLiterals();
+        if (valueExpression instanceof ParameterMarkerExpressionSegment) {
+            return Optional.of(parameters.get(getParameterIndex((ParameterMarkerExpressionSegment) valueExpression)));
+        }
+        if (valueExpression instanceof LiteralExpressionSegment) {
+            return Optional.of(((LiteralExpressionSegment) valueExpression).getLiterals());
+        }
+        return Optional.empty();
     }
     
     private int getParameterIndex(final ParameterMarkerExpressionSegment parameterMarkerExpression) {

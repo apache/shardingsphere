@@ -49,9 +49,9 @@ public final class ReadwriteSplittingRuleStatementConverter {
             if (null != each.getLoadBalancer()) {
                 String loadBalancerName = getLoadBalancerName(each.getName(), each.getLoadBalancer());
                 loadBalancers.put(loadBalancerName, createLoadBalancer(each));
-                dataSources.add(createDataSourceRuleConfiguration(each.getName(), createProperties(each), loadBalancerName, each.hasAutoAware()));
+                dataSources.add(createDataSourceRuleConfiguration(each.getName(), createProperties(each), loadBalancerName, each.isAutoAware()));
             } else {
-                dataSources.add(createDataSourceRuleConfiguration(each.getName(), createProperties(each), null, each.hasAutoAware()));
+                dataSources.add(createDataSourceRuleConfiguration(each.getName(), createProperties(each), null, each.isAutoAware()));
             }
         }
         return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancers);
@@ -71,9 +71,13 @@ public final class ReadwriteSplittingRuleStatementConverter {
     }
     
     private static Properties createProperties(final ReadwriteSplittingRuleSegment segment) {
-        Properties properties = new Properties();
-        properties.setProperty("write-data-source-name", segment.getWriteDataSource());
-        properties.setProperty("read-data-source-names", String.join(",", segment.getReadDataSources()));
-        return properties;
+        Properties result = new Properties();
+        if (segment.isAutoAware()) {
+            result.setProperty("auto-aware-data-source-name", segment.getAutoAwareResource());
+        } else {
+            result.setProperty("write-data-source-name", segment.getWriteDataSource());
+            result.setProperty("read-data-source-names", String.join(",", segment.getReadDataSources()));
+        }
+        return result;
     }
 }

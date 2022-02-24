@@ -145,10 +145,11 @@ dataSources:
 rules:
 - !READWRITE_SPLITTING
   dataSources:
-    pr_ds:
-      writeDataSourceName: primary_ds
-      readDataSourceNames:
-        - replica_ds_0
+    readwrite_ds:
+      type: Static
+      props:
+        write-data-source-name: primary_ds
+        read-data-source-names: replica_ds_0
 ```
 
 #### 主从+加密+分库分表配置
@@ -225,7 +226,7 @@ rules:
 - !SHARDING
   tables:
     tbl:
-      actualDataNodes: pr_ds_${0..3}.tbl${0..1023}
+      actualDataNodes: readwrite_ds_${0..3}.tbl${0..1023}
       databaseStrategy:
         standard:
           shardingColumn: id
@@ -246,7 +247,7 @@ rules:
     tbl_database_inline:
       type: INLINE
       props:
-        algorithm-expression: pr_ds_${id % 4}
+        algorithm-expression: readwrite_ds_${id % 4}
     tbl_table_inline:
       type: INLINE
       props:
@@ -256,25 +257,28 @@ rules:
       type: SNOWFLAKE
 - !READWRITE_SPLITTING
   dataSources:
-    pr_ds_0:
-      writeDataSourceName: primary_ds_0
-      readDataSourceNames:
-        - replica_ds_0
+    readwrite_ds_0:
+      type: Static
+      props:
+        write-data-source-name: primary_ds_0
+        read-data-source-names: replica_ds_0
+    readwrite_ds_1:
+      type: Static
+      props:
+        write-data-source-name: primary_ds_1
+        read-data-source-names: replica_ds_1
       loadBalancerName: round_robin
-    pr_ds_1:
-      writeDataSourceName: primary_ds_1
-      readDataSourceNames:
-        - replica_ds_1
+    readwrite_ds_2:
+      type: Static
+      props:
+        write-data-source-name: primary_ds_2
+        read-data-source-names: replica_ds_2
       loadBalancerName: round_robin
-    pr_ds_2:
-      writeDataSourceName: primary_ds_2
-      readDataSourceNames:
-        - replica_ds_2
-      loadBalancerName: round_robin
-    pr_ds_3:
-      writeDataSourceName: primary_ds_3
-      readDataSourceNames:
-        - replica_ds_3
+    readwrite_ds_3:
+      type: Static
+      props:
+        write-data-source-name: primary_ds_3
+        read-data-source-names: replica_ds_3
       loadBalancerName: round_robin
   loadBalancers:
     round_robin:

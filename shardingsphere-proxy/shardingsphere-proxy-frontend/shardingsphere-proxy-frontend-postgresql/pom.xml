@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-proxy-frontend</artifactId>
-        <version>5.0.1-SNAPSHOT</version>
+        <version>5.1.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-proxy-frontend-postgresql</artifactId>
     <name>${project.artifactId}</name>
@@ -63,7 +63,7 @@
                         <configuration>
                             <excludes>
                                 <!-- TODO Consider refactoring tests which changed Field's modifiers -->
-                                <exclude>org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPortalTest</exclude>
+                                <exclude>org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.JDBCPortalTest</exclude>
                                 <exclude>org.apache.shardingsphere.proxy.frontend.postgresql.command.query.simple.PostgreSQLComQueryExecutorTest</exclude>
                             </excludes>
                         </configuration>

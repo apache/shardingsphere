@@ -17,7 +17,7 @@
 
 grammar DMLStatement;
 
-import Symbol, Keyword, OpenGaussKeyword, Literals, BaseRule;
+import BaseRule;
 
 insert
     : withClause? INSERT INTO insertTarget insertRest optOnDuplicateKey? returningClause?

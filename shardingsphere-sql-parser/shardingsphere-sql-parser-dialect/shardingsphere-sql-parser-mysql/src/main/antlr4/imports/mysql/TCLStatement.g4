@@ -17,7 +17,7 @@
 
 grammar TCLStatement;
 
-import Symbol, Keyword, MySQLKeyword, Literals, BaseRule;
+import BaseRule;
 
 setTransaction
     : SET optionType? TRANSACTION transactionCharacteristics
@@ -52,7 +52,7 @@ begin
     ;
 
 lock
-    : LOCK (INSTANCE FOR BACKUP | (TABLE | TABLES) tableLock (COMMA_ tableLock)* )
+    : LOCK (INSTANCE FOR BACKUP | (TABLES tableLock (COMMA_ tableLock)*))
     ;
 
 unlock

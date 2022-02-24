@@ -49,7 +49,7 @@ dataSources:
 rules:
 - !READWRITE_SPLITTING
   dataSources:
-    pr_ds:
+    readwrite_ds:
       type: Static
       props:
         write-data-source-name: write_ds

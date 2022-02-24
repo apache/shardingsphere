@@ -38,11 +38,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -70,7 +68,7 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
             return Collections.emptyList();
         }
         List<ShardingCondition> result = new ArrayList<>();
-        for (WhereSegment each : getWhereSegments(sqlStatementContext)) {
+        for (WhereSegment each : ((WhereAvailable) sqlStatementContext).getWhereSegments()) {
             result.addAll(createShardingConditions(sqlStatementContext, each.getExpr(), parameters));
         }
         return result;
@@ -117,16 +115,6 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
         return new ColumnProjection(owner, segment.getIdentifier().getValue(), null);
     }
     
-    private Collection<WhereSegment> getWhereSegments(final SQLStatementContext<?> sqlStatementContext) {
-        Collection<WhereSegment> result = new LinkedList<>();
-        ((WhereAvailable) sqlStatementContext).getWhere().ifPresent(result::add);
-        if (sqlStatementContext.getSqlStatement() instanceof SelectStatement) {
-            result.addAll(WhereExtractUtil.getSubqueryWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()));
-            result.addAll(WhereExtractUtil.getJoinWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()));
-        }
-        return result;
-    }
-    
     private Map<Column, Collection<ShardingConditionValue>> createShardingConditionValueMap(final Collection<ExpressionSegment> predicates, 
                                                                                             final List<Object> parameters, final Map<String, String> columnTableNames) {
         Map<Column, Collection<ShardingConditionValue>> result = new HashMap<>(predicates.size(), 1);
@@ -143,13 +131,7 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
                 if (!shardingConditionValue.isPresent()) {
                     continue;
                 }
-                if (!result.containsKey(column)) {
-                    Collection<ShardingConditionValue> shardingConditionValues = new LinkedList<>();
-                    shardingConditionValues.add(shardingConditionValue.get());
-                    result.put(column, shardingConditionValues);
-                } else {
-                    result.get(column).add(shardingConditionValue.get());
-                }
+                result.computeIfAbsent(column, unused -> new LinkedList<>()).add(shardingConditionValue.get());
             }
         }
         return result;
@@ -171,7 +153,7 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
         return result;
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private ShardingConditionValue mergeShardingConditionValues(final Column column, final Collection<ShardingConditionValue> shardingConditionValues) {
         Collection<Comparable<?>> listValue = null;
         Range<Comparable<?>> rangeValue = null;

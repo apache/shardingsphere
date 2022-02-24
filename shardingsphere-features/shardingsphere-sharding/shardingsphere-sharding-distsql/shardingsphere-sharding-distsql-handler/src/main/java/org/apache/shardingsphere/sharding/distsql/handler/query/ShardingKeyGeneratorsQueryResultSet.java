@@ -62,6 +62,6 @@ public final class ShardingKeyGeneratorsQueryResultSet implements DistSQLResultS
     
     @Override
     public String getType() {
-        return ShowShardingKeyGeneratorsStatement.class.getCanonicalName();
+        return ShowShardingKeyGeneratorsStatement.class.getName();
     }
 }

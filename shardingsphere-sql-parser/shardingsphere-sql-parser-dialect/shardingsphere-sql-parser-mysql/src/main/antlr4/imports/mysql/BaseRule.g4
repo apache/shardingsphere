@@ -162,6 +162,7 @@ identifierKeywordsUnambiguous
     | CONSTRAINT_SCHEMA
     | CONTEXT
     | CPU
+    | CREATE
     | CURRENT
     | CURSOR_NAME
     | DATAFILE
@@ -565,6 +566,7 @@ variable
     
 userVariable
     : AT_ textOrIdentifier
+    | textOrIdentifier
     ;
     
 systemVariable
@@ -864,7 +866,7 @@ simpleExpr
     | parameterMarker
     | literals
     | columnRef
-    | simpleExpr COLLATE textOrIdentifier
+    | simpleExpr collateClause
     | variable
     | simpleExpr OR_ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | notOperator | BINARY) simpleExpr
@@ -872,9 +874,18 @@ simpleExpr
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
     | identifier (JSON_SEPARATOR | JSON_UNQUOTED_SEPARATOR) string_
+    | path (RETURNING dataType)? onEmptyError? 
     | matchExpression
     | caseExpression
     | intervalExpression
+    ;
+    
+path
+    : string_
+    ;
+
+onEmptyError
+    : (NULL | ERROR | DEFAULT literals) ON (EMPTY | ERROR)
     ;
     
 columnRef
@@ -890,7 +901,7 @@ functionCall
     ;
     
 aggregationFunction
-    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ overClause?
+    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? collateClause? RP_ overClause?
     ;
     
 aggregationFunctionName
@@ -1240,7 +1251,7 @@ characterSet
     ;
     
 collateClause
-    : COLLATE collationName
+    : COLLATE (collationName | parameterMarker)
     ;
     
 fieldOrVarSpec
@@ -1282,18 +1293,4 @@ noWriteToBinLog
     
 channelOption
     : FOR CHANNEL string_
-    ;
-    
-preparedStatement
-    : PREPARE identifier FROM (stringLiterals | userVariable)
-    | executeStatement
-    | (DEALLOCATE | DROP) PREPARE identifier
-    ;
-    
-executeStatement
-    : EXECUTE identifier (USING executeVarList)?
-    ;
-    
-executeVarList
-    : userVariable (COMMA_ userVariable)*
     ;
