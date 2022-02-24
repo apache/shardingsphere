@@ -61,6 +61,7 @@ chapter = true
 ## 贡献者
 
 您可以在 ShardingSphere 的贡献列表中找到全部的贡献者名单。
+
 - [shardingsphere](https://api.github.com/repos/apache/shardingsphere/contributors?page=1&per_page=10000)
 - [shardingsphere-benchmark](https://github.com/apache/shardingsphere-benchmark)
 
