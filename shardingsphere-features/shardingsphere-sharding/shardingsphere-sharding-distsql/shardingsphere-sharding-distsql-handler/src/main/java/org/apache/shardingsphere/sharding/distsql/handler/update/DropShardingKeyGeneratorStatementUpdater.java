@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingKeyGeneratorStatement;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
@@ -71,11 +70,8 @@ public final class DropShardingKeyGeneratorStatementUpdater implements RuleDefin
     }
     
     @Override
-    public Collection<String> getExistingConfiguration(final DropShardingKeyGeneratorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        if (currentRuleConfig == null) {
-            return Collections.emptyList();
-        }
-        return getIdenticalData(currentRuleConfig.getKeyGenerators().keySet(), sqlStatement.getKeyGeneratorNames());
+    public boolean needToBeUpdated(final DropShardingKeyGeneratorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        return null != currentRuleConfig && !getIdenticalData(currentRuleConfig.getKeyGenerators().keySet(), sqlStatement.getKeyGeneratorNames()).isEmpty();
     }
     
     @Override

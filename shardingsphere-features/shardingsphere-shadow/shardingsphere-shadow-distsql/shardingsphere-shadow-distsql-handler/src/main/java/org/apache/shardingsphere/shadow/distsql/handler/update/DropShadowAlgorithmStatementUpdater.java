@@ -76,11 +76,8 @@ public final class DropShadowAlgorithmStatementUpdater implements RuleDefinition
     }
     
     @Override
-    public Collection<String> getExistingConfiguration(final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        if (currentRuleConfig == null) {
-            return Collections.emptyList();
-        }
-        return getIdenticalData(currentRuleConfig.getShadowAlgorithms().keySet(), sqlStatement.getAlgorithmNames());
+    public boolean needToBeUpdated(final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+        return null != currentRuleConfig && !getIdenticalData(currentRuleConfig.getShadowAlgorithms().keySet(), sqlStatement.getAlgorithmNames()).isEmpty();
     }
     
     @Override

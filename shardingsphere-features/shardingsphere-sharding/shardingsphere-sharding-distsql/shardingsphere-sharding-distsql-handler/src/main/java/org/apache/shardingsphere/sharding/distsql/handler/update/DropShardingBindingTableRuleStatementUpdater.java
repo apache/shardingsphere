@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBindingTableRulesStatement;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
@@ -57,11 +56,8 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
     }
     
     @Override
-    public Collection<String> getExistingConfiguration(final DropShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        if (currentRuleConfig == null) {
-            return Collections.emptyList();
-        }
-        return getIdenticalData(currentRuleConfig.getBindingTableGroups(), sqlStatement.getBindingGroups());
+    public boolean needToBeUpdated(final DropShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        return null != currentRuleConfig && !getIdenticalData(currentRuleConfig.getBindingTableGroups(), sqlStatement.getBindingGroups()).isEmpty();
     }
     
     @Override

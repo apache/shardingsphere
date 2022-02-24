@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -68,11 +67,8 @@ public final class DropDatabaseDiscoveryTypeStatementUpdater implements RuleDefi
     }
     
     @Override
-    public Collection<String> getExistingConfiguration(final DropDatabaseDiscoveryTypeStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
-        if (currentRuleConfig == null) {
-            return Collections.emptyList();
-        }
-        return getIdenticalData(currentRuleConfig.getDiscoveryTypes().keySet(), sqlStatement.getTypes());
+    public boolean needToBeUpdated(final DropDatabaseDiscoveryTypeStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+        return null != currentRuleConfig && !getIdenticalData(currentRuleConfig.getDiscoveryTypes().keySet(), sqlStatement.getTypes()).isEmpty();
     }
     
     @Override

@@ -112,6 +112,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     @SuppressWarnings("rawtypes")
     private void processSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final T sqlStatement, final RuleDefinitionUpdater updater, final RuleConfiguration currentRuleConfig) {
+        boolean isRefresh = getRefreshStatus(sqlStatement, currentRuleConfig, updater);
         if (updater instanceof RuleDefinitionCreateUpdater) {
             processCreate(shardingSphereMetaData, sqlStatement, (RuleDefinitionCreateUpdater) updater, currentRuleConfig);
         } else if (updater instanceof RuleDefinitionAlterUpdater) {
@@ -121,7 +122,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         } else {
             throw new UnsupportedOperationException(String.format("Cannot support RDL updater type `%s`", updater.getClass().getCanonicalName()));
         }
-        if (isSkipRefresh(sqlStatement, currentRuleConfig, updater)) {
+        if (isRefresh) {
             ProxyContext.getInstance().getContextManager().alterRuleConfiguration(shardingSphereMetaData.getName(), shardingSphereMetaData.getRuleMetaData().getConfigurations());
         }
     }
@@ -144,8 +145,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void processDrop(final ShardingSphereMetaData shardingSphereMetaData, final T sqlStatement, final RuleDefinitionDropUpdater updater, final RuleConfiguration currentRuleConfig) {
-        Collection<String> existingConfiguration = ((RuleDefinitionDropUpdater<SQLStatement, RuleConfiguration>) updater).getExistingConfiguration(sqlStatement, currentRuleConfig);
-        if (existingConfiguration.isEmpty()) {
+        if (!updater.needToBeUpdated(sqlStatement, currentRuleConfig)) {
             return;
         }
         if (updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig)) {
@@ -184,10 +184,10 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         return result;
     }
     
-    private boolean isSkipRefresh(final SQLStatement sqlStatement, final RuleConfiguration currentRuleConfig, final RuleDefinitionUpdater updater) {
+    private boolean getRefreshStatus(final SQLStatement sqlStatement, final RuleConfiguration currentRuleConfig, final RuleDefinitionUpdater updater) {
         if (updater instanceof RuleDefinitionDropUpdater) {
-            return !((RuleDefinitionDropUpdater<SQLStatement, RuleConfiguration>) updater).getExistingConfiguration(sqlStatement, currentRuleConfig).isEmpty();
+            return ((RuleDefinitionDropUpdater) updater).needToBeUpdated(sqlStatement, currentRuleConfig);
         }
-        return false;
+        return true;
     }
 }

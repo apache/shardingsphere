@@ -26,8 +26,6 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyLevelType;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropDefaultShardingStrategyStatement;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -60,16 +58,11 @@ public final class DropDefaultStrategyStatementUpdater implements RuleDefinition
     }
     
     @Override
-    public Collection<String> getExistingConfiguration(final DropDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        if (currentRuleConfig == null) {
-            return Collections.emptyList();
-        }
+    public boolean needToBeUpdated(final DropDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         if (sqlStatement.getDefaultType().equalsIgnoreCase(ShardingStrategyLevelType.TABLE.name())) {
-            return null == currentRuleConfig.getDefaultTableShardingStrategy() ? Collections.emptyList()
-                    : Collections.singletonList(currentRuleConfig.getDefaultTableShardingStrategy().getShardingAlgorithmName());
+            return null != currentRuleConfig && null != currentRuleConfig.getDefaultTableShardingStrategy();
         } else {
-            return null == currentRuleConfig.getDefaultDatabaseShardingStrategy() ? Collections.emptyList()
-                    : Collections.singletonList(currentRuleConfig.getDefaultDatabaseShardingStrategy().getShardingAlgorithmName());
+            return null != currentRuleConfig && null != currentRuleConfig.getDefaultDatabaseShardingStrategy();
         }
     }
     

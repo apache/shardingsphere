@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBroadcastTableRulesStatement;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
@@ -59,11 +58,8 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements Rul
     }
     
     @Override
-    public Collection<String> getExistingConfiguration(final DropShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        if (currentRuleConfig == null) {
-            return Collections.emptyList();
-        }
-        return getIdenticalData(currentRuleConfig.getBroadcastTables(), sqlStatement.getRules());
+    public boolean needToBeUpdated(final DropShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        return null != currentRuleConfig && !getIdenticalData(currentRuleConfig.getBroadcastTables(), sqlStatement.getRules()).isEmpty();
     }
     
     @Override

@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingAlgorithmStatement;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -100,11 +99,8 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
     }
     
     @Override
-    public Collection<String> getExistingConfiguration(final DropShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        if (currentRuleConfig == null) {
-            return Collections.emptyList();
-        }
-        return getIdenticalData(currentRuleConfig.getShardingAlgorithms().keySet(), sqlStatement.getAlgorithmNames());
+    public boolean needToBeUpdated(final DropShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        return null != currentRuleConfig && !getIdenticalData(currentRuleConfig.getShardingAlgorithms().keySet(), sqlStatement.getAlgorithmNames()).isEmpty();
     }
     
     @Override

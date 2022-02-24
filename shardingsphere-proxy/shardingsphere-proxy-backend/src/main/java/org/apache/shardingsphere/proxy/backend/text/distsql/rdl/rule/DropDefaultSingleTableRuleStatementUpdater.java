@@ -24,9 +24,6 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 
-import java.util.Collection;
-import java.util.Collections;
-
 /**
  * Drop default single table rule statement updater.
  */
@@ -47,11 +44,8 @@ public final class DropDefaultSingleTableRuleStatementUpdater implements RuleDef
     }
     
     @Override
-    public Collection<String> getExistingConfiguration(final DropDefaultSingleTableRuleStatement sqlStatement, final SingleTableRuleConfiguration currentRuleConfig) {
-        if (currentRuleConfig == null) {
-            return Collections.emptyList();
-        }
-        return currentRuleConfig.getDefaultDataSource().isPresent() ? Collections.singletonList(currentRuleConfig.getDefaultDataSource().get()) : Collections.emptyList();
+    public boolean needToBeUpdated(final DropDefaultSingleTableRuleStatement sqlStatement, final SingleTableRuleConfiguration currentRuleConfig) {
+        return null != currentRuleConfig && currentRuleConfig.getDefaultDataSource().isPresent();
     }
     
     @Override

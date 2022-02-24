@@ -73,11 +73,9 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
     }
     
     @Override
-    public Collection<String> getExistingConfiguration(final DropDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
-        if (currentRuleConfig == null) {
-            return Collections.emptyList();
-        }
-        return getIdenticalData(currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName).collect(Collectors.toSet()), sqlStatement.getRuleNames());
+    public boolean needToBeUpdated(final DropDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+        return null != currentRuleConfig 
+                && !getIdenticalData(currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName).collect(Collectors.toSet()), sqlStatement.getRuleNames()).isEmpty();
     }
     
     @Override

@@ -21,11 +21,11 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.stream.Collectors;
 
 /**
  * Drop rule definition updater.
- * 
+ *
  * @param <T> type of SQL statement
  * @param <R> type of rule configuration
  */
@@ -36,9 +36,9 @@ public interface RuleDefinitionDropUpdater<T extends SQLStatement, R extends Rul
      *
      * @param sqlStatement SQL statement
      * @param currentRuleConfig current rule configuration to be updated
-     * @return Existing configuration
+     * @return can be updated or not
      */
-    Collection<String> getExistingConfiguration(T sqlStatement, R currentRuleConfig);
+    boolean needToBeUpdated(T sqlStatement, R currentRuleConfig);
     
     /**
      * Update current rule configuration.
@@ -57,7 +57,6 @@ public interface RuleDefinitionDropUpdater<T extends SQLStatement, R extends Rul
      * @return identical data
      */
     default Collection<String> getIdenticalData(Collection<String> col1, Collection<String> col2) {
-        col1.removeIf(col2::contains);
-        return new LinkedHashSet<>(col1);
+        return col1.stream().filter(col2::contains).collect(Collectors.toSet());
     }
 }

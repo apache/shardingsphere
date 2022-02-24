@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -62,11 +61,9 @@ public final class DropEncryptRuleStatementUpdater implements RuleDefinitionDrop
     }
     
     @Override
-    public Collection<String> getExistingConfiguration(final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
-        if (currentRuleConfig == null) {
-            return Collections.emptyList();
-        }
-        return getIdenticalData(currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toSet()), sqlStatement.getTables());
+    public boolean needToBeUpdated(final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+        return null != currentRuleConfig
+                && !getIdenticalData(currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toSet()), sqlStatement.getTables()).isEmpty();
     }
     
     @Override
