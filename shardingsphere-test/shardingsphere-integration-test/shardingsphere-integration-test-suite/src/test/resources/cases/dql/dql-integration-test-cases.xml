@@ -585,7 +585,7 @@
         <assertion parameters="10000:int" expected-data-file="select_sql_by_id_across_two_sharding_tables.xml" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="select t_user_encrypt_federate_sharding.user_id, t_user_encrypt_federate_sharding.pwd, t_user_info.information from t_user_encrypt_federate_sharding, t_user_info where t_user_encrypt_federate_sharding.user_id = t_user_info.user_id " scenario-types="dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="select t_user_encrypt_federate_sharding.user_id, t_user_encrypt_federate_sharding.pwd, t_user_info.information from t_user_encrypt_federate_sharding, t_user_info where t_user_encrypt_federate_sharding.user_id = t_user_info.user_id order by t_user_encrypt_federate_sharding.user_id" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt">
         <assertion expected-data-file="select_sql_by_id_across_single_and_sharding_tables_with_encrypt.xml" expected-data-source-name="read_dataset" />
     </test-case>
     
