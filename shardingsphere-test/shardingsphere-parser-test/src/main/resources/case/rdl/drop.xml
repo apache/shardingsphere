@@ -23,6 +23,12 @@
         <ignore-single-tables>false</ignore-single-tables>
     </drop-resource>
 
+    <drop-resource sql-case-id="drop-resource-if-exists" contains-exist-clause="true">
+        <data-source>ds_0</data-source>
+        <data-source>ds_1</data-source>
+        <ignore-single-tables>false</ignore-single-tables>
+    </drop-resource>
+    
     <drop-resource sql-case-id="drop-resource-ignore-single-tables">
         <data-source>ds_0</data-source>
         <data-source>ds_1</data-source>
