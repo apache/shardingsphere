@@ -215,6 +215,14 @@ CONCURRENCY_LEVEL
     : C O N C U R R E N C Y UL_ L E V E L
     ;
 
+IF  
+    : I F
+    ;
+
+EXISTS
+    : E X I S T S
+    ;
+
 TYPE
     : T Y P E
     ;
