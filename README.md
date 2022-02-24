@@ -133,6 +133,10 @@ Check out [Wiki](https://github.com/apache/shardingsphere/wiki) section for deta
 
 ### Landscapes
 
+### Contributors
+
+[shardingsphere-contributors](https://github.com/apache/shardingsphere/graphs/contributors)
+
 <p align="center">
 <br/><br/>
 <img src="https://landscape.cncf.io/images/left-logo.svg" width="150"/>&nbsp;&nbsp;<img src="https://landscape.cncf.io/images/right-logo.svg" width="200"/>
