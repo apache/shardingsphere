@@ -64,6 +64,6 @@ public final class TomcatDBCPDataSourcePoolMetaData implements DataSourcePoolMet
     
     @Override
     public String getType() {
-        return BasicDataSource.class.getName();
+        return "org.apache.tomcat.dbcp.dbcp2.BasicDataSource";
     }
 }
