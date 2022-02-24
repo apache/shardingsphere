@@ -66,7 +66,7 @@ public final class DropShardingKeyGeneratorStatementUpdaterTest {
     @Test
     public void assertDropSpecifiedKeyGenerator() {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
-        currentRuleConfig.getKeyGenerators().put("uuid_key_generator", new ShardingSphereAlgorithmConfiguration("uuid", buildProps()));
+        currentRuleConfig.getKeyGenerators().put("uuid_key_generator", new ShardingSphereAlgorithmConfiguration("uuid", new Properties()));
         updater.updateCurrentRuleConfiguration(createSQLStatement("uuid_key_generator"), currentRuleConfig);
         assertTrue(currentRuleConfig.getKeyGenerators().isEmpty());
     }
@@ -87,11 +87,5 @@ public final class DropShardingKeyGeneratorStatementUpdaterTest {
     
     private DropShardingKeyGeneratorStatement createSQLStatement(final String... keyGeneratorNames) {
         return new DropShardingKeyGeneratorStatement(Arrays.asList(keyGeneratorNames));
-    }
-    
-    private Properties buildProps() {
-        Properties result = new Properties();
-        result.put("worker-id", "123");
-        return result;
     }
 }
