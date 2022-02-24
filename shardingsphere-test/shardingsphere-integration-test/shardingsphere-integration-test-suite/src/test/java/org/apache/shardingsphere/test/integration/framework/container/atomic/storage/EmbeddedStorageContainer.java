@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.test.integration.framework.container.atomic.storage;
 
 import com.zaxxer.hikari.HikariDataSource;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
@@ -37,50 +35,38 @@ import java.util.Map;
 /**
  * Embedded storage container.
  */
-@RequiredArgsConstructor
-@Getter(AccessLevel.PROTECTED)
+@Getter
 public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, StorageContainer {
     
     private final DatabaseType databaseType;
     
     private final String scenario;
     
-    private Map<String, DataSource> actualDataSourceMap;
+    private final Map<String, DataSource> actualDataSourceMap;
     
-    private Map<String, DataSource> verificationDataSourceMap;
+    private final Map<String, DataSource> verificationDataSourceMap;
     
-    @Override
-    @SneakyThrows({IOException.class, JAXBException.class})
-    public Map<String, DataSource> getActualDataSourceMap() {
-        if (null != actualDataSourceMap) {
-            return actualDataSourceMap;
-        }
-        synchronized (this) {
-            if (null != actualDataSourceMap) {
-                return actualDataSourceMap;
-            } 
-            Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDatabaseNames(scenario);
-            actualDataSourceMap = new LinkedHashMap<>(dataSourceNames.size(), 1);
-            dataSourceNames.forEach(each -> actualDataSourceMap.put(each, createDataSource(each)));
-            return actualDataSourceMap;
-        }
+    public EmbeddedStorageContainer(final DatabaseType databaseType, final String scenario) {
+        this.databaseType = databaseType;
+        this.scenario = scenario;
+        actualDataSourceMap = createActualDataSourceMap();
+        verificationDataSourceMap = createVerificationDataSourceMap();
     }
     
-    @Override
     @SneakyThrows({IOException.class, JAXBException.class})
-    public final Map<String, DataSource> getVerificationDataSourceMap() {
-        if (null != verificationDataSourceMap) {
-            return verificationDataSourceMap;
-        }
-        synchronized (this) {
-            if (null != verificationDataSourceMap) {
-                return verificationDataSourceMap;
-            }
-            Collection<String> dataSourceNames = DatabaseEnvironmentManager.getVerificationDatabaseNames(scenario);
-            verificationDataSourceMap = new LinkedHashMap<>(dataSourceNames.size(), 1);
-            dataSourceNames.forEach(each -> verificationDataSourceMap.put(each, createDataSource(each)));
-            return verificationDataSourceMap;
-        }
+    private Map<String, DataSource> createActualDataSourceMap() {
+        Collection<String> databaseNames = DatabaseEnvironmentManager.getDatabaseNames(scenario);
+        Map<String, DataSource> result = new LinkedHashMap<>(databaseNames.size(), 1);
+        databaseNames.forEach(each -> result.put(each, createDataSource(each)));
+        return result;
+    }
+    
+    @SneakyThrows({IOException.class, JAXBException.class})
+    private Map<String, DataSource> createVerificationDataSourceMap() {
+        Collection<String> databaseNames = DatabaseEnvironmentManager.getVerificationDatabaseNames(scenario);
+        Map<String, DataSource> result = new LinkedHashMap<>(databaseNames.size(), 1);
+        databaseNames.forEach(each -> result.put(each, createDataSource(each)));
+        return result;
     }
     
     private DataSource createDataSource(final String dataSourceName) {
