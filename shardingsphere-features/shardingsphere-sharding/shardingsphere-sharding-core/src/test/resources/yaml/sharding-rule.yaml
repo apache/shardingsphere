@@ -102,8 +102,6 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-        worker-id: 123
   
   scalingName: default_scaling
   scaling:
