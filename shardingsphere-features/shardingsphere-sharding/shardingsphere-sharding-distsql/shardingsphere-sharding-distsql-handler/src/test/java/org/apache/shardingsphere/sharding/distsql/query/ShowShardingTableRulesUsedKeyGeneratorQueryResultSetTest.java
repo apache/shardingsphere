@@ -106,8 +106,6 @@ public final class ShowShardingTableRulesUsedKeyGeneratorQueryResultSetTest {
     }
     
     private ShardingSphereAlgorithmConfiguration createKeyGeneratorConfiguration() {
-        Properties props = new Properties();
-        props.put("worker-id", "123");
-        return new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", props);
+        return new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties());
     }
 }
