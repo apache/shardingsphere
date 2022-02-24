@@ -82,3 +82,15 @@ CREATE TABLE read_dataset.t_user_info (user_id INT NOT NULL,  information VARCHA
 
 CREATE INDEX order_index_t_order ON read_dataset.t_order (order_id);
 CREATE INDEX user_index_t_user ON read_dataset.t_user (user_id);
+
+
+DROP DATABASE IF EXISTS prod_dataset;
+CREATE DATABASE prod_dataset;
+
+CREATE TABLE prod_dataset.t_shadow (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name VARCHAR(32) NOT NULL, type_char CHAR(1) NOT NULL, type_boolean BOOLEAN NOT NULL, type_smallint SMALLINT NOT NULL, type_enum ENUM('spring', 'summer', 'autumn', 'winter'), type_decimal DECIMAL(18,2) NOT NULL, type_date DATE NOT NULL, type_time TIME NOT NULL, type_timestamp TIMESTAMP NOT NULL, PRIMARY KEY (order_id));
+
+
+DROP DATABASE IF EXISTS shadow_dataset;
+CREATE DATABASE shadow_dataset;
+
+CREATE TABLE shadow_dataset.t_shadow (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name VARCHAR(32) NOT NULL, type_char CHAR(1) NOT NULL, type_boolean BOOLEAN NOT NULL, type_smallint SMALLINT NOT NULL, type_enum ENUM('spring', 'summer', 'autumn', 'winter'), type_decimal DECIMAL(18,2) NOT NULL, type_date DATE NOT NULL, type_time TIME NOT NULL, type_timestamp TIMESTAMP NOT NULL, PRIMARY KEY (order_id));

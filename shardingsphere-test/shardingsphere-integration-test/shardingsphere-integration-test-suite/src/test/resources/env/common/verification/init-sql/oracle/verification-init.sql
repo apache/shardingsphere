@@ -19,7 +19,6 @@ CREATE USER 'root'@'%' IDENTIFIED BY '';
 GRANT All privileges ON *.* TO 'root'@'%';
 
 DROP SCHEMA verification_dataset;
-
 CREATE SCHEMA verification_dataset;
 
 CREATE TABLE verification_dataset.t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -41,7 +40,6 @@ CREATE INDEX user_index_t_user ON verification_dataset.t_user (user_id);
 
 
 DROP SCHEMA write_dataset;
-
 CREATE SCHEMA write_dataset;
 
 CREATE TABLE write_dataset.t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -63,7 +61,6 @@ CREATE INDEX user_index_t_user ON write_dataset.t_user (user_id);
 
 
 DROP SCHEMA read_dataset;
-
 CREATE SCHEMA read_dataset;
 
 CREATE TABLE read_dataset.t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -82,3 +79,15 @@ CREATE TABLE read_dataset.t_user_info (user_id INT NOT NULL,  information VARCHA
 
 CREATE INDEX order_index_t_order ON read_dataset.t_order (order_id);
 CREATE INDEX user_index_t_user ON read_dataset.t_user (user_id);
+
+
+DROP SCHEMA prod_dataset;
+CREATE SCHEMA prod_dataset;
+
+CREATE TABLE prod_dataset.t_shadow (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name VARCHAR(32) NOT NULL, type_char CHAR(1) NOT NULL, type_boolean BOOLEAN NOT NULL, type_smallint SMALLINT NOT NULL, type_enum ENUM('spring', 'summer', 'autumn', 'winter'), type_decimal DECIMAL(18,2) NOT NULL, type_date DATE NOT NULL, type_time TIME NOT NULL, type_timestamp TIMESTAMP NOT NULL, PRIMARY KEY (order_id));
+
+
+DROP SCHEMA shadow_dataset;
+CREATE SCHEMA shadow_dataset;
+
+CREATE TABLE shadow_dataset.t_shadow (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name VARCHAR(32) NOT NULL, type_char CHAR(1) NOT NULL, type_boolean BOOLEAN NOT NULL, type_smallint SMALLINT NOT NULL, type_enum ENUM('spring', 'summer', 'autumn', 'winter'), type_decimal DECIMAL(18,2) NOT NULL, type_date DATE NOT NULL, type_time TIME NOT NULL, type_timestamp TIMESTAMP NOT NULL, PRIMARY KEY (order_id));
