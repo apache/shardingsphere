@@ -30,7 +30,6 @@ import org.testcontainers.utility.MountableFile;
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -44,14 +43,16 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     private final String scenario;
     
-    private Map<String, DataSource> actualDataSourceMap;
+    private final Map<String, DataSource> actualDataSourceMap;
     
-    private Map<String, DataSource> verificationDataSourceMap;
+    private final Map<String, DataSource> verificationDataSourceMap;
     
     public DockerStorageContainer(final DatabaseType databaseType, final String dockerImageName, final String scenario) {
         super(databaseType.getName().toLowerCase(), dockerImageName);
         this.databaseType = databaseType;
         this.scenario = scenario;
+        actualDataSourceMap = new LinkedHashMap<>();
+        verificationDataSourceMap = new LinkedHashMap<>();
     }
     
     @Override
@@ -63,12 +64,8 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     @Override
     @SneakyThrows({IOException.class, JAXBException.class})
     protected void postStart() {
-        Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDatabaseNames(scenario);
-        actualDataSourceMap = new LinkedHashMap<>(dataSourceNames.size(), 1);
-        dataSourceNames.forEach(each -> actualDataSourceMap.put(each, createDataSource(each)));
-        Collection<String> verificationDataSourceNames = DatabaseEnvironmentManager.getVerificationDatabaseNames(scenario);
-        verificationDataSourceMap = new LinkedHashMap<>(verificationDataSourceNames.size(), 1);
-        verificationDataSourceNames.forEach(each -> verificationDataSourceMap.put(each, createDataSource(each)));
+        DatabaseEnvironmentManager.getDatabaseNames(scenario).forEach(each -> actualDataSourceMap.put(each, createDataSource(each)));
+        DatabaseEnvironmentManager.getVerificationDatabaseNames(scenario).forEach(each -> verificationDataSourceMap.put(each, createDataSource(each)));
     }
     
     private DataSource createDataSource(final String dataSourceName) {

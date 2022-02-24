@@ -46,16 +46,27 @@ public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, S
     
     private final Map<String, DataSource> verificationDataSourceMap;
     
-    @SneakyThrows({IOException.class, JAXBException.class})
     public EmbeddedStorageContainer(final DatabaseType databaseType, final String scenario) {
         this.databaseType = databaseType;
         this.scenario = scenario;
-        Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDatabaseNames(scenario);
-        actualDataSourceMap = new LinkedHashMap<>(dataSourceNames.size(), 1);
-        dataSourceNames.forEach(each -> actualDataSourceMap.put(each, createDataSource(each)));
-        Collection<String> verificationDataSourceNames = DatabaseEnvironmentManager.getVerificationDatabaseNames(scenario);
-        verificationDataSourceMap = new LinkedHashMap<>(verificationDataSourceNames.size(), 1);
-        verificationDataSourceNames.forEach(each -> verificationDataSourceMap.put(each, createDataSource(each)));
+        actualDataSourceMap = createActualDataSourceMap();
+        verificationDataSourceMap =createVerificationDataSourceMap();
+    }
+    
+    @SneakyThrows({IOException.class, JAXBException.class})
+    private Map<String, DataSource> createActualDataSourceMap() {
+        Collection<String> databaseNames = DatabaseEnvironmentManager.getDatabaseNames(scenario);
+        Map<String, DataSource> result = new LinkedHashMap<>(databaseNames.size(), 1);
+        databaseNames.forEach(each -> result.put(each, createDataSource(each)));
+        return result;
+    }
+    
+    @SneakyThrows({IOException.class, JAXBException.class})
+    private Map<String, DataSource> createVerificationDataSourceMap() {
+        Collection<String> databaseNames = DatabaseEnvironmentManager.getVerificationDatabaseNames(scenario);
+        Map<String, DataSource> result = new LinkedHashMap<>(databaseNames.size(), 1);
+        databaseNames.forEach(each -> result.put(each, createDataSource(each)));
+        return result;
     }
     
     private DataSource createDataSource(final String dataSourceName) {
