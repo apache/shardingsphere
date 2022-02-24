@@ -17,8 +17,8 @@
 
 <dataset>
     <metadata>
-        <column name="aggregation_distinct_derived_0" />
-        <column name="aggregation_distinct_derived_1" />
+        <column name="COUNT(DISTINCT order_id)" />
+        <column name="SUM(DISTINCT order_id)" />
     </metadata>
     <row values="2, 2001" />
 </dataset>
