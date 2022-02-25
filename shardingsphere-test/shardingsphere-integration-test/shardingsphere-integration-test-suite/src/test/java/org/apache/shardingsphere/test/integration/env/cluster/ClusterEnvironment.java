@@ -39,14 +39,14 @@ public final class ClusterEnvironment {
     
     private final Collection<DatabaseType> databaseTypes;
     
-    public ClusterEnvironment(final Properties envProps) {
-        type = getType(envProps);
-        adapters = getAdapters(envProps);
-        databaseTypes = getDatabaseTypes(envProps);
+    public ClusterEnvironment(final Properties props) {
+        type = getType(props);
+        adapters = getAdapters(props);
+        databaseTypes = getDatabaseTypes(props);
     }
     
-    private Type getType(final Properties envProps) {
-        String value = envProps.getProperty("it.cluster.env.type");
+    private Type getType(final Properties props) {
+        String value = props.getProperty("it.cluster.env.type");
         if (null == value) {
             return Type.NATIVE;
         }
@@ -57,12 +57,12 @@ public final class ClusterEnvironment {
         }
     }
     
-    private Collection<String> getAdapters(final Properties envProps) {
-        return Splitter.on(",").trimResults().splitToList(envProps.getProperty("it.cluster.adapters"));
+    private Collection<String> getAdapters(final Properties props) {
+        return Splitter.on(",").trimResults().splitToList(props.getProperty("it.cluster.adapters"));
     }
     
-    private Collection<DatabaseType> getDatabaseTypes(final Properties envProps) {
-        return Arrays.stream(envProps.getProperty("it.cluster.databases").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toSet());
+    private Collection<DatabaseType> getDatabaseTypes(final Properties props) {
+        return Arrays.stream(props.getProperty("it.cluster.databases").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toSet());
     }
     
     /**
