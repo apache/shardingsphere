@@ -15,12 +15,6 @@
 -- limitations under the License.
 --
 
-DROP DATABASE IF EXISTS verification_dataset;
-CREATE DATABASE verification_dataset;
-
-GRANT ALL PRIVILEGES ON DATABASE verification_dataset TO root;
-
-
 DROP DATABASE IF EXISTS write_dataset;
 CREATE DATABASE write_dataset;
 
