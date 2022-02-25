@@ -18,16 +18,10 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:p="http://www.springframework.org/schema/p"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
-       xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
-       xmlns:readwrite-splitting="http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting"
-       xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
-       xmlns:shadow="http://shardingsphere.apache.org/schema/shardingsphere/shadow"
        xmlns:database-discovery="http://shardingsphere.apache.org/schema/shardingsphere/database-discovery"
-       xmlns:sql-parser="http://shardingsphere.apache.org/schema/shardingsphere/sql-parser"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context
@@ -36,18 +30,8 @@
                            http://www.springframework.org/schema/tx/spring-tx.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/sharding
-                           http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting
-                           http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/encrypt
-                           http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/shadow
-                           http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/database-discovery
                            http://shardingsphere.apache.org/schema/shardingsphere/database-discovery/database-discovery.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/sql-parser 
-                           http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser.xsd
                            ">
     <context:annotation-config />
     <context:component-scan base-package="org.apache.shardingsphere.example.db.discovery.spring.namespace.mybatis"/>
