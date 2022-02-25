@@ -58,7 +58,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     @Override
     protected void configure() {
         withCopyFileToContainer(MountableFile.forClasspathResource(new ScenarioPath(scenario).getInitSQLResourcePath(databaseType)), "/docker-entrypoint-initdb.d/");
-        withCopyFileToContainer(MountableFile.forClasspathResource("/env/common/verification/init-sql/" + databaseType.getName().toLowerCase()), "/docker-entrypoint-initdb.d/");
+        withCopyFileToContainer(MountableFile.forClasspathResource(new ScenarioPath(scenario).getVerificationInitSQLResourcePath(databaseType)), "/docker-entrypoint-initdb.d/");
     }
     
     @Override
