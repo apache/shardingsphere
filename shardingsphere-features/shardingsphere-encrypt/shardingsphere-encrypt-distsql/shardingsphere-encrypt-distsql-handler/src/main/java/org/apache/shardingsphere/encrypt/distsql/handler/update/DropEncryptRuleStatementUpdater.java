@@ -72,7 +72,6 @@ public final class DropEncryptRuleStatementUpdater implements RuleDefinitionDrop
             currentRuleConfig.getTables().remove(encryptTableRuleConfig.get());
             encryptTableRuleConfig.get().getColumns().stream().filter(column -> !isEncryptorInUse(currentRuleConfig, column.getEncryptorName()))
                     .forEach(column -> currentRuleConfig.getEncryptors().remove(column.getEncryptorName()));
-            
         });
     }
     

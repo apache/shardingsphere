@@ -50,12 +50,11 @@ public interface RuleDefinitionDropUpdater<T extends SQLStatement, R extends Rul
         return currentRuleConfig != null;
     }
     
-    
     /**
      * Whether there is dropped data.
      * 
      * @param sqlStatement SQL statement
-     * @param currentRuleConfig current rule configuration to be updated
+     * @param currentRuleConfig current rule configuration
      * @return dropped data exists or does not exist
      */
     default boolean hasAnyOneToBeDropped(T sqlStatement, R currentRuleConfig) {
@@ -65,11 +64,11 @@ public interface RuleDefinitionDropUpdater<T extends SQLStatement, R extends Rul
     /**
      * Get identical data.
      *
-     * @param col1 collection
-     * @param col2 collection
+     * @param currentRules collection
+     * @param toBeDroppedRules collection
      * @return identical data
      */
-    default Collection<String> getIdenticalData(Collection<String> col1, Collection<String> col2) {
-        return col1.stream().filter(col2::contains).collect(Collectors.toSet());
+    default Collection<String> getIdenticalData(Collection<String> currentRules, Collection<String> toBeDroppedRules) {
+        return currentRules.stream().filter(toBeDroppedRules::contains).collect(Collectors.toSet());
     }
 }
