@@ -14,14 +14,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-product: proxy
-mode: memory
-transaction: local
-features: sharding,readwrite-splitting,encrypt
-frameworks: jdbc,spring-boot-starter-jdbc
-
-host: localhost
-port: 3306
-username: root
-password: root
+<#include "datasource.ftl">
+  - !DB_DISCOVERY
+    dataSources:
+      ds_0:
+        dataSourceNames:
+          - primary_ds_0_replica_0
+          - primary_ds_0_replica_1
+        discoveryHeartbeatName: mgr-heartbeat
+        discoveryTypeName: mgr
+      ds_1:
+        dataSourceNames:
+          - primary_ds_1_replica_0
+          - primary_ds_1_replica_1
+        discoveryHeartbeatName: mgr-heartbeat
+        discoveryTypeName: mgr
+    discoveryHeartbeats:
+      mgr-heartbeat:
+        props:
+          keep-alive-cron: '0/5 * * * * ?'
+    discoveryTypes:
+      mgr:
+        type: MGR
+        props:
+          group-name: 92504d5b-6dec-11e8-91ea-246e9612aaf1

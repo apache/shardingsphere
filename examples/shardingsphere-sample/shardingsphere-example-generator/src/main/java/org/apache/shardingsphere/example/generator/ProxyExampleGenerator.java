@@ -22,7 +22,6 @@ import freemarker.template.TemplateException;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -39,18 +38,21 @@ public final class ProxyExampleGenerator implements ExampleGenerator {
                 dataModel.put("feature", eachFeature);
                 dataModel.put("framework", eachFramework);
                 GenerateUtil.generateDirs(templateConfig, dataModel, Collections.singleton("conf"), OUTPUT_PATH + RESOURCES_PATH);
-                GenerateUtil.generateFile(templateConfig, getType(), dataModel, buildResourceMap(), OUTPUT_PATH + RESOURCES_PATH);
                 String outputPath = GenerateUtil.generatePath(templateConfig, dataModel, OUTPUT_PATH);
-                GenerateUtil.processFile(templateConfig, dataModel, "pom.ftl", outputPath + "pom.xml");
+                processFile(eachFeature, templateConfig, dataModel, outputPath);
             }
         }
     }
     
-    private Map<String, String> buildResourceMap() {
-        Map<String, String> result = new HashMap<>(2, 1);
-        result.put("config.ftl", "config.yaml");
-        result.put("server.ftl", "server.yaml");
-        return result;
+    private void processFile(final String feature, final Configuration templateConfig, final Map<String, String> dataModel,
+                             final String baseOutputPath) throws TemplateException, IOException {
+        String outputPath = baseOutputPath + RESOURCES_PATH + "/conf/";
+        for (String each : feature.split(",")) {
+            String fileSuffix = "config-" + each;
+            GenerateUtil.processFile(templateConfig, dataModel, getType() + "/" + fileSuffix + ".ftl", outputPath + fileSuffix + ".yaml");
+        }
+        GenerateUtil.processFile(templateConfig, dataModel, getType() + "/server.ftl", outputPath + "server.yaml");
+        GenerateUtil.processFile(templateConfig, dataModel, getType() + "/pom.ftl", baseOutputPath + "pom.xml");
     }
     
     @Override

@@ -14,14 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-product: proxy
-mode: memory
-transaction: local
-features: sharding,readwrite-splitting,encrypt
-frameworks: jdbc,spring-boot-starter-jdbc
-
-host: localhost
-port: 3306
-username: root
-password: root
+<#include "datasource.ftl">
+  - !READWRITE_SPLITTING
+    dataSources:
+      readwrite_ds:
+        type: Static
+        props:
+          write-data-source-name: write_ds
+          read-data-source-names: read_ds_0, read_ds_1
+        loadBalancerName: read_balance
+    loadBalancers:
+      read_balance:
+        type: ROUND_ROBIN
