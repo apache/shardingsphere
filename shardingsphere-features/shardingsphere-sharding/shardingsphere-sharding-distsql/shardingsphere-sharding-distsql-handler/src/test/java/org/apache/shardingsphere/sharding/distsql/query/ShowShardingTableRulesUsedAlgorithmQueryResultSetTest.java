@@ -58,6 +58,13 @@ public final class ShowShardingTableRulesUsedAlgorithmQueryResultSetTest {
         assertThat(actual.get(0), is("sharding_db"));
         assertThat(actual.get(1), is("table"));
         assertThat(actual.get(2), is("t_order"));
+        when(statement.getAlgorithmName()).thenReturn(Optional.of("auto_mod"));
+        resultSet.init(metaData, statement);
+        actual = new ArrayList<>(resultSet.getRowData());
+        assertThat(actual.size(), is(3));
+        assertThat(actual.get(0), is("sharding_db"));
+        assertThat(actual.get(1), is("auto_table"));
+        assertThat(actual.get(2), is("t_order_auto"));
     }
 
     private ShardingRuleConfiguration createRuleConfiguration() {

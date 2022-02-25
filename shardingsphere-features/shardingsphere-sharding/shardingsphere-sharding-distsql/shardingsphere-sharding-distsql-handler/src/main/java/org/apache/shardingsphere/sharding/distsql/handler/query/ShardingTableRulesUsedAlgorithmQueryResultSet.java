@@ -52,13 +52,14 @@ public final class ShardingTableRulesUsedAlgorithmQueryResultSet implements Dist
             return;
         }
         shardingRuleConfiguration.getTables().forEach(each -> {
-            if (null != each.getTableShardingStrategy() && statement.getAlgorithmName().get().equals(each.getTableShardingStrategy().getShardingAlgorithmName())) {
+            if (((null != each.getDatabaseShardingStrategy() && statement.getAlgorithmName().get().equals(each.getDatabaseShardingStrategy().getShardingAlgorithmName())))
+                    || (null != each.getTableShardingStrategy() && statement.getAlgorithmName().get().equals(each.getTableShardingStrategy().getShardingAlgorithmName()))) {
                 result.add(Arrays.asList(schemaName, "table", each.getLogicTable()));
             }
         });
         shardingRuleConfiguration.getAutoTables().forEach(each -> {
             if (null != each.getShardingStrategy() && statement.getAlgorithmName().get().equals(each.getShardingStrategy().getShardingAlgorithmName())) {
-                result.add(Arrays.asList(schemaName, "autoTable", each.getLogicTable()));
+                result.add(Arrays.asList(schemaName, "auto_table", each.getLogicTable()));
             }
         });
     }

@@ -61,7 +61,7 @@ public final class ShowShardingTableRulesUsedKeyGeneratorQueryResultSetTest {
         actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(3));
         assertThat(actual.get(0), is("sharding_db"));
-        assertThat(actual.get(1), is("autoTable"));
+        assertThat(actual.get(1), is("auto_table"));
         assertThat(actual.get(2), is("t_order_auto"));
     }
     
