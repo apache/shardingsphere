@@ -33,4 +33,9 @@ public final class DropShardingAlgorithmStatement extends DropRuleStatement {
     private final boolean containsExistsClause;
     
     private final Collection<String> algorithmNames;
+    
+    public DropShardingAlgorithmStatement(Collection<String> algorithmNames) {
+        this.containsExistsClause = false;
+        this.algorithmNames = algorithmNames;
+    }
 }
