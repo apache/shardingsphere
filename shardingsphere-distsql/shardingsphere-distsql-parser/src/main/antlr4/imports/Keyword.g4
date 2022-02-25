@@ -215,6 +215,14 @@ CONCURRENCY_LEVEL
     : C O N C U R R E N C Y UL_ L E V E L
     ;
 
+IF  
+    : I F
+    ;
+
+EXISTS
+    : E X I S T S
+    ;
+
 TYPE
     : T Y P E
     ;
@@ -253,14 +261,6 @@ TRAFFIC_ALGORITHM
 
 LOAD_BALANCER
     : L O A D UL_ B A L A N C E R
-    ;
-
-IF
-    : I F
-    ;
-
-EXISTS
-    : E X I S T S
     ;
 
 EXPORT
