@@ -22,8 +22,8 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfig
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,12 +52,12 @@ public final class DropEncryptRuleStatementUpdaterTest {
     private final DropEncryptRuleStatementUpdater updater = new DropEncryptRuleStatementUpdater();
     
     @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
+    public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("t_encrypt"), null);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutToBeDroppedRule() throws RuleDefinitionViolationException {
+    public void assertCheckSQLStatementWithoutToBeDroppedRule() throws DistSQLException {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("t_encrypt"), new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
     }
     
@@ -80,7 +80,7 @@ public final class DropEncryptRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdateCurrentRuleConfigurationWithIfExists() throws RuleDefinitionViolationException {
+    public void assertUpdateCurrentRuleConfigurationWithIfExists() throws DistSQLException {
         EncryptRuleConfiguration encryptRuleConfiguration = createCurrentRuleConfiguration();
         DropEncryptRuleStatement statement = createSQLStatement("t_encrypt_1");
         statement.setContainsExistClause(true);

@@ -41,6 +41,17 @@ public interface RuleDefinitionDropUpdater<T extends SQLStatement, R extends Rul
     boolean updateCurrentRuleConfiguration(T sqlStatement, R currentRuleConfig);
     
     /**
+     * Whether there is dropped configuration.
+     *
+     * @param currentRuleConfig current rule configuration to be updated
+     * @return dropped configuration exists or does not exist
+     */
+    default boolean isExistRuleConfig(R currentRuleConfig) {
+        return currentRuleConfig != null;
+    }
+    
+    
+    /**
      * Whether there is dropped data.
      * 
      * @param sqlStatement SQL statement
