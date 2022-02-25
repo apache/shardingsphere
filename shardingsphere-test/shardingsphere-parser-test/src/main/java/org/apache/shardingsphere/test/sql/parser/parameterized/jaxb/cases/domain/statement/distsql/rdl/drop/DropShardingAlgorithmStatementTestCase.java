@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.statement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import java.util.Collection;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Drop sharding algorithm statement.
+ * Drop sharding algorithm statement test case.
  */
-@RequiredArgsConstructor
+@Setter
 @Getter
-public final class DropShardingAlgorithmStatement extends DropRuleStatement {
+public final class DropShardingAlgorithmStatementTestCase extends SQLParserTestCase {
     
-    private final boolean containsExistsClause;
+    @XmlAttribute(name = "contains-exists-clause")
+    private boolean containsExistsClause;
     
-    private final Collection<String> algorithmNames;
-    
-    public DropShardingAlgorithmStatement(final Collection<String> algorithmNames) {
-        this.containsExistsClause = false;
-        this.algorithmNames = algorithmNames;
-    }
+    @XmlElement(name = "algorithm")
+    private final List<String> algorithms = new LinkedList<>();
 }
