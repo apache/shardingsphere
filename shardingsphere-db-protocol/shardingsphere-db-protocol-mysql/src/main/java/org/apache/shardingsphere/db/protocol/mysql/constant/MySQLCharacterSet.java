@@ -370,7 +370,11 @@ public enum MySQLCharacterSet {
      * @return MySQL character set
      */
     public static Optional<Charset> findByValue(final String charsetName) {
-        MySQLCharacterSet result = CHARACTER_NAME_SET_MAP.get(charsetName.toLowerCase(Locale.ROOT));
+        String key = charsetName.toLowerCase(Locale.ROOT);
+        if ("default".equals(key)) {
+            return Optional.of(MySQLServerInfo.DEFAULT_CHARSET.getCharset());
+        }
+        MySQLCharacterSet result = CHARACTER_NAME_SET_MAP.get(key);
         return null == result || null == result.getCharset() ? Optional.empty() : Optional.of(result.getCharset());
     }
 }
