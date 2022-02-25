@@ -263,14 +263,6 @@ LOAD_BALANCER
     : L O A D UL_ B A L A N C E R
     ;
 
-IF
-    : I F
-    ;
-
-EXISTS
-    : E X I S T S
-    ;
-
 EXPORT
     : E X P O R T
     ;
