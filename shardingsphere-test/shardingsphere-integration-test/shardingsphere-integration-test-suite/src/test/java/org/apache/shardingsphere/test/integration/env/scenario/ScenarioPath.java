@@ -37,15 +37,15 @@ public final class ScenarioPath {
     
     private static final String DATABASES_FILE = "databases.xml";
     
-    private static final String VERIFICATION_DATABASES_FILE = "verification_databases.xml";
-    
     private static final String INIT_SQL_PATH = "init-sql";
     
     private static final String INIT_SQL_FILE = "init.sql";
     
     private static final String DATASET_FILE = "dataset.xml";
     
-    private static final String VERIFICATION_DATASET_FILE = "verification_dataset.xml";
+    private static final String VERIFICATION_DATABASES_FILE = "verification/databases.xml";
+    
+    private static final String VERIFICATION_DATASET_FILE = "verification/dataset.xml";
     
     private static final String RULE_CONFIG_FILE = "rules.yaml";
     
