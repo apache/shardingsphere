@@ -96,17 +96,20 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     @Override
     public String getColumnLabel(final int column) throws SQLException {
+        if (hasSelectExpandProjections()) {
+            checkColumnIndex(column);
+            Projection projection = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1);
+            if (projection instanceof AggregationDistinctProjection) {
+                return DerivedColumn.isDerivedColumnName(projection.getColumnLabel()) ? projection.getExpression() : projection.getColumnLabel();
+            }
+        }
         return resultSetMetaData.getColumnLabel(column);
     }
     
     @Override
     public String getColumnName(final int column) throws SQLException {
         if (hasSelectExpandProjections()) {
-            List<Projection> actualProjections = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections();
-            if (column > actualProjections.size()) {
-                SQLExceptionErrorCode errorCode = SQLExceptionErrorCode.COLUMN_INDEX_OUT_OF_RANGE;
-                throw new SQLException(errorCode.getErrorMessage(), errorCode.getSqlState(), errorCode.getErrorCode());
-            }
+            checkColumnIndex(column);
             Projection projection = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1);
             if (projection instanceof ColumnProjection) {
                 return ((ColumnProjection) projection).getName();
@@ -120,6 +123,14 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     private boolean hasSelectExpandProjections() {
         return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
+    }
+    
+    private void checkColumnIndex(final int column) throws SQLException {
+        List<Projection> actualProjections = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections();
+        if (column > actualProjections.size()) {
+            SQLExceptionErrorCode errorCode = SQLExceptionErrorCode.COLUMN_INDEX_OUT_OF_RANGE;
+            throw new SQLException(errorCode.getErrorMessage(), errorCode.getSqlState(), errorCode.getErrorCode());
+        }
     }
     
     @Override
