@@ -44,6 +44,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterSharding
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -106,6 +107,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     @SuppressWarnings("rawtypes")
     private void processSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final T sqlStatement, final RuleDefinitionUpdater updater, final RuleConfiguration currentRuleConfig) {
+        boolean isRefresh = getRefreshStatus(sqlStatement, currentRuleConfig, updater);
         if (updater instanceof RuleDefinitionCreateUpdater) {
             processCreate(shardingSphereMetaData, sqlStatement, (RuleDefinitionCreateUpdater) updater, currentRuleConfig);
         } else if (updater instanceof RuleDefinitionAlterUpdater) {
@@ -115,7 +117,9 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         } else {
             throw new UnsupportedOperationException(String.format("Cannot support RDL updater type `%s`", updater.getClass().getCanonicalName()));
         }
-        ProxyContext.getInstance().getContextManager().alterRuleConfiguration(shardingSphereMetaData.getName(), shardingSphereMetaData.getRuleMetaData().getConfigurations());
+        if (isRefresh) {
+            ProxyContext.getInstance().getContextManager().alterRuleConfiguration(shardingSphereMetaData.getName(), shardingSphereMetaData.getRuleMetaData().getConfigurations());
+        }
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -136,6 +140,9 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void processDrop(final ShardingSphereMetaData shardingSphereMetaData, final T sqlStatement, final RuleDefinitionDropUpdater updater, final RuleConfiguration currentRuleConfig) {
+        if (!updater.hasAnyOneToBeDropped(sqlStatement, currentRuleConfig)) {
+            return;
+        }
         if (updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig)) {
             shardingSphereMetaData.getRuleMetaData().getConfigurations().remove(currentRuleConfig);
         }
@@ -170,5 +177,12 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         result.remove(currentRuleConfig);
         result.add(alteredRuleConfig);
         return result;
+    }
+    
+    private boolean getRefreshStatus(final SQLStatement sqlStatement, final RuleConfiguration currentRuleConfig, final RuleDefinitionUpdater updater) {
+        if (updater instanceof RuleDefinitionDropUpdater) {
+            return ((RuleDefinitionDropUpdater) updater).hasAnyOneToBeDropped(sqlStatement, currentRuleConfig);
+        }
+        return true;
     }
 }
