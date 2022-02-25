@@ -41,7 +41,9 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
                                   final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
         String schemaName = shardingSphereMetaData.getName();
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
-        checkToBeDroppedShardingAlgorithms(schemaName, sqlStatement, currentRuleConfig);
+        if (!sqlStatement.isContainsExistsClause()) {
+            checkToBeDroppedShardingAlgorithms(schemaName, sqlStatement, currentRuleConfig);
+        }
         checkShardingAlgorithmsInUsed(schemaName, sqlStatement, currentRuleConfig);
     }
     
