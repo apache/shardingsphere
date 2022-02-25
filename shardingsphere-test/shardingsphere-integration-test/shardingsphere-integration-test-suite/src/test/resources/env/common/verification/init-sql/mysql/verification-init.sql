@@ -22,7 +22,6 @@ SET character_set_database='utf8';
 SET character_set_server='utf8';
 
 DROP DATABASE IF EXISTS verification_dataset;
-
 CREATE DATABASE verification_dataset;
 
 CREATE TABLE verification_dataset.t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -45,7 +44,6 @@ CREATE INDEX user_index_t_user ON verification_dataset.t_user (user_id);
 
 
 DROP DATABASE IF EXISTS write_dataset;
-
 CREATE DATABASE write_dataset;
 
 CREATE TABLE write_dataset.t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -68,7 +66,6 @@ CREATE INDEX user_index_t_user ON write_dataset.t_user (user_id);
 
 
 DROP DATABASE IF EXISTS read_dataset;
-
 CREATE DATABASE read_dataset;
 
 CREATE TABLE read_dataset.t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -88,3 +85,15 @@ CREATE TABLE read_dataset.t_shadow (order_id BIGINT NOT NULL, user_id INT NOT NU
 
 CREATE INDEX order_index_t_order ON read_dataset.t_order (order_id);
 CREATE INDEX user_index_t_user ON read_dataset.t_user (user_id);
+
+
+DROP DATABASE IF EXISTS prod_dataset;
+CREATE DATABASE prod_dataset;
+
+CREATE TABLE prod_dataset.t_shadow (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name VARCHAR(32) NOT NULL, type_char CHAR(1) NOT NULL, type_boolean BOOLEAN NOT NULL, type_smallint SMALLINT NOT NULL, type_enum ENUM('spring', 'summer', 'autumn', 'winter'), type_decimal DECIMAL(18,2) NOT NULL, type_date DATE NOT NULL, type_time TIME NOT NULL, type_timestamp TIMESTAMP NOT NULL, PRIMARY KEY (order_id));
+
+
+DROP DATABASE IF EXISTS shadow_dataset;
+CREATE DATABASE shadow_dataset;
+
+CREATE TABLE shadow_dataset.t_shadow (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name VARCHAR(32) NOT NULL, type_char CHAR(1) NOT NULL, type_boolean BOOLEAN NOT NULL, type_smallint SMALLINT NOT NULL, type_enum ENUM('spring', 'summer', 'autumn', 'winter'), type_decimal DECIMAL(18,2) NOT NULL, type_date DATE NOT NULL, type_time TIME NOT NULL, type_timestamp TIMESTAMP NOT NULL, PRIMARY KEY (order_id));

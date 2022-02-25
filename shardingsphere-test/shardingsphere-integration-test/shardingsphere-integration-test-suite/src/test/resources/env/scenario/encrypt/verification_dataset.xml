@@ -37,10 +37,10 @@
     <row data-node="verification_dataset.t_single_table" values="2, 11, init" />
     <row data-node="verification_dataset.t_single_table" values="3, 12, init" />
     <row data-node="verification_dataset.t_single_table" values="4, 13, init" />
-    <row data-node="verification_dataset.t_user" values="10, 10000, yK+tn8E43EyCEgbqNOrJ4w==, init" />
-    <row data-node="verification_dataset.t_user" values="11, 11000, CIbxTwI742pGwxb18lQLkQ==, init" />
-    <row data-node="verification_dataset.t_user" values="12, 12000, VCHpNlwod9AiuS1V+7DSLw==, init" />
-    <row data-node="verification_dataset.t_user" values="13, 13000, 8uxRFhW4c2rtSOoesudk/A==, init" />
+    <row data-node="verification_dataset.t_user" values="10, 10000, a10, init" />
+    <row data-node="verification_dataset.t_user" values="11, 11000, b11, init" />
+    <row data-node="verification_dataset.t_user" values="12, 12000, c12, init" />
+    <row data-node="verification_dataset.t_user" values="13, 13000, d13, init" />
     <row data-node="verification_dataset.t_user_item" values="100000, 10, init, 2017-08-08" />
     <row data-node="verification_dataset.t_user_item" values="110000, 11, init, 2017-08-08" />
     <row data-node="verification_dataset.t_user_item" values="120000, 12, init, 2017-08-08" />

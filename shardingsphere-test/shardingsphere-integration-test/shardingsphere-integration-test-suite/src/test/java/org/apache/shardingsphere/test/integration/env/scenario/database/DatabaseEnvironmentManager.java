@@ -35,6 +35,8 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseEnvironmentManager {
     
+    private static final String DEFAULT_VERIFICATION_DATA_SOURCE_NAME = "verification_dataset";
+    
     /**
      * Get database names.
      *
@@ -57,7 +59,7 @@ public final class DatabaseEnvironmentManager {
      */
     public static Collection<String> getVerificationDatabaseNames(final String scenario) throws IOException, JAXBException {
         Optional<String> verificationDatabasesFile = new ScenarioPath(scenario).getVerificationDatabasesFile();
-        return verificationDatabasesFile.isPresent() ? unmarshal(verificationDatabasesFile.get()).getDatabases() : Collections.singleton("verification_dataset");
+        return verificationDatabasesFile.isPresent() ? unmarshal(verificationDatabasesFile.get()).getDatabases() : Collections.singleton(DEFAULT_VERIFICATION_DATA_SOURCE_NAME);
     }
     
     private static DatabaseNameEnvironment unmarshal(final String databasesFile) throws IOException, JAXBException {

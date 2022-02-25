@@ -585,7 +585,7 @@
         <assertion parameters="10000:int" expected-data-file="select_sql_by_id_across_two_sharding_tables.xml" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="select t_user_encrypt_federate_sharding.user_id, t_user_encrypt_federate_sharding.pwd, t_user_info.information from t_user_encrypt_federate_sharding, t_user_info where t_user_encrypt_federate_sharding.user_id = t_user_info.user_id " scenario-types="dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="select t_user_encrypt_federate_sharding.user_id, t_user_encrypt_federate_sharding.pwd, t_user_info.information from t_user_encrypt_federate_sharding, t_user_info where t_user_encrypt_federate_sharding.user_id = t_user_info.user_id order by t_user_encrypt_federate_sharding.user_id" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt">
         <assertion expected-data-file="select_sql_by_id_across_single_and_sharding_tables_with_encrypt.xml" expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -633,8 +633,7 @@
     
     <!-- TODO complete test type -->
     <test-case sql="SELECT order_id, user_id, order_name, type_char, type_boolean, type_smallint, type_enum, type_decimal, type_date, type_time, type_timestamp FROM t_shadow WHERE user_id = ?" db-types="MySQL,PostgreSQL" scenario-types="shadow">
-        <assertion parameters="1:int" expected-data-file="pro_select_order_by_user_id.xml" />
-        <assertion parameters="0:int" expected-data-file="shadow_select_order_by_user_id.xml" />
+        <assertion parameters="1:int" expected-data-file="pro_select_order_by_user_id.xml" expected-data-source-name="prod_dataset" />
+        <assertion parameters="0:int" expected-data-file="shadow_select_order_by_user_id.xml" expected-data-source-name="shadow_dataset" />
     </test-case>
-
 </integration-test-cases>

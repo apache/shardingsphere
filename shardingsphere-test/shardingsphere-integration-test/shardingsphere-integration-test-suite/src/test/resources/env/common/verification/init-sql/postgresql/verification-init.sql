@@ -142,3 +142,29 @@ CREATE TABLE t_shadow (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_nam
 
 CREATE INDEX order_index_t_order ON t_order (order_id);
 CREATE INDEX user_index_t_user ON t_user (user_id);
+
+
+DROP DATABASE IF EXISTS prod_dataset;
+CREATE DATABASE prod_dataset;
+
+GRANT ALL PRIVILEGES ON DATABASE prod_dataset TO root;
+
+\c prod_dataset;
+
+DROP TABLE IF EXISTS t_shadow;
+
+CREATE TYPE season AS ENUM ('spring', 'summer', 'autumn', 'winter');
+CREATE TABLE t_shadow (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name VARCHAR(32) NOT NULL, type_char CHAR(1) NOT NULL, type_boolean BOOLEAN NOT NULL, type_smallint SMALLINT NOT NULL, type_enum season DEFAULT 'summer', type_decimal NUMERIC(18,2) DEFAULT NULL, type_date DATE DEFAULT NULL, type_time TIME DEFAULT NULL, type_timestamp TIMESTAMP DEFAULT NULL, PRIMARY KEY (order_id));
+
+
+DROP DATABASE IF EXISTS shadow_dataset;
+CREATE DATABASE shadow_dataset;
+
+GRANT ALL PRIVILEGES ON DATABASE shadow_dataset TO root;
+
+\c shadow_dataset;
+
+DROP TABLE IF EXISTS t_shadow;
+
+CREATE TYPE season AS ENUM ('spring', 'summer', 'autumn', 'winter');
+CREATE TABLE t_shadow (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name VARCHAR(32) NOT NULL, type_char CHAR(1) NOT NULL, type_boolean BOOLEAN NOT NULL, type_smallint SMALLINT NOT NULL, type_enum season DEFAULT 'summer', type_decimal NUMERIC(18,2) DEFAULT NULL, type_date DATE DEFAULT NULL, type_time TIME DEFAULT NULL, type_timestamp TIMESTAMP DEFAULT NULL, PRIMARY KEY (order_id));
