@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesUsedKeyGeneratorStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesUsedAlgorithmStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.ArrayList;
@@ -31,55 +31,56 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Result set for show sharding table rules used key generator.
+ * Result set for show sharding table rules used algorithm.
  */
-public final class ShardingTableRulesUsedKeyGeneratorQueryResultSet implements DistSQLResultSet {
-    
+public final class ShardingTableRulesUsedAlgorithmQueryResultSet implements DistSQLResultSet {
+
     private Iterator<Collection<Object>> data = Collections.emptyIterator();
-    
+
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        ShowShardingTableRulesUsedKeyGeneratorStatement statement = (ShowShardingTableRulesUsedKeyGeneratorStatement) sqlStatement;
+        ShowShardingTableRulesUsedAlgorithmStatement statement = (ShowShardingTableRulesUsedAlgorithmStatement) sqlStatement;
         List<Collection<Object>> result = new ArrayList<>();
         Collection<ShardingRuleConfiguration> shardingTableRules = metaData.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class);
         shardingTableRules.forEach(each -> requireResult(statement, metaData.getName(), result, each));
         data = result.iterator();
     }
-    
-    private void requireResult(final ShowShardingTableRulesUsedKeyGeneratorStatement statement, final String schemaName, final List<Collection<Object>> result,
+
+    private void requireResult(final ShowShardingTableRulesUsedAlgorithmStatement statement, final String schemaName, final List<Collection<Object>> result,
                                final ShardingRuleConfiguration shardingRuleConfiguration) {
-        if (!statement.getKeyGeneratorName().isPresent()) {
+        if (!statement.getAlgorithmName().isPresent()) {
             return;
         }
         shardingRuleConfiguration.getTables().forEach(each -> {
-            if (null != each.getKeyGenerateStrategy() && statement.getKeyGeneratorName().get().equals(each.getKeyGenerateStrategy().getKeyGeneratorName())) {
+            if (((null != each.getDatabaseShardingStrategy() && statement.getAlgorithmName().get().equals(each.getDatabaseShardingStrategy().getShardingAlgorithmName())))
+                    || (null != each.getTableShardingStrategy() && statement.getAlgorithmName().get().equals(each.getTableShardingStrategy().getShardingAlgorithmName()))) {
                 result.add(Arrays.asList(schemaName, "table", each.getLogicTable()));
             }
         });
         shardingRuleConfiguration.getAutoTables().forEach(each -> {
-            if (null != each.getKeyGenerateStrategy() && statement.getKeyGeneratorName().get().equals(each.getKeyGenerateStrategy().getKeyGeneratorName())) {
+            if (null != each.getShardingStrategy() && statement.getAlgorithmName().get().equals(each.getShardingStrategy().getShardingAlgorithmName())) {
                 result.add(Arrays.asList(schemaName, "auto_table", each.getLogicTable()));
             }
         });
     }
-    
+
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("schema", "type", "name");
     }
-    
+
     @Override
     public boolean next() {
         return data.hasNext();
     }
-    
+
     @Override
     public Collection<Object> getRowData() {
         return data.next();
     }
-    
+
     @Override
     public String getType() {
-        return ShowShardingTableRulesUsedKeyGeneratorStatement.class.getName();
+        return ShowShardingTableRulesUsedAlgorithmStatement.class.getName();
     }
 }

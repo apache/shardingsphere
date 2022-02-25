@@ -14,19 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-grammar BaseRule;
 
-import Symbol, Keyword, Literals;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
 
-tableName
-    : IDENTIFIER
-    ;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-algorithmName
-    : IDENTIFIER
-    ;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
-keyGeneratorName
-    : IDENTIFIER
-    ;
+/**
+ * Show sharding table rules used algorithm statement test case.
+ */
+@Getter
+@Setter
+public final class ShowShardingTableRulesUsedAlgorithmStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute(name = "algorithmName")
+    private String algorithmName;
+    
+    @XmlElement
+    private ExpectedSchema schema;
+}
