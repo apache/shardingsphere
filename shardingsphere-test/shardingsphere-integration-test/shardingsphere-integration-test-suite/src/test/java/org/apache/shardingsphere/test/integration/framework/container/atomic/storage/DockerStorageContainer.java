@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.integration.framework.container.atomic.storage;
 
 import com.zaxxer.hikari.HikariDataSource;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -31,28 +30,29 @@ import org.testcontainers.utility.MountableFile;
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
  * Docker storage container.
  */
+@Getter
 public abstract class DockerStorageContainer extends DockerITContainer implements StorageContainer {
     
-    @Getter(AccessLevel.PROTECTED)
     private final DatabaseType databaseType;
     
     private final String scenario;
     
-    private Map<String, DataSource> actualDataSourceMap;
+    private final Map<String, DataSource> actualDataSourceMap;
     
-    private DataSource verificationDataSource;
+    private final Map<String, DataSource> verificationDataSourceMap;
     
     public DockerStorageContainer(final DatabaseType databaseType, final String dockerImageName, final String scenario) {
         super(databaseType.getName().toLowerCase(), dockerImageName);
         this.databaseType = databaseType;
         this.scenario = scenario;
+        actualDataSourceMap = new LinkedHashMap<>();
+        verificationDataSourceMap = new LinkedHashMap<>();
     }
     
     @Override
@@ -63,33 +63,9 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     @Override
     @SneakyThrows({IOException.class, JAXBException.class})
-    public final Map<String, DataSource> getActualDataSourceMap() {
-        if (null != actualDataSourceMap) {
-            return actualDataSourceMap;
-        }
-        synchronized (this) {
-            if (null != actualDataSourceMap) {
-                return actualDataSourceMap;
-            }
-            Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDatabaseNames(scenario);
-            actualDataSourceMap = new LinkedHashMap<>(dataSourceNames.size(), 1);
-            dataSourceNames.forEach(each -> actualDataSourceMap.put(each, createDataSource(each)));
-            return actualDataSourceMap;
-        }
-    }
-    
-    @Override
-    public final DataSource getVerificationDataSource() {
-        if (null != verificationDataSource) {
-            return verificationDataSource;
-        }
-        synchronized (this) {
-            if (null != verificationDataSource) {
-                return verificationDataSource;
-            }
-            verificationDataSource = createDataSource("verification_dataset");
-            return verificationDataSource;
-        }
+    protected void postStart() {
+        DatabaseEnvironmentManager.getDatabaseNames(scenario).forEach(each -> actualDataSourceMap.put(each, createDataSource(each)));
+        DatabaseEnvironmentManager.getVerificationDatabaseNames(scenario).forEach(each -> verificationDataSourceMap.put(each, createDataSource(each)));
     }
     
     private DataSource createDataSource(final String dataSourceName) {

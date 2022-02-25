@@ -63,12 +63,12 @@ public final class MetricsPluginIT extends BasePluginIT {
     @Test
     public void assertProxyWithAgent() {
         super.assertProxyWithAgent();
-        Properties engineEnvProps = IntegrationTestEnvironment.getInstance().getEngineEnvProps();
+        Properties props = IntegrationTestEnvironment.getInstance().getProps();
         try {
-            Thread.sleep(Long.parseLong(engineEnvProps.getProperty("prometheus.waitMs", "60000")));
+            Thread.sleep(Long.parseLong(props.getProperty("prometheus.waitMs", "60000")));
         } catch (final InterruptedException ignore) {
         }
-        String url = engineEnvProps.getProperty("prometheus.url");
+        String url = props.getProperty("prometheus.url");
         Collection<String> metricsNames = buildMetricsNames();
         for (String each : metricsNames) {
             String metricURL = buildMetricURL(url, each);

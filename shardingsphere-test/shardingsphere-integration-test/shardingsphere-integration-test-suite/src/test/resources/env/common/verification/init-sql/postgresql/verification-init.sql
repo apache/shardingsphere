@@ -15,6 +15,7 @@
 -- limitations under the License.
 --
 
+DROP DATABASE IF EXISTS verification_dataset;
 CREATE DATABASE verification_dataset;
 
 GRANT ALL PRIVILEGES ON DATABASE verification_dataset TO root;
@@ -55,3 +56,115 @@ CREATE TABLE t_shadow (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_nam
 
 CREATE INDEX order_index_t_order ON t_order (order_id);
 CREATE INDEX user_index_t_user ON t_user (user_id);
+
+
+DROP DATABASE IF EXISTS write_dataset;
+CREATE DATABASE write_dataset;
+
+GRANT ALL PRIVILEGES ON DATABASE write_dataset TO root;
+
+\c write_dataset;
+
+DROP TABLE IF EXISTS t_order;
+DROP TABLE IF EXISTS t_order_item;
+DROP TABLE IF EXISTS t_single_table;
+DROP TABLE IF EXISTS t_broadcast_table;
+DROP TABLE IF EXISTS t_order_federate;
+DROP TABLE IF EXISTS t_order_item_federate;
+DROP TABLE IF EXISTS t_order_federate_sharding;
+DROP TABLE IF EXISTS t_order_item_federate_sharding;
+DROP TABLE IF EXISTS t_user;
+DROP TABLE IF EXISTS t_user_item;
+DROP TABLE IF EXISTS t_user_encrypt_federate;
+DROP TABLE IF EXISTS t_user_encrypt_federate_sharding;
+DROP TABLE IF EXISTS t_user_info;
+DROP TABLE IF EXISTS t_shadow;
+
+CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
+CREATE TABLE t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
+CREATE TABLE t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
+CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
+CREATE TABLE t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
+CREATE TABLE t_order_item_federate (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (item_id));
+CREATE TABLE t_order_federate_sharding (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
+CREATE TABLE t_order_item_federate_sharding (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
+CREATE TABLE t_user (user_id INT NOT NULL, address_id INT NOT NULL, pwd VARCHAR(45) NULL, status VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE t_user_item (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
+CREATE TABLE t_user_encrypt_federate (user_id INT NOT NULL, pwd VARCHAR(45) NULL, username VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE t_user_encrypt_federate_sharding (user_id INT NOT NULL, pwd VARCHAR(45) NULL, username VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE t_user_info (user_id INT NOT NULL, information VARCHAR(45) NULL, PRIMARY KEY (user_id));
+
+CREATE TYPE season AS ENUM ('spring', 'summer', 'autumn', 'winter');
+CREATE TABLE t_shadow (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name VARCHAR(32) NOT NULL, type_char CHAR(1) NOT NULL, type_boolean BOOLEAN NOT NULL, type_smallint SMALLINT NOT NULL, type_enum season DEFAULT 'summer', type_decimal NUMERIC(18,2) DEFAULT NULL, type_date DATE DEFAULT NULL, type_time TIME DEFAULT NULL, type_timestamp TIMESTAMP DEFAULT NULL, PRIMARY KEY (order_id));
+
+CREATE INDEX order_index_t_order ON t_order (order_id);
+CREATE INDEX user_index_t_user ON t_user (user_id);
+
+
+DROP DATABASE IF EXISTS read_dataset;
+CREATE DATABASE read_dataset;
+
+GRANT ALL PRIVILEGES ON DATABASE read_dataset TO root;
+
+\c read_dataset;
+
+DROP TABLE IF EXISTS t_order;
+DROP TABLE IF EXISTS t_order_item;
+DROP TABLE IF EXISTS t_single_table;
+DROP TABLE IF EXISTS t_broadcast_table;
+DROP TABLE IF EXISTS t_order_federate;
+DROP TABLE IF EXISTS t_order_item_federate;
+DROP TABLE IF EXISTS t_order_federate_sharding;
+DROP TABLE IF EXISTS t_order_item_federate_sharding;
+DROP TABLE IF EXISTS t_user;
+DROP TABLE IF EXISTS t_user_item;
+DROP TABLE IF EXISTS t_user_encrypt_federate;
+DROP TABLE IF EXISTS t_user_encrypt_federate_sharding;
+DROP TABLE IF EXISTS t_user_info;
+DROP TABLE IF EXISTS t_shadow;
+
+CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
+CREATE TABLE t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
+CREATE TABLE t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
+CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
+CREATE TABLE t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
+CREATE TABLE t_order_item_federate (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (item_id));
+CREATE TABLE t_order_federate_sharding (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
+CREATE TABLE t_order_item_federate_sharding (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
+CREATE TABLE t_user (user_id INT NOT NULL, address_id INT NOT NULL, pwd VARCHAR(45) NULL, status VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE t_user_item (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
+CREATE TABLE t_user_encrypt_federate (user_id INT NOT NULL, pwd VARCHAR(45) NULL, username VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE t_user_encrypt_federate_sharding (user_id INT NOT NULL, pwd VARCHAR(45) NULL, username VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE t_user_info (user_id INT NOT NULL, information VARCHAR(45) NULL, PRIMARY KEY (user_id));
+
+CREATE TYPE season AS ENUM ('spring', 'summer', 'autumn', 'winter');
+CREATE TABLE t_shadow (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name VARCHAR(32) NOT NULL, type_char CHAR(1) NOT NULL, type_boolean BOOLEAN NOT NULL, type_smallint SMALLINT NOT NULL, type_enum season DEFAULT 'summer', type_decimal NUMERIC(18,2) DEFAULT NULL, type_date DATE DEFAULT NULL, type_time TIME DEFAULT NULL, type_timestamp TIMESTAMP DEFAULT NULL, PRIMARY KEY (order_id));
+
+CREATE INDEX order_index_t_order ON t_order (order_id);
+CREATE INDEX user_index_t_user ON t_user (user_id);
+
+
+DROP DATABASE IF EXISTS prod_dataset;
+CREATE DATABASE prod_dataset;
+
+GRANT ALL PRIVILEGES ON DATABASE prod_dataset TO root;
+
+\c prod_dataset;
+
+DROP TABLE IF EXISTS t_shadow;
+
+CREATE TYPE season AS ENUM ('spring', 'summer', 'autumn', 'winter');
+CREATE TABLE t_shadow (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name VARCHAR(32) NOT NULL, type_char CHAR(1) NOT NULL, type_boolean BOOLEAN NOT NULL, type_smallint SMALLINT NOT NULL, type_enum season DEFAULT 'summer', type_decimal NUMERIC(18,2) DEFAULT NULL, type_date DATE DEFAULT NULL, type_time TIME DEFAULT NULL, type_timestamp TIMESTAMP DEFAULT NULL, PRIMARY KEY (order_id));
+
+
+DROP DATABASE IF EXISTS shadow_dataset;
+CREATE DATABASE shadow_dataset;
+
+GRANT ALL PRIVILEGES ON DATABASE shadow_dataset TO root;
+
+\c shadow_dataset;
+
+DROP TABLE IF EXISTS t_shadow;
+
+CREATE TYPE season AS ENUM ('spring', 'summer', 'autumn', 'winter');
+CREATE TABLE t_shadow (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name VARCHAR(32) NOT NULL, type_char CHAR(1) NOT NULL, type_boolean BOOLEAN NOT NULL, type_smallint SMALLINT NOT NULL, type_enum season DEFAULT 'summer', type_decimal NUMERIC(18,2) DEFAULT NULL, type_date DATE DEFAULT NULL, type_time TIME DEFAULT NULL, type_timestamp TIMESTAMP DEFAULT NULL, PRIMARY KEY (order_id));

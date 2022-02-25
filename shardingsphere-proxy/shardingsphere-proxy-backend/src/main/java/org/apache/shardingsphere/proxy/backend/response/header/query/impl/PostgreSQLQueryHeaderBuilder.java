@@ -43,9 +43,8 @@ public final class PostgreSQLQueryHeaderBuilder extends QueryHeaderBuilder {
     }
     
     @Override
-    protected QueryHeader doBuild(final QueryResultMetaData queryResultMetaData, final ShardingSphereMetaData metaData, final String columnName,
+    protected QueryHeader doBuild(final QueryResultMetaData queryResultMetaData, final ShardingSphereMetaData metaData, final String columnName, final String columnLabel,
                                   final int columnIndex, final LazyInitializer<DataNodeContainedRule> unused) throws SQLException {
-        String columnLabel = queryResultMetaData.getColumnLabel(columnIndex);
         int columnType = queryResultMetaData.getColumnType(columnIndex);
         String columnTypeName = queryResultMetaData.getColumnTypeName(columnIndex);
         int columnLength = queryResultMetaData.getColumnLength(columnIndex);

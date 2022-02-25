@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Alter transaction rule statement executor.
+ * Alter transaction rule statement handler.
  */
 public final class AlterTransactionRuleHandler extends UpdatableRALBackendHandler<AlterTransactionRuleStatement, AlterTrafficRuleHandler> {
     
