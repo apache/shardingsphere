@@ -17,30 +17,30 @@
 
 package org.apache.shardingsphere.data.pipeline.core.check.datasource;
 
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class AbstractDataSourceCheckerTest {
     
-    @Mock(extraInterfaces = AutoCloseable.class)
     private DataSource dataSource;
-    
-    @Mock
-    private Connection connection;
     
     private AbstractDataSourceChecker dataSourceChecker;
     
@@ -64,19 +64,41 @@ public final class AbstractDataSourceCheckerTest {
             }
         };
         dataSources = new LinkedList<>();
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(ResourceUtil.mockJobConfig());
+        dataSource = new PipelineDataSourceManager().getDataSource(jobContext.getTaskConfig().getDumperConfig().getDataSourceConfig());
         dataSources.add(dataSource);
     }
     
     @Test
-    public void assertCheckConnection() throws SQLException {
-        when(dataSource.getConnection()).thenReturn(connection);
+    public void assertCheckConnection() {
         dataSourceChecker.checkConnection(dataSources);
-        verify(dataSource).getConnection();
     }
     
     @Test(expected = PipelineJobPrepareFailedException.class)
     public void assertCheckConnectionFailed() throws SQLException {
-        when(dataSource.getConnection()).thenThrow(new SQLException("error"));
-        dataSourceChecker.checkConnection(dataSources);
+        DataSource mockDatasource = mock(DataSource.class);
+        when(mockDatasource.getConnection()).thenThrow(new SQLException("error"));
+        dataSourceChecker.checkConnection(Collections.singletonList(mockDatasource));
+    }
+    
+    @Test
+    public void assertCheckTargetTable() throws SQLException {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute("DROP TABLE IF EXISTS t_order");
+            statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id VARCHAR(12))");
+        }
+        dataSourceChecker.checkTargetTable(dataSources, Collections.singletonList("t_order"));
+    }
+    
+    @Test(expected = PipelineJobPrepareFailedException.class)
+    public void assertCheckTargetTableFailed() throws SQLException {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute("DROP TABLE IF EXISTS t_order");
+            statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id VARCHAR(12))");
+            statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
+        }
+        dataSourceChecker.checkTargetTable(dataSources, Collections.singletonList("t_order"));
     }
 }
