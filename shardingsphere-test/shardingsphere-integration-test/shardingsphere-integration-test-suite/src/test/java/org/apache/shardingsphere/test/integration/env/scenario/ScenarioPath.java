@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -38,11 +39,17 @@ public final class ScenarioPath {
     
     private static final String INIT_SQL_PATH = "init-sql";
     
+    private static final String VERIFICATION_INIT_SQL_PATH = "verification/init-sql";
+    
     private static final String INIT_SQL_FILE = "init.sql";
     
     private static final String DATASET_FILE = "dataset.xml";
     
-    private static final String VERIFICATION_DATASET_FILE = "verification_dataset.xml";
+    private static final String VERIFICATION_INIT_SQL_FILE = "verification-init.sql";
+    
+    private static final String VERIFICATION_DATABASES_FILE = "verification/databases.xml";
+    
+    private static final String VERIFICATION_DATASET_FILE = "verification/dataset.xml";
     
     private static final String RULE_CONFIG_FILE = "rules.yaml";
     
@@ -65,6 +72,15 @@ public final class ScenarioPath {
      */
     public String getDatabasesFile() {
         return getFile(DATABASES_FILE);
+    }
+    
+    /**
+     * Get verification databases file.
+     *
+     * @return verification databases file
+     */
+    public Optional<String> getVerificationDatabasesFile() {
+        return isFileExist(VERIFICATION_DATABASES_FILE) ? Optional.of(getFile(VERIFICATION_DATABASES_FILE)) : Optional.empty();
     }
     
     /**
@@ -100,6 +116,27 @@ public final class ScenarioPath {
     }
     
     /**
+     * Get verification init SQL file.
+     * 
+     * @param databaseType database type
+     * @return verification init SQL file
+     */
+    public String getVerificationInitSQLFile(final DatabaseType databaseType) {
+        return getVerificationInitSQLFile(databaseType, VERIFICATION_INIT_SQL_FILE);
+    }
+    
+    private String getVerificationInitSQLFile(final DatabaseType databaseType, final String fileName) {
+        String resourceFile = getVerificationInitSQLResourceFile(databaseType, fileName);
+        URL url = ScenarioPath.class.getClassLoader().getResource(resourceFile);
+        assertNotNull(String.format("File `%s` must exist.", resourceFile), url);
+        return url.getFile();
+    }
+    
+    private String getVerificationInitSQLResourceFile(final DatabaseType databaseType, final String fileName) {
+        return String.join("/", ROOT_PATH, scenario, VERIFICATION_INIT_SQL_PATH, databaseType.getName().toLowerCase(), fileName);
+    }
+    
+    /**
      * Get init SQL resource path.
      *
      * @param databaseType database type
@@ -107,6 +144,16 @@ public final class ScenarioPath {
      */
     public String getInitSQLResourcePath(final DatabaseType databaseType) {
         return String.join("/", "", ROOT_PATH, scenario, INIT_SQL_PATH, databaseType.getName().toLowerCase());
+    }
+    
+    /**
+     * Get verification init SQL resource path.
+     *
+     * @param databaseType database type
+     * @return verification init SQL resource path
+     */
+    public String getVerificationInitSQLResourcePath(final DatabaseType databaseType) {
+        return String.join("/", "", ROOT_PATH, scenario, VERIFICATION_INIT_SQL_PATH, databaseType.getName().toLowerCase());
     }
     
     /**
@@ -150,5 +197,9 @@ public final class ScenarioPath {
         URL url = ScenarioPath.class.getClassLoader().getResource(path);
         assertNotNull(String.format("File `%s` must exist.", path), url);
         return url.getFile();
+    }
+    
+    private boolean isFileExist(final String fileName) {
+        return null != ScenarioPath.class.getClassLoader().getResource(String.join("/", ROOT_PATH, scenario, fileName));
     }
 }

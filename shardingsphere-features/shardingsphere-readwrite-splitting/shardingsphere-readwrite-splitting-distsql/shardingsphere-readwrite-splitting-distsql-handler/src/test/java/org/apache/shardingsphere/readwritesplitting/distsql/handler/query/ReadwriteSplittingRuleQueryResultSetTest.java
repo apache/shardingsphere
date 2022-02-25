@@ -94,10 +94,10 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
     }
     
     private Properties getProperties(final String writeDataSource, final String readDataSources) {
-        Properties props = new Properties();
-        props.setProperty("write-data-source-name", writeDataSource);
-        props.setProperty("read-data-source-names", readDataSources);
-        return props;
+        Properties result = new Properties();
+        result.setProperty("write-data-source-name", writeDataSource);
+        result.setProperty("read-data-source-names", readDataSources);
+        return result;
     }
     
     @Test
@@ -117,7 +117,7 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
         assertTrue(actual.contains("write_ds"));
         assertTrue(actual.contains("read_ds_0,read_ds_1"));
     }
-
+    
     private RuleConfiguration createRuleConfigurationWithAutoAwareDataSource() {
         Properties props = new Properties();
         props.setProperty("auto-aware-data-source-name", "rd_rs");
@@ -131,13 +131,13 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
         result.put(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, exportAutoAwareDataSourceMap());
         return result;
     }
-
+    
     private Map<String, Map<String, String>> exportAutoAwareDataSourceMap() {
         Map<String, Map<String, String>> result = new HashMap<>(1, 1);
         result.put("readwrite_ds", getAutoAwareDataSources());
         return result;
     }
-        
+    
     private Map<String, String> getAutoAwareDataSources() {
         Map<String, String> result = new HashMap<>(2, 1);
         result.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, "write_ds");

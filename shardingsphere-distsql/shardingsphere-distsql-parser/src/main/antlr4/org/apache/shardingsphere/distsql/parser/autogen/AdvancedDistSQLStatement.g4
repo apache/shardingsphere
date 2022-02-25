@@ -22,5 +22,6 @@ import Symbol, AdvancedStatement;
 execute
     : (previewSQL 
     | parseSQL
+    | formatSQL
     ) SEMI?
     ;

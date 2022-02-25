@@ -30,11 +30,6 @@ import java.util.Map;
  */
 public final class ProxyExampleGenerator implements ExampleGenerator {
     
-    private static final String OUTPUT_PATH = "./examples/shardingsphere-sample/shardingsphere-example-generator/target/shardingsphere-example-generated"
-            + "/shardingsphere-${product}-sample/${feature?replace(',', '-')}--${framework}--${mode}--${transaction}/";
-    
-    private static final String RESOURCES_PATH = "src/main/resources";
-    
     @Override
     public void generate(final Configuration templateConfig, final Map<String, String> dataModel) throws IOException, TemplateException {
         String features = dataModel.get("features");

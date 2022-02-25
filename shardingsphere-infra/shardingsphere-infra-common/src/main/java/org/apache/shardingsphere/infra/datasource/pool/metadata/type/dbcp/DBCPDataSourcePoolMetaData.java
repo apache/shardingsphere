@@ -64,6 +64,6 @@ public final class DBCPDataSourcePoolMetaData implements DataSourcePoolMetaData<
     
     @Override
     public String getType() {
-        return BasicDataSource.class.getName();
+        return "org.apache.commons.dbcp2.BasicDataSource";
     }
 }
