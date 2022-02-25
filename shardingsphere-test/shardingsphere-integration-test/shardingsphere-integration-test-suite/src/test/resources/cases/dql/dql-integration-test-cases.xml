@@ -483,11 +483,10 @@
     from t_order t left join t_order_item as o on o.order_id =t.order_id where t.order_id=1000 limit 1" db-types="MySQL,H2" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
-    
-    <!-- FIXME #15590 Expected: is "1100", but: was "2000" -->
-<!--    <test-case sql="SELECT * FROM t_order o LEFT JOIN t_order_item m ON o.order_id = m.order_id AND o.user_id = m.user_id" db-types="MySQL,H2" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
-<!--        <assertion expected-data-source-name="read_dataset" />-->
-<!--    </test-case>-->
+
+    <test-case sql="SELECT * FROM t_order o LEFT JOIN t_order_item m ON o.order_id = m.order_id AND o.user_id = m.user_id order by o.order_id, m.item_id" db-types="MySQL,H2" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
     
     <test-case sql="SELECT * FROM t_broadcast_table" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
