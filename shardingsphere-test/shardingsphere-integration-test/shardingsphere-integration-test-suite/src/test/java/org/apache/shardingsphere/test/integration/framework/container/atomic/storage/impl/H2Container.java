@@ -52,8 +52,7 @@ public final class H2Container extends EmbeddedStorageContainer {
             }
         }
         for (Entry<String, DataSource> entry : getVerificationDataSourceMap().entrySet()) {
-            executeInitSQL(entry.getValue(), Objects.requireNonNull(
-                    H2Container.class.getClassLoader().getResource("env/common/verification/init-sql/" + getDatabaseType().getName().toLowerCase() + "/verification-init.sql")).getFile());
+            executeInitSQL(entry.getValue(), Objects.requireNonNull(new ScenarioPath(getScenario()).getVerificationInitSQLFile(getDatabaseType())));
         }
     }
     
