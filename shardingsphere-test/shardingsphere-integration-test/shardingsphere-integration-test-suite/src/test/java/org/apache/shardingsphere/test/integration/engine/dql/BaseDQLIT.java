@@ -107,8 +107,7 @@ public abstract class BaseDQLIT extends SingleITCase {
     }
     
     private boolean isAssertRowsByResultSet() {
-        return "db".equals(getScenario()) || "tbl".equals(getScenario()) || "readwrite_splitting".equals(getScenario()) || "empty_rules".equals(getScenario())
-                || "shadow".equals(getScenario()) || "encrypt".equals(getScenario()) || "dbtbl_with_readwrite_splitting".equals(getScenario());
+        return true;
     }
     
     private void assertRows(final ResultSet actualResultSet, final ResultSet verificationResultSet) throws SQLException {
