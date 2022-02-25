@@ -91,8 +91,10 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
             prepareScaling(shardingSphereMetaData, sqlStatement, (RuleDefinitionAlterUpdater) ruleDefinitionUpdater, currentRuleConfig, preprocessor.get());
             return new UpdateResponseHeader(sqlStatement);
         }
-        processSQLStatement(shardingSphereMetaData, sqlStatement, ruleDefinitionUpdater, currentRuleConfig);
-        persistRuleConfigurationChange(shardingSphereMetaData);
+        if (getRefreshStatus(sqlStatement, currentRuleConfig, ruleDefinitionUpdater)) {
+            processSQLStatement(shardingSphereMetaData, sqlStatement, ruleDefinitionUpdater, currentRuleConfig);
+            persistRuleConfigurationChange(shardingSphereMetaData);
+        }
         return new UpdateResponseHeader(sqlStatement);
     }
     
@@ -107,7 +109,6 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     @SuppressWarnings("rawtypes")
     private void processSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final T sqlStatement, final RuleDefinitionUpdater updater, final RuleConfiguration currentRuleConfig) {
-        boolean isRefresh = getRefreshStatus(sqlStatement, currentRuleConfig, updater);
         if (updater instanceof RuleDefinitionCreateUpdater) {
             processCreate(shardingSphereMetaData, sqlStatement, (RuleDefinitionCreateUpdater) updater, currentRuleConfig);
         } else if (updater instanceof RuleDefinitionAlterUpdater) {
@@ -117,9 +118,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         } else {
             throw new UnsupportedOperationException(String.format("Cannot support RDL updater type `%s`", updater.getClass().getCanonicalName()));
         }
-        if (isRefresh) {
-            ProxyContext.getInstance().getContextManager().alterRuleConfiguration(shardingSphereMetaData.getName(), shardingSphereMetaData.getRuleMetaData().getConfigurations());
-        }
+        ProxyContext.getInstance().getContextManager().alterRuleConfiguration(shardingSphereMetaData.getName(), shardingSphereMetaData.getRuleMetaData().getConfigurations());
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
