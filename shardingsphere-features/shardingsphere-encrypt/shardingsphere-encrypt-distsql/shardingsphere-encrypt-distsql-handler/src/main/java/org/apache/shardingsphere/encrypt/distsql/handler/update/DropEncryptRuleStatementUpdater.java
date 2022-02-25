@@ -35,20 +35,21 @@ import java.util.stream.Collectors;
 public final class DropEncryptRuleStatementUpdater implements RuleDefinitionDropUpdater<DropEncryptRuleStatement, EncryptRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropEncryptRuleStatement sqlStatement, 
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropEncryptRuleStatement sqlStatement,
                                   final EncryptRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
         String schemaName = shardingSphereMetaData.getName();
-        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
+        checkCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
         checkToBeDroppedEncryptTableNames(schemaName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final EncryptRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
-        if (null == currentRuleConfig) {
+    private void checkCurrentRuleConfiguration(final String schemaName, final DropEncryptRuleStatement sqlStatement,
+                                               final EncryptRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
+        if (null == currentRuleConfig && !sqlStatement.isContainsExistClause()) {
             throw new RequiredRuleMissedException("Encrypt", schemaName);
         }
     }
     
-    private void checkToBeDroppedEncryptTableNames(final String schemaName, final DropEncryptRuleStatement sqlStatement, 
+    private void checkToBeDroppedEncryptTableNames(final String schemaName, final DropEncryptRuleStatement sqlStatement,
                                                    final EncryptRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         if (sqlStatement.isContainsExistClause()) {
             return;

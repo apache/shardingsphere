@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,6 +32,9 @@ import java.util.List;
 @Getter
 @Setter
 public final class DropEncryptRuleStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute(name = "contains-exist-clause")
+    private boolean containsExistClause;
     
     @XmlElement(name = "table")
     private final List<String> tables = new LinkedList<>();

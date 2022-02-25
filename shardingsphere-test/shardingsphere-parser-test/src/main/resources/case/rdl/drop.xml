@@ -68,6 +68,11 @@
         <table>t_encrypt_order</table>
     </drop-encrypt-rule>
 
+    <drop-encrypt-rule sql-case-id="drop-encrypt-rule-if-exists" contains-exist-clause="true">
+        <table>t_encrypt</table>
+        <table>t_encrypt_order</table>
+    </drop-encrypt-rule>
+    
     <drop-shadow-rule sql-case-id="drop-shadow-rule">
         <rule>shadow_rule_1</rule>
         <rule>shadow_rule_2</rule>
