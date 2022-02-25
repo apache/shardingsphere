@@ -188,12 +188,12 @@ public final class InsertStatementContextTest {
         assertThat(actual.getGeneratedKeyContext(), is(Optional.empty()));
         assertThat(actual.getColumnNames(), is(Arrays.asList("id", "name", "status")));
         assertThat(actual.getInsertValueContexts().size(), is(2));
-        assertThat(actual.getInsertValueContexts().get(0).getValue(0), is(1));
-        assertThat(actual.getInsertValueContexts().get(0).getValue(1), is("Tom"));
-        assertThat(actual.getInsertValueContexts().get(0).getValue(2), is("init"));
-        assertThat(actual.getInsertValueContexts().get(1).getValue(0), is(2));
-        assertThat(actual.getInsertValueContexts().get(1).getValue(1), is("Jerry"));
-        assertThat(actual.getInsertValueContexts().get(1).getValue(2), is("init"));
+        assertThat(actual.getInsertValueContexts().get(0).getValue(0).get(), is(1));
+        assertThat(actual.getInsertValueContexts().get(0).getValue(1).get(), is("Tom"));
+        assertThat(actual.getInsertValueContexts().get(0).getValue(2).get(), is("init"));
+        assertThat(actual.getInsertValueContexts().get(1).getValue(0).get(), is(2));
+        assertThat(actual.getInsertValueContexts().get(1).getValue(1).get(), is("Jerry"));
+        assertThat(actual.getInsertValueContexts().get(1).getValue(2).get(), is("init"));
     }
     
     @Test

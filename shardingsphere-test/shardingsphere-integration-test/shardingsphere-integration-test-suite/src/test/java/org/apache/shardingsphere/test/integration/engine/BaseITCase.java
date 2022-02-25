@@ -53,13 +53,14 @@ public abstract class BaseITCase {
     
     private final IntegrationTestCase itCase;
     
+    @Getter(AccessLevel.NONE)
     private final ComposedContainer composedContainer;
     
     private Map<String, DataSource> actualDataSourceMap;
     
     private DataSource targetDataSource;
     
-    private DataSource verificationDataSource;
+    private Map<String, DataSource> verificationDataSourceMap;
     
     public BaseITCase(final ParameterizedArray parameterizedArray) {
         scenario = parameterizedArray.getScenario();
@@ -74,7 +75,7 @@ public abstract class BaseITCase {
         composedContainer.start();
         actualDataSourceMap = composedContainer.getActualDataSourceMap();
         targetDataSource = composedContainer.getTargetDataSource();
-        verificationDataSource = composedContainer.getVerificationDataSource();
+        verificationDataSourceMap = composedContainer.getVerificationDataSourceMap();
     }
     
     @AfterClass

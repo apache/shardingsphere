@@ -41,6 +41,7 @@ import org.apache.shardingsphere.proxy.frontend.exception.FrontendTooManyConnect
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.exception.UnknownCharacterSetException;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
@@ -125,6 +126,9 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof FrontendTooManyConnectionsException) {
             return new MySQLErrPacket(0, MySQLServerErrorCode.ER_CON_COUNT_ERROR, MySQLServerErrorCode.ER_CON_COUNT_ERROR.getErrorMessage());
+        }
+        if (cause instanceof UnknownCharacterSetException) {
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_UNKNOWN_CHARACTER_SET, cause.getMessage());
         }
         if (cause instanceof RuntimeException) {
             return new MySQLErrPacket(1, CommonErrorCode.RUNTIME_EXCEPTION, cause.getMessage());

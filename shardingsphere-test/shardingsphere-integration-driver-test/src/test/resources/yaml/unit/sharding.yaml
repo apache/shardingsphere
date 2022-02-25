@@ -93,8 +93,6 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-          worker-id: 123
 
 - !READWRITE_SPLITTING
   dataSources:

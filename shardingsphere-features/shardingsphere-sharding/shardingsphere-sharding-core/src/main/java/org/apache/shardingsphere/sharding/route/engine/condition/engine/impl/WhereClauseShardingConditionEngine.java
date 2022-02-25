@@ -131,13 +131,7 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
                 if (!shardingConditionValue.isPresent()) {
                     continue;
                 }
-                if (!result.containsKey(column)) {
-                    Collection<ShardingConditionValue> shardingConditionValues = new LinkedList<>();
-                    shardingConditionValues.add(shardingConditionValue.get());
-                    result.put(column, shardingConditionValues);
-                } else {
-                    result.get(column).add(shardingConditionValue.get());
-                }
+                result.computeIfAbsent(column, unused -> new LinkedList<>()).add(shardingConditionValue.get());
             }
         }
         return result;
