@@ -21,8 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import java.net.URL;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Optional;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -74,33 +73,26 @@ public final class ScenarioDataPath {
     }
     
     /**
-     * Get actual init SQL files.
+     * Find actual init SQL file by database name.
      *
      * @param databaseName database name
      * @param databaseType database type
-     * @return init SQL files
+     * @return actual init SQL file
      */
-    public Collection<String> getActualInitSQLFiles(final String databaseName, final DatabaseType databaseType) {
-        Collection<String> result = new LinkedList<>();
-        result.add(getInitSQLFile(Type.ACTUAL, databaseType));
-        String dbInitSQLResourceFile = getInitSQLResourceFile(Type.ACTUAL, databaseType, databaseName);
-        if (null != ScenarioDataPath.class.getClassLoader().getResource(dbInitSQLResourceFile)) {
-            result.add(getInitSQLFile(Type.ACTUAL, databaseType, databaseName));
-        }
-        return result;
+    public Optional<String> findActualDatabaseInitSQLFile(final String databaseName, final DatabaseType databaseType) {
+        String initSQLResourceFile = getInitSQLResourceFile(Type.ACTUAL, databaseType, databaseName);
+        return null == ScenarioDataPath.class.getClassLoader().getResource(initSQLResourceFile) ? Optional.empty() : Optional.of(getInitSQLFile(Type.ACTUAL, databaseType, databaseName));
+    
     }
     
     /**
-     * Get expected init SQL file.
+     * Get init SQL file.
      *
+     * @param type data type
      * @param databaseType database type
      * @return expected init SQL file
      */
-    public String getExpectedInitSQLFile(final DatabaseType databaseType) {
-        return getInitSQLFile(Type.EXPECTED, databaseType);
-    }
-    
-    private String getInitSQLFile(final Type type, final DatabaseType databaseType) {
+    public String getInitSQLFile(final Type type, final DatabaseType databaseType) {
         String resourceFile = getInitSQLResourceFile(type, databaseType);
         URL url = ScenarioDataPath.class.getClassLoader().getResource(resourceFile);
         assertNotNull(String.format("File `%s` must exist.", resourceFile), url);

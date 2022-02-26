@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.integration.framework.container.atomic.st
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath;
+import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.EmbeddedStorageContainer;
 import org.h2.tools.RunScript;
 
@@ -30,6 +31,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * H2 container.
@@ -46,13 +48,23 @@ public final class H2Container extends EmbeddedStorageContainer {
     @Override
     @SneakyThrows({IOException.class, SQLException.class})
     public void start() {
+        fillActualDataSet();
+        fillExpectedDataSet();
+    }
+    
+    private void fillActualDataSet() throws SQLException, IOException {
         for (Entry<String, DataSource> entry : getActualDataSourceMap().entrySet()) {
-            for (String each : scenarioDataPath.getActualInitSQLFiles(entry.getKey(), getDatabaseType())) {
-                executeInitSQL(entry.getValue(), each);
+            executeInitSQL(entry.getValue(), scenarioDataPath.getInitSQLFile(Type.ACTUAL, getDatabaseType()));
+            Optional<String> dbInitSQLFile = scenarioDataPath.findActualDatabaseInitSQLFile(entry.getKey(), getDatabaseType());
+            if (dbInitSQLFile.isPresent()) {
+                executeInitSQL(entry.getValue(), dbInitSQLFile.get());
             }
         }
+    }
+    
+    private void fillExpectedDataSet() throws SQLException, IOException {
         for (Entry<String, DataSource> entry : getExpectedDataSourceMap().entrySet()) {
-            executeInitSQL(entry.getValue(), Objects.requireNonNull(scenarioDataPath.getExpectedInitSQLFile(getDatabaseType())));
+            executeInitSQL(entry.getValue(), scenarioDataPath.getInitSQLFile(Type.EXPECTED, getDatabaseType()));
         }
     }
     
