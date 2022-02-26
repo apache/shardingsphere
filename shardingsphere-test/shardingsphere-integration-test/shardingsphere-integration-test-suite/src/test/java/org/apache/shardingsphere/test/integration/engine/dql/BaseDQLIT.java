@@ -20,7 +20,8 @@ package org.apache.shardingsphere.test.integration.engine.dql;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
-import org.apache.shardingsphere.test.integration.env.scenario.ScenarioPath;
+import org.apache.shardingsphere.test.integration.env.scenario.ScenarioDataPath;
+import org.apache.shardingsphere.test.integration.env.scenario.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.integration.env.scenario.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.junit.Before;
@@ -64,8 +65,8 @@ public abstract class BaseDQLIT extends SingleITCase {
         if (!FILLED_SUITES.contains(getItKey())) {
             synchronized (FILLED_SUITES) {
                 if (!FILLED_SUITES.contains(getScenario())) {
-                    new DataSetEnvironmentManager(new ScenarioPath(getScenario()).getDataSetFile(), getActualDataSourceMap()).fillData();
-                    new DataSetEnvironmentManager(new ScenarioPath(getScenario()).getVerificationDataSetFile(), getVerificationDataSourceMap()).fillData();
+                    new DataSetEnvironmentManager(new ScenarioDataPath(getScenario()).getDataSetFile(Type.ACTUAL), getActualDataSourceMap()).fillData();
+                    new DataSetEnvironmentManager(new ScenarioDataPath(getScenario()).getDataSetFile(Type.VERIFICATION), getVerificationDataSourceMap()).fillData();
                     FILLED_SUITES.add(getItKey());
                 }
             }

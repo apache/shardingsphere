@@ -128,7 +128,10 @@ public final class ScenarioDataPath {
         return String.join("/", "env/scenario", scenario, "data", type.name().toLowerCase());
     }
     
-    enum Type {
+    /**
+     * Data type.
+     */
+    public enum Type {
         ACTUAL, VERIFICATION
     }
 }

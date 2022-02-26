@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.framework.container.atomic.st
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.test.integration.env.scenario.ScenarioPath;
+import org.apache.shardingsphere.test.integration.env.scenario.ScenarioDataPath;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.EmbeddedStorageContainer;
 import org.h2.tools.RunScript;
 
@@ -36,23 +36,23 @@ import java.util.Objects;
  */
 public final class H2Container extends EmbeddedStorageContainer {
     
-    private final ScenarioPath scenarioPath;
+    private final ScenarioDataPath scenarioDataPath;
     
     public H2Container(final String scenario) {
         super(DatabaseTypeRegistry.getActualDatabaseType("H2"), scenario);
-        scenarioPath = new ScenarioPath(scenario);
+        scenarioDataPath = new ScenarioDataPath(scenario);
     }
     
     @Override
     @SneakyThrows({IOException.class, SQLException.class})
     public void start() {
         for (Entry<String, DataSource> entry : getActualDataSourceMap().entrySet()) {
-            for (String each : scenarioPath.getInitSQLFiles(entry.getKey(), getDatabaseType())) {
+            for (String each : scenarioDataPath.getActualInitSQLFiles(entry.getKey(), getDatabaseType())) {
                 executeInitSQL(entry.getValue(), each);
             }
         }
         for (Entry<String, DataSource> entry : getVerificationDataSourceMap().entrySet()) {
-            executeInitSQL(entry.getValue(), Objects.requireNonNull(new ScenarioPath(getScenario()).getVerificationInitSQLFile(getDatabaseType())));
+            executeInitSQL(entry.getValue(), Objects.requireNonNull(scenarioDataPath.getVerificationInitSQLFile(getDatabaseType())));
         }
     }
     

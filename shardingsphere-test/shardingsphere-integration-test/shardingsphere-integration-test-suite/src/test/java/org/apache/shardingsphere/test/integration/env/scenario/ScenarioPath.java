@@ -17,22 +17,19 @@
 
 package org.apache.shardingsphere.test.integration.env.scenario;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.env.scenario.ScenarioDataPath.Type;
+import lombok.RequiredArgsConstructor;
 
 import java.net.URL;
-import java.util.Collection;
 
 import static org.junit.Assert.assertNotNull;
 
 /**
  * Scenario path.
  */
+@RequiredArgsConstructor
 public final class ScenarioPath {
     
     private static final String ROOT_PATH = "env/scenario";
-    
-    private static final String VERIFICATION_DATABASES_FILE = "data/verification/databases.xml";
     
     private static final String RULE_CONFIG_FILE = "rules.yaml";
     
@@ -40,96 +37,12 @@ public final class ScenarioPath {
     
     private final String scenario;
     
-    private final ScenarioDataPath dataPath;
-    
-    public ScenarioPath(final String scenario) {
-        this.scenario = scenario;
-        dataPath = new ScenarioDataPath(scenario);
-    }
-    
     /**
      * Check folder exist.
      */
     public void checkFolderExist() {
         String scenarioDirectory = String.join("/", ROOT_PATH, scenario);
         assertNotNull(String.format("Scenario folder `%s` must exist.", scenarioDirectory), ScenarioPath.class.getClassLoader().getResource(scenarioDirectory));
-    }
-    
-    /**
-     * Get databases file.
-     * 
-     * @return databases file
-     */
-    public String getDatabasesFile() {
-        return dataPath.getDatabasesFile(Type.ACTUAL);
-    }
-    
-    /**
-     * Get verification databases file.
-     *
-     * @return verification databases file
-     */
-    public String getVerificationDatabasesFile() {
-        return dataPath.getDatabasesFile(Type.VERIFICATION);
-    }
-    
-    /**
-     * Get init SQL files.
-     *
-     * @param databaseName database name
-     * @param databaseType database type
-     * @return init SQL files
-     */
-    public Collection<String> getInitSQLFiles(final String databaseName, final DatabaseType databaseType) {
-        return dataPath.getActualInitSQLFiles(databaseName, databaseType);
-    }
-    
-    /**
-     * Get verification init SQL file.
-     * 
-     * @param databaseType database type
-     * @return verification init SQL file
-     */
-    public String getVerificationInitSQLFile(final DatabaseType databaseType) {
-        return dataPath.getVerificationInitSQLFile(databaseType);
-    }
-    
-    /**
-     * Get init SQL resource path.
-     *
-     * @param databaseType database type
-     * @return init SQL resource path
-     */
-    public String getInitSQLResourcePath(final DatabaseType databaseType) {
-        return dataPath.getInitSQLResourcePath(Type.ACTUAL, databaseType);
-    }
-    
-    /**
-     * Get verification init SQL resource path.
-     *
-     * @param databaseType database type
-     * @return verification init SQL resource path
-     */
-    public String getVerificationInitSQLResourcePath(final DatabaseType databaseType) {
-        return dataPath.getInitSQLResourcePath(Type.VERIFICATION, databaseType);
-    }
-    
-    /**
-     * Get data set file.
-     *
-     * @return data set file
-     */
-    public String getDataSetFile() {
-        return dataPath.getDataSetFile(Type.ACTUAL);
-    }
-    
-    /**
-     * Get verification data set file.
-     *
-     * @return verification data set file
-     */
-    public String getVerificationDataSetFile() {
-        return dataPath.getDataSetFile(Type.VERIFICATION);
     }
     
     /**

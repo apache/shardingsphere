@@ -19,7 +19,8 @@ package org.apache.shardingsphere.test.integration.env.scenario.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.integration.env.scenario.ScenarioPath;
+import org.apache.shardingsphere.test.integration.env.scenario.ScenarioDataPath;
+import org.apache.shardingsphere.test.integration.env.scenario.ScenarioDataPath.Type;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -44,7 +45,7 @@ public final class DatabaseEnvironmentManager {
      * @throws JAXBException JAXB exception
      */
     public static Collection<String> getDatabaseNames(final String scenario) throws IOException, JAXBException {
-        return unmarshal(new ScenarioPath(scenario).getDatabasesFile()).getDatabases();
+        return unmarshal(new ScenarioDataPath(scenario).getDatabasesFile(Type.ACTUAL)).getDatabases();
     }
     
     /**
@@ -56,7 +57,7 @@ public final class DatabaseEnvironmentManager {
      * @throws JAXBException JAXB exception
      */
     public static Collection<String> getVerificationDatabaseNames(final String scenario) throws IOException, JAXBException {
-        return unmarshal(new ScenarioPath(scenario).getVerificationDatabasesFile()).getDatabases();
+        return unmarshal(new ScenarioDataPath(scenario).getDatabasesFile(Type.VERIFICATION)).getDatabases();
     }
     
     private static DatabaseNameEnvironment unmarshal(final String databasesFile) throws IOException, JAXBException {
