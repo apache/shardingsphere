@@ -57,7 +57,7 @@ public final class DatabaseEnvironmentManager {
      * @throws JAXBException JAXB exception
      */
     public static Collection<String> getVerificationDatabaseNames(final String scenario) throws IOException, JAXBException {
-        return unmarshal(new ScenarioDataPath(scenario).getDatabasesFile(Type.VERIFICATION)).getDatabases();
+        return unmarshal(new ScenarioDataPath(scenario).getDatabasesFile(Type.EXPECTED)).getDatabases();
     }
     
     private static DatabaseNameEnvironment unmarshal(final String databasesFile) throws IOException, JAXBException {

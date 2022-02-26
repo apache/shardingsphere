@@ -66,7 +66,7 @@ public abstract class BaseDQLIT extends SingleITCase {
             synchronized (FILLED_SUITES) {
                 if (!FILLED_SUITES.contains(getScenario())) {
                     new DataSetEnvironmentManager(new ScenarioDataPath(getScenario()).getDataSetFile(Type.ACTUAL), getActualDataSourceMap()).fillData();
-                    new DataSetEnvironmentManager(new ScenarioDataPath(getScenario()).getDataSetFile(Type.VERIFICATION), getVerificationDataSourceMap()).fillData();
+                    new DataSetEnvironmentManager(new ScenarioDataPath(getScenario()).getDataSetFile(Type.EXPECTED), getVerificationDataSourceMap()).fillData();
                     FILLED_SUITES.add(getItKey());
                 }
             }

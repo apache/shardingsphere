@@ -44,7 +44,7 @@ public final class ScenarioDataPath {
     
     private static final String INIT_SQL_FILE = "init.sql";
     
-    private static final String VERIFICATION_INIT_SQL_FILE = "verification-init.sql";
+    private static final String EXPECTED_INIT_SQL_FILE = "verification-init.sql";
     
     private final String scenario;
     
@@ -93,13 +93,13 @@ public final class ScenarioDataPath {
     }
     
     /**
-     * Get verification init SQL file.
+     * Get expected init SQL file.
      *
      * @param databaseType database type
-     * @return verification init SQL file
+     * @return expected init SQL file
      */
-    public String getVerificationInitSQLFile(final DatabaseType databaseType) {
-        return getInitSQLFile(Type.VERIFICATION, databaseType, VERIFICATION_INIT_SQL_FILE);
+    public String getExpectedInitSQLFile(final DatabaseType databaseType) {
+        return getInitSQLFile(Type.EXPECTED, databaseType, EXPECTED_INIT_SQL_FILE);
     }
     
     private String getInitSQLFile(final Type type, final DatabaseType databaseType, final String fileName) {
@@ -136,6 +136,6 @@ public final class ScenarioDataPath {
      * Data type.
      */
     public enum Type {
-        ACTUAL, VERIFICATION
+        ACTUAL, EXPECTED
     }
 }
