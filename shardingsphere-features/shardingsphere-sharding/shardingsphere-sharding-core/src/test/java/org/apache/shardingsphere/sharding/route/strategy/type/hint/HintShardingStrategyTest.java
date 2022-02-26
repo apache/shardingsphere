@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.strategy.type.hint;
 
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.sharding.api.sharding.common.DataNodeInfo;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.strategy.fixture.HintShardingAlgorithmFixture;
 import org.junit.Test;
@@ -37,7 +37,7 @@ public final class HintShardingStrategyTest {
     public void assertDoSharding() {
         Collection<String> targets = Sets.newHashSet("1", "2", "3");
         HintShardingStrategy hintShardingStrategy = new HintShardingStrategy(new HintShardingAlgorithmFixture());
-        DataNodeInfo dataNodeInfo = new DataNodeInfo("logicTable_", 1);
+        DataNodeInfo dataNodeInfo = new DataNodeInfo("logicTable_", 1, '0');
         Collection<String> actualSharding = hintShardingStrategy.doSharding(targets, Collections.singletonList(
                 new ListShardingConditionValue<>("column", "logicTable", Collections.singletonList(1))), dataNodeInfo, new ConfigurationProperties(new Properties()));
         assertThat(actualSharding.size(), is(1));
