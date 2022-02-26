@@ -22,7 +22,6 @@ import org.apache.shardingsphere.test.integration.env.scenario.ScenarioDataPath.
 
 import java.net.URL;
 import java.util.Collection;
-import java.util.Optional;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -70,8 +69,8 @@ public final class ScenarioPath {
      *
      * @return verification databases file
      */
-    public Optional<String> getVerificationDatabasesFile() {
-        return isFileExist(VERIFICATION_DATABASES_FILE) ? Optional.of(dataPath.getDatabasesFile(Type.VERIFICATION)) : Optional.empty();
+    public String getVerificationDatabasesFile() {
+        return dataPath.getDatabasesFile(Type.VERIFICATION);
     }
     
     /**
@@ -156,9 +155,5 @@ public final class ScenarioPath {
         URL url = ScenarioPath.class.getClassLoader().getResource(path);
         assertNotNull(String.format("File `%s` must exist.", path), url);
         return url.getFile();
-    }
-    
-    private boolean isFileExist(final String fileName) {
-        return null != ScenarioPath.class.getClassLoader().getResource(String.join("/", ROOT_PATH, scenario, fileName));
     }
 }

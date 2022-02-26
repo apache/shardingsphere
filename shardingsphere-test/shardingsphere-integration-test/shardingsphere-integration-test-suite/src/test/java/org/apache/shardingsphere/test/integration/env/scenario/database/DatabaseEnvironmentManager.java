@@ -26,8 +26,6 @@ import javax.xml.bind.JAXBException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
 
 /**
  * Database environment manager.
@@ -58,8 +56,7 @@ public final class DatabaseEnvironmentManager {
      * @throws JAXBException JAXB exception
      */
     public static Collection<String> getVerificationDatabaseNames(final String scenario) throws IOException, JAXBException {
-        Optional<String> verificationDatabasesFile = new ScenarioPath(scenario).getVerificationDatabasesFile();
-        return verificationDatabasesFile.isPresent() ? unmarshal(verificationDatabasesFile.get()).getDatabases() : Collections.singleton(DEFAULT_VERIFICATION_DATA_SOURCE_NAME);
+        return unmarshal(new ScenarioPath(scenario).getVerificationDatabasesFile()).getDatabases();
     }
     
     private static DatabaseNameEnvironment unmarshal(final String databasesFile) throws IOException, JAXBException {
