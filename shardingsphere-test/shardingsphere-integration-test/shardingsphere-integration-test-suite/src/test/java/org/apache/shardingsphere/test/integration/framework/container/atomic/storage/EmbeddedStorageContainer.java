@@ -44,13 +44,13 @@ public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, S
     
     private final Map<String, DataSource> actualDataSourceMap;
     
-    private final Map<String, DataSource> verificationDataSourceMap;
+    private final Map<String, DataSource> expectedDataSourceMap;
     
     public EmbeddedStorageContainer(final DatabaseType databaseType, final String scenario) {
         this.databaseType = databaseType;
         this.scenario = scenario;
         actualDataSourceMap = createActualDataSourceMap();
-        verificationDataSourceMap = createVerificationDataSourceMap();
+        expectedDataSourceMap = createExpectedDataSourceMap();
     }
     
     @SneakyThrows({IOException.class, JAXBException.class})
@@ -62,8 +62,8 @@ public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, S
     }
     
     @SneakyThrows({IOException.class, JAXBException.class})
-    private Map<String, DataSource> createVerificationDataSourceMap() {
-        Collection<String> databaseNames = DatabaseEnvironmentManager.getVerificationDatabaseNames(scenario);
+    private Map<String, DataSource> createExpectedDataSourceMap() {
+        Collection<String> databaseNames = DatabaseEnvironmentManager.getExpectedDatabaseNames(scenario);
         Map<String, DataSource> result = new LinkedHashMap<>(databaseNames.size(), 1);
         databaseNames.forEach(each -> result.put(each, createDataSource(each)));
         return result;

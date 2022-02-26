@@ -51,7 +51,7 @@ public final class H2Container extends EmbeddedStorageContainer {
                 executeInitSQL(entry.getValue(), each);
             }
         }
-        for (Entry<String, DataSource> entry : getVerificationDataSourceMap().entrySet()) {
+        for (Entry<String, DataSource> entry : getExpectedDataSourceMap().entrySet()) {
             executeInitSQL(entry.getValue(), Objects.requireNonNull(scenarioDataPath.getExpectedInitSQLFile(getDatabaseType())));
         }
     }

@@ -34,8 +34,6 @@ import java.util.Collection;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseEnvironmentManager {
     
-    private static final String DEFAULT_VERIFICATION_DATA_SOURCE_NAME = "verification_dataset";
-    
     /**
      * Get database names.
      *
@@ -49,14 +47,14 @@ public final class DatabaseEnvironmentManager {
     }
     
     /**
-     * Get verification database names.
+     * Get expected database names.
      *
      * @param scenario scenario
-     * @return verification database names
+     * @return expected database names
      * @throws IOException IO exception
      * @throws JAXBException JAXB exception
      */
-    public static Collection<String> getVerificationDatabaseNames(final String scenario) throws IOException, JAXBException {
+    public static Collection<String> getExpectedDatabaseNames(final String scenario) throws IOException, JAXBException {
         return unmarshal(new ScenarioDataPath(scenario).getDatabasesFile(Type.EXPECTED)).getDatabases();
     }
     

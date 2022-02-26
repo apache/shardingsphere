@@ -48,7 +48,7 @@ public abstract class BaseDQLIT extends SingleITCase {
     
     private static final Collection<String> FILLED_SUITES = new HashSet<>();
     
-    private DataSource verificationDataSource;
+    private DataSource expectedDataSource;
     
     public BaseDQLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
@@ -57,8 +57,8 @@ public abstract class BaseDQLIT extends SingleITCase {
     @Before
     public final void init() throws Exception {
         fillDataOnlyOnce();
-        verificationDataSource = null == getAssertion().getExpectedDataSourceName() || 1 == getVerificationDataSourceMap().size()
-                ? getVerificationDataSourceMap().values().iterator().next() : getVerificationDataSourceMap().get(getAssertion().getExpectedDataSourceName());
+        expectedDataSource = null == getAssertion().getExpectedDataSourceName() || 1 == getExpectedDataSourceMap().size()
+                ? getExpectedDataSourceMap().values().iterator().next() : getExpectedDataSourceMap().get(getAssertion().getExpectedDataSourceName());
     }
     
     private void fillDataOnlyOnce() throws SQLException, ParseException, IOException, JAXBException {
@@ -66,27 +66,27 @@ public abstract class BaseDQLIT extends SingleITCase {
             synchronized (FILLED_SUITES) {
                 if (!FILLED_SUITES.contains(getScenario())) {
                     new DataSetEnvironmentManager(new ScenarioDataPath(getScenario()).getDataSetFile(Type.ACTUAL), getActualDataSourceMap()).fillData();
-                    new DataSetEnvironmentManager(new ScenarioDataPath(getScenario()).getDataSetFile(Type.EXPECTED), getVerificationDataSourceMap()).fillData();
+                    new DataSetEnvironmentManager(new ScenarioDataPath(getScenario()).getDataSetFile(Type.EXPECTED), getExpectedDataSourceMap()).fillData();
                     FILLED_SUITES.add(getItKey());
                 }
             }
         }
     }
     
-    protected final void assertResultSet(final ResultSet actualResultSet, final ResultSet verificationResultSet) throws SQLException {
-        assertMetaData(actualResultSet.getMetaData(), verificationResultSet.getMetaData());
-        assertRows(actualResultSet, verificationResultSet);
+    protected final void assertResultSet(final ResultSet actualResultSet, final ResultSet expectedResultSet) throws SQLException {
+        assertMetaData(actualResultSet.getMetaData(), expectedResultSet.getMetaData());
+        assertRows(actualResultSet, expectedResultSet);
     }
     
-    private void assertMetaData(final ResultSetMetaData actualResultSetMetaData, final ResultSetMetaData verificationResultSetMetaData) throws SQLException {
-        assertThat(actualResultSetMetaData.getColumnCount(), is(verificationResultSetMetaData.getColumnCount()));
+    private void assertMetaData(final ResultSetMetaData actualResultSetMetaData, final ResultSetMetaData expectedResultSetMetaData) throws SQLException {
+        assertThat(actualResultSetMetaData.getColumnCount(), is(expectedResultSetMetaData.getColumnCount()));
         for (int i = 0; i < actualResultSetMetaData.getColumnCount(); i++) {
             try {
-                assertThat(actualResultSetMetaData.getColumnLabel(i + 1).toLowerCase(), is(verificationResultSetMetaData.getColumnLabel(i + 1).toLowerCase()));
+                assertThat(actualResultSetMetaData.getColumnLabel(i + 1).toLowerCase(), is(expectedResultSetMetaData.getColumnLabel(i + 1).toLowerCase()));
             } catch (final AssertionError ex) {
                 // FIXME #15594 Expected: is "order_id", but: was "order_id0"
                 try {
-                    assertThat(actualResultSetMetaData.getColumnLabel(i + 1).toLowerCase(), is(verificationResultSetMetaData.getColumnLabel(i + 1).toLowerCase() + "0"));
+                    assertThat(actualResultSetMetaData.getColumnLabel(i + 1).toLowerCase(), is(expectedResultSetMetaData.getColumnLabel(i + 1).toLowerCase() + "0"));
                 } catch (final AssertionError otherEx) {
                     // FIXME #15594 Expected: is "sum(order_id_sharding)0", but: was "expr$1"
                     assertThat(actualResultSetMetaData.getColumnLabel(i + 1).toLowerCase(), startsWith("expr$"));
@@ -95,30 +95,30 @@ public abstract class BaseDQLIT extends SingleITCase {
         }
     }
     
-    private void assertRows(final ResultSet actualResultSet, final ResultSet verificationResultSet) throws SQLException {
+    private void assertRows(final ResultSet actualResultSet, final ResultSet expectedResultSet) throws SQLException {
         ResultSetMetaData actualMetaData = actualResultSet.getMetaData();
-        ResultSetMetaData verificationMetaData = verificationResultSet.getMetaData();
+        ResultSetMetaData expectedMetaData = expectedResultSet.getMetaData();
         while (actualResultSet.next()) {
-            assertTrue("Size of actual result set is different with size of expected result set.", verificationResultSet.next());
-            assertRow(actualResultSet, actualMetaData, verificationResultSet, verificationMetaData);
+            assertTrue("Size of actual result set is different with size of expected result set.", expectedResultSet.next());
+            assertRow(actualResultSet, actualMetaData, expectedResultSet, expectedMetaData);
         }
-        assertFalse("Size of actual result set is different with size of expected result set.", verificationResultSet.next());
+        assertFalse("Size of actual result set is different with size of expected result set.", expectedResultSet.next());
     }
     
     private void assertRow(final ResultSet actualResultSet, final ResultSetMetaData actualMetaData, 
-                           final ResultSet verificationResultSet, final ResultSetMetaData verificationMetaData) throws SQLException {
+                           final ResultSet expectedResultSet, final ResultSetMetaData expectedMetaData) throws SQLException {
         for (int i = 0; i < actualMetaData.getColumnCount(); i++) {
             try {
-                assertThat(actualResultSet.getObject(i + 1), is(verificationResultSet.getObject(i + 1)));
-                assertThat(actualResultSet.getObject(actualMetaData.getColumnLabel(i + 1)), is(verificationResultSet.getObject(verificationMetaData.getColumnLabel(i + 1))));
+                assertThat(actualResultSet.getObject(i + 1), is(expectedResultSet.getObject(i + 1)));
+                assertThat(actualResultSet.getObject(actualMetaData.getColumnLabel(i + 1)), is(expectedResultSet.getObject(expectedMetaData.getColumnLabel(i + 1))));
             } catch (AssertionError ex) {
                 // FIXME #15593 verify accurate data types
                 Object actualValue = actualResultSet.getObject(i + 1);
-                Object verificationValue = verificationResultSet.getObject(i + 1);
+                Object expectedValue = expectedResultSet.getObject(i + 1);
                 if (actualValue instanceof Double || actualValue instanceof Float || actualValue instanceof BigDecimal) {
-                    assertThat(Math.floor(Double.parseDouble(actualValue.toString())), is(Math.floor(Double.parseDouble(verificationValue.toString()))));
+                    assertThat(Math.floor(Double.parseDouble(actualValue.toString())), is(Math.floor(Double.parseDouble(expectedValue.toString()))));
                 } else {
-                    assertThat(actualValue.toString(), is(verificationValue.toString()));
+                    assertThat(actualValue.toString(), is(expectedValue.toString()));
                 }
             }
         }

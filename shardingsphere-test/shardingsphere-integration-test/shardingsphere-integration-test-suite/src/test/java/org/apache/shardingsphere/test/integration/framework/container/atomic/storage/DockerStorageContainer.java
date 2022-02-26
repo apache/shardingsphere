@@ -46,14 +46,14 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     private final Map<String, DataSource> actualDataSourceMap;
     
-    private final Map<String, DataSource> verificationDataSourceMap;
+    private final Map<String, DataSource> expectedDataSourceMap;
     
     public DockerStorageContainer(final DatabaseType databaseType, final String dockerImageName, final String scenario) {
         super(databaseType.getName().toLowerCase(), dockerImageName);
         this.databaseType = databaseType;
         this.scenario = scenario;
         actualDataSourceMap = new LinkedHashMap<>();
-        verificationDataSourceMap = new LinkedHashMap<>();
+        expectedDataSourceMap = new LinkedHashMap<>();
     }
     
     @Override
@@ -66,7 +66,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     @SneakyThrows({IOException.class, JAXBException.class})
     protected void postStart() {
         DatabaseEnvironmentManager.getDatabaseNames(scenario).forEach(each -> actualDataSourceMap.put(each, createDataSource(each)));
-        DatabaseEnvironmentManager.getVerificationDatabaseNames(scenario).forEach(each -> verificationDataSourceMap.put(each, createDataSource(each)));
+        DatabaseEnvironmentManager.getExpectedDatabaseNames(scenario).forEach(each -> expectedDataSourceMap.put(each, createDataSource(each)));
     }
     
     private DataSource createDataSource(final String dataSourceName) {
