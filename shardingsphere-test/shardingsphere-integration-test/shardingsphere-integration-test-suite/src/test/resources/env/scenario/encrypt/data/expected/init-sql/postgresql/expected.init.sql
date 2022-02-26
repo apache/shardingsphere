@@ -15,12 +15,12 @@
 -- limitations under the License.
 --
 
-DROP DATABASE IF EXISTS verification_dataset;
-CREATE DATABASE verification_dataset;
+DROP DATABASE IF EXISTS expected_dataset;
+CREATE DATABASE expected_dataset;
 
-GRANT ALL PRIVILEGES ON DATABASE verification_dataset TO root;
+GRANT ALL PRIVILEGES ON DATABASE expected_dataset TO root;
 
-\c verification_dataset;
+\c expected_dataset;
 
 DROP TABLE IF EXISTS t_user;
 DROP TABLE IF EXISTS t_user_item;

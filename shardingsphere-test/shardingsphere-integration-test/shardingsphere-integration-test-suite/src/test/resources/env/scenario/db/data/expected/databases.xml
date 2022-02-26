@@ -17,5 +17,5 @@
   -->
 
 <databases>
-    <database>verification_dataset</database>
+    <database>expected_dataset</database>
 </databases>

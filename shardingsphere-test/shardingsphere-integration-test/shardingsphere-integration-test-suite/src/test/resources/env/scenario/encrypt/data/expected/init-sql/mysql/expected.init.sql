@@ -21,11 +21,11 @@ GRANT All privileges ON *.* TO 'root'@'%';
 SET character_set_database='utf8';
 SET character_set_server='utf8';
 
-DROP DATABASE IF EXISTS verification_dataset;
-CREATE DATABASE verification_dataset;
+DROP DATABASE IF EXISTS expected_dataset;
+CREATE DATABASE expected_dataset;
 
-CREATE TABLE verification_dataset.t_user (user_id INT NOT NULL, address_id INT NOT NULL, pwd VARCHAR(45) NULL, status VARCHAR(45) NULL, PRIMARY KEY (user_id));
-CREATE TABLE verification_dataset.t_user_item (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
-CREATE TABLE verification_dataset.t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));emarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
+CREATE TABLE expected_dataset.t_user (user_id INT NOT NULL, address_id INT NOT NULL, pwd VARCHAR(45) NULL, status VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE expected_dataset.t_user_item (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
+CREATE TABLE expected_dataset.t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));emarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
 
-CREATE INDEX user_index_t_user ON verification_dataset.t_user (user_id);
+CREATE INDEX user_index_t_user ON expected_dataset.t_user (user_id);
