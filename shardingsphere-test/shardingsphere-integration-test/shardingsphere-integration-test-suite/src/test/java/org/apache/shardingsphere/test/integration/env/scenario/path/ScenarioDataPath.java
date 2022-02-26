@@ -99,8 +99,8 @@ public final class ScenarioDataPath {
     }
     
     private boolean isActualDatabaseInitSQLFileExisted(final String databaseName, final DatabaseType databaseType) {
-        String actualDatabaseInitSQLResourceFile = getActualDatabaseInitSQLResourceFile(databaseType, databaseName);
-        return null != ScenarioDataPath.class.getClassLoader().getResource(actualDatabaseInitSQLResourceFile);
+        String initSQLResourceFile = getActualDatabaseInitSQLResourceFile(databaseType, databaseName);
+        return null != ScenarioDataPath.class.getClassLoader().getResource(initSQLResourceFile);
     }
     
     private String getActualDatabaseInitSQLResourceFile(final DatabaseType databaseType, final String databaseName) {
