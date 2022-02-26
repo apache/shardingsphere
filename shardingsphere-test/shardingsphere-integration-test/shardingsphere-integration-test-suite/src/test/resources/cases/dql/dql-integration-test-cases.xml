@@ -523,10 +523,10 @@
 <!--    <test-case sql="SELECT * FROM t_single_table s INNER JOIN t_order o ON s.id = o.order_id" db-types="MySQL,Oracle,SQLServer" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">-->
 <!--        <assertion expected-data-source-name="read_dataset" />-->
 <!--    </test-case>-->
-    <!--fixme! Expected: is "pwd" but: was "pwd_plain"-->
-<!--    <test-case sql="SELECT * FROM t_single_table s INNER JOIN t_user o ON s.id = o.user_id" db-types="MySQL,Oracle,SQLServer" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">-->
-<!--        <assertion expected-data-source-name="read_dataset" />-->
-<!--    </test-case>-->
+    
+    <test-case sql="SELECT * FROM t_single_table s INNER JOIN t_user o ON s.id = o.user_id" db-types="MySQL,Oracle,SQLServer" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
 
     <test-case sql="SELECT o.*, i.* FROM t_order_federate o, t_order_item_federate i WHERE o.order_id = ? AND i.item_id = ?" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
         <assertion parameters="1000:int, 100000:int" expected-data-source-name="read_dataset" />
