@@ -32,6 +32,10 @@ import static org.junit.Assert.assertNotNull;
 @RequiredArgsConstructor
 public final class ScenarioDataPath {
     
+    private static final String ROOT_PATH = "env/scenario";
+    
+    private static final String DATA_FOLDER = "data";
+    
     private static final String DATABASES_FILE = "databases.xml";
     
     private static final String DATASET_FILE = "dataset.xml";
@@ -125,7 +129,7 @@ public final class ScenarioDataPath {
     }
     
     private String getBasicPath(final Type type) {
-        return String.join("/", "env/scenario", scenario, "data", type.name().toLowerCase());
+        return String.join("/", ROOT_PATH, scenario, DATA_FOLDER, type.name().toLowerCase());
     }
     
     /**
