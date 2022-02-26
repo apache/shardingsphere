@@ -34,7 +34,7 @@ public final class ScenarioDataPath {
     
     private static final String ROOT_PATH = "env/scenario";
     
-    private static final String DATA_FOLDER = "data";
+    private static final String DATA_PATH = "data";
     
     private static final String DATABASES_FILE = "databases.xml";
     
@@ -85,7 +85,7 @@ public final class ScenarioDataPath {
     public Collection<String> getActualInitSQLFiles(final String databaseName, final DatabaseType databaseType) {
         Collection<String> result = new LinkedList<>();
         result.add(getInitSQLFile(Type.ACTUAL, databaseType, ACTUAL_INIT_SQL_FILE));
-        String dbInitSQLFileName = "init-" + databaseName + ".sql";
+        String dbInitSQLFileName = "actual.init-" + databaseName + ".sql";
         if (isInitSQLFileExist(databaseType, dbInitSQLFileName)) {
             result.add(getInitSQLFile(Type.ACTUAL, databaseType, dbInitSQLFileName));
         }
@@ -129,7 +129,7 @@ public final class ScenarioDataPath {
     }
     
     private String getBasicPath(final Type type) {
-        return String.join("/", ROOT_PATH, scenario, DATA_FOLDER, type.name().toLowerCase());
+        return String.join("/", ROOT_PATH, scenario, DATA_PATH, type.name().toLowerCase());
     }
     
     /**
