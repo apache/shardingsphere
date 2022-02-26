@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.integration.env.scenario.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.integration.env.scenario.ScenarioDataPath;
-import org.apache.shardingsphere.test.integration.env.scenario.ScenarioDataPath.Type;
+import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath;
+import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath.Type;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.scenario;
+package org.apache.shardingsphere.test.integration.env.scenario.path;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,10 +24,10 @@ import java.net.URL;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * Scenario path.
+ * Scenario common path.
  */
 @RequiredArgsConstructor
-public final class ScenarioPath {
+public final class ScenarioCommonPath {
     
     private static final String ROOT_PATH = "env/scenario";
     
@@ -42,7 +42,7 @@ public final class ScenarioPath {
      */
     public void checkFolderExist() {
         String scenarioDirectory = String.join("/", ROOT_PATH, scenario);
-        assertNotNull(String.format("Scenario folder `%s` must exist.", scenarioDirectory), ScenarioPath.class.getClassLoader().getResource(scenarioDirectory));
+        assertNotNull(String.format("Scenario folder `%s` must exist.", scenarioDirectory), ScenarioCommonPath.class.getClassLoader().getResource(scenarioDirectory));
     }
     
     /**
@@ -65,7 +65,7 @@ public final class ScenarioPath {
     
     private String getFile(final String fileName) {
         String path = String.join("/", ROOT_PATH, scenario, fileName);
-        URL url = ScenarioPath.class.getClassLoader().getResource(path);
+        URL url = ScenarioCommonPath.class.getClassLoader().getResource(path);
         assertNotNull(String.format("File `%s` must exist.", path), url);
         return url.getFile();
     }
