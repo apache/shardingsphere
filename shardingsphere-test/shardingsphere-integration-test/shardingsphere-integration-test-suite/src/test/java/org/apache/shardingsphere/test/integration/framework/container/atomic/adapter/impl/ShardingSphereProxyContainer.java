@@ -25,7 +25,6 @@ import org.apache.shardingsphere.test.integration.framework.container.atomic.Doc
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
-import org.testcontainers.utility.MountableFile;
 
 import javax.sql.DataSource;
 import java.util.Objects;
@@ -73,8 +72,8 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
     
     private void mapConfigurationFiles() {
         String containerPath = "/opt/shardingsphere-proxy/conf";
-        withCopyFileToContainer(MountableFile.forClasspathResource("/env/common/proxy/conf/"), containerPath);
-        withCopyFileToContainer(MountableFile.forClasspathResource("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getName().toLowerCase()), containerPath);
+        withClasspathResourceMapping("/env/common/proxy/conf/", containerPath, BindMode.READ_ONLY);
+        withClasspathResourceMapping("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getName().toLowerCase(), containerPath, BindMode.READ_ONLY);
     }
     
     @Override

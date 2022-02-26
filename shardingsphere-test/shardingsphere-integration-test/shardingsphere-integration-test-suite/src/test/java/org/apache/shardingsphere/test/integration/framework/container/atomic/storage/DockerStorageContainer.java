@@ -22,11 +22,11 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.env.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath.Type;
-import org.apache.shardingsphere.test.integration.env.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
-import org.testcontainers.utility.MountableFile;
+import org.testcontainers.containers.BindMode;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
@@ -58,8 +58,8 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     @Override
     protected void configure() {
-        withCopyFileToContainer(MountableFile.forClasspathResource(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType)), "/docker-entrypoint-initdb.d/");
-        withCopyFileToContainer(MountableFile.forClasspathResource(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType)), "/docker-entrypoint-initdb.d/");
+        withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
+        withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
     }
     
     @Override
