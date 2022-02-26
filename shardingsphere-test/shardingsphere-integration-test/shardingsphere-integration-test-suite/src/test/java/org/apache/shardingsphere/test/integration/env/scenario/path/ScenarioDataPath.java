@@ -73,19 +73,6 @@ public final class ScenarioDataPath {
     }
     
     /**
-     * Find actual init SQL file by database name.
-     *
-     * @param databaseName database name
-     * @param databaseType database type
-     * @return actual init SQL file
-     */
-    public Optional<String> findActualDatabaseInitSQLFile(final String databaseName, final DatabaseType databaseType) {
-        String initSQLResourceFile = getInitSQLResourceFile(Type.ACTUAL, databaseType, databaseName);
-        return null == ScenarioDataPath.class.getClassLoader().getResource(initSQLResourceFile) ? Optional.empty() : Optional.of(getInitSQLFile(Type.ACTUAL, databaseType, databaseName));
-    
-    }
-    
-    /**
      * Get init SQL file.
      *
      * @param type data type
@@ -99,21 +86,37 @@ public final class ScenarioDataPath {
         return url.getFile();
     }
     
-    private String getInitSQLFile(final Type type, final DatabaseType databaseType, final String databaseName) {
-        String resourceFile = getInitSQLResourceFile(type, databaseType, databaseName);
-        URL url = ScenarioDataPath.class.getClassLoader().getResource(resourceFile);
-        assertNotNull(String.format("File `%s` must exist.", resourceFile), url);
-        return url.getFile();
-    }
-    
     private String getInitSQLResourceFile(final Type type, final DatabaseType databaseType) {
         String initSQLFileName =  String.join("-", type.name().toLowerCase(), BASIC_INIT_SQL_FILE);
         return String.join("/", getBasicPath(type), INIT_SQL_PATH, databaseType.getName().toLowerCase(), initSQLFileName);
     }
     
-    private String getInitSQLResourceFile(final Type type, final DatabaseType databaseType, final String databaseName) {
-        String initSQLFileName =  String.join("-", type.name().toLowerCase(), databaseName, BASIC_INIT_SQL_FILE);
-        return String.join("/", getBasicPath(type), INIT_SQL_PATH, databaseType.getName().toLowerCase(), initSQLFileName);
+    /**
+     * Find actual init SQL file by database name.
+     *
+     * @param databaseName database name
+     * @param databaseType database type
+     * @return actual init SQL file
+     */
+    public Optional<String> findActualDatabaseInitSQLFile(final String databaseName, final DatabaseType databaseType) {
+        return isActualDatabaseInitSQLFileExisted(databaseName, databaseType) ? Optional.of(getActualDatabaseInitSQLFile(databaseType, databaseName)) : Optional.empty();
+    }
+    
+    private boolean isActualDatabaseInitSQLFileExisted(final String databaseName, final DatabaseType databaseType) {
+        String actualDatabaseInitSQLResourceFile = getActualDatabaseInitSQLResourceFile(databaseType, databaseName);
+        return null != ScenarioDataPath.class.getClassLoader().getResource(actualDatabaseInitSQLResourceFile);
+    }
+    
+    private String getActualDatabaseInitSQLResourceFile(final DatabaseType databaseType, final String databaseName) {
+        String initSQLFileName =  String.join("-", Type.ACTUAL.name().toLowerCase(), databaseName, BASIC_INIT_SQL_FILE);
+        return String.join("/", getBasicPath(Type.ACTUAL), INIT_SQL_PATH, databaseType.getName().toLowerCase(), initSQLFileName);
+    }
+    
+    private String getActualDatabaseInitSQLFile(final DatabaseType databaseType, final String databaseName) {
+        String resourceFile = getActualDatabaseInitSQLResourceFile(databaseType, databaseName);
+        URL url = ScenarioDataPath.class.getClassLoader().getResource(resourceFile);
+        assertNotNull(String.format("File `%s` must exist.", resourceFile), url);
+        return url.getFile();
     }
     
     /**
