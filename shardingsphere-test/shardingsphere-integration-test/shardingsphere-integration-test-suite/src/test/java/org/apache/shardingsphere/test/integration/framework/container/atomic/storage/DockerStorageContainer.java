@@ -22,7 +22,8 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.env.scenario.ScenarioPath;
+import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath;
+import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.integration.env.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
 import org.testcontainers.utility.MountableFile;
@@ -45,27 +46,27 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     private final Map<String, DataSource> actualDataSourceMap;
     
-    private final Map<String, DataSource> verificationDataSourceMap;
+    private final Map<String, DataSource> expectedDataSourceMap;
     
     public DockerStorageContainer(final DatabaseType databaseType, final String dockerImageName, final String scenario) {
         super(databaseType.getName().toLowerCase(), dockerImageName);
         this.databaseType = databaseType;
         this.scenario = scenario;
         actualDataSourceMap = new LinkedHashMap<>();
-        verificationDataSourceMap = new LinkedHashMap<>();
+        expectedDataSourceMap = new LinkedHashMap<>();
     }
     
     @Override
     protected void configure() {
-        withCopyFileToContainer(MountableFile.forClasspathResource(new ScenarioPath(scenario).getInitSQLResourcePath(databaseType)), "/docker-entrypoint-initdb.d/");
-        withCopyFileToContainer(MountableFile.forClasspathResource(new ScenarioPath(scenario).getVerificationInitSQLResourcePath(databaseType)), "/docker-entrypoint-initdb.d/");
+        withCopyFileToContainer(MountableFile.forClasspathResource(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType)), "/docker-entrypoint-initdb.d/");
+        withCopyFileToContainer(MountableFile.forClasspathResource(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType)), "/docker-entrypoint-initdb.d/");
     }
     
     @Override
     @SneakyThrows({IOException.class, JAXBException.class})
     protected void postStart() {
         DatabaseEnvironmentManager.getDatabaseNames(scenario).forEach(each -> actualDataSourceMap.put(each, createDataSource(each)));
-        DatabaseEnvironmentManager.getVerificationDatabaseNames(scenario).forEach(each -> verificationDataSourceMap.put(each, createDataSource(each)));
+        DatabaseEnvironmentManager.getExpectedDatabaseNames(scenario).forEach(each -> expectedDataSourceMap.put(each, createDataSource(each)));
     }
     
     private DataSource createDataSource(final String dataSourceName) {
