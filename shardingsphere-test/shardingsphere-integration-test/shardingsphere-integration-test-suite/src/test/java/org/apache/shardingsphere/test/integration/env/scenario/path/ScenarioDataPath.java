@@ -44,7 +44,7 @@ public final class ScenarioDataPath {
     
     private static final String INIT_SQL_FILE = "init.sql";
     
-    private static final String EXPECTED_INIT_SQL_FILE = "verification-init.sql";
+    private static final String EXPECTED_INIT_SQL_FILE = "expected.init.sql";
     
     private final String scenario;
     
