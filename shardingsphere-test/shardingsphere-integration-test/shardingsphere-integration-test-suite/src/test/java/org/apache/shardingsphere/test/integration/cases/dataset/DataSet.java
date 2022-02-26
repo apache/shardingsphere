@@ -41,9 +41,6 @@ public final class DataSet {
     @XmlAttribute(name = "update-count")
     private int updateCount;
     
-    @XmlAttribute(name = "ignore-row-order")
-    private boolean ignoreRowOrder;
-    
     @XmlElement(name = "metadata")
     private final List<DataSetMetaData> metaDataList = new LinkedList<>();
     
