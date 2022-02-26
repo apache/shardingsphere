@@ -42,7 +42,7 @@ public final class ScenarioDataPath {
     
     private static final String INIT_SQL_PATH = "init-sql";
     
-    private static final String INIT_SQL_FILE = "init.sql";
+    private static final String ACTUAL_INIT_SQL_FILE = "actual.init.sql";
     
     private static final String EXPECTED_INIT_SQL_FILE = "expected.init.sql";
     
@@ -84,7 +84,7 @@ public final class ScenarioDataPath {
      */
     public Collection<String> getActualInitSQLFiles(final String databaseName, final DatabaseType databaseType) {
         Collection<String> result = new LinkedList<>();
-        result.add(getInitSQLFile(Type.ACTUAL, databaseType, INIT_SQL_FILE));
+        result.add(getInitSQLFile(Type.ACTUAL, databaseType, ACTUAL_INIT_SQL_FILE));
         String dbInitSQLFileName = "init-" + databaseName + ".sql";
         if (isInitSQLFileExist(databaseType, dbInitSQLFileName)) {
             result.add(getInitSQLFile(Type.ACTUAL, databaseType, dbInitSQLFileName));
