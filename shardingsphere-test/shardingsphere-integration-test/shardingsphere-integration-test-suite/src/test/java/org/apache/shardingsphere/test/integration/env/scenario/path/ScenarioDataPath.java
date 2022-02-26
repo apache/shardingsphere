@@ -80,15 +80,11 @@ public final class ScenarioDataPath {
      * @return expected init SQL file
      */
     public String getInitSQLFile(final Type type, final DatabaseType databaseType) {
-        String resourceFile = getInitSQLResourceFile(type, databaseType);
-        URL url = ScenarioDataPath.class.getClassLoader().getResource(resourceFile);
-        assertNotNull(String.format("File `%s` must exist.", resourceFile), url);
-        return url.getFile();
-    }
-    
-    private String getInitSQLResourceFile(final Type type, final DatabaseType databaseType) {
         String initSQLFileName = String.join("-", type.name().toLowerCase(), BASIC_INIT_SQL_FILE);
-        return String.join("/", getBasicPath(type), INIT_SQL_PATH, databaseType.getName().toLowerCase(), initSQLFileName);
+        String initSQLResourceFile = String.join("/", getInitSQLResourcePath(type, databaseType), initSQLFileName);
+        URL url = ScenarioDataPath.class.getClassLoader().getResource(initSQLResourceFile);
+        assertNotNull(String.format("File `%s` must exist.", initSQLResourceFile), url);
+        return url.getFile();
     }
     
     /**
@@ -109,7 +105,7 @@ public final class ScenarioDataPath {
     
     private String getActualDatabaseInitSQLResourceFile(final DatabaseType databaseType, final String databaseName) {
         String initSQLFileName = String.join("-", Type.ACTUAL.name().toLowerCase(), databaseName, BASIC_INIT_SQL_FILE);
-        return String.join("/", getBasicPath(Type.ACTUAL), INIT_SQL_PATH, databaseType.getName().toLowerCase(), initSQLFileName);
+        return String.join("/", getInitSQLResourcePath(Type.ACTUAL, databaseType), initSQLFileName);
     }
     
     private String getActualDatabaseInitSQLFile(final DatabaseType databaseType, final String databaseName) {
@@ -127,7 +123,7 @@ public final class ScenarioDataPath {
      * @return init SQL resource path
      */
     public String getInitSQLResourcePath(final Type type, final DatabaseType databaseType) {
-        return String.join("/", "", getBasicPath(type), INIT_SQL_PATH, databaseType.getName().toLowerCase());
+        return String.join("/", getBasicPath(type), INIT_SQL_PATH, databaseType.getName().toLowerCase());
     }
     
     private String getBasicPath(final Type type) {
