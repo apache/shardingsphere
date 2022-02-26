@@ -488,8 +488,8 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         if (null != ctx.UNIQUE()) {
             result.getIndexColumns().addAll(getKeyColumnsFromKeyListWithExpression(ctx.keyListWithExpression()));
-            if (null != ctx.indexNameAndType()) {
-                result.setIndexName((IndexSegment) visit(ctx.indexNameAndType().indexName()));
+            if (null != ctx.indexName()) {
+                result.setIndexName((IndexSegment) visit(ctx.indexName()));
             }
             return result;
         }
@@ -500,8 +500,8 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (null != ctx.indexName()) {
             result.setIndexName((IndexSegment) visit(ctx.indexName()));
         }
-        if (null != ctx.indexNameAndType()) {
-            result.setIndexName((IndexSegment) visit(ctx.indexNameAndType().indexName()));
+        if (null != ctx.indexName()) {
+            result.setIndexName((IndexSegment) visit(ctx.indexName()));
         }
         return result;
     }

@@ -242,6 +242,7 @@ identifierKeywordsUnambiguous
     | ISSUER
     | JSON
     | JSON_VALUE
+    | KEY
     | KEY_BLOCK_SIZE
     | LAST
     | LEAVES
