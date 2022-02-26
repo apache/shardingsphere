@@ -87,7 +87,7 @@ public final class ScenarioDataPath {
     }
     
     private String getInitSQLResourceFile(final Type type, final DatabaseType databaseType) {
-        String initSQLFileName =  String.join("-", type.name().toLowerCase(), BASIC_INIT_SQL_FILE);
+        String initSQLFileName = String.join("-", type.name().toLowerCase(), BASIC_INIT_SQL_FILE);
         return String.join("/", getBasicPath(type), INIT_SQL_PATH, databaseType.getName().toLowerCase(), initSQLFileName);
     }
     
@@ -108,7 +108,7 @@ public final class ScenarioDataPath {
     }
     
     private String getActualDatabaseInitSQLResourceFile(final DatabaseType databaseType, final String databaseName) {
-        String initSQLFileName =  String.join("-", Type.ACTUAL.name().toLowerCase(), databaseName, BASIC_INIT_SQL_FILE);
+        String initSQLFileName = String.join("-", Type.ACTUAL.name().toLowerCase(), databaseName, BASIC_INIT_SQL_FILE);
         return String.join("/", getBasicPath(Type.ACTUAL), INIT_SQL_PATH, databaseType.getName().toLowerCase(), initSQLFileName);
     }
     
