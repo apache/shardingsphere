@@ -67,7 +67,7 @@
         
         <netty.version>4.1.73.Final</netty.version>
         <commons-lang3.version>3.8</commons-lang3.version>
-        <commons-codec.version>1.15</commons-codec.version>
+        <commons-codec.version>1.14</commons-codec.version>
         <commons-cli.version>1.4</commons-cli.version>
         <commons-collections4.version>4.2</commons-collections4.version>
         <commons-io.version>2.8.0</commons-io.version>
