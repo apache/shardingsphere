@@ -18,6 +18,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
 import com.google.common.collect.Range;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeId;
 import org.apache.shardingsphere.sharding.algorithm.keygen.CosIdSnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.api.sharding.common.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -38,7 +39,7 @@ public final class CosIdSnowflakeIntervalShardingAlgorithmTest {
     static CosIdSnowflakeIntervalShardingAlgorithm createShardingAlg() {
         Properties properties = new Properties();
         properties.setProperty(CosIdIntervalShardingAlgorithm.ZONE_ID_KEY, "Asia/Shanghai");
-        properties.setProperty(CosIdAlgorithm.LOGIC_NAME_PREFIX_KEY, CosIdIntervalShardingAlgorithmTest.LOGIC_NAME_PREFIX);
+        properties.setProperty(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, CosIdIntervalShardingAlgorithmTest.LOGIC_NAME_PREFIX);
         properties.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_LOWER_KEY,
                 CosIdIntervalShardingAlgorithmTest.LOWER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
         properties.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_UPPER_KEY,

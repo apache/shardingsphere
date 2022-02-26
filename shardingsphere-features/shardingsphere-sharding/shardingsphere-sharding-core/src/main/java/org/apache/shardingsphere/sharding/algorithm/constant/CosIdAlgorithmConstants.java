@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
+package org.apache.shardingsphere.sharding.algorithm.constant;
 
 /**
- * Common constant of CosId algorithm.
+ * CosId algorithm constants.
  */
-public final class CosIdAlgorithm {
+public final class CosIdAlgorithmConstants {
     
     public static final String TYPE_PREFIX = "COSID_";
     
