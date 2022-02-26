@@ -3283,6 +3283,16 @@
         </from>
     </select>
 
+    <select sql-case-id="select_with_assignment_operator_and_keyword">
+        <projections start-index="7" stop-index="29">
+            <expression-projection text="@KEY := ''" start-index="7" stop-index="16" />
+            <expression-projection text="@num := 123" start-index="19" stop-index="29" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="36" stop-index="42" />
+        </from>
+    </select>
+
     <select sql-case-id="select_from_dual" >
         <projections start-index="7" stop-index="7">
             <expression-projection text="1" start-index="7" stop-index="7" />
