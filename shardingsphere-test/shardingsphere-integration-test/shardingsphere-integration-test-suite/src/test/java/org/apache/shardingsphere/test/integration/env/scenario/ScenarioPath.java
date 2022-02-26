@@ -35,15 +35,15 @@ public final class ScenarioPath {
     
     private static final String ROOT_PATH = "env/scenario";
     
-    private static final String DATABASES_FILE = "data/databases.xml";
+    private static final String DATABASES_FILE = "data/actual/databases.xml";
     
-    private static final String INIT_SQL_PATH = "data/init-sql";
+    private static final String INIT_SQL_PATH = "data/actual/init-sql";
     
     private static final String VERIFICATION_INIT_SQL_PATH = "data/verification/init-sql";
     
     private static final String INIT_SQL_FILE = "init.sql";
     
-    private static final String DATASET_FILE = "data/dataset.xml";
+    private static final String DATASET_FILE = "data/actual/dataset.xml";
     
     private static final String VERIFICATION_INIT_SQL_FILE = "verification-init.sql";
     
