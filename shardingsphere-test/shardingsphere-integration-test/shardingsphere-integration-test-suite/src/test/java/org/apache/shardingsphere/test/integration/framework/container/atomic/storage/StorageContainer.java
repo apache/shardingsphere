@@ -35,9 +35,9 @@ public interface StorageContainer extends ITContainer {
     Map<String, DataSource> getActualDataSourceMap();
     
     /**
-     * Get verification data source map.
+     * Get expected data source map.
      * 
-     * @return verification data source map
+     * @return expected data source map
      */
-    Map<String, DataSource> getVerificationDataSourceMap();
+    Map<String, DataSource> getExpectedDataSourceMap();
 }

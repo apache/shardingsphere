@@ -17,6 +17,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
 
 import com.google.common.collect.Range;
 import me.ahoo.cosid.sharding.ExactCollection;
+import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.api.sharding.common.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -45,7 +46,7 @@ public final class CosIdModShardingAlgorithmTest {
     
     static CosIdModShardingAlgorithm<Long> createShardingAlg() {
         Properties properties = new Properties();
-        properties.setProperty(CosIdAlgorithm.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX);
+        properties.setProperty(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX);
         properties.setProperty(CosIdModShardingAlgorithm.MODULO_KEY, String.valueOf(DIVISOR));
         CosIdModShardingAlgorithm<Long> result = new CosIdModShardingAlgorithm<>();
         result.setProps(properties);
