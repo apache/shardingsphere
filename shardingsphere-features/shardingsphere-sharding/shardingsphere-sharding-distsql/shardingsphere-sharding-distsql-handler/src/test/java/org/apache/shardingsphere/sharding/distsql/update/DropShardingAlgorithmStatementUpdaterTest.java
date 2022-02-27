@@ -53,7 +53,7 @@ public final class DropShardingAlgorithmStatementUpdaterTest {
         updater.checkSQLStatement(shardingSphereMetaData, new DropShardingAlgorithmStatement(Collections.emptyList()), null);
     }
     
-    @Test
+    @Test(expected = RequiredAlgorithmMissedException.class)
     public void assertCheckSQLStatementWithoutCurrentRuleWithIfExists() throws RuleDefinitionViolationException {
         updater.checkSQLStatement(shardingSphereMetaData, new DropShardingAlgorithmStatement(true, Collections.emptyList()), null);
     }
@@ -63,7 +63,7 @@ public final class DropShardingAlgorithmStatementUpdaterTest {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("t_order"), new ShardingRuleConfiguration());
     }
     
-    @Test(expected = RequiredAlgorithmMissedException.class)
+    @Test
     public void assertCheckSQLStatementWithoutExistedAlgorithmWithIfExists() throws RuleDefinitionViolationException {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatementWithIfExists("t_order"), new ShardingRuleConfiguration());
     }
