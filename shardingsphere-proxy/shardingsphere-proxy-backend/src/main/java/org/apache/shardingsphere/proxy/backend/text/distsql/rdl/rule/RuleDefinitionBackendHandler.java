@@ -44,6 +44,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterSharding
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -90,8 +91,10 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
             prepareScaling(shardingSphereMetaData, sqlStatement, (RuleDefinitionAlterUpdater) ruleDefinitionUpdater, currentRuleConfig, preprocessor.get());
             return new UpdateResponseHeader(sqlStatement);
         }
-        processSQLStatement(shardingSphereMetaData, sqlStatement, ruleDefinitionUpdater, currentRuleConfig);
-        persistRuleConfigurationChange(shardingSphereMetaData);
+        if (getRefreshStatus(sqlStatement, currentRuleConfig, ruleDefinitionUpdater)) {
+            processSQLStatement(shardingSphereMetaData, sqlStatement, ruleDefinitionUpdater, currentRuleConfig);
+            persistRuleConfigurationChange(shardingSphereMetaData);
+        }
         return new UpdateResponseHeader(sqlStatement);
     }
     
@@ -136,6 +139,9 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void processDrop(final ShardingSphereMetaData shardingSphereMetaData, final T sqlStatement, final RuleDefinitionDropUpdater updater, final RuleConfiguration currentRuleConfig) {
+        if (!updater.hasAnyOneToBeDropped(sqlStatement, currentRuleConfig)) {
+            return;
+        }
         if (updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig)) {
             shardingSphereMetaData.getRuleMetaData().getConfigurations().remove(currentRuleConfig);
         }
@@ -170,5 +176,12 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         result.remove(currentRuleConfig);
         result.add(alteredRuleConfig);
         return result;
+    }
+    
+    private boolean getRefreshStatus(final SQLStatement sqlStatement, final RuleConfiguration currentRuleConfig, final RuleDefinitionUpdater updater) {
+        if (updater instanceof RuleDefinitionDropUpdater) {
+            return ((RuleDefinitionDropUpdater) updater).hasAnyOneToBeDropped(sqlStatement, currentRuleConfig);
+        }
+        return true;
     }
 }

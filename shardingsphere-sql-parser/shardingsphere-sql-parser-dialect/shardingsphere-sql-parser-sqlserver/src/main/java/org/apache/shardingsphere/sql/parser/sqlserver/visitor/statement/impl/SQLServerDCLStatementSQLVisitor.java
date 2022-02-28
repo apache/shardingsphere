@@ -138,7 +138,7 @@ public final class SQLServerDCLStatementSQLVisitor extends SQLServerStatementSQL
     @Override
     public ASTNode visitUserName(final UserNameContext ctx) {
         UserSegment result = new UserSegment();
-        String user = null != ctx.ignoredNameIdentifier() ? ((IdentifierValue) visit(ctx.ignoredNameIdentifier())).getValue() : (new IdentifierValue(ctx.NAME_().getText())).getValue();
+        String user = ((IdentifierValue) visit(ctx.ignoredNameIdentifier())).getValue();
         result.setUser(user);
         return result;
     }
