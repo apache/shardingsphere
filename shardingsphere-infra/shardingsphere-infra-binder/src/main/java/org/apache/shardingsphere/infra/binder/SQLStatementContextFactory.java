@@ -92,7 +92,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -235,10 +234,5 @@ public final class SQLStatementContextFactory {
             return new OptimizeTableStatementContext((MySQLOptimizeTableStatement) sqlStatement);
         }
         return new CommonSQLStatementContext<>(sqlStatement);
-    }
-    
-    public static SQLStatementContext<?> getCachedSQLStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, 
-                                                                      final List<Object> parameters, final SQLStatement sqlStatement, final String schema) {
-        return null;
     }
 }
