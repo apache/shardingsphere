@@ -30,12 +30,5 @@ import java.util.Collection;
 @Getter
 public final class DropShardingAlgorithmStatement extends DropRuleStatement {
     
-    private final boolean containsExistsClause;
-    
     private final Collection<String> algorithmNames;
-    
-    public DropShardingAlgorithmStatement(final Collection<String> algorithmNames) {
-        this.containsExistsClause = false;
-        this.algorithmNames = algorithmNames;
-    }
 }

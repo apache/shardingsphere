@@ -55,7 +55,9 @@ public final class DropShardingAlgorithmStatementUpdaterTest {
     
     @Test(expected = RequiredAlgorithmMissedException.class)
     public void assertCheckSQLStatementWithoutCurrentRuleWithIfExists() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(shardingSphereMetaData, new DropShardingAlgorithmStatement(true, Collections.emptyList()), null);
+        DropShardingAlgorithmStatement dropShardingAlgorithmStatement = new DropShardingAlgorithmStatement(Collections.emptyList());
+        dropShardingAlgorithmStatement.setContainsExistClause(true);
+        updater.checkSQLStatement(shardingSphereMetaData, dropShardingAlgorithmStatement, null);
     }
     
     @Test(expected = RequiredAlgorithmMissedException.class)
@@ -107,7 +109,9 @@ public final class DropShardingAlgorithmStatementUpdaterTest {
     }
     
     private DropShardingAlgorithmStatement createSQLStatementWithIfExists(final String algorithmName) {
-        return new DropShardingAlgorithmStatement(true, Collections.singleton(algorithmName));
+        DropShardingAlgorithmStatement result = new DropShardingAlgorithmStatement(Collections.singleton(algorithmName));
+        result.setContainsExistClause(true);
+        return result;
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {

@@ -44,8 +44,8 @@ public final class DropShardingAlgorithmStatementAssert {
         if (null == expected.getAlgorithms()) {
             assertNull(assertContext.getText("Actual algorithm should not exist."), actual);
         } else {
-            assertThat(assertContext.getText("resource assertion error: "), actual.getAlgorithmNames(), is(expected.getAlgorithms()));
-            assertThat(assertContext.getText("resource assertion error: "), actual.isContainsExistsClause(), is(expected.isContainsExistsClause()));
+            assertThat(assertContext.getText("Algorithm names assertion error: "), actual.getAlgorithmNames(), is(expected.getAlgorithms()));
+            assertThat(assertContext.getText("Contains exist clause assertion error: "), actual.isContainsExistClause(), is(expected.isContainsExistsClause()));
         }
     }
 }
