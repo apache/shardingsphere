@@ -20,14 +20,14 @@ package org.apache.shardingsphere.infra.binder.type;
 import java.util.List;
 
 /**
- * Where available.
+ * Parameter available.
  */
 public interface ParameterAvailable {
     
     /**
-     * Get where segments.
+     * prepare.
      * 
-     * @return where segments
+     * @param parameters parameters
      */
     void prepare(List<Object> parameters);
 }
