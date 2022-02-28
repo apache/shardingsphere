@@ -137,6 +137,9 @@ public final class EmbedTestingServer {
         return "localhost:" + PORT;
     }
     
+    /**
+     * Close embed zookeeper server.
+     */
     public static void close() {
         try {
             testingServer.close();
