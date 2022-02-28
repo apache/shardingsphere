@@ -131,7 +131,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
             int offsetKey = Integer.parseInt(each);
             JobProgress jobProgress = getJobProgress(jobId, offsetKey);
             if (null == jobProgress) {
-                return;
+                continue;
             }
             jobProgress.setStatus(status);
             persist(getOffsetPath(jobId, offsetKey), YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(jobProgress)));
