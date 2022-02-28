@@ -68,6 +68,16 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     }
     
     @Test
+    public void assertUpdateCurrentRuleConfigurationWithIfExists() throws DistSQLException {
+        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = createCurrentRuleConfiguration();
+        DropDatabaseDiscoveryRuleStatement dropDatabaseDiscoveryRuleStatement = createSQLStatementWithIfExists();
+        updater.checkSQLStatement(shardingSphereMetaData, dropDatabaseDiscoveryRuleStatement, databaseDiscoveryRuleConfiguration);
+        assertFalse(updater.updateCurrentRuleConfiguration(dropDatabaseDiscoveryRuleStatement, databaseDiscoveryRuleConfiguration));
+        assertThat(databaseDiscoveryRuleConfiguration.getDataSources().size(), is(1));
+        assertThat(databaseDiscoveryRuleConfiguration.getDiscoveryTypes().size(), is(1));
+    }
+    
+    @Test
     public void assertUpdateCurrentRuleConfigurationWithInUsedDiscoveryType() {
         DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = createMultipleCurrentRuleConfigurations();
         assertFalse(updater.updateCurrentRuleConfiguration(createSQLStatement(), databaseDiscoveryRuleConfiguration));
@@ -75,7 +85,11 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     }
     
     private DropDatabaseDiscoveryRuleStatement createSQLStatement() {
-        return new DropDatabaseDiscoveryRuleStatement(Collections.singleton("ha_group"));
+        return new DropDatabaseDiscoveryRuleStatement(Collections.singleton("ha_group"), false);
+    }
+    
+    private DropDatabaseDiscoveryRuleStatement createSQLStatementWithIfExists() {
+        return new DropDatabaseDiscoveryRuleStatement(Collections.singleton("ha_group_0"), true);
     }
     
     private DatabaseDiscoveryRuleConfiguration createCurrentRuleConfiguration() {
@@ -89,7 +103,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ha_group", Collections.emptyList(), "ha_heartbeat", "readwrite_ds_MGR");
         Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes = new HashMap<>(1, 1);
         discoveryTypes.put("readwrite_ds_MGR", new ShardingSphereAlgorithmConfiguration("readwrite_ds_MGR", new Properties()));
-        return new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Arrays.asList(dataSourceRuleConfig, 
+        return new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Arrays.asList(dataSourceRuleConfig,
                 new DatabaseDiscoveryDataSourceRuleConfiguration("ha_group_another", Collections.emptyList(), "ha_heartbeat", "readwrite_ds_MGR"))), Collections.emptyMap(), discoveryTypes);
     }
 }
