@@ -49,6 +49,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil.sleep;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -127,10 +128,8 @@ public final class GovernanceRepositoryAPIImplTest {
         governanceRepositoryAPI.persistJobProgress(jobContext);
         long s = System.currentTimeMillis();
         governanceRepositoryAPI.renewJobStatus(JobStatus.FINISHED, jobContext.getJobId());
-        System.out.println("====" + (System.currentTimeMillis() - s));
-        //sleep(1);
+        sleep(1);
         JobProgress jobProgress = governanceRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
-        System.out.println("====" + (System.currentTimeMillis() - s));
         assertThat(jobProgress.getStatus(), is(JobStatus.FINISHED));
     }
     

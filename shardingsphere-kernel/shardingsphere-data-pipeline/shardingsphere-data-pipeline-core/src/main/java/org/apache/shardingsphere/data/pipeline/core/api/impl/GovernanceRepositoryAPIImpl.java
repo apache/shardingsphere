@@ -128,13 +128,13 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     public void renewJobStatus(final JobStatus status, final String jobId) {
         List<String> offsetKeys = getChildrenKeys(String.format("%s/%s/offset", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId));
         for (String each : offsetKeys) {
-            int key = Integer.parseInt(each);
-            JobProgress progress = getJobProgress(jobId, key);
-            if (null == progress) {
+            int offsetKey = Integer.parseInt(each);
+            JobProgress jobProgress = getJobProgress(jobId, offsetKey);
+            if (null == jobProgress) {
                 return;
             }
-            progress.setStatus(status);
-            persist(getOffsetPath(jobId, key), YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(progress)));
+            jobProgress.setStatus(status);
+            persist(getOffsetPath(jobId, offsetKey), YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(jobProgress)));
         }
     }
     
