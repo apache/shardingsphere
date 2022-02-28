@@ -500,9 +500,6 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (null != ctx.indexName()) {
             result.setIndexName((IndexSegment) visit(ctx.indexName()));
         }
-        if (null != ctx.indexName()) {
-            result.setIndexName((IndexSegment) visit(ctx.indexName()));
-        }
         return result;
     }
     

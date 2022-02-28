@@ -18,6 +18,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
 import lombok.Getter;
 import lombok.Setter;
 import me.ahoo.cosid.sharding.ModCycle;
+import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -30,7 +31,7 @@ import java.util.Properties;
  */
 public final class CosIdModShardingAlgorithm<T extends Number & Comparable<T>> implements StandardShardingAlgorithm<T> {
     
-    public static final String TYPE = CosIdAlgorithm.TYPE_PREFIX + "MOD";
+    public static final String TYPE = CosIdAlgorithmConstants.TYPE_PREFIX + "MOD";
     
     public static final String MODULO_KEY = "mod";
     
@@ -44,7 +45,7 @@ public final class CosIdModShardingAlgorithm<T extends Number & Comparable<T>> i
     public void init() {
         String divisorStr = PropertiesUtil.getRequiredValue(getProps(), MODULO_KEY);
         int divisor = Integer.parseInt(divisorStr);
-        String logicNamePrefix = PropertiesUtil.getRequiredValue(getProps(), CosIdAlgorithm.LOGIC_NAME_PREFIX_KEY);
+        String logicNamePrefix = PropertiesUtil.getRequiredValue(getProps(), CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY);
         modCycle = new ModCycle<>(divisor, logicNamePrefix);
     }
     

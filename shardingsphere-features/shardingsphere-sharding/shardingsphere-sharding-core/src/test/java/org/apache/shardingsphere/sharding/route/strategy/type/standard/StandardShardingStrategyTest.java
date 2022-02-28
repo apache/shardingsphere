@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.strategy.type.standard;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.sharding.api.sharding.common.DataNodeInfo;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.strategy.fixture.StandardShardingAlgorithmFixture;
@@ -45,7 +45,7 @@ public final class StandardShardingStrategyTest {
     @Before
     public void setUp() {
         standardShardingStrategy = new StandardShardingStrategy("column", new StandardShardingAlgorithmFixture());
-        dataNodeSegment = new DataNodeInfo("logicTable_", 1);
+        dataNodeSegment = new DataNodeInfo("logicTable_", 1, '0');
     }
     
     @Test

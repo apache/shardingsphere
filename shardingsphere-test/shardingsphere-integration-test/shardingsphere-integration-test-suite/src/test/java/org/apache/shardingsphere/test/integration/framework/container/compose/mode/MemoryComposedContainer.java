@@ -57,18 +57,18 @@ public final class MemoryComposedContainer implements ComposedContainer {
     }
     
     @Override
-    public Map<String, DataSource> getActualDataSourceMap() {
-        return storageContainer.getActualDataSourceMap();
-    }
-    
-    @Override
     public DataSource getTargetDataSource() {
         return adapterContainer.getTargetDataSource(null);
     }
     
     @Override
-    public Map<String, DataSource> getVerificationDataSourceMap() {
-        return storageContainer.getVerificationDataSourceMap();
+    public Map<String, DataSource> getActualDataSourceMap() {
+        return storageContainer.getActualDataSourceMap();
+    }
+    
+    @Override
+    public Map<String, DataSource> getExpectedDataSourceMap() {
+        return storageContainer.getExpectedDataSourceMap();
     }
     
     @Override

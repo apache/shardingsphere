@@ -68,4 +68,40 @@ public final class JobProgressTest {
         assertTrue(jobProgress.getInventoryPosition("ds1").get("ds1.t_1") instanceof PlaceholderPosition);
         assertTrue(jobProgress.getInventoryPosition("ds1").get("ds1.t_2") instanceof PrimaryKeyPosition);
     }
+    
+    @Test
+    public void assertGetInventoryFinishedPercentage() {
+        JobProgress jobProgress = getJobProgress(ResourceUtil.readFileAndIgnoreComments("job-progress.yaml"));
+        assertThat(jobProgress.getInventoryFinishedPercentage(), is(50));
+    }
+    
+    @Test
+    public void assertGetNoFinishedInventoryFinishedPercentage() {
+        JobProgress jobProgress = getJobProgress(ResourceUtil.readFileAndIgnoreComments("job-progress-no-finished.yaml"));
+        assertThat(jobProgress.getInventoryFinishedPercentage(), is(0));
+    }
+    
+    @Test
+    public void assertGetAllFinishedInventoryFinishedPercentage() {
+        JobProgress jobProgress = getJobProgress(ResourceUtil.readFileAndIgnoreComments("job-progress-all-finished.yaml"));
+        assertThat(jobProgress.getInventoryFinishedPercentage(), is(100));
+    }
+    
+    @Test
+    public void assertGetIncrementalLatestActiveTimeMillis() {
+        JobProgress jobProgress = getJobProgress(ResourceUtil.readFileAndIgnoreComments("job-progress.yaml"));
+        assertThat(jobProgress.getIncrementalLatestActiveTimeMillis(), is(0L));
+    }
+    
+    @Test
+    public void assertGetIncrementalDataLatestActiveTimeMillis() {
+        JobProgress jobProgress = getJobProgress(ResourceUtil.readFileAndIgnoreComments("job-progress-all-finished.yaml"));
+        assertThat(jobProgress.getIncrementalLatestActiveTimeMillis(), is(50L));
+    }
+    
+    @Test
+    public void assertGetNoIncrementalDataLatestActiveTimeMillis() {
+        JobProgress jobProgress = getJobProgress(ResourceUtil.readFileAndIgnoreComments("job-progress-no-finished.yaml"));
+        assertThat(jobProgress.getIncrementalLatestActiveTimeMillis(), is(0L));
+    }
 }
