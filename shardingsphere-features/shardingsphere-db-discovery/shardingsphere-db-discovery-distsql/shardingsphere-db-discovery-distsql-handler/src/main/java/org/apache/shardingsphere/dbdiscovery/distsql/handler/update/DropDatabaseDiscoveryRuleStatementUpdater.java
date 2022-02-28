@@ -44,26 +44,23 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropDatabaseDiscoveryRuleStatement sqlStatement,
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         String schemaName = shardingSphereMetaData.getName();
-        checkToBeDroppedDatabaseDiscoveryRuleNames(schemaName, sqlStatement, currentRuleConfig, shardingSphereMetaData);
+        checkCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
+        checkIsInUse(schemaName, sqlStatement, shardingSphereMetaData);
     }
     
-    private void checkToBeDroppedDatabaseDiscoveryRuleNames(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement,
-                                                            final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final ShardingSphereMetaData shardingSphereMetaData) throws DistSQLException {
+    private void checkCurrentRuleConfiguration(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement,
+                                               final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         if (sqlStatement.isContainsExistClause()) {
             return;
         }
         DistSQLException.predictionThrow(null != currentRuleConfig, new RequiredRuleMissedException(RULE_TYPE, schemaName));
         checkIsExist(schemaName, sqlStatement, currentRuleConfig);
-        checkIsInUse(schemaName, sqlStatement, shardingSphereMetaData);
     }
     
     private void checkIsExist(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement,
                               final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName).collect(Collectors.toList());
         Collection<String> notExistedRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
-        if (sqlStatement.isContainsExistClause()) {
-            return;
-        }
         DistSQLException.predictionThrow(notExistedRuleNames.isEmpty(), new RequiredRuleMissedException(RULE_TYPE, schemaName));
     }
     
