@@ -140,7 +140,7 @@ public final class ProxySQLExecutorTest {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
-        return new InsertStatementContext(Collections.singletonMap("logic_db", metaData), Collections.emptyList(), sqlStatement, "logic_db");
+        return new InsertStatementContext(Collections.singletonMap("logic_db", metaData), sqlStatement, "logic_db");
     }
     
     private CreateTableStatementContext createPostgreSQLCreateTableStatementContext() {
@@ -154,6 +154,6 @@ public final class ProxySQLExecutorTest {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
-        return new InsertStatementContext(Collections.singletonMap("logic_db", metaData), Collections.emptyList(), sqlStatement, "logic_db");
+        return new InsertStatementContext(Collections.singletonMap("logic_db", metaData), sqlStatement, "logic_db");
     }
 }

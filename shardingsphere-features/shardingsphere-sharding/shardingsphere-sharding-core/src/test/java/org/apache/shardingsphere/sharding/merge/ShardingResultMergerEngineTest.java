@@ -87,7 +87,7 @@ public final class ShardingResultMergerEngineTest {
         when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext sqlStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData),
-                Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
+                selectStatement, DefaultSchema.LOGIC_NAME);
         assertThat(new ShardingResultMergerEngine().newInstance(DefaultSchema.LOGIC_NAME, DatabaseTypeRegistry.getActualDatabaseType("MySQL"), null, props,
                 sqlStatementContext), instanceOf(ShardingDQLResultMerger.class));
     }
@@ -116,6 +116,6 @@ public final class ShardingResultMergerEngineTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
         Map<String, ShardingSphereMetaData> metaDataMap = Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData);
-        return new InsertStatementContext(metaDataMap, Collections.emptyList(), insertStatement, DefaultSchema.LOGIC_NAME);
+        return new InsertStatementContext(metaDataMap, insertStatement, DefaultSchema.LOGIC_NAME);
     }
 }

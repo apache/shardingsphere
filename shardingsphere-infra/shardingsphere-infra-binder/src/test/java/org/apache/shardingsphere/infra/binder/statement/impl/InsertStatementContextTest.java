@@ -104,7 +104,7 @@ public final class InsertStatementContextTest {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(metaData.getSchema()).thenReturn(schema);
         when(schema.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
-        return new InsertStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), parameters, insertStatement, DefaultSchema.LOGIC_NAME);
+        return new InsertStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), insertStatement, DefaultSchema.LOGIC_NAME);
     }
     
     @Test

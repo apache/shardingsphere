@@ -36,6 +36,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ParameterMarkerProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.ParameterAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
@@ -75,7 +76,8 @@ import java.util.stream.Collectors;
  * Select SQL statement context.
  */
 @Getter
-public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable, WhereAvailable {
+@Setter
+public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable, WhereAvailable, ParameterAvailable {
     
     private final TablesContext tablesContext;
     
@@ -85,38 +87,33 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private final OrderByContext orderByContext;
     
-    private final PaginationContext paginationContext;
-    
     private final Map<Integer, SelectStatementContext> subqueryContexts;
     
     private final Collection<WhereSegment> whereSegments = new LinkedList<>();
     
-    @Setter
     private SubqueryType subqueryType;
     
-    @Setter
     private boolean needAggregateRewrite;
     
-    public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, 
-                                  final SelectStatement sqlStatement, final String defaultSchemaName) {
+    private PaginationContext paginationContext;
+    
+    public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final SelectStatement sqlStatement, final String defaultSchemaName) {
         super(sqlStatement);
         whereSegments.addAll(getWhereSegments(sqlStatement));
-        subqueryContexts = createSubqueryContexts(metaDataMap, parameters, defaultSchemaName);
+        subqueryContexts = createSubqueryContexts(metaDataMap, defaultSchemaName);
         tablesContext = new TablesContext(getAllTableSegments(), subqueryContexts);
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
         projectionsContext = new ProjectionsContextEngine(schema, getDatabaseType())
                 .createProjectionsContext(getSqlStatement().getFrom(), getSqlStatement().getProjections(), groupByContext, orderByContext);
-        paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters, whereSegments);
     }
     
-    private Map<Integer, SelectStatementContext> createSubqueryContexts(final Map<String, ShardingSphereMetaData> metaDataMap, 
-                                                                        final List<Object> parameters, final String defaultSchemaName) {
+    private Map<Integer, SelectStatementContext> createSubqueryContexts(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {
         Collection<SubquerySegment> subquerySegments = SubqueryExtractUtil.getSubquerySegments(getSqlStatement());
         Map<Integer, SelectStatementContext> result = new HashMap<>(subquerySegments.size(), 1);
         for (SubquerySegment each : subquerySegments) {
-            SelectStatementContext subqueryContext = new SelectStatementContext(metaDataMap, parameters, each.getSelect(), defaultSchemaName);
+            SelectStatementContext subqueryContext = new SelectStatementContext(metaDataMap, each.getSelect(), defaultSchemaName);
             subqueryContext.setSubqueryType(each.getSubqueryType());
             result.put(each.getStartIndex(), subqueryContext);
         }
@@ -318,5 +315,10 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
             }
         }
         return result;
+    }
+    
+    @Override
+    public void prepare(final List<Object> parameters) {
+        paginationContext = new PaginationContextEngine().createPaginationContext(getSqlStatement(), projectionsContext, parameters, whereSegments);
     }
 }

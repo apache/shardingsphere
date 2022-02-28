@@ -80,7 +80,7 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
         try {
             connectionSession.setCurrentSchema(schemaName);
             SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(),
-                    Collections.emptyList(), sqlStatement, connectionSession.getDefaultSchemaName());
+                    sqlStatement, connectionSession.getDefaultSchemaName());
             databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
             responseHeader = databaseCommunicationEngine.execute();
             mergedResult = new TransparentMergedResult(createQueryResult());

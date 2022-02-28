@@ -22,6 +22,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.ParameterAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -98,7 +99,10 @@ public final class PostgreSQLBatchedInsertsExecutor {
     
     private LogicSQL createLogicSQL(final List<Object> parameters) {
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
-                metaDataContexts.getMetaDataMap(), parameters, preparedStatement.getSqlStatement(), connectionSession.getSchemaName());
+                metaDataContexts.getMetaDataMap(), preparedStatement.getSqlStatement(), connectionSession.getSchemaName());
+        if (sqlStatementContext instanceof ParameterAvailable) {
+            ((ParameterAvailable) sqlStatementContext).prepare(parameters);
+        }
         return new LogicSQL(sqlStatementContext, preparedStatement.getSql(), parameters);
     }
     
