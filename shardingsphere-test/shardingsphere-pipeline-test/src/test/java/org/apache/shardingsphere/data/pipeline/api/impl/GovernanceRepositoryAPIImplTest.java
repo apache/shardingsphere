@@ -22,6 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumper
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
@@ -117,6 +118,15 @@ public final class GovernanceRepositoryAPIImplTest {
         DataChangedEvent event = eventReference.get();
         assertNotNull(event);
         assertThat(event.getType(), anyOf(is(Type.ADDED), is(Type.UPDATED)));
+    }
+    
+    @Test
+    public void assertRenewJobStatus() {
+        RuleAlteredJobContext jobContext = mockJobContext();
+        governanceRepositoryAPI.persistJobProgress(jobContext);
+        governanceRepositoryAPI.renewJobStatus(JobStatus.FINISHED, jobContext.getJobId());
+        JobProgress jobProgress = governanceRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
+        assertThat(jobProgress.getStatus(), is(JobStatus.FINISHED));
     }
     
     private RuleAlteredJobContext mockJobContext() {
