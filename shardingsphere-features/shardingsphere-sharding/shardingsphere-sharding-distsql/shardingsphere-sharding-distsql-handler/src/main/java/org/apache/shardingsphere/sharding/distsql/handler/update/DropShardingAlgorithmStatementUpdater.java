@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -103,6 +103,11 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
             dropShardingAlgorithm(currentRuleConfig, each);
         }
         return false;
+    }
+    
+    @Override
+    public boolean hasAnyOneToBeDropped(final DropShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        return null != currentRuleConfig && !getIdenticalData(getCurrentShardingAlgorithms(currentRuleConfig), sqlStatement.getAlgorithmNames()).isEmpty();
     }
     
     private void dropShardingAlgorithm(final ShardingRuleConfiguration currentRuleConfig, final String algorithmName) {
