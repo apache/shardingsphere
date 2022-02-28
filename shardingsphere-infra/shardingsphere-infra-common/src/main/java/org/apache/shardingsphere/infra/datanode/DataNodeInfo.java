@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.sharding.common;
+package org.apache.shardingsphere.infra.datanode;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -30,4 +30,6 @@ public final class DataNodeInfo {
     private final String prefix;
     
     private final int suffixMinLength;
+    
+    private final char paddingChar;
 }
