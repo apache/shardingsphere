@@ -302,8 +302,12 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
     }
     
     private Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
-        Optional<Connection> connectionInTransaction = connectionTransaction.getConnection(dataSourceName);
+        Optional<Connection> connectionInTransaction = isRawJdbcDataSource(dataSourceName) ? connectionTransaction.getConnection(dataSourceName) : Optional.empty();
         return connectionInTransaction.isPresent() ? connectionInTransaction.get() : dataSource.getConnection();
+    }
+    
+    private boolean isRawJdbcDataSource(final String dataSourceName) {
+        return physicalDataSourceMap.containsKey(dataSourceName);
     }
     
     @SuppressWarnings("MagicConstant")

@@ -1783,6 +1783,14 @@ SID
     : S I D
     ;
 
+UNCOMMITTED
+    : U N C O M M I T T E D
+    ;
+
+COMMITTED
+    : C O M M I T T E D
+    ;
+
 STOPLIST
     : S T O P L I S T
     ;

@@ -25,9 +25,11 @@ import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.integration.env.scenario.ScenarioPath;
+import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath;
+import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.integration.env.scenario.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.param.model.CaseParameterizedArray;
+import org.junit.After;
 import org.junit.Before;
 
 import javax.sql.DataSource;
@@ -66,14 +68,13 @@ public abstract class BatchITCase extends BaseITCase {
         for (IntegrationTestCaseAssertion each : getItCase().getAssertions()) {
             dataSets.add(DataSetLoader.load(parentPath, getScenario(), getDatabaseType(), each.getExpectedDataFile()));
         }
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(new ScenarioPath(getScenario()).getDataSetFile(), getActualDataSourceMap());
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(new ScenarioDataPath(getScenario()).getDataSetFile(Type.ACTUAL), getActualDataSourceMap());
         dataSetEnvironmentManager.fillData();
     }
     
-    @Override
-    public void tearDown() throws Exception {
+    @After
+    public void tearDown() {
         dataSetEnvironmentManager.cleanData();
-        super.tearDown();
     }
     
     protected final void assertDataSets(final int[] actualUpdateCounts) throws SQLException {

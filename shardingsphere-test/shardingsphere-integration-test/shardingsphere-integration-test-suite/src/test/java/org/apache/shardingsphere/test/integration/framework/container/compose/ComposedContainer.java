@@ -28,6 +28,13 @@ import java.util.Map;
 public interface ComposedContainer extends Startable {
     
     /**
+     * Get target data source.
+     *
+     * @return target data source
+     */
+    DataSource getTargetDataSource();
+    
+    /**
      * Get actual data source map.
      *
      * @return actual data source map
@@ -35,9 +42,9 @@ public interface ComposedContainer extends Startable {
     Map<String, DataSource> getActualDataSourceMap();
     
     /**
-     * Get target data source.
+     * Get expected data source map.
      * 
-     * @return target data source
+     * @return expected data source map
      */
-    DataSource getTargetDataSource();
+    Map<String, DataSource> getExpectedDataSourceMap();
 }

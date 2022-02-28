@@ -17,7 +17,7 @@
 
 grammar DCLStatement;
 
-import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule;
+import BaseRule;
 
 grant
     : GRANT (classPrivilegesClause | classTypePrivilegesClause)
@@ -247,7 +247,7 @@ createUser
     ;
 
 createUserLoginClause
-    : userName ((FOR | FROM) LOGIN loginName)? (WITH limitedOptionsList (COMMA_ limitedOptionsList)*)?
+    : userName ((FOR | FROM) LOGIN identifier)? (WITH limitedOptionsList (COMMA_ limitedOptionsList)*)?
     ;
 
 createUserWindowsPrincipalClause
@@ -281,11 +281,11 @@ limitedOptionsList
     ;
 
 createUserFromExternalProviderClause
-    : userName ((FOR | FROM) LOGIN loginName)? | FROM EXTERNAL PROVIDER (WITH limitedOptionsList (COMMA_ limitedOptionsList)*)?
+    : userName ((FOR | FROM) LOGIN identifier)? | FROM EXTERNAL PROVIDER (WITH limitedOptionsList (COMMA_ limitedOptionsList)*)?
     ;
 
 createUserWithDefaultSchema
-    : userName ((FOR | FROM) LOGIN loginName | WITHOUT LOGIN)? (WITH DEFAULT_SCHEMA EQ_ schemaName)?
+    : userName ((FOR | FROM) LOGIN identifier | WITHOUT LOGIN)? (WITH DEFAULT_SCHEMA EQ_ schemaName)?
     ;
 
 createUserWithAzureActiveDirectoryPrincipalClause
@@ -301,7 +301,7 @@ azureActiveDirectoryPrincipal
     ;
 
 userName
-    : ignoredNameIdentifier | NAME_
+    : ignoredNameIdentifier
     ;
 
 ignoredNameIdentifier
@@ -319,14 +319,10 @@ alterUser
 setItem
     : NAME EQ_ userName
     | DEFAULT_SCHEMA EQ_ (schemaName | NULL)
-    | LOGIN EQ_ loginName
+    | LOGIN EQ_ identifier
     | PASSWORD EQ_ stringLiterals (OLD_PASSWORD EQ_ stringLiterals)?
     | DEFAULT_LANGUAGE EQ_ (NONE | identifier)
     | ALLOW_ENCRYPTED_VALUE_MODIFICATIONS EQ_ (ON | OFF)?
-    ;
-
-loginName
-    : ignoredNameIdentifier | NAME_
     ;
 
 createRole

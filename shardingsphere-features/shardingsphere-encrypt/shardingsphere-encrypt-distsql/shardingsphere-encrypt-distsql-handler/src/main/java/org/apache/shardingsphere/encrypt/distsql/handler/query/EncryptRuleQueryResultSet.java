@@ -58,12 +58,18 @@ public final class EncryptRuleQueryResultSet implements DistSQLResultSet {
         Collection<Collection<Object>> result = new LinkedList<>();
         tableRuleConfiguration.getColumns().forEach(each -> {
             ShardingSphereAlgorithmConfiguration algorithmConfiguration = algorithmMap.get(each.getEncryptorName());
-            result.add(Arrays.asList(tableRuleConfiguration.getName(), each.getLogicColumn(), each.getLogicDataType(), each.getCipherColumn(), each.getCipherDataType(),
-                    each.getPlainColumn(), each.getPlainDataType(), each.getAssistedQueryColumn(), each.getAssistedQueryDataType(),
+            result.add(Arrays.asList(tableRuleConfiguration.getName(), each.getLogicColumn(), nullToEmptyString(each.getLogicDataType()),
+                    each.getCipherColumn(), nullToEmptyString(each.getCipherDataType()),
+                    nullToEmptyString(each.getPlainColumn()), nullToEmptyString(each.getPlainDataType()),
+                    nullToEmptyString(each.getAssistedQueryColumn()), nullToEmptyString(each.getAssistedQueryDataType()),
                     algorithmConfiguration.getType(), PropertiesConverter.convert(algorithmConfiguration.getProps()),
                     Objects.isNull(tableRuleConfiguration.getQueryWithCipherColumn()) ? Boolean.TRUE.toString() : tableRuleConfiguration.getQueryWithCipherColumn().toString()));
         });
         return result;
+    }
+    
+    private Object nullToEmptyString(final Object obj) {
+        return null == obj ? "" : obj;
     }
     
     @Override

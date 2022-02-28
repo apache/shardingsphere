@@ -17,7 +17,7 @@
 
 grammar SQLServerStatement;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, StoreProcedure, DALStatement;
+import Comments, TCLStatement, StoreProcedure, DALStatement;
 
 execute
     : (select

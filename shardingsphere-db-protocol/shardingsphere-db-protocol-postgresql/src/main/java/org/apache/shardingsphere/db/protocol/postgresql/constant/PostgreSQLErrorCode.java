@@ -47,6 +47,7 @@ public enum PostgreSQLErrorCode {
     PROTOCOL_VIOLATION("08P01", "protocol_violation"),
     FEATURE_NOT_SUPPORTED("0A000", "feature_not_supported"),
     INVALID_AUTHORIZATION_SPECIFICATION("28000", "invalid_authorization_specification"),
+    INVALID_PARAMETER_VALUE("22023", "invalid_parameter_value"),
     INVALID_PASSWORD("28P01", "invalid_password"),
     INVALID_CATALOG_NAME("3D000", "invalid_catalog_name"),
     INVALID_SCHEMA_NAME("3F000", "invalid_schema_name"),

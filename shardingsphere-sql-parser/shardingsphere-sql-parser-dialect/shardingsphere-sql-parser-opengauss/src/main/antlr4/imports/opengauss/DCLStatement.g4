@@ -17,7 +17,7 @@
 
 grammar DCLStatement;
 
-import Symbol, Keyword, OpenGaussKeyword, Literals, BaseRule, DDLStatement;
+import DDLStatement;
 
 grant
     : GRANT (privilegeClause | roleClause)

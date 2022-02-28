@@ -54,6 +54,9 @@ chapter = true
 | 兰城翔 | lanchengx   |
 | 杨肖   | yx9o        |
 | 唐国城 | totalo |
+| 李国平 | LeeGuoPing     |
+| 赵锦超 | zjcnb          |
+| 陈出新 | tuichenchuxin  |
 
 ## 贡献者
 

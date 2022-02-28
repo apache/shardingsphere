@@ -17,10 +17,19 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Show variable statement test case.
  */
+@Setter
+@Getter
 public final class ShowVariableStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute(name = "name")
+    private String name;
 }

@@ -33,4 +33,11 @@ public interface StorageContainer extends ITContainer {
      * @return actual data source map
      */
     Map<String, DataSource> getActualDataSourceMap();
+    
+    /**
+     * Get expected data source map.
+     * 
+     * @return expected data source map
+     */
+    Map<String, DataSource> getExpectedDataSourceMap();
 }

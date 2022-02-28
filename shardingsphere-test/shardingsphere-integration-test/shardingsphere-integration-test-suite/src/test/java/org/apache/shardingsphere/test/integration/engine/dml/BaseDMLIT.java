@@ -23,11 +23,13 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
-import org.apache.shardingsphere.test.integration.env.scenario.ScenarioPath;
+import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath;
+import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.integration.env.scenario.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.database.DatabaseAssertionMetaData;
 import org.apache.shardingsphere.test.integration.framework.database.DatabaseAssertionMetaDataFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.junit.After;
 import org.junit.Before;
 
 import javax.sql.DataSource;
@@ -55,14 +57,13 @@ public abstract class BaseDMLIT extends SingleITCase {
     
     @Before
     public final void init() throws Exception {
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(new ScenarioPath(getScenario()).getDataSetFile(), getActualDataSourceMap());
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(new ScenarioDataPath(getScenario()).getDataSetFile(Type.ACTUAL), getActualDataSourceMap());
         dataSetEnvironmentManager.fillData();
     }
     
-    @Override
-    public final void tearDown() throws Exception {
+    @After
+    public final void tearDown() {
         dataSetEnvironmentManager.cleanData();
-        super.tearDown();
     }
     
     protected final void assertDataSet(final int actualUpdateCount) throws SQLException {

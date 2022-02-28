@@ -25,7 +25,6 @@ import org.apache.shardingsphere.test.integration.framework.container.compose.Co
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRegistry;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.ShardingSphereIntegrationTestParameterized;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -54,11 +53,14 @@ public abstract class BaseITCase {
     
     private final IntegrationTestCase itCase;
     
+    @Getter(AccessLevel.NONE)
     private final ComposedContainer composedContainer;
     
     private Map<String, DataSource> actualDataSourceMap;
     
     private DataSource targetDataSource;
+    
+    private Map<String, DataSource> expectedDataSourceMap;
     
     public BaseITCase(final ParameterizedArray parameterizedArray) {
         scenario = parameterizedArray.getScenario();
@@ -73,14 +75,7 @@ public abstract class BaseITCase {
         composedContainer.start();
         actualDataSourceMap = composedContainer.getActualDataSourceMap();
         targetDataSource = composedContainer.getTargetDataSource();
-    }
-    
-    @After
-    public void tearDown() throws Exception {
-        // TODO Close data sources gracefully.
-//        if (targetDataSource instanceof AutoCloseable) {
-//            ((AutoCloseable) targetDataSource).close();
-//        }
+        expectedDataSourceMap = composedContainer.getExpectedDataSourceMap();
     }
     
     @AfterClass

@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.test.integration.engine.dcl;
 
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
-import org.apache.shardingsphere.test.integration.env.scenario.ScenarioPath;
+import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioCommonPath;
 import org.apache.shardingsphere.test.integration.env.scenario.authority.AuthorityEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.junit.After;
 import org.junit.Before;
 
 public abstract class BaseDCLIT extends SingleITCase {
@@ -33,13 +34,12 @@ public abstract class BaseDCLIT extends SingleITCase {
     
     @Before
     public final void init() throws Exception {
-        authorityEnvironmentManager = new AuthorityEnvironmentManager(new ScenarioPath(getScenario()).getAuthorityFile(), getActualDataSourceMap(), getDatabaseType());
+        authorityEnvironmentManager = new AuthorityEnvironmentManager(new ScenarioCommonPath(getScenario()).getAuthorityFile(), getActualDataSourceMap(), getDatabaseType());
         authorityEnvironmentManager.initialize();
     }
     
-    @Override
+    @After
     public final void tearDown() throws Exception {
         authorityEnvironmentManager.clean();
-        super.tearDown();
     }
 }

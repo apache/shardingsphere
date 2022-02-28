@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import Symbol, Keyword, OracleKeyword, Literals, BaseRule;
+import BaseRule;
 
 createTable
     : CREATE createTableSpecification TABLE tableName createSharingClause createDefinitionClause createMemOptimizeClause createParentClause

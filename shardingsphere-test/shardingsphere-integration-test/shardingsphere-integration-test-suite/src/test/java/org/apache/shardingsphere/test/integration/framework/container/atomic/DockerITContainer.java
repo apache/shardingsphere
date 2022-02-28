@@ -47,7 +47,7 @@ public abstract class DockerITContainer extends GenericContainer<DockerITContain
     public void start() {
         startDependencies();
         super.start();
-        execute();
+        postStart();
     }
     
     private void startDependencies() {
@@ -73,6 +73,6 @@ public abstract class DockerITContainer extends GenericContainer<DockerITContain
                 });
     }
     
-    protected void execute() {
+    protected void postStart() {
     }
 }
