@@ -44,7 +44,7 @@ public interface RuleDefinitionDropUpdater<T extends SQLStatement, R extends Rul
      * Whether there is configuration.
      *
      * @param currentRuleConfig current rule configuration 
-     * @return dropped configuration exists or does not exist
+     * @return configuration exists or does not exist
      */
     default boolean isExistRuleConfig(R currentRuleConfig) {
         return currentRuleConfig != null;
