@@ -17,34 +17,44 @@
 
 package org.apache.shardingsphere.data.pipeline.core.check.datasource;
 
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
-import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class AbstractDataSourceCheckerTest {
     
+    @Mock(extraInterfaces = AutoCloseable.class)
     private DataSource dataSource;
     
     private AbstractDataSourceChecker dataSourceChecker;
     
     private Collection<DataSource> dataSources;
+    
+    @Mock
+    private Connection connection;
+    
+    @Mock
+    private PreparedStatement preparedStatement;
+    
+    @Mock
+    private ResultSet resultSet;
     
     @Before
     public void setUp() {
@@ -64,41 +74,37 @@ public final class AbstractDataSourceCheckerTest {
             }
         };
         dataSources = new LinkedList<>();
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(ResourceUtil.mockJobConfig());
-        dataSource = new PipelineDataSourceManager().getDataSource(jobContext.getTaskConfig().getDumperConfig().getDataSourceConfig());
         dataSources.add(dataSource);
     }
     
+    @SneakyThrows
     @Test
     public void assertCheckConnection() {
+        when(dataSource.getConnection()).thenReturn(connection);
         dataSourceChecker.checkConnection(dataSources);
+        verify(dataSource).getConnection();
     }
     
     @Test(expected = PipelineJobPrepareFailedException.class)
     public void assertCheckConnectionFailed() throws SQLException {
-        DataSource mockDatasource = mock(DataSource.class);
-        when(mockDatasource.getConnection()).thenThrow(new SQLException("error"));
-        dataSourceChecker.checkConnection(Collections.singletonList(mockDatasource));
+        when(dataSource.getConnection()).thenThrow(new SQLException("error"));
+        dataSourceChecker.checkConnection(dataSources);
     }
     
     @Test
     public void assertCheckTargetTable() throws SQLException {
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.execute("DROP TABLE IF EXISTS t_order");
-            statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id VARCHAR(12))");
-        }
+        when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.prepareStatement("SELECT * FROM `t_order` LIMIT 1")).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
         dataSourceChecker.checkTargetTable(dataSources, Collections.singletonList("t_order"));
     }
     
     @Test(expected = PipelineJobPrepareFailedException.class)
     public void assertCheckTargetTableFailed() throws SQLException {
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.execute("DROP TABLE IF EXISTS t_order");
-            statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id VARCHAR(12))");
-            statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
-        }
+        when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.prepareStatement("SELECT * FROM `t_order` LIMIT 1")).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true);
         dataSourceChecker.checkTargetTable(dataSources, Collections.singletonList("t_order"));
     }
 }
