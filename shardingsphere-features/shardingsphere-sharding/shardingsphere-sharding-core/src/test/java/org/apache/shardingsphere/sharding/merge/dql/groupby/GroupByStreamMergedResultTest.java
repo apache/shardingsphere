@@ -167,7 +167,9 @@ public final class GroupByStreamMergedResultTest {
         selectStatement.setProjections(projectionsSegment);
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))));
-        return new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), selectStatement, DefaultSchema.LOGIC_NAME);
+        SelectStatementContext result = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), selectStatement, DefaultSchema.LOGIC_NAME);
+        result.prepare(Collections.emptyList());
+        return result;
     }
     
     private ShardingSphereSchema buildSchema() {
