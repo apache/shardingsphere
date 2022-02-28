@@ -136,4 +136,11 @@ public final class EmbedTestingServer {
     public static String getConnectionString() {
         return "localhost:" + PORT;
     }
+    
+    public static void close() {
+        try {
+            testingServer.close();
+        } catch (final IOException ignore) {
+        }
+    }
 }
