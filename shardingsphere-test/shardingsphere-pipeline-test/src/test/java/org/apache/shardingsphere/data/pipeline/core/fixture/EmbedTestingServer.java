@@ -136,14 +136,4 @@ public final class EmbedTestingServer {
     public static String getConnectionString() {
         return "localhost:" + PORT;
     }
-    
-    /**
-     * Close embed zookeeper server.
-     */
-    public static void close() {
-        try {
-            testingServer.close();
-        } catch (final IOException ignore) {
-        }
-    }
 }
