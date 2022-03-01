@@ -89,7 +89,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return new Properties();
     }
     
-    private void persistTransactionConfiguration(final ContextManagerBuilderParameter parameter, final MetaDataPersistService metaDataPersistService, Properties transactionProps) {
+    private void persistTransactionConfiguration(final ContextManagerBuilderParameter parameter, final MetaDataPersistService metaDataPersistService, final Properties transactionProps) {
         if (!transactionProps.isEmpty()) {
             metaDataPersistService.persistTransactionRule(transactionProps, true);
         }
