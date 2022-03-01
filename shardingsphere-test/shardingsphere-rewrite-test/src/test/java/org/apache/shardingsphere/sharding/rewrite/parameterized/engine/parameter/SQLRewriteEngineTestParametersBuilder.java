@@ -56,38 +56,38 @@ public final class SQLRewriteEngineTestParametersBuilder {
      */
     public static Collection<Object[]> loadTestParameters(final String type, final String path, final Class<?> targetClass) {
         Collection<Object[]> result = new LinkedList<>();
-        for (Entry<String, RewriteAssertionsRootEntity> entry : loadAllRewriteAssertionsRootEntities(path, targetClass).entrySet()) {
+        for (Entry<String, RewriteAssertionsRootEntity> entry : loadAllRewriteAssertionsRootEntities(type, path, targetClass).entrySet()) {
             result.addAll(createTestParameters(type, entry.getKey(), entry.getValue()));
         }
         return result;
     }
     
-    private static Map<String, RewriteAssertionsRootEntity> loadAllRewriteAssertionsRootEntities(final String path, final Class<?> targetClass) {
+    private static Map<String, RewriteAssertionsRootEntity> loadAllRewriteAssertionsRootEntities(final String type, final String path, final Class<?> targetClass) {
         Map<String, RewriteAssertionsRootEntity> result = new LinkedHashMap<>();
         File file = new File(targetClass.getProtectionDomain().getCodeSource().getLocation().getPath() + "/" + path);
         for (File each : Objects.requireNonNull(file.listFiles())) {
             if (each.isFile()) {
-                appendFromFile(each, path, result);
+                appendFromFile(type, each, path, result);
             } else {
-                appendFromDirectory(each, path + "/" + each.getName(), result);
+                appendFromDirectory(type, each, path + "/" + each.getName(), result);
             }
         }
         return result;
     }
     
-    private static void appendFromDirectory(final File directory, final String path, final Map<String, RewriteAssertionsRootEntity> result) {
+    private static void appendFromDirectory(final String type, final File directory, final String path, final Map<String, RewriteAssertionsRootEntity> result) {
         for (File each : Objects.requireNonNull(directory.listFiles())) {
             if (each.isFile()) {
-                appendFromFile(each, path, result);
+                appendFromFile(type, each, path, result);
             } else {
-                appendFromDirectory(each, path + "/" + each.getName(), result);
+                appendFromDirectory(type, each, path + "/" + each.getName(), result);
             }
         }
     }
     
-    private static void appendFromFile(final File file, final String path, final Map<String, RewriteAssertionsRootEntity> result) {
+    private static void appendFromFile(final String type, final File file, final String path, final Map<String, RewriteAssertionsRootEntity> result) {
         if (file.getName().endsWith(".xml")) {
-            String fileNameKey = result.containsKey(file.getName()) ? file.getName() + "_" + System.nanoTime() : file.getName();
+            String fileNameKey = path.toLowerCase().replace(type.toLowerCase() + "/", "") + file.getName();
             result.put(fileNameKey, new RewriteAssertionsRootEntityLoader().load(path + "/" + file.getName()));
         }
     }
