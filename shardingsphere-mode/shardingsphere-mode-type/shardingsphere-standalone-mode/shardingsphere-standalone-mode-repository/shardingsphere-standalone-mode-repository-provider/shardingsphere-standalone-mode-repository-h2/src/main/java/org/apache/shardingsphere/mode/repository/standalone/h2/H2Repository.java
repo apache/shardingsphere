@@ -15,27 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop;
+package org.apache.shardingsphere.mode.repository.standalone.h2;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
+import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 import java.util.List;
 
 /**
- * Drop encrypt rule statement test case.
+ * H2 repository.
  */
-@Getter
-@Setter
-public final class DropEncryptRuleStatementTestCase extends SQLParserTestCase {
+// TODO Use the built-in h2 database to implement all of the following methods
+public final class H2Repository implements StandalonePersistRepository {
     
-    @XmlAttribute(name = "contains-exist-clause")
-    private boolean containsExistClause;
+    @Override
+    public String get(final String key) {
+        return null;
+    }
     
-    @XmlElement(name = "table")
-    private final List<String> tables = new LinkedList<>();
+    @Override
+    public List<String> getChildrenKeys(final String key) {
+        return null;
+    }
+    
+    @Override
+    public void persist(final String key, final String value) {
+        
+    }
+    
+    @Override
+    public void delete(final String key) {
+        
+    }
+    
+    @Override
+    public void close() {
+        
+    }
+    
+    @Override
+    public String getType() {
+        return "H2";
+    }
 }

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingBindingTableRuleStatementUpdater;
+import org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingBindingTableRulesStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
 import org.junit.Test;
@@ -35,12 +35,12 @@ import java.util.Arrays;
 import java.util.Collections;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class AlterShardingBindingTableRuleStatementUpdaterTest {
+public final class AlterShardingBindingTableRulesStatementUpdaterTest {
     
     @Mock
     private ShardingSphereMetaData shardingSphereMetaData;
     
-    private final AlterShardingBindingTableRuleStatementUpdater updater = new AlterShardingBindingTableRuleStatementUpdater();
+    private final AlterShardingBindingTableRulesStatementUpdater updater = new AlterShardingBindingTableRulesStatementUpdater();
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {

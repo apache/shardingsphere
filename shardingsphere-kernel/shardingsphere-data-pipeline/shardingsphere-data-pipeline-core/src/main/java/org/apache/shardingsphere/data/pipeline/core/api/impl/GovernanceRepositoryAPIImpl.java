@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
@@ -128,12 +127,15 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     @Override
     public void renewJobStatus(final JobStatus status, final String jobId) {
         List<String> offsetKeys = getChildrenKeys(String.format("%s/%s/offset", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId));
-        Map<Integer, JobProgress> progressMap = Maps.newHashMap();
-        offsetKeys.forEach(each -> progressMap.put(Integer.parseInt(each), getJobProgress(jobId, Integer.parseInt(each))));
-        progressMap.forEach((key, value) -> {
-            value.setStatus(status);
-            persist(getOffsetPath(jobId, key), YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(value)));
-        });
+        for (String each : offsetKeys) {
+            int offsetKey = Integer.parseInt(each);
+            JobProgress jobProgress = getJobProgress(jobId, offsetKey);
+            if (null == jobProgress) {
+                continue;
+            }
+            jobProgress.setStatus(status);
+            persist(getOffsetPath(jobId, offsetKey), YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(jobProgress)));
+        }
     }
     
     private String getOffsetPath(final String jobId, final int shardingItem) {
