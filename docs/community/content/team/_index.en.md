@@ -57,6 +57,7 @@ chapter = true
 | Guoping Li      | LeeGuoPing              |
 | Jinchao Zhao    | zjcnb                   |
 | Chuxin Chen     | tuichenchuxin           |
+| Liangda Wang    | Liangda-w               |
 
 ## Contributors
 
