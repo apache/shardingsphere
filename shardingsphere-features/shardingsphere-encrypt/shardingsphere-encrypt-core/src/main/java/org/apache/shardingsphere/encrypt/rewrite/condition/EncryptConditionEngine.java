@@ -33,6 +33,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
@@ -109,7 +111,7 @@ public final class EncryptConditionEngine {
     
     private Collection<EncryptCondition> createEncryptConditions(final ExpressionSegment expression, final Map<String, String> columnTableNames) {
         Collection<EncryptCondition> result = new LinkedList<>();
-        for (ColumnSegment each : ColumnExtractor.extract(expression)) {
+        for (ColumnSegment each : getColumnSegmentsFromPredicates(expression)) {
             ColumnProjection projection = buildColumnProjection(each);
             Optional<String> tableName = Optional.ofNullable(columnTableNames.get(projection.getExpression()));
             Optional<EncryptCondition> encryptCondition = tableName.isPresent() 
@@ -154,11 +156,28 @@ public final class EncryptConditionEngine {
     private Collection<ColumnProjection> getColumnProjections(final AndPredicate predicate) {
         Collection<ColumnProjection> result = new LinkedList<>();
         for (ExpressionSegment each : predicate.getPredicates()) {
-            for (ColumnSegment column : ColumnExtractor.extract(each)) {
+            Collection<ColumnSegment> columnSegments = getColumnSegmentsFromPredicates(each);
+            for (ColumnSegment column : columnSegments) {
                 result.add(buildColumnProjection(column));
             }
         }
         return result;
+    }
+    
+    private Collection<ColumnSegment> getColumnSegmentsFromPredicates(final ExpressionSegment expressionSegment) {
+        Collection<ColumnSegment> result = new LinkedList<>(ColumnExtractor.extract(expressionSegment));
+        getColumnSegmentIfInSubQuerySegment(expressionSegment).ifPresent(result::add);
+        return result;
+    }
+    
+    private Optional<ColumnSegment> getColumnSegmentIfInSubQuerySegment(final ExpressionSegment expressionSegment) {
+        if (expressionSegment instanceof InExpression && ((InExpression) expressionSegment).getLeft() instanceof SubqueryExpressionSegment) {
+            Collection<ProjectionSegment> projectionSegments = ((SubqueryExpressionSegment) ((InExpression) expressionSegment).getLeft()).getSubquery().getSelect().getProjections().getProjections();
+            if (projectionSegments.size() == 1 && projectionSegments.iterator().next() instanceof ColumnProjectionSegment) {
+                return Optional.of(((ColumnProjectionSegment) projectionSegments.iterator().next()).getColumn());
+            }
+        }
+        return Optional.empty();
     }
     
     private ColumnProjection buildColumnProjection(final ColumnSegment segment) {
@@ -180,9 +199,26 @@ public final class EncryptConditionEngine {
     }
     
     private static Optional<EncryptCondition> createInEncryptCondition(final String tableName, final InExpression inExpression, final ExpressionSegment inRightValue) {
-        if (!(inExpression.getLeft() instanceof ColumnSegment)) {
-            return Optional.empty();
+        if (inExpression.getLeft() instanceof ColumnSegment) {
+            return createInEncryptConditionWithColumnName(((ColumnSegment) inExpression.getLeft()).getIdentifier().getValue(), tableName, inExpression, inRightValue);
         }
+        if (inExpression.getLeft() instanceof SubqueryExpressionSegment) {
+            return createInEncryptConditionFromSubQuery(tableName, inExpression, inRightValue);
+        }
+        return Optional.empty();
+    }
+    
+    private static Optional<EncryptCondition> createInEncryptConditionFromSubQuery(final String tableName, final InExpression inExpression, final ExpressionSegment inRightValue) {
+        Collection<ProjectionSegment> projectionSegments = ((SubqueryExpressionSegment) inExpression.getLeft()).getSubquery().getSelect().getProjections().getProjections();
+        if (projectionSegments.size() == 1 && projectionSegments.iterator().next() instanceof ColumnProjectionSegment) {
+            return createInEncryptConditionWithColumnName(((ColumnProjectionSegment) projectionSegments.iterator().next()).getColumn().getIdentifier().getValue(),
+                    tableName, inExpression, inRightValue);
+        }
+        return Optional.empty();
+    }
+    
+    private static Optional<EncryptCondition> createInEncryptConditionWithColumnName(final String columnName, final String tableName, 
+                                                                                     final InExpression inExpression, final ExpressionSegment inRightValue) {
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         for (ExpressionSegment each : inExpression.getExpressionList()) {
             if (each instanceof SimpleExpressionSegment) {
@@ -192,7 +228,6 @@ public final class EncryptConditionEngine {
         if (expressionSegments.isEmpty()) {
             return Optional.empty();
         }
-        String columnName = ((ColumnSegment) inExpression.getLeft()).getIdentifier().getValue();
         return Optional.of(new EncryptInCondition(columnName, tableName, inRightValue.getStartIndex(), inRightValue.getStopIndex(), expressionSegments));
     }
 }
