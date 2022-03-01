@@ -92,7 +92,8 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
         List<String> insertColumnNames = getInsertColumnNames();
         columnNames = useDefaultColumns() ? schema.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames;
-        generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema).createGenerateKeyContext(insertColumnNames, getAllValueExpressions(sqlStatement), Collections.emptyList()).orElse(null);
+        generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema)
+                .createGenerateKeyContext(insertColumnNames, getAllValueExpressions(sqlStatement), Collections.emptyList()).orElse(null);
     }
     
     private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {
