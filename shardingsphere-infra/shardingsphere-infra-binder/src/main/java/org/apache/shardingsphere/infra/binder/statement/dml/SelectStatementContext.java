@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.statement.dml;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.engine.GroupByContextEngine;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
@@ -36,7 +37,6 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ParameterMarkerProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
@@ -99,29 +99,23 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     private PaginationContext paginationContext;
     
     public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final SelectStatement sqlStatement, final String defaultSchemaName) {
-        this(metaDataMap, Collections.emptyList(), sqlStatement, defaultSchemaName);
-    }
-    
-    public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters,
-                                  final SelectStatement sqlStatement, final String defaultSchemaName) {
         super(sqlStatement);
         whereSegments.addAll(getWhereSegments(sqlStatement));
-        subqueryContexts = createSubqueryContexts(metaDataMap, parameters, defaultSchemaName);
+        subqueryContexts = createSubqueryContexts(metaDataMap, defaultSchemaName);
         tablesContext = new TablesContext(getAllTableSegments(), subqueryContexts);
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
         projectionsContext = new ProjectionsContextEngine(schema, getDatabaseType())
                 .createProjectionsContext(getSqlStatement().getFrom(), getSqlStatement().getProjections(), groupByContext, orderByContext);
-        paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters, whereSegments);
+        paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, Collections.emptyList(), whereSegments);
     }
     
-    private Map<Integer, SelectStatementContext> createSubqueryContexts(final Map<String, ShardingSphereMetaData> metaDataMap,
-                                                                        final List<Object> parameters, final String defaultSchemaName) {
+    private Map<Integer, SelectStatementContext> createSubqueryContexts(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {
         Collection<SubquerySegment> subquerySegments = SubqueryExtractUtil.getSubquerySegments(getSqlStatement());
         Map<Integer, SelectStatementContext> result = new HashMap<>(subquerySegments.size(), 1);
         for (SubquerySegment each : subquerySegments) {
-            SelectStatementContext subqueryContext = new SelectStatementContext(metaDataMap, parameters, each.getSelect(), defaultSchemaName);
+            SelectStatementContext subqueryContext = new SelectStatementContext(metaDataMap, each.getSelect(), defaultSchemaName);
             subqueryContext.setSubqueryType(each.getSubqueryType());
             result.put(each.getStartIndex(), subqueryContext);
         }
