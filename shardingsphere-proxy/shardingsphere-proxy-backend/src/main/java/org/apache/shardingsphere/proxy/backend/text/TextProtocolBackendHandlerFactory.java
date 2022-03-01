@@ -100,7 +100,7 @@ public final class TextProtocolBackendHandlerFactory {
             return backendHandler.get();
         }
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), 
-                Collections.emptyList(), sqlStatement, connectionSession.getDefaultSchemaName());
+                sqlStatement, connectionSession.getDefaultSchemaName());
         // TODO optimize SQLStatementSchemaHolder
         if (sqlStatementContext instanceof TableAvailable) {
             ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().ifPresent(SQLStatementSchemaHolder::set);

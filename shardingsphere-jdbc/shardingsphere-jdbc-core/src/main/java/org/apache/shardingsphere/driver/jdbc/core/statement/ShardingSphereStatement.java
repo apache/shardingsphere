@@ -415,8 +415,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
                 DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(connection.getSchema()).getResource().getDatabaseType()), findSQLParserRule());
         SQLStatement sqlStatement = sqlParserEngine.parse(sql, false);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), Collections.emptyList(), sqlStatement,
-                connection.getSchema());
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), sqlStatement, connection.getSchema());
         return new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
     }
     
