@@ -142,7 +142,7 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         Properties result = new Properties();
         if (!originTransactionProps.isEmpty()) {
             generateUserDefinedJdbcStoreConfiguration(originTransactionProps, result);
-        } else if ("Cluster".equalsIgnoreCase(modeType)) {
+        } else if ("Cluster".equals(modeType)) {
             generateDefaultJdbcStoreConfiguration(schemaConfiguration, result);
         }
         return result;
