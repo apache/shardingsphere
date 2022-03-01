@@ -36,7 +36,7 @@ public final class PrivilegeNodeChangedWatcherTest {
     
     @Test
     public void assertCreateEvent() {
-        Optional<AuthorityChangedEvent> actual = new PrivilegeNodeChangedWatcher().createGovernanceEvent(new DataChangedEvent("test", AUTHENTICATION_YAML, Type.UPDATED));
+        Optional<AuthorityChangedEvent> actual = new PrivilegeNodeChangedWatcher().createGovernanceEvent(new DataChangedEvent("/nodes/privilege_nodes", AUTHENTICATION_YAML, Type.UPDATED));
         assertTrue(actual.isPresent());
         Optional<ShardingSphereUser> user = actual.get().getUsers().stream().filter(each -> each.getGrantee().equals(new Grantee("root1", ""))).findFirst();
         assertTrue(user.isPresent());
