@@ -66,9 +66,9 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private final String defaultSchemaName;
     
-    private final List<List<ExpressionSegment>> valueExpressions;
-    
     private final List<String> insertColumnNames;
+    
+    private final List<List<ExpressionSegment>> valueExpressions;
     
     private List<InsertValueContext> insertValueContexts;
     
@@ -82,12 +82,10 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         super(sqlStatement);
         this.metaDataMap = metaDataMap;
         this.defaultSchemaName = defaultSchemaName;
-        valueExpressions = getAllValueExpressions(sqlStatement);
         insertColumnNames = getInsertColumnNames();
+        valueExpressions = getAllValueExpressions(sqlStatement);
         AtomicInteger parametersOffset = new AtomicInteger(0);
         insertValueContexts = getInsertValueContexts(Collections.emptyList(), parametersOffset);
-        insertSelectContext = getInsertSelectContext(metaDataMap, Collections.emptyList(), parametersOffset, defaultSchemaName).orElse(null);
-        onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(Collections.emptyList(), parametersOffset).orElse(null);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
         columnNames = useDefaultColumns() ? schema.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames;
@@ -270,7 +268,6 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultSchemaName).orElse(null);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
-        InsertStatement sqlStatement = getSqlStatement();
-        generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema).createGenerateKeyContext(insertColumnNames, valueExpressions, parameters).orElse(null);
+        generatedKeyContext = new GeneratedKeyContextEngine(getSqlStatement(), schema).createGenerateKeyContext(insertColumnNames, valueExpressions, parameters).orElse(null);
     }
 }
