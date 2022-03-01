@@ -49,7 +49,7 @@ public final class IteratorStreamMergedResultTest {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), selectStatement, DefaultSchema.LOGIC_NAME);
+        selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
     }
     
     @Test

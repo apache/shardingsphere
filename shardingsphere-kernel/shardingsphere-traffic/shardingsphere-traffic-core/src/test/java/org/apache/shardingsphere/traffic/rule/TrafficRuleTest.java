@@ -104,7 +104,7 @@ public final class TrafficRuleTest {
                 new CommentSegment("/* ShardingSphere hint: traffic=true */", 0, 0)) : Collections.emptyList();
         when(sqlStatement.getCommentSegments()).thenReturn(comments);
         when(sqlStatement.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
-        SQLStatementContext statementContext = new SelectStatementContext(createMetaDataMap(), sqlStatement, "sharding_db");
+        SQLStatementContext statementContext = new SelectStatementContext(createMetaDataMap(), Collections.emptyList(), sqlStatement, "sharding_db");
         when(result.getSqlStatementContext()).thenReturn(statementContext);
         return result;
     }

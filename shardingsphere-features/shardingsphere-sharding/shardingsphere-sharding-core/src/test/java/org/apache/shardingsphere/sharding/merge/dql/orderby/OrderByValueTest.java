@@ -85,7 +85,7 @@ public final class OrderByValueTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         selectStatement.setOrderBy(createOrderBySegment());
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData),
-                selectStatement, DefaultSchema.LOGIC_NAME);
+                Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         QueryResult queryResult1 = createQueryResult("1", "2");
         OrderByValue orderByValue1 = new OrderByValue(queryResult1, Arrays.asList(
@@ -137,7 +137,7 @@ public final class OrderByValueTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         selectStatement.setOrderBy(createOrderBySegment());
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData),
-                selectStatement, DefaultSchema.LOGIC_NAME);
+                Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.get("table")).thenReturn(new TableMetaData());
         QueryResult queryResult1 = createQueryResult("1", "2");
@@ -190,7 +190,7 @@ public final class OrderByValueTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         selectStatement.setOrderBy(createOrderBySegment());
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData),
-                selectStatement, DefaultSchema.LOGIC_NAME);
+                Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         QueryResult queryResult1 = createQueryResult("1", "2");
         OrderByValue orderByValue1 = new OrderByValue(queryResult1, Arrays.asList(

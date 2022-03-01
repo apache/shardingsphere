@@ -162,7 +162,7 @@ public final class PaginationContextTest {
     private void getRevisedRowCount(final SelectStatement selectStatement) {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         Map<String, ShardingSphereMetaData> metaDataMap = Collections.singletonMap(DefaultSchema.LOGIC_NAME, mock(ShardingSphereMetaData.class));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(metaDataMap, selectStatement, DefaultSchema.LOGIC_NAME);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(metaDataMap, Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectStatementContext), is(50L));
     }
     
@@ -196,7 +196,7 @@ public final class PaginationContextTest {
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.DESC))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
         Map<String, ShardingSphereMetaData> metaDataMap = Collections.singletonMap(DefaultSchema.LOGIC_NAME, mock(ShardingSphereMetaData.class));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(metaDataMap, selectStatement, DefaultSchema.LOGIC_NAME);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(metaDataMap, Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectStatementContext), is((long) Integer.MAX_VALUE));
     }
 }
