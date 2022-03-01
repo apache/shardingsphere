@@ -108,7 +108,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
         projectionsContext = new ProjectionsContextEngine(schema, getDatabaseType())
                 .createProjectionsContext(getSqlStatement().getFrom(), getSqlStatement().getProjections(), groupByContext, orderByContext);
-        paginationContext = new PaginationContext(null, null, Collections.emptyList());
+        paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, Collections.emptyList(), whereSegments);
     }
     
     private Map<Integer, SelectStatementContext> createSubqueryContexts(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {

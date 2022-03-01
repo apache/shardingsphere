@@ -86,6 +86,8 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         valueExpressions = getAllValueExpressions(sqlStatement);
         AtomicInteger parametersOffset = new AtomicInteger(0);
         insertValueContexts = getInsertValueContexts(Collections.emptyList(), parametersOffset);
+        insertSelectContext = getInsertSelectContext(metaDataMap, Collections.emptyList(), parametersOffset, defaultSchemaName).orElse(null);
+        onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(Collections.emptyList(), parametersOffset).orElse(null);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
         columnNames = useDefaultColumns() ? schema.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames;
