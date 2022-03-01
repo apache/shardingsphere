@@ -53,7 +53,7 @@ public final class DropShardingAlgorithmStatementUpdaterTest {
         updater.checkSQLStatement(shardingSphereMetaData, new DropShardingAlgorithmStatement(Collections.emptyList()), null);
     }
     
-    @Test(expected = RequiredAlgorithmMissedException.class)
+    @Test
     public void assertCheckSQLStatementWithoutCurrentRuleWithIfExists() throws RuleDefinitionViolationException {
         DropShardingAlgorithmStatement dropShardingAlgorithmStatement = new DropShardingAlgorithmStatement(Collections.emptyList());
         dropShardingAlgorithmStatement.setContainsExistClause(true);

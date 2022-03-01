@@ -39,11 +39,12 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingAlgorithmStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
+        if (null == currentRuleConfig && sqlStatement.isContainsExistClause()) {
+            return;
+        }
         String schemaName = shardingSphereMetaData.getName();
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
-        if (!sqlStatement.isContainsExistClause()) {
-            checkToBeDroppedShardingAlgorithms(schemaName, sqlStatement, currentRuleConfig);
-        }
+        checkToBeDroppedShardingAlgorithms(schemaName, sqlStatement, currentRuleConfig);
         checkShardingAlgorithmsInUsed(schemaName, sqlStatement, currentRuleConfig);
     }
     
@@ -55,6 +56,9 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
     
     private void checkToBeDroppedShardingAlgorithms(final String schemaName, final DropShardingAlgorithmStatement sqlStatement,
                                                     final ShardingRuleConfiguration currentRuleConfig) throws RequiredAlgorithmMissedException {
+        if (sqlStatement.isContainsExistClause()) {
+            return;
+        }
         Collection<String> currentShardingAlgorithms = getCurrentShardingAlgorithms(currentRuleConfig);
         Collection<String> notExistedAlgorithms = sqlStatement.getAlgorithmNames().stream().filter(each -> !currentShardingAlgorithms.contains(each)).collect(Collectors.toList());
         if (!notExistedAlgorithms.isEmpty()) {
