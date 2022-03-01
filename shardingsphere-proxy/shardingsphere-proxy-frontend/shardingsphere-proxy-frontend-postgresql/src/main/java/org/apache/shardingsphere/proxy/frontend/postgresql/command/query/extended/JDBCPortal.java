@@ -35,7 +35,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.Postgr
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.ParameterAvailable;
+import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
@@ -97,8 +97,8 @@ public final class JDBCPortal implements Portal<Void> {
         }
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), sqlStatement, backendConnection.getConnectionSession().getDefaultSchemaName());
-        if (sqlStatementContext instanceof ParameterAvailable) {
-            ((ParameterAvailable) sqlStatementContext).prepare(parameters); 
+        if (sqlStatementContext instanceof ParameterAware) {
+            ((ParameterAware) sqlStatementContext).setUpParameters(parameters); 
         }
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, preparedStatement.getSql(), parameters, backendConnection);
         textProtocolBackendHandler = null;

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.e
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.ParameterAvailable;
+import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
@@ -88,8 +88,8 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(packet.getSql(), true);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(),
                 sqlStatement, connectionSession.getDefaultSchemaName());
-        if (sqlStatementContext instanceof ParameterAvailable) {
-            ((ParameterAvailable) sqlStatementContext).prepare(packet.getParameters());
+        if (sqlStatementContext instanceof ParameterAware) {
+            ((ParameterAware) sqlStatementContext).setUpParameters(packet.getParameters());
         }
         // TODO optimize SQLStatementSchemaHolder
         if (sqlStatementContext instanceof TableAvailable) {

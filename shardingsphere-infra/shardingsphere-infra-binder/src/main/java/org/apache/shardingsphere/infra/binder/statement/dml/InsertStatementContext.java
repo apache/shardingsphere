@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueC
 import org.apache.shardingsphere.infra.binder.segment.insert.values.OnDuplicateUpdateContext;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.ParameterAvailable;
+import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -56,7 +56,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Insert SQL statement context.
  */
 @Getter
-public final class InsertStatementContext extends CommonSQLStatementContext<InsertStatement> implements TableAvailable, ParameterAvailable {
+public final class InsertStatementContext extends CommonSQLStatementContext<InsertStatement> implements TableAvailable, ParameterAware {
     
     private final TablesContext tablesContext;
     
@@ -127,7 +127,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         }
         SubquerySegment insertSelectSegment = getSqlStatement().getInsertSelect().get();
         SelectStatementContext selectStatementContext = new SelectStatementContext(metaDataMap, insertSelectSegment.getSelect(), defaultSchemaName);
-        selectStatementContext.prepare(parameters);
+        selectStatementContext.setUpParameters(parameters);
         InsertSelectContext insertSelectContext = new InsertSelectContext(selectStatementContext, parameters, parametersOffset.get());
         parametersOffset.addAndGet(insertSelectContext.getParameterCount());
         return Optional.of(insertSelectContext);
@@ -266,7 +266,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     }
     
     @Override
-    public void prepare(final List<Object> parameters) {
+    public void setUpParameters(final List<Object> parameters) {
         AtomicInteger parametersOffset = new AtomicInteger(0);
         insertValueContexts = getInsertValueContexts(parameters, parametersOffset);
         insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultSchemaName).orElse(null);

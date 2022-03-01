@@ -36,7 +36,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ParameterMarkerProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.ParameterAvailable;
+import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
@@ -78,7 +78,7 @@ import java.util.stream.Collectors;
  */
 @Getter
 @Setter
-public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable, WhereAvailable, ParameterAvailable {
+public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable, WhereAvailable, ParameterAware {
     
     private final TablesContext tablesContext;
     
@@ -326,7 +326,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     @Override
-    public void prepare(final List<Object> parameters) {
+    public void setUpParameters(final List<Object> parameters) {
         paginationContext = new PaginationContextEngine().createPaginationContext(getSqlStatement(), projectionsContext, parameters, whereSegments);
     }
 }

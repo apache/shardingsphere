@@ -96,7 +96,7 @@ public final class InsertStatementContextTest {
         insertStatement.setInsertColumns(insertColumnsSegment);
         setUpInsertValues(insertStatement);
         InsertStatementContext actual = createInsertStatementContext(Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
-        actual.prepare(Arrays.asList(1, "Tom", 2, "Jerry"));
+        actual.setUpParameters(Arrays.asList(1, "Tom", 2, "Jerry"));
         assertInsertStatementContext(actual);
     }
     
@@ -114,7 +114,7 @@ public final class InsertStatementContextTest {
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         setUpInsertValues(insertStatement);
         InsertStatementContext actual = createInsertStatementContext(Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
-        actual.prepare(Arrays.asList(1, "Tom", 2, "Jerry"));
+        actual.setUpParameters(Arrays.asList(1, "Tom", 2, "Jerry"));
         assertInsertStatementContext(actual);
     }
     
@@ -124,7 +124,7 @@ public final class InsertStatementContextTest {
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         setUpInsertValues(insertStatement);
         InsertStatementContext actual = createInsertStatementContext(Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
-        actual.prepare(Arrays.asList(1, "Tom", 2, "Jerry"));
+        actual.setUpParameters(Arrays.asList(1, "Tom", 2, "Jerry"));
         assertThat(actual.getGroupedParameters().size(), is(2));
         assertNull(actual.getOnDuplicateKeyUpdateValueContext());
         assertTrue(actual.getOnDuplicateKeyUpdateParameters().isEmpty());
@@ -137,7 +137,7 @@ public final class InsertStatementContextTest {
         setUpInsertValues(insertStatement);
         setUpOnDuplicateValues(insertStatement);
         InsertStatementContext actual = createInsertStatementContext(Arrays.asList(1, "Tom", 2, "Jerry", "onDuplicateKeyUpdateColumnValue"), insertStatement);
-        actual.prepare(Arrays.asList(1, "Tom", 2, "Jerry", "onDuplicateKeyUpdateColumnValue"));
+        actual.setUpParameters(Arrays.asList(1, "Tom", 2, "Jerry", "onDuplicateKeyUpdateColumnValue"));
         assertThat(actual.getGroupedParameters().size(), is(2));
         assertThat(actual.getOnDuplicateKeyUpdateValueContext().getColumns().size(), is(2));
         assertThat(actual.getOnDuplicateKeyUpdateParameters().size(), is(1));
@@ -152,7 +152,7 @@ public final class InsertStatementContextTest {
         insertStatement.setInsertSelect(insertSelect);
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         InsertStatementContext actual = createInsertStatementContext(Collections.singletonList("param"), insertStatement);
-        actual.prepare(Collections.singletonList("param"));
+        actual.setUpParameters(Collections.singletonList("param"));
         assertThat(actual.getInsertSelectContext().getParameterCount(), is(0));
         assertThat(actual.getGroupedParameters().size(), is(1));
         assertThat(actual.getGroupedParameters().iterator().next(), is(Collections.emptyList()));

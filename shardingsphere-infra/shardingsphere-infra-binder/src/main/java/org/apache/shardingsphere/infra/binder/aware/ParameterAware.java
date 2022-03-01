@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.type;
+package org.apache.shardingsphere.infra.binder.aware;
 
 import java.util.List;
 
 /**
- * Parameter available.
+ * Parameter aware.
  */
-public interface ParameterAvailable {
+public interface ParameterAware {
     
     /**
-     * Prepare.
+     * Set up parameters.
      * 
      * @param parameters parameters
      */
-    void prepare(List<Object> parameters);
+    void setUpParameters(List<Object> parameters);
 }

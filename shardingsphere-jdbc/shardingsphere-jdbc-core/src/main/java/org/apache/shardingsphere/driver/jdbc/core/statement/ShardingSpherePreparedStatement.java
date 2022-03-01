@@ -36,7 +36,7 @@ import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKey
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.type.ParameterAvailable;
+import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
@@ -452,8 +452,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private LogicSQL createLogicSQL() {
         List<Object> parameters = new ArrayList<>(getParameters());
-        if (sqlStatementContext instanceof ParameterAvailable) {
-            ((ParameterAvailable) sqlStatementContext).prepare(parameters);    
+        if (sqlStatementContext instanceof ParameterAware) {
+            ((ParameterAware) sqlStatementContext).setUpParameters(parameters);    
         }
         return new LogicSQL(sqlStatementContext, sql, parameters);
     }
