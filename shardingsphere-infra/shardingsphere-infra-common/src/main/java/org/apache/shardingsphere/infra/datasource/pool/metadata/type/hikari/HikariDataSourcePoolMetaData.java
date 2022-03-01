@@ -54,6 +54,7 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
         defaultProperties.put("maximumPoolSize", 50);
         defaultProperties.put("minimumIdle", 1);
         defaultProperties.put("readOnly", false);
+        defaultProperties.put("registerMbeans", false);
     }
     
     private void buildInvalidProperties() {
@@ -73,7 +74,6 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     private void buildTransientFieldNames() {
         transientFieldNames.add("running");
         transientFieldNames.add("poolName");
-        transientFieldNames.add("registerMbeans");
         transientFieldNames.add("closed");
     }
     
