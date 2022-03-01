@@ -71,7 +71,6 @@ public final class OrderByStreamMergedResultTest {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), selectStatement, DefaultSchema.LOGIC_NAME);
-        selectStatementContext.prepare(Collections.emptyList());
     }
     
     @Test

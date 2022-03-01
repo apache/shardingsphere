@@ -112,9 +112,7 @@ public final class GroupByMemoryMergedResultTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
         selectStatement.setProjections(projectionsSegment);
-        SelectStatementContext result = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), selectStatement, DefaultSchema.LOGIC_NAME);
-        result.prepare(Collections.emptyList());
-        return result;
+        return new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), selectStatement, DefaultSchema.LOGIC_NAME);
     }
     
     private SelectStatementContext createSelectStatementContext(final ShardingSphereMetaData metaData) {
@@ -126,9 +124,7 @@ public final class GroupByMemoryMergedResultTest {
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC))));
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         selectStatement.setProjections(projectionsSegment);
-        SelectStatementContext result = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), selectStatement, DefaultSchema.LOGIC_NAME);
-        result.prepare(Collections.emptyList());
-        return result;
+        return new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), selectStatement, DefaultSchema.LOGIC_NAME);
     }
 
     @Test

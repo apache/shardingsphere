@@ -25,7 +25,7 @@ import java.util.List;
 public interface ParameterAvailable {
     
     /**
-     * prepare.
+     * Prepare.
      * 
      * @param parameters parameters
      */

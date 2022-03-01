@@ -76,7 +76,6 @@ public final class RowNumberDecoratorMergedResultTest {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("Oracle"));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), selectStatement, DefaultSchema.LOGIC_NAME);
-        selectStatementContext.prepare(Collections.emptyList());
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, null);
         assertFalse(actual.next());
     }
@@ -88,7 +87,6 @@ public final class RowNumberDecoratorMergedResultTest {
         OracleSelectStatement selectStatement = new OracleSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), selectStatement, DefaultSchema.LOGIC_NAME);
-        selectStatementContext.prepare(Collections.emptyList());
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, null);
         for (int i = 0; i < 8; i++) {
             assertTrue(actual.next());
@@ -122,7 +120,6 @@ public final class RowNumberDecoratorMergedResultTest {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("Oracle"));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), selectStatement, DefaultSchema.LOGIC_NAME);
-        selectStatementContext.prepare(Collections.emptyList());
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, null);
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -155,7 +152,6 @@ public final class RowNumberDecoratorMergedResultTest {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("Oracle"));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), selectStatement, DefaultSchema.LOGIC_NAME);
-        selectStatementContext.prepare(Collections.emptyList());
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, null);
         assertTrue(actual.next());
         assertTrue(actual.next());
