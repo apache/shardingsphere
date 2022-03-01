@@ -66,11 +66,29 @@ public final class SQLRewriteEngineTestParametersBuilder {
         Map<String, RewriteAssertionsRootEntity> result = new LinkedHashMap<>();
         File file = new File(targetClass.getProtectionDomain().getCodeSource().getLocation().getPath() + "/" + path);
         for (File each : Objects.requireNonNull(file.listFiles())) {
-            if (each.getName().endsWith(".xml")) {
-                result.put(each.getName(), new RewriteAssertionsRootEntityLoader().load(path + "/" + each.getName()));
+            if (each.isFile()) {
+                appendFromFile(each, path, result);
+            } else {
+                appendFromDirectory(each, path + "/" + each.getName(), result);
             }
         }
         return result;
+    }
+    
+    private static void appendFromDirectory(final File directory, final String path, final Map<String, RewriteAssertionsRootEntity> result) {
+        for (File each : Objects.requireNonNull(directory.listFiles())) {
+            if (each.isFile()) {
+                appendFromFile(each, path, result);
+            } else {
+                appendFromDirectory(each, path + "/" + each.getName(), result);
+            }
+        }
+    }
+    
+    private static void appendFromFile(final File file, final String path, final Map<String, RewriteAssertionsRootEntity> result) {
+        if (file.getName().endsWith(".xml")) {
+            result.put(file.getName(), new RewriteAssertionsRootEntityLoader().load(path + "/" + file.getName()));
+        }
     }
     
     private static Collection<Object[]> createTestParameters(final String type, final String fileName, final RewriteAssertionsRootEntity rootAssertions) {
