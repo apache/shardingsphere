@@ -41,7 +41,6 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGener
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.builder.SQLTokenGeneratorBuilder;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -56,15 +55,10 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
     
     private final Collection<EncryptCondition> encryptConditions;
     
-    private final boolean containsEncryptTable;
-    
     private final String schemaName;
     
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
-        if (!containsEncryptTable) {
-            return Collections.emptyList();
-        }
         Collection<SQLTokenGenerator> result = new LinkedList<>();
         addSQLTokenGenerator(result, new EncryptProjectionTokenGenerator());
         addSQLTokenGenerator(result, new EncryptAssignmentTokenGenerator());
@@ -82,6 +76,13 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
     }
     
     private void addSQLTokenGenerator(final Collection<SQLTokenGenerator> sqlTokenGenerators, final SQLTokenGenerator toBeAddedSQLTokenGenerator) {
+        if (toBeAddedSQLTokenGenerator.isGenerateSQLToken(sqlStatementContext)) {
+            setUpSQLTokenGenerator(toBeAddedSQLTokenGenerator);
+            sqlTokenGenerators.add(toBeAddedSQLTokenGenerator);
+        }
+    }
+    
+    private void setUpSQLTokenGenerator(final SQLTokenGenerator toBeAddedSQLTokenGenerator) {
         if (toBeAddedSQLTokenGenerator instanceof EncryptRuleAware) {
             ((EncryptRuleAware) toBeAddedSQLTokenGenerator).setEncryptRule(encryptRule);
         }
@@ -93,9 +94,6 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
         }
         if (toBeAddedSQLTokenGenerator instanceof SchemaNameAware) {
             ((SchemaNameAware) toBeAddedSQLTokenGenerator).setSchemaName(schemaName);
-        }
-        if (toBeAddedSQLTokenGenerator.isGenerateSQLToken(sqlStatementContext)) {
-            sqlTokenGenerators.add(toBeAddedSQLTokenGenerator);
         }
     }
 }
