@@ -94,6 +94,9 @@ public final class GeneratedKeyContextEngine {
         GeneratedKeyContext result = new GeneratedKeyContext(generateKeyColumnName, false);
         for (ExpressionSegment each : findGenerateKeyExpressions(insertColumnNames, valueExpressions, generateKeyColumnName)) {
             if (each instanceof ParameterMarkerExpressionSegment) {
+                if (parameters.isEmpty()) {
+                    continue;
+                }
                 result.getGeneratedValues().add((Comparable<?>) parameters.get(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex()));
             } else if (each instanceof LiteralExpressionSegment) {
                 result.getGeneratedValues().add((Comparable<?>) ((LiteralExpressionSegment) each).getLiterals());
