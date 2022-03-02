@@ -60,8 +60,7 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
     }
     
     private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter parameter) {
-        ComputeNodeInstance instance = new ComputeNodeInstance();
-        instance.setInstanceDefinition(parameter.getInstanceDefinition());
+        ComputeNodeInstance instance = new ComputeNodeInstance(parameter.getInstanceDefinition());
         instance.setLabels(parameter.getLabels());
         return new InstanceContext(instance, new MemoryWorkerIdGenerator(), buildMemoryModeConfiguration(parameter.getModeConfig()));
     }

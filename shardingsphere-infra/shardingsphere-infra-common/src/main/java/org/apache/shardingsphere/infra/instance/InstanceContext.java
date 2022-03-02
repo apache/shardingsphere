@@ -90,7 +90,7 @@ public final class InstanceContext {
     public long getWorkerId() {
         if (null == instance.getWorkerId()) {
             // TODO process generate failed
-            Optional.ofNullable(workerIdGenerator.generate()).ifPresent(instance::setWorkerId);
+            Optional.of(workerIdGenerator.generate()).ifPresent(instance::setWorkerId);
         }
         return instance.getWorkerId();
     }

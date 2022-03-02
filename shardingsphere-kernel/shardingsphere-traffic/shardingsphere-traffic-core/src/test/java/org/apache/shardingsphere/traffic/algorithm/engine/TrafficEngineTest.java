@@ -114,14 +114,12 @@ public final class TrafficEngineTest {
     
     private Collection<ComputeNodeInstance> mockComputeNodeInstances() {
         Collection<ComputeNodeInstance> result = new LinkedList<>();
-        ComputeNodeInstance instanceOlap = new ComputeNodeInstance();
-        instanceOlap.setLabels(Collections.singletonList("OLAP"));
-        instanceOlap.setInstanceDefinition(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
-        result.add(instanceOlap);
-        ComputeNodeInstance instanceOltp = new ComputeNodeInstance();
-        instanceOltp.setLabels(Collections.singletonList("OLTP"));
-        instanceOltp.setInstanceDefinition(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3308"));
-        result.add(instanceOltp);
+        ComputeNodeInstance instanceOLAP = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
+        instanceOLAP.setLabels(Collections.singletonList("OLAP"));
+        result.add(instanceOLAP);
+        ComputeNodeInstance instanceOLTP = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3308"));
+        instanceOLTP.setLabels(Collections.singletonList("OLTP"));
+        result.add(instanceOLTP);
         return result;
     }
 }

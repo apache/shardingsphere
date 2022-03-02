@@ -126,9 +126,8 @@ public final class ConnectionManagerTest {
     }
     
     private ComputeNodeInstance mockComputeNodeInstance() {
-        ComputeNodeInstance result = new ComputeNodeInstance();
+        ComputeNodeInstance result = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
         result.setLabels(Collections.singletonList("OLTP"));
-        result.setInstanceDefinition(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
         return result;
     }
     
