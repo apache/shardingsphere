@@ -35,7 +35,6 @@ import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -100,6 +99,7 @@ public final class GovernanceRepositoryAPIImplTest {
         governanceRepositoryAPI.persist(DataPipelineConstants.DATA_PIPELINE_ROOT + "/1", "");
         List<String> actual = governanceRepositoryAPI.getChildrenKeys(DataPipelineConstants.DATA_PIPELINE_ROOT);
         assertFalse(actual.isEmpty());
+        assertTrue(actual.contains("1"));
     }
     
     @Test
@@ -122,11 +122,19 @@ public final class GovernanceRepositoryAPIImplTest {
     }
     
     @Test
+    public void assertGetShardingItems() {
+        RuleAlteredJobContext jobContext = mockJobContext();
+        governanceRepositoryAPI.persistJobProgress(jobContext);
+        List<Integer> shardingItems = governanceRepositoryAPI.getShardingItems(jobContext.getJobId());
+        assertThat(shardingItems.size(), is(1));
+        assertThat(shardingItems.get(0), is(jobContext.getShardingItem()));
+    }
+    
+    @Test
     public void assertRenewJobStatus() {
         RuleAlteredJobContext jobContext = mockJobContext();
         governanceRepositoryAPI.persistJobProgress(jobContext);
-        governanceRepositoryAPI.renewJobStatus(JobStatus.FINISHED, jobContext.getJobId());
-        ThreadUtil.sleep(1);
+        governanceRepositoryAPI.updateShardingJobStatus(jobContext.getJobId(), jobContext.getShardingItem(), JobStatus.FINISHED);
         JobProgress jobProgress = governanceRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
         assertThat(jobProgress.getStatus(), is(JobStatus.FINISHED));
     }
