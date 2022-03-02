@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.extension.sharding.algortihm.spibased.factory;
+package org.apache.shardingsphere.example.extension.spibased.sharding.raw.jdbc.factory;
 
+import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.example.type.ShardingType;
+
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import javax.sql.DataSource;
-import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.example.type.ShardingType;
 
 public final class YamlDataSourceFactory {
     
