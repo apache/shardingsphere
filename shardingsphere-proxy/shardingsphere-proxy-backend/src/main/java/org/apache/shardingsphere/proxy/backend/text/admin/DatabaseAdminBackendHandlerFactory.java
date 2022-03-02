@@ -25,6 +25,8 @@ import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorFactory;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseSetCharsetExecutor;
+import org.apache.shardingsphere.proxy.backend.text.encoding.DatabaseSetCharsetBackendHandler;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -80,7 +82,12 @@ public final class DatabaseAdminBackendHandlerFactory {
     }
     
     private static TextProtocolBackendHandler createTextProtocolBackendHandler(final SQLStatement sqlStatement, final ConnectionSession connectionSession, final DatabaseAdminExecutor executor) {
-        return executor instanceof DatabaseAdminQueryExecutor
-                ? new DatabaseAdminQueryBackendHandler(connectionSession, (DatabaseAdminQueryExecutor) executor) : new DatabaseAdminUpdateBackendHandler(connectionSession, sqlStatement, executor);
+        if (executor instanceof DatabaseAdminQueryExecutor) {
+            return new DatabaseAdminQueryBackendHandler(connectionSession, (DatabaseAdminQueryExecutor) executor);
+        }
+        if (executor instanceof DatabaseSetCharsetExecutor) {
+            return new DatabaseSetCharsetBackendHandler(connectionSession, (DatabaseSetCharsetExecutor) executor);
+        }
+        return new DatabaseAdminUpdateBackendHandler(connectionSession, sqlStatement, executor);
     }
 }

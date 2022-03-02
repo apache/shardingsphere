@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.simple;
 
 import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLCharacterSet;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLDataRowPacket;
@@ -48,7 +46,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatem
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 
-import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -111,15 +108,13 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     private Collection<DatabasePacket<?>> createClientEncodingPackets(final ClientEncodingResponseHeader clientEncodingResponseHeader) {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
-        result.add(new PostgreSQLCommandCompletePacket(PostgreSQLCommand.valueOf(clientEncodingResponseHeader.getSqlStatement().getClass()).map(PostgreSQLCommand::getTag).orElse(""), 0));
-        String value = clientEncodingResponseHeader.getValue();
-        Optional<Charset> charset = PostgreSQLCharacterSet.findByValue(value);
-        if (charset.isPresent()) {
-            clientEncodingResponseHeader.getConnectionSession().getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(charset.get());
-            result.add(new PostgreSQLParameterStatusPacket(clientEncodingResponseHeader.getName(), clientEncodingResponseHeader.getValue()));
+        Optional<String> currentCharsetValue = clientEncodingResponseHeader.getCurrentCharsetValue();
+        if (currentCharsetValue.isPresent()) {
+            result.add(new PostgreSQLCommandCompletePacket("SET", 0));
+            result.add(new PostgreSQLParameterStatusPacket("client_encoding", currentCharsetValue.get()));
             return result;
         }
-        throw new InvalidParameterValueException(String.format("invalid value for parameter \"clientEncoding\": \"%s\"", value));
+        throw new InvalidParameterValueException(String.format("invalid value for parameter \"clientEncoding\": \"%s\"", clientEncodingResponseHeader.getInputValue()));
     }
     
     @Override

@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.infra.binder.segment.table;
 
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -60,8 +60,9 @@ public final class TablesContextTest {
     @Test
     public void assertFindTableNameWhenSingleTable() {
         SimpleTableSegment tableSegment = createTableSegment("table_1", "tbl_1");
-        ColumnProjection columnProjection = createColumnProjection(null, "col", null);
-        Map<String, String> actual = new TablesContext(Collections.singletonList(tableSegment)).findTableName(Collections.singletonList(columnProjection), mock(ShardingSphereSchema.class));
+        ColumnSegment columnSegment = createColumnSegment(null, "col");
+        Map<String, String> actual = new TablesContext(Collections.singletonList(tableSegment))
+                .findTableNamesByColumnSegment(Collections.singletonList(columnSegment), mock(ShardingSphereSchema.class));
         assertFalse(actual.isEmpty());
         assertThat(actual.get("col"), is("table_1"));
     }
@@ -70,8 +71,9 @@ public final class TablesContextTest {
     public void assertFindTableNameWhenColumnSegmentOwnerPresent() {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
         SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
-        ColumnProjection columnProjection = createColumnProjection("table_1", "col", "");
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(Collections.singletonList(columnProjection), mock(ShardingSphereSchema.class));
+        ColumnSegment columnSegment = createColumnSegment("table_1", "col");
+        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2))
+                .findTableNamesByColumnSegment(Collections.singletonList(columnSegment), mock(ShardingSphereSchema.class));
         assertFalse(actual.isEmpty());
         assertThat(actual.get("table_1.col"), is("table_1"));
     }
@@ -80,8 +82,9 @@ public final class TablesContextTest {
     public void assertFindTableNameWhenColumnSegmentOwnerAbsent() {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
         SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
-        ColumnProjection columnProjection = createColumnProjection(null, "col", null);
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(Collections.singletonList(columnProjection), mock(ShardingSphereSchema.class));
+        ColumnSegment columnSegment = createColumnSegment(null, "col");
+        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2))
+                .findTableNamesByColumnSegment(Collections.singletonList(columnSegment), mock(ShardingSphereSchema.class));
         assertTrue(actual.isEmpty());
     }
     
@@ -91,8 +94,8 @@ public final class TablesContextTest {
         SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getAllColumnNames("table_1")).thenReturn(Collections.singletonList("col"));
-        ColumnProjection columnProjection = createColumnProjection(null, "col", null);
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(Collections.singletonList(columnProjection), schema);
+        ColumnSegment columnSegment = createColumnSegment(null, "col");
+        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableNamesByColumnSegment(Collections.singletonList(columnSegment), schema);
         assertFalse(actual.isEmpty());
         assertThat(actual.get("col"), is("table_1"));
     }
@@ -105,8 +108,8 @@ public final class TablesContextTest {
                 Arrays.asList(new ColumnMetaData("COL", 0, false, false, true)),
                 Collections.EMPTY_LIST);
         ShardingSphereSchema schema = new ShardingSphereSchema(Arrays.asList(tableMetaData).stream().collect(Collectors.toMap(TableMetaData::getName, v -> v)));
-        ColumnProjection columnProjection = createColumnProjection(null, "COL", null);
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(Collections.singletonList(columnProjection), schema);
+        ColumnSegment columnSegment = createColumnSegment(null, "COL");
+        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableNamesByColumnSegment(Collections.singletonList(columnSegment), schema);
         assertFalse(actual.isEmpty());
         assertThat(actual.get("col"), is("TABLE_1"));
     }
@@ -118,8 +121,12 @@ public final class TablesContextTest {
         return result;
     }
     
-    private ColumnProjection createColumnProjection(final String owner, final String name, final String alias) {
-        return new ColumnProjection(owner, name, alias);
+    private ColumnSegment createColumnSegment(final String owner, final String name) {
+        ColumnSegment result = new ColumnSegment(0, 0, new IdentifierValue(name));
+        if (null != owner) {
+            result.setOwner(new OwnerSegment(0, 0, new IdentifierValue(owner)));
+        }
+        return result;
     }
     
     @Test

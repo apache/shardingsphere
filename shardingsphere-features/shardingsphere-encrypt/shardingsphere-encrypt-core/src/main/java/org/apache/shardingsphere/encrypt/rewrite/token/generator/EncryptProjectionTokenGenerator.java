@@ -137,7 +137,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
                 columns.addAll(((ShorthandProjection) projection).getActualColumns().values());
             }
         }
-        return selectStatementContext.getTablesContext().findTableName(columns, schema);
+        return selectStatementContext.getTablesContext().findTableNamesByColumnProjection(columns, schema);
     }
     
     private Collection<SelectStatementContext> getSelectStatementContexts(final SelectStatementContext selectStatementContext) {
