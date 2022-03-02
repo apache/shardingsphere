@@ -1,3 +1,9 @@
++++
+title = "Apache ShardingSphere is on the Stack Overflow Podcast, InfoQ and FOSDEM!"
+weight = 36
+chapter = true
++++
+
 # Apache ShardingSphere is on the Stack Overflow Podcast, InfoQ and FOSDEM!
 
 ![1](https://shardingsphere.apache.org/blog/img/Stack_Overflow_img_1.jpeg)
