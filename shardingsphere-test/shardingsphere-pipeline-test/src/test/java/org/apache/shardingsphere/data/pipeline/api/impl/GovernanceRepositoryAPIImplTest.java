@@ -126,7 +126,7 @@ public final class GovernanceRepositoryAPIImplTest {
         RuleAlteredJobContext jobContext = mockJobContext();
         governanceRepositoryAPI.persistJobProgress(jobContext);
         governanceRepositoryAPI.renewJobStatus(JobStatus.FINISHED, jobContext.getJobId());
-        ThreadUtil.sleep(1);
+        ThreadUtil.sleep(10);
         JobProgress jobProgress = governanceRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
         assertThat(jobProgress.getStatus(), is(JobStatus.FINISHED));
     }
