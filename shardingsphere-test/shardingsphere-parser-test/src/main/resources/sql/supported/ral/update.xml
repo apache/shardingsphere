@@ -20,4 +20,5 @@
     <distsql-case id="stop-scaling-source-writing" value="STOP SCALING SOURCE WRITING 123;" />
     <distsql-case id="restore-scaling-source-writing" value="RESTORE SCALING SOURCE WRITING 123;" />
     <distsql-case id="apply-scaling" value="APPLY SCALING 123;" />
+    <distsql-case id="drop-scaling" value="DROP SCALING 123;" />
 </sql-cases>

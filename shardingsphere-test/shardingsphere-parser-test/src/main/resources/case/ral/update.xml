@@ -28,4 +28,8 @@
     <apply-scaling sql-case-id="apply-scaling">
         <job-id>123</job-id>
     </apply-scaling>
+
+    <drop-scaling sql-case-id="drop-scaling">
+        <job-id>123</job-id>
+    </drop-scaling>
 </sql-parser-test-cases>
