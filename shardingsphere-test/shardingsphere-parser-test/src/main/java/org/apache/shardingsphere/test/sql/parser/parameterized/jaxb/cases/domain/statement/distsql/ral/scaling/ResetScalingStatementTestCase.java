@@ -15,31 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.response.header.update;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import java.util.Optional;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Client encoding response header.
+ * Reset scaling statement test case.
  */
-@RequiredArgsConstructor
-public class ClientEncodingResponseHeader implements ResponseHeader {
+@Getter
+@Setter
+public final class ResetScalingStatementTestCase extends SQLParserTestCase {
     
-    private final String currentCharsetValue;
-    
-    @Getter
-    private final String inputValue;
-    
-    /**
-     * Get current charset value.
-     *
-     * @return current charset value
-     */
-    public Optional<String> getCurrentCharsetValue() {
-        return Optional.ofNullable(currentCharsetValue);
-    }
+    @XmlElement(name = "job-id")
+    private final List<String> jobIds = new LinkedList<>();
 }

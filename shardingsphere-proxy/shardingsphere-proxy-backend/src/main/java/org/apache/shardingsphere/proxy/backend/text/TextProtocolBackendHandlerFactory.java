@@ -37,14 +37,12 @@ import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHa
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.database.DatabaseOperateBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.distsql.DistSQLBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.text.encoding.SetClientEncodingBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.extra.ExtraTextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandlerFactory;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.FlushStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
@@ -119,9 +117,6 @@ public final class TextProtocolBackendHandlerFactory {
                 getRules(schemaName), schemaName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), connectionSession.getGrantee());
         if (sqlStatement instanceof TCLStatement) {
             return TransactionBackendHandlerFactory.newInstance((SQLStatementContext<TCLStatement>) sqlStatementContext, sql, connectionSession);
-        }
-        if (sqlStatement instanceof SetStatement && SetClientEncodingBackendHandler.isSetClientEncoding((SetStatement) sqlStatement)) {
-            return new SetClientEncodingBackendHandler((SetStatement) sqlStatement, connectionSession);
         }
         backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatement, connectionSession);
         return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(sqlStatementContext, sql, connectionSession));
