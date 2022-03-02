@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query;
 
 import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.CommonConstants;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCharacterSet;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -36,11 +37,10 @@ import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFa
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder.ResponsePacketBuilder;
-import org.apache.shardingsphere.proxy.frontend.mysql.command.query.exception.UnknownCharacterSetException;
 
-import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -84,13 +84,11 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     }
     
     private Collection<DatabasePacket<?>> processClientEncoding(final ClientEncodingResponseHeader clientEncodingResponseHeader) {
-        String value = clientEncodingResponseHeader.getValue();
-        Optional<Charset> charset = MySQLCharacterSet.findByValue(value);
-        if (charset.isPresent()) {
-            clientEncodingResponseHeader.getConnectionSession().getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(charset.get());
-            return ResponsePacketBuilder.buildClientEncodingResponsePackets();
+        Optional<String> currentCharsetValue = clientEncodingResponseHeader.getCurrentCharsetValue();
+        if (currentCharsetValue.isPresent()) {
+            return Collections.singletonList(new MySQLOKPacket(1, 0, 0));
         }
-        throw new UnknownCharacterSetException(value);
+        return Collections.singletonList(new MySQLErrPacket(1, MySQLServerErrorCode.ER_UNKNOWN_CHARACTER_SET, clientEncodingResponseHeader.getInputValue()));
     }
     
     @Override

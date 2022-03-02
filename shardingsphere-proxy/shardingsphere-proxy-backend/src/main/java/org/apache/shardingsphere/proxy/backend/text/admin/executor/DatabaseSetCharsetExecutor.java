@@ -15,31 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.response.header.update;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-
-import java.util.Optional;
+package org.apache.shardingsphere.proxy.backend.text.admin.executor;
 
 /**
- * Client encoding response header.
+ * Database set charset executor.
  */
-@RequiredArgsConstructor
-public class ClientEncodingResponseHeader implements ResponseHeader {
-    
-    private final String currentCharsetValue;
-    
-    @Getter
-    private final String inputValue;
+public interface DatabaseSetCharsetExecutor extends DatabaseAdminExecutor {
     
     /**
-     * Get current charset value.
+     * Get current charset.
      *
-     * @return current charset value
+     * @return Current charset name
      */
-    public Optional<String> getCurrentCharsetValue() {
-        return Optional.ofNullable(currentCharsetValue);
-    }
+    String getCurrentCharset();
 }

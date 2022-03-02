@@ -15,55 +15,57 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.encoding;
+package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.ClientEncodingResponseHeader;
+import org.apache.shardingsphere.db.protocol.CommonConstants;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseSetCharsetExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
-import java.util.Iterator;
+import java.util.Locale;
 
 /**
- * Set client encoding backend handler.
+ * Set charset executor of MySQL.
  */
 @RequiredArgsConstructor
-public class SetClientEncodingBackendHandler implements TextProtocolBackendHandler {
-    
-    private static final String MYSQL_KEY = "charset";
-    
-    private static final String POSTGRESQL_KEY = "client_encoding";
+public final class MySQLSetCharsetExecutor implements DatabaseSetCharsetExecutor {
     
     private final SetStatement setStatement;
     
-    private final ConnectionSession connectionSession;
+    private String currentValue;
     
     @Override
-    public ResponseHeader execute() throws SQLException {
+    public void execute(final ConnectionSession connectionSession) throws SQLException {
         VariableAssignSegment segment = setStatement.getVariableAssigns().iterator().next();
-        return new ClientEncodingResponseHeader(segment.getVariable().getVariable().trim(), formatValue(segment.getAssignValue().trim()), setStatement, connectionSession);
+        String value = formatValue(segment.getAssignValue().trim());
+        Charset charset = parseCharset(value);
+        currentValue = value;
+        connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(charset);
     }
     
     private String formatValue(final String value) {
         return value.startsWith("'") && value.endsWith("'") ? value.substring(1, value.length() - 1) : value.trim();
     }
     
-    /**
-     * Judgment set statement Is set client encoding set statement.
-     *
-     * @param setStatement set statement
-     * @return is set client encoding or not
-     */
-    public static boolean isSetClientEncoding(final SetStatement setStatement) {
-        Iterator<VariableAssignSegment> iterator = setStatement.getVariableAssigns().iterator();
-        return iterator.hasNext() && containsKey(iterator.next().getVariable().getVariable());
+    private Charset parseCharset(final String value) {
+        String result = value.toLowerCase(Locale.ROOT);
+        if ("default".equals(result)) {
+            return MySQLServerInfo.DEFAULT_CHARSET.getCharset();
+        }
+        if ("utf8mb4".equals(result)) {
+            return StandardCharsets.UTF_8;
+        }
+        return Charset.forName(value);
     }
     
-    private static boolean containsKey(final String key) {
-        return MYSQL_KEY.equalsIgnoreCase(key) || POSTGRESQL_KEY.equalsIgnoreCase(key);
+    @Override
+    public String getCurrentCharset() {
+        return currentValue;
     }
 }
