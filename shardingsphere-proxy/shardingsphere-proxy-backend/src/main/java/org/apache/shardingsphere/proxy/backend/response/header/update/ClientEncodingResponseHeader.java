@@ -40,6 +40,6 @@ public class ClientEncodingResponseHeader implements ResponseHeader {
      * @return current charset value
      */
     public Optional<String> getCurrentCharsetValue() {
-        return null == currentCharsetValue ? Optional.empty() : Optional.of(currentCharsetValue);
+        return Optional.ofNullable(currentCharsetValue);
     }
 }
