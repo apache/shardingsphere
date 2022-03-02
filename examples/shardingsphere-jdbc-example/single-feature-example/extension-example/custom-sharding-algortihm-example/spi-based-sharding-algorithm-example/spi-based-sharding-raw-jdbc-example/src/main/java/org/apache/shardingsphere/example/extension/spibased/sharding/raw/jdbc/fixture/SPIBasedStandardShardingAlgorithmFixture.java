@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.extension.sharding.algortihm.spibased.spi;
+package org.apache.shardingsphere.example.extension.spibased.sharding.raw.jdbc.fixture;
 
-import java.util.Collection;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
-public final class SpiBasedShardingAlgorithm implements StandardShardingAlgorithm<Integer> {
+import java.util.Collection;
+
+public final class SPIBasedStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
 
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {

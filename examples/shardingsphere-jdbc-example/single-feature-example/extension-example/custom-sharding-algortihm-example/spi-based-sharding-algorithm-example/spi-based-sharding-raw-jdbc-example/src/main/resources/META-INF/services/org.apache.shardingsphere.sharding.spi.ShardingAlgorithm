@@ -15,4 +15,4 @@
 # limitations under the License.
 #
  
-org.apache.shardingsphere.example.extension.sharding.algortihm.spibased.spi.SpiBasedShardingAlgorithm
+org.apache.shardingsphere.example.extension.spibased.sharding.raw.jdbc.fixture.SPIBasedStandardShardingAlgorithmFixture
