@@ -40,22 +40,22 @@ import java.util.Optional;
  */
 public final class DropShardingBindingTableRuleStatementUpdater implements RuleDefinitionDropUpdater<DropShardingBindingTableRulesStatement, ShardingRuleConfiguration> {
     
-    private Map<String, String> bindingRelationship;
+    private Map<String, String> bindingTableRules;
     
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingBindingTableRulesStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         String schemaName = shardingSphereMetaData.getName();
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
-        bindingRelationship = buildBindingRelationship(currentRuleConfig);
-        checkBindingTableRuleExist(schemaName, sqlStatement, bindingRelationship);
+        bindingTableRules = buildBindingTableRule(currentRuleConfig);
+        checkBindingTableRuleExist(schemaName, sqlStatement, bindingTableRules);
     }
     
     private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         DistSQLException.predictionThrow(null != currentRuleConfig && !currentRuleConfig.getBindingTableGroups().isEmpty(), new RequiredRuleMissedException("Binding", schemaName));
     }
     
-    private Map<String, String> buildBindingRelationship(final ShardingRuleConfiguration configuration) {
+    private Map<String, String> buildBindingTableRule(final ShardingRuleConfiguration configuration) {
         Map<String, String> result = new LinkedHashMap<>();
         configuration.getBindingTableGroups().forEach(each -> Arrays.stream(each.split(",")).forEach(each1 -> result.put(each1, each)));
         return result;
@@ -88,8 +88,8 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
     public boolean updateCurrentRuleConfiguration(final DropShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getBindingTableGroups().clear();
         if (!sqlStatement.getRules().isEmpty()) {
-            sqlStatement.getRules().forEach(each -> each.getBindingTables().forEach(each1 -> bindingRelationship.remove(each1)));
-            currentRuleConfig.getBindingTableGroups().addAll(new LinkedHashSet<>(bindingRelationship.values()));
+            sqlStatement.getRules().forEach(each -> each.getBindingTables().forEach(each1 -> bindingTableRules.remove(each1)));
+            currentRuleConfig.getBindingTableGroups().addAll(new LinkedHashSet<>(bindingTableRules.values()));
         }
         return false;
     }
