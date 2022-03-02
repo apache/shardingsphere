@@ -17,18 +17,18 @@
   -->
 
 <configuration>
-    <property name="log.context.name" value="class-based-sharding-algorithm-example" />
-    <property name="log.charset" value="UTF-8" />
-    <property name="log.pattern" value="[%-5level] %date --%thread-- [%logger] %msg %n" />
+    <property name="log.context.name" value="class-based-sharding-raw-jdbc-example"/>
+    <property name="log.charset" value="UTF-8"/>
+    <property name="log.pattern" value="[%-5level] %date --%thread-- [%logger] %msg %n"/>
     <contextName>${log.context.name}</contextName>
-    
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder charset="${log.charset}">
             <pattern>${log.pattern}</pattern>
         </encoder>
     </appender>
     <root>
-        <level value="INFO" />
-        <appender-ref ref="STDOUT" />
+        <level value="INFO"/>
+        <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

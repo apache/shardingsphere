@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.extension.sharding.algortihm.classbased.fixture;
+package org.apache.shardingsphere.example.extension.classbased.sharding.raw.jdbc.fixture;
 
 import com.google.common.base.Preconditions;
 import com.google.common.primitives.Ints;
