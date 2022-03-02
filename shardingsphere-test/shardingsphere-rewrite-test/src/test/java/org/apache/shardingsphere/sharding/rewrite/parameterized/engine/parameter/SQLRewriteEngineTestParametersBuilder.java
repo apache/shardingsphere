@@ -87,8 +87,8 @@ public final class SQLRewriteEngineTestParametersBuilder {
     
     private static void appendFromFile(final String type, final File file, final String path, final Map<String, RewriteAssertionsRootEntity> result) {
         if (file.getName().endsWith(".xml")) {
-            String fileNameKey = path.toLowerCase().replace(type.toLowerCase() + "/", "") + file.getName();
-            result.put(fileNameKey, new RewriteAssertionsRootEntityLoader().load(path + "/" + file.getName()));
+            String key = path.toLowerCase().replace(type.toLowerCase() + "/", "") + file.getName();
+            result.put(key, new RewriteAssertionsRootEntityLoader().load(path + "/" + file.getName()));
         }
     }
     
