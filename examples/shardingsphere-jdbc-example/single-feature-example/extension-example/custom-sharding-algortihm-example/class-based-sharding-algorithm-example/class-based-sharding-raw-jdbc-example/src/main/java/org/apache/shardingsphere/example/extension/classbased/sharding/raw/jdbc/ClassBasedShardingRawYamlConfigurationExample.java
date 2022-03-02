@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.extension.sharding.algortihm.classbased;
+package org.apache.shardingsphere.example.extension.classbased.sharding.raw.jdbc;
 
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
-import org.apache.shardingsphere.example.extension.sharding.algortihm.classbased.factory.YamlDataSourceFactory;
+import org.apache.shardingsphere.example.extension.classbased.sharding.raw.jdbc.factory.YamlDataSourceFactory;
 import org.apache.shardingsphere.example.type.ShardingType;
 
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public final class YamlClassBasedShardingAlgorithmExample {
+public final class ClassBasedShardingRawYamlConfigurationExample {
     
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
     

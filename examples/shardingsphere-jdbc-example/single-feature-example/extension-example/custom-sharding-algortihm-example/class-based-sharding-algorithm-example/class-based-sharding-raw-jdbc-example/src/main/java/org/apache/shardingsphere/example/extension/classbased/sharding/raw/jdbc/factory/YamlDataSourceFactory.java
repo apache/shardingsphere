@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.extension.sharding.algortihm.classbased.factory;
+package org.apache.shardingsphere.example.extension.classbased.sharding.raw.jdbc.factory;
 
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.type.ShardingType;
