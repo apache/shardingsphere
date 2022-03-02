@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Governance repository API impl.
@@ -125,20 +126,28 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
-    public void renewJobStatus(final JobStatus status, final String jobId) {
-        List<String> offsetKeys = getChildrenKeys(String.format("%s/%s/offset", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId));
-        for (String each : offsetKeys) {
-            int offsetKey = Integer.parseInt(each);
-            JobProgress jobProgress = getJobProgress(jobId, offsetKey);
-            if (null == jobProgress) {
-                continue;
-            }
-            jobProgress.setStatus(status);
-            persist(getOffsetPath(jobId, offsetKey), YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(jobProgress)));
+    public List<Integer> getShardingItems(final String jobId) {
+        List<String> result = getChildrenKeys(getOffsetPath(jobId));
+        log.info("getShardingItems, jobId={}, offsetKeys={}", jobId, result);
+        return result.stream().map(Integer::parseInt).collect(Collectors.toList());
+    }
+    
+    @Override
+    public void updateShardingJobStatus(final String jobId, final int shardingItem, final JobStatus status) {
+        JobProgress jobProgress = getJobProgress(jobId, shardingItem);
+        if (null == jobProgress) {
+            log.warn("updateShardingJobStatus, jobProgress is null, jobId={}, shardingItem={}", jobId, shardingItem);
+            return;
         }
+        jobProgress.setStatus(status);
+        persist(getOffsetPath(jobId, shardingItem), YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(jobProgress)));
     }
     
     private String getOffsetPath(final String jobId, final int shardingItem) {
         return String.format("%s/%s/offset/%d", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, shardingItem);
+    }
+    
+    private String getOffsetPath(final String jobId) {
+        return String.format("%s/%s/offset", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId);
     }
 }
