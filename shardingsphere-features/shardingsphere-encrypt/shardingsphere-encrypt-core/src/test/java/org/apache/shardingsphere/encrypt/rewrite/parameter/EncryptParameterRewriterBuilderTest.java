@@ -48,7 +48,7 @@ public final class EncryptParameterRewriterBuilderTest {
         SQLStatementContext<?> sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
         Collection<ParameterRewriter> actual = new EncryptParameterRewriterBuilder(
-                encryptRule, DefaultSchema.LOGIC_NAME, shardingSphereSchema, sqlStatementContext, Collections.emptyList(), true).getParameterRewriters();
+                encryptRule, DefaultSchema.LOGIC_NAME, shardingSphereSchema, sqlStatementContext, Collections.emptyList()).getParameterRewriters();
         assertThat(actual.size(), is(1));
         ParameterRewriter parameterRewriter = actual.iterator().next();
         assertThat(parameterRewriter, instanceOf(EncryptPredicateParameterRewriter.class));
@@ -64,7 +64,7 @@ public final class EncryptParameterRewriterBuilderTest {
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
         when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.emptyList());
         Collection<ParameterRewriter> actual = new EncryptParameterRewriterBuilder(
-                encryptRule, DefaultSchema.LOGIC_NAME, shardingSphereSchema, sqlStatementContext, Collections.emptyList(), true).getParameterRewriters();
+                encryptRule, DefaultSchema.LOGIC_NAME, shardingSphereSchema, sqlStatementContext, Collections.emptyList()).getParameterRewriters();
         assertThat(actual.size(), is(0));
     }
 }

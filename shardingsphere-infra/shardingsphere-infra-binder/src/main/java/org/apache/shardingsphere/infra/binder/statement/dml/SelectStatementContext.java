@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.statement.dml;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.engine.GroupByContextEngine;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
@@ -75,7 +76,8 @@ import java.util.stream.Collectors;
  * Select SQL statement context.
  */
 @Getter
-public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable, WhereAvailable {
+@Setter
+public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable, WhereAvailable, ParameterAware {
     
     private final TablesContext tablesContext;
     
@@ -85,19 +87,17 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private final OrderByContext orderByContext;
     
-    private final PaginationContext paginationContext;
-    
     private final Map<Integer, SelectStatementContext> subqueryContexts;
     
     private final Collection<WhereSegment> whereSegments = new LinkedList<>();
     
-    @Setter
     private SubqueryType subqueryType;
     
-    @Setter
     private boolean needAggregateRewrite;
     
-    public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, 
+    private PaginationContext paginationContext;
+    
+    public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters,
                                   final SelectStatement sqlStatement, final String defaultSchemaName) {
         super(sqlStatement);
         whereSegments.addAll(getWhereSegments(sqlStatement));
@@ -318,5 +318,10 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
             }
         }
         return result;
+    }
+    
+    @Override
+    public void setUpParameters(final List<Object> parameters) {
+        paginationContext = new PaginationContextEngine().createPaginationContext(getSqlStatement(), projectionsContext, parameters, whereSegments);
     }
 }
