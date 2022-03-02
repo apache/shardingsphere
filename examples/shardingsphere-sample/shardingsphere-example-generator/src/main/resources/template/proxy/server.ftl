@@ -15,13 +15,32 @@
 # limitations under the License.
 #
 
-product: proxy
-mode: memory
-transaction: local
-features: sharding,readwrite-splitting,encrypt
-frameworks: jdbc,spring-boot-starter-jdbc
+# You can get more configuration items about proxy conf from the following URL:
+# https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/configuration/
 
-host: localhost
-port: 3306
-username: root
-password: root
+mode:
+  type: Cluster
+  repository:
+    type: ZooKeeper
+    props:
+      namespace: demo_yaml
+      server-lists: localhost:2181
+  overwrite: false
+
+rules:
+  - !AUTHORITY
+    users:
+      - root@:root
+      - sharding@:sharding
+    provider:
+      type: ALL_PRIVILEGES_PERMITTED
+
+props:
+  max-connections-size-per-query: 1
+  executor-size: 16  # Infinite by default.
+  proxy-frontend-flush-threshold: 128  # The default value is 128.
+  proxy-hint-enabled: false
+  sql-show: false
+  check-table-metadata-enabled: false
+  sql-simple: false
+  check-duplicate-table-enabled: false

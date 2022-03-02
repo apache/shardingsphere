@@ -14,14 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-product: proxy
-mode: memory
-transaction: local
-features: sharding,readwrite-splitting,encrypt
-frameworks: jdbc,spring-boot-starter-jdbc
-
-host: localhost
-port: 3306
-username: root
-password: root
+<#include "datasource.ftl">
+  - !ENCRYPT
+    tables:
+      t_order:
+        columns:
+          columnName:
+            cipherColumn: cipher
+            encryptorName: encryptor
+    encryptors:
+      encryptor:
+        type: AES
+        props:
+          aes-key-value: 123456abc
