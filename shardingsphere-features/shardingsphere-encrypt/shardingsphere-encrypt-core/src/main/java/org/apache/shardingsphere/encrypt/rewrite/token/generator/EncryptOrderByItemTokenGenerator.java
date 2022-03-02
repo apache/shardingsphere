@@ -62,7 +62,7 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
         for (OrderByItem each : getOrderByItems(sqlStatementContext)) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
                 ColumnSegment columnSegment = ((ColumnOrderByItemSegment) each.getSegment()).getColumn();
-                Map<String, String> columnTableNames = sqlStatementContext.getTablesContext().findTableName(Collections.singletonList(buildColumnProjection(columnSegment)), schema);
+                Map<String, String> columnTableNames = sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(Collections.singletonList(columnSegment), schema);
                 result.addAll(generateSQLTokensWithColumnSegments(Collections.singletonList(columnSegment), columnTableNames));
             }
         }
@@ -72,25 +72,25 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
     private Collection<SubstitutableColumnNameToken> generateSQLTokensWithColumnSegments(final Collection<ColumnSegment> columnSegments, final Map<String, String> columnTableNames) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (ColumnSegment column : columnSegments) {
-            Optional<String> tableName = findTableName(columnTableNames, buildColumnProjection(column));
-            Optional<EncryptTable> encryptTable = tableName.flatMap(optional -> encryptRule.findEncryptTable(optional));
+            String tableName = columnTableNames.getOrDefault(column.getExpression(), "");
+            Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
             if (!encryptTable.isPresent() || !encryptTable.get().findEncryptorName(column.getIdentifier().getValue()).isPresent()) {
                 continue;
             }
             int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
             int stopIndex = column.getStopIndex();
-            boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(tableName.orElse(""));
+            boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(tableName);
             if (!queryWithCipherColumn) {
                 Optional<String> plainColumn = encryptTable.get().findPlainColumn(column.getIdentifier().getValue());
                 if (plainColumn.isPresent()) {
-                    result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(plainColumn.get())));
+                    result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(plainColumn.get())));
                     continue;
                 }
             }
             Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(column.getIdentifier().getValue());
             SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.map(columnName
-                -> new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(columnName))).orElseGet(()
-                    -> new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(encryptTable.get().getCipherColumn(column.getIdentifier().getValue()))));
+                -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(columnName))).orElseGet(()
+                    -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(encryptTable.get().getCipherColumn(column.getIdentifier().getValue()))));
             result.add(encryptColumnNameToken);
         }
         return result;
@@ -126,16 +126,7 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
         return false;
     }
     
-    private ColumnProjection buildColumnProjection(final ColumnSegment segment) {
-        String owner = segment.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(null);
-        return new ColumnProjection(owner, segment.getIdentifier().getValue(), null);
-    }
-    
-    private Optional<String> findTableName(final Map<String, String> columnTableNames, final ColumnProjection column) {
-        return Optional.ofNullable(columnTableNames.get(column.getExpression()));
-    }
-    
-    private Collection<ColumnProjection> getColumnProjections(final String columnName) {
+    private Collection<ColumnProjection> createColumnProjections(final String columnName) {
         return Collections.singletonList(new ColumnProjection(null, columnName, null));
     }
 }

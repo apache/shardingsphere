@@ -20,8 +20,8 @@ package org.apache.shardingsphere.encrypt.rewrite.condition;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptEqualCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
+import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -78,36 +78,37 @@ public final class EncryptConditionEngine {
      * Create encrypt conditions.
      *
      * @param whereSegments where segments
+     * @param columnSegments column segments
      * @param tablesContext tables context
      * @return encrypt conditions
      */
-    public Collection<EncryptCondition> createEncryptConditions(final Collection<WhereSegment> whereSegments, final TablesContext tablesContext) {
+    public Collection<EncryptCondition> createEncryptConditions(final Collection<WhereSegment> whereSegments, 
+                                                                final Collection<ColumnSegment> columnSegments, final TablesContext tablesContext) {
         Collection<EncryptCondition> result = new LinkedList<>();
+        Map<String, String> expressionTableNames = tablesContext.findTableNamesByColumnSegment(columnSegments, schema);
         for (WhereSegment each : whereSegments) {
             Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(each.getExpr());
-            Map<String, String> columnTableNames = getColumnTableNames(tablesContext, andPredicates);
             for (AndPredicate predicate : andPredicates) {
-                addEncryptConditions(result, predicate.getPredicates(), columnTableNames);
+                addEncryptConditions(result, predicate.getPredicates(), expressionTableNames);
             }
         }
         return result;
     }
     
-    private void addEncryptConditions(final Collection<EncryptCondition> encryptConditions, final Collection<ExpressionSegment> predicates, final Map<String, String> columnTableNames) {
+    private void addEncryptConditions(final Collection<EncryptCondition> encryptConditions, final Collection<ExpressionSegment> predicates, final Map<String, String> expressionTableNames) {
         Collection<Integer> stopIndexes = new HashSet<>(predicates.size(), 1);
         for (ExpressionSegment each : predicates) {
             if (stopIndexes.add(each.getStopIndex())) {
-                addEncryptConditions(encryptConditions, each, columnTableNames);
+                addEncryptConditions(encryptConditions, each, expressionTableNames);
             }
         }
     }
     
-    private void addEncryptConditions(final Collection<EncryptCondition> encryptConditions, final ExpressionSegment expression, final Map<String, String> columnTableNames) {
+    private void addEncryptConditions(final Collection<EncryptCondition> encryptConditions, final ExpressionSegment expression, final Map<String, String> expressionTableNames) {
         for (ColumnSegment each : ColumnExtractor.extract(expression)) {
-            ColumnProjection projection = buildColumnProjection(each);
-            Optional<String> tableName = Optional.ofNullable(columnTableNames.get(projection.getExpression()));
-            Optional<EncryptCondition> encryptCondition = tableName.isPresent() 
-                    && encryptRule.findEncryptColumn(tableName.get(), projection.getName()).isPresent() ? createEncryptCondition(expression, tableName.get()) : Optional.empty();
+            String tableName = expressionTableNames.getOrDefault(each.getExpression(), "");
+            Optional<EncryptColumn> encryptColumn = encryptRule.findEncryptColumn(tableName, each.getIdentifier().getValue());
+            Optional<EncryptCondition> encryptCondition = encryptColumn.isPresent() ? createEncryptCondition(expression, tableName) : Optional.empty();
             encryptCondition.ifPresent(encryptConditions::add);
         }
     }
@@ -134,27 +135,6 @@ public final class EncryptConditionEngine {
             throw new ShardingSphereException("The SQL clause '%s' is unsupported in encrypt rule.", operator);
         }
         return Optional.empty();
-    }
-    
-    private Map<String, String> getColumnTableNames(final TablesContext tablesContext, final Collection<AndPredicate> andPredicates) {
-        Collection<ColumnProjection> columns = new LinkedList<>();
-        for (AndPredicate each : andPredicates) {
-            addColumnProjections(columns, each);
-        }
-        return tablesContext.findTableName(columns, schema);
-    }
-    
-    private void addColumnProjections(final Collection<ColumnProjection> columns, final AndPredicate predicate) {
-        for (ExpressionSegment each : predicate.getPredicates()) {
-            for (ColumnSegment column : ColumnExtractor.extract(each)) {
-                columns.add(buildColumnProjection(column));
-            }
-        }
-    }
-    
-    private ColumnProjection buildColumnProjection(final ColumnSegment segment) {
-        String owner = segment.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(null);
-        return new ColumnProjection(owner, segment.getIdentifier().getValue(), null);
     }
     
     private Optional<EncryptCondition> createCompareEncryptCondition(final String tableName, final BinaryOperationExpression expression, final ExpressionSegment compareRightValue) {
