@@ -28,7 +28,7 @@
     <artifactId>class-based-sharding-algorithm-example</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
-
+    
     <modules>
         <module>class-based-sharding-raw-jdbc-example</module>
     </modules>
