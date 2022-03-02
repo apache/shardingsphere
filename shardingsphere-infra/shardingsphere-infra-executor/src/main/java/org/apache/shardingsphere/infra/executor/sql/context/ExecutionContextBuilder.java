@@ -63,7 +63,7 @@ public final class ExecutionContextBuilder {
     }
     
     private static Collection<ExecutionUnit> build(final RouteSQLRewriteResult sqlRewriteResult) {
-        Collection<ExecutionUnit> result = new LinkedHashSet<>();
+        Collection<ExecutionUnit> result = new LinkedHashSet<>(sqlRewriteResult.getSqlRewriteUnits().size(), 1f);
         for (Entry<RouteUnit, SQLRewriteUnit> entry : sqlRewriteResult.getSqlRewriteUnits().entrySet()) {
             result.add(new ExecutionUnit(entry.getKey().getDataSourceMapper().getActualName(),
                     new SQLUnit(entry.getValue().getSql(), entry.getValue().getParameters(), getRouteTableRouteMappers(entry.getKey().getTableMappers()))));

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryabl
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.swapper.DatabaseDiscoveryRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.ExportSchemaConfigurationStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ExportSchemaConfigurationStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -50,13 +50,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Export schema configuration handler.
  */
 public final class ExportSchemaConfigurationHandler extends QueryableRALBackendHandler<ExportSchemaConfigurationStatement, ExportSchemaConfigurationHandler> {
     
-    private static final String CONFIG = "config";
+    private static final String RESULT = "result";
     
     private static final String COLON = ":";
     
@@ -106,7 +107,7 @@ public final class ExportSchemaConfigurationHandler extends QueryableRALBackendH
     
     @Override
     protected Collection<String> getColumnNames() {
-        return Collections.singletonList(CONFIG);
+        return Collections.singletonList(RESULT);
     }
     
     @Override
@@ -127,7 +128,7 @@ public final class ExportSchemaConfigurationHandler extends QueryableRALBackendH
         } catch (final IOException ex) {
             throw new ShardingSphereException(ex);
         }
-        return null;
+        return Collections.singleton(Collections.singletonList(String.format("Successfully exported to：'%s'", sqlStatement.getFilePath().get())));
     }
     
     private void getDataSourcesConfig(final ShardingSphereMetaData metaData, final StringBuilder result) {
@@ -135,7 +136,7 @@ public final class ExportSchemaConfigurationHandler extends QueryableRALBackendH
             return;
         }
         configItem(ZERO, "dataSources", result);
-        for (Map.Entry<String, DataSource> each : metaData.getResource().getDataSources().entrySet()) {
+        for (Entry<String, DataSource> each : metaData.getResource().getDataSources().entrySet()) {
             configItem(ONE, each.getKey(), result);
             DataSourceProperties dataSourceProps = DataSourcePropertiesCreator.create(each.getValue());
             dataSourceProps.getConnectionPropertySynonyms().getStandardProperties().entrySet().forEach(standard -> {

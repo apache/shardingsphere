@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.classbased;
 
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
@@ -36,6 +37,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class ClassBasedShardingAlgorithmTest {
+    
+    private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("t_order_", 1, '0');
     
     @Test
     public void assertStandardStrategyInit() {
@@ -86,14 +89,16 @@ public final class ClassBasedShardingAlgorithmTest {
     public void assertPreciseDoSharding() {
         ClassBasedShardingAlgorithm shardingAlgorithm = getStandardShardingAlgorithm();
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        assertThat(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", 0)), is("t_order_0"));
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames, 
+                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
     }
     
     @Test
     public void assertRangeDoSharding() {
         ClassBasedShardingAlgorithm shardingAlgorithm = getStandardShardingAlgorithm();
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "order_id", Range.closed(2, 15)));
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, 
+                new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(2, 15)));
         assertThat(actual.size(), is(4));
     }
     

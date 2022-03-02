@@ -43,8 +43,8 @@ public final class MySQLQueryHeaderBuilder extends QueryHeaderBuilder {
     
     @SneakyThrows(ConcurrentException.class)
     @Override
-    protected QueryHeader doBuild(final QueryResultMetaData queryResultMetaData, final ShardingSphereMetaData metaData, final String columnName, final int columnIndex,
-                                  final LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException {
+    protected QueryHeader doBuild(final QueryResultMetaData queryResultMetaData, final ShardingSphereMetaData metaData, final String columnName, final String columnLabel, 
+                                  final int columnIndex, final LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException {
         String schemaName = null == metaData ? "" : metaData.getName();
         String actualTableName = queryResultMetaData.getTableName(columnIndex);
         String tableName;
@@ -57,7 +57,6 @@ public final class MySQLQueryHeaderBuilder extends QueryHeaderBuilder {
             tableName = actualTableName;
             primaryKey = false;
         }
-        String columnLabel = queryResultMetaData.getColumnLabel(columnIndex);
         int columnType = queryResultMetaData.getColumnType(columnIndex);
         String columnTypeName = queryResultMetaData.getColumnTypeName(columnIndex);
         int columnLength = queryResultMetaData.getColumnLength(columnIndex);

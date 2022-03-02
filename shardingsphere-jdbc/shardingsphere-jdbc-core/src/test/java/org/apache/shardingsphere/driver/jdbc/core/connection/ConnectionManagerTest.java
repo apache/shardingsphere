@@ -31,6 +31,8 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.After;
 import org.junit.Before;
@@ -61,16 +63,22 @@ public final class ConnectionManagerTest {
     
     private ConnectionManager connectionManager;
     
+    private ConnectionManager connectionManagerInXaTransaction;
+    
     private MockedStatic<DataSourcePoolCreator> dataSourcePoolCreator;
     
     @Before
     public void setUp() throws SQLException {
-        connectionManager = new ConnectionManager(DefaultSchema.LOGIC_NAME, mockContextManager());
+        ContextManager contextManager = mockContextManager();
+        connectionManager = new ConnectionManager(DefaultSchema.LOGIC_NAME, contextManager);
+        TransactionTypeHolder.set(TransactionType.XA);
+        connectionManagerInXaTransaction = new ConnectionManager(DefaultSchema.LOGIC_NAME, contextManager);
     }
     
     @After
     public void cleanUp() {
         dataSourcePoolCreator.close();
+        TransactionTypeHolder.clear();
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -91,7 +99,7 @@ public final class ConnectionManagerTest {
     
     private Map<String, DataSource> mockTrafficDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>();
-        result.put("127.0.0.1@3307", new MockedDataSource());
+        result.put("127.0.0.1@3307", new MockedDataSource("jdbc:mysql://127.0.0.1:3307/logic_db?serverTimezone=UTC&useSSL=false", "root", "123456"));
         return result;
     }
     
@@ -163,7 +171,16 @@ public final class ConnectionManagerTest {
         List<Connection> actual = connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual, is(connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY)));
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mock://127.0.0.1/foo_ds"));
+        assertThat(actual.get(0).getMetaData().getUserName(), is("root"));
+        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?serverTimezone=UTC&useSSL=false"));
+    }
+    
+    @Test
+    public void assertGetConnectionWhenConfigTrafficRuleInXaTransaction() throws SQLException {
+        List<Connection> actual = connectionManagerInXaTransaction.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getMetaData().getUserName(), is("root"));
+        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?serverTimezone=UTC&useSSL=false"));
     }
     
     @Test
@@ -180,7 +197,8 @@ public final class ConnectionManagerTest {
         List<Connection> actual = connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.CONNECTION_STRICTLY);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), is(expected));
-        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mock://127.0.0.1/foo_ds"));
+        assertThat(actual.get(0).getMetaData().getUserName(), is("root"));
+        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?serverTimezone=UTC&useSSL=false"));
     }
     
     @Test
@@ -193,7 +211,8 @@ public final class ConnectionManagerTest {
     public void assertGetConnectionsWhenConfigTrafficRuleAndEmptyCache() throws SQLException {
         List<Connection> actual = connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mock://127.0.0.1/foo_ds"));
+        assertThat(actual.get(0).getMetaData().getUserName(), is("root"));
+        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?serverTimezone=UTC&useSSL=false"));
     }
     
     @Test

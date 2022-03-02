@@ -73,7 +73,6 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     private void buildTransientFieldNames() {
         transientFieldNames.add("running");
         transientFieldNames.add("poolName");
-        transientFieldNames.add("registerMbeans");
         transientFieldNames.add("closed");
     }
     
@@ -84,6 +83,6 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     
     @Override
     public String getType() {
-        return HikariDataSource.class.getName();
+        return "com.zaxxer.hikari.HikariDataSource";
     }
 }

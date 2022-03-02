@@ -31,7 +31,7 @@ public final class TargetConfiguration {
     
     private static final String TARGET_JDBC_URL = "jdbc:mysql://%s/ds_dst?useSSL=false";
     
-    private static final Properties ENGINE_ENV_PROPS = IntegrationTestEnvironment.getInstance().getEngineEnvProps();
+    private static final Properties ENGINE_ENV_PROPS = IntegrationTestEnvironment.getInstance().getProps();
     
     /**
      * Get docker standard pipeline configuration.

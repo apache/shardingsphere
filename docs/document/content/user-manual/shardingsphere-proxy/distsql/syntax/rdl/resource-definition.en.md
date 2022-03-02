@@ -30,6 +30,7 @@ poolProperty:
 - Duplicate `dataSourceName` is not allowed to be added
 - In the definition of a `dataSource`, the syntax of `simpleSource` and `urlSource` cannot be mixed
 - `poolProperty` is used to customize connection pool properties, `key` must be the same as the connection pool property name, `value` supports int and String types
+- `ALTER RESOURCE` is not allowed to change the real data source associated with this resource
 - `ALTER RESOURCE` will switch the connection pool. This operation may affect the ongoing business, please use it with caution
 - `DROP RESOURCE` will only delete logical resources, not real data sources
 - Resources referenced by rules cannot be deleted

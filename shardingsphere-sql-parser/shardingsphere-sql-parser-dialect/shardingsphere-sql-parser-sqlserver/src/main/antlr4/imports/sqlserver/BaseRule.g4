@@ -63,7 +63,15 @@ nullValueLiterals
     ;
 
 identifier
+    : regularIdentifier | delimitedIdentifier
+    ;
+
+regularIdentifier
     : IDENTIFIER_ | unreservedWord
+    ;
+
+delimitedIdentifier
+    : DELIMITED_IDENTIFIER_
     ;
 
 unreservedWord
@@ -194,7 +202,7 @@ collationName
     ;
 
 alias
-    : IDENTIFIER_
+    : identifier | STRING_
     ;
 
 dataTypeLength
@@ -325,10 +333,6 @@ caseElse
 
 privateExprOfDb
     : windowedFunction | atTimeZoneExpr | castExpr | convertExpr
-    ;
-
-subquery
-    : matchNone
     ;
 
 orderByClause
@@ -480,7 +484,7 @@ matchNone
     ;
 
 variableName
-    : AT_ identifier
+    : identifier
     ;
 
 executeAsClause

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.rule;
 
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -572,8 +571,7 @@ public final class ShardingRuleTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(sqlStatementContext.isContainsJoinQuery()).thenReturn(true);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(sqlStatementContext.getTablesContext().findTableName(Arrays.asList(buildColumnProjection(leftDatabaseJoin), 
-                buildColumnProjection(rightDatabaseJoin)), schema)).thenReturn(createColumnTableNameMap());
+        when(sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(Arrays.asList(leftDatabaseJoin, rightDatabaseJoin), schema)).thenReturn(createColumnTableNameMap());
         assertFalse(createMaximumShardingRule().isAllBindingTables(schema, sqlStatementContext, Arrays.asList("logic_Table", "sub_Logic_Table")));
     }
     
@@ -593,7 +591,7 @@ public final class ShardingRuleTest {
                 new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("LOGIC_TABLE"))),
                 new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("SUB_LOGIC_TABLE")))
         );
-        TablesContext tablesContext = new TablesContext(tableSegments, Collections.EMPTY_MAP);
+        TablesContext tablesContext = new TablesContext(tableSegments, Collections.emptyMap());
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getAllColumnNames("LOGIC_TABLE")).thenReturn(Arrays.asList("user_id", "order_id"));
@@ -618,10 +616,8 @@ public final class ShardingRuleTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(sqlStatementContext.isContainsJoinQuery()).thenReturn(true);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(sqlStatementContext.getTablesContext().findTableName(Arrays.asList(buildColumnProjection(leftDatabaseJoin), 
-                buildColumnProjection(rightDatabaseJoin)), schema)).thenReturn(createColumnTableNameMap());
-        when(sqlStatementContext.getTablesContext().findTableName(Arrays.asList(buildColumnProjection(leftTableJoin), 
-                buildColumnProjection(rightTableJoin)), schema)).thenReturn(createColumnTableNameMap());
+        when(sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(Arrays.asList(leftDatabaseJoin, rightDatabaseJoin), schema)).thenReturn(createColumnTableNameMap());
+        when(sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(Arrays.asList(leftTableJoin, rightTableJoin), schema)).thenReturn(createColumnTableNameMap());
         assertTrue(createMaximumShardingRule().isAllBindingTables(schema, sqlStatementContext, Arrays.asList("logic_Table", "sub_Logic_Table")));
     }
     
@@ -648,7 +644,9 @@ public final class ShardingRuleTest {
     
     private ColumnSegment createColumnSegment(final String columnName, final String owner) {
         ColumnSegment result = new ColumnSegment(0, 0, new IdentifierValue(columnName));
-        result.setOwner(new OwnerSegment(0, 0, new IdentifierValue(owner)));
+        if (null != owner) {
+            result.setOwner(new OwnerSegment(0, 0, new IdentifierValue(owner)));
+        }
         return result;
     }
     
@@ -659,11 +657,6 @@ public final class ShardingRuleTest {
         result.put("logic_Table.order_id", "logic_Table");
         result.put("sub_Logic_Table.order_id", "sub_Logic_Table");
         return result;
-    }
-    
-    private ColumnProjection buildColumnProjection(final ColumnSegment segment) {
-        String owner = segment.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(null);
-        return new ColumnProjection(owner, segment.getIdentifier().getValue(), null);
     }
     
     @Test

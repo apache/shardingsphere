@@ -43,9 +43,9 @@ import static org.mockito.Mockito.when;
 @Setter
 public final class MockedDataSource implements DataSource {
     
-    private String driverClassName;
-    
     private String url = "jdbc:mock://127.0.0.1/foo_ds";
+    
+    private String driverClassName;
     
     private String username = "root";
     
@@ -63,6 +63,12 @@ public final class MockedDataSource implements DataSource {
     @Setter(AccessLevel.NONE)
     private Connection connection;
     
+    public MockedDataSource(final String url, final String username, final String password) {
+        this.url = url;
+        this.username = username;
+        this.password = password;
+    }
+    
     public MockedDataSource(final Connection connection) {
         this.connection = connection;
     }
@@ -75,6 +81,7 @@ public final class MockedDataSource implements DataSource {
         }
         Connection result = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(result.getMetaData().getURL()).thenReturn(url);
+        when(result.getMetaData().getUserName()).thenReturn(username);
         when(result.createStatement(anyInt(), anyInt(), anyInt()).getConnection()).thenReturn(result);
         return result;
     }
