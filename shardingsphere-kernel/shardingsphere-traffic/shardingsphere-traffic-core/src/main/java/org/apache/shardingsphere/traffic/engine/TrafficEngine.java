@@ -46,10 +46,11 @@ public final class TrafficEngine {
      * Dispatch.
      *
      * @param logicSQL logic SQL
+     * @param inTransaction is in transaction
      * @return traffic context
      */
-    public TrafficContext dispatch(final LogicSQL logicSQL) {
-        Optional<TrafficStrategyRule> strategyRule = trafficRule.findMatchedStrategyRule(logicSQL);
+    public TrafficContext dispatch(final LogicSQL logicSQL, final boolean inTransaction) {
+        Optional<TrafficStrategyRule> strategyRule = trafficRule.findMatchedStrategyRule(logicSQL, inTransaction);
         TrafficContext result = new TrafficContext();
         if (!strategyRule.isPresent() || isInvalidStrategyRule(strategyRule.get())) {
             return result;

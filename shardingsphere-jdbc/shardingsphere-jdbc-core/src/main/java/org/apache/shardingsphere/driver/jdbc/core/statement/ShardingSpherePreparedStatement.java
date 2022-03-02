@@ -81,7 +81,6 @@ import org.apache.shardingsphere.traffic.context.TrafficContext;
 import org.apache.shardingsphere.traffic.context.TrafficContextHolder;
 import org.apache.shardingsphere.traffic.engine.TrafficEngine;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
-import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.sql.Connection;
 import java.sql.ParameterMetaData;
@@ -225,7 +224,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private TrafficContext getTrafficContext(final LogicSQL logicSQL) {
         TrafficContext result = TrafficContextHolder.get().orElseGet(() -> createTrafficContext(logicSQL));
-        if (TransactionHolder.isTransaction()) {
+        if (connection.isHoldTransaction()) {
             TrafficContextHolder.set(result);
         }
         return result;
@@ -233,7 +232,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private TrafficContext createTrafficContext(final LogicSQL logicSQL) {
         Optional<TrafficRule> trafficRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(TrafficRule.class);
-        return trafficRule.map(optional -> new TrafficEngine(optional, metaDataContexts).dispatch(logicSQL)).orElse(new TrafficContext());
+        return trafficRule.map(optional -> new TrafficEngine(optional, metaDataContexts).dispatch(logicSQL, connection.isHoldTransaction())).orElse(new TrafficContext());
     }
     
     private void resetParameters() throws SQLException {
