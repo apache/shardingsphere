@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import lombok.Getter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,6 +30,9 @@ import java.util.List;
  */
 @Getter
 public final class DropShardingKeyGeneratorStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute(name = "contains-exists-clause")
+    private boolean containsExistsClause;
     
     @XmlElement(name = "key-generator")
     private final List<String> keyGeneratorName = new LinkedList<>();

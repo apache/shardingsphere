@@ -88,7 +88,7 @@ dropShardingAlgorithm
     ;
 
 dropShardingKeyGenerator
-    : DROP SHARDING KEY GENERATOR keyGeneratorName (COMMA keyGeneratorName)*
+    : DROP SHARDING KEY GENERATOR existsClause? keyGeneratorName (COMMA keyGeneratorName)*
     ;
 
 shardingTableRuleDefinition
