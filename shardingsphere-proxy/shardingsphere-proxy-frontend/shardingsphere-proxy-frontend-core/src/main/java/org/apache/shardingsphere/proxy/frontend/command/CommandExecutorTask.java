@@ -69,6 +69,9 @@ public final class CommandExecutorTask implements Runnable {
             isNeedFlush = executeCommand(context, payload);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
+            if (connectionSession.getTransactionStatus().isInTransaction()) {
+                setRollbackOnly();
+            }
             // CHECKSTYLE:ON
             processException(ex);
         } finally {
@@ -105,6 +108,12 @@ public final class CommandExecutorTask implements Runnable {
             commandExecutor.close();
         }
         return databaseProtocolFrontendEngine.getFrontendContext().isFlushForPerCommandPacket();
+    }
+    
+    private void setRollbackOnly() {
+        if (databaseProtocolFrontendEngine.getDatabaseType().equals("PostgreSQL") || "openGauss".equals(databaseProtocolFrontendEngine.getDatabaseType())) {
+            connectionSession.getTransactionStatus().setRollbackOnly(true);
+        }
     }
     
     private void processException(final Exception cause) {

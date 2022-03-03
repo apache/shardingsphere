@@ -121,7 +121,7 @@ public final class JDBCBackendTransactionManagerTest {
         newBackendTransactionManager(TransactionType.XA, true);
         backendTransactionManager.commit();
         verify(transactionStatus).setInTransaction(false);
-        verify(shardingSphereTransactionManager).commit();
+        verify(shardingSphereTransactionManager).commit(false);
     }
     
     @Test
