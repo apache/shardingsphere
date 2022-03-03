@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.rule;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
@@ -638,11 +637,11 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
             if (!isJoinConditionExpression(each)) {
                 continue;
             }
-            ColumnProjection leftColumn = buildColumnProjection((ColumnSegment) ((BinaryOperationExpression) each).getLeft());
-            ColumnProjection rightColumn = buildColumnProjection((ColumnSegment) ((BinaryOperationExpression) each).getRight());
-            Map<String, String> columnTableNames = select.getTablesContext().findTableName(Arrays.asList(leftColumn, rightColumn), schema);
-            Optional<TableRule> leftTableRule = findTableRule(columnTableNames.get(leftColumn.getExpression()));
-            Optional<TableRule> rightTableRule = findTableRule(columnTableNames.get(rightColumn.getExpression()));
+            ColumnSegment leftColumn = (ColumnSegment) ((BinaryOperationExpression) each).getLeft();
+            ColumnSegment rightColumn = (ColumnSegment) ((BinaryOperationExpression) each).getRight();
+            Map<String, String> columnExpressionTableNames = select.getTablesContext().findTableNamesByColumnSegment(Arrays.asList(leftColumn, rightColumn), schema);
+            Optional<TableRule> leftTableRule = findTableRule(columnExpressionTableNames.get(leftColumn.getExpression()));
+            Optional<TableRule> rightTableRule = findTableRule(columnExpressionTableNames.get(rightColumn.getExpression()));
             if (!leftTableRule.isPresent() || !rightTableRule.isPresent()) {
                 continue;
             }
@@ -650,17 +649,13 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
                     ? getDatabaseShardingStrategyConfiguration(leftTableRule.get()) : getTableShardingStrategyConfiguration(leftTableRule.get());
             ShardingStrategyConfiguration rightConfiguration = isDatabaseJoinCondition
                     ? getDatabaseShardingStrategyConfiguration(rightTableRule.get()) : getTableShardingStrategyConfiguration(rightTableRule.get());
-            if (findShardingColumn(leftConfiguration, leftColumn.getName()).isPresent() && findShardingColumn(rightConfiguration, rightColumn.getName()).isPresent()) {
-                result.add(columnTableNames.get(leftColumn.getExpression()));
-                result.add(columnTableNames.get(rightColumn.getExpression()));
+            if (findShardingColumn(leftConfiguration, leftColumn.getIdentifier().getValue()).isPresent() 
+                    && findShardingColumn(rightConfiguration, rightColumn.getIdentifier().getValue()).isPresent()) {
+                result.add(columnExpressionTableNames.get(leftColumn.getExpression()));
+                result.add(columnExpressionTableNames.get(rightColumn.getExpression()));
             }
         }
         return result;
-    }
-    
-    private ColumnProjection buildColumnProjection(final ColumnSegment segment) {
-        String owner = segment.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(null);
-        return new ColumnProjection(owner, segment.getIdentifier().getValue(), null);
     }
     
     private boolean isJoinConditionExpression(final ExpressionSegment expression) {

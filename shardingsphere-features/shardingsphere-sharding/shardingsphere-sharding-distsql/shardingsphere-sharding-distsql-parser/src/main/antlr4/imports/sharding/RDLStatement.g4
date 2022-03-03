@@ -84,7 +84,7 @@ dropShardingBroadcastTableRules
     ;
 
 dropShardingAlgorithm
-    : DROP SHARDING ALGORITHM algorithmName (COMMA algorithmName)*
+    : DROP SHARDING ALGORITHM existsClause? algorithmName (COMMA algorithmName)*
     ;
 
 dropShardingKeyGenerator

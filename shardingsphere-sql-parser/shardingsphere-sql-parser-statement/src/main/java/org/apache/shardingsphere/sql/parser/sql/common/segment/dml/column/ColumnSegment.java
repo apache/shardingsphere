@@ -57,6 +57,15 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
             : String.join(".", owner.getIdentifier().getValueWithQuoteCharacters(), identifier.getValueWithQuoteCharacters());
     }
     
+    /**
+     * Get expression.
+     * 
+     * @return expression
+     */
+    public String getExpression() {
+        return null == owner ? identifier.getValue() : owner.getIdentifier().getValue() + "." + identifier.getValue();
+    }
+    
     @Override
     public Optional<OwnerSegment> getOwner() {
         return Optional.ofNullable(owner);
