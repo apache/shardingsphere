@@ -36,7 +36,7 @@ public final class ComputeNodeStatusServiceTest {
     @Test
     public void assertRegisterOnline() {
         InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307);
-        new ComputeNodeStatusService(repository).registerOnline(instanceDefinition, "1");
-        verify(repository).persistEphemeral("/nodes/compute_nodes/online/proxy/" + instanceDefinition.getInstanceId().getId(), "1");
+        new ComputeNodeStatusService(repository).registerOnline(instanceDefinition, "test_id");
+        verify(repository).persistEphemeral("/nodes/compute_nodes/online/proxy/" + instanceDefinition.getInstanceId().getId(), "test_id");
     }
 }
