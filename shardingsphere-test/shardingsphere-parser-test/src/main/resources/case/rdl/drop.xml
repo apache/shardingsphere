@@ -58,6 +58,11 @@
         <rule>ha_group_0</rule>
         <rule>ha_group_1</rule>
     </drop-database-discovery-rule>
+    
+    <drop-database-discovery-rule sql-case-id="drop-database-discovery-rule-if-exists" contains-exist-clause="true">
+        <rule>ha_group_0</rule>
+        <rule>ha_group_1</rule>
+    </drop-database-discovery-rule>
 
     <drop-database-discovery-type sql-case-id="drop-database-discovery-type">
         <type>type_name_0</type>
@@ -108,4 +113,8 @@
     <drop-default-sharding-strategy sql-case-id="drop-default-sharding-strategy" type="table"/>
 
     <drop-sharding-scaling-rule sql-case-id="drop-sharding-scaling-rule" scaling-name="default_scaling"/>
+    
+    <drop-sharding-algorithm sql-case-id="drop-sharding-algorithm" contains-exists-clause="true">
+        <algorithm>t_order_hash_mod</algorithm>
+    </drop-sharding-algorithm>
 </sql-parser-test-cases>

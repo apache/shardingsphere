@@ -20,18 +20,26 @@ package org.apache.shardingsphere.proxy.backend.response.header.update;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.util.Optional;
+
+/**
+ * Client encoding response header.
+ */
 @RequiredArgsConstructor
-@Getter
 public class ClientEncodingResponseHeader implements ResponseHeader {
     
-    private final String name;
+    private final String currentCharsetValue;
     
-    private final String value;
+    @Getter
+    private final String inputValue;
     
-    private final SQLStatement sqlStatement;
-    
-    private final ConnectionSession connectionSession;
+    /**
+     * Get current charset value.
+     *
+     * @return current charset value
+     */
+    public Optional<String> getCurrentCharsetValue() {
+        return Optional.ofNullable(currentCharsetValue);
+    }
 }

@@ -37,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.L
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -65,10 +66,11 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
     }
     
     private List<ShardingCondition> createShardingConditionsWithInsertValues(final InsertStatementContext sqlStatementContext, final List<Object> parameters) {
-        List<ShardingCondition> result = new LinkedList<>();
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         Collection<String> columnNames = getColumnNames(sqlStatementContext);
-        for (InsertValueContext each : sqlStatementContext.getInsertValueContexts()) {
+        List<InsertValueContext> insertValueContexts = sqlStatementContext.getInsertValueContexts();
+        List<ShardingCondition> result = new ArrayList<>(insertValueContexts.size());
+        for (InsertValueContext each : insertValueContexts) {
             result.add(createShardingCondition(tableName, columnNames.iterator(), each, parameters));
         }
         return result;

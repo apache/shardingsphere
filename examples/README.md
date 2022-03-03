@@ -94,42 +94,6 @@ shardingsphere-example
   ├── shardingsphere-sample
   │   ├── shardingsphere-example-generator
   │   └── shardingsphere-example-generated
-  │   │   ├── shardingsphere-jdbc-sample
-  │   │   │   ├── shardingsphere-jdbc-memory-local-db-discovery-jdbc-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-db-discovery-spring-boot-starter-jdbc-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-db-discovery-spring-boot-starter-jpa-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-db-discovery-spring-boot-starter-mybatis-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-db-discovery-spring-namespace-jdbc-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-db-discovery-spring-namespace-jpa-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-db-discovery-spring-namespace-mybatis-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-encrypt-jdbc-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-encrypt-spring-boot-starter-jdbc-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-encrypt-spring-boot-starter-jpa-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-encrypt-spring-boot-starter-mybatis-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-encrypt-spring-namespace-jdbc-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-encrypt-spring-namespace-jpa-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-encrypt-spring-namespace-mybatis-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-mixed-spring-boot-starter-jdbc-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-mixed-spring-namespace-jdbc-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-readwrite-splitting-jdbc-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-readwrite-splitting-spring-boot-starter-jdbc-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-readwrite-splitting-spring-boot-starter-jpa-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-readwrite-splitting-spring-boot-starter-mybatis-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-readwrite-splitting-spring-namespace-jdbc-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-readwrite-splitting-spring-namespace-jpa-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-readwrite-splitting-spring-namespace-mybatis-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-shadow-jdbc-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-shadow-spring-boot-starter-jdbc-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-shadow-spring-boot-starter-mybatis-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-shadow-spring-namespace-jdbc-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-shadow-spring-namespace-mybatis-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-sharding-jdbc-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-sharding-spring-boot-starter-jdbc-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-sharding-spring-boot-starter-jpa-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-sharding-spring-boot-starter-mybatis-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-sharding-spring-namespace-jdbc-example
-  │   │   │   ├── shardingsphere-jdbc-memory-local-sharding-spring-namespace-jpa-example
-  │   │   │   └── shardingsphere-jdbc-memory-local-sharding-spring-namespace-mybatis-example
   │   │   └── shardingsphere-proxy-sample
   │   │   │   ├── shardingsphere-proxy-cluster-etcd-base-seata-db-discovery-example
   │   │   │   ├── shardingsphere-proxy-cluster-etcd-base-seata-encrypt-example
