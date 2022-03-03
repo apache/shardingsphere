@@ -526,6 +526,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     @Override
     public int[] executeBatch() throws SQLException {
+        if (null == executionContext) {
+            return new int[0];
+        }
         try {
             // TODO add raw SQL executor
             initBatchPreparedStatementExecutor();
