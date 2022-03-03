@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.IfExistsStatementTestCase;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,10 +28,7 @@ import java.util.List;
  * Drop sharding key generator statement test case.
  */
 @Getter
-public final class DropShardingKeyGeneratorStatementTestCase extends SQLParserTestCase {
-    
-    @XmlAttribute(name = "contains-exists-clause")
-    private boolean containsExistsClause;
+public final class DropShardingKeyGeneratorStatementTestCase extends IfExistsStatementTestCase {
     
     @XmlElement(name = "key-generator")
     private final List<String> keyGeneratorName = new LinkedList<>();
