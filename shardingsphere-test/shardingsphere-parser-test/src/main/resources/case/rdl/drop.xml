@@ -83,6 +83,11 @@
         <rule>shadow_rule_1</rule>
         <rule>shadow_rule_2</rule>
     </drop-shadow-rule>
+    
+    <drop-shadow-rule sql-case-id="drop-shadow-rule-if-exists" contains-exist-clause="true">
+        <rule>shadow_rule_1</rule>
+        <rule>shadow_rule_2</rule>
+    </drop-shadow-rule>
 
     <drop-shadow-algorithm sql-case-id="drop-shadow-algorithm">
         <rule>shadow_algorithm_1</rule>
