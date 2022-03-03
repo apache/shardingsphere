@@ -40,7 +40,7 @@ alterShadowAlgorithm
     ;
 
 dropShadowAlgorithm
-    : DROP SHADOW ALGORITHM algorithmName (COMMA algorithmName)*
+    : DROP SHADOW ALGORITHM existClause? algorithmName (COMMA algorithmName)*
     ;
 
 createDefaultShadowAlgorithm
