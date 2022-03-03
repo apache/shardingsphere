@@ -81,7 +81,7 @@ public abstract class AbstractIntervalShardingAlgorithm<T extends Comparable<?>>
         LocalDateTime effectiveUpper = LocalDateTime.parse(getRequiredValue(DATE_TIME_UPPER_KEY), DEFAULT_DATE_TIME_FORMATTER);
         DateTimeFormatter suffixFormatter = DateTimeFormatter.ofPattern(getRequiredValue(SHARDING_SUFFIX_FORMAT_KEY));
         ChronoUnit stepUnit = ChronoUnit.valueOf(getRequiredValue(INTERVAL_UNIT_KEY));
-        int stepAmount = Integer.parseInt(getProps().getProperty(INTERVAL_AMOUNT_KEY, "1"));
+        int stepAmount = Integer.parseInt(getProps().getOrDefault(INTERVAL_AMOUNT_KEY, 1).toString());
         intervalTimeline = new IntervalTimeline(logicNamePrefix, Range.closed(effectiveLower, effectiveUpper), IntervalStep.of(stepUnit, stepAmount), suffixFormatter);
     }
     
