@@ -46,6 +46,9 @@
         
         <module>shardingsphere-test</module>
         <module>shardingsphere-distribution</module>
+        <module>
+            examples/shardingsphere-jdbc-example/single-feature-example/extension-example/custom-sharding-algortihm-example/spi-based-sharding-algorithm-example/spi-based-sharding-spring-boot-mybatis-example
+        </module>
     </modules>
     
     <properties>
