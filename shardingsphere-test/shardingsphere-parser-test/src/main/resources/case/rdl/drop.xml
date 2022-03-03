@@ -103,4 +103,8 @@
     <drop-default-sharding-strategy sql-case-id="drop-default-sharding-strategy" type="table"/>
 
     <drop-sharding-scaling-rule sql-case-id="drop-sharding-scaling-rule" scaling-name="default_scaling"/>
+    
+    <drop-sharding-algorithm sql-case-id="drop-sharding-algorithm" contains-exists-clause="true">
+        <algorithm>t_order_hash_mod</algorithm>
+    </drop-sharding-algorithm>
 </sql-parser-test-cases>

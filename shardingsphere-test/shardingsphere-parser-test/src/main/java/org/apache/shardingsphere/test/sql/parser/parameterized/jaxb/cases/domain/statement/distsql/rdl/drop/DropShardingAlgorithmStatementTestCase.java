@@ -14,23 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-grammar BaseRule;
 
-import Symbol, Keyword, Literals;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop;
 
-tableName
-    : IDENTIFIER
-    ;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-algorithmName
-    : IDENTIFIER
-    ;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
-keyGeneratorName
-    : IDENTIFIER
-    ;
-
-existsClause
-    : IF EXISTS
-    ;
+/**
+ * Drop sharding algorithm statement test case.
+ */
+@Setter
+@Getter
+public final class DropShardingAlgorithmStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute(name = "contains-exists-clause")
+    private boolean containsExistsClause;
+    
+    @XmlElement(name = "algorithm")
+    private final List<String> algorithms = new LinkedList<>();
+}
