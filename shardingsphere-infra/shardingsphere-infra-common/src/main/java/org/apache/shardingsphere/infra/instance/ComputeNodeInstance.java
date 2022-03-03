@@ -41,4 +41,6 @@ public final class ComputeNodeInstance {
     private Long workerId;
     
     private String xaRecoveryId;
+    
+    private String id;
 }

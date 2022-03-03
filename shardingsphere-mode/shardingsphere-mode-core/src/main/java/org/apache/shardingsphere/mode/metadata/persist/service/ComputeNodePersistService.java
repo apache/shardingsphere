@@ -32,6 +32,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Compute node persist service.
@@ -139,6 +141,18 @@ public final class ComputeNodePersistService {
     }
     
     /**
+     * Load instance id.
+     * 
+     * @param instanceId instance id
+     * @param instanceType instance type
+     * @return instance id
+     */
+    public Optional<String> loadInstanceId(final String instanceId, final InstanceType instanceType) {
+        String id = repository.get(ComputeNode.getOnlineInstanceNodePath(instanceId, instanceType));
+        return Strings.isNullOrEmpty(id) ? Optional.empty() : Optional.ofNullable(id);
+    }
+    
+    /**
      * Load compute node instances by instance type and labels.
      *
      * @param instanceType instance type
@@ -187,6 +201,8 @@ public final class ComputeNodePersistService {
         result.setStatus(loadInstanceStatus(instanceDefinition.getInstanceId().getId()));
         loadInstanceWorkerId(instanceDefinition.getInstanceId().getId()).ifPresent(result::setWorkerId);
         loadXaRecoveryId(instanceDefinition.getInstanceId().getId()).ifPresent(result::setXaRecoveryId);
+        result.setId(loadInstanceId(instanceDefinition.getInstanceId().getId(), instanceDefinition.getInstanceType())
+                .orElseGet(() -> new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString()));
         return result;
     }
 }

@@ -70,9 +70,10 @@ public final class RegistryCenter {
      * Online instance.
      * 
      * @param instanceDefinition instance definition
+     * @param id instance id                          
      */
-    public void onlineInstance(final InstanceDefinition instanceDefinition) {
-        computeNodeStatusService.registerOnline(instanceDefinition);
+    public void onlineInstance(final InstanceDefinition instanceDefinition, final String id) {
+        computeNodeStatusService.registerOnline(instanceDefinition, id);
         listenerFactory.watchListeners();
     }
 }

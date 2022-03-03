@@ -34,8 +34,9 @@ public final class ComputeNodeStatusService {
      * Register online.
      * 
      * @param instanceDefinition instance definition
+     * @param id instance id                          
      */
-    public void registerOnline(final InstanceDefinition instanceDefinition) {
-        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceDefinition.getInstanceId().getId(), instanceDefinition.getInstanceType()), "");
+    public void registerOnline(final InstanceDefinition instanceDefinition, final String id) {
+        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceDefinition.getInstanceId().getId(), instanceDefinition.getInstanceType()), id);
     }
 }

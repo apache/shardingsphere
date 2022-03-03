@@ -156,7 +156,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private void registerOnline(final MetaDataPersistService metaDataPersistService, final InstanceDefinition instanceDefinition, final ContextManager contextManager,
                                 final RegistryCenter registryCenter) {
         new ClusterContextManagerCoordinator(metaDataPersistService, contextManager, registryCenter);
-        registryCenter.onlineInstance(instanceDefinition);
+        registryCenter.onlineInstance(instanceDefinition, contextManager.getInstanceContext().getInstance().getId());
     }
     
     @Override
