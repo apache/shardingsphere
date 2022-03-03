@@ -82,7 +82,32 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         return result;
     }
     
-    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final ExpressionSegment expr, final Map<String, String> columnTableNames,
+    private void addGenerateSQLTokens(final Collection<SubstitutableColumnNameToken> result, final SelectStatementContext selectStatementContext) {
+        Map<String, String> columnTableNames = getColumnTableNames(selectStatementContext);
+        for (ProjectionSegment projection : selectStatementContext.getSqlStatement().getProjections().getProjections()) {
+            SubqueryType subqueryType = selectStatementContext.getSubqueryType();
+            if (projection instanceof ColumnProjectionSegment) {
+                ColumnProjectionSegment columnSegment = (ColumnProjectionSegment) projection;
+                ColumnProjection columnProjection = buildColumnProjection(columnSegment);
+                String tableName = columnTableNames.get(columnProjection.getExpression());
+                if (null != tableName && encryptRule.findEncryptColumn(tableName, columnProjection.getName()).isPresent()) {
+                    result.add(generateSQLToken(tableName, columnSegment, columnProjection, subqueryType, false));
+                }
+            }
+            if (projection instanceof ExpressionProjectionSegment) {
+                result.addAll(generateSQLToken(((ExpressionProjectionSegment) projection).getExpr(), columnTableNames, subqueryType, true));
+            }
+            if (projection instanceof ShorthandProjectionSegment) {
+                ShorthandProjectionSegment shorthandSegment = (ShorthandProjectionSegment) projection;
+                Collection<ColumnProjection> actualColumns = getShorthandProjection(shorthandSegment, selectStatementContext.getProjectionsContext()).getActualColumns().values();
+                if (!actualColumns.isEmpty()) {
+                    result.add(generateSQLToken(shorthandSegment, actualColumns, selectStatementContext.getDatabaseType(), subqueryType, columnTableNames, false));
+                }
+            }
+        }
+    }
+    
+    private Collection<SubstitutableColumnNameToken> generateSQLToken(final ExpressionSegment expr, final Map<String, String> columnTableNames,
                                                                        final SubqueryType subqueryType, final boolean forceNoneAlias) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         if (!(expr instanceof FunctionSegment) || (expr instanceof FunctionSegment && null == ((FunctionSegment) expr).getParameters())) {
@@ -93,74 +118,31 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
                 continue;
             }
             ColumnProjectionSegment columnSegment = buildColumnProjectionSegment((ColumnSegment) expressionSegment);
-            generateSQLTokens(columnSegment, columnTableNames, subqueryType, forceNoneAlias).ifPresent(result::add);
+            generateSQLToken(columnSegment, columnTableNames, subqueryType, forceNoneAlias).ifPresent(result::add);
         }
         return result;
     }
     
-    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final SelectStatementContext selectStatementContext, 
-                                                                       final ProjectionSegment projection, final Map<String, String> columnTableNames) {
-        Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
-        SubqueryType subqueryType = selectStatementContext.getSubqueryType();
-        if (projection instanceof ColumnProjectionSegment) {
-            ColumnProjectionSegment columnSegment = (ColumnProjectionSegment) projection;
-            generateSQLTokens(columnSegment, columnTableNames, subqueryType, false).ifPresent(result::add);
-        }
-        if (projection instanceof ExpressionProjectionSegment) {
-            result.addAll(generateSQLTokens(((ExpressionProjectionSegment) projection).getExpr(), columnTableNames, subqueryType, true));
-        }
-        if (projection instanceof ShorthandProjectionSegment) {
-            ShorthandProjectionSegment shorthandSegment = (ShorthandProjectionSegment) projection;
-            Collection<ColumnProjection> actualColumns = getShorthandProjection(shorthandSegment, selectStatementContext.getProjectionsContext()).getActualColumns().values();
-            if (!actualColumns.isEmpty()) {
-                result.add(generateSQLTokens(shorthandSegment, actualColumns, selectStatementContext.getDatabaseType(), subqueryType, columnTableNames, false));
-    private void addGenerateSQLTokens(final Collection<SubstitutableColumnNameToken> result, final SelectStatementContext selectStatementContext) {
-        Map<String, String> columnTableNames = getColumnTableNames(selectStatementContext);
-        for (ProjectionSegment projection : selectStatementContext.getSqlStatement().getProjections().getProjections()) {
-            SubqueryType subqueryType = selectStatementContext.getSubqueryType();
-            if (projection instanceof ColumnProjectionSegment) {
-                ColumnProjectionSegment columnSegment = (ColumnProjectionSegment) projection;
-                ColumnProjection columnProjection = buildColumnProjection(columnSegment);
-                String tableName = columnTableNames.get(columnProjection.getExpression());
-                if (null != tableName && encryptRule.findEncryptColumn(tableName, columnProjection.getName()).isPresent()) {
-                    result.add(generateSQLToken(tableName, columnSegment, columnProjection, subqueryType));
-                }
-            }
-            if (projection instanceof ShorthandProjectionSegment) {
-                ShorthandProjectionSegment shorthandSegment = (ShorthandProjectionSegment) projection;
-                Collection<ColumnProjection> actualColumns = getShorthandProjection(shorthandSegment, selectStatementContext.getProjectionsContext()).getActualColumns().values();
-                if (!actualColumns.isEmpty()) {
-                    result.add(generateSQLToken(shorthandSegment, actualColumns, selectStatementContext.getDatabaseType(), subqueryType, columnTableNames));
-                }
-            }
-        }
-    }
-    
-    private Optional<SubstitutableColumnNameToken> generateSQLTokens(final ColumnProjectionSegment columnSegment, final Map<String, String> columnTableNames,
+    private Optional<SubstitutableColumnNameToken> generateSQLToken(final ColumnProjectionSegment columnSegment, final Map<String, String> columnTableNames,
                                                                      final SubqueryType subqueryType, final boolean forceNoneAlias) {
         ColumnProjection columnProjection = buildColumnProjection(columnSegment);
         String tableName = columnTableNames.get(columnProjection.getExpression());
         if (null != tableName && encryptRule.findEncryptor(tableName, columnProjection.getName()).isPresent()) {
-            return Optional.ofNullable(generateSQLTokens(tableName, columnSegment, columnProjection, subqueryType, forceNoneAlias));
+            return Optional.ofNullable(generateSQLToken(tableName, columnSegment, columnProjection, subqueryType, forceNoneAlias));
         }
         return Optional.empty();
     }
     
-    private SubstitutableColumnNameToken generateSQLTokens(final String tableName, final ColumnProjectionSegment columnSegment, 
-                                                           final ColumnProjection columnProjection, final SubqueryType subqueryType, final boolean forceNoneAlia) {
-        Collection<ColumnProjection> projections = generateProjections(tableName, columnProjection, subqueryType, false, null, forceNoneAlia);
     private SubstitutableColumnNameToken generateSQLToken(final String tableName, final ColumnProjectionSegment columnSegment,
-                                                          final ColumnProjection columnProjection, final SubqueryType subqueryType) {
-        Collection<ColumnProjection> projections = generateProjections(tableName, columnProjection, subqueryType, false, null);
+                                                          final ColumnProjection columnProjection, final SubqueryType subqueryType, final boolean forceNoneAlias) {
+        Collection<ColumnProjection> projections = generateProjections(tableName, columnProjection, subqueryType, false, null, forceNoneAlias);
         int startIndex = columnSegment.getColumn().getOwner().isPresent() ? columnSegment.getColumn().getOwner().get().getStopIndex() + 2 : columnSegment.getColumn().getStartIndex();
         int stopIndex = columnSegment.getStopIndex();
         return new SubstitutableColumnNameToken(startIndex, stopIndex, projections);
     }
     
-    private SubstitutableColumnNameToken generateSQLTokens(final ShorthandProjectionSegment segment, final Collection<ColumnProjection> actualColumns, 
-                                                           final DatabaseType databaseType, final SubqueryType subqueryType, final Map<String, String> columnTableNames, final boolean forceNoneAlias) {
     private SubstitutableColumnNameToken generateSQLToken(final ShorthandProjectionSegment segment, final Collection<ColumnProjection> actualColumns,
-                                                          final DatabaseType databaseType, final SubqueryType subqueryType, final Map<String, String> columnTableNames) {
+                                                          final DatabaseType databaseType, final SubqueryType subqueryType, final Map<String, String> columnTableNames, final boolean forceNoneAlias) {
         List<ColumnProjection> projections = new LinkedList<>();
         for (ColumnProjection each : actualColumns) {
             String tableName = columnTableNames.get(each.getExpression());
@@ -209,7 +191,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         return selectStatementContext.getTablesContext().findTableNamesByColumnProjection(columns, schema);
     }
     
-    private Collection<ColumnProjection> generateProjections(final String tableName, final ColumnProjection column, final SubqueryType subqueryType, final boolean shorthand, 
+    private Collection<ColumnProjection> generateProjections(final String tableName, final ColumnProjection column, final SubqueryType subqueryType, final boolean shorthand,
                                                              final ShorthandProjectionSegment segment, final boolean forceNoneAlias) {
         Collection<ColumnProjection> result = new LinkedList<>();
         if (SubqueryType.PREDICATE_SUBQUERY.equals(subqueryType)) {
@@ -265,10 +247,8 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     
     private ColumnProjection generateCommonProjection(final String tableName, final ColumnProjection column, final ShorthandProjectionSegment segment, final boolean forceNoneAlias) {
         String encryptColumnName = getEncryptColumnName(tableName, column.getName());
-        String owner = (segment != null && segment.getOwner().isPresent()) ? segment.getOwner().get().getIdentifier().getValue() : column.getOwner();
-        return new ColumnProjection(owner, encryptColumnName, forceNoneAlias ? null : column.getAlias().orElse(column.getName()));
         String owner = (null != segment && segment.getOwner().isPresent()) ? segment.getOwner().get().getIdentifier().getValue() : column.getOwner();
-        return new ColumnProjection(owner, encryptColumnName, column.getAlias().orElse(column.getName()));
+        return new ColumnProjection(owner, encryptColumnName, forceNoneAlias ? null : column.getAlias().orElse(column.getName()));
     }
     
     private String getEncryptColumnName(final String tableName, final String logicEncryptColumnName) {
