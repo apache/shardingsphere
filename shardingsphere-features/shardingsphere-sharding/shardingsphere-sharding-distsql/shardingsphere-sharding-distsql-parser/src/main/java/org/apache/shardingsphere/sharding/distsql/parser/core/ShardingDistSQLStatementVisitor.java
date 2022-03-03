@@ -389,7 +389,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
         if (null == context) {
             return null;
         }
-        return new IdentifierValue(context.getText(), "[]").getValue();
+        return new IdentifierValue(context.getText(), "[]'").getValue();
     }
     
     private Properties getAlgorithmProperties(final AlgorithmDefinitionContext ctx) {
