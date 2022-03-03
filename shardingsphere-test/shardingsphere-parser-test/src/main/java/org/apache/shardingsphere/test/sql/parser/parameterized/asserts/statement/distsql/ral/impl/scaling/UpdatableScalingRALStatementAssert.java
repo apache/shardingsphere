@@ -21,17 +21,20 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ApplyScalingStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.DropScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ResetScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.RestoreScalingSourceWritingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.StopScalingSourceWritingStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.scaling.update.ApplyScalingStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.scaling.update.DropScalingStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.scaling.update.ResetScalingStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.scaling.update.RestoreScalingSourceWritingStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.scaling.update.StopScalingSourceWritingStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ApplyScalingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ResetScalingStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.DropScalingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.RestoreScalingSourceWritingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.StopScalingSourceWritingStatementTestCase;
 
@@ -58,6 +61,8 @@ public final class UpdatableScalingRALStatementAssert {
             ApplyScalingStatementAssert.assertIs(assertContext, (ApplyScalingStatement) actual, (ApplyScalingStatementTestCase) expected);
         } else if (actual instanceof ResetScalingStatement) {
             ResetScalingStatementAssert.assertIs(assertContext, (ResetScalingStatement) actual, (ResetScalingStatementTestCase) expected);
+        } else if (actual instanceof DropScalingStatement) {
+            DropScalingStatementAssert.assertIs(assertContext, (DropScalingStatement) actual, (DropScalingStatementTestCase) expected);
         }
     }
 }
