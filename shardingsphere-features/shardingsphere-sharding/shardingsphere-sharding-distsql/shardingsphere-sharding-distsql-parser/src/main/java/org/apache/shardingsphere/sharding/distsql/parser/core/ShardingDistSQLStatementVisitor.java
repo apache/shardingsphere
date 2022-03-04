@@ -370,7 +370,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     }
     
     private Collection<String> getDataNodes(final DataNodesContext ctx) {
-        return ctx.dataNode().stream().map(each -> getIdentifierValueWithBracketReserved(each)).collect(Collectors.toCollection(LinkedList::new));
+        return ctx.dataNode().stream().map(each -> getIdentifierValueForDataNodes(each)).collect(Collectors.toCollection(LinkedList::new));
     }
     
     @Override
@@ -385,11 +385,15 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
         return new IdentifierValue(context.getText()).getValue();
     }
     
-    private String getIdentifierValueWithBracketReserved(final ParseTree context) {
+    private String getIdentifierValueForDataNodes(final ParseTree context) {
         if (null == context) {
             return null;
         }
-        return new IdentifierValue(context.getText(), "[]").getValue();
+        String value = new IdentifierValue(context.getText(), "[]'").getValue();
+        if (value.startsWith("'")) {
+            return value.substring(1, value.length() - 1);
+        }
+        return value.trim();
     }
     
     private Properties getAlgorithmProperties(final AlgorithmDefinitionContext ctx) {
@@ -471,7 +475,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     public ASTNode visitShowUnusedShardingKeyGenerators(final ShowUnusedShardingKeyGeneratorsContext ctx) {
         return new ShowUnusedShardingKeyGeneratorsStatement(Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null);
     }
-
+    
     @Override
     public ASTNode visitShowShardingTableRulesUsedAlgorithm(final ShowShardingTableRulesUsedAlgorithmContext ctx) {
         return new ShowShardingTableRulesUsedAlgorithmStatement(getIdentifierValue(ctx.algorithmName()), Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null);
