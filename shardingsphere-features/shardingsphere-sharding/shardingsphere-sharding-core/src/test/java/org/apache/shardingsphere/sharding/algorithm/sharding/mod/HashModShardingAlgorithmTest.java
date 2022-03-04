@@ -40,7 +40,7 @@ public final class HashModShardingAlgorithmTest {
     @Before
     public void setup() {
         shardingAlgorithm = new HashModShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("sharding-count", "4");
+        shardingAlgorithm.getProps().put("sharding-count", 4);
         shardingAlgorithm.init();
     }
     

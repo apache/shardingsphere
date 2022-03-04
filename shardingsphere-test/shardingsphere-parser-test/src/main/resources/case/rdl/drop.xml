@@ -88,13 +88,25 @@
         <rule>shadow_rule_1</rule>
         <rule>shadow_rule_2</rule>
     </drop-shadow-rule>
+    
+    <drop-shadow-rule sql-case-id="drop-shadow-rule-if-exists" contains-exist-clause="true">
+        <rule>shadow_rule_1</rule>
+        <rule>shadow_rule_2</rule>
+    </drop-shadow-rule>
 
     <drop-shadow-algorithm sql-case-id="drop-shadow-algorithm">
         <rule>shadow_algorithm_1</rule>
         <rule>shadow_algorithm_2</rule>
     </drop-shadow-algorithm>
 
+    <drop-shadow-algorithm sql-case-id="drop-shadow-algorithm-if-exists" contains-exist-clause="true">
+        <rule>shadow_algorithm_1</rule>
+        <rule>shadow_algorithm_2</rule>
+    </drop-shadow-algorithm>
+
     <drop-default-single-table sql-case-id="drop-default-single-table" />
+    
+    <drop-default-single-table sql-case-id="drop-default-single-table-if-exists" contains-exist-clause="true"/>
 
     <drop-sharding-key-generator sql-case-id="drop-sharding-key-generator" >
         <key-generator>uuid_key_generator</key-generator>
