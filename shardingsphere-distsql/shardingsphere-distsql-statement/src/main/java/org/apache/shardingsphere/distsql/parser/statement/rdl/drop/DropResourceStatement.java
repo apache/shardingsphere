@@ -30,7 +30,15 @@ import java.util.Collection;
 @Getter
 public final class DropResourceStatement extends ResourceDefinitionStatement {
     
+    private final boolean containsExistClause;
+    
     private final Collection<String> names;
     
     private final boolean ignoreSingleTables;
+    
+    public DropResourceStatement(final Collection<String> names, final boolean ignoreSingleTables) {
+        this.containsExistClause = false;
+        this.names = names;
+        this.ignoreSingleTables = ignoreSingleTables;
+    }
 }

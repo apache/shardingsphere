@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -62,7 +63,7 @@ public final class ShardingInsertValuesTokenGeneratorTest {
         InsertValuesSegment insertValuesSegment = new InsertValuesSegment(1, 2, expressionSegmentList);
         Collection<InsertValuesSegment> insertValuesSegmentCollection = new LinkedList<>();
         insertValuesSegmentCollection.add(insertValuesSegment);
-        InsertValueContext insertValueContext = new InsertValueContext(expressionSegmentList, null, 4);
+        InsertValueContext insertValueContext = new InsertValueContext(expressionSegmentList, Collections.emptyList(), 4);
         List<InsertValueContext> insertValueContextList = new LinkedList<>();
         insertValueContextList.add(insertValueContext);
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);

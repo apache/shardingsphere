@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.impl;
 
-import org.apache.shardingsphere.encrypt.fixture.TestEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptProjectionTokenGenerator;
+import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
@@ -120,7 +120,8 @@ public final class EncryptProjectionTokenGeneratorTest {
         when(encryptRule.findPlainColumn("doctor1", "mobile")).thenReturn(Optional.of("Mobile"));
         when(encryptRule.findEncryptTable("doctor")).thenReturn(Optional.of(encryptTable1));
         when(encryptRule.findEncryptTable("doctor1")).thenReturn(Optional.of(encryptTable2));
-        when(encryptRule.findEncryptor("doctor", "mobile")).thenReturn(Optional.of(new TestEncryptAlgorithm()));
+        EncryptColumn column = new EncryptColumn(null, "mobile", null, null, null, "mobile", null, null);
+        when(encryptRule.findEncryptColumn("doctor", "mobile")).thenReturn(Optional.of(column));
         return encryptRule;
     }
 }

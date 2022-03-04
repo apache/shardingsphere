@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedE
 import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.authority.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
@@ -50,7 +48,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Cluster context manager coordinator.
@@ -101,18 +98,6 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final PropertiesChangedEvent event) {
         contextManager.alterProperties(event.getProps());
-    }
-    
-    /**
-     * Renew authority.
-     *
-     * @param event authority changed event
-     */
-    @Subscribe
-    public synchronized void renew(final AuthorityChangedEvent event) {
-        Optional<AuthorityRule> rule = contextManager.getMetaDataContexts().getGlobalRuleMetaData().getRules().stream()
-                .filter(each -> each instanceof AuthorityRule).findAny().map(each -> (AuthorityRule) each);
-        rule.ifPresent(optional -> optional.refresh(contextManager.getMetaDataContexts().getMetaDataMap(), event.getUsers()));
     }
     
     /**

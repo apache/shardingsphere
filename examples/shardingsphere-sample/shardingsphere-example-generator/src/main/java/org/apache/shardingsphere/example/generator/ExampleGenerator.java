@@ -28,6 +28,11 @@ import java.util.Map;
  */
 public interface ExampleGenerator {
     
+    String OUTPUT_PATH = "./examples/shardingsphere-sample/shardingsphere-example-generator/target/generated-sources"
+            + "/shardingsphere-${product}-sample/${feature?replace(',', '-')}--${framework}--${mode}--${transaction}/";
+    
+    String RESOURCES_PATH = "src/main/resources";
+    
     /**
      * Generate file.
      * 

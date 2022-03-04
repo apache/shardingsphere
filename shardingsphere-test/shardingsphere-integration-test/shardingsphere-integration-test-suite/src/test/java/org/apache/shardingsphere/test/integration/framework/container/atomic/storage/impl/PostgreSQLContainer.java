@@ -48,8 +48,9 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     
     @Override
     @SneakyThrows({ClassNotFoundException.class, SQLException.class, InterruptedException.class})
-    // TODO if remove the method, DML and BatchDML run together may throw exception. Need to investigate the reason, it is better to use LogMessageWaitStrategy only
-    protected void execute() {
+    protected void postStart() {
+        super.postStart();
+        // TODO if remove the method, DML and BatchDML run together may throw exception. Need to investigate the reason, it is better to use LogMessageWaitStrategy only
         Class.forName(DataSourceEnvironment.getDriverClassName(getDatabaseType()));
         String url = DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getMappedPort(getPort()));
         boolean connected = false;

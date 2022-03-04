@@ -104,10 +104,7 @@ public final class RouteSQLRewriteEngine {
         Map<String, Collection<RouteUnit>> result = new LinkedHashMap<>(routeUnits.size(), 1);
         for (RouteUnit each : routeUnits) {
             String dataSourceName = each.getDataSourceMapper().getActualName();
-            if (!result.containsKey(dataSourceName)) {
-                result.put(dataSourceName, new LinkedList<>());
-            }
-            result.get(dataSourceName).add(each);
+            result.computeIfAbsent(dataSourceName, unused -> new LinkedList<>()).add(each);
         }
         return result;
     }
