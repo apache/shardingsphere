@@ -22,7 +22,15 @@ import Symbol, Keyword, Literals;
 tableName
     : IDENTIFIER
     ;
-    
+
+algorithmName
+    : IDENTIFIER
+    ;
+
 keyGeneratorName
     : IDENTIFIER
+    ;
+
+existsClause
+    : IF EXISTS
     ;

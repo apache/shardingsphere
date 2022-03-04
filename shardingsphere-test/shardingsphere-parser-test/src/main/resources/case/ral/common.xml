@@ -97,4 +97,7 @@
     </unlabel-instance>
     <unlabel-instance sql-case-id="unlabel-instance-without-label" ip="127.0.0.1" port="3309">
     </unlabel-instance>
+    <prepare-distsql sql-case-id="prepare-distsql"/>
+    <apply-distsql sql-case-id="apply-distsql"/>
+    <discard-distsql sql-case-id="discard-distsql"/>
 </sql-parser-test-cases>

@@ -35,7 +35,6 @@ import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewri
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -54,14 +53,9 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
     
     private final Collection<EncryptCondition> encryptConditions;
     
-    private final boolean containsEncryptTable;
-    
     @SuppressWarnings("rawtypes")
     @Override
     public Collection<ParameterRewriter> getParameterRewriters() {
-        if (!containsEncryptTable) {
-            return Collections.emptyList();
-        }
         Collection<ParameterRewriter> result = new LinkedList<>();
         addParameterRewriter(result, new EncryptAssignmentParameterRewriter());
         addParameterRewriter(result, new EncryptPredicateParameterRewriter());
@@ -70,8 +64,15 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
         return result;
     }
     
+    private void addParameterRewriter(final Collection<ParameterRewriter> parameterRewriters, final ParameterRewriter<?> toBeAddedParameterRewriter) {
+        if (toBeAddedParameterRewriter.isNeedRewrite(sqlStatementContext)) {
+            setUpParameterRewriter(toBeAddedParameterRewriter);
+            parameterRewriters.add(toBeAddedParameterRewriter);
+        }
+    }
+    
     @SuppressWarnings("rawtypes")
-    private void addParameterRewriter(final Collection<ParameterRewriter> parameterRewriters, final ParameterRewriter toBeAddedParameterRewriter) {
+    private void setUpParameterRewriter(final ParameterRewriter toBeAddedParameterRewriter) {
         if (toBeAddedParameterRewriter instanceof SchemaMetaDataAware) {
             ((SchemaMetaDataAware) toBeAddedParameterRewriter).setSchema(schema);
         }
@@ -86,9 +87,6 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
         }
         if (toBeAddedParameterRewriter instanceof SchemaNameAware) {
             ((SchemaNameAware) toBeAddedParameterRewriter).setSchemaName(schemaName);
-        }
-        if (toBeAddedParameterRewriter.isNeedRewrite(sqlStatementContext)) {
-            parameterRewriters.add(toBeAddedParameterRewriter);
         }
     }
 }

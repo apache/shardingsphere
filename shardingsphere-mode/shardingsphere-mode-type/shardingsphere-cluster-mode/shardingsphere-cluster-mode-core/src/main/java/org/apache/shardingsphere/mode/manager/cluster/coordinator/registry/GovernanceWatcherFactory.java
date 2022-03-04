@@ -22,6 +22,8 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
+import java.util.Collection;
+
 /**
  * Governance watcher factory.
  */
@@ -38,22 +40,8 @@ public final class GovernanceWatcherFactory {
      * Watch listeners.
      */
     public void watchListeners() {
-        for (GovernanceWatcher<?> each : ShardingSphereServiceLoader.getSingletonServiceInstances(GovernanceWatcher.class)) {
-            watch(each);
-        }
-    }
-    
-    private void watch(final GovernanceWatcher<?> listener) {
-        for (String each : listener.getWatchingKeys()) {
-            watch(each, listener);
-        }
-    }
-    
-    private void watch(final String watchingKey, final GovernanceWatcher<?> listener) {
-        repository.watch(watchingKey, dataChangedEventListener -> {
-            if (listener.getWatchingTypes().contains(dataChangedEventListener.getType())) {
-                listener.createGovernanceEvent(dataChangedEventListener).ifPresent(ShardingSphereEventBus.getInstance()::post);
-            }
-        });
+        Collection<GovernanceWatcher> governanceWatchers = ShardingSphereServiceLoader.getSingletonServiceInstances(GovernanceWatcher.class);
+        repository.watch("/", dataChangedEventListener -> governanceWatchers.stream().filter(each -> each.getWatchingTypes().contains(dataChangedEventListener.getType()))
+                .forEach(each -> each.createGovernanceEvent(dataChangedEventListener).ifPresent(ShardingSphereEventBus.getInstance()::post)));
     }
 }

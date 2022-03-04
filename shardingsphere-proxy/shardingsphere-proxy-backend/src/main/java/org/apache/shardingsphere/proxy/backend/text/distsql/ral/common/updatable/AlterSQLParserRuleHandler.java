@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Alter SQL parser rule statement executor.
+ * Alter SQL parser rule statement handler.
  */
 public final class AlterSQLParserRuleHandler extends UpdatableRALBackendHandler<AlterSQLParserRuleStatement, AlterSQLParserRuleHandler> {
     

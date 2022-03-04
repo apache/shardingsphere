@@ -34,8 +34,6 @@ import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseT
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGenerator;
 
 import javax.sql.DataSource;
@@ -53,12 +51,12 @@ import java.util.Properties;
 public final class NarayanaConfigurationFileGenerator implements TransactionConfigurationFileGenerator {
     
     @Override
-    public void generateFile(final TransactionRule transactionRule, final InstanceContext instanceContext) {
+    public void generateFile(final Properties transactionProps, final InstanceContext instanceContext) {
         String instanceId = instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId();
         String recoveryId = null == instanceContext.getInstance().getXaRecoveryId() ? instanceId : instanceContext.getInstance().getXaRecoveryId();
         NarayanaConfiguration config = createDefaultConfiguration(instanceId, recoveryId);
-        if (null != transactionRule.getProps()) {
-            appendUserDefinedJdbcStoreConfiguration(transactionRule, config);
+        if (!transactionProps.isEmpty()) {
+            appendUserDefinedJdbcStoreConfiguration(transactionProps, config);
         }
         JAXB.marshal(config, new File(ClassLoader.getSystemResource("").getPath(), "jbossts-properties.xml"));
     }
@@ -111,11 +109,11 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         return result;
     }
     
-    private void appendUserDefinedJdbcStoreConfiguration(final TransactionRule transactionRule, final NarayanaConfiguration config) {
-        String url = transactionRule.getProps().getProperty("recoveryStoreUrl");
-        String user = transactionRule.getProps().getProperty("recoveryStoreUser");
-        String password = String.valueOf(transactionRule.getProps().get("recoveryStorePassword"));
-        String dataSourceClass = transactionRule.getProps().getProperty("recoveryStoreDataSource");
+    private void appendUserDefinedJdbcStoreConfiguration(final Properties transactionProps, final NarayanaConfiguration config) {
+        String url = transactionProps.getProperty("recoveryStoreUrl");
+        String user = transactionProps.getProperty("recoveryStoreUser");
+        String password = String.valueOf(transactionProps.get("recoveryStorePassword"));
+        String dataSourceClass = transactionProps.getProperty("recoveryStoreDataSource");
         if (null != url && null != user && null != password && null != dataSourceClass) {
             appendJdbcStoreConfiguration(url, user, password, dataSourceClass, config);
         }
@@ -139,21 +137,21 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
     }
     
     @Override
-    public Properties getTransactionProps(final TransactionRuleConfiguration transactionRuleConfiguration, final SchemaConfiguration schemaConfiguration) {
+    public Properties getTransactionProps(final Properties originTransactionProps, final SchemaConfiguration schemaConfiguration, final String modeType) {
         Properties result = new Properties();
-        if (!transactionRuleConfiguration.getProps().isEmpty()) {
-            generateUserDefinedJdbcStoreConfiguration(transactionRuleConfiguration, result);
-        } else {
+        if (!originTransactionProps.isEmpty()) {
+            generateUserDefinedJdbcStoreConfiguration(originTransactionProps, result);
+        } else if ("Cluster".equals(modeType)) {
             generateDefaultJdbcStoreConfiguration(schemaConfiguration, result);
         }
         return result;
     }
     
-    private void generateUserDefinedJdbcStoreConfiguration(final TransactionRuleConfiguration transactionRuleConfiguration, final Properties props) {
-        String url = transactionRuleConfiguration.getProps().getProperty("recoveryStoreUrl");
-        String user = transactionRuleConfiguration.getProps().getProperty("recoveryStoreUser");
-        String password = String.valueOf(transactionRuleConfiguration.getProps().get("recoveryStorePassword"));
-        String dataSourceClass = transactionRuleConfiguration.getProps().getProperty("recoveryStoreDataSource");
+    private void generateUserDefinedJdbcStoreConfiguration(final Properties originTransactionProps, final Properties props) {
+        String url = originTransactionProps.getProperty("recoveryStoreUrl");
+        String user = originTransactionProps.getProperty("recoveryStoreUser");
+        String password = String.valueOf(originTransactionProps.get("recoveryStorePassword"));
+        String dataSourceClass = originTransactionProps.getProperty("recoveryStoreDataSource");
         generateTransactionProps(url, user, password, dataSourceClass, props);
     }
     

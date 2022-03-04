@@ -37,7 +37,6 @@ import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTraf
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficValue;
 import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
-import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -119,11 +118,12 @@ public final class TrafficRule implements GlobalRule {
      * Find matched strategy rule.
      * 
      * @param logicSQL logic SQL
+     * @param inTransaction is in transaction
      * @return matched strategy rule
      */
-    public Optional<TrafficStrategyRule> findMatchedStrategyRule(final LogicSQL logicSQL) {
+    public Optional<TrafficStrategyRule> findMatchedStrategyRule(final LogicSQL logicSQL, final boolean inTransaction) {
         for (TrafficStrategyRule each : strategyRules) {
-            if (match(each.getTrafficAlgorithm(), logicSQL)) {
+            if (match(each.getTrafficAlgorithm(), logicSQL, inTransaction)) {
                 return Optional.of(each);
             }
         }
@@ -137,9 +137,9 @@ public final class TrafficRule implements GlobalRule {
     }
     
     @SuppressWarnings("unchecked")
-    private boolean match(final TrafficAlgorithm trafficAlgorithm, final LogicSQL logicSQL) {
+    private boolean match(final TrafficAlgorithm trafficAlgorithm, final LogicSQL logicSQL, final boolean inTransaction) {
         if (trafficAlgorithm instanceof TransactionTrafficAlgorithm) {
-            return matchTransactionTraffic((TransactionTrafficAlgorithm) trafficAlgorithm);
+            return matchTransactionTraffic((TransactionTrafficAlgorithm) trafficAlgorithm, inTransaction);
         }
         SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
         if (trafficAlgorithm instanceof HintTrafficAlgorithm) {
@@ -165,8 +165,8 @@ public final class TrafficRule implements GlobalRule {
         return trafficAlgorithm.match(segmentTrafficValue);
     }
     
-    private boolean matchTransactionTraffic(final TransactionTrafficAlgorithm trafficAlgorithm) {
-        TransactionTrafficValue transactionTrafficValue = new TransactionTrafficValue(TransactionHolder.isTransaction());
+    private boolean matchTransactionTraffic(final TransactionTrafficAlgorithm trafficAlgorithm, final boolean inTransaction) {
+        TransactionTrafficValue transactionTrafficValue = new TransactionTrafficValue(inTransaction);
         return trafficAlgorithm.match(transactionTrafficValue);
     }
     

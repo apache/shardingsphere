@@ -35,7 +35,7 @@ import java.util.List;
  */
 public final class ShowInstanceModeHandler extends QueryableRALBackendHandler<ShowInstanceModeStatement, ShowInstanceModeHandler> {
     
-    private static final String ID = "id";
+    private static final String INSTANCE_ID = "instance_id";
     
     private static final String TYPE = "type";
     
@@ -47,7 +47,7 @@ public final class ShowInstanceModeHandler extends QueryableRALBackendHandler<Sh
     
     @Override
     protected Collection<String> getColumnNames() {
-        return Arrays.asList(ID, TYPE, REPOSITORY, PROPS, OVERWRITE);
+        return Arrays.asList(INSTANCE_ID, TYPE, REPOSITORY, PROPS, OVERWRITE);
     }
     
     @Override

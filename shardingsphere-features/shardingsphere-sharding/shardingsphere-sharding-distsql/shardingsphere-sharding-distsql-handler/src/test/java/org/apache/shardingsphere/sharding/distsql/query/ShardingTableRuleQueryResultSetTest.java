@@ -64,7 +64,6 @@ public final class ShardingTableRuleQueryResultSetTest {
         assertThat(actual.get(10), is("algorithm-expression=t_order_${order_id % 2}"));
         assertThat(actual.get(11), is("order_id"));
         assertThat(actual.get(12), is("SNOWFLAKE"));
-        assertThat(actual.get(13), is("worker-id=123"));
     }
     
     private RuleConfiguration createRuleConfiguration() {
@@ -93,8 +92,6 @@ public final class ShardingTableRuleQueryResultSetTest {
     }
     
     private ShardingSphereAlgorithmConfiguration createKeyGeneratorConfiguration() {
-        Properties props = new Properties();
-        props.put("worker-id", "123");
-        return new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", props);
+        return new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties());
     }
 }
