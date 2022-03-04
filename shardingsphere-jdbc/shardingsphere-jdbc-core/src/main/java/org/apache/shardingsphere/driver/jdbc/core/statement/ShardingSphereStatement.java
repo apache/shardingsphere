@@ -116,6 +116,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private TrafficContext trafficContext;
     
+    private TrafficRule trafficRule;
+    
     public ShardingSphereStatement(final ShardingSphereConnection connection) {
         this(connection, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
@@ -132,6 +134,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         executor = new DriverExecutor(connection);
         kernelProcessor = new KernelProcessor();
+        trafficRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(TrafficRule.class).orElse(null);
     }
     
     @Override
@@ -172,8 +175,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private TrafficContext createTrafficContext(final LogicSQL logicSQL) {
-        Optional<TrafficRule> trafficRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(TrafficRule.class);
-        return trafficRule.map(optional -> new TrafficEngine(optional, metaDataContexts).dispatch(logicSQL, connection.isHoldTransaction())).orElseGet(TrafficContext::new);
+        return null != trafficRule ? new TrafficEngine(trafficRule, metaDataContexts).dispatch(logicSQL, connection.isHoldTransaction()) : new TrafficContext();
     }
     
     private List<ResultSet> getShardingSphereResultSets() {
