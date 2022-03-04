@@ -43,10 +43,12 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
     @Getter
     private final int stopIndex;
     
+    @Getter
     private final Collection<ColumnProjection> projections;
     
     private final boolean lastColumn;
     
+    @Getter
     private final QuoteCharacter quoteCharacter;
     
     public SubstitutableColumnNameToken(final int startIndex, final int stopIndex, final Collection<ColumnProjection> projections) {
@@ -82,6 +84,10 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
         }
         String allColumnNames = Joiner.on(", ").join(columnNames);
         return lastColumn ? ", " + allColumnNames : allColumnNames;
+    }
+    
+    public SubstitutableColumnNameToken clone(final int startIndex, final int stopIndex, final SubstitutableColumnNameToken substitutableColumnNameToken) {
+        return new SubstitutableColumnNameToken(startIndex, stopIndex, substitutableColumnNameToken.getProjections(), substitutableColumnNameToken.getQuoteCharacter());
     }
     
     private Map<String, String> getLogicAndActualTables(final RouteUnit routeUnit) {

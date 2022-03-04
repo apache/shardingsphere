@@ -52,8 +52,8 @@
         <output sql="SELECT `t_order`.`order_id`, `t_order`.`user_id`, `t_order`.`plain_content` AS `content` FROM t_order WHERE plain_content = ?" parameters="TEST" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_with_for_concat_literals" db-types="MySQL">
+    <rewrite-assertion id="select_for_concat_literals" db-types="MySQL">
         <input sql="SELECT account_id, concat(account_id, password, amount) AS ap, amount AS a, status AS s FROM t_account WHERE account_id = 1 AND password = 'aaa' AND amount = 1000 AND status = 'OK'" />
-        <output sql="SELECT account_id, concat(account_id, cipher_password, cipher_amount) AS ap, cipher_amount AS a, status AS s FROM t_account WHERE account_id = 1 AND assisted_query_password = 'aaa' AND cipher_amount = 1000 AND status = 'OK'" />
+        <output sql="SELECT account_id, cipher_password AS placeholder_1, cipher_amount AS placeholder_2, concat(account_id, '', '') AS placeholder_0, 'placeholder_[0,1,2]' AS ap, cipher_amount AS a, status AS s FROM t_account WHERE account_id = 1 AND assisted_query_password = 'aaa' AND cipher_amount = 1000 AND status = 'OK'" />
     </rewrite-assertion>
 </rewrite-assertions>
