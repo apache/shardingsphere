@@ -182,7 +182,8 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     
     @Override
     public ASTNode visitDropDatabaseDiscoveryType(final DropDatabaseDiscoveryTypeContext ctx) {
-        return new DropDatabaseDiscoveryTypeStatement(ctx.discoveryTypeName().stream().map(this::getIdentifierValue).collect(Collectors.toCollection(LinkedList::new)));
+        return new DropDatabaseDiscoveryTypeStatement(ctx.discoveryTypeName().stream().map(this::getIdentifierValue).collect(Collectors.toCollection(LinkedList::new)),
+                null != ctx.existClause());
     }
     
     @Override
