@@ -19,7 +19,6 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
-import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.SchemaNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter.EncryptAssignmentParameterRewriter;
@@ -78,9 +77,6 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
         }
         if (toBeAddedParameterRewriter instanceof EncryptRuleAware) {
             ((EncryptRuleAware) toBeAddedParameterRewriter).setEncryptRule(encryptRule);
-        }
-        if (toBeAddedParameterRewriter instanceof QueryWithCipherColumnAware) {
-            ((QueryWithCipherColumnAware) toBeAddedParameterRewriter).setQueryWithCipherColumn(encryptRule.isQueryWithCipherColumn());
         }
         if (toBeAddedParameterRewriter instanceof EncryptConditionsAware) {
             ((EncryptConditionsAware) toBeAddedParameterRewriter).setEncryptConditions(encryptConditions);

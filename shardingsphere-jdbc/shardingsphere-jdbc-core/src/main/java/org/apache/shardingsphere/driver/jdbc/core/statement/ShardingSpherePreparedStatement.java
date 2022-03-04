@@ -32,11 +32,11 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.metadata.ShardingSph
 import org.apache.shardingsphere.driver.jdbc.exception.SQLExceptionErrorCode;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
@@ -137,7 +137,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private ResultSet currentResultSet;
     
     private TrafficContext trafficContext;
-
+    
+    private TrafficRule trafficRule;
+    
     public ShardingSpherePreparedStatement(final ShardingSphereConnection connection, final String sql) throws SQLException {
         this(connection, sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT, false);
     }
@@ -178,6 +180,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(metaDataContexts, jdbcExecutor, connection.getSchema());
         kernelProcessor = new KernelProcessor();
         statementsCacheable = isStatementsCacheable(metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getConfigurations());
+        trafficRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(TrafficRule.class).orElse(null);
     }
     
     private boolean isStatementsCacheable(final Collection<RuleConfiguration> configurations) {
@@ -231,8 +234,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private TrafficContext createTrafficContext(final LogicSQL logicSQL) {
-        Optional<TrafficRule> trafficRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(TrafficRule.class);
-        return trafficRule.map(optional -> new TrafficEngine(optional, metaDataContexts).dispatch(logicSQL, connection.isHoldTransaction())).orElseGet(TrafficContext::new);
+        return null != trafficRule ? new TrafficEngine(trafficRule, metaDataContexts).dispatch(logicSQL, connection.isHoldTransaction()) : new TrafficContext();
     }
     
     private void resetParameters() throws SQLException {

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -39,6 +37,8 @@ import java.util.Map;
  */
 @EqualsAndHashCode(callSuper = false)
 public final class SubstitutableColumnNameToken extends SQLToken implements Substitutable, RouteUnitAware {
+    
+    private static final String COLUMN_NAME_SPLITTER = ", ";
     
     @Getter
     private final int stopIndex;
@@ -76,12 +76,11 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
     @Override
     public String toString(final RouteUnit routeUnit) {
         Map<String, String> logicAndActualTables = getLogicAndActualTables(routeUnit);
-        Collection<String> columnNames = new LinkedList<>();
+        StringBuilder builder = lastColumn ? new StringBuilder(COLUMN_NAME_SPLITTER) : new StringBuilder();
         for (ColumnProjection each : projections) {
-            columnNames.add(getColumnName(each, logicAndActualTables));
+            builder.append(getColumnName(each, logicAndActualTables)).append(COLUMN_NAME_SPLITTER);
         }
-        String allColumnNames = Joiner.on(", ").join(columnNames);
-        return lastColumn ? ", " + allColumnNames : allColumnNames;
+        return builder.substring(0, builder.length() - COLUMN_NAME_SPLITTER.length());
     }
     
     private Map<String, String> getLogicAndActualTables(final RouteUnit routeUnit) {
