@@ -31,5 +31,6 @@
     
     <modules>
         <module>spi-based-sharding-raw-jdbc-example</module>
+        <module>spi-based-sharding-spring-boot-mybatis-example</module>
     </modules>
 </project>

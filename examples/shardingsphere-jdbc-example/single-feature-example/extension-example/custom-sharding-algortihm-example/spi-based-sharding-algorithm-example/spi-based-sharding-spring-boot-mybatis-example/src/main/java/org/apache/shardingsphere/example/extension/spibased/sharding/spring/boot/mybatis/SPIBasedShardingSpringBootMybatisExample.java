@@ -27,9 +27,6 @@ import org.springframework.context.annotation.ComponentScan;
 
 import java.sql.SQLException;
 
-/**
- * @author susongyan
- **/
 @ComponentScan("org.apache.shardingsphere.example.core.mybatis")
 @MapperScan(basePackages = "org.apache.shardingsphere.example.core.mybatis.repository")
 @SpringBootApplication

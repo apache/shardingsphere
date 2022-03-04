@@ -23,10 +23,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 
 import java.util.Collection;
 
-/**
- * @author susongyan
- **/
-public class SPIBasedDatasourceStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
+public final class SPIBasedDatasourceStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
 
     @Override
     public String doSharding(Collection<String> dataSourceNames, PreciseShardingValue<Integer> shardingValue) {

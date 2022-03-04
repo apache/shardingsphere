@@ -23,10 +23,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 
 import java.util.Collection;
 
-/**
- * @author susongyan
- **/
-public class SPIBasedOrderItemStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Long> {
+public final class SPIBasedOrderItemStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Long> {
 
     @Override
     public String doSharding(Collection<String> availableTargetNames, PreciseShardingValue<Long> shardingValue) {
