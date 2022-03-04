@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token;
 
-import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptOrderByItemTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptProjectionTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -82,9 +81,6 @@ public final class EncryptTokenGenerateBuilderTest {
     private void assertSqlTokenGenerator(final SQLTokenGenerator sqlTokenGenerator) throws IllegalAccessException {
         if (sqlTokenGenerator instanceof EncryptRuleAware) {
             assertField(sqlTokenGenerator, encryptRule, "encryptRule");
-        }
-        if (sqlTokenGenerator instanceof QueryWithCipherColumnAware) {
-            assertField(sqlTokenGenerator, encryptRule.isQueryWithCipherColumn(), "queryWithCipherColumn");
         }
     }
     
