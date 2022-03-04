@@ -63,13 +63,12 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
             hostname = matcher.group(3);
             port = Strings.isNullOrEmpty(matcher.group(4)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(4));
             catalog = matcher.group(5);
-            schema = username;
         } else {
             hostname = matcher.group(2);
             port = Strings.isNullOrEmpty(matcher.group(3)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(3));
             catalog = matcher.group(4);
-            schema = username;
         }
+        schema = username;
     }
     
     @Override
