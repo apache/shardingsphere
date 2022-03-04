@@ -101,11 +101,7 @@ public final class PostgreSQLAdminExecutorFactory implements DatabaseAdminExecut
     
     private boolean isSetClientEncoding(final SetStatement setStatement) {
         Iterator<VariableAssignSegment> iterator = setStatement.getVariableAssigns().iterator();
-        return iterator.hasNext() && containsKey(iterator.next().getVariable().getVariable());
-    }
-    
-    private boolean containsKey(final String key) {
-        return "charset".equalsIgnoreCase(key) || "client_encoding".equalsIgnoreCase(key);
+        return iterator.hasNext() && "client_encoding".equalsIgnoreCase(iterator.next().getVariable().getVariable());
     }
     
     @Override
