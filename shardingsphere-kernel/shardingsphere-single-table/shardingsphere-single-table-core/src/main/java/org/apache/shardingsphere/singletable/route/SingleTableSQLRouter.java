@@ -48,8 +48,8 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
         RouteContext result = new RouteContext();
         if (1 == metaData.getResource().getDataSources().size()) {
             String logicDataSource = rule.getDataSourceNames().iterator().next();
-            String actualDataSourceName = metaData.getResource().getDataSources().keySet().iterator().next();
-            result.getRouteUnits().add(new RouteUnit(new RouteMapper(logicDataSource, actualDataSourceName), Collections.emptyList()));
+            String actualDataSource = metaData.getResource().getDataSources().keySet().iterator().next();
+            result.getRouteUnits().add(new RouteUnit(new RouteMapper(logicDataSource, actualDataSource), Collections.emptyList()));
         } else {
             route(logicSQL.getSqlStatementContext(), rule, result, props);
         }
