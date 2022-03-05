@@ -20,7 +20,39 @@ grammar DCLStatement;
 import BaseRule;
 
 grant
-    : GRANT (classPrivilegesClause | classTypePrivilegesClause)
+    : GRANT (grantClassPrivilegesClause | grantClassTypePrivilegesClause)
+    ;
+
+grantClassPrivilegesClause
+    : grantClassPrivileges (ON grantOnClassClause)? TO principal (COMMA_ principal)* (WITH GRANT OPTION)? (AS principal)?
+    ;
+
+grantClassTypePrivilegesClause
+    : grantClassTypePrivileges (ON grantOnClassTypeClause)? TO principal (COMMA_ principal)* (WITH GRANT OPTION)?
+    ;
+
+grantClassPrivileges
+    : privilegeType columnNames? (COMMA_ privilegeType columnNames?)*
+    ;
+
+grantOnClassClause
+    : (classItem COLON_ COLON_)? securable
+    ;
+
+grantClassTypePrivileges
+    : privilegeType (COMMA_ privilegeType)*
+    ;
+
+grantOnClassTypeClause
+    : (grantClassType COLON_ COLON_)? securable
+    ;
+
+securable
+    : (owner DOT_)? name
+    ;
+
+principal
+    : userName
     ;
 
 revoke
@@ -32,11 +64,11 @@ deny
     ;
 
 classPrivilegesClause
-    : classPrivileges (ON onClassClause)? TO principal (COMMA_ principal)* (WITH GRANT OPTION)? (AS principal)?
+    : classPrivileges (ON onClassClause)?
     ;
 
 classTypePrivilegesClause
-    : classTypePrivileges (ON onClassTypeClause)? TO principal (COMMA_ principal)* (WITH GRANT OPTION)?
+    : classTypePrivileges (ON onClassTypeClause)?
     ;
 
 optionForClause
@@ -48,7 +80,7 @@ classPrivileges
     ;
 
 onClassClause
-    : (class COLON_ COLON_)? securable
+    : class_? tableName
     ;
 
 classTypePrivileges
@@ -56,24 +88,17 @@ classTypePrivileges
     ;
 
 onClassTypeClause
-    : (classType COLON_ COLON_)? securable
-    ;
-
-securable
-    : ignoredNameIdentifier | NAME_
-    ;
-
-principal
-    : userName
+    : classType? tableName
     ;
 
 privilegeType
     : ALL PRIVILEGES?
     | assemblyPermission | asymmetricKeyPermission
     | availabilityGroupPermission | certificatePermission
+    | objectPermission
     | databasePermission | databasePrincipalPermission
     | databaseScopedCredentialPermission | endpointPermission
-    | fullTextPermission | objectPermission
+    | fullTextPermission
     | schemaPermission | searchPropertyListPermission
     | serverPermission | serverPrincipalPermission
     | serviceBrokerPermission | symmetricKeyPermission
@@ -215,14 +240,22 @@ xmlSchemaCollectionPermission
     : ALTER | CONTROL | EXECUTE | REFERENCES | TAKE OWNERSHIP | VIEW DEFINITION
     ;
 
-class
-    : ASSEMBLY | ASYMMETRIC KEY | AVAILABILITY GROUP | CERTIFICATE | USER | ROLE | APPLICATION ROLE
-    | DATABASE SCOPED CREDENTIAL | ENDPOINT | FULLTEXT (CATALOG | STOPLIST) | OBJECT | SCHEMA | SEARCH PROPERTY LIST
-    | LOGIN | SERVER ROLE | CONTRACT | MESSAGE TYPE | REMOTE SERVICE BINDING | ROUTE | SERVICE | SYMMETRIC KEY
-    | SELECT | EXECUTE | ON TYPE | XML SCHEMA COLLECTION
+class_
+    : IDENTIFIER_ COLON_ COLON_
     ;
 
 classType
+    : (LOGIN | DATABASE | OBJECT | ROLE | SCHEMA | USER) COLON_ COLON_
+    ;
+
+classItem
+    : ASSEMBLY | ASYMMETRIC KEY | AVAILABILITY GROUP | CERTIFICATE | USER | ROLE | APPLICATION ROLE
+    | DATABASE SCOPED CREDENTIAL | ENDPOINT | FULLTEXT (CATALOG | STOPLIST) | OBJECT | SCHEMA | SEARCH PROPERTY LIST
+    | LOGIN | SERVER ROLE | CONTRACT | MESSAGE TYPE | REMOTE SERVICE BINDING | ROUTE | SERVICE | SYMMETRIC KEY
+    | SELECT | EXECUTE | TYPE | XML SCHEMA COLLECTION
+    ;
+
+grantClassType
     : LOGIN | DATABASE | OBJECT | ROLE | SCHEMA | USER
     ;
 
