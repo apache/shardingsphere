@@ -61,7 +61,7 @@ public final class DataSourcePoolMetaDataReflection {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private  <T> T getFieldValue(final String... fieldNames) {
+    private <T> T getFieldValue(final String... fieldNames) {
         for (String each : fieldNames) {
             Optional<T> result = findFieldValue(each);
             if (result.isPresent()) {
