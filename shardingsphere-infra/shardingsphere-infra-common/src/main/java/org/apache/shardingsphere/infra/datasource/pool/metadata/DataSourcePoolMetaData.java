@@ -63,5 +63,5 @@ public interface DataSourcePoolMetaData<T extends DataSource> extends TypedSPI {
      * 
      * @return data source JDBC URL meta data
      */
-    DataSourceJdbcUrlMetaData<T> getJdbcUrlMetaData();
+    DataSourceJdbcUrlMetaData getJdbcUrlMetaData();
 }

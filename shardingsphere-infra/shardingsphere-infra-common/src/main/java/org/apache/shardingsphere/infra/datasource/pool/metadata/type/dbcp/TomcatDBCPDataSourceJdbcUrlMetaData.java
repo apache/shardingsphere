@@ -19,29 +19,30 @@ package org.apache.shardingsphere.infra.datasource.pool.metadata.type.dbcp;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourceJdbcUrlMetaData;
-import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 
+import javax.sql.DataSource;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Properties;
 
 /**
  * Tomcat DBCP data source JDBC URL meta data.
  */
-public final class TomcatDBCPDataSourceJdbcUrlMetaData implements DataSourceJdbcUrlMetaData<BasicDataSource> {
+public final class TomcatDBCPDataSourceJdbcUrlMetaData implements DataSourceJdbcUrlMetaData {
     
     @Override
-    public String getJdbcUrl(final BasicDataSource targetDataSource) {
-        return targetDataSource.getUrl();
+    public String getJdbcUrl(final DataSource targetDataSource) {
+        return (String) getFieldValue(targetDataSource, "url");
     }
     
     @Override
-    public String getUsername(final BasicDataSource targetDataSource) {
-        return targetDataSource.getUsername();
+    public String getUsername(final DataSource targetDataSource) {
+        return (String) getFieldValue(targetDataSource, "username");
     }
     
     @Override
-    public String getPassword(final BasicDataSource targetDataSource) {
-        return targetDataSource.getPassword();
+    public String getPassword(final DataSource targetDataSource) {
+        return (String) getFieldValue(targetDataSource, "password");
     }
     
     @Override
@@ -50,15 +51,21 @@ public final class TomcatDBCPDataSourceJdbcUrlMetaData implements DataSourceJdbc
     }
     
     @Override
-    @SneakyThrows(ReflectiveOperationException.class)
-    public Properties getJdbcUrlProperties(final BasicDataSource targetDataSource) {
-        Field field = BasicDataSource.class.getDeclaredField("connectionProperties");
-        field.setAccessible(true);
-        return (Properties) field.get(targetDataSource);
+    public Properties getJdbcUrlProperties(final DataSource targetDataSource) {
+        return (Properties) getFieldValue(targetDataSource, "connectionProperties");
     }
     
+    @SneakyThrows(ReflectiveOperationException.class)
     @Override
-    public void appendJdbcUrlProperties(final String key, final String value, final BasicDataSource targetDataSource) {
-        targetDataSource.addConnectionProperty(key, value);
+    public void appendJdbcUrlProperties(final String key, final String value, final DataSource targetDataSource) {
+        Method method = targetDataSource.getClass().getMethod("addConnectionProperty", String.class, String.class);
+        method.invoke(targetDataSource, key, value);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Object getFieldValue(final DataSource targetDataSource, final String fieldName) {
+        Field field = targetDataSource.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return field.get(targetDataSource);
     }
 }
