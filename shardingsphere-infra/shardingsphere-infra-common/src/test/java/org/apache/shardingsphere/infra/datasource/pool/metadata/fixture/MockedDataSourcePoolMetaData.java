@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.infra.datasource.pool.metadata.fixture;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaData<MockedDataSource> {
+public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaData {
     
     @Override
     public Map<String, Object> getDefaultProperties() {
@@ -62,6 +61,6 @@ public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaDat
     
     @Override
     public String getType() {
-        return MockedDataSource.class.getName();
+        return "org.apache.shardingsphere.test.mock.MockedDataSource";
     }
 }

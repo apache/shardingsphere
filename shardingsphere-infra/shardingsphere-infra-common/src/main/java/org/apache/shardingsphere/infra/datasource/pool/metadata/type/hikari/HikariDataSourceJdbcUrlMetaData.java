@@ -17,29 +17,31 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.metadata.type.hikari;
 
-import com.zaxxer.hikari.HikariDataSource;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourceJdbcUrlMetaData;
 
+import javax.sql.DataSource;
+import java.lang.reflect.Field;
 import java.util.Properties;
 
 /**
  * Hikari data source JDBC URL meta data.
  */
-public final class HikariDataSourceJdbcUrlMetaData implements DataSourceJdbcUrlMetaData<HikariDataSource> {
+public final class HikariDataSourceJdbcUrlMetaData implements DataSourceJdbcUrlMetaData {
     
     @Override
-    public String getJdbcUrl(final HikariDataSource targetDataSource) {
-        return targetDataSource.getJdbcUrl();
+    public String getJdbcUrl(final DataSource targetDataSource) {
+        return (String) getFieldValue(targetDataSource, "jdbcUrl");
     }
     
     @Override
-    public String getUsername(final HikariDataSource targetDataSource) {
-        return targetDataSource.getUsername();
+    public String getUsername(final DataSource targetDataSource) {
+        return (String) getFieldValue(targetDataSource, "username");
     }
     
     @Override
-    public String getPassword(final HikariDataSource targetDataSource) {
-        return targetDataSource.getPassword();
+    public String getPassword(final DataSource targetDataSource) {
+        return (String) getFieldValue(targetDataSource, "password");
     }
     
     @Override
@@ -48,12 +50,32 @@ public final class HikariDataSourceJdbcUrlMetaData implements DataSourceJdbcUrlM
     }
     
     @Override
-    public Properties getJdbcUrlProperties(final HikariDataSource targetDataSource) {
-        return targetDataSource.getDataSourceProperties();
+    public Properties getJdbcUrlProperties(final DataSource targetDataSource) {
+        return (Properties) getFieldValue(targetDataSource, "dataSourceProperties");
     }
     
     @Override
-    public void appendJdbcUrlProperties(final String key, final String value, final HikariDataSource targetDataSource) {
-        targetDataSource.getDataSourceProperties().put(key, value);
+    public void appendJdbcUrlProperties(final String key, final String value, final DataSource targetDataSource) {
+        ((Properties) getFieldValue(targetDataSource, "dataSourceProperties")).put(key, value);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Object getFieldValue(final DataSource targetDataSource, final String fieldName) {
+        Class<?> dataSourceClass = targetDataSource.getClass();
+        Field field = null;
+        boolean found = false;
+        while (!found) {
+            try {
+                field = dataSourceClass.getDeclaredField(fieldName);
+                found = true;
+            } catch (final ReflectiveOperationException ex) {
+                dataSourceClass = dataSourceClass.getSuperclass();
+                if (Object.class == dataSourceClass) {
+                    throw ex;
+                }
+            }
+        }
+        field.setAccessible(true);
+        return field.get(targetDataSource);
     }
 }
