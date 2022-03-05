@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import com.google.common.base.Preconditions;
+import groovy.lang.Tuple2;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
@@ -84,6 +85,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     
     private void addGenerateSQLTokens(final Collection<SubstitutableColumnNameToken> result, final SelectStatementContext selectStatementContext) {
         Map<String, String> columnTableNames = getColumnTableNames(selectStatementContext);
+        int countPlaceHolders = 0;
         for (ProjectionSegment projection : selectStatementContext.getSqlStatement().getProjections().getProjections()) {
             SubqueryType subqueryType = selectStatementContext.getSubqueryType();
             if (projection instanceof ColumnProjectionSegment) {
@@ -95,7 +97,9 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
                 }
             }
             if (projection instanceof ExpressionProjectionSegment) {
-                result.addAll(generateSQLToken(((ExpressionProjectionSegment) projection).getExpr(), columnTableNames, subqueryType));
+                Tuple2<Collection<SubstitutableColumnNameToken>, Integer> tuple2 = generateSQLToken(((ExpressionProjectionSegment) projection).getExpr(), columnTableNames, subqueryType, countPlaceHolders);
+                countPlaceHolders = tuple2.getV2();
+                result.addAll(tuple2.getV1());
             }
             if (projection instanceof ShorthandProjectionSegment) {
                 ShorthandProjectionSegment shorthandSegment = (ShorthandProjectionSegment) projection;
@@ -107,25 +111,25 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         }
     }
     
-    private Collection<SubstitutableColumnNameToken> generateSQLToken(final ExpressionSegment expr, final Map<String, String> columnTableNames,
-                                                                       final SubqueryType subqueryType) {
+    private Tuple2<Collection<SubstitutableColumnNameToken>, Integer> generateSQLToken(final ExpressionSegment expr, final Map<String, String> columnTableNames,
+                                                                                       final SubqueryType subqueryType, final int countPlaceHolders) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         if (!(expr instanceof FunctionSegment) || (expr instanceof FunctionSegment && null == ((FunctionSegment) expr).getParameters())) {
-            return result;
+            return new Tuple2(result, 0);
         }
         FunctionSegment functionSegment = (FunctionSegment) expr;
         String partsTemplate = "placeholder_";
         StringBuffer countPartsTemplate = new StringBuffer("'" + partsTemplate + "[");
         String originParts = functionSegment.getText();
         String splitPartsTemplate = partsTemplate + "%s";
-        int count = 0;
+        int count = countPlaceHolders;
         List<ColumnProjection> temporaryList = new LinkedList<>();
         for (ExpressionSegment expressionSegment : functionSegment.getParameters()) {
             if (!(expressionSegment instanceof ColumnSegment)) {
                 continue;
             }
             ColumnProjectionSegment columnSegment = buildColumnProjectionSegment((ColumnSegment) expressionSegment);
-            Optional<SubstitutableColumnNameToken> substitutableColumnNameToken = generateSQLToken(columnSegment, columnTableNames, subqueryType, Optional.of(String.format(splitPartsTemplate, count+1)));
+            Optional<SubstitutableColumnNameToken> substitutableColumnNameToken = generateSQLToken(columnSegment, columnTableNames, subqueryType, Optional.of(String.format(splitPartsTemplate, count + 1)));
             if (substitutableColumnNameToken.isPresent()) {
                 temporaryList.addAll(substitutableColumnNameToken.get().getProjections());
                 originParts = originParts.replace(columnSegment.getColumn().getIdentifier().getValue(), "''");
@@ -133,15 +137,15 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
                 count++;
             }
         }
-        countPartsTemplate =countPartsTemplate.append(count).append("]'");
+        countPartsTemplate = countPartsTemplate.append(count).append("]'");
     
         ColumnProjection columnProjection0 = new ColumnProjection(null, countPartsTemplate.toString(), null);
         ColumnProjection columnProjection1 = new ColumnProjection(null, originParts + " AS " + partsTemplate + "0", null);
         temporaryList.add(columnProjection1);
         temporaryList.add(columnProjection0);
-        SubstitutableColumnNameToken substitutableColumnNameToken0 = new SubstitutableColumnNameToken(functionSegment.getStartIndex(), functionSegment.getStopIndex() , temporaryList);
+        SubstitutableColumnNameToken substitutableColumnNameToken0 = new SubstitutableColumnNameToken(functionSegment.getStartIndex(), functionSegment.getStopIndex(), temporaryList);
         result.add(substitutableColumnNameToken0);
-        return result;
+        return new Tuple2(result, count + 1);
     }
     
     private Optional<SubstitutableColumnNameToken> generateSQLToken(final ColumnProjectionSegment columnSegment, final Map<String, String> columnTableNames,
