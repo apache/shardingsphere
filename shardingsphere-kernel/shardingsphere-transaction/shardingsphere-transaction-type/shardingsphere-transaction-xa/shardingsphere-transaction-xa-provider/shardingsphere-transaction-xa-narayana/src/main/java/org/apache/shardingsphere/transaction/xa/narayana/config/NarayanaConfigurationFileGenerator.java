@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseTy
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGenerator;
 
@@ -155,20 +156,20 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         generateTransactionProps(url, user, password, dataSourceClass, props);
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     private void generateDefaultJdbcStoreConfiguration(final SchemaConfiguration schemaConfiguration, final Properties props) {
         Map<String, DataSource> datasourceMap = schemaConfiguration.getDataSources();
         Optional<DataSource> dataSource = datasourceMap.values().stream().findFirst();
         if (dataSource.isPresent()) {
             Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSource.get().getClass().getName());
             if (poolMetaData.isPresent()) {
-                String jdbcUrl = poolMetaData.get().getJdbcUrlMetaData().getJdbcUrl(dataSource.get());
+                DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(dataSource.get());
+                String jdbcUrl = dataSourcePoolMetaDataReflection.getJdbcUrl();
                 int endIndex = jdbcUrl.indexOf("?");
                 jdbcUrl = jdbcUrl.substring(0, endIndex);
-                String user = poolMetaData.get().getJdbcUrlMetaData().getUsername(dataSource.get());
-                String password = poolMetaData.get().getJdbcUrlMetaData().getPassword(dataSource.get());
+                String username = dataSourcePoolMetaDataReflection.getUsername();
+                String password = dataSourcePoolMetaDataReflection.getPassword();
                 String dataSourceClassName = getDataSourceClassNameByJdbcUrl(jdbcUrl);
-                generateTransactionProps(jdbcUrl, user, password, dataSourceClassName, props);
+                generateTransactionProps(jdbcUrl, username, password, dataSourceClassName, props);
             }
         }
     }
