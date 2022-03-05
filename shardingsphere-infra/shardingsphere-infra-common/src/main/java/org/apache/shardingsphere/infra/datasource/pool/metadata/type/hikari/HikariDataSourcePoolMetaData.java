@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.metadata.type.hikari;
 
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 
@@ -30,7 +29,7 @@ import java.util.Map;
  * Hikari data source pool meta data.
  */
 @Getter
-public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaData<HikariDataSource> {
+public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaData {
     
     private final Map<String, Object> defaultProperties = new HashMap<>(6, 1);
     

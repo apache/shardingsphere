@@ -61,11 +61,19 @@ public final class HikariDataSourceJdbcUrlMetaData implements DataSourceJdbcUrlM
     
     @SneakyThrows(ReflectiveOperationException.class)
     private Object getFieldValue(final DataSource targetDataSource, final String fieldName) {
-        Field field;
-        try {
-            field = targetDataSource.getClass().getDeclaredField(fieldName);
-        } catch (final ReflectiveOperationException ignored) {
-            field = targetDataSource.getClass().getSuperclass().getDeclaredField(fieldName);
+        Class<?> dataSourceClass = targetDataSource.getClass();
+        Field field = null;
+        boolean found = false;
+        while (!found) {
+            try {
+                field = dataSourceClass.getDeclaredField(fieldName);
+                found = true;
+            } catch (final ReflectiveOperationException ex) {
+                dataSourceClass = dataSourceClass.getSuperclass();
+                if (Object.class == dataSourceClass) {
+                    throw ex;
+                }
+            }
         }
         field.setAccessible(true);
         return field.get(targetDataSource);
