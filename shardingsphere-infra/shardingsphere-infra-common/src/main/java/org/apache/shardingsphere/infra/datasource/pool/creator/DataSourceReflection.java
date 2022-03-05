@@ -23,6 +23,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
@@ -156,11 +157,10 @@ public final class DataSourceReflection {
      *
      * @param dataSourcePoolMetaData data source pool meta data
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
     public void addDefaultDataSourceProperties(final DataSourcePoolMetaData dataSourcePoolMetaData) {
-        String jdbcUrl = dataSourcePoolMetaData.getJdbcUrlMetaData().getJdbcUrl(dataSource);
+        String jdbcUrl = new DataSourcePoolMetaDataReflection(dataSource).getJdbcUrl();
         Properties jdbcUrlProps = dataSourcePoolMetaData.getJdbcUrlMetaData().getJdbcUrlProperties(dataSource);
-        if (null == jdbcUrl || null == jdbcUrlProps) {
+        if (null == jdbcUrlProps) {
             return;
         }
         DataSourceMetaData dataSourceMetaData = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl).getDataSourceMetaData(jdbcUrl, null);

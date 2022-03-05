@@ -17,29 +17,12 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.metadata.fixture;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourceJdbcUrlMetaData;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.util.Properties;
 
 public final class MockedDataSourceJdbcUrlMetaData implements DataSourceJdbcUrlMetaData {
-    
-    @Override
-    public String getJdbcUrl(final DataSource targetDataSource) {
-        return (String) getFieldValue(targetDataSource, "url");
-    }
-    
-    @Override
-    public String getUsername(final DataSource targetDataSource) {
-        return (String) getFieldValue(targetDataSource, "username");
-    }
-    
-    @Override
-    public String getPassword(final DataSource targetDataSource) {
-        return (String) getFieldValue(targetDataSource, "password");
-    }
     
     @Override
     public String getJdbcUrlPropertiesFieldName() {
@@ -53,12 +36,5 @@ public final class MockedDataSourceJdbcUrlMetaData implements DataSourceJdbcUrlM
     
     @Override
     public void appendJdbcUrlProperties(final String key, final String value, final DataSource targetDataSource) {
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private Object getFieldValue(final DataSource targetDataSource, final String fieldName) {
-        Field field = targetDataSource.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        return field.get(targetDataSource);
     }
 }

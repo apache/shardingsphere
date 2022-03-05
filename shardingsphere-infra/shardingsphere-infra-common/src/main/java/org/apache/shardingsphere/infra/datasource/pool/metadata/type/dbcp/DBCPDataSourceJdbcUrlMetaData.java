@@ -31,21 +31,6 @@ import java.util.Properties;
 public final class DBCPDataSourceJdbcUrlMetaData implements DataSourceJdbcUrlMetaData {
     
     @Override
-    public String getJdbcUrl(final DataSource targetDataSource) {
-        return (String) getFieldValue(targetDataSource, "url");
-    }
-    
-    @Override
-    public String getUsername(final DataSource targetDataSource) {
-        return (String) getFieldValue(targetDataSource, "username");
-    }
-    
-    @Override
-    public String getPassword(final DataSource targetDataSource) {
-        return (String) getFieldValue(targetDataSource, "password");
-    }
-    
-    @Override
     public String getJdbcUrlPropertiesFieldName() {
         return "connectionProperties";
     }
