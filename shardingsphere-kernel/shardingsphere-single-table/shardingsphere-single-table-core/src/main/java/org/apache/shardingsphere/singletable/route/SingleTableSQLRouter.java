@@ -47,8 +47,9 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final SingleTableRule rule, final ConfigurationProperties props) {
         RouteContext result = new RouteContext();
         if (1 == metaData.getResource().getDataSources().size()) {
-            String singleDataSourceName = metaData.getResource().getDataSources().keySet().iterator().next();
-            result.getRouteUnits().add(new RouteUnit(new RouteMapper(singleDataSourceName, singleDataSourceName), Collections.emptyList()));
+            String logicDataSource = rule.getDataSourceNames().iterator().next();
+            String actualDataSource = metaData.getResource().getDataSources().keySet().iterator().next();
+            result.getRouteUnits().add(new RouteUnit(new RouteMapper(logicDataSource, actualDataSource), Collections.emptyList()));
         } else {
             route(logicSQL.getSqlStatementContext(), rule, result, props);
         }
