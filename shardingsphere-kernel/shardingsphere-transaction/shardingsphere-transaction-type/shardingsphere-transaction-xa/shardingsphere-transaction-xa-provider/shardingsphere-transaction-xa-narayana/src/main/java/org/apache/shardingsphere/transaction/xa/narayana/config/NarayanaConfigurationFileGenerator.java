@@ -162,7 +162,7 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
             return;
         }
         DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = DataSourcePoolMetaDataFactory.newInstance(dataSource.get().getClass().getName()).map(
-                optional -> new DataSourcePoolMetaDataReflection(dataSource.get(), optional.getFieldMetaData())).orElseGet(() -> new DataSourcePoolMetaDataReflection(dataSource.get()));
+            optional -> new DataSourcePoolMetaDataReflection(dataSource.get(), optional.getFieldMetaData())).orElseGet(() -> new DataSourcePoolMetaDataReflection(dataSource.get()));
         String jdbcUrl = dataSourcePoolMetaDataReflection.getJdbcUrl();
         int endIndex = jdbcUrl.indexOf("?");
         jdbcUrl = jdbcUrl.substring(0, endIndex);
