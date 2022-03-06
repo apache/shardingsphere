@@ -30,21 +30,6 @@ import java.util.Properties;
 public final class HikariDataSourceJdbcUrlMetaData implements DataSourceJdbcUrlMetaData {
     
     @Override
-    public String getJdbcUrl(final DataSource targetDataSource) {
-        return (String) getFieldValue(targetDataSource, "jdbcUrl");
-    }
-    
-    @Override
-    public String getUsername(final DataSource targetDataSource) {
-        return (String) getFieldValue(targetDataSource, "username");
-    }
-    
-    @Override
-    public String getPassword(final DataSource targetDataSource) {
-        return (String) getFieldValue(targetDataSource, "password");
-    }
-    
-    @Override
     public String getJdbcUrlPropertiesFieldName() {
         return "dataSourceProperties";
     }
