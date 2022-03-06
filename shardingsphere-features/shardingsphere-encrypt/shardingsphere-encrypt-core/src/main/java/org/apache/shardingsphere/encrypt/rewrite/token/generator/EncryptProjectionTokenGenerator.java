@@ -97,7 +97,8 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
                 }
             }
             if (projection instanceof ExpressionProjectionSegment) {
-                Tuple2<Collection<SubstitutableColumnNameToken>, Integer> tuple2 = generateSQLToken(((ExpressionProjectionSegment) projection).getExpr(), columnTableNames, subqueryType, countPlaceHolders);
+                Tuple2<Collection<SubstitutableColumnNameToken>, Integer> tuple2 = generateSQLToken(((ExpressionProjectionSegment) projection).getExpr(), columnTableNames, subqueryType, 
+                        countPlaceHolders);
                 countPlaceHolders = tuple2.getV2();
                 result.addAll(tuple2.getV1());
             }
@@ -129,7 +130,8 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
                 continue;
             }
             ColumnProjectionSegment columnSegment = buildColumnProjectionSegment((ColumnSegment) expressionSegment);
-            Optional<SubstitutableColumnNameToken> substitutableColumnNameToken = generateSQLToken(columnSegment, columnTableNames, subqueryType, Optional.of(String.format(splitPartsTemplate, count + 1)));
+            Optional<SubstitutableColumnNameToken> substitutableColumnNameToken = generateSQLToken(columnSegment, columnTableNames, subqueryType, 
+                    Optional.of(String.format(splitPartsTemplate, count + 1)));
             if (substitutableColumnNameToken.isPresent()) {
                 temporaryList.addAll(substitutableColumnNameToken.get().getProjections());
                 originParts = originParts.replace(columnSegment.getColumn().getIdentifier().getValue(), "''");
