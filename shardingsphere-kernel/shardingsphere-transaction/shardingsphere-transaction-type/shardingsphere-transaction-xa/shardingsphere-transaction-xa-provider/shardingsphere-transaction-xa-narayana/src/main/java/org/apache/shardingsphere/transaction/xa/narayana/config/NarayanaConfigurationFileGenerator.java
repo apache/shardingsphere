@@ -182,8 +182,8 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         throw new UnsupportedOperationException(String.format("Cannot support database type: `%s` as narayana recovery store", type));
     }
     
-    private void generateTransactionProps(final String recoveryStoreUrl, final String recoveryStoreUser, final String recoveryStorePassword, final String recoveryStoreDataSource,
-                                          final Properties props) {
+    private void generateTransactionProps(final String recoveryStoreUrl, final String recoveryStoreUser, final String recoveryStorePassword, 
+                                          final String recoveryStoreDataSource, final Properties props) {
         props.setProperty("recoveryStoreUrl", recoveryStoreUrl);
         props.setProperty("recoveryStoreUser", recoveryStoreUser);
         props.setProperty("recoveryStorePassword", recoveryStorePassword);
