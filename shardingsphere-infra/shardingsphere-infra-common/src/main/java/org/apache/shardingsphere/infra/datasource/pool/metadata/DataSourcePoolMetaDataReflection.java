@@ -33,13 +33,19 @@ public final class DataSourcePoolMetaDataReflection {
     
     private final DataSource targetDataSource;
     
+    private final DataSourcePoolFieldMetaData dataSourcePoolFieldMetaData;
+    
+    public DataSourcePoolMetaDataReflection(final DataSource targetDataSource) {
+        this(targetDataSource, null);
+    }
+    
     /**
      * Get JDBC URL.
      *
      * @return got JDBC URL
      */
     public String getJdbcUrl() {
-        return getFieldValue("jdbcUrl", "url");
+        return null == dataSourcePoolFieldMetaData ? getFieldValue("jdbcUrl", "url") : getFieldValue(dataSourcePoolFieldMetaData.getJdbcUrlFieldName());
     }
     
     /**

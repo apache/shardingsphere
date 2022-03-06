@@ -23,6 +23,13 @@ package org.apache.shardingsphere.infra.datasource.pool.metadata;
 public interface DataSourcePoolFieldMetaData {
     
     /**
+     * Get JDBC URL field name.
+     *
+     * @return JDBC URL field name
+     */
+    String getJdbcUrlFieldName();
+    
+    /**
      * Get JDBC URL properties field name.
      *
      * @return JDBC URL properties field name

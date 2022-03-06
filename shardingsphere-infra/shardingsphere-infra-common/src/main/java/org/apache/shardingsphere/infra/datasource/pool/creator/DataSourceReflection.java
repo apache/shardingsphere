@@ -22,6 +22,7 @@ import com.google.common.collect.Sets;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
 
 import javax.sql.DataSource;
@@ -155,7 +156,8 @@ public final class DataSourceReflection {
      * Add default data source properties.
      */
     public void addDefaultDataSourceProperties() {
-        DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(dataSource);
+        DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = DataSourcePoolMetaDataFactory.newInstance(dataSource.getClass().getName()).map(
+                optional -> new DataSourcePoolMetaDataReflection(dataSource, optional.getFieldMetaData())).orElseGet(() -> new DataSourcePoolMetaDataReflection(dataSource));
         String jdbcUrl = dataSourcePoolMetaDataReflection.getJdbcUrl();
         Properties jdbcConnectionProps = dataSourcePoolMetaDataReflection.getJdbcConnectionProperties();
         if (null == jdbcUrl || null == jdbcConnectionProps) {

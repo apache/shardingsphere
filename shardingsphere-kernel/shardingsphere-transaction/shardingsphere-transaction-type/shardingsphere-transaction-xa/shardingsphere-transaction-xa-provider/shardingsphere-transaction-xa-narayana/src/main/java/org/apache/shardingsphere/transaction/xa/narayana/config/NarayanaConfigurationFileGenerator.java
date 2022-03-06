@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -159,19 +158,18 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
     private void generateDefaultJdbcStoreConfiguration(final SchemaConfiguration schemaConfiguration, final Properties props) {
         Map<String, DataSource> datasourceMap = schemaConfiguration.getDataSources();
         Optional<DataSource> dataSource = datasourceMap.values().stream().findFirst();
-        if (dataSource.isPresent()) {
-            Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSource.get().getClass().getName());
-            if (poolMetaData.isPresent()) {
-                DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(dataSource.get());
-                String jdbcUrl = dataSourcePoolMetaDataReflection.getJdbcUrl();
-                int endIndex = jdbcUrl.indexOf("?");
-                jdbcUrl = jdbcUrl.substring(0, endIndex);
-                String username = dataSourcePoolMetaDataReflection.getUsername();
-                String password = dataSourcePoolMetaDataReflection.getPassword();
-                String dataSourceClassName = getDataSourceClassNameByJdbcUrl(jdbcUrl);
-                generateTransactionProps(jdbcUrl, username, password, dataSourceClassName, props);
-            }
+        if (!dataSource.isPresent()) {
+            return;
         }
+        DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = DataSourcePoolMetaDataFactory.newInstance(dataSource.get().getClass().getName()).map(
+                optional -> new DataSourcePoolMetaDataReflection(dataSource.get(), optional.getFieldMetaData())).orElseGet(() -> new DataSourcePoolMetaDataReflection(dataSource.get()));
+        String jdbcUrl = dataSourcePoolMetaDataReflection.getJdbcUrl();
+        int endIndex = jdbcUrl.indexOf("?");
+        jdbcUrl = jdbcUrl.substring(0, endIndex);
+        String username = dataSourcePoolMetaDataReflection.getUsername();
+        String password = dataSourcePoolMetaDataReflection.getPassword();
+        String dataSourceClassName = getDataSourceClassNameByJdbcUrl(jdbcUrl);
+        generateTransactionProps(jdbcUrl, username, password, dataSourceClassName, props);
     }
     
     private String getDataSourceClassNameByJdbcUrl(final String jdbcUrl) {
