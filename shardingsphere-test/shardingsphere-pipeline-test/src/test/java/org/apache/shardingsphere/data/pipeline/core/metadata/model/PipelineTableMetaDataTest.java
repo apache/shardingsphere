@@ -35,7 +35,7 @@ public final class PipelineTableMetaDataTest {
 
     @Before
     public void setUp() {
-        pipelineTableMetaData = new PipelineTableMetaData("test_data", Collections.singletonMap("test_column", new PipelineColumnMetaData(1, "test", Types.INTEGER, "INTEGER", true)));
+        pipelineTableMetaData = new PipelineTableMetaData("test_data", Collections.singletonMap("test", new PipelineColumnMetaData(1, "test", Types.INTEGER, "INTEGER", true)));
     }
 
     @Test
@@ -49,7 +49,7 @@ public final class PipelineTableMetaDataTest {
 
     @Test
     public void assertGetColumnMetaDataGivenColumnName() {
-        PipelineColumnMetaData actual = pipelineTableMetaData.getColumnMetaData("test_column");
+        PipelineColumnMetaData actual = pipelineTableMetaData.getColumnMetaData("test");
         assertNull(pipelineTableMetaData.getColumnMetaData("non_exist"));
         assertThat(actual.getOrdinalPosition(), is(1));
         assertThat(actual.getName(), is("test"));
