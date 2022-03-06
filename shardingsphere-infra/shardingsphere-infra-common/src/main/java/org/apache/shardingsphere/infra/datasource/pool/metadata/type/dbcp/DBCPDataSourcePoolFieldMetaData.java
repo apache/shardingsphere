@@ -15,37 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.metadata;
+package org.apache.shardingsphere.infra.datasource.pool.metadata.type.dbcp;
 
-import javax.sql.DataSource;
-import java.util.Properties;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFieldMetaData;
 
 /**
- * Data source JDBC URL meta data.
+ * DBCP data source JDBC URL meta data.
  */
-public interface DataSourceJdbcUrlMetaData {
+public final class DBCPDataSourcePoolFieldMetaData implements DataSourcePoolFieldMetaData {
     
-    /**
-     * Get JDBC URL properties field name.
-     *
-     * @return JDBC URL properties field name
-     */
-    String getJdbcUrlPropertiesFieldName();
+    @Override
+    public String getUsernameFieldName() {
+        return "username";
+    }
     
-    /**
-     * Get JDBC URL properties.
-     * 
-     * @param targetDataSource target data source
-     * @return JDBC URL properties
-     */
-    Properties getJdbcUrlProperties(DataSource targetDataSource);
+    @Override
+    public String getPasswordFieldName() {
+        return "password";
+    }
     
-    /**
-     * Append JDBC URL properties.
-     * 
-     * @param key key
-     * @param value value
-     * @param targetDataSource target data source
-     */
-    void appendJdbcUrlProperties(String key, String value, DataSource targetDataSource);
+    @Override
+    public String getJdbcUrlFieldName() {
+        return "url";
+    }
+    
+    @Override
+    public String getJdbcUrlPropertiesFieldName() {
+        return "connectionProperties";
+    }
 }

@@ -22,7 +22,7 @@ import com.google.common.collect.Sets;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
 
 import javax.sql.DataSource;
@@ -154,13 +154,13 @@ public final class DataSourceReflection {
     
     /**
      * Add default data source properties.
-     *
-     * @param dataSourcePoolMetaData data source pool meta data
      */
-    public void addDefaultDataSourceProperties(final DataSourcePoolMetaData dataSourcePoolMetaData) {
-        String jdbcUrl = new DataSourcePoolMetaDataReflection(dataSource).getJdbcUrl();
-        Properties jdbcUrlProps = dataSourcePoolMetaData.getJdbcUrlMetaData().getJdbcUrlProperties(dataSource);
-        if (null == jdbcUrlProps) {
+    public void addDefaultDataSourceProperties() {
+        DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = DataSourcePoolMetaDataFactory.newInstance(dataSource.getClass().getName()).map(
+            optional -> new DataSourcePoolMetaDataReflection(dataSource, optional.getFieldMetaData())).orElseGet(() -> new DataSourcePoolMetaDataReflection(dataSource));
+        String jdbcUrl = dataSourcePoolMetaDataReflection.getJdbcUrl();
+        Properties jdbcConnectionProps = dataSourcePoolMetaDataReflection.getJdbcConnectionProperties();
+        if (null == jdbcUrl || null == jdbcConnectionProps) {
             return;
         }
         DataSourceMetaData dataSourceMetaData = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl).getDataSourceMetaData(jdbcUrl, null);
@@ -168,8 +168,8 @@ public final class DataSourceReflection {
         for (Entry<Object, Object> entry : dataSourceMetaData.getDefaultQueryProperties().entrySet()) {
             String defaultPropertyKey = entry.getKey().toString();
             String defaultPropertyValue = entry.getValue().toString();
-            if (!containsDefaultProperty(defaultPropertyKey, jdbcUrlProps, queryProps)) {
-                dataSourcePoolMetaData.getJdbcUrlMetaData().appendJdbcUrlProperties(defaultPropertyKey, defaultPropertyValue, dataSource);
+            if (!containsDefaultProperty(defaultPropertyKey, jdbcConnectionProps, queryProps)) {
+                jdbcConnectionProps.setProperty(defaultPropertyKey, defaultPropertyValue);
             }
         }
     }

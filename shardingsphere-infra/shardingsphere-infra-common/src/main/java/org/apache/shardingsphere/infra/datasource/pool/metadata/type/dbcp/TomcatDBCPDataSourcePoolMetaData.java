@@ -57,8 +57,8 @@ public final class TomcatDBCPDataSourcePoolMetaData implements DataSourcePoolMet
     }
     
     @Override
-    public TomcatDBCPDataSourceJdbcUrlMetaData getJdbcUrlMetaData() {
-        return new TomcatDBCPDataSourceJdbcUrlMetaData();
+    public DBCPDataSourcePoolFieldMetaData getFieldMetaData() {
+        return new DBCPDataSourcePoolFieldMetaData();
     }
     
     @Override

@@ -57,8 +57,8 @@ public final class DBCPDataSourcePoolMetaData implements DataSourcePoolMetaData 
     }
     
     @Override
-    public DBCPDataSourceJdbcUrlMetaData getJdbcUrlMetaData() {
-        return new DBCPDataSourceJdbcUrlMetaData();
+    public DBCPDataSourcePoolFieldMetaData getFieldMetaData() {
+        return new DBCPDataSourcePoolFieldMetaData();
     }
     
     @Override
