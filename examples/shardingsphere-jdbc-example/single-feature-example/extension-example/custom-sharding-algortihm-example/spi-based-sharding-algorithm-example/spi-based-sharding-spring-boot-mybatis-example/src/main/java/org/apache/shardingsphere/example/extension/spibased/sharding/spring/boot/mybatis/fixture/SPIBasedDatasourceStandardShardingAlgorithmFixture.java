@@ -26,7 +26,7 @@ import java.util.Collection;
 public final class SPIBasedDatasourceStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
 
     @Override
-    public String doSharding(Collection<String> dataSourceNames, PreciseShardingValue<Integer> shardingValue) {
+    public String doSharding(final Collection<String> dataSourceNames, final PreciseShardingValue<Integer> shardingValue) {
         for (String each : dataSourceNames) {
             if (each.endsWith(shardingSuffix(shardingValue.getValue()))) {
                 return each;
@@ -45,9 +45,7 @@ public final class SPIBasedDatasourceStandardShardingAlgorithmFixture implements
     }
 
     @Override
-    public void init() {
-
-    }
+    public void init() {}
 
     @Override
     public String getType() {

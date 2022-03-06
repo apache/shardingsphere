@@ -26,7 +26,7 @@ import java.util.Collection;
 public final class SPIBasedOrderItemStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Long> {
 
     @Override
-    public String doSharding(Collection<String> availableTargetNames, PreciseShardingValue<Long> shardingValue) {
+    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Long> shardingValue) {
         for (String each : availableTargetNames) {
             if (each.endsWith(shardingSuffix(shardingValue.getValue()))) {
                 return each;
@@ -46,9 +46,7 @@ public final class SPIBasedOrderItemStandardShardingAlgorithmFixture implements 
     }
 
     @Override
-    public void init() {
-
-    }
+    public void init() {}
 
     @Override
     public String getType() {
