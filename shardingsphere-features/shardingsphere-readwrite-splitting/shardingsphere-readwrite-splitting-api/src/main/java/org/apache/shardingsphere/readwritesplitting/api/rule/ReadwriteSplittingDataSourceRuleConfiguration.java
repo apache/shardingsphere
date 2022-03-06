@@ -17,11 +17,17 @@
 
 package org.apache.shardingsphere.readwritesplitting.api.rule;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.beans.Transient;
 import java.util.Optional;
 import java.util.Properties;
+
+import static org.junit.Assert.assertThat;
 
 /**
  * Readwrite-splitting data source rule configuration.
@@ -29,15 +35,22 @@ import java.util.Properties;
 @RequiredArgsConstructor
 @Getter
 public final class ReadwriteSplittingDataSourceRuleConfiguration {
-    
+
     private final String name;
-    
+
     private final String type;
-    
+
     private final Properties props;
-    
+
     private final String loadBalancerName;
-    
+
+    private ReadwriteSplittingDataSourceRule readwriteSplittingDataSourceRule;
+
+    @Before
+    public void setup(){
+        readwriteSplittingDataSourceRule=new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", "Static", getProperties("write_ds", "read_ds_0,read_ds_1"), ""), new RandomReplicaLoadBalanceAlgorithm());
+    }
+
     /**
      * Get auto aware data source name.
      *
@@ -46,7 +59,13 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
     public Optional<String> getAutoAwareDataSourceName() {
         return Optional.ofNullable(props.getProperty("auto-aware-data-source-name"));
     }
-    
+
+    @Test
+    public void assertGetAutoAwareDataSourceName(){
+        ReadwriteSplittingAutoDataSourceRule actual=readwriteSplittingDataSourceRule.getAutoAwareDataSourceName();
+        assertThat(actual,is(name));
+    }
+
     /**
      * Get write data source name.
      *
@@ -55,7 +74,12 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
     public Optional<String> getWriteDataSourceName() {
         return Optional.ofNullable(props.getProperty("write-data-source-name"));
     }
-    
+
+    @Test
+    public void assertGetWriteDataSourceName(){
+
+    }
+
     /**
      * Get read data source names.
      *
@@ -63,5 +87,10 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
      */
     public Optional<String> getReadDataSourceNames() {
         return Optional.ofNullable(props.getProperty("read-data-source-names"));
+    }
+
+    @Test
+    public void assertGetReadDataSourceNames(){
+
     }
 }
