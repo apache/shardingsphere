@@ -22,34 +22,8 @@ import java.util.Properties;
 
 /**
  * Data source JDBC URL meta data.
- * 
- * @param <T> type of target data source
  */
-public interface DataSourceJdbcUrlMetaData<T extends DataSource> {
-    
-    /**
-     * Get JDBC URL.
-     * 
-     * @param targetDataSource target data source
-     * @return JDBC URL
-     */
-    String getJdbcUrl(T targetDataSource);
-    
-    /**
-     * Get username.
-     *
-     * @param targetDataSource target data source
-     * @return username
-     */
-    String getUsername(T targetDataSource);
-    
-    /**
-     * Get password.
-     *
-     * @param targetDataSource target data source
-     * @return password
-     */
-    String getPassword(T targetDataSource);
+public interface DataSourceJdbcUrlMetaData {
     
     /**
      * Get JDBC URL properties field name.
@@ -64,7 +38,7 @@ public interface DataSourceJdbcUrlMetaData<T extends DataSource> {
      * @param targetDataSource target data source
      * @return JDBC URL properties
      */
-    Properties getJdbcUrlProperties(T targetDataSource);
+    Properties getJdbcUrlProperties(DataSource targetDataSource);
     
     /**
      * Append JDBC URL properties.
@@ -73,5 +47,5 @@ public interface DataSourceJdbcUrlMetaData<T extends DataSource> {
      * @param value value
      * @param targetDataSource target data source
      */
-    void appendJdbcUrlProperties(String key, String value, T targetDataSource);
+    void appendJdbcUrlProperties(String key, String value, DataSource targetDataSource);
 }

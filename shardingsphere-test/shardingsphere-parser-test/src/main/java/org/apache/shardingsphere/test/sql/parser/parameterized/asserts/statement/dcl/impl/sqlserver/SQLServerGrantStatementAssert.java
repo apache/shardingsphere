@@ -15,36 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.sqlserver;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLGrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerGrantStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.mysql.MySQLGrantStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.sqlserver.SQLServerGrantStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.column.ColumnAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.GrantStatementTestCase;
 
 /**
- * Grant statement assert.
+ * SQLServer Grant statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class GrantStatementAssert {
+public final class SQLServerGrantStatementAssert {
     
     /**
-     * Assert grant statement is correct with expected parser result.
-     * 
+     * Assert SQLServer grant statement is correct with expected parser result.
+     *
      * @param assertContext assert context
-     * @param actual actual grant statement
+     * @param actual actual SQLServer grant statement
      * @param expected expected grant statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final GrantStatement actual, final GrantStatementTestCase expected) {
-        if (actual instanceof MySQLGrantStatement) {
-            MySQLGrantStatementAssert.assertIs(assertContext, (MySQLGrantStatement) actual, expected);
-        } else if (actual instanceof SQLServerGrantStatement) {
-            SQLServerGrantStatementAssert.assertIs(assertContext, (SQLServerGrantStatement) actual, expected);
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SQLServerGrantStatement actual, final GrantStatementTestCase expected) {
+        if (0 != expected.getTables().size()) {
+            TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
+        }
+        if (0 != expected.getColumns().size()) {
+            ColumnAssert.assertIs(assertContext, actual.getColumns(), expected.getColumns());
         }
     }
 }

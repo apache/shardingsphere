@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.datasource.pool.metadata.type.dbcp;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
-import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -30,7 +29,7 @@ import java.util.Map;
  * Tomcat JDBC data source pool meta data.
  */
 @Getter
-public final class TomcatDBCPDataSourcePoolMetaData implements DataSourcePoolMetaData<BasicDataSource> {
+public final class TomcatDBCPDataSourcePoolMetaData implements DataSourcePoolMetaData {
     
     private final Collection<String> transientFieldNames = new LinkedList<>();
     

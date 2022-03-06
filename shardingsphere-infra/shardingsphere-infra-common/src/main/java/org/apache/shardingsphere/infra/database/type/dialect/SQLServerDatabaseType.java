@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.database.type.dialect;
 
-import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import org.apache.shardingsphere.infra.database.metadata.dialect.SQLServerDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
@@ -53,6 +52,6 @@ public final class SQLServerDatabaseType implements DatabaseType {
     
     @Override
     public Optional<String> getDataSourceClassName() {
-        return Optional.of(SQLServerDataSource.class.getName());
+        return Optional.of("com.microsoft.sqlserver.jdbc.SQLServerDataSource");
     }
 }

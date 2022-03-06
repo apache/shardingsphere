@@ -18,26 +18,11 @@
 package org.apache.shardingsphere.infra.datasource.pool.metadata.fixture;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourceJdbcUrlMetaData;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
 
+import javax.sql.DataSource;
 import java.util.Properties;
 
-public final class MockedDataSourceJdbcUrlMetaData implements DataSourceJdbcUrlMetaData<MockedDataSource> {
-    
-    @Override
-    public String getJdbcUrl(final MockedDataSource targetDataSource) {
-        return targetDataSource.getUrl();
-    }
-    
-    @Override
-    public String getUsername(final MockedDataSource targetDataSource) {
-        return targetDataSource.getUsername();
-    }
-    
-    @Override
-    public String getPassword(final MockedDataSource targetDataSource) {
-        return targetDataSource.getPassword();
-    }
+public final class MockedDataSourceJdbcUrlMetaData implements DataSourceJdbcUrlMetaData {
     
     @Override
     public String getJdbcUrlPropertiesFieldName() {
@@ -45,11 +30,11 @@ public final class MockedDataSourceJdbcUrlMetaData implements DataSourceJdbcUrlM
     }
     
     @Override
-    public Properties getJdbcUrlProperties(final MockedDataSource targetDataSource) {
+    public Properties getJdbcUrlProperties(final DataSource targetDataSource) {
         return new Properties();
     }
     
     @Override
-    public void appendJdbcUrlProperties(final String key, final String value, final MockedDataSource targetDataSource) {
+    public void appendJdbcUrlProperties(final String key, final String value, final DataSource targetDataSource) {
     }
 }
