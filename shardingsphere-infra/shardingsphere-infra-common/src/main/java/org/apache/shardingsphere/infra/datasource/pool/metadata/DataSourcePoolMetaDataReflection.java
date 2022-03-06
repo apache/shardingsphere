@@ -54,7 +54,7 @@ public final class DataSourcePoolMetaDataReflection {
      * @return username
      */
     public String getUsername() {
-        return null == dataSourcePoolFieldMetaData ? getFieldValue("username", "user") : getFieldValue(dataSourcePoolFieldMetaData.getUsername());
+        return null == dataSourcePoolFieldMetaData ? getFieldValue("username", "user") : getFieldValue(dataSourcePoolFieldMetaData.getUsernameFieldName());
     }
     
     /**
@@ -63,7 +63,7 @@ public final class DataSourcePoolMetaDataReflection {
      * @return password
      */
     public String getPassword() {
-        return null == dataSourcePoolFieldMetaData ? getFieldValue("password") : getFieldValue(dataSourcePoolFieldMetaData.getPassword());
+        return null == dataSourcePoolFieldMetaData ? getFieldValue("password") : getFieldValue(dataSourcePoolFieldMetaData.getPasswordFieldName());
     }
     
     /**

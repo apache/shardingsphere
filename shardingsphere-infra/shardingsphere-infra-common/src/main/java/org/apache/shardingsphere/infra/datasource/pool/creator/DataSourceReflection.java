@@ -157,7 +157,7 @@ public final class DataSourceReflection {
      */
     public void addDefaultDataSourceProperties() {
         DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = DataSourcePoolMetaDataFactory.newInstance(dataSource.getClass().getName()).map(
-                optional -> new DataSourcePoolMetaDataReflection(dataSource, optional.getFieldMetaData())).orElseGet(() -> new DataSourcePoolMetaDataReflection(dataSource));
+            optional -> new DataSourcePoolMetaDataReflection(dataSource, optional.getFieldMetaData())).orElseGet(() -> new DataSourcePoolMetaDataReflection(dataSource));
         String jdbcUrl = dataSourcePoolMetaDataReflection.getJdbcUrl();
         Properties jdbcConnectionProps = dataSourcePoolMetaDataReflection.getJdbcConnectionProperties();
         if (null == jdbcUrl || null == jdbcConnectionProps) {

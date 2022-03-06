@@ -23,18 +23,18 @@ package org.apache.shardingsphere.infra.datasource.pool.metadata;
 public interface DataSourcePoolFieldMetaData {
     
     /**
-     * Get username.
+     * Get username field name.
      *
-     * @return username
+     * @return username field name
      */
-    String getUsername();
+    String getUsernameFieldName();
     
     /**
-     * Get password.
+     * Get password field name.
      *
-     * @return password
+     * @return password field name
      */
-    String getPassword();
+    String getPasswordFieldName();
     
     /**
      * Get JDBC URL field name.

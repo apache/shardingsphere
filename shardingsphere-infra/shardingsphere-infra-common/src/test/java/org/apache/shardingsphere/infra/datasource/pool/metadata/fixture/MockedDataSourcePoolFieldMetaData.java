@@ -22,12 +22,12 @@ import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFi
 public final class MockedDataSourcePoolFieldMetaData implements DataSourcePoolFieldMetaData {
     
     @Override
-    public String getUsername() {
+    public String getUsernameFieldName() {
         return "username";
     }
     
     @Override
-    public String getPassword() {
+    public String getPasswordFieldName() {
         return "password";
     }
     

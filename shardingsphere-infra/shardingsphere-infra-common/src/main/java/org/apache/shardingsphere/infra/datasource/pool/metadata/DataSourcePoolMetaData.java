@@ -56,9 +56,9 @@ public interface DataSourcePoolMetaData extends TypedSPI {
     Collection<String> getTransientFieldNames();
     
     /**
-     * Get data source field meta data.
+     * Get data source pool field meta data.
      * 
-     * @return data source field meta data
+     * @return data source pool field meta data
      */
     DataSourcePoolFieldMetaData getFieldMetaData();
 }
