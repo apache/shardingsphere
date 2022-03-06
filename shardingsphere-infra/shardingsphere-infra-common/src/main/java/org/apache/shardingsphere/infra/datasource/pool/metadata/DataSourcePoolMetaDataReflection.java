@@ -22,8 +22,8 @@ import lombok.SneakyThrows;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Data source pool meta data reflection.
@@ -60,7 +60,15 @@ public final class DataSourcePoolMetaDataReflection {
         return getFieldValue("password");
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
+    /**
+     * Get JDBC connection properties.
+     * 
+     * @return got JDBC connection properties
+     */
+    public Properties getJdbcConnectionProperties() {
+        return getFieldValue("dataSourceProperties", "connectionProperties");
+    }
+    
     private <T> T getFieldValue(final String... fieldNames) {
         for (String each : fieldNames) {
             Optional<T> result = findFieldValue(each);
@@ -68,7 +76,7 @@ public final class DataSourcePoolMetaDataReflection {
                 return result.get();
             }
         }
-        throw new ReflectiveOperationException(String.format("Can not find field names `%s`", Arrays.asList(fieldNames)));
+        return null;
     }
     
     @SuppressWarnings("unchecked")

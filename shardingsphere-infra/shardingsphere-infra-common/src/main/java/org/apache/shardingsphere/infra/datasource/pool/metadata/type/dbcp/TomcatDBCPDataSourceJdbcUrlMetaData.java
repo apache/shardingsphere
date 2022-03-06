@@ -17,13 +17,7 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.metadata.type.dbcp;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourceJdbcUrlMetaData;
-
-import javax.sql.DataSource;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Properties;
 
 /**
  * Tomcat DBCP data source JDBC URL meta data.
@@ -33,24 +27,5 @@ public final class TomcatDBCPDataSourceJdbcUrlMetaData implements DataSourceJdbc
     @Override
     public String getJdbcUrlPropertiesFieldName() {
         return "connectionProperties";
-    }
-    
-    @Override
-    public Properties getJdbcUrlProperties(final DataSource targetDataSource) {
-        return (Properties) getFieldValue(targetDataSource, "connectionProperties");
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    @Override
-    public void appendJdbcUrlProperties(final String key, final String value, final DataSource targetDataSource) {
-        Method method = targetDataSource.getClass().getMethod("addConnectionProperty", String.class, String.class);
-        method.invoke(targetDataSource, key, value);
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private Object getFieldValue(final DataSource targetDataSource, final String fieldName) {
-        Field field = targetDataSource.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        return field.get(targetDataSource);
     }
 }

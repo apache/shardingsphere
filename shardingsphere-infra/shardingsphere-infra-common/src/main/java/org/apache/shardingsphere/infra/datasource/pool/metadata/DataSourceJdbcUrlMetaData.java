@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.metadata;
 
-import javax.sql.DataSource;
-import java.util.Properties;
-
 /**
  * Data source JDBC URL meta data.
  */
@@ -31,21 +28,4 @@ public interface DataSourceJdbcUrlMetaData {
      * @return JDBC URL properties field name
      */
     String getJdbcUrlPropertiesFieldName();
-    
-    /**
-     * Get JDBC URL properties.
-     * 
-     * @param targetDataSource target data source
-     * @return JDBC URL properties
-     */
-    Properties getJdbcUrlProperties(DataSource targetDataSource);
-    
-    /**
-     * Append JDBC URL properties.
-     * 
-     * @param key key
-     * @param value value
-     * @param targetDataSource target data source
-     */
-    void appendJdbcUrlProperties(String key, String value, DataSource targetDataSource);
 }

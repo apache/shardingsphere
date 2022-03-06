@@ -19,22 +19,10 @@ package org.apache.shardingsphere.infra.datasource.pool.metadata.fixture;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourceJdbcUrlMetaData;
 
-import javax.sql.DataSource;
-import java.util.Properties;
-
 public final class MockedDataSourceJdbcUrlMetaData implements DataSourceJdbcUrlMetaData {
     
     @Override
     public String getJdbcUrlPropertiesFieldName() {
         return null;
-    }
-    
-    @Override
-    public Properties getJdbcUrlProperties(final DataSource targetDataSource) {
-        return new Properties();
-    }
-    
-    @Override
-    public void appendJdbcUrlProperties(final String key, final String value, final DataSource targetDataSource) {
     }
 }

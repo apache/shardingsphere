@@ -17,12 +17,7 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.metadata.type.hikari;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourceJdbcUrlMetaData;
-
-import javax.sql.DataSource;
-import java.lang.reflect.Field;
-import java.util.Properties;
 
 /**
  * Hikari data source JDBC URL meta data.
@@ -32,35 +27,5 @@ public final class HikariDataSourceJdbcUrlMetaData implements DataSourceJdbcUrlM
     @Override
     public String getJdbcUrlPropertiesFieldName() {
         return "dataSourceProperties";
-    }
-    
-    @Override
-    public Properties getJdbcUrlProperties(final DataSource targetDataSource) {
-        return (Properties) getFieldValue(targetDataSource, "dataSourceProperties");
-    }
-    
-    @Override
-    public void appendJdbcUrlProperties(final String key, final String value, final DataSource targetDataSource) {
-        ((Properties) getFieldValue(targetDataSource, "dataSourceProperties")).put(key, value);
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private Object getFieldValue(final DataSource targetDataSource, final String fieldName) {
-        Class<?> dataSourceClass = targetDataSource.getClass();
-        Field field = null;
-        boolean found = false;
-        while (!found) {
-            try {
-                field = dataSourceClass.getDeclaredField(fieldName);
-                found = true;
-            } catch (final ReflectiveOperationException ex) {
-                dataSourceClass = dataSourceClass.getSuperclass();
-                if (Object.class == dataSourceClass) {
-                    throw ex;
-                }
-            }
-        }
-        field.setAccessible(true);
-        return field.get(targetDataSource);
     }
 }

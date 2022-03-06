@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.custom.CustomDataSourceProperties;
 
@@ -62,7 +63,7 @@ public final class DataSourcePoolCreator {
             setDefaultFields(dataSourceReflection, poolMetaData.get());
             setConfiguredFields(dataSourceProps, dataSourceReflection, poolMetaData.get());
             appendJdbcUrlProperties(dataSourceProps.getCustomDataSourceProperties(), result, poolMetaData.get());
-            dataSourceReflection.addDefaultDataSourceProperties(poolMetaData.get());
+            dataSourceReflection.addDefaultDataSourceProperties();
         } else {
             setConfiguredFields(dataSourceProps, dataSourceReflection);
         }
@@ -105,8 +106,9 @@ public final class DataSourcePoolCreator {
         String jdbcUrlPropertiesFieldName = poolMetaData.getJdbcUrlMetaData().getJdbcUrlPropertiesFieldName();
         if (null != jdbcUrlPropertiesFieldName && customDataSourceProps.getProperties().containsKey(jdbcUrlPropertiesFieldName)) {
             Map<String, Object> jdbcUrlProps = (Map<String, Object>) customDataSourceProps.getProperties().get(jdbcUrlPropertiesFieldName);
+            DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(targetDataSource);
             for (Entry<String, Object> entry : jdbcUrlProps.entrySet()) {
-                poolMetaData.getJdbcUrlMetaData().appendJdbcUrlProperties(entry.getKey(), entry.getValue().toString(), targetDataSource);
+                dataSourcePoolMetaDataReflection.getJdbcConnectionProperties().setProperty(entry.getKey(), entry.getValue().toString());
             }
         }
     }
