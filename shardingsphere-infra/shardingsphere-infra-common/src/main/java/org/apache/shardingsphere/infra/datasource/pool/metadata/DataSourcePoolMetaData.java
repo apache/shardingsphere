@@ -56,9 +56,9 @@ public interface DataSourcePoolMetaData extends TypedSPI {
     Collection<String> getTransientFieldNames();
     
     /**
-     * Get JDBC URL meta data.
+     * Get data source field meta data.
      * 
-     * @return data source JDBC URL meta data
+     * @return data source field meta data
      */
-    DataSourceJdbcUrlMetaData getJdbcUrlMetaData();
+    DataSourcePoolFieldMetaData getFieldMetaData();
 }

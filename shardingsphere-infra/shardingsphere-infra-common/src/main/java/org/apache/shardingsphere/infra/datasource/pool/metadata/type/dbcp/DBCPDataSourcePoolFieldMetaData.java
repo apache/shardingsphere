@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.metadata.type.hikari;
+package org.apache.shardingsphere.infra.datasource.pool.metadata.type.dbcp;
 
-import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourceJdbcUrlMetaData;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFieldMetaData;
 
 /**
  * Hikari data source JDBC URL meta data.
  */
-public final class HikariDataSourceJdbcUrlMetaData implements DataSourceJdbcUrlMetaData {
+public final class DBCPDataSourcePoolFieldMetaData implements DataSourcePoolFieldMetaData {
     
     @Override
     public String getJdbcUrlPropertiesFieldName() {
-        return "dataSourceProperties";
+        return "connectionProperties";
     }
 }

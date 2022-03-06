@@ -15,14 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.metadata.fixture;
+package org.apache.shardingsphere.infra.datasource.pool.metadata;
 
-import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourceJdbcUrlMetaData;
-
-public final class MockedDataSourceJdbcUrlMetaData implements DataSourceJdbcUrlMetaData {
+/**
+ * Data source pool field meta data.
+ */
+public interface DataSourcePoolFieldMetaData {
     
-    @Override
-    public String getJdbcUrlPropertiesFieldName() {
-        return null;
-    }
+    /**
+     * Get JDBC URL properties field name.
+     *
+     * @return JDBC URL properties field name
+     */
+    String getJdbcUrlPropertiesFieldName();
 }

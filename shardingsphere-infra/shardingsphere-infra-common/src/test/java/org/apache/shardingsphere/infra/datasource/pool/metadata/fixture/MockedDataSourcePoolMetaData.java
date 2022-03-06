@@ -55,8 +55,8 @@ public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaDat
     }
     
     @Override
-    public MockedDataSourceJdbcUrlMetaData getJdbcUrlMetaData() {
-        return new MockedDataSourceJdbcUrlMetaData();
+    public MockedDataSourcePoolFieldMetaData getFieldMetaData() {
+        return new MockedDataSourcePoolFieldMetaData();
     }
     
     @Override
