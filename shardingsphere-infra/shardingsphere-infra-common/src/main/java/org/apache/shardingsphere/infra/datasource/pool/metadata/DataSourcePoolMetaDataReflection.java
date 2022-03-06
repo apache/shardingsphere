@@ -42,7 +42,7 @@ public final class DataSourcePoolMetaDataReflection {
     /**
      * Get JDBC URL.
      *
-     * @return got JDBC URL
+     * @return JDBC URL
      */
     public String getJdbcUrl() {
         return null == dataSourcePoolFieldMetaData ? getFieldValue("jdbcUrl", "url") : getFieldValue(dataSourcePoolFieldMetaData.getJdbcUrlFieldName());
@@ -51,28 +51,28 @@ public final class DataSourcePoolMetaDataReflection {
     /**
      * Get username.
      * 
-     * @return got username
+     * @return username
      */
     public String getUsername() {
-        return getFieldValue("username", "user");
+        return null == dataSourcePoolFieldMetaData ? getFieldValue("username", "user") : getFieldValue(dataSourcePoolFieldMetaData.getUsername());
     }
     
     /**
      * Get password.
      *
-     * @return got password
+     * @return password
      */
     public String getPassword() {
-        return getFieldValue("password");
+        return null == dataSourcePoolFieldMetaData ? getFieldValue("password") : getFieldValue(dataSourcePoolFieldMetaData.getPassword());
     }
     
     /**
      * Get JDBC connection properties.
      * 
-     * @return got JDBC connection properties
+     * @return JDBC connection properties
      */
     public Properties getJdbcConnectionProperties() {
-        return getFieldValue("dataSourceProperties", "connectionProperties");
+        return null == dataSourcePoolFieldMetaData ? getFieldValue("dataSourceProperties", "connectionProperties") : getFieldValue(dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
     }
     
     private <T> T getFieldValue(final String... fieldNames) {
@@ -103,6 +103,6 @@ public final class DataSourcePoolMetaDataReflection {
             }
         }
         field.setAccessible(true);
-        return Optional.of((T) field.get(targetDataSource));
+        return Optional.ofNullable((T) field.get(targetDataSource));
     }
 }

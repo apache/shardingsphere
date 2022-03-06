@@ -25,6 +25,16 @@ import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFi
 public final class HikariDataSourcePoolFieldMetaData implements DataSourcePoolFieldMetaData {
     
     @Override
+    public String getUsername() {
+        return "username";
+    }
+    
+    @Override
+    public String getPassword() {
+        return "password";
+    }
+    
+    @Override
     public String getJdbcUrlFieldName() {
         return "jdbcUrl";
     }
