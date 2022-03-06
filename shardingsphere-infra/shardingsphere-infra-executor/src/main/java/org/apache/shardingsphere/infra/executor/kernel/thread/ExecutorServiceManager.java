@@ -34,8 +34,6 @@ public final class ExecutorServiceManager {
     
     private static final String DEFAULT_NAME_FORMAT = "%d";
     
-    private static final ExecutorService SHUTDOWN_EXECUTOR = Executors.newSingleThreadExecutor(ExecutorThreadFactoryBuilder.build("Executor-Engine-Closer"));
-    
     private final ListeningExecutorService executorService;
     
     public ExecutorServiceManager(final int executorSize) {
@@ -44,7 +42,6 @@ public final class ExecutorServiceManager {
     
     public ExecutorServiceManager(final int executorSize, final String nameFormat) {
         executorService = MoreExecutors.listeningDecorator(getExecutorService(executorSize, nameFormat));
-        MoreExecutors.addDelayedShutdownHook(executorService, 60, TimeUnit.SECONDS);
     }
     
     private ExecutorService getExecutorService(final int executorSize, final String nameFormat) {
@@ -56,7 +53,7 @@ public final class ExecutorServiceManager {
      * Close executor service.
      */
     public void close() {
-        SHUTDOWN_EXECUTOR.execute(() -> {
+        if (null != executorService) {
             try {
                 executorService.shutdown();
                 while (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
@@ -65,6 +62,6 @@ public final class ExecutorServiceManager {
             } catch (final InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
-        });
+        }
     }
 }

@@ -21,10 +21,12 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * User executor group.
  */
-public final class UserExecutorGroup {
+public final class UserExecutorGroup implements AutoCloseable {
     
     private static final String NAME_FORMAT = "Command-%d";
     
@@ -45,5 +47,18 @@ public final class UserExecutorGroup {
      */
     public static UserExecutorGroup getInstance() {
         return INSTANCE;
+    }
+    
+    public void close() throws Exception {
+        if (null != executorService) {
+            try {
+                executorService.shutdown();
+                while (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
+                    executorService.shutdownNow();
+                }
+            } catch (final InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 }
