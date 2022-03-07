@@ -22,7 +22,6 @@ import lombok.SneakyThrows;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -35,17 +34,13 @@ public final class DataSourcePoolMetaDataReflection {
     
     private final DataSourcePoolFieldMetaData dataSourcePoolFieldMetaData;
     
-    public DataSourcePoolMetaDataReflection(final DataSource targetDataSource) {
-        this(targetDataSource, null);
-    }
-    
     /**
      * Get JDBC URL.
      *
      * @return JDBC URL
      */
     public String getJdbcUrl() {
-        return null == dataSourcePoolFieldMetaData ? getFieldValue("jdbcUrl", "url") : getFieldValue(dataSourcePoolFieldMetaData.getJdbcUrlFieldName());
+        return getFieldValue(dataSourcePoolFieldMetaData.getJdbcUrlFieldName());
     }
     
     /**
@@ -54,7 +49,7 @@ public final class DataSourcePoolMetaDataReflection {
      * @return username
      */
     public String getUsername() {
-        return null == dataSourcePoolFieldMetaData ? getFieldValue("username", "user") : getFieldValue(dataSourcePoolFieldMetaData.getUsernameFieldName());
+        return getFieldValue(dataSourcePoolFieldMetaData.getUsernameFieldName());
     }
     
     /**
@@ -63,7 +58,7 @@ public final class DataSourcePoolMetaDataReflection {
      * @return password
      */
     public String getPassword() {
-        return null == dataSourcePoolFieldMetaData ? getFieldValue("password") : getFieldValue(dataSourcePoolFieldMetaData.getPasswordFieldName());
+        return getFieldValue(dataSourcePoolFieldMetaData.getPasswordFieldName());
     }
     
     /**
@@ -72,22 +67,12 @@ public final class DataSourcePoolMetaDataReflection {
      * @return JDBC connection properties
      */
     public Properties getJdbcConnectionProperties() {
-        return null == dataSourcePoolFieldMetaData ? getFieldValue("dataSourceProperties", "connectionProperties") : getFieldValue(dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
-    }
-    
-    private <T> T getFieldValue(final String... fieldNames) {
-        for (String each : fieldNames) {
-            Optional<T> result = findFieldValue(each);
-            if (result.isPresent()) {
-                return result.get();
-            }
-        }
-        return null;
+        return getFieldValue(dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
     }
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private <T> Optional<T> findFieldValue(final String fieldName) {
+    private <T> T getFieldValue(final String fieldName) {
         Class<?> dataSourceClass = targetDataSource.getClass();
         Field field = null;
         boolean isFound = false;
@@ -98,11 +83,11 @@ public final class DataSourcePoolMetaDataReflection {
             } catch (final ReflectiveOperationException ignored) {
                 dataSourceClass = dataSourceClass.getSuperclass();
                 if (Object.class == dataSourceClass) {
-                    return Optional.empty();
+                    return null;
                 }
             }
         }
         field.setAccessible(true);
-        return Optional.ofNullable((T) field.get(targetDataSource));
+        return (T) field.get(targetDataSource);
     }
 }
