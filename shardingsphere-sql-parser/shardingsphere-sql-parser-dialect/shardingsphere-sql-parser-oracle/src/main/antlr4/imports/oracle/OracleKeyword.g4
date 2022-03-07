@@ -2699,6 +2699,10 @@ CHARSETFORM
     : C H A R S E T F O R M
     ;
 
-C_
+SINGLE_C
     : C
+    ;
+
+SYSTIMESTAMP
+    : S Y S T I M E S T A M P
     ;

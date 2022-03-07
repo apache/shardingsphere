@@ -68,5 +68,5 @@
         RETURN BINARY_INTEGER AS LANGUAGE C
           NAME &quot;c_get_val&quot;
           LIBRARY c_utils
-          PARAMETERS (CONTEXT);" db-types="Oracle" />
+          PARAMETERS (CONTEXT)" db-types="Oracle" />
 </sql-cases>

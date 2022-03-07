@@ -2155,7 +2155,7 @@ javaDeclaration
     ;
 
 cDeclaration
-    : (LANGUAGE C_ | EXTERNAL) 
+    : (LANGUAGE SINGLE_C | EXTERNAL) 
     ((NAME name)? LIBRARY libName| LIBRARY libName (NAME name)?) 
     (AGENT IN RP_ argument (COMMA_ argument)* LP_)?
     (WITH CONTEXT)?
