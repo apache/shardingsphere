@@ -1212,3 +1212,31 @@ filenamePattern
 connectString
     : STRING_
     ;
+
+argument
+    : identifier
+    ;
+
+dataSource
+    : identifier
+    ;
+
+implementationType
+    : (owner DOT_)? name
+    ;
+
+implementationPackage
+    : (owner DOT_)? name
+    ;
+
+label
+    : identifier
+    ;
+
+libName
+    : identifier
+    ;
+
+externalDatatype
+    : dataType
+    ;
