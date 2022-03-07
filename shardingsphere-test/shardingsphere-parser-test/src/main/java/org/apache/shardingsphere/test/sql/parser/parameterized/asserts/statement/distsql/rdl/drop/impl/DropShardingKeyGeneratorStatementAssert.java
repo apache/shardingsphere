@@ -19,32 +19,32 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingAlgorithmStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingKeyGeneratorStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingAlgorithmStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingKeyGeneratorStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Drop sharding algorithm statement assert.
+ * Drop sharding key generator statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DropShardingAlgorithmStatementAssert {
+public final class DropShardingKeyGeneratorStatementAssert {
     
     /**
-     * Assert drop sharding algorithm statement is correct with expected parser result.
+     * Assert drop sharding key generator statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual drop sharding algorithm statement
-     * @param expected expected drop sharding algorithm statement test case
+     * @param actual actual drop sharding key generator statement
+     * @param expected expected drop sharding key generator statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DropShardingAlgorithmStatement actual, final DropShardingAlgorithmStatementTestCase expected) {
-        if (null == expected.getAlgorithms()) {
-            assertNull(assertContext.getText("Actual algorithm should not exist."), actual);
+    public static void assertIs(final SQLCaseAssertContext assertContext, final DropShardingKeyGeneratorStatement actual, final DropShardingKeyGeneratorStatementTestCase expected) {
+        if (null == expected.getKeyGeneratorName()) {
+            assertNull(assertContext.getText("Actual key generator name should not exist."), actual);
         } else {
-            assertThat(assertContext.getText("Algorithm names assertion error: "), actual.getAlgorithmNames(), is(expected.getAlgorithms()));
+            assertThat(assertContext.getText("Key generator names assertion error: "), actual.getKeyGeneratorNames(), is(expected.getKeyGeneratorName()));
             assertThat(assertContext.getText("Contains exist clause assertion error: "), actual.isContainsExistClause(), is(expected.isContainsExistClause()));
         }
     }

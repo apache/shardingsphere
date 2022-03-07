@@ -111,6 +111,10 @@
     <drop-sharding-key-generator sql-case-id="drop-sharding-key-generator" >
         <key-generator>uuid_key_generator</key-generator>
     </drop-sharding-key-generator>
+
+    <drop-sharding-key-generator sql-case-id="drop-sharding-key-generator-if-exists" contains-exists-clause="true">
+        <key-generator>uuid_key_generator</key-generator>
+    </drop-sharding-key-generator>
     
     <drop-default-sharding-strategy sql-case-id="drop-default-sharding-strategy" type="table"/>
 
