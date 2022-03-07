@@ -19,6 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.api.rule;
 
 import org.junit.Before;
 import org.junit.Test;
+import java.util.Arrays;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import java.beans.Transient;
 import java.util.Optional;
 import java.util.Properties;
+import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
 
 import static org.junit.Assert.assertThat;
 
@@ -36,19 +38,19 @@ import static org.junit.Assert.assertThat;
 @Getter
 public final class ReadwriteSplittingDataSourceRuleConfiguration {
 
-    private final String name;
+    private final String name="ds";
 
-    private final String type;
+    private final String type="Dynamic";
 
     private final Properties props;
 
     private final String loadBalancerName;
 
-    private ReadwriteSplittingDataSourceRule readwriteSplittingDataSourceRule;
+    private ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfig;
 
     @Before
     public void setup(){
-        readwriteSplittingDataSourceRule=new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", "Static", getProperties("write_ds", "read_ds_0,read_ds_1"), ""), new RandomReplicaLoadBalanceAlgorithm());
+        readwriteSplittingDataSourceRuleConfig=new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Static", getProperties("write_ds", "read_ds_0,read_ds_1"), RandomReplicaLoadBalanceAlgorithm);
     }
 
     /**
@@ -62,8 +64,10 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
 
     @Test
     public void assertGetAutoAwareDataSourceName(){
-        ReadwriteSplittingAutoDataSourceRule actual=readwriteSplittingDataSourceRule.getAutoAwareDataSourceName();
-        assertThat(actual,is(name));
+        ReadwriteSplittingDataSourceRuleConfiguration anotherInstance=new ReadwriteSplittingDataSourceRuleConfiguration("ds","Dynamic",getProperties("write_ds","read_ds_0,read_ds_1"),RandomReplicaLoadBalanceAlgorithm);
+        String actual=readwriteSplittingDataSourceRuleConfig.props.getProperty("auto-aware-data-source-name");
+        String testing=anotherInstance.props.getProperty("auto-aware-data-source-name");
+        assertThat(testing,is(actual));
     }
 
     /**
@@ -77,7 +81,10 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
 
     @Test
     public void assertGetWriteDataSourceName(){
-
+        ReadwriteSplittingDataSourceRuleConfiguration anotherInstance=new ReadwriteSplittingDataSourceRuleConfiguration("ds","Static",getProperties("write_ds","read_ds_0,read_ds_1"),RandomReplicaLoadBalanceAlgorithm);
+        String actual=readwriteSplittingDataSourceRuleConfig.props.getProperty("write-data-source-name");
+        String testing=anotherInstance.props.getProperty("write-data-source-name");
+        assertThat(testing,is(actual));
     }
 
     /**
@@ -91,6 +98,14 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
 
     @Test
     public void assertGetReadDataSourceNames(){
+        ReadwriteSplittingDataSourceRuleConfiguration anotherInstance=new ReadwriteSplittingDataSourceRuleConfiguration("ds","Static",getProperties("write_ds","read_ds_0,read_ds_1"),RandomReplicaLoadBalanceAlgorithm);
+        assertThat(anotherInstance.props.getProperty("read-data-source-names"),is(Arrays.asList("read_ds_0", "read_ds_1")));
+    }
 
+    private Properties getProperties(final String writeDataSource, final String readDataSources) {
+        Properties result = new Properties();
+        result.setProperty("write-data-source-name", writeDataSource);
+        result.setProperty("read-data-source-names", readDataSources);
+        return result;
     }
 }
