@@ -15,23 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.DropRuleStatementTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * Drop sharding algorithm statement test case.
+ * Count schema rules statement.
  */
-@Setter
 @Getter
-public final class DropShardingAlgorithmStatementTestCase extends DropRuleStatementTestCase {
-    
-    @XmlElement(name = "algorithm")
-    private final List<String> algorithms = new LinkedList<>();
+public final class CountInstanceRulesStatement extends QueryableRALStatement {
 }
