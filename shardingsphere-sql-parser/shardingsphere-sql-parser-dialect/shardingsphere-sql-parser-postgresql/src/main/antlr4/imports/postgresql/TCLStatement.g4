@@ -19,6 +19,8 @@ parser grammar TCLStatement;
 
 import DMLStatement;
 
+options {tokenVocab = ModeLexer;}
+
 setTransaction
     : SET (SESSION CHARACTERISTICS AS)? TRANSACTION transactionModeList
     | SET TRANSACTION SNAPSHOT STRING_

@@ -19,6 +19,8 @@ parser grammar DMLStatement;
 
 import BaseRule;
 
+options {tokenVocab = ModeLexer;}
+
 insert
     : withClause? INSERT INTO insertTarget insertRest optOnConflict? returningClause?
     ;

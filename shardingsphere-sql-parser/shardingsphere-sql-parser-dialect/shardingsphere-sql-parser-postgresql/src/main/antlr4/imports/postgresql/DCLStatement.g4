@@ -19,6 +19,8 @@ parser grammar DCLStatement;
 
 import DDLStatement;
 
+options {tokenVocab = ModeLexer;}
+
 grant
     : GRANT (privilegeClause | roleClause)
     ;

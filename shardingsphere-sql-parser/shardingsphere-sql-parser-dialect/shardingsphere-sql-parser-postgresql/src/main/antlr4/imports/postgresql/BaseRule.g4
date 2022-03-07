@@ -17,6 +17,8 @@
 
 parser grammar BaseRule;
 
+options {tokenVocab = ModeLexer;}
+
 parameterMarker
     : QUESTION_ literalsType?
     | DOLLAR_ numberLiterals

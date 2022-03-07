@@ -15,14 +15,27 @@
  * limitations under the License.
  */
 
-lexer grammar PostgreSQLStatementLexer;
+lexer grammar ModeLexer;
 
-import ModeLexer;
+import Symbol, PostgreSQLKeyword, Keyword, Comments, Literals;
 
-options {
-superClass = PostgreSQLLexerBase;
-}
+BeginDollarStringConstant
+   : '$' Tag? '$'
+   {pushTag();} -> pushMode (DollarQuotedStringMode)
+   ;
+   
+fragment Tag
+   : IdentifierStartChar StrictIdentifierChar*
+   ;
+   
+mode DollarQuotedStringMode;
+DollarText
+   : ~ '$'+
+   | '$' ~ '$'*
+   ;
 
-@header {
-    import org.apache.shardingsphere.sql.parser.postgresql.parser.PostgreSQLLexerBase;
-}
+EndDollarStringConstant
+   : ('$' Tag? '$')
+   {isTag()}?
+   {popTag();} -> popMode
+   ;
