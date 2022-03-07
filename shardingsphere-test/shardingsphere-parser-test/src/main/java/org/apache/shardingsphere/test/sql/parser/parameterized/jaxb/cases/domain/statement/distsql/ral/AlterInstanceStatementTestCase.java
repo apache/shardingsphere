@@ -22,22 +22,20 @@ import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.Collection;
 
 /**
- * Unlabel instance statement test case.
+ * Alter instance statement test case.
  */
 @Getter
 @Setter
-public final class UnlabelInstanceStatementTestCase extends SQLParserTestCase {
+public final class AlterInstanceStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "ip")
-    private String ip;
+    @XmlAttribute(name = "instance-id")
+    private String instanceId;
     
-    @XmlAttribute(name = "port")
-    private String port;
+    @XmlAttribute(name = "key")
+    private String key;
     
-    @XmlElement(name = "label")
-    private Collection<String> labels;
+    @XmlAttribute(name = "value")
+    private String value;
 }

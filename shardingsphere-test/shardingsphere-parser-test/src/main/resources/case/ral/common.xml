@@ -100,4 +100,5 @@
     <prepare-distsql sql-case-id="prepare-distsql"/>
     <apply-distsql sql-case-id="apply-distsql"/>
     <discard-distsql sql-case-id="discard-distsql"/>
+    <alter-instance sql-case-id="alter-instance-xa-recovery-id" instance-id="1.2.3.4@3307"  key="XA_RECOVERY_ID" value="test"/>
 </sql-parser-test-cases>
