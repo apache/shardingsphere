@@ -4,7 +4,7 @@ weight = 5
 chapter = true
 +++
 
-以下行为准则以完全遵循[Apache软件基金会行为准则](https://www.apache.org/foundation/policies/conduct.html)为前提。
+以下行为准则以完全遵循 [Apache软件基金会行为准则](https://www.apache.org/foundation/policies/conduct.html)为前提。
 
 ## 开发理念
 
@@ -19,11 +19,11 @@ chapter = true
 ## 代码提交行为规范
 
  - 确保通过全部测试用例，确保执行 `./mvnw -T 1C clean install` 可以编译和测试通过。
- - 确保覆盖率不低于master分支。
- - 确保使用Checkstyle检查代码，违反验证规则的需要有特殊理由。模板位置在`https://github.com/apache/shardingsphere/blob/master/src/resources/checkstyle.xml`，请使用checkstyle 8.8运行规则。
+ - 确保覆盖率不低于 master 分支。
+ - 确保使用 Checkstyle 检查代码，违反验证规则的需要有特殊理由。模板位置在`https://github.com/apache/shardingsphere/blob/master/src/resources/checkstyle.xml`，请使用 checkstyle 8.8 运行规则。
  - 应尽量将设计精细化拆分；做到小幅度修改，多次数提交，但应保证提交的完整性。
  - 确保遵守编码规范。
- - 如果您使用IDEA，可导入推荐的[Settings](https://shardingsphere.apache.org/community/data/shardingsphere-settings.jar)。
+ - 如果您使用 IDEA，可导入推荐的 [Settings](https://shardingsphere.apache.org/community/data/shardingsphere-settings.jar)。
  
 ## 编码规范
 
