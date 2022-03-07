@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.spi.ordered.cache;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -27,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Ordered services cached.
@@ -34,7 +33,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OrderedServicesCache {
     
-    private static final Cache<Key, Map<?, ?>> CACHED_SERVICES = CacheBuilder.newBuilder().softValues().build();
+    private static final Map<Key, Map<?, ?>> CACHED_SERVICES = new ConcurrentHashMap<>();
     
     /**
      * Find cached services.
@@ -44,7 +43,7 @@ public final class OrderedServicesCache {
      * @return cached services
      */
     public static Optional<Map<?, ?>> findCachedServices(final Class<?> spiClass, final Collection<?> types) {
-        return Optional.ofNullable(CACHED_SERVICES.getIfPresent(new Key(spiClass, types)));
+        return Optional.ofNullable(CACHED_SERVICES.get(new Key(spiClass, types)));
     }
     
     /**
