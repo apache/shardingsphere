@@ -5,7 +5,7 @@ weight = 1
 
 ## 目标
 
-对ShardingSphere-JDBC，ShardingSphere-Proxy及 MySQL 进行性能对比。从业务角度考虑，在基本应用场景（单路由，主从+加密+分库分表，全路由）下，INSERT+UPDATE+DELETE 通常用作一个完整的关联操作，用于性能评估，而SELECT关注分片优化可用作性能评估的另一个操作；而主从模式下，可将INSERT+SELECT+DELETE作为一组评估性能的关联操作。
+对 ShardingSphere-JDBC，ShardingSphere-Proxy及 MySQL 进行性能对比。从业务角度考虑，在基本应用场景（单路由，主从+加密+分库分表，全路由）下，INSERT+UPDATE+DELETE 通常用作一个完整的关联操作，用于性能评估，而SELECT关注分片优化可用作性能评估的另一个操作；而主从模式下，可将 INSERT+SELECT+DELETE 作为一组评估性能的关联操作。
 为了更好的观察效果，设计在一定数据量的基础上，使用 jmeter 20 并发线程持续压测半小时，进行增删改查性能测试，且每台机器部署一个 MySQL 实例，而对比 MySQL 场景为单机单实例部署。
 
 ## 测试场景
@@ -427,5 +427,5 @@ sh shardingsphere-benchmark/report/script/gen_report.sh
 
 正在进行中，请等待。
 <!--
-[Benchmark性能平台](https://shardingsphere.apache.org/benchmark/#/overview)是数据以天粒度展示
+[Benchmark 性能平台](https://shardingsphere.apache.org/benchmark/#/overview)是数据以天粒度展示
 -->
