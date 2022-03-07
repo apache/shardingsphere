@@ -442,14 +442,34 @@ public final class ShardingRuleTest {
         shardingRuleConfig.getBindingTableGroups().add(shardingTableRuleConfig.getLogicTable() + "," + subTableRuleConfig.getLogicTable());
         InlineShardingAlgorithm shardingAlgorithmTBL = new InlineShardingAlgorithm();
         Properties shardingProps = new Properties();
-        shardingProps = new Properties();
         shardingProps.setProperty("algorithm-expression", "table_%{table_id % 2}");
         shardingAlgorithmTBL.setProps(shardingProps);
         shardingTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("table_id", "shardingAlgorithmTBL"));
         shardingRuleConfig.getShardingAlgorithms().put("shardingAlgorithmTBL", new ShardingSphereAlgorithmConfiguration(shardingAlgorithmTBL.getType(), shardingProps));
         InlineShardingAlgorithm subAlgorithmTBL = new InlineShardingAlgorithm();
         Properties subProps = new Properties();
-        subProps = new Properties();
+        subProps.setProperty("algorithm-expression", "table_%{table_id % 3}");
+        subAlgorithmTBL.setProps(subProps);
+        subTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("table_id", "subAlgorithmTBL"));
+        shardingRuleConfig.getShardingAlgorithms().put("subAlgorithmTBL", new ShardingSphereAlgorithmConfiguration(subAlgorithmTBL.getType(), subProps));
+        return new ShardingRule(shardingRuleConfig, createDataSourceNames());
+    }
+    
+    private ShardingRule createInconsistentAlgorithmExpressionWithoutShardingStrategyShardingRule() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
+        ShardingTableRuleConfiguration subTableRuleConfig = createTableRuleConfiguration("SUB_LOGIC_TABLE", "ds_${0..1}.sub_table_${0..2}");
+        shardingRuleConfig.getTables().add(shardingTableRuleConfig);
+        shardingRuleConfig.getTables().add(subTableRuleConfig);
+        shardingRuleConfig.getBindingTableGroups().add(shardingTableRuleConfig.getLogicTable() + "," + subTableRuleConfig.getLogicTable());
+        InlineShardingAlgorithm shardingAlgorithmTBL = new InlineShardingAlgorithm();
+        Properties shardingProps = new Properties();
+        shardingProps.setProperty("algorithm-expression", "table_%{table_id % 2}");
+        shardingAlgorithmTBL.setProps(shardingProps);
+        shardingTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("table_id", "shardingAlgorithmTBL"));
+        shardingRuleConfig.getShardingAlgorithms().put("shardingAlgorithmTBL", new ShardingSphereAlgorithmConfiguration(shardingAlgorithmTBL.getType(), shardingProps));
+        InlineShardingAlgorithm subAlgorithmTBL = new InlineShardingAlgorithm();
+        Properties subProps = new Properties();
         subProps.setProperty("algorithm-expression", "table_%{table_id % 3}");
         subAlgorithmTBL.setProps(subProps);
         subTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("table_id", "subAlgorithmTBL"));

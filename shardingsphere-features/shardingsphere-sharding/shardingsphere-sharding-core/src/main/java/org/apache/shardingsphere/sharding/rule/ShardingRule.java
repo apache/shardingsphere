@@ -237,7 +237,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     private void checkSameActualDatasourceNamesAndActualTableIndex(final TableRule sampleTableRule, final TableRule tableRule, final String bindingTableGroup) {
-        if (!CollectionUtils.isEqualCollection(sampleTableRule.getActualDatasourceNames(), tableRule.getActualDatasourceNames())) {
+        if (!sampleTableRule.getActualDatasourceNames().equals( tableRule.getActualDatasourceNames())) {
             throw new ShardingSphereConfigurationException("The %s on bindingTableGroup `%s` are inconsistent", "actualDatasourceNames", bindingTableGroup);
         }
         checkSameAlgorithmOnDatabase(sampleTableRule, tableRule, sampleTableRule.getActualDatasourceNames().stream().findFirst().get(), bindingTableGroup);
@@ -256,7 +256,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     
     private void checkSameAlgorithmOnDatabase(final TableRule sampleTableRule, final TableRule tableRule, final String dataSourceName,
                                               final String bindingTableGroup) {
-        Collection<String[]> algorithmExpressions = new ArrayList<>();
+        List<String[]> algorithmExpressions = new LinkedList<>();
         String logicName = substring(dataSourceName)[0];
         algorithmExpressions.add(new String[] {getAlgorithmExpression(sampleTableRule, true), logicName, getShardingColumn(sampleTableRule.getDatabaseShardingStrategyConfig())});
         algorithmExpressions.add(new String[] {getAlgorithmExpression(tableRule, true), logicName, getShardingColumn(tableRule.getDatabaseShardingStrategyConfig())});
@@ -270,15 +270,11 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         String shardingAlgorithmName = databaseOrTable ? tableRule.getDatabaseShardingStrategyConfig().getShardingAlgorithmName()
                 : tableRule.getTableShardingStrategyConfig().getShardingAlgorithmName();
         ShardingAlgorithm shardingAlgorithm = shardingAlgorithms.get(shardingAlgorithmName);
-        return null == shardingAlgorithm ? "" : checkWithDefaultValue(shardingAlgorithm.getProps().getProperty("algorithm-expression"), "");
-    }
-    
-    private String checkWithDefaultValue(final String str, final String defaultValue) {
-        return null == str ? defaultValue : str;
+        return null == shardingAlgorithm ? "" : StringUtils.defaultString(shardingAlgorithm.getProps().getProperty("algorithm-expression"), "");
     }
     
     private String getShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfiguration) {
-        String result = checkWithDefaultValue(defaultShardingColumn, "");
+        String result = StringUtils.defaultString(defaultShardingColumn, "");
         if (null == shardingStrategyConfiguration) {
             return result;
         }
@@ -288,7 +284,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         if (shardingStrategyConfiguration instanceof StandardShardingStrategyConfiguration) {
             result = ((StandardShardingStrategyConfiguration) shardingStrategyConfiguration).getShardingColumn();
         }
-        return checkWithDefaultValue(result, "");
+        return StringUtils.defaultString(result, "");
     }
     
     private void checkSameAlgorithmOnTable(final TableRule sampleTableRule, final String sampleTableName, final TableRule tableRule,
