@@ -56,6 +56,10 @@ public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine
     }
     
     @Override
+    public void handleException(final ConnectionSession connectionSession) {
+    }
+    
+    @Override
     public String getDatabaseType() {
         return "MySQL";
     }

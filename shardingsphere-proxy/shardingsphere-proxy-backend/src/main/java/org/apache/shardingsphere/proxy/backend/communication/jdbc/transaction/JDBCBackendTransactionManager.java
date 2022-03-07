@@ -93,6 +93,7 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
                 }
             } finally {
                 connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
+                connection.getConnectionSession().getTransactionStatus().setRollbackOnly(false);
                 TransactionHolder.clear();
             }
         }
