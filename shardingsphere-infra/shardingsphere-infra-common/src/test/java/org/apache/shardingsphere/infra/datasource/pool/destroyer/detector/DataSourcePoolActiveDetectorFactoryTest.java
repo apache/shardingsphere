@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.type.H
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 public final class DataSourcePoolActiveDetectorFactoryTest {
