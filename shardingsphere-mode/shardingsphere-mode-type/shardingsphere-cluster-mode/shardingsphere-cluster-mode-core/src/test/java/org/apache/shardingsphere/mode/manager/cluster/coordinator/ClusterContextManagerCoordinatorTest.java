@@ -91,7 +91,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -305,9 +304,9 @@ public final class ClusterContextManagerCoordinatorTest {
         coordinator.renew(schemaVersionChangedEvent);
         assertThat(contextManager.getDataSourceMap("schema").get("ds_0"), is(dataSourceMap.get("ds_0")));
         assertNotNull(contextManager.getDataSourceMap("schema").get("ds_1"));
-        assertEquals(DataSourcePropertiesCreator.create(getChangeMockedDataSource()), DataSourcePropertiesCreator.create(contextManager.getDataSourceMap("schema").get("ds_1")));
+        assertThat(DataSourcePropertiesCreator.create(getChangeMockedDataSource()), is(DataSourcePropertiesCreator.create(contextManager.getDataSourceMap("schema").get("ds_1"))));
         assertNotNull(contextManager.getDataSourceMap("schema").get("primary_ds"));
-        assertEquals(DataSourcePropertiesCreator.create(getDefaultMockedDataSource()), DataSourcePropertiesCreator.create(contextManager.getDataSourceMap("schema").get("primary_ds")));
+        assertThat(DataSourcePropertiesCreator.create(getDefaultMockedDataSource()), is(DataSourcePropertiesCreator.create(contextManager.getDataSourceMap("schema").get("primary_ds"))));
     }
 
     private Map<String, DataSource> initContextManager() {
