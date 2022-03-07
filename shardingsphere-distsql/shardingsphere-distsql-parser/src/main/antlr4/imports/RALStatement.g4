@@ -31,6 +31,10 @@ showAllVariables
     : SHOW ALL VARIABLES
     ;
 
+alterInstance
+    : ALTER INSTANCE instanceId SET variableName EQ variableValue
+    ;
+
 enableInstance
     : ENABLE INSTANCE (instanceId | instanceDefination)
     ;
@@ -168,7 +172,7 @@ instanceDefination
     ;
 
 instanceId
-    : ip AT port
+    : ip AT port | IDENTIFIER | STRING
     ;
 
 refreshScope
