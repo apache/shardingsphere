@@ -45,8 +45,8 @@ chapter = true
  - 类和方法的访问权限控制为最小。
  - 方法所用到的私有方法应紧跟该方法，如果有多个私有方法，书写私有方法应与私有方法在原方法的出现顺序相同。
  - 方法入参和返回值不允许为 `null`。
- - 优先使用三目运算符代替if else 的返回和赋值语句。
- - 优先使用 lombok 代替构造器，getter, setter 方法和log变量。
+ - 优先使用三目运算符代替 if else 的返回和赋值语句。
+ - 优先使用 lombok 代替构造器，getter, setter 方法和 log 变量。
  - 优先考虑使用 `LinkedList`，只有在需要通过下标获取集合中元素值时再使用 `ArrayList`。
  - `ArrayList`，`HashMap` 等可能产生扩容的集合类型必须指定集合初始大小，避免扩容。
  - 日志与注释一律使用英文。
@@ -69,14 +69,14 @@ chapter = true
  - 如无特殊理由，测试需全覆盖。
  - 每个测试用例需精确断言。
  - 准备环境的代码和测试代码分离。
- - 只有junit `Assert`，hamcrest `CoreMatchers`，Mockito相关可以使用 static import。
+ - 只有 junit `Assert`，hamcrest `CoreMatchers`，Mockito 相关可以使用 static import。
  - 单数据断言，应使用 `assertTrue`，`assertFalse`，`assertNull` 和 `assertNotNull`。
  - 多数据断言，应使用 `assertThat`。
  - 精确断言，尽量不使用 `not`，`containsString` 断言。
  - 测试用例的真实值应名为为 actual XXX，期望值应命名为 expected XXX。
  - 测试类和 `@Test` 标注的方法无需 javadoc。
 
-## G4编码规范
+## G4 编码规范
  - 公共规范
    - 每行长度不超过 `200` 个字符，保证每一行语义完整以便于理解。
  - 词法解析规范
