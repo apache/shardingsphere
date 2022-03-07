@@ -4,7 +4,7 @@ weight = 5
 chapter = true
 +++
 
-以下行为准则以完全遵循[Apache软件基金会行为准则](https://www.apache.org/foundation/policies/conduct.html)为前提。
+以下行为准则以完全遵循 [Apache软件基金会行为准则](https://www.apache.org/foundation/policies/conduct.html) 为前提。
 
 ## 开发理念
 
@@ -27,7 +27,7 @@ chapter = true
  
 ## 编码规范
 
- - 使用linux换行符。
+ - 使用 linux 换行符。
  - 缩进（包含空行）和上一行保持一致。
  - 类声明后与下面的变量或方法之间需要空一行。
  - 不应有无意义的空行。请提炼私有方法，代替方法体过长或代码段逻辑闭环而采用的空行间隔。
@@ -46,7 +46,7 @@ chapter = true
  - 方法所用到的私有方法应紧跟该方法，如果有多个私有方法，书写私有方法应与私有方法在原方法的出现顺序相同。
  - 方法入参和返回值不允许为 `null`。
  - 优先使用三目运算符代替if else的返回和赋值语句。
- - 优先使用lombok代替构造器，getter, setter方法和log变量。
+ - 优先使用 lombok 代替构造器，getter, setter方法和log变量。
  - 优先考虑使用 `LinkedList`，只有在需要通过下标获取集合中元素值时再使用 `ArrayList`。
  - `ArrayList`，`HashMap` 等可能产生扩容的集合类型必须指定集合初始大小，避免扩容。
  - 日志与注释一律使用英文。
@@ -57,11 +57,11 @@ chapter = true
 ## 单元测试规范
 
  - 测试代码和生产代码需遵守相同代码规范。
- - 单元测试需遵循AIR（Automatic, Independent, Repeatable）设计理念。
+ - 单元测试需遵循 AIR（Automatic, Independent, Repeatable）设计理念。
    - 自动化（Automatic）：单元测试应全自动执行，而非交互式。禁止人工检查输出结果，不允许使用 `System.out`，`log` 等，必须使用断言进行验证。
    - 独立性（Independent）：禁止单元测试用例间的互相调用，禁止依赖执行的先后次序。每个单元测试均可独立运行。
    - 可重复执行（Repeatable）：单元测试不能受到外界环境的影响，可以重复执行。
- - 单元测试需遵循BCDE（Border, Correct, Design, Error）设计原则。
+ - 单元测试需遵循 BCDE（Border, Correct, Design, Error）设计原则。
    - 边界值测试（Border）：通过循环边界、特殊数值、数据顺序等边界的输入，得到预期结果。
    - 正确性测试（Correct）：通过正确的输入，得到预期结果。
    - 合理性设计（Design）：与生产代码设计相结合，设计高质量的单元测试。
