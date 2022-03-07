@@ -226,3 +226,15 @@ algorithmProperty
 ifExists
     : IF EXISTS
     ;
+
+prepareDistSQL
+    : PREPARE DISTSQL
+    ;
+
+applyDistSQL
+    : APPLY DISTSQL
+    ;
+
+discardDistSQL
+    : DISCARD DISTSQL
+    ;

@@ -49,4 +49,7 @@
     <distsql-case id="relabel-instance" value="RELABEL INSTANCE 127.0.0.1@3309 WITH OLAP_1,OLAP_2" />
     <distsql-case id="unlabel-instance" value="UNLABEL INSTANCE 127.0.0.1@3309 WITH OLAP_1" />
     <distsql-case id="unlabel-instance-without-label" value="UNLABEL INSTANCE 127.0.0.1@3309" />
+    <distsql-case id="prepare-distsql" value="PREPARE DISTSQL" />
+    <distsql-case id="apply-distsql" value="APPLY DISTSQL" />
+    <distsql-case id="discard-distsql" value="DISCARD DISTSQL" />
 </sql-cases>

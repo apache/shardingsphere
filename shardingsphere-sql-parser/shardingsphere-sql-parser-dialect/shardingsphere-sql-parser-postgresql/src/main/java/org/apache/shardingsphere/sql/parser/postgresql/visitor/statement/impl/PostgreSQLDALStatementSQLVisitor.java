@@ -77,8 +77,17 @@ public final class PostgreSQLDALStatementSQLVisitor extends PostgreSQLStatementS
                 variableAssignSegment.getVariable().setScope(ctx.runtimeScope().getText());
             }
             variableAssigns.add(variableAssignSegment);
-            result.getVariableAssigns().addAll(variableAssigns);
         }
+        if (null != ctx.encoding()) {
+            VariableAssignSegment variableAssignSegment = new VariableAssignSegment();
+            VariableSegment variableSegment = new VariableSegment();
+            variableSegment.setVariable("client_encoding");
+            variableAssignSegment.setVariable(variableSegment);
+            String value = ctx.encoding().getText();
+            variableAssignSegment.setAssignValue(value);
+            variableAssigns.add(variableAssignSegment);
+        }
+        result.getVariableAssigns().addAll(variableAssigns);
         return result;
     }
     

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.DropShadowRuleStatementUpdater;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowRuleStatement;
 import org.junit.Before;
@@ -29,9 +30,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static org.junit.Assert.assertFalse;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -53,6 +57,24 @@ public final class DropShadowRuleStatementUpdaterTest {
     @Test(expected = RequiredRuleMissedException.class)
     public void assertExecuteWithoutRuleNameInMetaData() throws DistSQLException {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("ruleSegment"), null);
+    }
+    
+    @Test
+    public void assertExecuteWithIfExists() throws DistSQLException {
+        DropShadowRuleStatement sqlStatement = createSQLStatement("ruleSegment");
+        sqlStatement.setContainsExistClause(true);
+        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, mock(ShadowRuleConfiguration.class));
+    }
+    
+    @Test
+    public void assertUpdate() throws DistSQLException {
+        DropShadowRuleStatement sqlStatement = createSQLStatement("ds_0");
+        sqlStatement.setContainsExistClause(true);
+        ShadowRuleConfiguration configuration = new ShadowRuleConfiguration();
+        configuration.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singletonList("ds_0")), Collections.emptyList()));
+        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, configuration);
+        updater.updateCurrentRuleConfiguration(sqlStatement, configuration);
+        assertFalse(configuration.getTables().containsKey("ds_0"));
     }
     
     @Test

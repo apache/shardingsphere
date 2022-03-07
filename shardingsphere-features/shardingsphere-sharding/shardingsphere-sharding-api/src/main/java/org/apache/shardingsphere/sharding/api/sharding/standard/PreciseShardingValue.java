@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingValue;
-import org.apache.shardingsphere.sharding.api.sharding.common.DataNodeInfo;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 
 /**
  * Sharding value for precise.

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
+import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
@@ -305,8 +306,9 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     public void switchClusterConfiguration(final JobConfiguration jobConfig) {
         String jobId = jobConfig.getHandleConfig().getJobId();
         RuleAlteredContext ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+        GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         if (isDataConsistencyCheckNeeded(ruleAlteredContext)) {
-            Optional<Boolean> checkResultOptional = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobCheckResult(jobId);
+            Optional<Boolean> checkResultOptional = repositoryAPI.getJobCheckResult(jobId);
             if (!checkResultOptional.isPresent() || !checkResultOptional.get()) {
                 throw new PipelineDataConsistencyCheckFailedException("Data consistency check not finished or failed.");
             }
@@ -314,7 +316,9 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         WorkflowConfiguration workflowConfig = jobConfig.getWorkflowConfig();
         ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(workflowConfig.getSchemaName(), workflowConfig.getSchemaVersion());
         ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
-        PipelineAPIFactory.getGovernanceRepositoryAPI().renewJobStatus(JobStatus.FINISHED, jobId);
+        for (int each : repositoryAPI.getShardingItems(jobId)) {
+            repositoryAPI.updateShardingJobStatus(jobId, each, JobStatus.FINISHED);
+        }
         stop(jobId);
         // TODO clean up should be done after the task is complete.
         try {

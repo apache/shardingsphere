@@ -24,6 +24,7 @@ execute
     | alterResource
     | dropResource
     | showResources
+    | showUnusedResources
     | setVariable
     | showVariable
     | showAllVariables
@@ -36,6 +37,9 @@ execute
     | unlabelInstance
     | countInstanceRules
     | countSchemaRules
+    | prepareDistSQL
+    | applyDistSQL
+    | discardDistSQL
     | showSingleTable
     | showSingleTableRules
     | createDefaultSingleTableRule

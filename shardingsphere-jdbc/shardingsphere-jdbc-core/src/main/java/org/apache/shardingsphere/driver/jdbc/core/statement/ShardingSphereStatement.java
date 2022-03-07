@@ -76,7 +76,6 @@ import org.apache.shardingsphere.traffic.context.TrafficContext;
 import org.apache.shardingsphere.traffic.context.TrafficContextHolder;
 import org.apache.shardingsphere.traffic.engine.TrafficEngine;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
-import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -117,6 +116,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private TrafficContext trafficContext;
     
+    private TrafficRule trafficRule;
+    
     public ShardingSphereStatement(final ShardingSphereConnection connection) {
         this(connection, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
@@ -133,6 +134,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         executor = new DriverExecutor(connection);
         kernelProcessor = new KernelProcessor();
+        trafficRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(TrafficRule.class).orElse(null);
     }
     
     @Override
@@ -166,15 +168,14 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private TrafficContext getTrafficContext(final LogicSQL logicSQL) {
         TrafficContext result = TrafficContextHolder.get().orElseGet(() -> createTrafficContext(logicSQL));
-        if (TransactionHolder.isTransaction()) {
+        if (connection.isHoldTransaction()) {
             TrafficContextHolder.set(result);
         }
         return result;
     }
     
     private TrafficContext createTrafficContext(final LogicSQL logicSQL) {
-        Optional<TrafficRule> trafficRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(TrafficRule.class);
-        return trafficRule.map(optional -> new TrafficEngine(optional, metaDataContexts).dispatch(logicSQL)).orElse(new TrafficContext());
+        return null != trafficRule ? new TrafficEngine(trafficRule, metaDataContexts).dispatch(logicSQL, connection.isHoldTransaction()) : new TrafficContext();
     }
     
     private List<ResultSet> getShardingSphereResultSets() {
@@ -415,8 +416,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
                 DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(connection.getSchema()).getResource().getDatabaseType()), findSQLParserRule());
         SQLStatement sqlStatement = sqlParserEngine.parse(sql, false);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), Collections.emptyList(), sqlStatement,
-                connection.getSchema());
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), sqlStatement, connection.getSchema());
         return new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
     }
     

@@ -32,6 +32,7 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.metadata.ShardingSph
 import org.apache.shardingsphere.driver.jdbc.exception.SQLExceptionErrorCode;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
@@ -80,7 +81,6 @@ import org.apache.shardingsphere.traffic.context.TrafficContext;
 import org.apache.shardingsphere.traffic.context.TrafficContextHolder;
 import org.apache.shardingsphere.traffic.engine.TrafficEngine;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
-import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.sql.Connection;
 import java.sql.ParameterMetaData;
@@ -114,6 +114,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private final SQLStatement sqlStatement;
     
+    private final SQLStatementContext<?> sqlStatementContext;
+    
     private final StatementOption statementOption;
     
     @Getter
@@ -135,7 +137,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private ResultSet currentResultSet;
     
     private TrafficContext trafficContext;
-
+    
+    private TrafficRule trafficRule;
+    
     public ShardingSpherePreparedStatement(final ShardingSphereConnection connection, final String sql) throws SQLException {
         this(connection, sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT, false);
     }
@@ -168,6 +172,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
                 DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(connection.getSchema()).getResource().getDatabaseType()), sqlParserRule.get());
         sqlStatement = sqlParserEngine.parse(sql, true);
+        sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), sqlStatement, connection.getSchema());
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
         statementOption = returnGeneratedKeys ? new StatementOption(true) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         executor = new DriverExecutor(connection);
@@ -175,6 +180,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(metaDataContexts, jdbcExecutor, connection.getSchema());
         kernelProcessor = new KernelProcessor();
         statementsCacheable = isStatementsCacheable(metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getConfigurations());
+        trafficRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(TrafficRule.class).orElse(null);
     }
     
     private boolean isStatementsCacheable(final Collection<RuleConfiguration> configurations) {
@@ -221,15 +227,14 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private TrafficContext getTrafficContext(final LogicSQL logicSQL) {
         TrafficContext result = TrafficContextHolder.get().orElseGet(() -> createTrafficContext(logicSQL));
-        if (TransactionHolder.isTransaction()) {
+        if (connection.isHoldTransaction()) {
             TrafficContextHolder.set(result);
         }
         return result;
     }
     
     private TrafficContext createTrafficContext(final LogicSQL logicSQL) {
-        Optional<TrafficRule> trafficRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(TrafficRule.class);
-        return trafficRule.map(optional -> new TrafficEngine(optional, metaDataContexts).dispatch(logicSQL)).orElse(new TrafficContext());
+        return null != trafficRule ? new TrafficEngine(trafficRule, metaDataContexts).dispatch(logicSQL, connection.isHoldTransaction()) : new TrafficContext();
     }
     
     private void resetParameters() throws SQLException {
@@ -448,7 +453,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private LogicSQL createLogicSQL() {
         List<Object> parameters = new ArrayList<>(getParameters());
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), parameters, sqlStatement, connection.getSchema());
+        if (sqlStatementContext instanceof ParameterAware) {
+            ((ParameterAware) sqlStatementContext).setUpParameters(parameters);    
+        }
         return new LogicSQL(sqlStatementContext, sql, parameters);
     }
     
@@ -521,6 +528,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     @Override
     public int[] executeBatch() throws SQLException {
+        if (null == executionContext) {
+            return new int[0];
+        }
         try {
             // TODO add raw SQL executor
             initBatchPreparedStatementExecutor();

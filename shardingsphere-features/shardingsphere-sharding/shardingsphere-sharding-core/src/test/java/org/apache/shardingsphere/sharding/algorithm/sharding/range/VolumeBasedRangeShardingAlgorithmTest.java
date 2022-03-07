@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.range;
 
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.sharding.api.sharding.common.DataNodeInfo;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.junit.Before;
@@ -34,16 +34,16 @@ import static org.junit.Assert.assertTrue;
 
 public final class VolumeBasedRangeShardingAlgorithmTest {
     
-    private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("t_order_", 1);
+    private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("t_order_", 1, '0');
     
     private VolumeBasedRangeShardingAlgorithm shardingAlgorithm;
     
     @Before
     public void setUp() {
         shardingAlgorithm = new VolumeBasedRangeShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("range-lower", "10");
-        shardingAlgorithm.getProps().setProperty("range-upper", "45");
-        shardingAlgorithm.getProps().setProperty("sharding-volume", "10");
+        shardingAlgorithm.getProps().put("range-lower", 10);
+        shardingAlgorithm.getProps().put("range-upper", 45);
+        shardingAlgorithm.getProps().put("sharding-volume", 10);
         shardingAlgorithm.init();
     }
     

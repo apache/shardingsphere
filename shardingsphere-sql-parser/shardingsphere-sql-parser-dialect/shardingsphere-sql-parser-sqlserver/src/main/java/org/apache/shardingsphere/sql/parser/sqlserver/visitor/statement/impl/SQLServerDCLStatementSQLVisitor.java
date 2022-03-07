@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Alt
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ClassPrivilegesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ClassTypePrivilegesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateLoginContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateUserContext;
@@ -35,12 +36,20 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Den
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropLoginContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropUserContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GrantClassPrivilegesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GrantClassTypePrivilegesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GrantContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.IgnoredNameIdentifierContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RevokeContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SecurableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UserNameContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.UserSegment;
@@ -58,6 +67,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerRevokeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerSetUserStatement;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
@@ -75,13 +85,18 @@ public final class SQLServerDCLStatementSQLVisitor extends SQLServerStatementSQL
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         SQLServerGrantStatement result = new SQLServerGrantStatement();
-        if (null != ctx.classPrivilegesClause()) {
-            for (SimpleTableSegment each : getTableFromPrivilegeClause(ctx.classPrivilegesClause())) {
+        if (null != ctx.grantClassPrivilegesClause()) {
+            for (SimpleTableSegment each : getTableFromGrantPrivilegeClause(ctx.grantClassPrivilegesClause())) {
                 result.getTables().add(each);
             }
+            if (null != ctx.grantClassPrivilegesClause().grantClassPrivileges().columnNames()) {
+                for (ColumnNamesContext each : ctx.grantClassPrivilegesClause().grantClassPrivileges().columnNames()) {
+                    result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(each)).getValue());
+                }
+            }
         }
-        if (null != ctx.classTypePrivilegesClause()) {
-            for (SimpleTableSegment each : getTableFromPrivilegeClause(ctx.classTypePrivilegesClause())) {
+        if (null != ctx.grantClassTypePrivilegesClause()) {
+            for (SimpleTableSegment each : getTableFromGrantPrivilegeClause(ctx.grantClassTypePrivilegesClause())) {
                 result.getTables().add(each);
             }
         }
@@ -100,6 +115,40 @@ public final class SQLServerDCLStatementSQLVisitor extends SQLServerStatementSQL
             for (SimpleTableSegment each : getTableFromPrivilegeClause(ctx.classTypePrivilegesClause())) {
                 result.getTables().add(each);
             }
+        }
+        return result;
+    }
+    
+    private Collection<SimpleTableSegment> getTableFromGrantPrivilegeClause(final GrantClassPrivilegesClauseContext ctx) {
+        Collection<SimpleTableSegment> result = new ArrayList<>();
+        if (null != ctx.grantOnClassClause()) {
+            if (null != ctx.grantOnClassClause().classItem() && null != ctx.grantOnClassClause().classItem().OBJECT()) {
+                result = Collections.singletonList((SimpleTableSegment) visit(ctx.grantOnClassClause().securable()));
+            }
+            if (null != ctx.grantClassPrivileges().privilegeType().get(0).objectPermission()) {
+                result = Collections.singletonList((SimpleTableSegment) visit(ctx.grantOnClassClause().securable()));
+            }
+            if (null != ctx.grantClassPrivileges().privilegeType().get(0).PRIVILEGES()) {
+                result = Collections.singletonList((SimpleTableSegment) visit(ctx.grantOnClassClause().securable()));
+            }
+        }
+        return result;
+    }
+    
+    private Collection<SimpleTableSegment> getTableFromGrantPrivilegeClause(final GrantClassTypePrivilegesClauseContext ctx) {
+        Collection<SimpleTableSegment> result = new ArrayList<>();
+        if (null != ctx.grantOnClassTypeClause() && null != ctx.grantOnClassTypeClause().grantClassType() && null != ctx.grantOnClassTypeClause().grantClassType().OBJECT()) {
+            result = Collections.singletonList((SimpleTableSegment) visit(ctx.grantOnClassTypeClause().securable()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitSecurable(final SecurableContext ctx) {
+        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.name().getStart().getStartIndex(), ctx.name().getStop().getStopIndex(), (IdentifierValue) visit(ctx.name())));
+        OwnerContext owner = ctx.owner();
+        if (null != owner) {
+            result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
         }
         return result;
     }
@@ -138,7 +187,7 @@ public final class SQLServerDCLStatementSQLVisitor extends SQLServerStatementSQL
     @Override
     public ASTNode visitUserName(final UserNameContext ctx) {
         UserSegment result = new UserSegment();
-        String user = null != ctx.ignoredNameIdentifier() ? ((IdentifierValue) visit(ctx.ignoredNameIdentifier())).getValue() : (new IdentifierValue(ctx.NAME_().getText())).getValue();
+        String user = ((IdentifierValue) visit(ctx.ignoredNameIdentifier())).getValue();
         result.setUser(user);
         return result;
     }

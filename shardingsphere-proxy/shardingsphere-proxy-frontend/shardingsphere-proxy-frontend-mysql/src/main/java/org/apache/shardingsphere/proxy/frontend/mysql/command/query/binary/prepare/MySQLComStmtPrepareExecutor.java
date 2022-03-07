@@ -40,7 +40,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -83,7 +82,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         if (sqlStatement instanceof SelectStatement) {
             Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
             String schemaName = connectionSession.getSchemaName();
-            SelectStatementContext sqlStatementContext = (SelectStatementContext) SQLStatementContextFactory.newInstance(metaDataMap, Collections.emptyList(), sqlStatement, schemaName);
+            SelectStatementContext sqlStatementContext = (SelectStatementContext) SQLStatementContextFactory.newInstance(metaDataMap, sqlStatement, schemaName);
             return sqlStatementContext.getProjectionsContext().getExpandProjections().size();
         }
         return 0;

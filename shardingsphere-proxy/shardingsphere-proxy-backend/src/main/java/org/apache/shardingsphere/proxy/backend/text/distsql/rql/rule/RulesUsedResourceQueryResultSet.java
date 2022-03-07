@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Result set for show rules used resource.
@@ -142,7 +143,7 @@ public final class RulesUsedResourceQueryResultSet implements DistSQLResultSet {
             return;
         }
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) ruleConfig;
-        for (Map.Entry<String, ShadowDataSourceConfiguration> each : config.getDataSources().entrySet()) {
+        for (Entry<String, ShadowDataSourceConfiguration> each : config.getDataSources().entrySet()) {
             if (each.getValue().getShadowDataSourceName().equalsIgnoreCase(resourceName) || each.getValue().getSourceDataSourceName().equalsIgnoreCase(resourceName)) {
                 result.add(buildRow(SHADOW, each.getKey()));
             }

@@ -17,7 +17,8 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
 
 import com.google.common.collect.Range;
 import me.ahoo.cosid.sharding.ExactCollection;
-import org.apache.shardingsphere.sharding.api.sharding.common.DataNodeInfo;
+import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.junit.Before;
@@ -45,7 +46,7 @@ public final class CosIdModShardingAlgorithmTest {
     
     static CosIdModShardingAlgorithm<Long> createShardingAlg() {
         Properties properties = new Properties();
-        properties.setProperty(CosIdAlgorithm.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX);
+        properties.setProperty(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX);
         properties.setProperty(CosIdModShardingAlgorithm.MODULO_KEY, String.valueOf(DIVISOR));
         CosIdModShardingAlgorithm<Long> result = new CosIdModShardingAlgorithm<>();
         result.setProps(properties);
@@ -76,7 +77,7 @@ public final class CosIdModShardingAlgorithmTest {
         
         @Test
         public void assertDoSharding() {
-            PreciseShardingValue<Long> shardingValue = new PreciseShardingValue<>(LOGIC_NAME, COLUMN_NAME, new DataNodeInfo(LOGIC_NAME_PREFIX, 1), id);
+            PreciseShardingValue<Long> shardingValue = new PreciseShardingValue<>(LOGIC_NAME, COLUMN_NAME, new DataNodeInfo(LOGIC_NAME_PREFIX, 1, '0'), id);
             String actual = shardingAlgorithm.doSharding(ALL_NODES, shardingValue);
             String expected = LOGIC_NAME_PREFIX + (id % DIVISOR);
             assertThat(actual, is(expected));
@@ -150,7 +151,7 @@ public final class CosIdModShardingAlgorithmTest {
         
         @Test
         public void assertDoSharding() {
-            RangeShardingValue<Long> shardingValue = new RangeShardingValue<>(LOGIC_NAME, COLUMN_NAME, new DataNodeInfo(LOGIC_NAME_PREFIX, 1), rangeValue);
+            RangeShardingValue<Long> shardingValue = new RangeShardingValue<>(LOGIC_NAME, COLUMN_NAME, new DataNodeInfo(LOGIC_NAME_PREFIX, 1, '0'), rangeValue);
             Collection<String> actual = shardingAlgorithm.doSharding(ALL_NODES, shardingValue);
             assertThat(actual, is(expected));
         }
