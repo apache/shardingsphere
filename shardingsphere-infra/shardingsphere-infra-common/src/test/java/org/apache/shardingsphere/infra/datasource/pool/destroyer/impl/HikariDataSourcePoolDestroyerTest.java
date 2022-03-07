@@ -19,10 +19,11 @@ package org.apache.shardingsphere.infra.datasource.pool.destroyer.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
 
+import org.apache.shardingsphere.infra.datasource.pool.destroyer.type.HikariDataSourcePoolDestroyer;
 import org.junit.Test;
 
 public final class HikariDataSourcePoolDestroyerTest {
-
+    
     @Test(timeout = 60000L)
     public void assertDestroy() throws InterruptedException {
         HikariDataSource dataSource = new HikariDataSource();

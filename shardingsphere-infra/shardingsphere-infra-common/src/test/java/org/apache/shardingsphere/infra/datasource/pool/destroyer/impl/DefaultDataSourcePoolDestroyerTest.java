@@ -25,6 +25,7 @@ import java.sql.SQLException;
 
 import com.zaxxer.hikari.HikariDataSource;
 
+import org.apache.shardingsphere.infra.datasource.pool.destroyer.type.DefaultDataSourcePoolDestroyer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
