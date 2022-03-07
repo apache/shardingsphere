@@ -52,7 +52,6 @@ public final class AlterInstanceHandler extends UpdatableRALBackendHandler<Alter
         Collection<ComputeNodeInstance> instances = persistService.get().getComputeNodePersistService().loadAllComputeNodeInstances();
         checkDuplicated(instances, sqlStatement);
         persistService.get().getComputeNodePersistService().persistInstanceXaRecoveryId(sqlStatement.getInstanceId(), sqlStatement.getValue());
-        
     }
     
     private void checkDuplicated(final Collection<ComputeNodeInstance> instances, final AlterInstanceStatement sqlStatement) {
