@@ -26,30 +26,6 @@ import java.util.Properties;
 public interface DataSourceJdbcUrlMetaData {
     
     /**
-     * Get JDBC URL.
-     * 
-     * @param targetDataSource target data source
-     * @return JDBC URL
-     */
-    String getJdbcUrl(DataSource targetDataSource);
-    
-    /**
-     * Get username.
-     *
-     * @param targetDataSource target data source
-     * @return username
-     */
-    String getUsername(DataSource targetDataSource);
-    
-    /**
-     * Get password.
-     *
-     * @param targetDataSource target data source
-     * @return password
-     */
-    String getPassword(DataSource targetDataSource);
-    
-    /**
      * Get JDBC URL properties field name.
      *
      * @return JDBC URL properties field name
