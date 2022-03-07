@@ -40,6 +40,4 @@ public final class DefaultDataSourcePoolActiveDetector implements DataSourcePool
     public boolean isDefault() {
         return true;
     }
-    
-    
 }
