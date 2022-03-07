@@ -49,7 +49,11 @@ public final class UserExecutorGroup implements AutoCloseable {
         return INSTANCE;
     }
     
-    public void close() throws Exception {
+    /**
+     * Close executor service.
+     */
+    @Override
+    public void close() {
         if (null != executorService) {
             try {
                 executorService.shutdown();
