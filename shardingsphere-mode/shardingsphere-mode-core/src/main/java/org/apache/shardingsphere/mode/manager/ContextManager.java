@@ -559,21 +559,13 @@ public final class ContextManager implements AutoCloseable {
     
     private void closeDataSources(final ShardingSphereMetaData removeMetaData) {
         if (null != removeMetaData.getResource()) {
-            removeMetaData.getResource().getDataSources().values().forEach(each -> closeDataSource(removeMetaData.getResource(), each));
+            removeMetaData.getResource().getDataSources().values().forEach(each -> removeMetaData.getResource().close(each));
         }
     }
     
     private void closeDataSources(final String schemaName, final Collection<DataSource> dataSources) {
         ShardingSphereResource resource = metaDataContexts.getMetaData(schemaName).getResource();
-        dataSources.forEach(each -> closeDataSource(resource, each));
-    }
-    
-    private void closeDataSource(final ShardingSphereResource resource, final DataSource dataSource) {
-        try {
-            resource.close(dataSource);
-        } catch (final SQLException ex) {
-            log.error("Close data source failed", ex);
-        }
+        dataSources.forEach(resource::close);
     }
     
     private void removeAndCloseTransactionEngine(final String schemaName) {

@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.datasource.pool.destroyer.type.DefaultDataSourcePoolDestroyer
-org.apache.shardingsphere.infra.datasource.pool.destroyer.type.HikariDataSourcePoolDestroyer
+org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.type.DefaultDataSourcePoolActiveDetector
+org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.type.HikariDataSourcePoolActiveDetector

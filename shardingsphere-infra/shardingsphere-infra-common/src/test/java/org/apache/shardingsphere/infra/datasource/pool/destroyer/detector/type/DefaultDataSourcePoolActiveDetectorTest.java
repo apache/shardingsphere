@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.destroyer.impl;
+package org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.type;
 
-import com.zaxxer.hikari.HikariDataSource;
-
-import org.apache.shardingsphere.infra.datasource.pool.destroyer.type.HikariDataSourcePoolDestroyer;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
-public final class HikariDataSourcePoolDestroyerTest {
+import static org.junit.Assert.assertFalse;
+
+public final class DefaultDataSourcePoolActiveDetectorTest {
     
-    @Test(timeout = 60000L)
-    public void assertDestroy() throws InterruptedException {
-        HikariDataSource dataSource = new HikariDataSource();
-        new HikariDataSourcePoolDestroyer().destroy(dataSource);
-        while (!dataSource.isClosed()) {
-            Thread.sleep(10L);
-        }
+    @Test
+    public void assertContainsActiveConnection() {
+        assertFalse(new DefaultDataSourcePoolActiveDetector().containsActiveConnection(new MockedDataSource()));
     }
 }
