@@ -17,7 +17,7 @@
 
 lexer grammar Literals;
 
-import Alphabet, Symbol;
+import Symbol, PostgreSQLKeyword, Keyword, Comments;
 
 IDENTIFIER_
     : IdentifierStartChar IdentifierChar*
@@ -63,4 +63,33 @@ fragment IdentifierChar
 fragment StrictIdentifierChar
    : IdentifierStartChar
    | [0-9]
+   ;
+   
+DEFAULT_DOES_NOT_MATCH_ANYTHING
+   : 'Default does not match anything'
+   ;
+
+APOSTROPHE_SKIP
+   : 'skip'
+   ;
+
+BeginDollarStringConstant
+   : '$' Tag? '$'
+   {pushTag();} -> pushMode (DollarQuotedStringMode)
+   ;
+   
+fragment Tag
+   : IdentifierStartChar StrictIdentifierChar*
+   ;
+   
+mode DollarQuotedStringMode;
+DollarText
+   : ~ '$'+
+   | '$' ~ '$'*
+   ;
+
+EndDollarStringConstant
+   : ('$' Tag? '$')
+   {isTag()}?
+   {popTag();} -> popMode
    ;

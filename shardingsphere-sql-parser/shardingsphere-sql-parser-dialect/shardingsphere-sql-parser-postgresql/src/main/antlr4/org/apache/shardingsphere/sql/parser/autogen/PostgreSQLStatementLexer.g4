@@ -15,17 +15,14 @@
  * limitations under the License.
  */
 
-parser grammar StoreProcedure;
+lexer grammar PostgreSQLStatementLexer;
 
-import BaseRule;
+import Symbol, PostgreSQLKeyword, Keyword, Comments, Literals;
 
-call
-    : CALL funcName LP_ callClauses? RP_
-    ;
+options {
+superClass = PostgreSQLLexerBase;
+}
 
-callClauses
-    : (ALL | DISTINCT)? funcArgList sortClause?
-    | VARIADIC funcArgExpr sortClause
-    | funcArgList COMMA_ VARIADIC funcArgExpr sortClause
-    | ASTERISK_
-    ;
+@header {
+    import org.apache.shardingsphere.sql.parser.postgresql.parser.PostgreSQLLexerBase;
+}

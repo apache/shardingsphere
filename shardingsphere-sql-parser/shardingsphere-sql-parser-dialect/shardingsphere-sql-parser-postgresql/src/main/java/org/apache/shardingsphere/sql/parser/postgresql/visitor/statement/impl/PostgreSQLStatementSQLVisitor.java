@@ -26,7 +26,7 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParserBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AexprConstContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AliasClauseContext;
@@ -179,7 +179,7 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 @Getter(AccessLevel.PROTECTED)
-public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementBaseVisitor<ASTNode> {
+public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementParserBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
     

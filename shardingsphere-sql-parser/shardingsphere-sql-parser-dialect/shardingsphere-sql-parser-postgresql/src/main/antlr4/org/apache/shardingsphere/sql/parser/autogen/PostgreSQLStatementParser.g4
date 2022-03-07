@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-grammar PostgreSQLStatement;
+parser grammar PostgreSQLStatementParser;
 
-import Comments, TCLStatement, DCLStatement, DALStatement, StoreProcedure;
+import TCLStatement, DCLStatement, DALStatement, StoreProcedure;
+
+options {tokenVocab = PostgreSQLStatementLexer;}
 
 execute
     : (select

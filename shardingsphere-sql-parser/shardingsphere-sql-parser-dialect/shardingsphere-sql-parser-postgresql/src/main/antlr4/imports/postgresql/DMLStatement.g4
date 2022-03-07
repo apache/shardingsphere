@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-grammar DMLStatement;
+parser grammar DMLStatement;
 
 import BaseRule;
 
@@ -194,7 +194,7 @@ forLockingItem
 
 nowaitOrSkip
     : NOWAIT
-    | 'skip' LOCKED
+    | APOSTROPHE_SKIP LOCKED
     ;
 
 forLockingStrength

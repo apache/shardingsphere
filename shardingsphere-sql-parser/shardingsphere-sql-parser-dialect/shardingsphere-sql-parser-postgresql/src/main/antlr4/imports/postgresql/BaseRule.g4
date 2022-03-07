@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-grammar BaseRule;
-
-import Keyword, PostgreSQLKeyword, Symbol, Literals;
+parser grammar BaseRule;
 
 parameterMarker
     : QUESTION_ literalsType?
@@ -873,6 +871,7 @@ funcName
 aexprConst
     : NUMBER_
     | STRING_
+    | BeginDollarStringConstant DollarText* EndDollarStringConstant
     | funcName STRING_
     | funcName LP_ funcArgList sortClause? RP_ STRING_
     | TRUE
@@ -1386,7 +1385,7 @@ funcType
     ;
 
 selectWithParens
-    : 'Default does not match anything'
+    : DEFAULT_DOES_NOT_MATCH_ANYTHING
     ;
 
 dataType

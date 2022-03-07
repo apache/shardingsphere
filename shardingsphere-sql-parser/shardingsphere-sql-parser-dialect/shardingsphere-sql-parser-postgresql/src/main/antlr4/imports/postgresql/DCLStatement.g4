@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-grammar DCLStatement;
+parser grammar DCLStatement;
 
 import DDLStatement;
 
