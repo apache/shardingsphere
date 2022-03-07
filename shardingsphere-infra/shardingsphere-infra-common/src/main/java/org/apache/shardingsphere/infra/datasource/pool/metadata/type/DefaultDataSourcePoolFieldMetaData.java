@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.metadata.type.dbcp;
+package org.apache.shardingsphere.infra.datasource.pool.metadata.type;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFieldMetaData;
 
 /**
- * DBCP data source pool field meta data.
+ * Default data source pool field meta data.
  */
-public final class DBCPDataSourcePoolFieldMetaData implements DataSourcePoolFieldMetaData {
+public final class DefaultDataSourcePoolFieldMetaData implements DataSourcePoolFieldMetaData {
     
     @Override
     public String getUsernameFieldName() {
@@ -41,6 +41,6 @@ public final class DBCPDataSourcePoolFieldMetaData implements DataSourcePoolFiel
     
     @Override
     public String getJdbcUrlPropertiesFieldName() {
-        return "connectionProperties";
+        return null;
     }
 }
