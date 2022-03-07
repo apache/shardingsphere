@@ -35,6 +35,7 @@ execute
     | showInstanceMode
     | labelInstance
     | unlabelInstance
+    | countInstanceRules
     | countSchemaRules
     | prepareDistSQL
     | applyDistSQL
