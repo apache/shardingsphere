@@ -22,7 +22,7 @@ import lombok.Getter;
 import javax.xml.bind.annotation.XmlAttribute;
 
 @Getter
-public abstract class IfExistsStatementTestCase extends SQLParserTestCase {
+public abstract class DropRuleStatementTestCase extends SQLParserTestCase {
     
     @XmlAttribute(name = "contains-exists-clause")
     private boolean containsExistClause;
