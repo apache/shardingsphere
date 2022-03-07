@@ -165,7 +165,7 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
             optional -> new DataSourcePoolMetaDataReflection(dataSource.get(), optional.getFieldMetaData())).orElseGet(() -> new DataSourcePoolMetaDataReflection(dataSource.get()));
         String jdbcUrl = dataSourcePoolMetaDataReflection.getJdbcUrl();
         int endIndex = jdbcUrl.indexOf("?");
-        jdbcUrl = jdbcUrl.substring(0, endIndex);
+        jdbcUrl = -1 == endIndex ? jdbcUrl : jdbcUrl.substring(0, endIndex);
         String username = dataSourcePoolMetaDataReflection.getUsername();
         String password = dataSourcePoolMetaDataReflection.getPassword();
         String dataSourceClassName = getDataSourceClassNameByJdbcUrl(jdbcUrl);
