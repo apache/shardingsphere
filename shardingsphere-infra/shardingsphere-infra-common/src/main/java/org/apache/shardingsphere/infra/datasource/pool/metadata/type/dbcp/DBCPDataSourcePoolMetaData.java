@@ -69,6 +69,6 @@ public final class DBCPDataSourcePoolMetaData implements DataSourcePoolMetaData 
     
     @Override
     public Collection<String> getTypeAliases() {
-        return Arrays.asList("org.apache.commons.dbcp.BasicDataSource", "org.apache.tomcat.dbcp.dbcp2.BasicDataSource", "com.alibaba.druid.pool.DruidDataSource");
+        return Arrays.asList("org.apache.commons.dbcp.BasicDataSource", "org.apache.tomcat.dbcp.dbcp2.BasicDataSource");
     }
 }
