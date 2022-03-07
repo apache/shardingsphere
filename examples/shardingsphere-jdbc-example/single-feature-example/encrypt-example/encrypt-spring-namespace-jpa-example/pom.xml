@@ -31,26 +31,12 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere.example</groupId>
-            <artifactId>example-spring-mybatis</artifactId>
+            <artifactId>example-spring-namespace</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-core-spring-namespace</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+            <groupId>org.apache.shardingsphere.example.sharding.spring.namespace.jpa</groupId>
+            <artifactId>example-spring-namespace</artifactId>
         </dependency>
     </dependencies>
 </project>

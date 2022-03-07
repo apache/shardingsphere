@@ -24,9 +24,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.sql.SQLException;
 
-public final class ShardingSpringNamespaceJpaExample {
+public final class ShardingSpringNamespaceJPAExample {
     
-    private static final String CONFIG_FILE = "META-INF/application-sharding-databases.xml";
+    private static final String CONFIG_FILE = "META-INF/application-encrypt-databases.xml";
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(CONFIG_FILE)) {
