@@ -40,8 +40,6 @@ ShardingSphere 社区遵循[Apache Community’s process](http://community.apach
 
 3. Committer 提交的 PR，需要根据PR类型和当前发布的周期标注 Label 和 Milestone。
 
-4. Committer review PR 时，可以进行 squash and merge to master 的操作, 如果有问题可以加上 change request 或者@相关人员协助处理。
-
 ### 轮值顺序表
 
 | 序列 | 开始时间 | 姓名   | GitHub ID     |
