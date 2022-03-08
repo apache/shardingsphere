@@ -57,7 +57,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.Whe
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -264,12 +263,13 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     private String getAlgorithmExpression(final TableRule tableRule, final boolean databaseOrTable) {
-        if (null == tableRule.getDatabaseShardingStrategyConfig() || null == tableRule.getTableShardingStrategyConfig()) {
-            return "";
+        ShardingStrategyConfiguration shardingStrategyConfiguration = null;
+        if (databaseOrTable) {
+            shardingStrategyConfiguration = null == tableRule.getDatabaseShardingStrategyConfig() ? defaultDatabaseShardingStrategyConfig : tableRule.getDatabaseShardingStrategyConfig();
+        } else {
+            shardingStrategyConfiguration = null == tableRule.getTableShardingStrategyConfig() ? defaultTableShardingStrategyConfig : tableRule.getTableShardingStrategyConfig();
         }
-        String shardingAlgorithmName = databaseOrTable ? tableRule.getDatabaseShardingStrategyConfig().getShardingAlgorithmName()
-                : tableRule.getTableShardingStrategyConfig().getShardingAlgorithmName();
-        ShardingAlgorithm shardingAlgorithm = shardingAlgorithms.get(shardingAlgorithmName);
+        ShardingAlgorithm shardingAlgorithm = shardingAlgorithms.get(shardingStrategyConfiguration.getShardingAlgorithmName());
         return null == shardingAlgorithm ? "" : StringUtils.defaultString(shardingAlgorithm.getProps().getProperty("algorithm-expression"), "");
     }
     
@@ -289,7 +289,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     
     private void checkSameAlgorithmOnTable(final TableRule sampleTableRule, final String sampleTableName, final TableRule tableRule,
                                            final String tableName, final String bindingTableGroup) {
-        Collection<String[]> algorithmExpressions = new ArrayList<>();
+        List<String[]> algorithmExpressions = new LinkedList<>();
         algorithmExpressions.add(new String[] {getAlgorithmExpression(sampleTableRule, false), substring(sampleTableName)[0],
                 getShardingColumn(sampleTableRule.getTableShardingStrategyConfig())});
         algorithmExpressions.add(new String[] {getAlgorithmExpression(tableRule, false), substring(tableName)[0],
