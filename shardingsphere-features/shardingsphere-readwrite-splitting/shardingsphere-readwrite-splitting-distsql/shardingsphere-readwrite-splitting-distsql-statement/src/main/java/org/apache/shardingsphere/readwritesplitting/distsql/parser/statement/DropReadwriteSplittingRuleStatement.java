@@ -26,8 +26,8 @@ import java.util.Collection;
 /**
  * Drop readwrite splitting rule statement.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class DropReadwriteSplittingRuleStatement extends DropRuleStatement {
     
     private final Collection<String> ruleNames;
