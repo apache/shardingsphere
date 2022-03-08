@@ -112,7 +112,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private SchemaConfiguration createSchemaConfiguration(final String schemaName, final MetaDataPersistService metaDataPersistService,
-                                                              final ContextManagerBuilderParameter parameter) throws SQLException {
+                                                          final ContextManagerBuilderParameter parameter) {
         Map<String, DataSource> dataSources = metaDataPersistService.getEffectiveDataSources(schemaName, parameter.getSchemaConfigs());
         Collection<RuleConfiguration> schemaRuleConfigs = metaDataPersistService.getSchemaRuleService().load(schemaName);
         return new DataSourceProvidedSchemaConfiguration(dataSources, schemaRuleConfigs);
