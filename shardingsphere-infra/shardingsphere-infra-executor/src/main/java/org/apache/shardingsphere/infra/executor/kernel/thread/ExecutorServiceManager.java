@@ -58,7 +58,7 @@ public final class ExecutorServiceManager {
         SHUTDOWN_EXECUTOR.execute(() -> {
             try {
                 executorService.shutdown();
-                while (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                while (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
                     executorService.shutdownNow();
                 }
             } catch (final InterruptedException ex) {
