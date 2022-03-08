@@ -21,8 +21,6 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * User executor group.
  */
