@@ -43,6 +43,10 @@
         <rule>t_1,t_2</rule>
     </drop-sharding-binding-table-rules>
 
+    <drop-sharding-binding-table-rules sql-case-id="drop-sharding-binding-table-specified-rules-if-exists" contains-exists-clause="true">
+        <rule>t_1,t_2</rule>
+    </drop-sharding-binding-table-rules>
+    
     <drop-sharding-broadcast-table-rules sql-case-id="drop-sharding-broadcast-table-rules" />
 
     <drop-sharding-broadcast-table-rules sql-case-id="drop-sharding-broadcast-table-specified-table" >
