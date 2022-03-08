@@ -130,7 +130,7 @@ public final class JDBCBackendTransactionManagerTest {
         backendTransactionManager.commit();
         verify(transactionStatus, times(0)).setInTransaction(false);
         verify(localTransactionManager, times(0)).commit();
-        verify(shardingSphereTransactionManager, times(0)).commit();
+        verify(shardingSphereTransactionManager, times(0)).commit(false);
     }
     
     @Test

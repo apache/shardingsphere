@@ -152,14 +152,14 @@ public final class SeataATShardingSphereTransactionManagerTest {
     public void assertCommit() {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
         setXID("testXID");
-        seataTransactionManager.commit();
+        seataTransactionManager.commit(false);
         assertResult();
     }
     
     @Test(expected = IllegalStateException.class)
     public void assertCommitWithoutBegin() {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
-        seataTransactionManager.commit();
+        seataTransactionManager.commit(false);
     }
     
     @Test

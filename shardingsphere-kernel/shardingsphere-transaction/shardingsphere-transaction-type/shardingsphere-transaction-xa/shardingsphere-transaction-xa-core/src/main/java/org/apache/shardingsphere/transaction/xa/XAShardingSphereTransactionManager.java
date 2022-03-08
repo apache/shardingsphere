@@ -102,12 +102,6 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
 
     @SneakyThrows({SystemException.class, RollbackException.class, HeuristicMixedException.class, HeuristicRollbackException.class})
     @Override
-    public void commit() {
-        xaTransactionManagerProvider.getTransactionManager().commit();
-    }
-    
-    @SneakyThrows({SystemException.class, RollbackException.class, HeuristicMixedException.class, HeuristicRollbackException.class})
-    @Override
     public void commit(final boolean rollbackOnly) {
         if (rollbackOnly) {
             xaTransactionManagerProvider.getTransactionManager().rollback();

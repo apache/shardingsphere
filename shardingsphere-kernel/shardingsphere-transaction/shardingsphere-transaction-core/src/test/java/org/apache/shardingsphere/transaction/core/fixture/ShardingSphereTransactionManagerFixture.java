@@ -61,12 +61,7 @@ public final class ShardingSphereTransactionManagerFixture implements ShardingSp
     }
 
     @Override
-    public void commit() {
-    }
-    
-    @Override
     public void commit(final boolean rollbackOnly) {
-        commit();
     }
     
     @Override

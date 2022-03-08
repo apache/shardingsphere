@@ -208,6 +208,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             List<QueryResult> queryResults = executeQuery0();
             MergedResult mergedResult = mergeQuery(queryResults);
             result = new ShardingSphereResultSet(getShardingSphereResultSet(), mergedResult, this, executionContext);
+        } catch (SQLException ex) {
+            handleExceptionInTransaction(connection, metaDataContexts);
+            throw ex;
         } finally {
             clearBatch();
         }
@@ -298,6 +301,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             cacheStatements(executionGroupContext.getInputGroups());
             return executor.getRegularExecutor().executeUpdate(executionGroupContext,
                     executionContext.getLogicSQL(), executionContext.getRouteContext().getRouteUnits(), createExecuteUpdateCallback());
+        } catch (SQLException ex) {
+            handleExceptionInTransaction(connection, metaDataContexts);
+            throw ex;
         } finally {
             clearBatch();
         }
@@ -355,6 +361,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             cacheStatements(executionGroupContext.getInputGroups());
             return executor.getRegularExecutor().execute(executionGroupContext,
                     executionContext.getLogicSQL(), executionContext.getRouteContext().getRouteUnits(), createExecuteCallback());
+        } catch (SQLException ex) {
+            handleExceptionInTransaction(connection, metaDataContexts);
+            throw ex;
         } finally {
             clearBatch();
         }
@@ -533,6 +542,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             // TODO add raw SQL executor
             initBatchPreparedStatementExecutor();
             return batchPreparedStatementExecutor.executeBatch(executionContext.getSqlStatementContext());
+        } catch (SQLException ex) {
+            handleExceptionInTransaction(connection, metaDataContexts);
+            throw ex;
         } finally {
             clearBatch();
         }
