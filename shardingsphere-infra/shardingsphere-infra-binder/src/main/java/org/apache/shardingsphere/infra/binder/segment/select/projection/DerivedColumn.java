@@ -35,6 +35,8 @@ public enum DerivedColumn {
     ORDER_BY_ALIAS("ORDER_BY_DERIVED_"), 
     GROUP_BY_ALIAS("GROUP_BY_DERIVED_"),
     AGGREGATION_DISTINCT_DERIVED("AGGREGATION_DISTINCT_DERIVED_");
+    
+    private static final DerivedColumn[] VALUES = values();
 
     private static final Collection<DerivedColumn> VALUES_WITHOUT_AGGREGATION_DISTINCT_DERIVED = getValues();
 
@@ -57,7 +59,7 @@ public enum DerivedColumn {
      * @return is derived column name or not
      */
     public static boolean isDerivedColumnName(final String columnName) {
-        for (DerivedColumn each : values()) {
+        for (DerivedColumn each : VALUES) {
             if (columnName.startsWith(each.pattern)) {
                 return true;
             }
