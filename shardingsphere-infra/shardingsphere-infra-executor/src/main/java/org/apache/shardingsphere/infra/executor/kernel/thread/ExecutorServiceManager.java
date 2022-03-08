@@ -34,9 +34,9 @@ public final class ExecutorServiceManager {
     
     private static final String DEFAULT_NAME_FORMAT = "%d";
     
-    private final ListeningExecutorService executorService;
-    
     private static final ExecutorService SHUTDOWN_EXECUTOR = Executors.newSingleThreadExecutor(ExecutorThreadFactoryBuilder.build("Executor-Engine-Closer"));
+        
+    private final ListeningExecutorService executorService;
     
     public ExecutorServiceManager(final int executorSize) {
         this(executorSize, DEFAULT_NAME_FORMAT);
