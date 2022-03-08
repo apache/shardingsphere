@@ -114,3 +114,11 @@ DISABLE
 READ
    : R E A D
    ;
+
+IF
+    : I F
+    ;
+    
+EXISTS
+    : E X I S T S
+    ;  
