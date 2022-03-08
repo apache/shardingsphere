@@ -104,6 +104,9 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
     
     private Collection<String> getExistedBindingGroups(final DropShardingBindingTableRulesStatement sqlStatement, final Map<String, String> bindingTableRules) {
         Collection<String> result = new LinkedList<>();
+        if (sqlStatement.getRules().isEmpty()) {
+            return new LinkedHashSet<>(bindingTableRules.values());
+        }
         for (BindingTableRuleSegment each : sqlStatement.getRules()) {
             if (isToBeDroppedRuleExists(each, bindingTableRules)) {
                 result.add(each.getTableGroups());
