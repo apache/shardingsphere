@@ -61,7 +61,7 @@ import java.sql.SQLException;
 <#if framework?contains("spring-boot")>
 @SpringBootApplication
 </#if>
-public final class Example {
+public class Example {
     
     public static void main(final String[] args) throws SQLException {
     <#if framework=="jdbc">

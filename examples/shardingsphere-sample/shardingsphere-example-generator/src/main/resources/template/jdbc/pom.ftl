@@ -22,8 +22,8 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>shardingsphere-${product}-sample</artifactId>
-        <version>${r'${revision}'}</version>
+        <artifactId>shardingsphere-example</artifactId>
+        <version>5.1.1-SNAPSHOT</version>
     </parent>
     <artifactId>${feature?replace(',', '-')}--${framework}--${mode}--${transaction}</artifactId>
     <name>${r'${project.artifactId}'}</name>
