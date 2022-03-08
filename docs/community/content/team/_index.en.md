@@ -62,7 +62,7 @@ chapter = true
 
 You can find all of the ShardingSphere contributors directly in GitHub's contribution list.
 
-- [shardingsphere](https://api.github.com/repos/apache/shardingsphere/contributors?page=1&per_page=10000)
+- [shardingsphere](https://github.com/apache/shardingsphere/graphs/contributors)
 - [shardingsphere-benchmark](https://github.com/apache/shardingsphere-benchmark)
 
 <table>
