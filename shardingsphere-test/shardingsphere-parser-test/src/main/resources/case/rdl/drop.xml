@@ -49,6 +49,10 @@
         <table>t_order</table>
     </drop-sharding-broadcast-table-rules>
 
+    <drop-sharding-broadcast-table-rules sql-case-id="drop-sharding-broadcast-table-specified-table-if-exist" contains-exists-clause="true">
+        <table>t_order</table>
+    </drop-sharding-broadcast-table-rules>
+
     <drop-readwrite-splitting-rule sql-case-id="drop-readwrite-splitting-rule">
         <rule>ms_group_0</rule>
         <rule>ms_group_1</rule>
