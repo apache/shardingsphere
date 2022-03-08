@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTable
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Create table statement context.
@@ -73,7 +74,7 @@ public final class CreateTableStatementContext extends CommonSQLStatementContext
 
     @Override
     public Collection<ConstraintSegment> getConstraints() {
-        List<ConstraintSegment> result = new LinkedList<>();
+        Collection<ConstraintSegment> result = new LinkedList<>();
         for (ConstraintDefinitionSegment each : getSqlStatement().getConstraintDefinitions()) {
             each.getConstraintName().ifPresent(result::add);
         }
