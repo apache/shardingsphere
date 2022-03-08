@@ -20,6 +20,8 @@ package org.apache.shardingsphere.spi.fixture.typed;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Properties;
 
 @Getter
@@ -31,5 +33,10 @@ public final class TypedSPIFixtureImpl implements TypedSPIFixture {
     @Override
     public String getType() {
         return "FIXTURE";
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        return Collections.singletonList("FIXTURE_ALIAS");
     }
 }

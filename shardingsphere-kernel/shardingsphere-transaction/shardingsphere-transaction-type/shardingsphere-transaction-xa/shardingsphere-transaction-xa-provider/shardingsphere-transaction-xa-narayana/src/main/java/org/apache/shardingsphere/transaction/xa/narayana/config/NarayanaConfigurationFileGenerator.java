@@ -31,8 +31,10 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.type.DefaultDataSourcePoolFieldMetaData;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGenerator;
 
@@ -161,11 +163,11 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         if (!dataSource.isPresent()) {
             return;
         }
-        DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = DataSourcePoolMetaDataFactory.newInstance(dataSource.get().getClass().getName()).map(
-            optional -> new DataSourcePoolMetaDataReflection(dataSource.get(), optional.getFieldMetaData())).orElseGet(() -> new DataSourcePoolMetaDataReflection(dataSource.get()));
+        DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(dataSource.get(), 
+                DataSourcePoolMetaDataFactory.newInstance(dataSource.get().getClass().getName()).map(DataSourcePoolMetaData::getFieldMetaData).orElseGet(DefaultDataSourcePoolFieldMetaData::new));
         String jdbcUrl = dataSourcePoolMetaDataReflection.getJdbcUrl();
         int endIndex = jdbcUrl.indexOf("?");
-        jdbcUrl = jdbcUrl.substring(0, endIndex);
+        jdbcUrl = -1 == endIndex ? jdbcUrl : jdbcUrl.substring(0, endIndex);
         String username = dataSourcePoolMetaDataReflection.getUsername();
         String password = dataSourcePoolMetaDataReflection.getPassword();
         String dataSourceClassName = getDataSourceClassNameByJdbcUrl(jdbcUrl);

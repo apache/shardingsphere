@@ -43,6 +43,12 @@ public final class TypedSPIRegistryTest {
     }
     
     @Test
+    public void assertGetRegisteredServiceWithAlias() {
+        TypedSPIFixture actual = TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "FIXTURE_ALIAS", new Properties());
+        assertNotNull(actual);
+    }
+    
+    @Test
     public void assertGetRegisteredServiceWithProperties() {
         Properties properties = new Properties();
         properties.put("key1", 1);

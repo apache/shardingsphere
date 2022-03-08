@@ -61,6 +61,11 @@
         <rule>ms_group_0</rule>
         <rule>ms_group_1</rule>
     </drop-readwrite-splitting-rule>
+
+    <drop-readwrite-splitting-rule sql-case-id="drop-readwrite-splitting-rule-if-exists" contains-exists-clause="true">
+        <rule>ms_group_0</rule>
+        <rule>ms_group_1</rule>
+    </drop-readwrite-splitting-rule>
     
     <drop-database-discovery-rule sql-case-id="drop-database-discovery-rule">
         <rule>ha_group_0</rule>
@@ -73,6 +78,11 @@
     </drop-database-discovery-rule>
 
     <drop-database-discovery-type sql-case-id="drop-database-discovery-type">
+        <type>type_name_0</type>
+        <type>type_name_1</type>
+    </drop-database-discovery-type>
+    
+    <drop-database-discovery-type sql-case-id="drop-database-discovery-type-if-exists" contains-exist-clause="true">
         <type>type_name_0</type>
         <type>type_name_1</type>
     </drop-database-discovery-type>

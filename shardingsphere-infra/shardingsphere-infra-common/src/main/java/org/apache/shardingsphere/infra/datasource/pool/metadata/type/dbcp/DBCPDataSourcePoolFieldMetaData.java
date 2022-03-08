@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.datasource.pool.metadata.type.dbcp;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFieldMetaData;
 
 /**
- * DBCP data source JDBC URL meta data.
+ * DBCP data source pool field meta data.
  */
 public final class DBCPDataSourcePoolFieldMetaData implements DataSourcePoolFieldMetaData {
     
