@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * User executor group.
  */
-public final class UserExecutorGroup implements AutoCloseable {
+public final class UserExecutorGroup {
     
     private static final String NAME_FORMAT = "Command-%d";
     
@@ -47,22 +47,5 @@ public final class UserExecutorGroup implements AutoCloseable {
      */
     public static UserExecutorGroup getInstance() {
         return INSTANCE;
-    }
-    
-    /**
-     * Close executor service.
-     */
-    @Override
-    public void close() {
-        if (null != executorService) {
-            try {
-                executorService.shutdown();
-                while (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
-                    executorService.shutdownNow();
-                }
-            } catch (final InterruptedException ex) {
-                Thread.currentThread().interrupt();
-            }
-        }
     }
 }
