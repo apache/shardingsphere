@@ -28,6 +28,8 @@ import org.apache.shardingsphere.data.pipeline.core.spi.ingest.channel.MemoryPip
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 
@@ -58,6 +60,7 @@ public final class PipelineContextUtil {
     public static void mockContextManager() {
         ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig = new ShardingSpherePipelineDataSourceConfiguration(
                 ResourceUtil.readFileToString("/config_sharding_sphere_jdbc_source.yaml"));
+        pipelineDataSourceConfig.getRootConfig().setMode(mockYamlModeConfiguration());
         ShardingSphereDataSource shardingSphereDataSource = (ShardingSphereDataSource) new PipelineDataSourceFactory().newInstance(pipelineDataSourceConfig).getDataSource();
         ContextManager contextManager = shardingSphereDataSource.getContextManager();
         PipelineContext.initContextManager(contextManager);
@@ -68,6 +71,17 @@ public final class PipelineContextUtil {
             // CHECKSTYLE:ON
             log.error("close data source failed", ex);
         }
+    }
+    
+    private static YamlModeConfiguration mockYamlModeConfiguration() {
+        ModeConfiguration modeConfiguration = createModeConfig();
+        YamlModeConfiguration result = new YamlModeConfiguration();
+        result.setType(modeConfiguration.getType());
+        YamlPersistRepositoryConfiguration yamlPersistRepositoryConfiguration = new YamlPersistRepositoryConfiguration();
+        yamlPersistRepositoryConfiguration.setType(modeConfiguration.getRepository().getType());
+        yamlPersistRepositoryConfiguration.setProps(modeConfiguration.getRepository().getProps());
+        result.setRepository(yamlPersistRepositoryConfiguration);
+        return result;
     }
     
     /**
