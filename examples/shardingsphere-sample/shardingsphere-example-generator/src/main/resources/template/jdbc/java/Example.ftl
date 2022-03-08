@@ -15,12 +15,7 @@
  * limitations under the License.
  */
 
-<#assign package="" />
-<#if feature?split(",")?size gt 1>
-    <#assign package="mixed" />
-<#else>
-    <#assign package = feature?replace('-', '.') />
-</#if>
+<#assign package = feature?replace('-', '.')?replace(',', '.') />
 package org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')};
 
 <#if framework?contains("spring-boot")>
