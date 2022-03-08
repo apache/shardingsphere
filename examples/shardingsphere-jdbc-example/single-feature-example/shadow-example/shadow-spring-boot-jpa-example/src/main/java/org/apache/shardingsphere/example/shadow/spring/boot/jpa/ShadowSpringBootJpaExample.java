@@ -19,7 +19,6 @@ package org.apache.shardingsphere.example.shadow.spring.boot.jpa;
 
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
