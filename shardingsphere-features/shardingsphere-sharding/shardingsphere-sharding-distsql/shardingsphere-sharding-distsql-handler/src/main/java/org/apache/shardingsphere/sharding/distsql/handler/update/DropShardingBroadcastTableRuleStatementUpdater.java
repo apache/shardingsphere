@@ -62,6 +62,9 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements Rul
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        if (sqlStatement.getRules().isEmpty()) {
+            return true;
+        }
         return isExistRuleConfig(currentRuleConfig) && !getIdenticalData(currentRuleConfig.getBroadcastTables(), sqlStatement.getRules()).isEmpty();
     }
     
