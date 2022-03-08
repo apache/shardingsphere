@@ -27,10 +27,13 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.infra.federation.executor.FederationContext;
+import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.infra.federation.optimizer.ShardingSphereOptimizer;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.enumerable.EnumerableMergedResult;
+import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.Connection;
@@ -45,6 +48,8 @@ public final class CustomizedFilterableExecutor implements FederationExecutor {
     private final String schemaName;
     
     private final ShardingSphereOptimizer optimizer;
+
+    private ResultSet federationResultSet;
     
     public CustomizedFilterableExecutor(final String schemaName, final OptimizerContext context) {
         this.schemaName = schemaName;
@@ -54,13 +59,18 @@ public final class CustomizedFilterableExecutor implements FederationExecutor {
     @Override
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final FederationContext federationContext) throws SQLException {
-        // TODO
-        return null;
+        String sql = federationContext.getLogicSQL().getSql();
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine("MySQL", optimizer.getContext().getSqlParserRule());
+        SQLStatement sqlStatement = sqlParserEngine.parse(sql, true);
+        Enumerable<Object[]> enumerableResult = execute(sqlStatement);
+        MergedResult mergedResult = new EnumerableMergedResult(enumerableResult);
+        federationResultSet = new FederationResultSet(mergedResult);
+        return federationResultSet;
     }
     
     @Override
     public ResultSet getResultSet() {
-        return null;
+        return federationResultSet;
     }
     
     private Enumerable<Object[]> execute(final SQLStatement sqlStatement) {
