@@ -33,7 +33,6 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 /**
  * Pipeline API factory.
@@ -106,10 +105,7 @@ public final class PipelineAPIFactory {
         }
         
         private static GovernanceRepositoryAPI createGovernanceRepositoryAPI() {
-            ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) PipelineContext.getModeConfig().getRepository();
-            ClusterPersistRepository repository = TypedSPIRegistry.getRegisteredService(ClusterPersistRepository.class, repositoryConfig.getType(), repositoryConfig.getProps());
-            repository.init(repositoryConfig);
-            return new GovernanceRepositoryAPIImpl(repository);
+            return new GovernanceRepositoryAPIImpl((ClusterPersistRepository) PipelineContext.getContextManager().getMetaDataContexts().getMetaDataPersistService().get().getRepository());
         }
     }
     
