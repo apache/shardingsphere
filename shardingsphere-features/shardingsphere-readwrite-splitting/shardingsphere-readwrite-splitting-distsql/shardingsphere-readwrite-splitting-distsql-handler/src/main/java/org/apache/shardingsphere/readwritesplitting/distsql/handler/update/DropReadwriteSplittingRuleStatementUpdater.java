@@ -92,7 +92,6 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
     public boolean hasAnyOneToBeDropped(final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         return null != currentRuleConfig
                 && !getIdenticalData(currentRuleConfig.getDataSources().stream().map(each -> each.getName()).collect(Collectors.toSet()), sqlStatement.getRuleNames()).isEmpty();
-        
     }
     
     @Override
