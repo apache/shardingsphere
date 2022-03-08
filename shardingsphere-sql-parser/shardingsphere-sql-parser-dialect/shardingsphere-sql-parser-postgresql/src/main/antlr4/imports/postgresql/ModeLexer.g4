@@ -15,19 +15,27 @@
  * limitations under the License.
  */
 
-parser grammar StoreProcedure;
+lexer grammar ModeLexer;
 
-import BaseRule;
+import Symbol, PostgreSQLKeyword, Keyword, Comments, Literals;
 
-options {tokenVocab = ModeLexer;}
+BEGIN_DOLLAR_STRING_CONSTANT
+   : '$' TAG? '$'
+   {pushTag();} -> pushMode (DOLLAR_QUOTED_STRING_MODE)
+   ;
+   
+fragment TAG
+   : IDENTIFIER_START_CHAR STRICT_IDENTIFIER_CHAR*
+   ;
+   
+mode DOLLAR_QUOTED_STRING_MODE;
+DOLLAR_TEXT
+   : ~ '$'+
+   | '$' ~ '$'*
+   ;
 
-call
-    : CALL funcName LP_ callClauses? RP_
-    ;
-
-callClauses
-    : (ALL | DISTINCT)? funcArgList sortClause?
-    | VARIADIC funcArgExpr sortClause
-    | funcArgList COMMA_ VARIADIC funcArgExpr sortClause
-    | ASTERISK_
-    ;
+END_DOLLAR_STRING_CONSTANT
+   : ('$' TAG? '$')
+   {isTag()}?
+   {popTag();} -> popMode
+   ;

@@ -15,19 +15,44 @@
  * limitations under the License.
  */
 
-parser grammar StoreProcedure;
+package org.apache.shardingsphere.sql.parser.postgresql.parser;
 
-import BaseRule;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.Lexer;
 
-options {tokenVocab = ModeLexer;}
+import java.util.ArrayDeque;
+import java.util.Deque;
 
-call
-    : CALL funcName LP_ callClauses? RP_
-    ;
-
-callClauses
-    : (ALL | DISTINCT)? funcArgList sortClause?
-    | VARIADIC funcArgExpr sortClause
-    | funcArgList COMMA_ VARIADIC funcArgExpr sortClause
-    | ASTERISK_
-    ;
+/**
+ * Postgre SQL Lexer Base.
+ */
+public abstract class PostgreSQLLexerBase extends Lexer {
+    private final Deque<String> tags = new ArrayDeque<>();
+    
+    protected PostgreSQLLexerBase(final CharStream input) {
+        super(input);
+    }
+    
+    /**
+     * Push tag.
+     */
+    public void pushTag() {
+        tags.push(getText());
+    }
+    
+    /**
+     * Judge is tag.
+     *
+     * @return is tag
+     */
+    public boolean isTag() {
+        return getText().equals(tags.peek());
+    }
+    
+    /**
+     * Pop tag.
+     */
+    public void popTag() {
+        tags.pop();
+    }
+}
