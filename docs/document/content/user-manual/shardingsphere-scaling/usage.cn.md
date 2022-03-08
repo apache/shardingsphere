@@ -7,7 +7,7 @@ weight = 2
 
 ### 环境要求
 
-纯 JAVA 开发，JDK 建议 1.8 以上版本。
+纯  JAVA 开发，JDK  建议 1.8 以上版本。
 
 支持迁移场景如下：
 
@@ -19,9 +19,9 @@ weight = 2
 
 **注意**：
 
-如果后端连接以下数据库，请下载相应JDBC驱动jar包，并将其放入 `${shardingsphere-proxy}/lib` 目录。
+如果后端连接以下数据库，请下载相应 JDBC 驱动 jar 包，并将其放入 `${shardingsphere-proxy}/lib` 目录。
 
-| 数据库                 | JDBC驱动                              | 参考                 |
+| 数据库                 | JDBC 驱动                              | 参考                 |
 | --------------------- | ------------------------------------ | -------------------- |
 | MySQL                 | [mysql-connector-java-5.1.47.jar]( https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar ) | [Connector/J Versions]( https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-versions.html ) |
 | openGauss             | [opengauss-jdbc-2.0.1-compatibility.jar]( https://repo1.maven.org/maven2/org/opengauss/opengauss-jdbc/2.0.1-compatibility/opengauss-jdbc-2.0.1-compatibility.jar ) | |
@@ -54,13 +54,13 @@ binlog-row-image=full
 max_connections=600
 ```
 
-执行以下命令，确认是否有开启binlog：
+执行以下命令，确认是否有开启 binlog：
 ```
 show variables like '%log_bin%';
 show variables like '%binlog%';
 ```
 
-如以下显示，则说明binlog已开启
+如以下显示，则说明 binlog 已开启
 ```
 +-----------------------------------------+---------------------------------------+
 | Variable_name                           | Value                                 |
@@ -129,7 +129,7 @@ mysql> preview select count(1) from t_order;
 
 1. 添加新的数据源
 
-详情请参见[RDL#数据源资源](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/)。
+详情请参见 [RDL #数据源资源](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/)。
 
 先在底层数据库系统创建需要的分库，下面的 `DistSQL` 需要用到。
 
@@ -157,7 +157,7 @@ ADD RESOURCE ds_2 (
 
 目前只有通过执行 `ALTER SHARDING TABLE RULE` DistSQL 来触发迁移。
 
-详情请参见[RDL#数据分片](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/)。
+详情请参见 [RDL #数据分片](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/)。
 
 `SHARDING TABLE RULE`支持 2 种类型：`TableRule`和`AutoTableRule`。以下是两种分片规则的对比：
 
@@ -165,9 +165,9 @@ ADD RESOURCE ds_2 (
 | ----------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | 定义         | [自动化分片算法](/cn/features/sharding/concept/sharding/#自动化分片算法) | [自定义分片算法](/cn/features/sharding/concept/sharding/#自定义分片算法)   |
 
-DistSQL 字段含义和 YAML 配置保持一致，详情请参见[YAML配置#数据分片](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/)。
+DistSQL 字段含义和 YAML 配置保持一致，详情请参见 [YAML 配置#数据分片](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/)。
 
-`AutoTableRule`修改示例：
+`AutoTableRule` 修改示例：
 ```sql
 ALTER SHARDING TABLE RULE t_order (
 RESOURCES(ds_2, ds_3, ds_4),
@@ -179,7 +179,7 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
 
 `RESOURCES` 从 `(ds_0, ds_1)` 改为了 `(ds_2, ds_3, ds_4)`，`sharding-count` 从 `4` 改为了 `6`，会触发迁移。
 
-`TableRule`修改示例：
+`TableRule` 修改示例：
 ```sql
 ALTER SHARDING ALGORITHM database_inline (
 TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="ds_${user_id % 3 + 2}"))
@@ -204,7 +204,7 @@ KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME=snowflake))
 
 #### 查询所有迁移任务
 
-详情请参见[RAL#弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
+详情请参见 [RAL #弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
 
 示例：
 ```sql
@@ -243,7 +243,7 @@ mysql> show scaling status 660152090995195904;
 ```
 当前迁移任务已完成，新的分片规则已生效。如果迁移失败，新的分片规则不会生效。
 
-`status`的取值：
+`status` 的取值：
 
 | 取值                                               | 描述                                                         |
 | ------------------------------------------------- | ------------------------------------------------------------ |
@@ -256,7 +256,7 @@ mysql> show scaling status 660152090995195904;
 | EXECUTE_INVENTORY_TASK_FAILURE                    | 全量迁移阶段失败                                                 |
 | EXECUTE_INCREMENTAL_TASK_FAILURE                  | 增量迁移阶段失败                                                 |
 
-如果`status`出现失败的情况，可以查看`proxy`的日志查看错误堆栈分析问题。
+如果 `status` 出现失败的情况，可以查看 `proxy` 的日志查看错误堆栈分析问题。
 
 #### 预览新的分片规则是否生效
 
@@ -281,11 +281,11 @@ mysql> preview select count(1) from t_order;
 6 rows in set (0.01 sec)
 ```
 
-#### 其他DistSQL
-详情请参见[RAL#弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
+#### 其他 DistSQL
+详情请参见 [RAL #弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
 
 ### DistSQL 手动模式接口
 
-数据校验、切换配置等操作可以手动执行。详情请参见：[RAL#弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
+数据校验、切换配置等操作可以手动执行。详情请参见：[RAL #弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
 
 注意：目前还在开发中，功能还不完善。
