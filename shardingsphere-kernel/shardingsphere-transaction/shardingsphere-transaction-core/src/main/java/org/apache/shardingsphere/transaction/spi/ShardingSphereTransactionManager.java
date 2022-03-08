@@ -77,8 +77,10 @@ public interface ShardingSphereTransactionManager extends AutoCloseable {
     
     /**
      * Commit transaction.
+     *
+     * @param rollbackOnly rollback only
      */
-    void commit();
+    void commit(boolean rollbackOnly);
     
     /**
      * Rollback transaction.

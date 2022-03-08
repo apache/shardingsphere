@@ -60,4 +60,8 @@ public final class DummyReactiveDatabaseProtocolFrontendEngine implements Reacti
     @Override
     public void release(final ConnectionSession connectionSession) {
     }
+    
+    @Override
+    public void handleException(final ConnectionSession connectionSession) {
+    }
 }

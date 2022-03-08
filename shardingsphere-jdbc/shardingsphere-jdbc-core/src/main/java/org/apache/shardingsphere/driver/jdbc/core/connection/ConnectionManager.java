@@ -152,7 +152,9 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
      * @throws SQLException SQL exception
      */
     public void commit() throws SQLException {
-        if (connectionTransaction.isLocalTransaction()) {
+        if (connectionTransaction.isLocalTransaction() && connectionTransaction.isRollbackOnly()) {
+            forceExecuteTemplate.execute(cachedConnections.values(), Connection::rollback);
+        } else if (connectionTransaction.isLocalTransaction() && !connectionTransaction.isRollbackOnly()) {
             forceExecuteTemplate.execute(cachedConnections.values(), Connection::commit);
         } else {
             connectionTransaction.commit();

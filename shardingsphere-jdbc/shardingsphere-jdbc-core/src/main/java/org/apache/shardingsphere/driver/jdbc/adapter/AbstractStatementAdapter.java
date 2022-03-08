@@ -21,7 +21,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.executor.DriverExecutor;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationStatement;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 import java.sql.SQLException;
 import java.sql.SQLWarning;
@@ -186,6 +191,15 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
             }
         } finally {
             getRoutedStatements().clear();
+        }
+    }
+    
+    protected final void handleExceptionInTransaction(final ShardingSphereConnection connection, final MetaDataContexts metaDataContexts) {
+        if (connection.getConnectionManager().getConnectionTransaction().isInTransaction()) {
+            DatabaseType databaseType = metaDataContexts.getMetaData(connection.getSchema()).getResource().getDatabaseType();
+            if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
+                connection.getConnectionManager().getConnectionTransaction().setRollbackOnly(true);
+            }
         }
     }
     
