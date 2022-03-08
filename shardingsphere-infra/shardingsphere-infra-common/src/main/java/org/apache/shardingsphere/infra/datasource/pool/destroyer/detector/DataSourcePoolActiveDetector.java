@@ -15,10 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.resource.fixture;
+package org.apache.shardingsphere.infra.datasource.pool.destroyer.detector;
+
+import org.apache.shardingsphere.spi.required.RequiredSPI;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 import javax.sql.DataSource;
-import java.io.Closeable;
 
-public interface CloseableDataSource extends DataSource, Closeable {
+/**
+ * Data source pool active detector.
+ */
+public interface DataSourcePoolActiveDetector extends TypedSPI, RequiredSPI {
+    
+    /**
+     * Whether contains active connection.
+     * 
+     * @param dataSource data source pool to be detected
+     * @return contains active connection or not
+     */
+    boolean containsActiveConnection(DataSource dataSource);
 }

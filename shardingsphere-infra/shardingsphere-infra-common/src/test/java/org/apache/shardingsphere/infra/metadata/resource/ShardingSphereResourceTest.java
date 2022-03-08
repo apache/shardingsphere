@@ -18,47 +18,25 @@
 package org.apache.shardingsphere.infra.metadata.resource;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.resource.fixture.CloseableDataSource;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class ShardingSphereResourceTest {
     
-    @Mock
-    private CloseableDataSource dataSource0;
-    
-    @Mock
-    private CloseableDataSource dataSource1;
-    
-    @Mock
-    private DataSource dataSource2;
-    
     @Test
-    public void assertClose() throws SQLException, IOException {
-        new ShardingSphereResource(createDataSources(), mock(DataSourcesMetaData.class), mock(CachedDatabaseMetaData.class), mock(DatabaseType.class)).close(Arrays.asList("ds_0", "ds_2"));
-        verify(dataSource0).close();
-        verify(dataSource1, times(0)).close();
-    }
-    
-    private Map<String, DataSource> createDataSources() {
-        Map<String, DataSource> result = new HashMap<>(3, 1);
-        result.put("ds_0", dataSource0);
-        result.put("ds_1", dataSource1);
-        result.put("ds_2", dataSource2);
-        return result;
+    public void assertClose() throws SQLException, IOException, InterruptedException {
+        MockedDataSource dataSource = new MockedDataSource();
+        new ShardingSphereResource(Collections.singletonMap("foo_ds", dataSource), mock(DataSourcesMetaData.class), mock(CachedDatabaseMetaData.class), mock(DatabaseType.class)).close(dataSource);
+        while (null == dataSource.getClosed() || !dataSource.getClosed()) {
+            Thread.sleep(10L);
+        }
+        assertTrue(dataSource.getClosed());
     }
 }
