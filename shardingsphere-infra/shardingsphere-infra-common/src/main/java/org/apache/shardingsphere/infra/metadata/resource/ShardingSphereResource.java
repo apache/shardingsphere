@@ -63,17 +63,6 @@ public final class ShardingSphereResource {
     }
     
     /**
-     * Close data sources.
-     * 
-     * @param dataSources data sources to be closed
-     */
-    public void close(final Collection<String> dataSources) {
-        for (String each : dataSources) {
-            close(this.dataSources.get(each));
-        }
-    }
-    
-    /**
      * Close data source.
      *
      * @param dataSource data source to be closed
