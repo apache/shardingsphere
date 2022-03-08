@@ -56,8 +56,8 @@ public final class TrafficEngine {
         }
         List<String> instanceIds = getInstanceIdsByLabels(strategyRule.get().getLabels());
         if (!instanceIds.isEmpty()) {
-            String instanceId = 1 == instanceIds.size() ? instanceIds.iterator().next() 
-                    : strategyRule.get().getLoadBalancer().getInstanceId(strategyRule.get().getName(), instanceIds);
+            String instanceId = 1 == instanceIds.size() 
+                    ? instanceIds.iterator().next() : strategyRule.get().getLoadBalancer().getInstanceId(strategyRule.get().getName(), instanceIds);
             result.setInstanceId(instanceId);
         }
         return result;
