@@ -36,6 +36,8 @@ public final class ExecutorServiceManager {
     
     private final ListeningExecutorService executorService;
     
+    private static final ExecutorService SHUTDOWN_EXECUTOR = Executors.newSingleThreadExecutor(ExecutorThreadFactoryBuilder.build("Executor-Engine-Closer"));
+    
     public ExecutorServiceManager(final int executorSize) {
         this(executorSize, DEFAULT_NAME_FORMAT);
     }
@@ -53,13 +55,16 @@ public final class ExecutorServiceManager {
      * Close executor service.
      */
     public void close() {
-        try {
-            executorService.shutdown();
-            while (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
-                executorService.shutdownNow();
+        SHUTDOWN_EXECUTOR.execute(() -> {
+            try {
+                executorService.shutdown();
+                while (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                    executorService.shutdownNow();
+                }
+            } catch (final InterruptedException ex) {
+                Thread.currentThread().interrupt();
             }
-        } catch (final InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
+        });
+        SHUTDOWN_EXECUTOR.shutdownNow();
     }
 }
