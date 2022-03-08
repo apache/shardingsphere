@@ -72,7 +72,7 @@ alterShardingKeyGenerator
     ;
 
 dropShardingTableRule
-    : DROP SHARDING TABLE RULE tableName (COMMA tableName)*
+    : DROP SHARDING TABLE RULE existsClause? tableName (COMMA tableName)*
     ;
 
 dropShardingBindingTableRules
@@ -213,4 +213,8 @@ algorithmProperties
 
 algorithmProperty
     : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | IDENTIFIER | STRING)
+    ;
+
+existClause
+    : IF EXISTS
     ;
