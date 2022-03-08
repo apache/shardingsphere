@@ -65,6 +65,5 @@ public final class ExecutorServiceManager {
                 Thread.currentThread().interrupt();
             }
         });
-        SHUTDOWN_EXECUTOR.shutdownNow();
     }
 }
