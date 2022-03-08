@@ -34,9 +34,9 @@ public final class ShardingSphereResourceTest {
     public void assertClose() throws SQLException, IOException, InterruptedException {
         MockedDataSource dataSource = new MockedDataSource();
         new ShardingSphereResource(Collections.singletonMap("foo_ds", dataSource), mock(DataSourcesMetaData.class), mock(CachedDatabaseMetaData.class), mock(DatabaseType.class)).close(dataSource);
-        while (!dataSource.isClosed()) {
+        while (null == dataSource.getClosed() || !dataSource.getClosed()) {
             Thread.sleep(10L);
         }
-        assertTrue(dataSource.isClosed());
+        assertTrue(dataSource.getClosed());
     }
 }
