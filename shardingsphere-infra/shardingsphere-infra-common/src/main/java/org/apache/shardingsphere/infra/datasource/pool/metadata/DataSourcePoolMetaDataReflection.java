@@ -22,8 +22,7 @@ import lombok.SneakyThrows;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Data source pool meta data reflection.
@@ -33,47 +32,47 @@ public final class DataSourcePoolMetaDataReflection {
     
     private final DataSource targetDataSource;
     
+    private final DataSourcePoolFieldMetaData dataSourcePoolFieldMetaData;
+    
     /**
      * Get JDBC URL.
      *
-     * @return got JDBC URL
+     * @return JDBC URL
      */
     public String getJdbcUrl() {
-        return getFieldValue("jdbcUrl", "url");
+        return getFieldValue(dataSourcePoolFieldMetaData.getJdbcUrlFieldName());
     }
     
     /**
      * Get username.
      * 
-     * @return got username
+     * @return username
      */
     public String getUsername() {
-        return getFieldValue("username", "user");
+        return getFieldValue(dataSourcePoolFieldMetaData.getUsernameFieldName());
     }
     
     /**
      * Get password.
      *
-     * @return got password
+     * @return password
      */
     public String getPassword() {
-        return getFieldValue("password");
+        return getFieldValue(dataSourcePoolFieldMetaData.getPasswordFieldName());
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private <T> T getFieldValue(final String... fieldNames) {
-        for (String each : fieldNames) {
-            Optional<T> result = findFieldValue(each);
-            if (result.isPresent()) {
-                return result.get();
-            }
-        }
-        throw new ReflectiveOperationException(String.format("Can not find field names `%s`", Arrays.asList(fieldNames)));
+    /**
+     * Get JDBC connection properties.
+     * 
+     * @return JDBC connection properties
+     */
+    public Properties getJdbcConnectionProperties() {
+        return getFieldValue(dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
     }
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private <T> Optional<T> findFieldValue(final String fieldName) {
+    private <T> T getFieldValue(final String fieldName) {
         Class<?> dataSourceClass = targetDataSource.getClass();
         Field field = null;
         boolean isFound = false;
@@ -84,11 +83,11 @@ public final class DataSourcePoolMetaDataReflection {
             } catch (final ReflectiveOperationException ignored) {
                 dataSourceClass = dataSourceClass.getSuperclass();
                 if (Object.class == dataSourceClass) {
-                    return Optional.empty();
+                    return null;
                 }
             }
         }
         field.setAccessible(true);
-        return Optional.of((T) field.get(targetDataSource));
+        return (T) field.get(targetDataSource);
     }
 }

@@ -66,5 +66,6 @@ execute
     | createDimension
     | alterDimension
     | dropDimension
+    | createFunction
     ) SEMI_?
     ;

@@ -167,12 +167,14 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.TruncateStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterInstanceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterSQLParserRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterTrafficRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ApplyDistSQLStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearReadwriteSplittingHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearShardingHintStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.CountInstanceRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.CreateTrafficRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.DiscardDistSQLStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.DropTrafficRuleStatementTestCase;
@@ -198,12 +200,12 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowVariableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.UnlabelInstanceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ApplyScalingStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.DropScalingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.CheckScalingStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.DropScalingStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ResetScalingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.RestoreScalingSourceWritingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ShowScalingCheckAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.StopScalingSourceWritingStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ResetScalingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryConstructionRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryDefinitionRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryHeartbeatStatementTestCase;
@@ -887,6 +889,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-instance")
     private final List<ShowInstanceStatementTestCase> showInstanceStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "count-instance-rules")
+    private final List<CountInstanceRulesStatementTestCase> countInstanceRulesStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "clone")
     private final List<CloneStatementTestCase> cloneStatementTestCases = new LinkedList<>();
     
@@ -1044,7 +1049,10 @@ public final class SQLParserTestCases {
     private final List<LabelInstanceStatementTestCase> labelStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "unlabel-instance")
-    private final List<UnlabelInstanceStatementTestCase> unlabelStatementTestCases = new LinkedList<>();
+    private final List<UnlabelInstanceStatementTestCase> unlabelStatementTestCases = new LinkedList<>(); 
+    
+    @XmlElement(name = "alter-instance")
+    private final List<AlterInstanceStatementTestCase> alterInstanceStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "prepare-distsql")
     private final List<PrepareDistSQLStatementTestCase> prepareDistSQLStatementTestCases = new LinkedList<>();
@@ -1330,6 +1338,7 @@ public final class SQLParserTestCases {
         putAll(flushStatementTestCase, result);
         putAll(installPluginStatementTestCase, result);
         putAll(showInstanceStatementTestCases, result);
+        putAll(countInstanceRulesStatementTestCases, result);
         putAll(cloneStatementTestCases, result);
         putAll(showReadwriteSplittingReadResourcesStatementTestCases, result);
         putAll(uninstallComponentStatementTestCases, result);
@@ -1411,6 +1420,7 @@ public final class SQLParserTestCases {
         putAll(dropTrafficRuleStatementTestCases, result);
         putAll(labelStatementTestCases, result);
         putAll(unlabelStatementTestCases, result);
+        putAll(alterInstanceStatementTestCases, result);
         putAll(prepareDistSQLStatementTestCases, result);
         putAll(applyDistSQLStatementTestCases, result);
         putAll(discardDistSQLStatementTestCases, result);

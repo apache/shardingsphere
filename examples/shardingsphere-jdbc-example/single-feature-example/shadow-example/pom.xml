@@ -30,6 +30,7 @@
     <name>${project.artifactId}</name>
 
     <modules>
+        <module>shadow-spring-boot-jpa-example</module>
         <module>shadow-spring-namespace-mybatis-example</module>
         <module>shadow-spring-boot-mybatis-example</module>
         <module>shadow-raw-jdbc-example</module>

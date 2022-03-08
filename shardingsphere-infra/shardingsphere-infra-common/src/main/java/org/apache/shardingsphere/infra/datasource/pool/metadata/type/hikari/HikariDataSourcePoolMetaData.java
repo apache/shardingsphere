@@ -76,8 +76,8 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     }
     
     @Override
-    public HikariDataSourceJdbcUrlMetaData getJdbcUrlMetaData() {
-        return new HikariDataSourceJdbcUrlMetaData();
+    public HikariDataSourcePoolFieldMetaData getFieldMetaData() {
+        return new HikariDataSourcePoolFieldMetaData();
     }
     
     @Override

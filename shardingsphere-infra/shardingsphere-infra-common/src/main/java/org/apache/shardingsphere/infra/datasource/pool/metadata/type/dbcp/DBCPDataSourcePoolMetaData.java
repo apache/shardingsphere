@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.datasource.pool.metadata.type.dbcp;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -57,12 +58,17 @@ public final class DBCPDataSourcePoolMetaData implements DataSourcePoolMetaData 
     }
     
     @Override
-    public DBCPDataSourceJdbcUrlMetaData getJdbcUrlMetaData() {
-        return new DBCPDataSourceJdbcUrlMetaData();
+    public DBCPDataSourcePoolFieldMetaData getFieldMetaData() {
+        return new DBCPDataSourcePoolFieldMetaData();
     }
     
     @Override
     public String getType() {
         return "org.apache.commons.dbcp2.BasicDataSource";
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        return Arrays.asList("org.apache.commons.dbcp.BasicDataSource", "org.apache.tomcat.dbcp.dbcp2.BasicDataSource");
     }
 }

@@ -15,9 +15,13 @@
  * limitations under the License.
  */
 
-grammar TCLStatement;
+parser grammar TCLStatement;
 
 import DMLStatement;
+
+options {
+    tokenVocab = ModeLexer;
+}
 
 setTransaction
     : SET (SESSION CHARACTERISTICS AS)? TRANSACTION transactionModeList

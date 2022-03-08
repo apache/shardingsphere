@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-grammar DCLStatement;
+parser grammar DCLStatement;
 
 import DDLStatement;
+
+options {tokenVocab = ModeLexer;}
 
 grant
     : GRANT (privilegeClause | roleClause)

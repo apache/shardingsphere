@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-grammar StoreProcedure;
+parser grammar StoreProcedure;
 
 import BaseRule;
+
+options {tokenVocab = ModeLexer;}
 
 call
     : CALL funcName LP_ callClauses? RP_
