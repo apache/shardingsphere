@@ -20,8 +20,8 @@ package org.apache.shardingsphere.traffic.engine;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.traffic.context.TrafficContext;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.TrafficStrategyRule;
@@ -40,7 +40,7 @@ public final class TrafficEngine {
     
     private final TrafficRule trafficRule;
     
-    private final MetaDataContexts metaDataContexts;
+    private final InstanceContext instanceContext;
     
     /**
      * Dispatch.
@@ -69,11 +69,9 @@ public final class TrafficEngine {
     
     private List<String> getInstanceIdsByLabels(final Collection<String> labels) {
         List<String> result = new ArrayList<>();
-        if (metaDataContexts.getMetaDataPersistService().isPresent()) {
-            Collection<ComputeNodeInstance> instances = metaDataContexts.getMetaDataPersistService().get().getComputeNodePersistService().loadComputeNodeInstances(InstanceType.PROXY, labels);
-            for (ComputeNodeInstance each : instances) {
-                result.add(each.getInstanceDefinition().getInstanceId().getId());
-            }
+        Collection<ComputeNodeInstance> instances = instanceContext.getComputeNodeInstances(InstanceType.PROXY, labels);
+        for (ComputeNodeInstance each : instances) {
+            result.add(each.getInstanceDefinition().getInstanceId().getId());
         }
         return result;
     }

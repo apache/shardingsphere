@@ -65,6 +65,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Statemen
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 import org.apache.shardingsphere.infra.hint.HintManager;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -234,7 +235,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private TrafficContext createTrafficContext(final LogicSQL logicSQL) {
-        return null != trafficRule ? new TrafficEngine(trafficRule, metaDataContexts).dispatch(logicSQL, connection.isHoldTransaction()) : new TrafficContext();
+        InstanceContext instanceContext = connection.getContextManager().getInstanceContext();
+        return null != trafficRule ? new TrafficEngine(trafficRule, instanceContext).dispatch(logicSQL, connection.isHoldTransaction()) : new TrafficContext();
     }
     
     private void resetParameters() throws SQLException {
