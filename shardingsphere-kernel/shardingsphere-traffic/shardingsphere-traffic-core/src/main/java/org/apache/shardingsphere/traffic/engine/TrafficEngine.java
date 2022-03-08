@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.traffic.context.TrafficContext;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.TrafficStrategyRule;
-import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,8 +56,9 @@ public final class TrafficEngine {
         }
         List<String> instanceIds = getInstanceIdsByLabels(strategyRule.get().getLabels());
         if (!instanceIds.isEmpty()) {
-            TrafficLoadBalanceAlgorithm loadBalancer = strategyRule.get().getLoadBalancer();
-            result.setInstanceId(loadBalancer.getInstanceId(strategyRule.get().getName(), instanceIds));
+            String instanceId = 1 == instanceIds.size() ? instanceIds.iterator().next() 
+                    : strategyRule.get().getLoadBalancer().getInstanceId(strategyRule.get().getName(), instanceIds);
+            result.setInstanceId(instanceId);
         }
         return result;
     }

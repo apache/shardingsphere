@@ -236,7 +236,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private TrafficContext createTrafficContext(final LogicSQL logicSQL) {
         InstanceContext instanceContext = connection.getContextManager().getInstanceContext();
-        return null != trafficRule ? new TrafficEngine(trafficRule, instanceContext).dispatch(logicSQL, connection.isHoldTransaction()) : new TrafficContext();
+        return null != trafficRule && !trafficRule.getStrategyRules().isEmpty() 
+                ? new TrafficEngine(trafficRule, instanceContext).dispatch(logicSQL, connection.isHoldTransaction()) : new TrafficContext();
     }
     
     private void resetParameters() throws SQLException {
