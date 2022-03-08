@@ -44,7 +44,7 @@ alterDatabaseDiscoveryHeartbeat
     ;
 
 dropDatabaseDiscoveryType
-    : DROP DB_DISCOVERY TYPE discoveryTypeName (COMMA discoveryTypeName)*
+    : DROP DB_DISCOVERY TYPE existClause? discoveryTypeName (COMMA discoveryTypeName)*
     ;
 
 dropDatabaseDiscoveryHeartbeat

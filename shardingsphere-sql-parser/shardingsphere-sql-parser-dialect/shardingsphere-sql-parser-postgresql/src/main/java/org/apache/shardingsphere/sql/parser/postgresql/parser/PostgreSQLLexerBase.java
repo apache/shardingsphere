@@ -15,20 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.destroyer.impl;
+package org.apache.shardingsphere.sql.parser.postgresql.parser;
 
-import com.zaxxer.hikari.HikariDataSource;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.Lexer;
 
-import org.junit.Test;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
-public final class HikariDataSourcePoolDestroyerTest {
-
-    @Test(timeout = 60000L)
-    public void assertDestroy() throws InterruptedException {
-        HikariDataSource dataSource = new HikariDataSource();
-        new HikariDataSourcePoolDestroyer().destroy(dataSource);
-        while (!dataSource.isClosed()) {
-            Thread.sleep(10L);
-        }
+/**
+ * Postgre SQL Lexer Base.
+ */
+public abstract class PostgreSQLLexerBase extends Lexer {
+    private final Deque<String> tags = new ArrayDeque<>();
+    
+    protected PostgreSQLLexerBase(final CharStream input) {
+        super(input);
+    }
+    
+    /**
+     * Push tag.
+     */
+    public void pushTag() {
+        tags.push(getText());
+    }
+    
+    /**
+     * Judge is tag.
+     *
+     * @return is tag
+     */
+    public boolean isTag() {
+        return getText().equals(tags.peek());
+    }
+    
+    /**
+     * Pop tag.
+     */
+    public void popTag() {
+        tags.pop();
     }
 }

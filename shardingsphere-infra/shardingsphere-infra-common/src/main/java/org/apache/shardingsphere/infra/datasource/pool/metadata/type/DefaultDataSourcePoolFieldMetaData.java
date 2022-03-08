@@ -15,38 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.destroyer.impl;
+package org.apache.shardingsphere.infra.datasource.pool.metadata.type;
 
-import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
-
-import javax.sql.DataSource;
-import java.sql.SQLException;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFieldMetaData;
 
 /**
- * Default data source pool destroyer.
+ * Default data source pool field meta data.
  */
-public final class DefaultDataSourcePoolDestroyer implements DataSourcePoolDestroyer {
+public final class DefaultDataSourcePoolFieldMetaData implements DataSourcePoolFieldMetaData {
     
     @Override
-    public void destroy(final DataSource dataSource) throws SQLException {
-        if (dataSource instanceof AutoCloseable) {
-            try {
-                ((AutoCloseable) dataSource).close();
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-                throw new SQLException(ex);
-            }
-        }
+    public String getUsernameFieldName() {
+        return "username";
     }
     
     @Override
-    public String getType() {
-        return "Default";
+    public String getPasswordFieldName() {
+        return "password";
     }
     
     @Override
-    public boolean isDefault() {
-        return true;
+    public String getJdbcUrlFieldName() {
+        return "url";
+    }
+    
+    @Override
+    public String getJdbcUrlPropertiesFieldName() {
+        return null;
     }
 }

@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
 @Getter
+@Setter
 public abstract class DropRuleStatementTestCase extends SQLParserTestCase {
     
     @XmlAttribute(name = "contains-exists-clause")

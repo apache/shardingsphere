@@ -15,10 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.resource.fixture;
+lexer grammar ModeLexer;
 
-import javax.sql.DataSource;
-import java.io.Closeable;
+import Symbol, PostgreSQLKeyword, Keyword, Comments, Literals;
 
-public interface CloseableDataSource extends DataSource, Closeable {
-}
+BEGIN_DOLLAR_STRING_CONSTANT
+   : '$' TAG? '$'
+   {pushTag();} -> pushMode (DOLLAR_QUOTED_STRING_MODE)
+   ;
+   
+fragment TAG
+   : IDENTIFIER_START_CHAR STRICT_IDENTIFIER_CHAR*
+   ;
+   
+mode DOLLAR_QUOTED_STRING_MODE;
+DOLLAR_TEXT
+   : ~ '$'+
+   | '$' ~ '$'*
+   ;
+
+END_DOLLAR_STRING_CONSTANT
+   : ('$' TAG? '$')
+   {isTag()}?
+   {popTag();} -> popMode
+   ;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.datasource.pool.metadata.type.hikari;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFieldMetaData;
 
 /**
- * Hikari data source JDBC URL meta data.
+ * Hikari data source pool field meta data.
  */
 public final class HikariDataSourcePoolFieldMetaData implements DataSourcePoolFieldMetaData {
     
