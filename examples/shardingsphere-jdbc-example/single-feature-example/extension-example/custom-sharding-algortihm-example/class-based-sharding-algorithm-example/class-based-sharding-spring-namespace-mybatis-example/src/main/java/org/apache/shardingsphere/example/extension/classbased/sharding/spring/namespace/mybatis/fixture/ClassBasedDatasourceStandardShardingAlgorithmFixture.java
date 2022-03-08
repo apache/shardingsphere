@@ -44,7 +44,7 @@ public final class ClassBasedDatasourceStandardShardingAlgorithmFixture implemen
         shardingCount = Ints.tryParse(props.getProperty(SHARDING_COUNT));
         Preconditions.checkArgument(null != shardingCount, "%s is not valid.", SHARDING_COUNT);
     }
-
+    
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
         for (String each : availableTargetNames) {
@@ -54,12 +54,12 @@ public final class ClassBasedDatasourceStandardShardingAlgorithmFixture implemen
         }
         return null;
     }
-
+    
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
         return availableTargetNames;
     }
-
+    
     @Override
     public String getType() {
         return null;

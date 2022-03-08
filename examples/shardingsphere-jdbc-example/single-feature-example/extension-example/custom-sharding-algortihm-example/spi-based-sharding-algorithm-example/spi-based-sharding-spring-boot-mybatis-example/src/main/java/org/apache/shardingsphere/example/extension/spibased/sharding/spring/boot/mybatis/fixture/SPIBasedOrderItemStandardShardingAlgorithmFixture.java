@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 import java.util.Collection;
 
 public final class SPIBasedOrderItemStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Long> {
-
+    
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Long> shardingValue) {
         for (String each : availableTargetNames) {
@@ -34,20 +34,20 @@ public final class SPIBasedOrderItemStandardShardingAlgorithmFixture implements 
         }
         return null;
     }
-
-    private String shardingSuffix(Long shardingValue) {
+    
+    private String shardingSuffix(final Long shardingValue) {
         return "_" + (shardingValue % 2);
     }
-
+    
     @Override
-    public Collection<String> doSharding
-            (Collection<String> availableTargetNames, RangeShardingValue<Long> shardingValue) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Long> shardingValue) {
         return availableTargetNames;
     }
-
+    
     @Override
-    public void init() {}
-
+    public void init() {
+    }
+    
     @Override
     public String getType() {
         return "T_ORDER_ITEM_SPI_BASED";

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 import java.util.Collection;
 
 public final class SPIBasedDatasourceStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
-
+    
     @Override
     public String doSharding(final Collection<String> dataSourceNames, final PreciseShardingValue<Integer> shardingValue) {
         for (String each : dataSourceNames) {
@@ -34,19 +34,20 @@ public final class SPIBasedDatasourceStandardShardingAlgorithmFixture implements
         }
         return null;
     }
-
-    private String shardingSuffix(Integer shardingValue) {
+    
+    private String shardingSuffix(final Integer shardingValue) {
         return "_" + (shardingValue % 2);
     }
-
+    
     @Override
-    public Collection<String> doSharding(Collection<String> availableTargetNames, RangeShardingValue<Integer> shardingValue) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
         return availableTargetNames;
     }
-
+    
     @Override
-    public void init() {}
-
+    public void init() {
+    }
+    
     @Override
     public String getType() {
         return "DATASOURCE_SPI_BASED";
