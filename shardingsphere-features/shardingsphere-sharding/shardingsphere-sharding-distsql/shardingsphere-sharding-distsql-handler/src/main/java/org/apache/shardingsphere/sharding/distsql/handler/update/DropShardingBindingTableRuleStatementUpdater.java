@@ -99,10 +99,10 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
         if (bindingTableRules.isEmpty()) {
             bindingTableRules = buildBindingTableRule(currentRuleConfig);
         }
-        return !getExistBindingGroups(sqlStatement, bindingTableRules).isEmpty();
+        return !getExistedBindingGroups(sqlStatement, bindingTableRules).isEmpty();
     }
     
-    private Collection<String> getExistBindingGroups(final DropShardingBindingTableRulesStatement sqlStatement, final Map<String, String> bindingTableRules) {
+    private Collection<String> getExistedBindingGroups(final DropShardingBindingTableRulesStatement sqlStatement, final Map<String, String> bindingTableRules) {
         Collection<String> result = new LinkedList<>();
         for (BindingTableRuleSegment each : sqlStatement.getRules()) {
             if (isToBeDroppedRuleExists(each, bindingTableRules)) {
