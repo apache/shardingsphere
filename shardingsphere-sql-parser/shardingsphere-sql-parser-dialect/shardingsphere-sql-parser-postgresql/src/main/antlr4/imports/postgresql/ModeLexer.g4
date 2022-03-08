@@ -19,24 +19,23 @@ lexer grammar ModeLexer;
 
 import Symbol, PostgreSQLKeyword, Keyword, Comments, Literals;
 
-BeginDollarStringConstant
-   : '$' Tag? '$'
-   {pushTag();} -> pushMode (DollarQuotedStringMode)
+BEGIN_DOLLAR_STRING_CONSTANT
+   : '$' TAG? '$'
+   {pushTag();} -> pushMode (DOLLAR_QUOTED_STRING_MODE)
    ;
    
-fragment Tag
-   : IdentifierStartChar StrictIdentifierChar*
+fragment TAG
+   : IDENTIFIER_START_CHAR STRICT_IDENTIFIER_CHAR*
    ;
    
-mode DollarQuotedStringMode;
-DollarText
+mode DOLLAR_QUOTED_STRING_MODE;
+DOLLAR_TEXT
    : ~ '$'+
    | '$' ~ '$'*
    ;
 
-EndDollarStringConstant
-   : ('$' Tag? '$')
+END_DOLLAR_STRING_CONSTANT
+   : ('$' TAG? '$')
    {isTag()}?
    {popTag();} -> popMode
    ;
-   

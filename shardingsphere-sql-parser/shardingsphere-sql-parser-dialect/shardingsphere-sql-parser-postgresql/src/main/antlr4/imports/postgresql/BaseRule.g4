@@ -17,7 +17,9 @@
 
 parser grammar BaseRule;
 
-options {tokenVocab = ModeLexer;}
+options {
+    tokenVocab = ModeLexer;
+}
 
 parameterMarker
     : QUESTION_ literalsType?
@@ -873,7 +875,7 @@ funcName
 aexprConst
     : NUMBER_
     | STRING_
-    | BeginDollarStringConstant DollarText* EndDollarStringConstant
+    | BEGIN_DOLLAR_STRING_CONSTANT DOLLAR_TEXT* END_DOLLAR_STRING_CONSTANT
     | funcName STRING_
     | funcName LP_ funcArgList sortClause? RP_ STRING_
     | TRUE

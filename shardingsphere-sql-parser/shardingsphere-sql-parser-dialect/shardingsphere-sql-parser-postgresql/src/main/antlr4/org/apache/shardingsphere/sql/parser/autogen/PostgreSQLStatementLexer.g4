@@ -20,7 +20,7 @@ lexer grammar PostgreSQLStatementLexer;
 import ModeLexer;
 
 options {
-superClass = PostgreSQLLexerBase;
+    superClass = PostgreSQLLexerBase;
 }
 
 @header {

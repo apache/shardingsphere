@@ -19,7 +19,9 @@ parser grammar PostgreSQLStatementParser;
 
 import TCLStatement, DCLStatement, DALStatement, StoreProcedure;
 
-options {tokenVocab = PostgreSQLStatementLexer;}
+options {
+    tokenVocab = PostgreSQLStatementLexer;
+}
 
 execute
     : (select
