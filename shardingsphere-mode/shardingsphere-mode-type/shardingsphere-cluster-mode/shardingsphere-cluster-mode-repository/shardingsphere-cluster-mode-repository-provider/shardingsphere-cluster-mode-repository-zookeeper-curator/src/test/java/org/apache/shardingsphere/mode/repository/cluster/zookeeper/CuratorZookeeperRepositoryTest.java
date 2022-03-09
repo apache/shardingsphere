@@ -54,7 +54,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -78,9 +77,6 @@ public final class CuratorZookeeperRepositoryTest {
     private static final CuratorZookeeperRepository REPOSITORY = new CuratorZookeeperRepository();
     
     private static final String SERVER_LISTS = "127.0.0.1:2181";
-    
-    @Mock
-    private Map<String, CuratorCache> caches;
     
     @Mock
     private CuratorCache curatorCache;
@@ -251,10 +247,9 @@ public final class CuratorZookeeperRepositoryTest {
     }
     
     private void mockCache() throws Exception {
-        Field cachesFiled = CuratorZookeeperRepository.class.getDeclaredField("caches");
+        Field cachesFiled = CuratorZookeeperRepository.class.getDeclaredField("curatorCache");
         cachesFiled.setAccessible(true);
-        cachesFiled.set(REPOSITORY, caches);
-        when(caches.get(anyString())).thenReturn(curatorCache);
+        cachesFiled.set(REPOSITORY, curatorCache);
         when(curatorCache.listenable()).thenReturn(listenable);
     }
     

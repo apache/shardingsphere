@@ -86,12 +86,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         String tableNameSuffix = String.valueOf(doSharding(parseDate(shardingValue.getValue())));
-        for (String each : availableTargetNames) {
-            if (each.endsWith(tableNameSuffix)) {
-                return each;
-            }
-        }
-        return null;
+        return findMatchedTargetName(availableTargetNames, tableNameSuffix, shardingValue.getDataNodeInfo()).orElse(null);
     }
     
     @Override
@@ -100,15 +95,8 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
         int firstPartition = getFirstPartition(shardingValue.getValueRange());
         int lastPartition = getLastPartition(shardingValue.getValueRange());
         for (int i = firstPartition; i <= lastPartition; i++) {
-            for (String each : availableTargetNames) {
-                if (each.endsWith(String.valueOf(i))) {
-                    result.add(each);
-                    break;
-                }
-                if (result.size() == availableTargetNames.size()) {
-                    return result;
-                }
-            }
+            String suffix = String.valueOf(i);
+            findMatchedTargetName(availableTargetNames, suffix, shardingValue.getDataNodeInfo()).ifPresent(result::add);
         }
         return result;
     }

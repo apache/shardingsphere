@@ -29,10 +29,13 @@ import java.util.Properties;
  */
 public final class SQLHintExtractor {
     
+    private static final SQLHintProperties DEFAULT_SQL_HINT_PROPERTIES = new SQLHintProperties(new Properties());
+    
     private final SQLHintProperties sqlHintProperties;
     
     public SQLHintExtractor(final SQLStatement sqlStatement) {
-        sqlHintProperties = sqlStatement instanceof AbstractSQLStatement ? extract((AbstractSQLStatement) sqlStatement) : new SQLHintProperties(new Properties());
+        sqlHintProperties = sqlStatement instanceof AbstractSQLStatement && !((AbstractSQLStatement) sqlStatement).getCommentSegments().isEmpty() ? extract((AbstractSQLStatement) sqlStatement)
+                : DEFAULT_SQL_HINT_PROPERTIES;
     }
     
     private SQLHintProperties extract(final AbstractSQLStatement statement) {

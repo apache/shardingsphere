@@ -167,16 +167,21 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.TruncateStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterInstanceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterSQLParserRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterTrafficRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ApplyDistSQLStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearReadwriteSplittingHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearShardingHintStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.CountInstanceRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.CreateTrafficRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.DiscardDistSQLStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.DropTrafficRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ExportSchemaConfigurationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.LabelInstanceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ParseStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.PrepareDistSQLStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.PreviewStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.RefreshTableMetadataStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetReadwriteSplittingHintStatementTestCase;
@@ -196,6 +201,8 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.UnlabelInstanceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ApplyScalingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.CheckScalingStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.DropScalingStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ResetScalingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.RestoreScalingSourceWritingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ShowScalingCheckAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.StopScalingSourceWritingStatementTestCase;
@@ -247,6 +254,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropResourceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShadowAlgorithmStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShadowRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingAlgorithmStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingBroadcastTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingKeyGeneratorStatementTestCase;
@@ -268,6 +276,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingScalingRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableNodesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableRulesUsedAlgorithmStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableRulesUsedKeyGeneratorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowSingleTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowSingleTableStatementTestCase;
@@ -762,7 +771,13 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "apply-scaling")
     private final List<ApplyScalingStatementTestCase> applyScalingStatementTestCases = new LinkedList<>();
-    
+
+    @XmlElement(name = "reset-scaling")
+    private final List<ResetScalingStatementTestCase> resetScalingStatementTestCases = new LinkedList<>();
+
+    @XmlElement(name = "drop-scaling")
+    private final List<DropScalingStatementTestCase> dropScalingStatementTestCases = new LinkedList<>();
+
     @XmlElement(name = "create-sharding-scaling-rule")
     private final List<CreateShardingScalingRuleStatementTestCase> createShardingScalingRuleStatementTestCases = new LinkedList<>();
     
@@ -873,6 +888,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-instance")
     private final List<ShowInstanceStatementTestCase> showInstanceStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "count-instance-rules")
+    private final List<CountInstanceRulesStatementTestCase> countInstanceRulesStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "clone")
     private final List<CloneStatementTestCase> cloneStatementTestCases = new LinkedList<>();
@@ -1031,7 +1049,19 @@ public final class SQLParserTestCases {
     private final List<LabelInstanceStatementTestCase> labelStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "unlabel-instance")
-    private final List<UnlabelInstanceStatementTestCase> unlabelStatementTestCases = new LinkedList<>();
+    private final List<UnlabelInstanceStatementTestCase> unlabelStatementTestCases = new LinkedList<>(); 
+    
+    @XmlElement(name = "alter-instance")
+    private final List<AlterInstanceStatementTestCase> alterInstanceStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "prepare-distsql")
+    private final List<PrepareDistSQLStatementTestCase> prepareDistSQLStatementTestCases = new LinkedList<>();
+
+    @XmlElement(name = "apply-distsql")
+    private final List<ApplyDistSQLStatementTestCase> applyDistSQLStatementTestCases = new LinkedList<>();
+
+    @XmlElement(name = "discard-distsql")
+    private final List<DiscardDistSQLStatementTestCase> discardDistSQLStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-table-metadata")
     private final List<ShowTableMetadataStatementTestCase> showTableMetadataStatementTestCases = new LinkedList<>();
@@ -1110,6 +1140,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-rules-used-resource")
     private final List<ShowRulesUsedResourceStatementTestCase> showRulesUsedResourceStatementTestCases = new LinkedList<>();
+
+    @XmlElement(name = "show-sharding-table-rules-used-algorithm")
+    private final List<ShowShardingTableRulesUsedAlgorithmStatementTestCase> showShardingTableRulesUsedAlgorithmStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-sharding-table-rules-used-key-generator")
     private final List<ShowShardingTableRulesUsedKeyGeneratorStatementTestCase> showShardingTableRulesUsedKeyGeneratorStatementTestCases = new LinkedList<>();
@@ -1119,6 +1152,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "set-user")
     private final List<SetUserStatementTestCase> setUserStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-sharding-algorithm")
+    private final List<DropShardingAlgorithmStatementTestCase> dropShardingAlgorithmStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -1264,6 +1300,8 @@ public final class SQLParserTestCases {
         putAll(stopScalingSourceWritingStatementTestCase, result);
         putAll(restoreScalingSourceWritingStatementTestCase, result);
         putAll(applyScalingStatementTestCases, result);
+        putAll(resetScalingStatementTestCases, result);
+        putAll(dropScalingStatementTestCases, result);
         putAll(createShardingScalingRuleStatementTestCases, result);
         putAll(dropShardingScalingRuleStatementTestCases, result);
         putAll(enableShardingScalingRuleStatementTestCases, result);
@@ -1300,6 +1338,7 @@ public final class SQLParserTestCases {
         putAll(flushStatementTestCase, result);
         putAll(installPluginStatementTestCase, result);
         putAll(showInstanceStatementTestCases, result);
+        putAll(countInstanceRulesStatementTestCases, result);
         putAll(cloneStatementTestCases, result);
         putAll(showReadwriteSplittingReadResourcesStatementTestCases, result);
         putAll(uninstallComponentStatementTestCases, result);
@@ -1381,6 +1420,10 @@ public final class SQLParserTestCases {
         putAll(dropTrafficRuleStatementTestCases, result);
         putAll(labelStatementTestCases, result);
         putAll(unlabelStatementTestCases, result);
+        putAll(alterInstanceStatementTestCases, result);
+        putAll(prepareDistSQLStatementTestCases, result);
+        putAll(applyDistSQLStatementTestCases, result);
+        putAll(discardDistSQLStatementTestCases, result);
         putAll(helpStatementTestCases, result);
         putAll(showUnusedShardingAlgorithmsStatementTestCases, result);
         putAll(showUnusedShardingKeyGeneratorsStatementTestCases, result);
@@ -1397,8 +1440,10 @@ public final class SQLParserTestCases {
         putAll(exportSchemaConfigurationStatementTestCases, result);
         putAll(showRulesUsedResourceStatementTestCases, result);
         putAll(preparedStatementTestCases, result);
+        putAll(showShardingTableRulesUsedAlgorithmStatementTestCases, result);
         putAll(showShardingTableRulesUsedKeyGeneratorStatementTestCases, result);
         putAll(setUserStatementTestCases, result);
+        putAll(dropShardingAlgorithmStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

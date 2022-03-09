@@ -31,4 +31,9 @@ import java.util.Collection;
 public final class DropDatabaseDiscoveryTypeStatement extends DropRuleStatement {
     
     private final Collection<String> types;
+    
+    public DropDatabaseDiscoveryTypeStatement(final Collection<String> types, final boolean containsExistClause) {
+        setContainsExistClause(containsExistClause);
+        this.types = types;
+    }
 }

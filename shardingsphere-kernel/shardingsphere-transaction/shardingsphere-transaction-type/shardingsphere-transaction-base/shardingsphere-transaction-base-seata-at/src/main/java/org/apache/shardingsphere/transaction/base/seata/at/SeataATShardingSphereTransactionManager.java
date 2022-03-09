@@ -118,7 +118,7 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
 
     @Override
     @SneakyThrows(TransactionException.class)
-    public void commit() {
+    public void commit(final boolean rollbackOnly) {
         Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled.");
         try {
             SeataTransactionHolder.get().commit();

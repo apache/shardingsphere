@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.binder.segment.insert.values.expression.D
 import org.apache.shardingsphere.infra.binder.segment.insert.values.expression.DerivedSimpleExpressionSegment;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
@@ -130,7 +131,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
             if (encryptor.isPresent()) {
                 int columnIndex = useDefaultInsertColumnsToken.map(sqlToken -> ((UseDefaultInsertColumnsToken) sqlToken).getColumns().indexOf(columnName))
                         .orElseGet(() -> insertStatementContext.getColumnNames().indexOf(columnName));
-                Object originalValue = insertValueContext.getValue(columnIndex);
+                Object originalValue = insertValueContext.getValue(columnIndex).orElseThrow(() -> new ShardingSphereException("Not support for encrypt!"));
                 EncryptContext encryptContext = EncryptContextBuilder.build(schemaName, tableName, columnName, encryptRule);
                 addPlainColumn(insertValueToken, columnIndex, encryptContext, insertValueContext, originalValue);
                 addAssistedQueryColumn(insertValueToken, encryptor.get(), columnIndex, encryptContext, insertValueContext, originalValue);

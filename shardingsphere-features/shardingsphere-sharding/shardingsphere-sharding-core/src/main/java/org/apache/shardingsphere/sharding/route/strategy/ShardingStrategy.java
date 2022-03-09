@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.strategy;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.sharding.api.sharding.common.DataNodeInfo;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 

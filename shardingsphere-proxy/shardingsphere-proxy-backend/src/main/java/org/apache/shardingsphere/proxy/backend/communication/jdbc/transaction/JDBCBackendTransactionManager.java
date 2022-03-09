@@ -71,10 +71,11 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
                 if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
                     localTransactionManager.commit();
                 } else {
-                    shardingSphereTransactionManager.commit();
+                    shardingSphereTransactionManager.commit(connection.getConnectionSession().getTransactionStatus().isRollbackOnly());
                 }
             } finally {
                 connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
+                connection.getConnectionSession().getTransactionStatus().setRollbackOnly(false);
                 TransactionHolder.clear();
             }
         }
@@ -92,6 +93,7 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
                 }
             } finally {
                 connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
+                connection.getConnectionSession().getTransactionStatus().setRollbackOnly(false);
                 TransactionHolder.clear();
             }
         }

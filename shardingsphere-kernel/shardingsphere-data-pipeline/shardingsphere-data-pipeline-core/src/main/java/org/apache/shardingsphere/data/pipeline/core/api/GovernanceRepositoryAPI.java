@@ -94,9 +94,19 @@ public interface GovernanceRepositoryAPI {
     void persist(String key, String value);
     
     /**
-     * Renew job status.
-     * @param status status
+     * Get sharding items of job.
+     *
      * @param jobId job id
+     * @return sharding items
      */
-    void renewJobStatus(JobStatus status, String jobId);
+    List<Integer> getShardingItems(String jobId);
+    
+    /**
+     * Update sharding job status.
+     *
+     * @param jobId job id
+     * @param shardingItem sharding item
+     * @param status status
+     */
+    void updateShardingJobStatus(String jobId, int shardingItem, JobStatus status);
 }

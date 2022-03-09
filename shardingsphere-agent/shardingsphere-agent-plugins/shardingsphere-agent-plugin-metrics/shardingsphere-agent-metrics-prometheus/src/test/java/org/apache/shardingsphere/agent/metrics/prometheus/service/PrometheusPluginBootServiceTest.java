@@ -23,6 +23,7 @@ import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.mode.manager.memory.workerid.generator.MemoryWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -45,8 +46,8 @@ public final class PrometheusPluginBootServiceTest {
     @SneakyThrows
     @Test
     public void assertStart() {
-        ProxyContext.getInstance().getContextManager().init(mock(MetaDataContexts.class), mock(TransactionContexts.class), new InstanceContext(new ComputeNodeInstance(), 
-                new MemoryWorkerIdGenerator(), new ModeConfiguration("Memory", null, false)));
+        ProxyContext.getInstance().getContextManager().init(mock(MetaDataContexts.class), mock(TransactionContexts.class), 
+                new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new MemoryWorkerIdGenerator(), new ModeConfiguration("Memory", null, false)));
         Properties props = new Properties();
         props.setProperty("JVM_INFORMATION_COLLECTOR_ENABLED", "true");
         PluginConfiguration configuration = new PluginConfiguration("localhost", 8090, "", props);

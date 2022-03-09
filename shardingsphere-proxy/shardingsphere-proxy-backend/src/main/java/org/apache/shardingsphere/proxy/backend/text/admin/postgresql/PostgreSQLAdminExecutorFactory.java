@@ -20,16 +20,20 @@ package org.apache.shardingsphere.proxy.backend.text.admin.postgresql;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorFactory;
+import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor.PostgreSQLSetCharsetExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor.SelectDatabaseExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor.SelectTableExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -71,6 +75,9 @@ public final class PostgreSQLAdminExecutorFactory implements DatabaseAdminExecut
                 return Optional.of(new DefaultDatabaseMetadataExecutor(sql));
             }
         }
+        if (sqlStatement instanceof SetStatement && isSetClientEncoding((SetStatement) sqlStatement)) {
+            return Optional.of(new PostgreSQLSetCharsetExecutor((SetStatement) sqlStatement));
+        }
         return Optional.empty();
     }
     
@@ -90,6 +97,11 @@ public final class PostgreSQLAdminExecutorFactory implements DatabaseAdminExecut
         extractor.getTableContext().addAll(subQueryTableSegment);
         return extractor.getTableContext().stream().filter(each -> each instanceof SimpleTableSegment)
                 .map(each -> ((SimpleTableSegment) each).getTableName().getIdentifier().getValue()).collect(Collectors.toCollection(LinkedList::new));
+    }
+    
+    private boolean isSetClientEncoding(final SetStatement setStatement) {
+        Iterator<VariableAssignSegment> iterator = setStatement.getVariableAssigns().iterator();
+        return iterator.hasNext() && "client_encoding".equalsIgnoreCase(iterator.next().getVariable().getVariable());
     }
     
     @Override

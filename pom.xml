@@ -67,7 +67,7 @@
         
         <netty.version>4.1.73.Final</netty.version>
         <commons-lang3.version>3.8</commons-lang3.version>
-        <commons-codec.version>1.10</commons-codec.version>
+        <commons-codec.version>1.15</commons-codec.version>
         <commons-cli.version>1.4</commons-cli.version>
         <commons-collections4.version>4.2</commons-collections4.version>
         <commons-io.version>2.8.0</commons-io.version>
@@ -96,11 +96,10 @@
         
         <hikari-cp.version>3.4.2</hikari-cp.version>
         <commons-dbcp2.version>2.2.0</commons-dbcp2.version>
-        <tomcat.version>10.0.16</tomcat.version>
         <commons-pool.version>1.6</commons-pool.version>
         <h2.version>1.4.196</h2.version>
         <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
-        <postgresql.version>42.3.2</postgresql.version>
+        <postgresql.version>42.3.3</postgresql.version>
         <opengauss.version>2.0.1-compatibility</opengauss.version>
         <mssql.version>6.1.7.jre8-preview</mssql.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
@@ -433,12 +432,6 @@
             </dependency>
             
             <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
-                <version>${h2.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql-connector-java.version}</version>
@@ -448,6 +441,12 @@
                 <groupId>org.mariadb.jdbc</groupId>
                 <artifactId>mariadb-java-client</artifactId>
                 <version>${mariadb-java-client.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -555,12 +554,6 @@
                         <artifactId>commons-pool</artifactId>
                     </exclusion>
                 </exclusions>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.tomcat</groupId>
-                <artifactId>tomcat-dbcp</artifactId>
-                <version>${tomcat.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

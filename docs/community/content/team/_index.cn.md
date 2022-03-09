@@ -57,6 +57,7 @@ chapter = true
 | 李国平 | LeeGuoPing     |
 | 赵锦超 | zjcnb          |
 | 陈出新 | tuichenchuxin  |
+| 汪亮达 | Liangda-w      |
 
 ## 贡献者
 

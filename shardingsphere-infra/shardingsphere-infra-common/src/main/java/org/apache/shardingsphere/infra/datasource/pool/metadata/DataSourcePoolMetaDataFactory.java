@@ -41,7 +41,6 @@ public final class DataSourcePoolMetaDataFactory {
      * @param dataSourceClassName data source class name
      * @return new instance of data source pool meta data
      */
-    @SuppressWarnings("rawtypes")
     public static Optional<DataSourcePoolMetaData> newInstance(final String dataSourceClassName) {
         return TypedSPIRegistry.findRegisteredService(DataSourcePoolMetaData.class, dataSourceClassName, new Properties());
     }

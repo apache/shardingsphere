@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceS
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceDefinitionViolationException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceInUsedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -160,6 +161,23 @@ public final class DropResourceBackendHandlerTest {
         verify(contextManager).dropResource("test", dropResourceStatement.getNames());
     }
     
+    @Test
+    public void assertExecuteWithIfExists() throws ResourceDefinitionViolationException {
+        DropResourceStatement dropResourceStatement = createDropResourceStatementWithIfExists();
+        ResponseHeader responseHeader = dropResourceBackendHandler.execute("test", dropResourceStatement);
+        assertTrue(responseHeader instanceof UpdateResponseHeader);
+        verify(contextManager).dropResource("test", dropResourceStatement.getNames());
+    }
+    
+    @Test(expected = ResourceInUsedException.class)
+    public void assertResourceNameInUseWithIfExists() throws ResourceDefinitionViolationException {
+        when(ruleMetaData.getRules()).thenReturn(Collections.singleton(shadowRule));
+        when(shadowRule.getType()).thenReturn("ShadowRule");
+        when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("test0")));
+        DropResourceStatement dropResourceStatement = createDropResourceStatementWithIfExists();
+        dropResourceBackendHandler.execute("test", dropResourceStatement);
+    }
+    
     private Map<String, DataSource> getDataSourceMapForSupportRemove() {
         Map<String, DataSource> result = new LinkedHashMap<>();
         result.put("test0", dataSource);
@@ -172,5 +190,9 @@ public final class DropResourceBackendHandlerTest {
     
     private DropResourceStatement createDropResourceStatementIgnoreSingleTables() {
         return new DropResourceStatement(Collections.singleton("test0"), true);
+    }
+    
+    private DropResourceStatement createDropResourceStatementWithIfExists() {
+        return new DropResourceStatement(true, Collections.singleton("test0"), true);
     }
 }

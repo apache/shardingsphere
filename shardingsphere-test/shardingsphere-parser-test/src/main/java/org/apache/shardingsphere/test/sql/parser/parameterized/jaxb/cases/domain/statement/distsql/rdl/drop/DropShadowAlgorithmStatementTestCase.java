@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,7 +30,11 @@ import java.util.List;
  * Drop shadow algorithm statement test case.
  */
 @Getter
+@Setter
 public final class DropShadowAlgorithmStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute(name = "contains-exist-clause")
+    private boolean containsExistClause;
     
     @XmlElement(name = "rule")
     private final List<String> ruleName = new LinkedList<>();

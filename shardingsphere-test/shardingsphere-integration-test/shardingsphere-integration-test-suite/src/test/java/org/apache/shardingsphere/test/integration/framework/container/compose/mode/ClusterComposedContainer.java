@@ -63,18 +63,18 @@ public final class ClusterComposedContainer implements ComposedContainer {
     }
     
     @Override
-    public Map<String, DataSource> getActualDataSourceMap() {
-        return storageContainer.getActualDataSourceMap();
-    }
-    
-    @Override
     public DataSource getTargetDataSource() {
         return adapterContainer.getTargetDataSource(governanceContainer.getServerLists());
     }
     
     @Override
-    public DataSource getVerificationDataSource() {
-        return storageContainer.getVerificationDataSource();
+    public Map<String, DataSource> getActualDataSourceMap() {
+        return storageContainer.getActualDataSourceMap();
+    }
+    
+    @Override
+    public Map<String, DataSource> getExpectedDataSourceMap() {
+        return storageContainer.getExpectedDataSourceMap();
     }
     
     @Override

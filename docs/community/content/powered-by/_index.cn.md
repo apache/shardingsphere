@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 173 家公司。
+共计 174 家公司。
 
 ### 基础设施
 <ul>
@@ -174,6 +174,7 @@ chapter = true
     <li><a href="http://www.zcckj.com/" rel="nofollow">中策车空间</a></li> 
     <li><a href="https://www.baixing.com/" rel="nofollow">百姓网</a></li>
     <li><a href="https://www.zmn.cn/" rel="nofollow">啄木鸟网络科技</a></li>
+    <li><a href="https://www.enmonster.com/" rel="nofollow">怪兽充电</a></li>
 </ul>
 
 ### 公共事业
