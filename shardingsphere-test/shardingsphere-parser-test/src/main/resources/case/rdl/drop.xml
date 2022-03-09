@@ -127,6 +127,8 @@
     </drop-sharding-key-generator>
     
     <drop-default-sharding-strategy sql-case-id="drop-default-sharding-strategy" type="table"/>
+    
+    <drop-default-sharding-strategy sql-case-id="drop-default-sharding-strategy-if-exists" type="table" contains-exists-clause="true"/>
 
     <drop-sharding-scaling-rule sql-case-id="drop-sharding-scaling-rule" scaling-name="default_scaling"/>
     

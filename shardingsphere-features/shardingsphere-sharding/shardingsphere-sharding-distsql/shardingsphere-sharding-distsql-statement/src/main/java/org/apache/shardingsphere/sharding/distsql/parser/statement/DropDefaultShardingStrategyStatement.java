@@ -29,4 +29,9 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleState
 public final class DropDefaultShardingStrategyStatement extends DropRuleStatement {
     
     private final String defaultType;
+    
+    public DropDefaultShardingStrategyStatement(final boolean containsExistClause, final String defaultType) {
+        setContainsExistClause(containsExistClause);
+        this.defaultType = defaultType;
+    }
 }

@@ -261,7 +261,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitDropDefaultShardingStrategy(final DropDefaultShardingStrategyContext ctx) {
-        return new DropDefaultShardingStrategyStatement(new IdentifierValue(ctx.type.getText()).getValue().toLowerCase());
+        return new DropDefaultShardingStrategyStatement(null != ctx.existsClause(), new IdentifierValue(ctx.type.getText()).getValue().toLowerCase());
     }
     
     @Override
