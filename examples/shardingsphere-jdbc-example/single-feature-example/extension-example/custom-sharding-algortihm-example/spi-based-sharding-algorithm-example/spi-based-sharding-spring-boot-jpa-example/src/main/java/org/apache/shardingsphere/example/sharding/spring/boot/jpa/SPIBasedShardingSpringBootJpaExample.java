@@ -33,7 +33,7 @@ import java.sql.SQLException;
 @SpringBootApplication(exclude = JtaAutoConfiguration.class)
 public class ShardingSpringBootJpaExample {
     
-    public static void main(String[] args) throws SQLException {
+    public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(ShardingSpringBootJpaExample.class, args)) {
             ExampleExecuteTemplate.run(applicationContext.getBean(ExampleService.class));
         }
