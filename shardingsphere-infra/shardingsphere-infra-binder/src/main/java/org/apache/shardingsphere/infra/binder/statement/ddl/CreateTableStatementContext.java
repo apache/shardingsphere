@@ -32,8 +32,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTable
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Create table statement context.
