@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.rule.builder;
+package org.apache.shardingsphere.readwritesplitting.rule;
 
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.junit.Before;
@@ -23,13 +23,10 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Properties;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ReadWriteSplittingDataSourceRuleTest {
+public final class ReadWriteSplittingDataSourceRuleConfigurationTest {
 
     private ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfig;
     private ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfigDynamic;
