@@ -17,18 +17,11 @@
 
 package org.apache.shardingsphere.readwritesplitting.api.rule;
 
-import org.junit.Before;
-import org.junit.Test;
-import java.util.Arrays;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
 import java.util.Properties;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 /**
  * Readwrite-splitting data source rule configuration.
@@ -45,15 +38,6 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
 
     private final String loadBalancerName;
 
-    private ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfig;
-    private ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfigDynamic;
-
-    @Before
-    public void setup(){
-        readwriteSplittingDataSourceRuleConfig=new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Static", getProperties("write_ds", "read_ds_0,read_ds_1"),"");
-        readwriteSplittingDataSourceRuleConfigDynamic=new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Dynamic", getProperties("write_ds", "read_ds_0,read_ds_1"),"");
-    }
-
     /**
      * Get auto aware data source name.
      *
@@ -61,15 +45,6 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
      */
     public Optional<String> getAutoAwareDataSourceName() {
         return Optional.ofNullable(props.getProperty("auto-aware-data-source-name"));
-    }
-
-    @Test
-    public void assertGetAutoAwareDataSourceName(){
-
-        ReadwriteSplittingDataSourceRuleConfiguration anotherInstance=new ReadwriteSplittingDataSourceRuleConfiguration("ds","Dynamic",getProperties("write_ds","read_ds_0,read_ds_1"),"");
-        String actual=readwriteSplittingDataSourceRuleConfigDynamic.props.getProperty("auto-aware-data-source-name");
-        String testing=anotherInstance.props.getProperty("auto-aware-data-source-name");
-        assertThat(testing,is(actual));
     }
 
     /**
@@ -81,14 +56,6 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
         return Optional.ofNullable(props.getProperty("write-data-source-name"));
     }
 
-    @Test
-    public void assertGetWriteDataSourceName(){
-        ReadwriteSplittingDataSourceRuleConfiguration anotherInstance=new ReadwriteSplittingDataSourceRuleConfiguration("ds","Static",getProperties("write_ds","read_ds_0,read_ds_1"),"");
-        String actual=readwriteSplittingDataSourceRuleConfig.props.getProperty("write-data-source-name");
-        String testing=anotherInstance.props.getProperty("write-data-source-name");
-        assertThat(testing,is(actual));
-    }
-
     /**
      * Get read data source names.
      *
@@ -98,16 +65,4 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
         return Optional.ofNullable(props.getProperty("read-data-source-names"));
     }
 
-    @Test
-    public void assertGetReadDataSourceNames(){
-        ReadwriteSplittingDataSourceRuleConfiguration anotherInstance=new ReadwriteSplittingDataSourceRuleConfiguration("ds","Static",getProperties("write_ds","read_ds_0,read_ds_1"),"");
-        assertThat(anotherInstance.props.getProperty("read-data-source-names"),is(Arrays.asList("read_ds_0", "read_ds_1")));
-    }
-
-    private Properties getProperties(final String writeDataSource, final String readDataSources) {
-        Properties result = new Properties();
-        result.setProperty("write-data-source-name", writeDataSource);
-        result.setProperty("read-data-source-names", readDataSources);
-        return result;
-    }
 }
