@@ -76,10 +76,6 @@
             <artifactId>commons-dbcp2</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-dbcp</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-mysql-client</artifactId>
         </dependency>

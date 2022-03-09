@@ -40,6 +40,9 @@ public final class TransactionStatus {
     @Setter
     private volatile boolean manualXA;
     
+    @Setter
+    private volatile boolean rollbackOnly;
+    
     public TransactionStatus(final TransactionType initialTransactionType) {
         transactionType = initialTransactionType;
     }

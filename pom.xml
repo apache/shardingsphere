@@ -96,7 +96,6 @@
         
         <hikari-cp.version>3.4.2</hikari-cp.version>
         <commons-dbcp2.version>2.2.0</commons-dbcp2.version>
-        <tomcat.version>10.0.16</tomcat.version>
         <commons-pool.version>1.6</commons-pool.version>
         <h2.version>1.4.196</h2.version>
         <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
@@ -555,12 +554,6 @@
                         <artifactId>commons-pool</artifactId>
                     </exclusion>
                 </exclusions>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.tomcat</groupId>
-                <artifactId>tomcat-dbcp</artifactId>
-                <version>${tomcat.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

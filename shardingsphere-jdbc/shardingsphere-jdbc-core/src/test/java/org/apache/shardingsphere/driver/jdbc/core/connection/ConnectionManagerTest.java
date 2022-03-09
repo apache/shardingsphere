@@ -31,6 +31,9 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
+import org.apache.shardingsphere.traffic.rule.TrafficStrategyRule;
+import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
+import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -91,6 +94,7 @@ public final class ConnectionManagerTest {
         when(result.getMetaDataContexts().getMetaDataPersistService()).thenReturn(Optional.of(metaDataPersistService));
         when(result.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.empty());
         when(result.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TrafficRule.class)).thenReturn(Optional.of(trafficRule));
+        when(result.getInstanceContext().getComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(Collections.singletonList(mockComputeNodeInstance()));
         dataSourcePoolCreator = mockStatic(DataSourcePoolCreator.class);
         Map<String, DataSource> trafficDataSourceMap = mockTrafficDataSourceMap();
         when(DataSourcePoolCreator.create((Map) any())).thenReturn(trafficDataSourceMap);
@@ -106,7 +110,6 @@ public final class ConnectionManagerTest {
     private MetaDataPersistService mockMetaDataPersistService() {
         MetaDataPersistService result = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
         when(result.getDataSourceService().load(DefaultSchema.LOGIC_NAME)).thenReturn(createDataSourcePropertiesMap());
-        when(result.getComputeNodePersistService().loadComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(Collections.singletonList(mockComputeNodeInstance()));
         when(result.getGlobalRuleService().loadUsers()).thenReturn(Collections.singletonList(new ShardingSphereUser("root", "root", "localhost")));
         return result;
     }
@@ -134,6 +137,8 @@ public final class ConnectionManagerTest {
     private TrafficRule mockTrafficRule() {
         TrafficRule result = mock(TrafficRule.class);
         when(result.getLabels()).thenReturn(Arrays.asList("OLTP", "OLAP"));
+        when(result.getStrategyRules()).thenReturn(Collections.singletonList(
+                new TrafficStrategyRule("sql_match", Arrays.asList("OLTP", "OLAP"), mock(TrafficAlgorithm.class), mock(TrafficLoadBalanceAlgorithm.class))));
         return result;
     }
     

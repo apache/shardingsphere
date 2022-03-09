@@ -12,23 +12,23 @@ weight = 1
 
 ### 单路由
 
-在1000数据量的基础上分库分表，根据`id`分为4个库，部署在同一台机器上，根据`k`分为1024个表，查询操作路由到单库单表；
-作为对比，MySQL 运行在1000数据量的基础上，使用 INSERT+UPDATE+DELETE 和单路由查询语句。
+在1000数据量的基础上分库分表，根据`id`分为4个库，部署在同一台机器上，根据`k`分为 1024 个表，查询操作路由到单库单表；
+作为对比，MySQL 运行在 1000 数据量的基础上，使用 INSERT+UPDATE+DELETE 和单路由查询语句。
 
 ### 主从
 
-基本主从场景，设置一主库一从库，部署在两台不同的机器上，在10000数据量的基础上，观察读写性能；
+基本主从场景，设置一主库一从库，部署在两台不同的机器上，在 10000 数据量的基础上，观察读写性能；
 作为对比，MySQL 运行在10000数据量的基础上，使用 INSERT+SELECT+DELETE 语句。
 
 ### 主从+加密+分库分表
 
-在1000数据量的基础上，根据`id`分为4个库，部署在四台不同的机器上，根据`k`分为1024个表，`c`使用 aes 加密，`pad` 使用 md5 加密，查询操作路由到单库单表；
+在1000数据量的基础上，根据`id`分为4个库，部署在四台不同的机器上，根据 `k` 分为1024个表，`c` 使用 aes 加密，`pad` 使用 md5 加密，查询操作路由到单库单表；
 作为对比，MySQL 运行在1000数据量的基础上，使用 INSERT+UPDATE+DELETE 和单路由查询语句。
 
 ### 全路由
 
 在1000数据量的基础上，分库分表，根据`id`分为4个库，部署在四台不同的机器上，根据`k`分为1个表，查询操作使用全路由。
-作为对比，MySQL 运行在1000数据量的基础上，使用 INSERT+UPDATE+DELETE 和全路由查询语句。
+作为对比，MySQL 运行在 1000 数据量的基础上，使用 INSERT+UPDATE+DELETE 和全路由查询语句。
 
 ## 测试环境搭建
 
@@ -398,7 +398,7 @@ DELETE FROM tbl1 WHERE id=?
 
 ### 压测类
 
-参考[ shardingsphere-benchmark ](https://github.com/apache/shardingsphere-benchmark/tree/master/shardingsphere-benchmark)实现，注意阅读其中的注释
+参考 [ shardingsphere-benchmark ](https://github.com/apache/shardingsphere-benchmark/tree/master/shardingsphere-benchmark) 实现，注意阅读其中的注释
 
 ### 编译
 

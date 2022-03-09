@@ -15,12 +15,7 @@
  * limitations under the License.
  */
 
-<#assign package="" />
-<#if feature?split(",")?size gt 1>
-    <#assign package="mixed" />
-<#else>
-    <#assign package = feature?replace('-', '.') />
-</#if>
+<#assign package = feature?replace('-', '.')?replace(',', '.') />
 package org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')};
 
 <#if framework?contains("spring-boot")>
@@ -61,7 +56,7 @@ import java.sql.SQLException;
 <#if framework?contains("spring-boot")>
 @SpringBootApplication
 </#if>
-public final class Example {
+public class Example {
     
     public static void main(final String[] args) throws SQLException {
     <#if framework=="jdbc">
