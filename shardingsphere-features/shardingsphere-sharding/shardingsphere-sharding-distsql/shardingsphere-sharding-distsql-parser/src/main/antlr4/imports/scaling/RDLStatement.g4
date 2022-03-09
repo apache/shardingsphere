@@ -24,7 +24,7 @@ createShardingScalingRule
     ;
 
 dropShardingScalingRule
-    : DROP SHARDING SCALING RULE scalingName
+    : DROP SHARDING SCALING RULE existsClause? scalingName
     ;
 
 enableShardingScalingRule
@@ -77,4 +77,8 @@ streamChannel
 
 intValue
     : INT
+    ;
+
+existsClause
+    : IF EXISTS
     ;
