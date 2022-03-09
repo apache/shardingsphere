@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.instance;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.infra.instance.fixture.WorkerIdGeneratorFixture;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
@@ -33,6 +34,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class InstanceContextTest {
 
@@ -65,9 +67,11 @@ public final class InstanceContextTest {
 
     @Test
     public void assertUpdateLabel() {
-        InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfiguration);
+        InstanceDefinition instanceDefinition = mock(InstanceDefinition.class);
+        when(instanceDefinition.getInstanceId()).thenReturn(new InstanceId("127.0.0.1@3307"));
+        InstanceContext context = new InstanceContext(new ComputeNodeInstance(instanceDefinition), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfiguration);
         Collection<String> expected = Arrays.asList("label_1", "label_2");
-        context.updateLabel(expected);
+        context.updateLabel("127.0.0.1@3307", expected);
         Collection<String> actual = context.getInstance().getLabels();
         assertThat(actual, is(expected));
     }

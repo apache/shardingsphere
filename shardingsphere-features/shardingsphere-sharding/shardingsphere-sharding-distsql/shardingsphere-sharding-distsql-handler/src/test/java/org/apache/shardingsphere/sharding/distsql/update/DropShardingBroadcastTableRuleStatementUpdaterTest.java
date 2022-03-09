@@ -32,6 +32,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -50,6 +51,19 @@ public final class DropShardingBroadcastTableRuleStatementUpdaterTest {
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutExistBroadcastTableRule() throws DistSQLException {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("t_order"), new ShardingRuleConfiguration());
+    }
+    
+    @Test
+    public void assertCheckSQLStatementWithIfExists() throws DistSQLException {
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(true, "t_order"), new ShardingRuleConfiguration());
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(true, "t_order"), null);
+    }
+    
+    @Test
+    public void assertHasAnyOneToBeDropped() {
+        assertFalse(updater.hasAnyOneToBeDropped(createSQLStatement(true, "t_order"), new ShardingRuleConfiguration()));
+        assertFalse(updater.hasAnyOneToBeDropped(createSQLStatement(true, "t_order"), null));
+        assertTrue(updater.hasAnyOneToBeDropped(createSQLStatement(true, "t_order"), createCurrentRuleConfiguration()));
     }
     
     @Test(expected = RequiredRuleMissedException.class)
@@ -74,6 +88,11 @@ public final class DropShardingBroadcastTableRuleStatementUpdaterTest {
     private DropShardingBroadcastTableRulesStatement createSQLStatement(final String tableName) {
         return null == tableName ? new DropShardingBroadcastTableRulesStatement(Collections.emptyList())
                 : new DropShardingBroadcastTableRulesStatement(Collections.singleton(tableName));
+    }
+    
+    private DropShardingBroadcastTableRulesStatement createSQLStatement(final boolean containsExistClause, final String tableName) {
+        return null == tableName ? new DropShardingBroadcastTableRulesStatement(Collections.emptyList())
+                : new DropShardingBroadcastTableRulesStatement(containsExistClause, Collections.singleton(tableName));
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {

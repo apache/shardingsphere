@@ -59,6 +59,13 @@ public final class OpenGaussFrontendEngine implements DatabaseProtocolFrontendEn
     }
     
     @Override
+    public void handleException(final ConnectionSession connectionSession) {
+        if (connectionSession.getTransactionStatus().isInTransaction()) {
+            connectionSession.getTransactionStatus().setRollbackOnly(true);
+        }
+    }
+    
+    @Override
     public String getDatabaseType() {
         return "openGauss";
     }
