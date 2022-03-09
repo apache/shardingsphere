@@ -29,15 +29,15 @@ import java.util.Properties;
 @RequiredArgsConstructor
 @Getter
 public final class ReadwriteSplittingDataSourceRuleConfiguration {
-
+    
     private final String name;
-
+    
     private final String type;
-
+    
     private final Properties props;
-
+    
     private final String loadBalancerName;
-
+    
     /**
      * Get auto aware data source name.
      *
@@ -46,7 +46,7 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
     public Optional<String> getAutoAwareDataSourceName() {
         return Optional.ofNullable(props.getProperty("auto-aware-data-source-name"));
     }
-
+    
     /**
      * Get write data source name.
      *
@@ -55,7 +55,7 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
     public Optional<String> getWriteDataSourceName() {
         return Optional.ofNullable(props.getProperty("write-data-source-name"));
     }
-
+    
     /**
      * Get read data source names.
      *
