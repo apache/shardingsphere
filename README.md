@@ -83,11 +83,13 @@ We are currently working towards our 5.1.1 milestone. Keep an eye on the [milest
  
 <hr>
  A nightly build of ShardingSphere from the latest master branch is available. The package is updated daily and is [available here](http://117.48.121.24:8080).
+ 
 ##
 
  ##### ‼️ Notice: 
 <hr>
  Use this nightly build at your own risk! The branch is not always fully tested. The nightly build may contain bugs, and there may be new features added which may cause problems with your environment. 
+ 
 ##
 
 ### How it Works:
@@ -97,15 +99,20 @@ Apache ShardingSphere includes 3 independent products: JDBC, Proxy & Sidecar (Pl
 
 #### ShardingSphere-JDBC
 <hr>
+
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/org.apache.shardingsphere/shardingsphere-jdbc/badge.svg)](https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-jdbc)
 
 A lightweight Java framework providing extra services at the Java JDBC layer. 
 With the client end connecting directly to the database, it provides services in the form of a jar and requires no extra deployment and dependence.
 
 :link: For more details, follow this [link to the official website](https://shardingsphere.apache.org/document/current/en/overview/#shardingsphere-jdbc).
+
  ##
+ 
 #### ShardingSphere-Proxy
+
 <hr>
+
 [![Download](https://img.shields.io/badge/release-download-orange.svg)](https://apache.org/dyn/closer.cgi?path=shardingsphere/5.1.0/apache-shardingsphere-5.1.0-shardingsphere-proxy-bin.tar.gz)
 [![Docker Pulls](https://img.shields.io/docker/pulls/apache/shardingsphere-proxy.svg)](https://store.docker.com/community/images/apache/shardingsphere-proxy)
 
@@ -113,7 +120,9 @@ A transparent database proxy, providing a database server that encapsulates data
 Friendlier to DBAs, the MySQL and PostgreSQL version now provided can use any kind of terminal.
 
 :link: For more details, follow this [link to the official website](https://shardingsphere.apache.org/document/current/en/overview/#shardingsphere-proxy).
+
 ##
+
 #### Hybrid Architecture
 <hr>
 ShardingSphere-JDBC adopts a decentralized architecture, applicable to high-performance light-weight OLTP applications developed with Java. 
@@ -122,6 +131,7 @@ ShardingSphere-Proxy provides static entry and all languages support, suitable f
 Through the mixed use of ShardingSphere-JDBC & ShardingSphere-Proxy together with a unified sharding strategy by the same registry center, the ShardingSphere ecosystem can build an application system suitable to all kinds of scenarios.
 
 :link: More details can be found following this [link to the official website](https://shardingsphere.apache.org/document/current/en/overview/#hybrid-architecture).
+
 ##
 
 #### Solution
@@ -135,6 +145,7 @@ Through the mixed use of ShardingSphere-JDBC & ShardingSphere-Proxy together wit
 |                      | Distributed Transaction | SQL Audit (TODO)     |                                   |                  |
 |                      | Elastic Scale-out       | SQL Firewall (TODO)  |                                   |                  |
 |                      | Highly Available        |                      |                                   |                  |
+
 ##
 
 #### Roadmap
