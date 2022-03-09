@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder.util;
 
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -59,9 +58,6 @@ public final class TableMetaDataUtilTest {
 
     @Test
     public void assertGetTableMetaDataLoadMaterial() {
-        Map<String, Collection<DataNode>> dataNodes = new HashMap<>();
-        dataNodes.put("t_user", Collections.singletonList(new DataNode("ds0.t_user")));
-        dataNodes.put("t_order", Collections.singletonList(new DataNode("ds1.t_order")));
         Collection<ShardingSphereRule> rules = new LinkedList<>();
         rules.add(dataNodeContainedRule);
         rules.add(dataSourceContainedRule);
@@ -70,9 +66,7 @@ public final class TableMetaDataUtilTest {
         dataSourceMap.put("ds0", dataSource1);
         dataSourceMap.put("ds1", dataSource2);
         when(materials.getDataSourceMap()).thenReturn(dataSourceMap);
-        Collection<String> tableNames = new LinkedList<>();
-        tableNames.add("t_user");
-        Collection<TableMetaDataLoaderMaterial> results = TableMetaDataUtil.getTableMetaDataLoadMaterial(tableNames, materials, false);
+        Collection<TableMetaDataLoaderMaterial> results = TableMetaDataUtil.getTableMetaDataLoadMaterial(Collections.singletonList("t_user"), materials, false);
         assertThat(results.size(), is(1));
     }
 }
