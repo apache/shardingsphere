@@ -87,14 +87,14 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
     private Map<String, DataSource> getTrafficDataSourceMap(final String schema, final ContextManager contextManager) {
         Optional<TrafficRule> trafficRule = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TrafficRule.class);
         Optional<MetaDataPersistService> metaDataPersistService = contextManager.getMetaDataContexts().getMetaDataPersistService();
-        if (!trafficRule.isPresent() || !metaDataPersistService.isPresent()) {
+        if (!trafficRule.isPresent() || trafficRule.get().getStrategyRules().isEmpty() || !metaDataPersistService.isPresent()) {
             return Collections.emptyMap();
         }
         Map<String, DataSourceProperties> dataSourcePropsMap = metaDataPersistService.get().getDataSourceService().load(schema);
         Preconditions.checkState(!dataSourcePropsMap.isEmpty(), "Can not get data source properties from meta data.");
         DataSourceProperties dataSourcePropsSample = dataSourcePropsMap.values().iterator().next();
         Collection<ShardingSphereUser> users = metaDataPersistService.get().getGlobalRuleService().loadUsers();
-        Collection<ComputeNodeInstance> instances = metaDataPersistService.get().getComputeNodePersistService().loadComputeNodeInstances(InstanceType.PROXY, trafficRule.get().getLabels());
+        Collection<ComputeNodeInstance> instances = contextManager.getInstanceContext().getComputeNodeInstances(InstanceType.PROXY, trafficRule.get().getLabels());
         return DataSourcePoolCreator.create(createDataSourcePropertiesMap(instances, users, dataSourcePropsSample, schema));
     }
     
@@ -152,7 +152,9 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
      * @throws SQLException SQL exception
      */
     public void commit() throws SQLException {
-        if (connectionTransaction.isLocalTransaction()) {
+        if (connectionTransaction.isLocalTransaction() && connectionTransaction.isRollbackOnly()) {
+            forceExecuteTemplate.execute(cachedConnections.values(), Connection::rollback);
+        } else if (connectionTransaction.isLocalTransaction() && !connectionTransaction.isRollbackOnly()) {
             forceExecuteTemplate.execute(cachedConnections.values(), Connection::commit);
         } else {
             connectionTransaction.commit();

@@ -31,8 +31,8 @@ import java.sql.SQLException;
 @MapperScan(basePackages = "org.apache.shardingsphere.example.core.mybatis.repository")
 @SpringBootApplication
 public class SPIBasedShardingSpringBootMybatisExample {
-
-    public static void main(String[] args) throws SQLException {
+    
+    public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SPIBasedShardingSpringBootMybatisExample.class, args)) {
             ExampleExecuteTemplate.run(applicationContext.getBean(ExampleService.class));
         }

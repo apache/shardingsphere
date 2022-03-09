@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.spi.ordered.cache;
 
-import com.google.common.cache.CacheBuilder;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.fixture.FixtureCustomInterface;
 import org.apache.shardingsphere.spi.fixture.FixtureCustomInterfaceImpl;
@@ -26,13 +25,14 @@ import org.apache.shardingsphere.spi.fixture.ordered.OrderedSPIFixtureImpl;
 import org.junit.After;
 import org.junit.Test;
 
+import java.lang.ref.SoftReference;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -47,12 +47,9 @@ public final class OrderedServicesCacheTest {
     
     @After
     public void cleanCache() throws NoSuchFieldException, IllegalAccessException {
-        Field field = OrderedServicesCache.class.getDeclaredField("CACHED_SERVICES");
+        Field field = OrderedServicesCache.class.getDeclaredField("softCache");
         field.setAccessible(true);
-        Field modifiers = Field.class.getDeclaredField("modifiers");
-        modifiers.setAccessible(true);
-        modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-        field.set(null, CacheBuilder.newBuilder().build());
+        field.set(null, new SoftReference<>(new ConcurrentHashMap<>()));
     }
     
     @Test

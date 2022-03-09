@@ -27,11 +27,16 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLBeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussCommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussRollbackStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLCommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLRollbackStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 import java.sql.SQLException;
@@ -113,8 +118,9 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
                 backendTransactionManager.releaseSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());
                 break;
             case COMMIT:
+                SQLStatement sqlStatement = getSQLStatementByCommit();
                 backendTransactionManager.commit();
-                break;
+                return new UpdateResponseHeader(sqlStatement);
             case ROLLBACK:
                 backendTransactionManager.rollback();
                 break;
@@ -122,5 +128,17 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
                 throw new SQLFeatureNotSupportedException(operationType.name());
         }
         return new UpdateResponseHeader(tclStatement);
+    }
+    
+    private SQLStatement getSQLStatementByCommit() {
+        SQLStatement result = tclStatement;
+        if (connectionSession.getTransactionStatus().isRollbackOnly()) {
+            if (tclStatement instanceof OpenGaussCommitStatement) {
+                result = new OpenGaussRollbackStatement();
+            } else if (tclStatement instanceof PostgreSQLCommitStatement) {
+                result = new PostgreSQLRollbackStatement();
+            }
+        }
+        return result;
     }
 }

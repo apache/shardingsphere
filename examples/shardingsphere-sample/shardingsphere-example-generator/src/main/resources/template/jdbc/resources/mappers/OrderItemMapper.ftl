@@ -15,13 +15,8 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+<#assign package = feature?replace('-', '.')?replace(',', '.') />
 
-<#assign package="" />
-<#if feature?split(",")?size gt 1>
-    <#assign package="mixed" />
-<#else>
-    <#assign package = feature?replace('-', '.') />
-</#if>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.repository.OrderItemRepository">
     <resultMap id="baseResultMap" type="org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.entity.OrderItem">

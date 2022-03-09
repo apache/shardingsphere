@@ -21,7 +21,8 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * Build info of ShardingSphere. Values prefixed with `BUILD` will be empty if building from source codes without .git directory.
+ * Build info of ShardingSphere. 
+ * Values prefixed with `BUILD` will be empty if building from source codes without .git directory.
  */
 public final class ShardingSphereVersion {
     

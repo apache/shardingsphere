@@ -15,10 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.resource.fixture;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling;
 
-import javax.sql.DataSource;
-import java.io.Closeable;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-public interface CloseableDataSource extends DataSource, Closeable {
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
+
+/**
+ * Stop scaling statement test case.
+ */
+@Getter
+@Setter
+public final class StopScalingStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "job-id")
+    private final List<String> jobIds = new LinkedList<>();
 }

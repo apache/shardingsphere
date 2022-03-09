@@ -15,29 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.destroyer.impl;
+package org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.type;
 
-import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
+import org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.DataSourcePoolActiveDetector;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 
 /**
- * Default data source pool destroyer.
+ * Default data source pool active detector.
  */
-public final class DefaultDataSourcePoolDestroyer implements DataSourcePoolDestroyer {
+public final class DefaultDataSourcePoolActiveDetector implements DataSourcePoolActiveDetector {
     
     @Override
-    public void destroy(final DataSource dataSource) throws SQLException {
-        if (dataSource instanceof AutoCloseable) {
-            try {
-                ((AutoCloseable) dataSource).close();
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-                throw new SQLException(ex);
-            }
-        }
+    public boolean containsActiveConnection(final DataSource dataSource) {
+        return false;
     }
     
     @Override

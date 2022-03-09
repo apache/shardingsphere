@@ -27,6 +27,7 @@ import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -44,34 +45,56 @@ public final class SchemaMetaDataPersistService {
      * @param schema schema to be persisted
      */
     public void persist(final String schemaName, final ShardingSphereSchema schema) {
-        if (null != schema) {
-            Optional<ShardingSphereSchema> originalSchema = load(schemaName);
-            if (originalSchema.isPresent()) {
-                originalSchema.get().getTables().entrySet().stream().filter(entry -> !schema.getTables().containsKey(entry.getKey()))
-                        .forEach(entry -> repository.delete(SchemaMetaDataNode.getTableMetaDataPath(schemaName, entry.getKey())));
-            }
-            schema.getTables().forEach(
-                (key, value) -> repository.persist(SchemaMetaDataNode.getTableMetaDataPath(schemaName, key), YamlEngine.marshal(new TableMetaDataYamlSwapper().swapToYamlConfiguration(value))));
+        if (null == schema) {
+            return;
         }
+        Optional<ShardingSphereSchema> originalSchema = load(schemaName);
+        if (originalSchema.isPresent()) {
+            compareAndPersist(schemaName, schema, originalSchema.get());
+            return;
+        }
+        persistTables(schemaName, schema.getTables());
+    }
+    
+    /**
+     * Persist table meta data.
+     *
+     * @param schemaName schema name
+     * @param tableMetaData table meta data
+     */
+    public void persist(final String schemaName, final TableMetaData tableMetaData) {
+        repository.persist(SchemaMetaDataNode.getTableMetaDataPath(schemaName, tableMetaData.getName()), YamlEngine.marshal(new TableMetaDataYamlSwapper().swapToYamlConfiguration(tableMetaData)));
     }
     
     /**
      * Persist schema tables.
-     * 
+     *
      * @param schemaName schema name
      */
     public void persist(final String schemaName) {
         repository.persist(SchemaMetaDataNode.getMetaDataTablesPath(schemaName), "");
     }
     
-    /**
-     * Persist table meta data.
-     * 
-     * @param schemaName schema name
-     * @param tableMetaData table meta data
-     */
-    public void persist(final String schemaName, final TableMetaData tableMetaData) {
-        repository.persist(SchemaMetaDataNode.getTableMetaDataPath(schemaName, tableMetaData.getName()), YamlEngine.marshal(new TableMetaDataYamlSwapper().swapToYamlConfiguration(tableMetaData)));
+    private void compareAndPersist(final String schemaName, final ShardingSphereSchema schema, final ShardingSphereSchema originalSchema) {
+        Map<String, TableMetaData> localTables = schema.getTables();
+        for (Map.Entry<String, TableMetaData> entry : originalSchema.getTables().entrySet()) {
+            String onlineTableName = entry.getKey();
+            TableMetaData localTableMetaData = localTables.remove(onlineTableName);
+            if (null == localTableMetaData) {
+                delete(schemaName, onlineTableName);
+                continue;
+            }
+            if (!localTableMetaData.equals(entry.getValue())) {
+                persist(schemaName, localTableMetaData);
+            }
+        }
+        if (!localTables.isEmpty()) {
+            persistTables(schemaName, localTables);
+        }
+    }
+    
+    private void persistTables(final String schemaName, final Map<String, TableMetaData> tables) {
+        tables.forEach((key, value) -> repository.persist(SchemaMetaDataNode.getTableMetaDataPath(schemaName, key), YamlEngine.marshal(new TableMetaDataYamlSwapper().swapToYamlConfiguration(value))));
     }
     
     /**

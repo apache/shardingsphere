@@ -31,5 +31,6 @@
     
     <modules>
         <module>class-based-sharding-raw-jdbc-example</module>
+        <module>class-based-sharding-spring-namespace-mybatis-example</module>
     </modules>
 </project>

@@ -14,13 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+<#assign package = feature?replace('-', '.')?replace(',', '.') />
 
-<#assign package="" />
-<#if feature?split(",")?size gt 1>
-    <#assign package="mixed" />
-<#else>
-    <#assign package = feature?replace('-', '.') />
-</#if>
 package org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.repository;
 
 import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.entity.OrderItem;
