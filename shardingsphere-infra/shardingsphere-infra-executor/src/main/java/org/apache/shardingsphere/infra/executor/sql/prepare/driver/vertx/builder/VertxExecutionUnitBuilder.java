@@ -21,11 +21,11 @@ import io.vertx.core.Future;
 import io.vertx.sqlclient.SqlClient;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.vertx.VertxExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.SQLExecutionUnitBuilder;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx.ExecutorVertxManager;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx.ExecutorVertxStatementManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx.VertxExecutionContext;
 
 /**
  * Execution unit builder for Vert.x.
  */
-public interface VertxExecutionUnitBuilder extends SQLExecutionUnitBuilder<VertxExecutionUnit, ExecutorVertxManager, Future<? extends SqlClient>, VertxExecutionContext> {
+public interface VertxExecutionUnitBuilder extends SQLExecutionUnitBuilder<VertxExecutionUnit, ExecutorVertxStatementManager, Future<? extends SqlClient>, VertxExecutionContext> {
 }

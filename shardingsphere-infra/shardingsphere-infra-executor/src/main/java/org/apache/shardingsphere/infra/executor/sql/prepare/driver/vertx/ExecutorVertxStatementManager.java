@@ -22,10 +22,10 @@ import io.vertx.sqlclient.Query;
 import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.SqlClient;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorDriverManager;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 
 /**
- * Executor manager for Vert.x.
+ * Executor statement manager for Vert.x.
  */
-public interface ExecutorVertxManager extends ExecutorDriverManager<Future<? extends SqlClient>, Future<Query<RowSet<Row>>>, VertxExecutionContext> {
+public interface ExecutorVertxStatementManager extends ExecutorStatementManager<Future<? extends SqlClient>, Future<Query<RowSet<Row>>>, VertxExecutionContext> {
 }

@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc;
 
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorDriverManager;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 
 import java.sql.Connection;
 import java.sql.Statement;
 
 /**
- * Executor JDBC driver manager.
+ * Executor JDBC connection manager.
  */
-public interface ExecutorJDBCManager extends ExecutorDriverManager<Connection, Statement, StatementOption> {
+public interface ExecutorJDBCStatementManager extends ExecutorStatementManager<Connection, Statement, StatementOption> {
 }

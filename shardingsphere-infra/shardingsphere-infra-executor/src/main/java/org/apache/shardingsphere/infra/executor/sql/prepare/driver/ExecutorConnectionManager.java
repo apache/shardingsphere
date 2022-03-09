@@ -15,17 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.builder;
+package org.apache.shardingsphere.infra.executor.sql.prepare.driver;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.SQLExecutionUnitBuilder;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCStatementManager;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 
-import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
- * JDBC execution unit builder.
+ * Executor connection manager.
+ * 
+ * @param <C> type of resource connection
  */
-public interface JDBCExecutionUnitBuilder extends SQLExecutionUnitBuilder<JDBCExecutionUnit, ExecutorJDBCStatementManager, Connection, StatementOption> {
+public interface ExecutorConnectionManager<C> {
+    
+    /**
+     * Get connections.
+     *
+     * @param dataSourceName data source name
+     * @param connectionSize connection size
+     * @param connectionMode connection mode
+     * @return connections
+     * @throws SQLException SQL exception
+     */
+    List<C> getConnections(String dataSourceName, int connectionSize, ConnectionMode connectionMode) throws SQLException;
 }

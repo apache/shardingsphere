@@ -17,30 +17,18 @@
 
 package org.apache.shardingsphere.infra.executor.sql.prepare.driver;
 
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 
 import java.sql.SQLException;
-import java.util.List;
 
 /**
- * Executor driver manager.
+ * Executor statement manager.
  * 
- * @param <C> type of resource connection
  * @param <R> type of storage resource
  * @param <O> type of storage resource option
  */
-public interface ExecutorDriverManager<C, R, O extends StorageResourceOption> {
-    
-    /**
-     * Get connections.
-     *
-     * @param dataSourceName data source name
-     * @param connectionSize connection size
-     * @param connectionMode connection mode
-     * @return connections
-     * @throws SQLException SQL exception
-     */
-    List<C> getConnections(String dataSourceName, int connectionSize, ConnectionMode connectionMode) throws SQLException;
+public interface ExecutorStatementManager<C, R, O extends StorageResourceOption> {
     
     /**
      * Create storage resource.
@@ -56,13 +44,12 @@ public interface ExecutorDriverManager<C, R, O extends StorageResourceOption> {
     /**
      * Create storage resource.
      *
-     * @param sql SQL
-     * @param parameters SQL parameters
+     * @param executionUnit execution unit
      * @param connection connection
      * @param connectionMode connection mode
      * @param option storage resource option
      * @return storage resource
      * @throws SQLException SQL exception
      */
-    R createStorageResource(String sql, List<Object> parameters, C connection, ConnectionMode connectionMode, O option) throws SQLException;
+    R createStorageResource(ExecutionUnit executionUnit, C connection, ConnectionMode connectionMode, O option) throws SQLException;
 }
