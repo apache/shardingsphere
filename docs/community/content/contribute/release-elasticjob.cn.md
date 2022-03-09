@@ -64,7 +64,7 @@ chapter = true
 https://github.com/apache/shardingsphere-elasticjob/blob/master/RELEASE-NOTES.md
 ```
 
-更新 `examples` 模块的pom，将版本由 ${CURRENT.VERSION} 替换为 ${RELEASE.VERSION}。
+更新 `examples` 模块的 pom，将版本由 ${CURRENT.VERSION} 替换为 ${RELEASE.VERSION}。
 
 **2. 创建发布分支**
 
@@ -396,7 +396,7 @@ mvn clean package -Prelease,docker
 
 4.3 给本地 Docker 镜像打标记
 
-通过`docker images`查看到IMAGE ID，例如为：e9ea51023687
+通过 `docker images` 查看到 IMAGE ID，例如为：e9ea51023687
 
 ```shell
 docker tag e9ea51023687 apache/shardingsphere-elasticjob-cloud-scheduler:latest
