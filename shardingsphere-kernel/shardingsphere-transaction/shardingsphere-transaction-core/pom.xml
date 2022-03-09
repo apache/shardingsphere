@@ -38,6 +38,7 @@
             <artifactId>shardingsphere-infra-executor</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
