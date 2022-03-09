@@ -41,6 +41,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
@@ -211,6 +212,18 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final LabelsEvent event) {
         contextManager.getInstanceContext().updateLabel(event.getInstanceId(), event.getLabels());
+    }
+    
+    /**
+     * Renew instance xa recovery id event.
+     *
+     * @param event xa recovery id event
+     */
+    @Subscribe
+    public synchronized void renew(final XaRecoveryIdEvent event) {
+        if (contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId().equals(event.getInstanceId())) {
+            contextManager.getInstanceContext().updateXaRecoveryId(event.getXaRecoveryId());
+        }
     }
     
     /**
