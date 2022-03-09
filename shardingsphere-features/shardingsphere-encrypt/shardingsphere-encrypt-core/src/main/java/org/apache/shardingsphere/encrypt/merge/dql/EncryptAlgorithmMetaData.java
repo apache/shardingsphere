@@ -78,8 +78,8 @@ public final class EncryptAlgorithmMetaData {
         if (!columnProjection.isPresent()) {
             return Optional.empty();
         }
-        Map<String, String> columnTableNames = selectStatementContext.getTablesContext().findTableName(Collections.singletonList(columnProjection.get()), schema);
-        Optional<String> tableName = findTableName(columnProjection.get(), columnTableNames);
+        Map<String, String> expressionTableNames = selectStatementContext.getTablesContext().findTableNamesByColumnProjection(Collections.singletonList(columnProjection.get()), schema);
+        Optional<String> tableName = findTableName(columnProjection.get(), expressionTableNames);
         return tableName.map(optional -> EncryptContextBuilder.build(schemaName, optional, columnProjection.get().getName(), encryptRule));
     }
     

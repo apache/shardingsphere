@@ -47,7 +47,6 @@ public final class DataSourceProperties {
     
     private final CustomDataSourceProperties customDataSourceProperties;
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     public DataSourceProperties(final String dataSourceClassName, final Map<String, Object> props) {
         this.dataSourceClassName = dataSourceClassName;
         Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceClassName);

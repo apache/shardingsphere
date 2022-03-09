@@ -17,9 +17,9 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
 
 import com.google.common.collect.Range;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeId;
-import org.apache.shardingsphere.sharding.algorithm.keygen.CosIdSnowflakeKeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
+import org.apache.shardingsphere.sharding.algorithm.keygen.CosIdSnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.junit.Before;
@@ -46,7 +46,7 @@ public final class CosIdSnowflakeIntervalShardingAlgorithmTest {
                 CosIdIntervalShardingAlgorithmTest.UPPER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
         properties.setProperty(CosIdIntervalShardingAlgorithm.SHARDING_SUFFIX_FORMAT_KEY, CosIdIntervalShardingAlgorithmTest.SUFFIX_FORMATTER_STRING);
         properties.setProperty(CosIdIntervalShardingAlgorithm.INTERVAL_UNIT_KEY, "MONTHS");
-        properties.setProperty(CosIdIntervalShardingAlgorithm.INTERVAL_AMOUNT_KEY, "1");
+        properties.put(CosIdIntervalShardingAlgorithm.INTERVAL_AMOUNT_KEY, 1);
         CosIdSnowflakeIntervalShardingAlgorithm result = new CosIdSnowflakeIntervalShardingAlgorithm();
         result.setProps(properties);
         result.init();

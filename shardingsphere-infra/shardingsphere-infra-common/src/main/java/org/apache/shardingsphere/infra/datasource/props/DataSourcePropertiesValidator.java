@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.infra.datasource.props;
 
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyerFactory;
+import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -63,10 +62,7 @@ public final class DataSourcePropertiesValidator {
             throw new InvalidDataSourcePropertiesException(dataSourceName, ex.getMessage());
         } finally {
             if (null != dataSource) {
-                try {
-                    DataSourcePoolDestroyerFactory.destroy(dataSource);
-                } catch (final SQLException ignored) {
-                }
+                new DataSourcePoolDestroyer(dataSource).asyncDestroy();
             }
         }
     }

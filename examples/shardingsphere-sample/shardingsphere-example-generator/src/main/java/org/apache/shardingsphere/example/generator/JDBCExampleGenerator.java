@@ -30,12 +30,7 @@ import java.util.Map;
 public final class JDBCExampleGenerator implements ExampleGenerator {
     
     private static final String JAVA_CLASS_PATH = "src/main/java/org/apache/shardingsphere/example/"
-            + "<#assign package=\"\">"
-            + "<#if feature?split(\",\")?size gt 1>"
-            + "<#assign package=\"mixed\">"
-            + "<#else>"
-            + "<#assign package=feature?replace('-', '/') />"
-            + "</#if>"
+            + "<#assign package = feature?replace('-', '.')?replace(',', '.') />"
             + "${package}/${framework?replace('-', '/')}";
     
     @Override

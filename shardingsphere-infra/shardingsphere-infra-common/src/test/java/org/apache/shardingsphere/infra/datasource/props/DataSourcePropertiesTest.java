@@ -43,7 +43,7 @@ public final class DataSourcePropertiesTest {
     
     @Rule
     public ExpectedException thrown = ExpectedException.none();
-
+    
     @SuppressWarnings("unchecked")
     @Test
     public void assertGetDataSourceConfigurationWithConnectionInitSqls() {
@@ -64,7 +64,7 @@ public final class DataSourcePropertiesTest {
         assertThat(actualConnectionInitSql, hasItem("set names utf8mb4;"));
         assertThat(actualConnectionInitSql, hasItem("set names utf8;"));
     }
-
+    
     @Test
     public void assertGetAllLocalProperties() {
         DataSourceProperties originalDataSourceProps = new DataSourceProperties(MockedDataSource.class.getName(), getProperties());
@@ -86,7 +86,7 @@ public final class DataSourcePropertiesTest {
         assertTrue(actualAllProperties.containsKey("idleTimeout"));
         assertTrue(actualAllProperties.containsValue("30000"));
     }
-
+    
     private Map<String, Object> getProperties() {
         Map<String, Object> result = new HashMap<>(7, 1);
         result.put("driverClassName", MockedDataSource.class.getName());

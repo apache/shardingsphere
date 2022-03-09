@@ -81,7 +81,7 @@ public final class PostgreSQLDALStatementSQLVisitor extends PostgreSQLStatementS
         if (null != ctx.encoding()) {
             VariableAssignSegment variableAssignSegment = new VariableAssignSegment();
             VariableSegment variableSegment = new VariableSegment();
-            variableSegment.setVariable("charset");
+            variableSegment.setVariable("client_encoding");
             variableAssignSegment.setVariable(variableSegment);
             String value = ctx.encoding().getText();
             variableAssignSegment.setAssignValue(value);

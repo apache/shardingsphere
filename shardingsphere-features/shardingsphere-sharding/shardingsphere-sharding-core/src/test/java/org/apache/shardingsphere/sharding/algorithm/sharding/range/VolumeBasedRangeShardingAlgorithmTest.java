@@ -41,9 +41,9 @@ public final class VolumeBasedRangeShardingAlgorithmTest {
     @Before
     public void setUp() {
         shardingAlgorithm = new VolumeBasedRangeShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("range-lower", "10");
-        shardingAlgorithm.getProps().setProperty("range-upper", "45");
-        shardingAlgorithm.getProps().setProperty("sharding-volume", "10");
+        shardingAlgorithm.getProps().put("range-lower", 10);
+        shardingAlgorithm.getProps().put("range-upper", 45);
+        shardingAlgorithm.getProps().put("sharding-volume", 10);
         shardingAlgorithm.init();
     }
     

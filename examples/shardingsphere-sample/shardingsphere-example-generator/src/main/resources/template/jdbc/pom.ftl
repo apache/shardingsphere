@@ -22,8 +22,8 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>shardingsphere-${product}-sample</artifactId>
-        <version>${r'${revision}'}</version>
+        <artifactId>shardingsphere-example</artifactId>
+        <version>5.1.1-SNAPSHOT</version>
     </parent>
     <artifactId>${feature?replace(',', '-')}--${framework}--${mode}--${transaction}</artifactId>
     <name>${r'${project.artifactId}'}</name>
@@ -33,17 +33,20 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-jdbc-core</artifactId>
+            <version>5.1.1-SNAPSHOT</version>
         </dependency>
     </#if>
     <#if framework?contains("spring-namespace")>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-jdbc-core-spring-namespace</artifactId>
+            <version>5.1.1-SNAPSHOT</version>
         </dependency>
     <#elseif framework?contains("spring-boot-starter")>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
+            <version>5.1.1-SNAPSHOT</version>
         </dependency>
     </#if>
     <#if framework?contains("jpa")>
@@ -107,4 +110,18 @@
         </dependency>
     </#if>
     </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

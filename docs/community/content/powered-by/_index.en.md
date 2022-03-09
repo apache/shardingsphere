@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 173 companies.
+Total: 174 companies.
 
 ### Infra
 <ul>
@@ -174,6 +174,7 @@ Total: 173 companies.
     <li><a href="http://www.zcckj.com/" rel="nofollow">Zhong Ce Auto Space</a></li>
     <li><a href="https://www.baixing.com/" rel="nofollow">BaiXing</a></li>
     <li><a href="https://www.zmn.cn/" rel="nofollow">ZMN</a></li>
+    <li><a href="https://www.enmonster.com/" rel="nofollow">Energy Monster</a></li>
 </ul>
 
 ### Public Utilities

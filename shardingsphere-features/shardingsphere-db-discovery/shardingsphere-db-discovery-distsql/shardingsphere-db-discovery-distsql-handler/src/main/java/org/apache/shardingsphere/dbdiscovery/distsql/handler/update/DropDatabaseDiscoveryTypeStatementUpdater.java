@@ -34,19 +34,23 @@ import java.util.stream.Collectors;
  */
 public final class DropDatabaseDiscoveryTypeStatementUpdater implements RuleDefinitionDropUpdater<DropDatabaseDiscoveryTypeStatement, DatabaseDiscoveryRuleConfiguration> {
     
-    private static final String RULE_TYPE = "database discovery";
+    private static final String RULE_TYPE = "Database discovery";
     
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropDatabaseDiscoveryTypeStatement sqlStatement,
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         String schemaName = shardingSphereMetaData.getName();
-        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
-        checkIsExist(schemaName, sqlStatement, currentRuleConfig);
+        checkCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
         checkIsInUse(schemaName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkCurrentRuleConfiguration(final String schemaName, final DropDatabaseDiscoveryTypeStatement sqlStatement,
+                                               final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+        if (sqlStatement.isContainsExistClause()) {
+            return;
+        }
         DistSQLException.predictionThrow(null != currentRuleConfig, new RequiredRuleMissedException(RULE_TYPE, schemaName));
+        checkIsExist(schemaName, sqlStatement, currentRuleConfig);
     }
     
     private void checkIsExist(final String schemaName, final DropDatabaseDiscoveryTypeStatement sqlStatement,
@@ -75,6 +79,13 @@ public final class DropDatabaseDiscoveryTypeStatementUpdater implements RuleDefi
         if (isNotInUse(currentRuleConfig, typeName)) {
             currentRuleConfig.getDiscoveryTypes().remove(typeName);
         }
+    }
+    
+    @Override
+    public boolean hasAnyOneToBeDropped(final DropDatabaseDiscoveryTypeStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+        return isExistRuleConfig(currentRuleConfig)
+                && !getIdenticalData(currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getDiscoveryTypeName).collect(Collectors.toSet()),
+                sqlStatement.getTypes()).isEmpty();
     }
     
     private boolean isNotInUse(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String toBeDroppedDiscoveryTypeName) {

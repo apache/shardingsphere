@@ -112,7 +112,7 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     
     @Override
     public ASTNode visitDropDatabaseDiscoveryRule(final DropDatabaseDiscoveryRuleContext ctx) {
-        return new DropDatabaseDiscoveryRuleStatement(ctx.ruleName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toList()));
+        return new DropDatabaseDiscoveryRuleStatement(ctx.ruleName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toList()), null != ctx.existClause());
     }
     
     @Override
@@ -182,7 +182,8 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     
     @Override
     public ASTNode visitDropDatabaseDiscoveryType(final DropDatabaseDiscoveryTypeContext ctx) {
-        return new DropDatabaseDiscoveryTypeStatement(ctx.discoveryTypeName().stream().map(this::getIdentifierValue).collect(Collectors.toCollection(LinkedList::new)));
+        return new DropDatabaseDiscoveryTypeStatement(ctx.discoveryTypeName().stream().map(this::getIdentifierValue).collect(Collectors.toCollection(LinkedList::new)),
+                null != ctx.existClause());
     }
     
     @Override
