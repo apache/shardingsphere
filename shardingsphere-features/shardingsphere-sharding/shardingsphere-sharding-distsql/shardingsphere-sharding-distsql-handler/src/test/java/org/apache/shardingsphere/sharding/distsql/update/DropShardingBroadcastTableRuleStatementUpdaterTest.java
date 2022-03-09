@@ -90,7 +90,7 @@ public final class DropShardingBroadcastTableRuleStatementUpdaterTest {
                 : new DropShardingBroadcastTableRulesStatement(Collections.singleton(tableName));
     }
     
-    private DropShardingBroadcastTableRulesStatement createSQLStatement(final boolean containsExistClause, String tableName) {
+    private DropShardingBroadcastTableRulesStatement createSQLStatement(final boolean containsExistClause, final String tableName) {
         return null == tableName ? new DropShardingBroadcastTableRulesStatement(Collections.emptyList())
                 : new DropShardingBroadcastTableRulesStatement(containsExistClause, Collections.singleton(tableName));
     }
