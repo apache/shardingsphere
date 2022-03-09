@@ -73,18 +73,6 @@ public final class ShardingSphereRuleMetaData {
     }
     
     /**
-     * Find single rule configuration by class.
-     *
-     * @param clazz target class
-     * @param <T> type of rule configuration
-     * @return found rule configurations
-     */
-    public <T extends RuleConfiguration> T findSingleRuleConfiguration(final Class<T> clazz) {
-        Collection<T> foundRuleConfiguration = findRuleConfiguration(clazz);
-        return foundRuleConfiguration.isEmpty() ? null : foundRuleConfiguration.iterator().next();
-    }
-    
-    /**
      * Find single rule by class.
      *
      * @param clazz target class
