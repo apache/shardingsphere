@@ -81,10 +81,14 @@ public final class InstanceContext {
     /**
      * Update instance label.
      * 
+     * @param instanceId instance id
      * @param labels collection of label
      */
-    public void updateLabel(final Collection<String> labels) {
-        instance.setLabels(labels);
+    public void updateLabel(final String instanceId, final Collection<String> labels) {
+        if (instance.getInstanceDefinition().getInstanceId().getId().equals(instanceId)) {
+            instance.setLabels(labels);
+        }
+        computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().getId().equals(instanceId)).forEach(each -> each.setLabels(labels));
     }
     
     /**
