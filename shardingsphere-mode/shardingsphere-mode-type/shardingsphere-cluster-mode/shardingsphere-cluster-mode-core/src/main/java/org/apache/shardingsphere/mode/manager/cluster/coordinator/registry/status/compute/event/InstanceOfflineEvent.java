@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.destroyer.impl;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
 
-import com.zaxxer.hikari.HikariDataSource;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
-import org.junit.Test;
-
-public final class HikariDataSourcePoolDestroyerTest {
-
-    @Test(timeout = 60000L)
-    public void assertDestroy() throws InterruptedException {
-        HikariDataSource dataSource = new HikariDataSource();
-        new HikariDataSourcePoolDestroyer().destroy(dataSource);
-        while (!dataSource.isClosed()) {
-            Thread.sleep(10L);
-        }
-    }
+/**
+ * Compute node instance offline event.
+ */
+@RequiredArgsConstructor
+@Getter
+public class InstanceOfflineEvent implements GovernanceEvent {
+    
+    private final InstanceDefinition instanceDefinition;
 }

@@ -15,37 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.destroyer;
+package org.apache.shardingsphere.infra.datasource.pool.destroyer.detector;
 
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Properties;
 
 /**
- * Data source pool destroyer factory.
+ * Data source pool active detector factory.
  */
-public final class DataSourcePoolDestroyerFactory {
+public final class DataSourcePoolActiveDetectorFactory {
     
     static {
-        ShardingSphereServiceLoader.register(DataSourcePoolDestroyer.class);
+        ShardingSphereServiceLoader.register(DataSourcePoolActiveDetector.class);
     }
     
     /**
-     * Destroy data source pool.
-     *
-     * @param dataSource data source pool to be destroyed
-     * @throws SQLException SQL exception
+     * Create new instance of data source pool active detector.
+     * 
+     * @param dataSourceClassName data source class name
+     * @return new instance of data source pool active detector
      */
-    public static void destroy(final DataSource dataSource) throws SQLException {
-        newInstance(dataSource.getClass().getCanonicalName()).destroy(dataSource);
-    }
-    
-    private static DataSourcePoolDestroyer newInstance(final String dataSourceClassName) {
-        return TypedSPIRegistry.findRegisteredService(DataSourcePoolDestroyer.class, dataSourceClassName, new Properties())
-                .orElse(RequiredSPIRegistry.getRegisteredService(DataSourcePoolDestroyer.class));
+    public static DataSourcePoolActiveDetector newInstance(final String dataSourceClassName) {
+        return TypedSPIRegistry.findRegisteredService(DataSourcePoolActiveDetector.class, dataSourceClassName, new Properties())
+                .orElse(RequiredSPIRegistry.getRegisteredService(DataSourcePoolActiveDetector.class));
     }
 }

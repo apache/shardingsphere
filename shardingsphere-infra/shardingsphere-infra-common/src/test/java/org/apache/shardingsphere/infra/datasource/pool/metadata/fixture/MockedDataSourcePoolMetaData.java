@@ -51,7 +51,7 @@ public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaDat
     
     @Override
     public Collection<String> getTransientFieldNames() {
-        return Collections.emptyList();
+        return Collections.singleton("closed");
     }
     
     @Override

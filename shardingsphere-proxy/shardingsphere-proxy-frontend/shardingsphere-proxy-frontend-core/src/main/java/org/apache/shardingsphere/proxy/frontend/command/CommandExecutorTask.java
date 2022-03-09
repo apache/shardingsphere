@@ -69,6 +69,7 @@ public final class CommandExecutorTask implements Runnable {
             isNeedFlush = executeCommand(context, payload);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
+            databaseProtocolFrontendEngine.handleException(connectionSession);
             // CHECKSTYLE:ON
             processException(ex);
         } finally {

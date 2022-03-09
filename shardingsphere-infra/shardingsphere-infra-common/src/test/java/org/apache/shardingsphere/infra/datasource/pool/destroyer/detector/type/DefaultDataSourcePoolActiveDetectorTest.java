@@ -15,10 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.resource.fixture;
+package org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.type;
 
-import javax.sql.DataSource;
-import java.io.Closeable;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.junit.Test;
 
-public interface CloseableDataSource extends DataSource, Closeable {
+import static org.junit.Assert.assertFalse;
+
+public final class DefaultDataSourcePoolActiveDetectorTest {
+    
+    @Test
+    public void assertContainsActiveConnection() {
+        assertFalse(new DefaultDataSourcePoolActiveDetector().containsActiveConnection(new MockedDataSource()));
+    }
 }

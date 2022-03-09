@@ -80,7 +80,7 @@ password
     | TILDE | NOT | AT | POUND | DL | MOD | CARET 
     | AMPERSAND | ASTERISK | LP | RP | UL | MINUS | PLUS 
     | EQ| LBE | RBE | LBT | RBT | SLASH | LT | GT | COMMA 
-    | DOT | SEMI | QUESTION | SQ | COLON | VERTICALBAR                    
+    | DOT | SEMI | QUESTION | SQ | COLON | VERTICALBAR | PASSWORD                    
     ;
 
 ignoreSingleTables

@@ -19,11 +19,14 @@ package org.apache.shardingsphere.infra.instance;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -40,6 +43,8 @@ public final class InstanceContext {
     private final WorkerIdGenerator workerIdGenerator;
     
     private final ModeConfiguration modeConfiguration;
+    
+    private final Collection<ComputeNodeInstance> computeNodeInstances = new LinkedList<>();
     
     public InstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator, final ModeConfiguration modeConfiguration) {
         this.instance = instance;
@@ -76,10 +81,14 @@ public final class InstanceContext {
     /**
      * Update instance label.
      * 
+     * @param instanceId instance id
      * @param labels collection of label
      */
-    public void updateLabel(final Collection<String> labels) {
-        instance.setLabels(labels);
+    public void updateLabel(final String instanceId, final Collection<String> labels) {
+        if (instance.getInstanceDefinition().getInstanceId().getId().equals(instanceId)) {
+            instance.setLabels(labels);
+        }
+        computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().getId().equals(instanceId)).forEach(each -> each.setLabels(labels));
     }
     
     /**
@@ -93,5 +102,41 @@ public final class InstanceContext {
             Optional.of(workerIdGenerator.generate()).ifPresent(instance::setWorkerId);
         }
         return instance.getWorkerId();
+    }
+    
+    /**
+     * Add compute node instance.
+     * 
+     * @param instance compute node instance
+     */
+    public void addComputeNodeInstance(final ComputeNodeInstance instance) {
+        computeNodeInstances.removeIf(each -> each.getInstanceDefinition().getInstanceId().getId().equalsIgnoreCase(instance.getInstanceDefinition().getInstanceId().getId()));
+        computeNodeInstances.add(instance);
+    }
+    
+    /**
+     * Delete compute node instance.
+     *
+     * @param instance compute node instance
+     */
+    public void deleteComputeNodeInstance(final ComputeNodeInstance instance) {
+        computeNodeInstances.removeIf(each -> each.getInstanceDefinition().getInstanceId().getId().equalsIgnoreCase(instance.getInstanceDefinition().getInstanceId().getId()));
+    }
+    
+    /**
+     * Get compute node instances by instance type and labels.
+     *
+     * @param instanceType instance type
+     * @param labels collection of contained label
+     * @return compute node instances
+     */
+    public Collection<ComputeNodeInstance> getComputeNodeInstances(final InstanceType instanceType, final Collection<String> labels) {
+        Collection<ComputeNodeInstance> result = new ArrayList<>(computeNodeInstances.size());
+        computeNodeInstances.forEach(each -> {
+            if (each.getInstanceDefinition().getInstanceType() == instanceType && each.getLabels().stream().anyMatch(labels::contains)) {
+                result.add(each);
+            }
+        });
+        return result;
     }
 }
