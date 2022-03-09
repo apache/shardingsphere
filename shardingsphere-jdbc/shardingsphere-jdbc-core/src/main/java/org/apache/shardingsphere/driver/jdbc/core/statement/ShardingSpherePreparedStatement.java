@@ -223,7 +223,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine();
         ExecutionUnit executionUnit = new ExecutionUnit(trafficContext.getInstanceId(), new SQLUnit(logicSQL.getSql(), logicSQL.getParameters()));
         ExecutionGroupContext<JDBCExecutionUnit> context = prepareEngine.prepare(trafficContext.getRouteContext(), Collections.singletonList(executionUnit));
-        return context.getInputGroups().stream().flatMap(each -> each.getInputs().stream()).findFirst().orElseThrow(() -> new ShardingSphereException("Can not get traffic execution unit."));
+        if (context.getInputGroups().isEmpty() || context.getInputGroups().iterator().next().getInputs().isEmpty()) {
+            throw new ShardingSphereException("Can not get traffic execution unit.");
+        }
+        return context.getInputGroups().iterator().next().getInputs().iterator().next();
     }
     
     private TrafficContext getTrafficContext(final LogicSQL logicSQL) {
