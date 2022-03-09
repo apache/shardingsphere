@@ -60,10 +60,6 @@
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
         </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-mysql-client</artifactId>
-        </dependency>
         
         <dependency>
             <groupId>com.h2database</groupId>
