@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * JDBC backend connection.
+ * JDBC backend statement.
  */
 @Getter
 @Setter

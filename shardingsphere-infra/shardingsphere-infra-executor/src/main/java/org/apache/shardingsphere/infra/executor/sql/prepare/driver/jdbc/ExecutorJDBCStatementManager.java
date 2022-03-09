@@ -23,7 +23,7 @@ import java.sql.Connection;
 import java.sql.Statement;
 
 /**
- * Executor JDBC connection manager.
+ * Executor JDBC statement manager.
  */
 public interface ExecutorJDBCStatementManager extends ExecutorStatementManager<Connection, Statement, StatementOption> {
 }

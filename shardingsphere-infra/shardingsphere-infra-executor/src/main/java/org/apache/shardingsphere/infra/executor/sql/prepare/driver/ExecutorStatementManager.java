@@ -25,6 +25,7 @@ import java.sql.SQLException;
 /**
  * Executor statement manager.
  * 
+ * @param <C> type of resource connection
  * @param <R> type of storage resource
  * @param <O> type of storage resource option
  */
