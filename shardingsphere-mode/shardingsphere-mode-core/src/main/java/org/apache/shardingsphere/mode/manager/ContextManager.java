@@ -47,6 +47,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.rule.builder.DefaultTransactionRuleConfigurationBuilder;
@@ -61,6 +62,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -308,9 +310,19 @@ public final class ContextManager implements AutoCloseable {
      */
     public void alterGlobalRuleConfiguration(final Collection<RuleConfiguration> ruleConfigurations) {
         if (!ruleConfigurations.isEmpty()) {
+            alterTransactionRuleConfiguration(ruleConfigurations);
             ShardingSphereRuleMetaData newGlobalRuleMetaData = new ShardingSphereRuleMetaData(ruleConfigurations,
                     GlobalRulesBuilder.buildRules(ruleConfigurations, metaDataContexts.getMetaDataMap()));
             renewMetaDataContexts(rebuildMetaDataContexts(newGlobalRuleMetaData));
+        }
+    }
+    
+    private void alterTransactionRuleConfiguration(final Collection<RuleConfiguration> ruleConfigurations) {
+        for (RuleConfiguration each : ruleConfigurations) {
+            if (each instanceof TransactionRuleConfiguration) {
+                renewAllTransactionContext();
+                break;
+            }
         }
     }
     
@@ -526,6 +538,12 @@ public final class ContextManager implements AutoCloseable {
     
     private Map<String, DataSource> buildChangedDataSources(final ShardingSphereMetaData originalMetaData, final Map<String, DataSourceProperties> newDataSourcePropsMap) {
         return DataSourcePoolCreator.create(getChangedDataSourceConfiguration(originalMetaData, newDataSourcePropsMap));
+    }
+    
+    private void renewAllTransactionContext() {
+        for (Entry<String, ShardingSphereMetaData> entry : metaDataContexts.getMetaDataMap().entrySet()) {
+            renewTransactionContext(entry.getKey(), entry.getValue().getResource());
+        }
     }
     
     private void renewTransactionContext(final String schemaName, final ShardingSphereResource resource) {
