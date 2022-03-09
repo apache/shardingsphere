@@ -67,9 +67,8 @@ public final class DropDefaultStrategyStatementUpdater implements RuleDefinition
     public boolean hasAnyOneToBeDropped(final DropDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         if (sqlStatement.getDefaultType().equalsIgnoreCase(ShardingStrategyLevelType.TABLE.name())) {
             return null != currentRuleConfig && null != currentRuleConfig.getDefaultTableShardingStrategy();
-        } else {
-            return null != currentRuleConfig && null != currentRuleConfig.getDefaultDatabaseShardingStrategy();
         }
+        return null != currentRuleConfig && null != currentRuleConfig.getDefaultDatabaseShardingStrategy();
     }
     
     @Override
