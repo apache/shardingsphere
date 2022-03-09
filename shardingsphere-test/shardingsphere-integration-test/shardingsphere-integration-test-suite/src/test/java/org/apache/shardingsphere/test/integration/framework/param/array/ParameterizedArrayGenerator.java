@@ -117,7 +117,7 @@ public final class ParameterizedArrayGenerator {
         return envScenarios.stream().filter(each -> filterScenarios(each, scenarios, sqlCommandType.getSqlStatementClass()))
                 .map(each -> new AssertionParameterizedArray(testCaseContext, assertion, adapter, each, databaseType, sqlExecuteType)).collect(Collectors.toList());
     }
-
+    
     private boolean filterScenarios(final String scenario, final Collection<String> scenarios, final Class<? extends SQLStatement> sqlStatementClass) {
         if (sqlStatementClass == RDLStatement.class || sqlStatementClass == RALStatement.class) {
             return "empty_rules".equals(scenario);
