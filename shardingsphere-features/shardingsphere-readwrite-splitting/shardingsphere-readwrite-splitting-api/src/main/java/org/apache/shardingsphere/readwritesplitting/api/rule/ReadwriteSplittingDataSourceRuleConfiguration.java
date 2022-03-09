@@ -64,5 +64,4 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
     public Optional<String> getReadDataSourceNames() {
         return Optional.ofNullable(props.getProperty("read-data-source-names"));
     }
-
 }
