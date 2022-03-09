@@ -17,7 +17,7 @@ chapter = true
 
 具体操作，请参考[使用 TOTP 启用双因素认证](https://help.github.com/articles/configuring-two-factor-authentication-via-a-totp-mobile-app/)。
 
-当您开启2FA验证后，您需要使用用户名/密码 + 手机认证码的方式来登录 GitHub。
+当您开启 2FA 验证后，您需要使用用户名/密码 + 手机认证码的方式来登录 GitHub。
 
 提示：若无法通过页面链接下载对应 APP，可在手机的应用市场或是 APP Store 里搜索并下载 Google Authenticator。
 
