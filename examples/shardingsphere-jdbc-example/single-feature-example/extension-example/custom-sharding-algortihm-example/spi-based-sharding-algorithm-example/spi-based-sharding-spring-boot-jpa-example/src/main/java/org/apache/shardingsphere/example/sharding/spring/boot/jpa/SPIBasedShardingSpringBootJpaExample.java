@@ -31,7 +31,7 @@ import java.sql.SQLException;
 @ComponentScan("org.apache.shardingsphere.example.core.jpa")
 @EntityScan(basePackages = "org.apache.shardingsphere.example.core.jpa.entity")
 @SpringBootApplication(exclude = JtaAutoConfiguration.class)
-public class ShardingSpringBootJpaExample {
+public class SPIBasedShardingSpringBootJpaExample {
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(ShardingSpringBootJpaExample.class, args)) {
