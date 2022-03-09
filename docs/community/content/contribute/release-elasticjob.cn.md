@@ -64,12 +64,12 @@ chapter = true
 https://github.com/apache/shardingsphere-elasticjob/blob/master/RELEASE-NOTES.md
 ```
 
-更新 `examples` 模块的pom，将版本由 ${CURRENT.VERSION} 替换为 ${RELEASE.VERSION}。
+更新`examples`模块的pom，将版本由${CURRENT.VERSION}替换为${RELEASE.VERSION}。
 
 **2. 创建发布分支**
 
-假设从 github 下载的 ElasticJob 源代码在 `~/elasticjob/` 目录；假设即将发布的版本为 `${RELEASE.VERSION}`。
-创建 `${RELEASE.VERSION}-release` 分支，接下来的操作都在该分支进行。
+假设从github下载的ElasticJob源代码在`~/elasticjob/`目录；假设即将发布的版本为`${RELEASE.VERSION}`。
+创建`${RELEASE.VERSION}-release`分支，接下来的操作都在该分支进行。
 
 ```shell
 ## ${name}为源码所在分支，如：master，dev-4.x
@@ -86,7 +86,7 @@ git push origin ${RELEASE.VERSION}-release
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
 ```
 
--Prelease: 选择 release 的 profile，这个 profile 会打包所有源码和 jar 文件。
+-Prelease: 选择release的profile，这个profile会打包所有源码和jar文件。
 
 -DautoVersionSubmodules=true：作用是发布过程中版本号只需要输入一次，不必为每个子模块都输入一次。
 
@@ -104,11 +104,11 @@ mvn release:clean
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github用户名}
 ```
 
-和上一步演练的命令基本相同，去掉了- DdryRun=true 参数。
+和上一步演练的命令基本相同，去掉了-DdryRun=true参数。
 
--DpushChanges=false：不要将修改后的版本号和 tag 自动提交至 Github。
+-DpushChanges=false：不要将修改后的版本号和tag自动提交至Github。
 
-将本地文件检查无误后，提交至 github。
+将本地文件检查无误后，提交至github。
 
 ```shell
 git push origin ${RELEASE.VERSION}-release
@@ -121,10 +121,10 @@ git push origin --tags
 mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -Dusername=${Github用户名}
 ```
 
-执行完该命令后，待发布版本会自动上传到 Apache 的临时筹备仓库 (staging repository)。
-访问 https://repository.apache.org/#stagingRepositories, 使用 Apache 的 LDAP 账户登录后，就会看到上传的版本，`Repository` 列的内容即为 ${STAGING.REPOSITORY}。
-点击 `Close` 来告诉 Nexus 这个构建已经完成，只有这样该版本才是可用的。
-如果电子签名等出现问题，`Close` 会失败，可以通过 `Activity` 查看失败信息。
+执行完该命令后，待发布版本会自动上传到Apache的临时筹备仓库(staging repository)。
+访问https://repository.apache.org/#stagingRepositories, 使用Apache的LDAP账户登录后，就会看到上传的版本，`Repository`列的内容即为${STAGING.REPOSITORY}。
+点击`Close`来告诉Nexus这个构建已经完成，只有这样该版本才是可用的。
+如果电子签名等出现问题，`Close`会失败，可以通过`Activity`查看失败信息。
 
 ### 发布 Apache SVN 仓库
 
@@ -137,14 +137,14 @@ mkdir -p ~/ss_svn/dev/
 cd ~/ss_svn/dev/
 ```
 
-创建完毕后，从 Apache SVN 检出 shardingsphere 发布目录。
+创建完毕后，从Apache SVN 检出 shardingsphere 发布目录。
 
 ```shell
 svn --username=${APACHE LDAP 用户名} co https://dist.apache.org/repos/dist/dev/shardingsphere
 cd ~/ss_svn/dev/shardingsphere
 ```
 
-**2. 添加 gpg 公钥**
+**2. 添加gpg公钥**
 
 仅第一次部署的账号需要添加，只要 `KEYS` 中包含已经部署过的账户的公钥即可。
 
@@ -170,7 +170,7 @@ cp -f ~/elasticjob/elasticjob-distribution/elasticjob-cloud-executor-distributio
 cp -f ~/elasticjob/elasticjob-distribution/elasticjob-cloud-scheduler-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/elasticjob-${RELEASE.VERSION}
 ```
 
-**4. 提交 Apache SVN **
+**4. 提交 Apache SVN**
 
 ```shell
 svn add *
@@ -221,7 +221,7 @@ gpg --verify apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-scheduler
 
 **检查发布文件内容**
 
-**对比源码包与 Github 上 tag 的内容差异**
+**对比源码包与 Github 上tag的内容差异**
 
 ```
 curl -Lo tag-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere-elasticjob/archive/${RELEASE.VERSION}.zip
@@ -232,11 +232,11 @@ diff -r apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src-release sharding
 
 **检查源码包的文件内容**
 
-- 检查源码包是否包含由于包含不必要文件，致使tarball过于庞大
+- 检查源码包是否包含由于包含不必要文件，致使 tarball 过于庞大
 - 存在 `LICENSE` 和 `NOTICE` 文件
 - `NOTICE` 文件中的年份正确
 - 只存在文本文件，不存在二进制文件
-- 所有文件的开头都有ASF许可证
+- 所有文件的开头都有 ASF 许可证
 - 能够正确编译，单元测试可以通过 (./mvnw -T 1C install)
 - 检查是否有多余文件或文件夹，例如空文件夹等
 
@@ -250,7 +250,7 @@ diff -r apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src-release sharding
 
 - 存在 `LICENSE` 和 `NOTICE` 文件
 - `NOTICE` 文件中的年份正确
-- 所有文本文件开头都有ASF许可证
+- 所有文本文件开头都有 ASF 许可证
 - 检查第三方依赖许可证：
   - 第三方依赖的许可证兼容
   - 所有第三方依赖的许可证都在 `LICENSE` 文件中声名
@@ -262,9 +262,9 @@ diff -r apache-shardingsphere-elasticjob-${RELEASE.VERSION}-src-release sharding
 **投票阶段**
 
 1. ShardingSphere 社区投票，发起投票邮件到 `dev@shardingsphere.apache.org`。PMC 需要先按照文档检查版本的正确性，然后再进行投票。
-经过至少72小时并统计到3个`+1 PMC member` 票后，即可进入下一阶段的投票。
+经过至少 72 小时并统计到3个`+1 PMC member` 票后，即可进入下一阶段的投票。
 
-2. 宣布投票结果,发起投票结果邮件到 `dev@shardingsphere.apache.org`。
+2. 宣布投票结果,发起投票结果邮件到`dev@shardingsphere.apache.org`。
 
 **投票模板**
 
@@ -396,7 +396,7 @@ mvn clean package -Prelease,docker
 
 4.3 给本地 Docker 镜像打标记
 
-通过`docker images`查看到IMAGE ID，例如为：e9ea51023687
+通过 `docker images` 查看到 IMAGE ID，例如为：e9ea51023687
 
 ```shell
 docker tag e9ea51023687 apache/shardingsphere-elasticjob-cloud-scheduler:latest
