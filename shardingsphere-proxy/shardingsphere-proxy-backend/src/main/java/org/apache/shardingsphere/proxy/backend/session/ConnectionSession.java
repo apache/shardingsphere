@@ -84,7 +84,7 @@ public final class ConnectionSession {
     
     private ExecutorStatementManager determineStatementManager() {
         String proxyBackendDriverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
-        return "ExperimentalVertx".equals(proxyBackendDriverType) ? new VertxBackendStatement() : new JDBCBackendStatement(schemaName);
+        return "ExperimentalVertx".equals(proxyBackendDriverType) ? new VertxBackendStatement() : new JDBCBackendStatement();
     }
     
     /**
@@ -98,6 +98,9 @@ public final class ConnectionSession {
         }
         if (transactionStatus.isInTransaction()) {
             throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
+        }
+        if (statementManager instanceof JDBCBackendStatement) {
+            ((JDBCBackendStatement) statementManager).setSchemaName(schemaName);
         }
         this.schemaName = schemaName;
     }

@@ -43,12 +43,11 @@ import java.util.Map;
 @Setter
 public final class JDBCBackendStatement implements ExecutorJDBCStatementManager {
     
-    private final String schemaName;
-    
     private final Map<String, StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetters;
     
-    public JDBCBackendStatement(final String schemaName) {
-        this.schemaName = schemaName;
+    private String schemaName;
+    
+    public JDBCBackendStatement() {
         fetchSizeSetters = SingletonSPIRegistry.getTypedSingletonInstancesMap(StatementMemoryStrictlyFetchSizeSetter.class);
     }
     

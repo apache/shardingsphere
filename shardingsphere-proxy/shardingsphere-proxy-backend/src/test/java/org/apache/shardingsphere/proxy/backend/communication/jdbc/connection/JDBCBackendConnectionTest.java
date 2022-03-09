@@ -96,8 +96,9 @@ public final class JDBCBackendConnectionTest {
         backendConnection = spy(new JDBCBackendConnection(connectionSession));
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
-        String schemaName = connectionSession.getSchemaName();
-        when(connectionSession.getStatementManager()).thenReturn(new JDBCBackendStatement(schemaName));
+        JDBCBackendStatement backendStatement = new JDBCBackendStatement();
+        backendStatement.setSchemaName(connectionSession.getSchemaName());
+        when(connectionSession.getStatementManager()).thenReturn(backendStatement);
     }
     
     private void setContextManager() throws ReflectiveOperationException {
