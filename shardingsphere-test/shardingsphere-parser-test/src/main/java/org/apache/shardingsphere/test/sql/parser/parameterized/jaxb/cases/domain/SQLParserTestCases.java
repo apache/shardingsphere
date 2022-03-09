@@ -206,6 +206,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.RestoreScalingSourceWritingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ShowScalingCheckAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.StopScalingSourceWritingStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.StopScalingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryConstructionRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryDefinitionRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryHeartbeatStatementTestCase;
@@ -778,6 +779,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "drop-scaling")
     private final List<DropScalingStatementTestCase> dropScalingStatementTestCases = new LinkedList<>();
 
+    @XmlElement(name = "stop-scaling")
+    private final List<StopScalingStatementTestCase> stopScalingStatementTestCases = new LinkedList<>();
+
     @XmlElement(name = "create-sharding-scaling-rule")
     private final List<CreateShardingScalingRuleStatementTestCase> createShardingScalingRuleStatementTestCases = new LinkedList<>();
     
@@ -1302,6 +1306,7 @@ public final class SQLParserTestCases {
         putAll(applyScalingStatementTestCases, result);
         putAll(resetScalingStatementTestCases, result);
         putAll(dropScalingStatementTestCases, result);
+        putAll(stopScalingStatementTestCases, result);
         putAll(createShardingScalingRuleStatementTestCases, result);
         putAll(dropShardingScalingRuleStatementTestCases, result);
         putAll(enableShardingScalingRuleStatementTestCases, result);

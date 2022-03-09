@@ -15,19 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Compute node instance offline event.
+ * Stop scaling statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class InstanceOfflineEvent implements GovernanceEvent {
+@Setter
+public final class StopScalingStatementTestCase extends SQLParserTestCase {
     
-    private final InstanceDefinition instanceDefinition;
+    @XmlElement(name = "job-id")
+    private final List<String> jobIds = new LinkedList<>();
 }

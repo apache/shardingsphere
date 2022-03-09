@@ -19,15 +19,16 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Compute node instance offline event.
+ * Xa recovery id event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class InstanceOfflineEvent implements GovernanceEvent {
+public final class XaRecoveryIdEvent implements GovernanceEvent {
     
-    private final InstanceDefinition instanceDefinition;
+    private final String instanceId;
+    
+    private final String xaRecoveryId;
 }
