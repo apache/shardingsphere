@@ -32,4 +32,9 @@ import java.util.Collection;
 public final class DropShardingTableRuleStatement extends DropRuleStatement {
     
     private final Collection<TableNameSegment> tableNames;
+    
+    public DropShardingTableRuleStatement(final boolean containsExistsClause, final Collection<TableNameSegment> tableNames) {
+        setContainsExistClause(containsExistsClause);
+        this.tableNames = tableNames;
+    }
 }
