@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.DropRuleStatementTestCase;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Drop sharding table rule statement test case.
+ * Stop scaling statement test case.
  */
 @Getter
-public final class DropShardingTableRuleStatementTestCase extends DropRuleStatementTestCase {
+@Setter
+public final class StopScalingStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "table")
-    private final List<String> tables = new LinkedList<>();
+    @XmlElement(name = "job-id")
+    private final List<String> jobIds = new LinkedList<>();
 }

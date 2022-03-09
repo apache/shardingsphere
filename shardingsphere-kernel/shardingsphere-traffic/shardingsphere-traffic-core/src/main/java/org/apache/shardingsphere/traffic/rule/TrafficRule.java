@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.traffic.rule;
 
 import com.google.common.base.Preconditions;
+import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
@@ -57,6 +58,7 @@ public final class TrafficRule implements GlobalRule {
         ShardingSphereServiceLoader.register(TrafficLoadBalanceAlgorithm.class);
     }
     
+    @Getter
     private final Collection<TrafficStrategyRule> strategyRules;
     
     public TrafficRule(final TrafficRuleConfiguration config) {

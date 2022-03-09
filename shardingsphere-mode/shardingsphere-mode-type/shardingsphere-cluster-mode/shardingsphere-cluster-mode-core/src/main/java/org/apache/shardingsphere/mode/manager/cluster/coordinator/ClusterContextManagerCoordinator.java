@@ -210,9 +210,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final LabelsEvent event) {
-        if (contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId().equals(event.getInstanceId())) {
-            contextManager.getInstanceContext().updateLabel(event.getLabels());
-        }
+        contextManager.getInstanceContext().updateLabel(event.getInstanceId(), event.getLabels());
     }
     
     /**

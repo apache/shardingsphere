@@ -43,19 +43,18 @@ chapter = true
 | ---------------------------- |----------------------------|
 | DataSourcePoolMetaData        | Data source pool meta data |
 
-| *Implementation Class*           | *Description*                   |
-|----------------------------------|---------------------------------|
-| DBCPDataSourcePoolMetaData       | DBCP data source pool meta data |
-| HikariDataSourcePoolMetaData     | Hikari data source pool meta data                |
-| TomcatDBCPDataSourcePoolMetaData | Tomcat DBCP data source pool meta data           |
+| *Implementation Class*       | *Description*                     |
+|------------------------------|-----------------------------------|
+| DBCPDataSourcePoolMetaData   | DBCP data source pool meta data   |
+| HikariDataSourcePoolMetaData | Hikari data source pool meta data |
 
-## DataSourcePoolDestroyer
+## DataSourcePoolActiveDetector
 
-| *SPI Name*                     | *Description*                      |
-| ------------------------------ | ---------------------------------- |
-| DataSourcePoolDestroyer        | Data source pool destroyer         |
+| *SPI Name*                          | *Description*                            |
+| ----------------------------------- | ---------------------------------------- |
+| DataSourcePoolActiveDetector        | Data source pool active detector         |
 
-| *Implementation Class*         | *Description*                      |
-| ------------------------------ | ---------------------------------- |
-| DefaultDataSourcePoolDestroyer | Default data source pool destroyer |
-| HikariDataSourcePoolDestroyer  | Hikari data source pool destroyer  |
+| *Implementation Class*              | *Description*                            |
+| ----------------------------------- | ---------------------------------------- |
+| DefaultDataSourcePoolActiveDetector | Default data source pool active detector |
+| HikariDataSourcePoolActiveDetector  | Hikari data source pool active detector  |
