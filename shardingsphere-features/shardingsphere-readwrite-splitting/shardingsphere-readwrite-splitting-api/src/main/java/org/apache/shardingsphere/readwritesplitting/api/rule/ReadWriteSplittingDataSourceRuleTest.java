@@ -24,14 +24,12 @@ public final class ReadWriteSplittingDataSourceRuleTest {
 
     @Test
     public void assertGetAutoAwareDataSourceName(){
-        String actual = readwriteSplittingDataSourceRuleConfigDynamic.getProps().getProperty("auto-aware-data-source-name");
-        assertThat(actual, is("ds"));
+        assertThat(readwriteSplittingDataSourceRuleConfigDynamic.getProps().getProperty("auto-aware-data-source-name"), is("ds"));
     }
 
     @Test
     public void assertGetWriteDataSourceName(){
-        String actual = readwriteSplittingDataSourceRuleConfig.getProps().getProperty("write-data-source-name");
-        assertThat(actual, is("write_ds"));
+        assertThat(readwriteSplittingDataSourceRuleConfig.getProps().getProperty("write-data-source-name"), is("write_ds"));
     }
 
     @Test
