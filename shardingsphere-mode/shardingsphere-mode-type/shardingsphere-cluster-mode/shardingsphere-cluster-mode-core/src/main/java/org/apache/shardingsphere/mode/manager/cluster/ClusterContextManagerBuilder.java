@@ -86,11 +86,13 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
             ShardingSphereMetaData metaData = metaDataContexts.getMetaData(schemaName.get());
             Properties result = fileGenerator.get().getTransactionProps(transactionRule.get().getProps(),
                     new DataSourceProvidedSchemaConfiguration(metaData.getResource().getDataSources(), metaData.getRuleMetaData().getConfigurations()), getType());
-            TransactionRuleConfiguration transactionRuleConfiguration = metaDataContexts.getGlobalRuleMetaData().findSingleRuleConfiguration(TransactionRuleConfiguration.class);
-            transactionRuleConfiguration.getProps().clear();
-            transactionRuleConfiguration.getProps().putAll(result);
-            transactionRule.get().getProps().clear();
-            transactionRule.get().getProps().putAll(result);
+            Optional<TransactionRuleConfiguration> transactionRuleConfiguration = metaDataContexts.getGlobalRuleMetaData().findSingleRuleConfiguration(TransactionRuleConfiguration.class);
+            if (transactionRule.isPresent()) {
+                transactionRuleConfiguration.get().getProps().clear();
+                transactionRuleConfiguration.get().getProps().putAll(result);
+                transactionRule.get().getProps().clear();
+                transactionRule.get().getProps().putAll(result);
+            }
             return result;
         }
         return new Properties();

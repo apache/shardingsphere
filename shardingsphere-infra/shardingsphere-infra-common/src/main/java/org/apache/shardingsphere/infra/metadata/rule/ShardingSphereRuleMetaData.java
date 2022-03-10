@@ -79,9 +79,9 @@ public final class ShardingSphereRuleMetaData {
      * @param <T> type of rule configuration
      * @return found rule configurations
      */
-    public <T extends RuleConfiguration> T findSingleRuleConfiguration(final Class<T> clazz) {
+    public <T extends RuleConfiguration> Optional<T> findSingleRuleConfiguration(final Class<T> clazz) {
         Collection<T> foundRuleConfiguration = findRuleConfiguration(clazz);
-        return foundRuleConfiguration.isEmpty() ? null : foundRuleConfiguration.iterator().next();
+        return foundRuleConfiguration.isEmpty() ? Optional.empty() : Optional.of(foundRuleConfiguration.iterator().next());
     }
     
     /**

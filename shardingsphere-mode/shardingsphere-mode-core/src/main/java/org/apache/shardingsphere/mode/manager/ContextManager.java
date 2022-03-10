@@ -323,8 +323,8 @@ public final class ContextManager implements AutoCloseable {
     private boolean needRenewTransactionContext(final Collection<RuleConfiguration> ruleConfigurations) {
         for (RuleConfiguration each : ruleConfigurations) {
             if (each instanceof TransactionRuleConfiguration) {
-                TransactionRuleConfiguration old = metaDataContexts.getGlobalRuleMetaData().findSingleRuleConfiguration(TransactionRuleConfiguration.class);
-                if (!((TransactionRuleConfiguration) each).compare(old)) {
+                Optional<TransactionRuleConfiguration> old = metaDataContexts.getGlobalRuleMetaData().findSingleRuleConfiguration(TransactionRuleConfiguration.class);
+                if (old.isPresent() && !((TransactionRuleConfiguration) each).compare(old.get())) {
                     return true;
                 }
                 break;

@@ -45,9 +45,6 @@ public final class TransactionRuleConfiguration implements GlobalRuleConfigurati
      * @return return true if the two transactionRuleConfiguration are the same
      */
     public boolean compare(final TransactionRuleConfiguration transactionRuleConfiguration) {
-        if (null == transactionRuleConfiguration) {
-            return false;
-        }
         return Objects.equals(defaultType, transactionRuleConfiguration.defaultType) && Objects.equals(providerType, transactionRuleConfiguration.providerType)
                 && Objects.equals(props, transactionRuleConfiguration.props);
     }
