@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
+import org.apache.shardingsphere.infra.hint.SQLHintProperties;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -144,9 +145,9 @@ public final class TrafficRule implements GlobalRule {
             return matchTransactionTraffic((TransactionTrafficAlgorithm) trafficAlgorithm, inTransaction);
         }
         if (trafficAlgorithm instanceof HintTrafficAlgorithm) {
-            Properties props = logicSQL.getSqlStatementContext() instanceof CommonSQLStatementContext 
-                    ? ((CommonSQLStatementContext) logicSQL.getSqlStatementContext()).getSqlHintExtractor().getSqlHintProperties().getProps() : new Properties();
-            return matchHintTraffic((HintTrafficAlgorithm) trafficAlgorithm, props);
+            SQLHintProperties sqlHintProps = logicSQL.getSqlStatementContext() instanceof CommonSQLStatementContext 
+                    ? ((CommonSQLStatementContext) logicSQL.getSqlStatementContext()).getSqlHintExtractor().getSqlHintProperties() : new SQLHintProperties(new Properties());
+            return matchHintTraffic((HintTrafficAlgorithm) trafficAlgorithm, sqlHintProps);
         }
         if (trafficAlgorithm instanceof SegmentTrafficAlgorithm) {
             SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
@@ -155,8 +156,8 @@ public final class TrafficRule implements GlobalRule {
         return false;
     }
     
-    private boolean matchHintTraffic(final HintTrafficAlgorithm trafficAlgorithm, final Properties props) {
-        HintTrafficValue hintTrafficValue = new HintTrafficValue(props);
+    private boolean matchHintTraffic(final HintTrafficAlgorithm trafficAlgorithm, final SQLHintProperties sqlHintProps) {
+        HintTrafficValue hintTrafficValue = new HintTrafficValue(sqlHintProps);
         return trafficAlgorithm.match(hintTrafficValue);
     }
     

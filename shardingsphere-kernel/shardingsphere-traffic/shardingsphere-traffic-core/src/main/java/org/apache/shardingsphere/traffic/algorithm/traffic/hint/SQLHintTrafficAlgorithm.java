@@ -17,39 +17,22 @@
 
 package org.apache.shardingsphere.traffic.algorithm.traffic.hint;
 
-import com.google.common.base.Preconditions;
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.infra.hint.SQLHintPropertiesKey;
 import org.apache.shardingsphere.traffic.api.traffic.hint.HintTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.hint.HintTrafficValue;
-
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Properties;
 
 /**
  * Simple hint traffic algorithm.
  */
-@Getter
-@Setter
 public final class SQLHintTrafficAlgorithm implements HintTrafficAlgorithm {
-    
-    private Properties props = new Properties();
     
     @Override
     public void init() {
-        Preconditions.checkState(!props.isEmpty(), "Simple hint traffic algorithm props cannot be empty.");
     }
     
     @Override
     public boolean match(final HintTrafficValue hintTrafficValue) {
-        Properties sqlHintProps = hintTrafficValue.getProps();
-        for (Entry<Object, Object> each : props.entrySet()) {
-            if (!Objects.equals(each.getValue(), sqlHintProps.get(String.valueOf(each.getKey())))) {
-                return false;
-            }
-        }
-        return true;
+        return hintTrafficValue.getSqlHintProps().getValue(SQLHintPropertiesKey.USE_TRAFFIC);
     }
     
     @Override

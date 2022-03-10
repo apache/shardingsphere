@@ -19,9 +19,8 @@ package org.apache.shardingsphere.traffic.api.traffic.hint;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.hint.SQLHintProperties;
 import org.apache.shardingsphere.traffic.api.traffic.TrafficValue;
-
-import java.util.Properties;
 
 /**
  * Hint traffic value.
@@ -30,5 +29,5 @@ import java.util.Properties;
 @Getter
 public final class HintTrafficValue implements TrafficValue {
     
-    private final Properties props;
+    private final SQLHintProperties sqlHintProps;
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.traffic.algorithm.traffic.hint;
 
+import org.apache.shardingsphere.infra.hint.SQLHintProperties;
 import org.apache.shardingsphere.traffic.api.traffic.hint.HintTrafficValue;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,24 +36,21 @@ public final class SQLHintTrafficAlgorithmTest {
     @Before
     public void setUp() {
         sqlHintAlgorithm = new SQLHintTrafficAlgorithm();
-        sqlHintAlgorithm.getProps().put("foo", "bar");
-        sqlHintAlgorithm.getProps().put("test", "234");
         sqlHintAlgorithm.init();
     }
     
     @Test
     public void assertMatchWhenSQLHintAllMatch() {
         Properties props = new Properties();
-        props.put("foo", "bar");
-        props.put("test", "234");
-        assertTrue(sqlHintAlgorithm.match(new HintTrafficValue(props)));
+        props.put("useTraffic", "true");
+        assertTrue(sqlHintAlgorithm.match(new HintTrafficValue(new SQLHintProperties(props))));
     }
     
     @Test
     public void assertMatchWhenSQLHintOneMatch() {
         Properties props = new Properties();
-        props.put("foo", "bar");
-        assertFalse(sqlHintAlgorithm.match(new HintTrafficValue(props)));
+        props.put("useTraffic", "false");
+        assertFalse(sqlHintAlgorithm.match(new HintTrafficValue(new SQLHintProperties(props))));
     }
     
     @Test
