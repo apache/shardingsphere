@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.readwritesplitting.rule;
 
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.hamcrest.Matcher;
+
 import org.junit.Before;
 import org.junit.Test;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class ReadWriteSplittingDataSourceRuleConfigurationTest {
@@ -39,7 +40,7 @@ public final class ReadWriteSplittingDataSourceRuleConfigurationTest {
 
     @Test
     public void assertGetAutoAwareDataSourceName(){
-        assertThat(readwriteSplittingDataSourceRuleConfigDynamic.getProps().getProperty("auto-aware-data-source-name"), is((Matcher<Object>) null));
+        assertNull(readwriteSplittingDataSourceRuleConfigDynamic.getProps().getProperty("auto-aware-data-source-name"));
     }
 
     @Test
