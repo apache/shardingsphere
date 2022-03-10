@@ -39,6 +39,7 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryFactory;
 import org.apache.shardingsphere.schedule.core.api.ModeScheduleContextFactory;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.TransactionContextsBuilder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -83,8 +84,14 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                 ? TransactionConfigurationFileGeneratorFactory.newInstance(transactionRule.get().getProviderType()) : Optional.empty();
         if (schemaName.isPresent() && fileGenerator.isPresent()) {
             ShardingSphereMetaData metaData = metaDataContexts.getMetaData(schemaName.get());
-            return fileGenerator.get().getTransactionProps(transactionRule.get().getProps(),
+            Properties result = fileGenerator.get().getTransactionProps(transactionRule.get().getProps(),
                     new DataSourceProvidedSchemaConfiguration(metaData.getResource().getDataSources(), metaData.getRuleMetaData().getConfigurations()), getType());
+            TransactionRuleConfiguration transactionRuleConfiguration = metaDataContexts.getGlobalRuleMetaData().findSingleRuleConfiguration(TransactionRuleConfiguration.class);
+            transactionRuleConfiguration.getProps().clear();
+            transactionRuleConfiguration.getProps().putAll(result);
+            transactionRule.get().getProps().clear();
+            transactionRule.get().getProps().putAll(result);
+            return result;
         }
         return new Properties();
     }

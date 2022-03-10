@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
 
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -36,4 +37,18 @@ public final class TransactionRuleConfiguration implements GlobalRuleConfigurati
     private final String providerType;
     
     private final Properties props;
+    
+    /**
+     * Compare to another transaction rule configuration.
+     *
+     * @param transactionRuleConfiguration transaction rule configuration
+     * @return return true if the two transactionRuleConfiguration are the same
+     */
+    public boolean compare(final TransactionRuleConfiguration transactionRuleConfiguration) {
+        if (null == transactionRuleConfiguration) {
+            return false;
+        }
+        return Objects.equals(defaultType, transactionRuleConfiguration.defaultType) && Objects.equals(providerType, transactionRuleConfiguration.providerType)
+                && Objects.equals(props, transactionRuleConfiguration.props);
+    }
 }

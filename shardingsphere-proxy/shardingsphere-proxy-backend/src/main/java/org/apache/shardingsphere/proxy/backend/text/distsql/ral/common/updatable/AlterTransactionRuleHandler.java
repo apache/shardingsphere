@@ -28,8 +28,11 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGenerator;
+import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGeneratorFactory;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -47,11 +50,13 @@ public final class AlterTransactionRuleHandler extends UpdatableRALBackendHandle
         ShardingSphereRuleMetaData globalRuleMetaData = metaDataContexts.getGlobalRuleMetaData();
         Collection<ShardingSphereRule> globalRules = globalRuleMetaData.getRules();
         globalRules.removeIf(each -> each instanceof TransactionRule);
-        Collection<RuleConfiguration> globalRuleConfigurations = globalRuleMetaData.getConfigurations();
+        Collection<RuleConfiguration> globalRuleConfigurations = new LinkedList<>(globalRuleMetaData.getConfigurations());
         globalRuleConfigurations.removeIf(each -> each instanceof TransactionRuleConfiguration);
         TransactionRuleConfiguration toBeAlteredRuleConfig = buildTransactionRuleConfiguration();
         globalRules.add(new TransactionRule(toBeAlteredRuleConfig));
         globalRuleConfigurations.add(toBeAlteredRuleConfig);
+        Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(toBeAlteredRuleConfig.getProviderType());
+        fileGenerator.ifPresent(optional -> optional.generateFile(toBeAlteredRuleConfig.getProps(), ProxyContext.getInstance().getContextManager().getInstanceContext()));
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
         if (metaDataPersistService.isPresent() && null != metaDataPersistService.get().getGlobalRuleService()) {
             metaDataPersistService.get().getGlobalRuleService().persist(globalRuleConfigurations, true);

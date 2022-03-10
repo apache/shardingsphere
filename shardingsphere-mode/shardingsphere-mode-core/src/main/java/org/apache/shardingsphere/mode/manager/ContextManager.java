@@ -310,20 +310,27 @@ public final class ContextManager implements AutoCloseable {
      */
     public void alterGlobalRuleConfiguration(final Collection<RuleConfiguration> ruleConfigurations) {
         if (!ruleConfigurations.isEmpty()) {
-            alterTransactionRuleConfiguration(ruleConfigurations);
+            boolean needRenewTransaction = needRenewTransactionContext(ruleConfigurations);
             ShardingSphereRuleMetaData newGlobalRuleMetaData = new ShardingSphereRuleMetaData(ruleConfigurations,
                     GlobalRulesBuilder.buildRules(ruleConfigurations, metaDataContexts.getMetaDataMap()));
             renewMetaDataContexts(rebuildMetaDataContexts(newGlobalRuleMetaData));
+            if (needRenewTransaction) {
+                renewAllTransactionContext();
+            }
         }
     }
     
-    private void alterTransactionRuleConfiguration(final Collection<RuleConfiguration> ruleConfigurations) {
+    private boolean needRenewTransactionContext(final Collection<RuleConfiguration> ruleConfigurations) {
         for (RuleConfiguration each : ruleConfigurations) {
             if (each instanceof TransactionRuleConfiguration) {
-                renewAllTransactionContext();
+                TransactionRuleConfiguration old = metaDataContexts.getGlobalRuleMetaData().findSingleRuleConfiguration(TransactionRuleConfiguration.class);
+                if (!((TransactionRuleConfiguration) each).compare(old)) {
+                    return true;
+                }
                 break;
             }
         }
+        return false;
     }
     
     /**
