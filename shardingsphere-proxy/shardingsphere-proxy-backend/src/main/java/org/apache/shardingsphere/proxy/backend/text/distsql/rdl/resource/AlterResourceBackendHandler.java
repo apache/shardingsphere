@@ -70,7 +70,7 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
             ProxyContext.getInstance().getContextManager().alterResource(schemaName, dataSourcePropsMap);
         } catch (final SQLException ex) {
             log.error("Alter resource failed", ex);
-            DistSQLException.predictionThrow(false, new InvalidResourcesException(dataSourcePropsMap.keySet()));
+            DistSQLException.predictionThrow(false, () -> new InvalidResourcesException(dataSourcePropsMap.keySet()));
         }
         return new UpdateResponseHeader(sqlStatement);
     }
@@ -86,7 +86,7 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
         Map<String, DataSource> resources = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources();
         Set<String> invalid = sqlStatement.getDataSources().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> each)).entrySet().stream()
                 .filter(each -> !isIdenticalDatabase(each.getValue(), resources.get(each.getKey()))).map(Entry::getKey).collect(Collectors.toSet());
-        DistSQLException.predictionThrow(invalid.isEmpty(), new InvalidResourcesException(Collections.singleton(String.format("Cannot alter the database of %s", invalid))));
+        DistSQLException.predictionThrow(invalid.isEmpty(), () -> new InvalidResourcesException(Collections.singleton(String.format("Cannot alter the database of %s", invalid))));
     }
     
     private Collection<String> getToBeAlteredResourceNames(final AlterResourceStatement sqlStatement) {

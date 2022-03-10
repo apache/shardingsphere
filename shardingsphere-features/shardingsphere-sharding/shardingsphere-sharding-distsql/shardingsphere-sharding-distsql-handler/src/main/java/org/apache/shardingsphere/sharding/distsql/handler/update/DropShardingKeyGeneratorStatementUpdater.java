@@ -58,7 +58,7 @@ public final class DropShardingKeyGeneratorStatementUpdater implements RuleDefin
     private void checkDuplicate(final String schemaName, final Collection<String> keyGeneratorNames) throws DistSQLException {
         Collection<String> duplicateNames = keyGeneratorNames.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
                 .filter(each -> each.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
-        DistSQLException.predictionThrow(duplicateNames.isEmpty(), new DuplicateKeyGeneratorException("sharding", schemaName, duplicateNames));
+        DistSQLException.predictionThrow(duplicateNames.isEmpty(), () -> new DuplicateKeyGeneratorException("sharding", schemaName, duplicateNames));
     }
     
     private void checkExist(final String schemaName, final Collection<String> keyGeneratorNames, final ShardingRuleConfiguration currentRuleConfig,
@@ -67,13 +67,13 @@ public final class DropShardingKeyGeneratorStatementUpdater implements RuleDefin
             return;
         }
         Collection<String> notExistKeyGenerators = keyGeneratorNames.stream().filter(each -> !currentRuleConfig.getKeyGenerators().containsKey(each)).collect(Collectors.toCollection(LinkedList::new));
-        DistSQLException.predictionThrow(notExistKeyGenerators.isEmpty(), new RequiredKeyGeneratorMissedException("Sharding", schemaName, notExistKeyGenerators));
+        DistSQLException.predictionThrow(notExistKeyGenerators.isEmpty(), () -> new RequiredKeyGeneratorMissedException("Sharding", schemaName, notExistKeyGenerators));
     }
     
     private void checkInUsed(final String schemaName, final Collection<String> keyGeneratorNames, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> usedKeyGenerators = getUsedKeyGenerators(currentRuleConfig);
         Collection<String> inUsedNames = keyGeneratorNames.stream().filter(usedKeyGenerators::contains).collect(Collectors.toCollection(LinkedList::new));
-        DistSQLException.predictionThrow(inUsedNames.isEmpty(), new KeyGeneratorInUsedException("Sharding", schemaName, inUsedNames));
+        DistSQLException.predictionThrow(inUsedNames.isEmpty(), () -> new KeyGeneratorInUsedException("Sharding", schemaName, inUsedNames));
     }
     
     @Override

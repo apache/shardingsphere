@@ -64,7 +64,7 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
             ProxyContext.getInstance().getContextManager().addResource(schemaName, dataSourcePropsMap);
         } catch (final SQLException ex) {
             log.error("Add resource failed", ex);
-            DistSQLException.predictionThrow(false, new InvalidResourcesException(dataSourcePropsMap.keySet()));
+            DistSQLException.predictionThrow(false, () -> new InvalidResourcesException(dataSourcePropsMap.keySet()));
         }
         return new UpdateResponseHeader(sqlStatement);
     }

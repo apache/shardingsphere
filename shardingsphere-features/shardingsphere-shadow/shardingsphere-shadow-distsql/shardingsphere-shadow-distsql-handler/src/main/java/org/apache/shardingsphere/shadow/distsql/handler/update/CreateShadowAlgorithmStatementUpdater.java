@@ -73,7 +73,7 @@ public final class CreateShadowAlgorithmStatementUpdater implements RuleDefiniti
     private void checkAlgorithmType(final CreateShadowAlgorithmStatement sqlStatement) throws DistSQLException {
         Collection<String> notExistedShardingAlgorithms = sqlStatement.getAlgorithms().stream().map(ShadowAlgorithmSegment::getAlgorithmSegment).map(AlgorithmSegment::getName)
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(ShadowAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
-        DistSQLException.predictionThrow(notExistedShardingAlgorithms.isEmpty(), new InvalidAlgorithmConfigurationException(SHADOW, notExistedShardingAlgorithms));
+        DistSQLException.predictionThrow(notExistedShardingAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException(SHADOW, notExistedShardingAlgorithms));
     }
     
     private void checkDuplicatedInput(final String schemaName, final CreateShadowAlgorithmStatement sqlStatement) throws DistSQLException {
