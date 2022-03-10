@@ -20,12 +20,11 @@ package org.apache.shardingsphere.traffic.rule;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
@@ -47,6 +46,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Traffic rule.
@@ -138,48 +138,36 @@ public final class TrafficRule implements GlobalRule {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     private boolean match(final TrafficAlgorithm trafficAlgorithm, final LogicSQL logicSQL, final boolean inTransaction) {
         if (trafficAlgorithm instanceof TransactionTrafficAlgorithm) {
             return matchTransactionTraffic((TransactionTrafficAlgorithm) trafficAlgorithm, inTransaction);
         }
-        SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
         if (trafficAlgorithm instanceof HintTrafficAlgorithm) {
-            return matchHintTraffic((HintTrafficAlgorithm<Comparable<?>>) trafficAlgorithm, sqlStatement);
+            Properties props = logicSQL.getSqlStatementContext() instanceof CommonSQLStatementContext 
+                    ? ((CommonSQLStatementContext) logicSQL.getSqlStatementContext()).getSqlHintExtractor().getSqlHintProperties().getProps() : new Properties();
+            return matchHintTraffic((HintTrafficAlgorithm) trafficAlgorithm, props);
         }
         if (trafficAlgorithm instanceof SegmentTrafficAlgorithm) {
-            return matchSegmentTraffic((SegmentTrafficAlgorithm) trafficAlgorithm, logicSQL, sqlStatement);
+            SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
+            return matchSegmentTraffic((SegmentTrafficAlgorithm) trafficAlgorithm, logicSQL.getSql(), sqlStatement);
         }
         return false;
     }
     
-    private boolean matchHintTraffic(final HintTrafficAlgorithm<Comparable<?>> trafficAlgorithm, final SQLStatement sqlStatement) {
-        for (HintTrafficValue<Comparable<?>> each : getHintTrafficValues(sqlStatement)) {
-            if (trafficAlgorithm.match(each)) {
-                return true;
-            }
-        }
-        return false;
+    private boolean matchHintTraffic(final HintTrafficAlgorithm trafficAlgorithm, final Properties props) {
+        HintTrafficValue hintTrafficValue = new HintTrafficValue(props);
+        return trafficAlgorithm.match(hintTrafficValue);
     }
     
-    private boolean matchSegmentTraffic(final SegmentTrafficAlgorithm trafficAlgorithm, final LogicSQL logicSQL, final SQLStatement sqlStatement) {
-        SegmentTrafficValue segmentTrafficValue = new SegmentTrafficValue(sqlStatement, logicSQL.getSql());
+    private boolean matchSegmentTraffic(final SegmentTrafficAlgorithm trafficAlgorithm, final String sql, final SQLStatement sqlStatement) {
+        SegmentTrafficValue segmentTrafficValue = new SegmentTrafficValue(sqlStatement, sql);
         return trafficAlgorithm.match(segmentTrafficValue);
     }
     
     private boolean matchTransactionTraffic(final TransactionTrafficAlgorithm trafficAlgorithm, final boolean inTransaction) {
         TransactionTrafficValue transactionTrafficValue = new TransactionTrafficValue(inTransaction);
         return trafficAlgorithm.match(transactionTrafficValue);
-    }
-    
-    private Collection<HintTrafficValue<Comparable<?>>> getHintTrafficValues(final SQLStatement sqlStatement) {
-        Collection<HintTrafficValue<Comparable<?>>> result = new LinkedList<>();
-        if (sqlStatement instanceof AbstractSQLStatement) {
-            for (CommentSegment each : ((AbstractSQLStatement) sqlStatement).getCommentSegments()) {
-                result.add(new HintTrafficValue<>(each.getText()));
-            }
-        }
-        return result;
     }
     
     private TrafficLoadBalanceAlgorithm getLoadBalancer(final Map<String, TrafficLoadBalanceAlgorithm> loadBalancers, final String loadBalancerName) {

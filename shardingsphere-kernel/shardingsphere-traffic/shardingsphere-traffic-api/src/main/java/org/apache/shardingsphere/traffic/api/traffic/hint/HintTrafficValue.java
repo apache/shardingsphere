@@ -21,14 +21,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.traffic.api.traffic.TrafficValue;
 
+import java.util.Properties;
+
 /**
  * Hint traffic value.
- *
- * @param <T> class type of hint value
  */
 @RequiredArgsConstructor
 @Getter
-public final class HintTrafficValue<T extends Comparable<?>> implements TrafficValue {
+public final class HintTrafficValue implements TrafficValue {
     
-    private final T value;
+    private final Properties props;
 }

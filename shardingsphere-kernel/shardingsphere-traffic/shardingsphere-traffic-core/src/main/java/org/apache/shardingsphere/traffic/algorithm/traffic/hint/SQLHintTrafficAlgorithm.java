@@ -20,7 +20,6 @@ package org.apache.shardingsphere.traffic.algorithm.traffic.hint;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 import org.apache.shardingsphere.traffic.api.traffic.hint.HintTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.hint.HintTrafficValue;
 
@@ -33,7 +32,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public final class SQLHintTrafficAlgorithm implements HintTrafficAlgorithm<String> {
+public final class SQLHintTrafficAlgorithm implements HintTrafficAlgorithm {
     
     private Properties props = new Properties();
     
@@ -43,8 +42,8 @@ public final class SQLHintTrafficAlgorithm implements HintTrafficAlgorithm<Strin
     }
     
     @Override
-    public boolean match(final HintTrafficValue<String> hintTrafficValue) {
-        Properties sqlHintProps = SQLHintUtils.getSQLHintProps(hintTrafficValue.getValue());
+    public boolean match(final HintTrafficValue hintTrafficValue) {
+        Properties sqlHintProps = hintTrafficValue.getProps();
         for (Entry<Object, Object> each : props.entrySet()) {
             if (!Objects.equals(each.getValue(), sqlHintProps.get(String.valueOf(each.getKey())))) {
                 return false;

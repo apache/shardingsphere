@@ -21,6 +21,8 @@ import org.apache.shardingsphere.traffic.api.traffic.hint.HintTrafficValue;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Properties;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -40,12 +42,17 @@ public final class SQLHintTrafficAlgorithmTest {
     
     @Test
     public void assertMatchWhenSQLHintAllMatch() {
-        assertTrue(sqlHintAlgorithm.match(new HintTrafficValue<>("/* ShardingSphere hint: foo=bar , test=234 */")));
+        Properties props = new Properties();
+        props.put("foo", "bar");
+        props.put("test", "234");
+        assertTrue(sqlHintAlgorithm.match(new HintTrafficValue(props)));
     }
     
     @Test
     public void assertMatchWhenSQLHintOneMatch() {
-        assertFalse(sqlHintAlgorithm.match(new HintTrafficValue<>("/* ShardingSphere hint: foo=bar */")));
+        Properties props = new Properties();
+        props.put("foo", "bar");
+        assertFalse(sqlHintAlgorithm.match(new HintTrafficValue(props)));
     }
     
     @Test
