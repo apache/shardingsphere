@@ -547,7 +547,10 @@ public final class ContextManager implements AutoCloseable {
         return DataSourcePoolCreator.create(getChangedDataSourceConfiguration(originalMetaData, newDataSourcePropsMap));
     }
     
-    private void renewAllTransactionContext() {
+    /**
+     * Renew all transaction context.
+     */
+    public void renewAllTransactionContext() {
         for (Entry<String, ShardingSphereMetaData> entry : metaDataContexts.getMetaDataMap().entrySet()) {
             renewTransactionContext(entry.getKey(), entry.getValue().getResource());
         }
