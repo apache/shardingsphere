@@ -49,7 +49,7 @@ public final class DropDatabaseDiscoveryHeartbeatStatementUpdater implements Rul
         if (sqlStatement.isContainsExistClause()) {
             return;
         }
-        DistSQLException.predictionThrow(null != currentRuleConfig, new RequiredRuleMissedException(RULE_TYPE, schemaName));
+        DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException(RULE_TYPE, schemaName));
         checkIsExist(schemaName, sqlStatement, currentRuleConfig);
     }
     
