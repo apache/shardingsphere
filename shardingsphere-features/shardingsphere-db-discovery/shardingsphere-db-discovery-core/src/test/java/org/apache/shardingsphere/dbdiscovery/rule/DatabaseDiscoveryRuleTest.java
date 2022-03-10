@@ -61,30 +61,27 @@ public final class DatabaseDiscoveryRuleTest {
     
     private void assertDataSourceRule(final DatabaseDiscoveryDataSourceRule actual) {
         assertThat(actual.getGroupName(), is("test_pr"));
-        assertThat(actual.getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
     }
     
     @Test
     public void assertUpdateRuleStatusWithNotExistDataSource() {
         DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
         databaseDiscoveryRule.updateStatus(new DataSourceNameDisabledEvent("db", true));
-        assertThat(databaseDiscoveryRule.getSingleDataSourceRule().getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
+        assertThat(databaseDiscoveryRule.getSingleDataSourceRule().getReplicaDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
     }
     
     @Test
     public void assertUpdateRuleStatus() {
         DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
         databaseDiscoveryRule.updateStatus(new DataSourceNameDisabledEvent("ds_0", true));
-        assertThat(databaseDiscoveryRule.getSingleDataSourceRule().getDataSourceNames(), is(Collections.singletonList("ds_1")));
+        assertThat(databaseDiscoveryRule.getSingleDataSourceRule().getReplicaDataSourceNames(), is(Collections.singletonList("ds_1")));
     }
     
     @Test
     public void assertUpdateRuleStatusWithEnable() {
         DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
         databaseDiscoveryRule.updateStatus(new DataSourceNameDisabledEvent("ds_0", true));
-        assertThat(databaseDiscoveryRule.getSingleDataSourceRule().getDataSourceNames(), is(Collections.singletonList("ds_1")));
-        databaseDiscoveryRule.updateStatus(new DataSourceNameDisabledEvent("ds_0", false));
-        assertThat(databaseDiscoveryRule.getSingleDataSourceRule().getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
+        assertThat(databaseDiscoveryRule.getSingleDataSourceRule().getReplicaDataSourceNames(), is(Collections.singletonList("ds_1")));
     }
     
     @Test
