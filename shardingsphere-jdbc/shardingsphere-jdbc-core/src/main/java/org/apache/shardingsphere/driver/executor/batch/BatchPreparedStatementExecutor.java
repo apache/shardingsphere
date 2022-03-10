@@ -246,16 +246,9 @@ public final class BatchPreparedStatementExecutor {
      * @throws SQLException SQL exception
      */
     public void clear() throws SQLException {
-        closeStatements();
         getStatements().clear();
         executionGroupContext.getInputGroups().clear();
         batchCount = 0;
         batchExecutionUnits.clear();
-    }
-    
-    private void closeStatements() throws SQLException {
-        for (Statement each : getStatements()) {
-            each.close();
-        }
     }
 }
