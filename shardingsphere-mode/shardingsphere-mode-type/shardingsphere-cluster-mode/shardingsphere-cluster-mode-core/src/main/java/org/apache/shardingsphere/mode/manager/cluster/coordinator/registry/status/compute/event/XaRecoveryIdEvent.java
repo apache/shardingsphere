@@ -15,17 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
 
-import io.vertx.core.Future;
-import io.vertx.sqlclient.Query;
-import io.vertx.sqlclient.Row;
-import io.vertx.sqlclient.RowSet;
-import io.vertx.sqlclient.SqlClient;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorDriverManager;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Executor manager for Vert.x.
+ * Xa recovery id event.
  */
-public interface ExecutorVertxManager extends ExecutorDriverManager<Future<? extends SqlClient>, Future<Query<RowSet<Row>>>, VertxExecutionContext> {
+@RequiredArgsConstructor
+@Getter
+public final class XaRecoveryIdEvent implements GovernanceEvent {
+    
+    private final String instanceId;
+    
+    private final String xaRecoveryId;
 }

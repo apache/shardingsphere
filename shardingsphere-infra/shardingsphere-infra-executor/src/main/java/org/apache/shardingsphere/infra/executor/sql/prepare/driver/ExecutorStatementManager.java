@@ -19,31 +19,38 @@ package org.apache.shardingsphere.infra.executor.sql.prepare.driver;
 
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.DriverExecutionUnit;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 import java.sql.SQLException;
 
 /**
- * SQL execution unit builder.
- *
- * @param <T> type of storage resource execute unit
- * @param <M> type of driver executor manager
+ * Executor statement manager.
+ * 
  * @param <C> type of resource connection
+ * @param <R> type of storage resource
  * @param <O> type of storage resource option
  */
-public interface SQLExecutionUnitBuilder<T extends DriverExecutionUnit<?>, M extends ExecutorStatementManager<C, ?, O>, C, O extends StorageResourceOption> extends TypedSPI {
+public interface ExecutorStatementManager<C, R, O extends StorageResourceOption> {
     
     /**
-     * Build SQL execution unit.
-     * 
-     * @param executionUnit execution unit
-     * @param executorManager executor manager 
+     * Create storage resource.
+     *
      * @param connection connection
      * @param connectionMode connection mode
      * @param option storage resource option
-     * @return SQL execution unit
+     * @return storage resource
      * @throws SQLException SQL exception
      */
-    T build(ExecutionUnit executionUnit, M executorManager, C connection, ConnectionMode connectionMode, O option) throws SQLException;
+    R createStorageResource(C connection, ConnectionMode connectionMode, O option) throws SQLException;
+    
+    /**
+     * Create storage resource.
+     *
+     * @param executionUnit execution unit
+     * @param connection connection
+     * @param connectionMode connection mode
+     * @param option storage resource option
+     * @return storage resource
+     * @throws SQLException SQL exception
+     */
+    R createStorageResource(ExecutionUnit executionUnit, C connection, ConnectionMode connectionMode, O option) throws SQLException;
 }

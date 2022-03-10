@@ -44,7 +44,7 @@ alterDefaultShardingStrategy
     ;
 
 dropDefaultShardingStrategy
-    : DROP DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY 
+    : DROP DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY existsClause?
     ;
 
 createShardingKeyGenerator
