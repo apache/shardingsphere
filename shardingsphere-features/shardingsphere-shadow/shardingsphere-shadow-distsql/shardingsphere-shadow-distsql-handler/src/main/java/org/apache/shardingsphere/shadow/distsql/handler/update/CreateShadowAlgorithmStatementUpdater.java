@@ -82,6 +82,9 @@ public final class CreateShadowAlgorithmStatementUpdater implements RuleDefiniti
     }
     
     private void checkExist(final String schemaName, final CreateShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
+        if (null == currentRuleConfig) {
+            return;
+        }
         Collection<String> requireAlgorithmNames = sqlStatement.getAlgorithms().stream().map(ShadowAlgorithmSegment::getAlgorithmName).collect(Collectors.toList());
         ShadowRuleStatementChecker.checkAnyDuplicate(requireAlgorithmNames, currentRuleConfig.getShadowAlgorithms().keySet(),
             different -> new DuplicateRuleException(SHADOW, schemaName, different));
