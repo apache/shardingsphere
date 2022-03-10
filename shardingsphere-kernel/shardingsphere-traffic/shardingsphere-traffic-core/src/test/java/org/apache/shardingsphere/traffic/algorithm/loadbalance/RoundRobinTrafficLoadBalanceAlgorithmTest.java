@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.traffic.algorithm.loadbalance;
 
+import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,9 +45,9 @@ public final class RoundRobinTrafficLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetInstanceId() {
-        String instanceId1 = "127.0.0.1@3307";
-        String instanceId2 = "127.0.0.1@3308";
-        List<String> instanceIds = Arrays.asList(instanceId1, instanceId2);
+        InstanceId instanceId1 = new InstanceId("127.0.0.1@3307");
+        InstanceId instanceId2 = new InstanceId("127.0.0.1@3308");
+        List<InstanceId> instanceIds = Arrays.asList(instanceId1, instanceId2);
         assertThat(roundRobinAlgorithm.getInstanceId("simple_traffic", instanceIds), is(instanceId1));
         assertThat(roundRobinAlgorithm.getInstanceId("simple_traffic", instanceIds), is(instanceId2));
         assertThat(roundRobinAlgorithm.getInstanceId("simple_traffic", instanceIds), is(instanceId1));

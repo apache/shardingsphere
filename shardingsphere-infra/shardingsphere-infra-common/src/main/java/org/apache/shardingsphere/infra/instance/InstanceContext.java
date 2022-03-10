@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.instance;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.state.StateContext;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.infra.state.StateType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -141,13 +143,13 @@ public final class InstanceContext {
      * @param labels collection of contained label
      * @return compute node instances
      */
-    public Collection<ComputeNodeInstance> getComputeNodeInstances(final InstanceType instanceType, final Collection<String> labels) {
-        Collection<ComputeNodeInstance> result = new ArrayList<>(computeNodeInstances.size());
-        computeNodeInstances.forEach(each -> {
+    public List<InstanceId> getComputeNodeInstanceIds(final InstanceType instanceType, final Collection<String> labels) {
+        List<InstanceId> result = new ArrayList<>(computeNodeInstances.size());
+        for (ComputeNodeInstance each : computeNodeInstances) {
             if (each.getInstanceDefinition().getInstanceType() == instanceType && each.getLabels().stream().anyMatch(labels::contains)) {
-                result.add(each);
+                result.add(each.getInstanceDefinition().getInstanceId());
             }
-        });
+        }
         return result;
     }
 }

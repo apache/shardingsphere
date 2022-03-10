@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.traffic.algorithm.loadbalance;
 
+import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
 import java.util.List;
@@ -28,7 +29,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public final class RandomTrafficLoadBalanceAlgorithm implements TrafficLoadBalanceAlgorithm {
     
     @Override
-    public String getInstanceId(final String name, final List<String> instanceIds) {
+    public InstanceId getInstanceId(final String name, final List<InstanceId> instanceIds) {
         return instanceIds.get(ThreadLocalRandom.current().nextInt(instanceIds.size()));
     }
     
