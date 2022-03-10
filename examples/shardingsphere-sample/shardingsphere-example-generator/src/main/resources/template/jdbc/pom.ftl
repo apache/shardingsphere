@@ -24,7 +24,7 @@
     <groupId>org.apache.shardingsphere.example</groupId>
     <artifactId>${feature?replace(',', '-')}--${framework}--${mode}--${transaction}</artifactId>
     <name>${r'${project.artifactId}'}</name>
-    <version>5.1.1-SNAPSHOT</version>
+    <version>${shardingsphereVersion}</version>
     
     <dependencies>
     <#if framework=="jdbc">
