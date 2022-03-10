@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.readwritesplitting.rule;
 
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
-import java.util.Arrays;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -39,7 +39,7 @@ public final class ReadWriteSplittingDataSourceRuleConfigurationTest {
 
     @Test
     public void assertGetAutoAwareDataSourceName(){
-        assertThat(readwriteSplittingDataSourceRuleConfigDynamic.getProps().getProperty("auto-aware-data-source-name"), is("ds"));
+        assertThat(readwriteSplittingDataSourceRuleConfigDynamic.getProps().getProperty("auto-aware-data-source-name"), is((Matcher<Object>) null));
     }
 
     @Test
@@ -49,7 +49,7 @@ public final class ReadWriteSplittingDataSourceRuleConfigurationTest {
 
     @Test
     public void assertGetReadDataSourceNames(){
-        assertThat(readwriteSplittingDataSourceRuleConfig.getProps().getProperty("read-data-source-names"), is(Arrays.asList("read_ds_0", "read_ds_1")));
+        assertThat(readwriteSplittingDataSourceRuleConfig.getProps().getProperty("read-data-source-names"), is("read_ds_0,read_ds_1"));
     }
 
     private Properties getProperties(final String writeDataSource, final String readDataSources) {
