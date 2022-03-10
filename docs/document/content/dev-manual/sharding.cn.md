@@ -33,7 +33,7 @@ chapter = true
 | *已知实现类*                    | *详细说明*                  |
 | ----------------------------- | -------------------------- |
 | SnowflakeKeyGenerateAlgorithm | 基于雪花算法的分布式主键生成算法 |
-| UUIDKeyGenerateAlgorithm      | 基于UUID的分布式主键生成算法    |
+| UUIDKeyGenerateAlgorithm      | 基于 UUID 的分布式主键生成算法    |
 
 ## DatetimeService
 

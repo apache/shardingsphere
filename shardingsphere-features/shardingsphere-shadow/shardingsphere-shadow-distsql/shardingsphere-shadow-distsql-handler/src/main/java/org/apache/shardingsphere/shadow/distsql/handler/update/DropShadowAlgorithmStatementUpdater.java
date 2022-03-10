@@ -65,7 +65,7 @@ public final class DropShadowAlgorithmStatementUpdater implements RuleDefinition
             ShadowRuleStatementChecker.checkAlgorithmExist(requireAlgorithms, currentAlgorithms, different -> new RequiredAlgorithmMissedException(SHADOW, schemaName, different));
         }
         checkAlgorithmInUsed(requireAlgorithms, getAlgorithmInUse(currentRuleConfig), identical -> new AlgorithmInUsedException(schemaName, identical));
-        DistSQLException.predictionThrow(!requireAlgorithms.contains(defaultShadowAlgorithmName), new AlgorithmInUsedException(schemaName, Collections.singleton(defaultShadowAlgorithmName)));
+        DistSQLException.predictionThrow(!requireAlgorithms.contains(defaultShadowAlgorithmName), () -> new AlgorithmInUsedException(schemaName, Collections.singleton(defaultShadowAlgorithmName)));
     }
     
     private void checkAlgorithmInUsed(final Collection<String> requireAlgorithms, final Collection<String> currentAlgorithms, 

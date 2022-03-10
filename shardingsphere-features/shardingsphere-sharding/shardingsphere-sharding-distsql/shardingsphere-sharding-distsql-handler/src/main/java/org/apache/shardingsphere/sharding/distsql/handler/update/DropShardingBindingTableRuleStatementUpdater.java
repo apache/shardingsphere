@@ -56,7 +56,7 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
     }
     
     private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(null != currentRuleConfig && !currentRuleConfig.getBindingTableGroups().isEmpty(), new RequiredRuleMissedException("Binding", schemaName));
+        DistSQLException.predictionThrow(null != currentRuleConfig && !currentRuleConfig.getBindingTableGroups().isEmpty(), () -> new RequiredRuleMissedException("Binding", schemaName));
     }
     
     private Map<String, String> buildBindingTableRule(final ShardingRuleConfiguration configuration) {
@@ -76,7 +76,7 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
                 notExistBindingGroups.add(each.getTableGroups());
             }
         }
-        DistSQLException.predictionThrow(notExistBindingGroups.isEmpty(), new RequiredRuleMissedException("Binding", schemaName, notExistBindingGroups));
+        DistSQLException.predictionThrow(notExistBindingGroups.isEmpty(), () -> new RequiredRuleMissedException("Binding", schemaName, notExistBindingGroups));
     }
     
     private boolean isToBeDroppedRuleExists(final BindingTableRuleSegment bindingRule, final Map<String, String> bindingRelationship) {

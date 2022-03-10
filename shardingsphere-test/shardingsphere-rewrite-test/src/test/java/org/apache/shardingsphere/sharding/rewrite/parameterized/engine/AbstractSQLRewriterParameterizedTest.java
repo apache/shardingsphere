@@ -44,6 +44,7 @@ import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
@@ -69,7 +70,9 @@ public abstract class AbstractSQLRewriterParameterizedTest {
     
     private final SQLRewriteEngineTestParameters testParameters;
     
-    private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
+    private final SQLParserRule sqlParserRule = new SQLParserRule(new SQLParserRuleConfiguration(true, 
+            DefaultSQLParserRuleConfigurationBuilder.PARSE_TREE_CACHE_OPTION, 
+            DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION));
     
     @Test
     public final void assertRewrite() throws IOException {

@@ -98,7 +98,7 @@ public final class TrafficRuleTest {
         LogicSQL result = mock(LogicSQL.class);
         MySQLSelectStatement sqlStatement = mock(MySQLSelectStatement.class);
         Collection<CommentSegment> comments = includeComments ? Collections.singletonList(
-                new CommentSegment("/* ShardingSphere hint: traffic=true */", 0, 0)) : Collections.emptyList();
+                new CommentSegment("/* ShardingSphere hint: useTraffic=true */", 0, 0)) : Collections.emptyList();
         when(sqlStatement.getCommentSegments()).thenReturn(comments);
         when(sqlStatement.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
         SQLStatementContext statementContext = new SelectStatementContext(createMetaDataMap(), Collections.emptyList(), sqlStatement, "sharding_db");

@@ -150,7 +150,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     
     private void checkResourceExists(final String schemaName, final String toBeDisabledResource) throws DistSQLException {
         Collection<String> notExistedResources = ProxyContext.getInstance().getMetaData(schemaName).getResource().getNotExistedResources(Collections.singleton(toBeDisabledResource));
-        DistSQLException.predictionThrow(notExistedResources.isEmpty(), new RequiredResourceMissedException(schemaName, Collections.singleton(toBeDisabledResource)));
+        DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(schemaName, Collections.singleton(toBeDisabledResource)));
     }
     
     private void addPrimaryResource(final Map<String, String> primaryResources, final Entry<String, Map<String, String>> entry) {
