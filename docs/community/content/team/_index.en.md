@@ -9,63 +9,6 @@ chapter = true
 
 ### Project Management Committee
 
-| Name                | GitHub ID               |
-| :------------------ | :---------------------- |
-| Craig L Russell     | craiglrussell, clr      |
-| Hao Cao             | haocao                  |
-| Hongjun Du          | codefairy08             |
-| Hongtao Gao         | hanahmily               |
-| Juan Pan            | tristaZero              |
-| Jun Zhao            | cherrylzhao             |
-| Liang Zhang (Chair) | terrymanu               |
-| QingYang Chen       | beckhampu               |
-| Sheng Wu            | wu-sheng                |
-| vongosling          | vongosling              |
-| Willem Ning Jiang   | WillemJiang             |
-| Xiaoguang Ma        | maxiaoguang64           |
-| Yang Yi             | KomachiSion             |
-| Yonglun Zhang       | tuohai666, zhangyonglun |
-| Kimm King           | kimmking                |
-| Haoran Meng         | menghaoranss            |
-
-### Committers
-
-| Name            | GitHub ID               |
-| :-------------- | :---------------------- |
-| Xiaoman Wang    | wgy8283335              |
-| Haisheng Sun    | sunbufu                 |
-| Qi Wang         | wqzwh                   |
-| Ya Li           | betterjava              |
-| Yanan Zhao      | nancyzrh                |
-| Zhiyi Yan       | yanyzy                  |
-| YangWen Ou      | avalon566               |
-| Zonglei Dong    | dongzl                  |
-| Xiaofeng Jiang  | SteNicholas             |
-| Ling Yue        | yue530tom               |
-| Xiao Yu         | yu199195                |
-| Jingshang Lu    | jingshanglu             |
-| Zhengqiang Duan | strongduanmu            |
-| Jiwei Guo       | Technoboy-              |
-| Weijie Wu       | TeslaCN                 |
-| Lu Qiu          | Lucas-307               |
-| Hongsheng Zhong | sandynz                 |
-| Longtao Jiang   | RaigorJiang             |
-| Thanoshan MV    | ThanoshanMV             |
-| Chengxiang Lan  | lanchengx               |
-| Xiao Yang       | yx9o                    |
-| Guocheng Tang   | totalo                  |
-| Guoping Li      | LeeGuoPing              |
-| Jinchao Zhao    | zjcnb                   |
-| Chuxin Chen     | tuichenchuxin           |
-| Liangda Wang    | Liangda-w               |
-
-## Contributors
-
-You can find all of the ShardingSphere contributors directly in GitHub's contribution list.
-
-- [shardingsphere](https://github.com/apache/shardingsphere/graphs/contributors)
-- [shardingsphere-benchmark](https://github.com/apache/shardingsphere-benchmark)
-
 <table>
     <tr>
         <td>
@@ -211,7 +154,7 @@ You can find all of the ShardingSphere contributors directly in GitHub's contrib
 
 ### Committers
 
- <table>
+<table>
     <tr>
         <td>
             <a href="https://github.com/wgy8283335" target="_blank">
