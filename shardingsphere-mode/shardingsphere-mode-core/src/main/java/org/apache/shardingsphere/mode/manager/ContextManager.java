@@ -548,7 +548,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
-     * Renew all transaction context.
+     * Reload all transaction context.
      */
     public void renewAllTransactionContext() {
         for (Entry<String, ShardingSphereMetaData> entry : metaDataContexts.getMetaDataMap().entrySet()) {
