@@ -58,7 +58,7 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements Rul
                                                final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> currentLogicTables = getCurrentLogicTables(currentRuleConfig);
         Collection<String> notExistedBindingTables = sqlStatement.getBindingTables().stream().filter(each -> !currentLogicTables.contains(each)).collect(Collectors.toCollection(LinkedHashSet::new));
-        DistSQLException.predictionThrow(notExistedBindingTables.isEmpty(), new RequiredRuleMissedException("Sharding", schemaName, notExistedBindingTables));
+        DistSQLException.predictionThrow(notExistedBindingTables.isEmpty(), () -> new RequiredRuleMissedException("Sharding", schemaName, notExistedBindingTables));
     }
     
     private Collection<String> getCurrentLogicTables(final ShardingRuleConfiguration currentRuleConfig) {

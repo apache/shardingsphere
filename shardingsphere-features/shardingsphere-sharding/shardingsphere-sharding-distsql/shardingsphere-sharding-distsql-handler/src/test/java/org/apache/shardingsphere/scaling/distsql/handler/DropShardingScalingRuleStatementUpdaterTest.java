@@ -57,6 +57,12 @@ public final class DropShardingScalingRuleStatementUpdaterTest {
     }
     
     @Test
+    public void assertCheckWithIfExists() throws DistSQLException {
+        updater.checkSQLStatement(shardingSphereMetaData, new DropShardingScalingRuleStatement(true, "default_scaling"), new ShardingRuleConfiguration());
+        updater.checkSQLStatement(shardingSphereMetaData, new DropShardingScalingRuleStatement(true, "default_scaling"), null);
+    }
+    
+    @Test
     public void assertCheckSuccess() throws DistSQLException {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getScaling().put("default_scaling", null);

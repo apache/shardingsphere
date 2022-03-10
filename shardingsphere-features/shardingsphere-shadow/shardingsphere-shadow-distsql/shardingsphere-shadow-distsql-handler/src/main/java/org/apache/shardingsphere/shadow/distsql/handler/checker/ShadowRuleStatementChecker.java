@@ -46,7 +46,7 @@ public class ShadowRuleStatementChecker {
      * @throws DistSQLException DistSQL exception
      */
     public static void checkConfigurationExist(final String schemaName, final SchemaRuleConfiguration configuration) throws DistSQLException {
-        DistSQLException.predictionThrow(null != configuration, new RequiredRuleMissedException(SHADOW, schemaName));
+        DistSQLException.predictionThrow(null != configuration, () -> new RequiredRuleMissedException(SHADOW, schemaName));
     }
     
     /**
@@ -59,7 +59,7 @@ public class ShadowRuleStatementChecker {
      */
     public static void checkResourceExist(final Collection<String> resources, final ShardingSphereMetaData metaData, final String schemaName) throws DistSQLException {
         Collection<String> notExistedResources = metaData.getResource().getNotExistedResources(resources);
-        DistSQLException.predictionThrow(notExistedResources.isEmpty(), new RequiredResourceMissedException(schemaName, notExistedResources));
+        DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(schemaName, notExistedResources));
     }
     
     /**
@@ -70,7 +70,7 @@ public class ShadowRuleStatementChecker {
      */
     public static void checkAlgorithmCompleteness(final Collection<ShadowAlgorithmSegment> algorithmSegments) throws DistSQLException {
         Set<ShadowAlgorithmSegment> incompleteAlgorithms = algorithmSegments.stream().filter(each -> !each.isComplete()).collect(Collectors.toSet());
-        DistSQLException.predictionThrow(incompleteAlgorithms.isEmpty(), new InvalidAlgorithmConfigurationException(SHADOW));
+        DistSQLException.predictionThrow(incompleteAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException(SHADOW));
     }
     
     /**
@@ -108,7 +108,7 @@ public class ShadowRuleStatementChecker {
      */
     public static void checkAnyDuplicate(final Collection<String> rules, final Function<Collection<String>, DistSQLException> thrower) throws DistSQLException {
         Collection<String> duplicateRequire = getDuplicate(rules);
-        DistSQLException.predictionThrow(duplicateRequire.isEmpty(), thrower.apply(duplicateRequire));
+        DistSQLException.predictionThrow(duplicateRequire.isEmpty(), () -> thrower.apply(duplicateRequire));
     }
     
     /**
@@ -122,7 +122,7 @@ public class ShadowRuleStatementChecker {
     public static void checkAnyDuplicate(final Collection<String> requireRules, final Collection<String> currentRules, 
                                          final Function<Collection<String>, DistSQLException> thrower) throws DistSQLException {
         Collection<String> identical = getIdentical(requireRules, currentRules);
-        DistSQLException.predictionThrow(identical.isEmpty(), thrower.apply(identical));
+        DistSQLException.predictionThrow(identical.isEmpty(), () -> thrower.apply(identical));
     }
     
     /**
@@ -136,7 +136,7 @@ public class ShadowRuleStatementChecker {
     public static void checkAnyDifferent(final Collection<String> requireRules, final Collection<String> currentRules, 
                                          final Function<Collection<String>, DistSQLException> thrower) throws DistSQLException {
         Collection<String> different = getDifferent(requireRules, currentRules);
-        DistSQLException.predictionThrow(different.isEmpty(), thrower.apply(different));
+        DistSQLException.predictionThrow(different.isEmpty(), () -> thrower.apply(different));
     }
     
     private static Collection<String> getDuplicate(final Collection<String> require) {

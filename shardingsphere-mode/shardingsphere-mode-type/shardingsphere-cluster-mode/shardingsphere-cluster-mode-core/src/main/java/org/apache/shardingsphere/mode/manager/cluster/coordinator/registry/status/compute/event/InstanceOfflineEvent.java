@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.Gover
  */
 @RequiredArgsConstructor
 @Getter
-public class InstanceOfflineEvent implements GovernanceEvent {
+public final class InstanceOfflineEvent implements GovernanceEvent {
     
     private final InstanceDefinition instanceDefinition;
 }
