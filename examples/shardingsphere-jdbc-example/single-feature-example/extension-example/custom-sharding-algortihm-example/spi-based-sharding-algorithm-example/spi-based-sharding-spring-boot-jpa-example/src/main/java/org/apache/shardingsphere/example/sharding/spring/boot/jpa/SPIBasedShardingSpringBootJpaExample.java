@@ -34,7 +34,7 @@ import java.sql.SQLException;
 public class SPIBasedShardingSpringBootJpaExample {
     
     public static void main(final String[] args) throws SQLException {
-        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(ShardingSpringBootJpaExample.class, args)) {
+        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SPIBasedShardingSpringBootJpaExample.class, args)) {
             ExampleExecuteTemplate.run(applicationContext.getBean(ExampleService.class));
         }
     }
