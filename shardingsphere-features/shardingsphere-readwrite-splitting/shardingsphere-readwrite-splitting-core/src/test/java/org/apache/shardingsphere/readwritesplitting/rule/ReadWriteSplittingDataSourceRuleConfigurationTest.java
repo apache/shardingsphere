@@ -30,26 +30,27 @@ import static org.junit.Assert.assertThat;
 public final class ReadWriteSplittingDataSourceRuleConfigurationTest {
 
     private ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfig;
+
     private ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfigDynamic;
 
     @Before
-    public void setup(){
+    public void setup() {
         readwriteSplittingDataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Static", getProperties("write_ds", "read_ds_0,read_ds_1"), "");
         readwriteSplittingDataSourceRuleConfigDynamic = new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Dynamic", getProperties("write_ds", "read_ds_0,read_ds_1"), "");
     }
 
     @Test
-    public void assertGetAutoAwareDataSourceName(){
+    public void assertGetAutoAwareDataSourceName() {
         assertNull(readwriteSplittingDataSourceRuleConfigDynamic.getProps().getProperty("auto-aware-data-source-name"));
     }
 
     @Test
-    public void assertGetWriteDataSourceName(){
+    public void assertGetWriteDataSourceName() {
         assertThat(readwriteSplittingDataSourceRuleConfig.getProps().getProperty("write-data-source-name"), is("write_ds"));
     }
 
     @Test
-    public void assertGetReadDataSourceNames(){
+    public void assertGetReadDataSourceNames() {
         assertThat(readwriteSplittingDataSourceRuleConfig.getProps().getProperty("read-data-source-names"), is("read_ds_0,read_ds_1"));
     }
 
