@@ -39,6 +39,11 @@ public enum SQLHintPropertiesKey implements TypedPropertyKey {
     WRITE_ROUTE_ONLY_KEY("writeRouteOnly", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
+     * Whether to use traffic or not.
+     */
+    USE_TRAFFIC("useTraffic", String.valueOf(Boolean.FALSE), boolean.class),
+    
+    /**
      * Whether hint indicate encrypt rewrite needed or not.
      */
     NO_ENCRYPT_REWRITE_KEY("noEncryptRewrite", String.valueOf(Boolean.FALSE), boolean.class);

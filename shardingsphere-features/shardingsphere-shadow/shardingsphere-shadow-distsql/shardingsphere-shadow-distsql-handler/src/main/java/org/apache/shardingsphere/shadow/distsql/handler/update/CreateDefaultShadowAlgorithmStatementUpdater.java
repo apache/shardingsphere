@@ -52,8 +52,8 @@ public final class CreateDefaultShadowAlgorithmStatementUpdater implements RuleD
     }
     
     private void checkAlgorithmExist(final String schemaName, final CreateDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(currentRuleConfig.getShadowAlgorithms().containsKey(sqlStatement.getAlgorithmName()), 
-                new RequiredAlgorithmMissedException(schemaName, Collections.singleton(sqlStatement.getAlgorithmName())));
+        DistSQLException.predictionThrow(currentRuleConfig.getShadowAlgorithms().containsKey(sqlStatement.getAlgorithmName()),
+            () -> new RequiredAlgorithmMissedException(schemaName, Collections.singleton(sqlStatement.getAlgorithmName())));
     }
     
     @Override

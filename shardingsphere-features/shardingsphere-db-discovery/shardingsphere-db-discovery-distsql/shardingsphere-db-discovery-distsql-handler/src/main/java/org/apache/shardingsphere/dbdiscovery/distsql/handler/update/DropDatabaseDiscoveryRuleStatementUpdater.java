@@ -53,7 +53,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
         if (sqlStatement.isContainsExistClause()) {
             return;
         }
-        DistSQLException.predictionThrow(null != currentRuleConfig, new RequiredRuleMissedException(RULE_TYPE, schemaName));
+        DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException(RULE_TYPE, schemaName));
         checkIsExist(schemaName, sqlStatement, currentRuleConfig);
     }
     
@@ -61,7 +61,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
                               final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName).collect(Collectors.toList());
         Collection<String> notExistedRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
-        DistSQLException.predictionThrow(notExistedRuleNames.isEmpty(), new RequiredRuleMissedException(RULE_TYPE, schemaName));
+        DistSQLException.predictionThrow(notExistedRuleNames.isEmpty(), () -> new RequiredRuleMissedException(RULE_TYPE, schemaName));
     }
     
     private void checkIsInUse(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereMetaData shardingSphereMetaData) throws DistSQLException {
@@ -70,7 +70,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
                 .map(each -> each.export(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_NAME)).filter(Optional::isPresent)
                 .map(each -> (Collection<String>) each.get()).flatMap(Collection::stream).collect(Collectors.toSet());
         Collection<String> invalid = sqlStatement.getRuleNames().stream().filter(rulesInUse::contains).collect(Collectors.toList());
-        DistSQLException.predictionThrow(invalid.isEmpty(), new RuleInUsedException(RULE_TYPE, schemaName, invalid));
+        DistSQLException.predictionThrow(invalid.isEmpty(), () -> new RuleInUsedException(RULE_TYPE, schemaName, invalid));
     }
     
     @Override
