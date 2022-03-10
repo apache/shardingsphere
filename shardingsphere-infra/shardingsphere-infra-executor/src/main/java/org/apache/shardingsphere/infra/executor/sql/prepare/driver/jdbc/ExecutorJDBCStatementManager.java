@@ -15,17 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.builder;
+package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.SQLExecutionUnitBuilder;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCStatementManager;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 
 import java.sql.Connection;
+import java.sql.Statement;
 
 /**
- * JDBC execution unit builder.
+ * Executor JDBC statement manager.
  */
-public interface JDBCExecutionUnitBuilder extends SQLExecutionUnitBuilder<JDBCExecutionUnit, ExecutorJDBCStatementManager, Connection, StatementOption> {
+public interface ExecutorJDBCStatementManager extends ExecutorStatementManager<Connection, Statement, StatementOption> {
 }

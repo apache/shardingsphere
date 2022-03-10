@@ -15,17 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx;
+package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc;
 
-import io.vertx.core.Future;
-import io.vertx.sqlclient.Query;
-import io.vertx.sqlclient.Row;
-import io.vertx.sqlclient.RowSet;
-import io.vertx.sqlclient.SqlClient;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorDriverManager;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorConnectionManager;
+
+import java.sql.Connection;
 
 /**
- * Executor manager for Vert.x.
+ * Executor JDBC connection manager.
  */
-public interface ExecutorVertxManager extends ExecutorDriverManager<Future<? extends SqlClient>, Future<Query<RowSet<Row>>>, VertxExecutionContext> {
+public interface ExecutorJDBCConnectionManager extends ExecutorConnectionManager<Connection> {
 }

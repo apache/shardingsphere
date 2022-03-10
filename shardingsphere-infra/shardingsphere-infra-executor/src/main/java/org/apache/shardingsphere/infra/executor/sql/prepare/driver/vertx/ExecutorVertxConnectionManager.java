@@ -15,17 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.builder;
+package org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.SQLExecutionUnitBuilder;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCStatementManager;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
-
-import java.sql.Connection;
+import io.vertx.core.Future;
+import io.vertx.sqlclient.SqlClient;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorConnectionManager;
 
 /**
- * JDBC execution unit builder.
+ * Executor connection manager for Vert.x.
  */
-public interface JDBCExecutionUnitBuilder extends SQLExecutionUnitBuilder<JDBCExecutionUnit, ExecutorJDBCStatementManager, Connection, StatementOption> {
+public interface ExecutorVertxConnectionManager extends ExecutorConnectionManager<Future<? extends SqlClient>> {
 }

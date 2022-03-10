@@ -23,13 +23,11 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Executor driver manager.
+ * Executor connection manager.
  * 
  * @param <C> type of resource connection
- * @param <R> type of storage resource
- * @param <O> type of storage resource option
  */
-public interface ExecutorDriverManager<C, R, O extends StorageResourceOption> {
+public interface ExecutorConnectionManager<C> {
     
     /**
      * Get connections.
@@ -41,28 +39,4 @@ public interface ExecutorDriverManager<C, R, O extends StorageResourceOption> {
      * @throws SQLException SQL exception
      */
     List<C> getConnections(String dataSourceName, int connectionSize, ConnectionMode connectionMode) throws SQLException;
-    
-    /**
-     * Create storage resource.
-     *
-     * @param connection connection
-     * @param connectionMode connection mode
-     * @param option storage resource option
-     * @return storage resource
-     * @throws SQLException SQL exception
-     */
-    R createStorageResource(C connection, ConnectionMode connectionMode, O option) throws SQLException;
-    
-    /**
-     * Create storage resource.
-     *
-     * @param sql SQL
-     * @param parameters SQL parameters
-     * @param connection connection
-     * @param connectionMode connection mode
-     * @param option storage resource option
-     * @return storage resource
-     * @throws SQLException SQL exception
-     */
-    R createStorageResource(String sql, List<Object> parameters, C connection, ConnectionMode connectionMode, O option) throws SQLException;
 }

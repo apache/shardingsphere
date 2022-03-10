@@ -23,11 +23,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionIsolationLevel;
@@ -65,15 +68,23 @@ public final class ConnectionSession {
 
     private final BackendConnection backendConnection;
     
+    private final ExecutorStatementManager statementManager;
+    
     public ConnectionSession(final TransactionType initialTransactionType, final AttributeMap attributeMap) {
         transactionStatus = new TransactionStatus(initialTransactionType);
         this.attributeMap = attributeMap;
         backendConnection = determineBackendConnection();
+        statementManager = determineStatementManager();
     }
     
     private BackendConnection determineBackendConnection() {
         String proxyBackendDriverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
         return "ExperimentalVertx".equals(proxyBackendDriverType) ? new VertxBackendConnection(this) : new JDBCBackendConnection(this);
+    }
+    
+    private ExecutorStatementManager determineStatementManager() {
+        String proxyBackendDriverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
+        return "ExperimentalVertx".equals(proxyBackendDriverType) ? new VertxBackendStatement() : new JDBCBackendStatement();
     }
     
     /**
@@ -87,6 +98,9 @@ public final class ConnectionSession {
         }
         if (transactionStatus.isInTransaction()) {
             throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
+        }
+        if (statementManager instanceof JDBCBackendStatement) {
+            ((JDBCBackendStatement) statementManager).setSchemaName(schemaName);
         }
         this.schemaName = schemaName;
     }
