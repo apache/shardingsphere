@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-grammar ShadowDistSQLStatement;
+package org.apache.shardingsphere.shadow.distsql.parser.statement;
 
-import Symbol, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 
-execute
-    : (createShadowRule
-    | alterShadowRule
-    | dropShadowRule
-    | showShadowRules
-    | showShadowTableRules
-    | showShadowAlgorithms
-    | dropShadowAlgorithm
-    | dropDefaultShadowAlgorithm
-    | createDefaultShadowAlgorithm
-    | alterShadowAlgorithm
-    | createShadowAlgorithm
-    ) SEMI?
-    ;
+/**
+ * Drop default shadow algorithm statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class DropDefaultShadowAlgorithmStatement extends DropRuleStatement {
+    
+    public DropDefaultShadowAlgorithmStatement(final boolean containsExistClause) {
+        setContainsExistClause(containsExistClause);
+    }
+}
