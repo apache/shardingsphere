@@ -40,6 +40,7 @@
     <distsql-case id="drop-shadow-rule" value="DROP SHADOW RULE shadow_rule_1,shadow_rule_2" />
     <distsql-case id="drop-shadow-rule-if-exists" value="DROP SHADOW RULE IF EXISTS shadow_rule_1,shadow_rule_2" />
     <distsql-case id="drop-shadow-algorithm" value="DROP SHADOW algorithm shadow_algorithm_1,shadow_algorithm_2" />
+    <distsql-case id="drop-default-shadow-algorithm-if-exists" value="DROP DEFAULT SHADOW ALGORITHM IF EXISTS" />
     <distsql-case id="drop-shadow-algorithm-if-exists" value="DROP SHADOW ALGORITHM IF EXISTS shadow_algorithm_1,shadow_algorithm_2" />
     <distsql-case id="drop-default-single-table" value="DROP DEFAULT SINGLE TABLE RULE" />
     <distsql-case id="drop-default-single-table-if-exists" value="DROP DEFAULT SINGLE TABLE RULE IF EXISTS" />
