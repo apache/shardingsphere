@@ -23,4 +23,5 @@
     <distsql-case id="drop-scaling" value="DROP SCALING 123;" />
     <distsql-case id="reset-scaling" value="RESET SCALING 123;" />
     <distsql-case id="stop-scaling" value="STOP SCALING 123;" />
+    <distsql-case id="start-scaling" value="START SCALING 123;" />
 </sql-cases>
