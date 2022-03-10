@@ -18,7 +18,11 @@
 package org.apache.shardingsphere.infra.federation.executor.customized;
 
 import java.io.Reader;
-import java.sql.*;
+import java.sql.NClob;
+import java.sql.Ref;
+import java.sql.RowId;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Map;
 
 /**
