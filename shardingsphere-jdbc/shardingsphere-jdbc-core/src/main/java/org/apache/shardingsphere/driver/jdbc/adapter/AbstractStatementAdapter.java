@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.executor.DriverExecutor;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
@@ -189,6 +190,9 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
             if (null != getExecutor()) {
                 getExecutor().close();
             }
+            if (null != getStatementManager()) {
+                getStatementManager().close();
+            }
         } finally {
             getRoutedStatements().clear();
         }
@@ -208,4 +212,6 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     protected abstract Collection<? extends Statement> getRoutedStatements();
     
     protected abstract DriverExecutor getExecutor();
+    
+    protected abstract StatementManager getStatementManager();
 }

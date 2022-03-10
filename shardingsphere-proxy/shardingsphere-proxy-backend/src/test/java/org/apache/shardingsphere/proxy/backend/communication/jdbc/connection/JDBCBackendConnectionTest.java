@@ -31,6 +31,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -47,8 +48,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -97,6 +96,9 @@ public final class JDBCBackendConnectionTest {
         backendConnection = spy(new JDBCBackendConnection(connectionSession));
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
+        JDBCBackendStatement backendStatement = new JDBCBackendStatement();
+        backendStatement.setSchemaName(connectionSession.getSchemaName());
+        when(connectionSession.getStatementManager()).thenReturn(backendStatement);
     }
     
     private void setContextManager() throws ReflectiveOperationException {
@@ -248,15 +250,6 @@ public final class JDBCBackendConnectionTest {
     }
     
     @Test
-    public void assertSetFetchSizeAsExpected() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, SQLException {
-        Statement statement = mock(Statement.class);
-        Method setFetchSizeMethod = JDBCBackendConnection.class.getDeclaredMethod("setFetchSize", Statement.class);
-        setFetchSizeMethod.setAccessible(true);
-        setFetchSizeMethod.invoke(backendConnection, statement);
-        verify(statement, times(1)).setFetchSize(Integer.MIN_VALUE);
-    }
-    
-    @Test
     public void assertCloseConnectionsCorrectlyWhenNotForceRollback() throws NoSuchFieldException, IllegalAccessException, SQLException {
         Field field = JDBCBackendConnection.class.getDeclaredField("cachedConnections");
         field.setAccessible(true);
@@ -306,7 +299,8 @@ public final class JDBCBackendConnectionTest {
         Connection connection = mock(Connection.class);
         Statement statement = mock(Statement.class);
         when(connection.createStatement()).thenReturn(statement);
-        assertThat(backendConnection.createStorageResource(connection, ConnectionMode.MEMORY_STRICTLY, null), is(statement));
+        JDBCBackendStatement backendStatement = (JDBCBackendStatement) connectionSession.getStatementManager();
+        assertThat(backendStatement.createStorageResource(connection, ConnectionMode.MEMORY_STRICTLY, null), is(statement));
         verify(connection, times(1)).createStatement();
     }
     

@@ -109,6 +109,11 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private final KernelProcessor kernelProcessor;
     
+    private final TrafficRule trafficRule;
+    
+    @Getter(AccessLevel.PROTECTED)
+    private final StatementManager statementManager;
+    
     private boolean returnGeneratedKeys;
     
     private ExecutionContext executionContext;
@@ -116,8 +121,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     private ResultSet currentResultSet;
     
     private TrafficContext trafficContext;
-    
-    private TrafficRule trafficRule;
     
     public ShardingSphereStatement(final ShardingSphereConnection connection) {
         this(connection, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
@@ -136,6 +139,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         executor = new DriverExecutor(connection);
         kernelProcessor = new KernelProcessor();
         trafficRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(TrafficRule.class).orElse(null);
+        statementManager = new StatementManager();
     }
     
     @Override
@@ -209,7 +213,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine() {
         int maxConnectionsSizePerQuery = metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, connection.getConnectionManager(), 
+        return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, connection.getConnectionManager(), statementManager,
                 statementOption, metaDataContexts.getMetaData(connection.getSchema()).getRuleMetaData().getRules());
     }
     

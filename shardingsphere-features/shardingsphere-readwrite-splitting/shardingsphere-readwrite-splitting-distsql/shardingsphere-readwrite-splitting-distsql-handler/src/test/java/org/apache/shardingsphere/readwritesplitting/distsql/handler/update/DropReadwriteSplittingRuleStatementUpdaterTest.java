@@ -60,6 +60,13 @@ public final class DropReadwriteSplittingRuleStatementUpdaterTest {
     }
     
     @Test
+    public void assertCheckSQLStatementWithIfExists() throws RuleDefinitionViolationException {
+        updater.checkSQLStatement(shardingSphereMetaData, new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")),
+                new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
+        updater.checkSQLStatement(shardingSphereMetaData, new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")), null);
+    }
+    
+    @Test
     public void assertUpdateCurrentRuleConfiguration() {
         ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfiguration = createCurrentRuleConfiguration();
         assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement(), readwriteSplittingRuleConfiguration));
@@ -89,7 +96,7 @@ public final class DropReadwriteSplittingRuleStatementUpdaterTest {
         Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new HashMap<>(1, 1);
         loadBalancers.put("readwrite_ds", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()));
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", "Static", new Properties(), "TEST");
-        return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Arrays.asList(dataSourceRuleConfig, 
+        return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Arrays.asList(dataSourceRuleConfig,
                 new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds_another", "Static", new Properties(), "TEST"))), loadBalancers);
     }
 }

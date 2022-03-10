@@ -15,17 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling;
 
-import io.vertx.core.Future;
-import io.vertx.sqlclient.Query;
-import io.vertx.sqlclient.Row;
-import io.vertx.sqlclient.RowSet;
-import io.vertx.sqlclient.SqlClient;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorDriverManager;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Executor manager for Vert.x.
+ * Stop scaling statement test case.
  */
-public interface ExecutorVertxManager extends ExecutorDriverManager<Future<? extends SqlClient>, Future<Query<RowSet<Row>>>, VertxExecutionContext> {
+@Getter
+@Setter
+public final class StopScalingStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "job-id")
+    private final List<String> jobIds = new LinkedList<>();
 }

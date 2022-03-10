@@ -82,7 +82,9 @@ public final class ParameterizedArrayGenerator {
                                                                                    final DatabaseType databaseType, final SQLCommandType sqlCommandType) {
         Collection<AssertionParameterizedArray> result = new LinkedList<>();
         for (SQLExecuteType each : SQLExecuteType.values()) {
-            result.addAll(getAssertionParameterizedArray(testCaseContext, databaseType, each, sqlCommandType));
+            if (!sqlCommandType.isLiteralOnly() || SQLExecuteType.Literal == each) {
+                result.addAll(getAssertionParameterizedArray(testCaseContext, databaseType, each, sqlCommandType));
+            }
         }
         return result;
     }
@@ -101,7 +103,9 @@ public final class ParameterizedArrayGenerator {
                                                                                    final IntegrationTestCaseAssertion assertion, final SQLCommandType sqlCommandType) {
         Collection<AssertionParameterizedArray> result = new LinkedList<>();
         for (String each : envAdapters) {
-            result.addAll(getAssertionParameterizedArray(testCaseContext, assertion, each, databaseType, sqlExecuteType, sqlCommandType));
+            if (sqlCommandType.getRunningAdaptors().contains(each)) {
+                result.addAll(getAssertionParameterizedArray(testCaseContext, assertion, each, databaseType, sqlExecuteType, sqlCommandType));
+            }
         }
         return result;
     }
@@ -111,11 +115,9 @@ public final class ParameterizedArrayGenerator {
                                                                                    final SQLExecuteType sqlExecuteType, final SQLCommandType sqlCommandType) {
         Collection<String> scenarios = null == testCaseContext.getTestCase().getScenarioTypes() ? Collections.emptyList() : Arrays.asList(testCaseContext.getTestCase().getScenarioTypes().split(","));
         return envScenarios.stream().filter(each -> filterScenarios(each, scenarios, sqlCommandType.getSqlStatementClass()))
-                .filter(each -> !sqlCommandType.isLiteralOnly() || SQLExecuteType.Literal != sqlExecuteType)
-                .filter(each -> sqlCommandType.getRunningAdaptors().contains(adapter))
                 .map(each -> new AssertionParameterizedArray(testCaseContext, assertion, adapter, each, databaseType, sqlExecuteType)).collect(Collectors.toList());
     }
-
+    
     private boolean filterScenarios(final String scenario, final Collection<String> scenarios, final Class<? extends SQLStatement> sqlStatementClass) {
         if (sqlStatementClass == RDLStatement.class || sqlStatementClass == RALStatement.class) {
             return "empty_rules".equals(scenario);

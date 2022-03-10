@@ -78,17 +78,17 @@ public enum SQLCommandType {
      * Database control Language.
      */
     DCL(DCLStatement.class, "dcl-integration-test-cases", false, Arrays.asList("jdbc", "proxy")),
-
+    
     /**
      * Resource & Rule Administration Language.
      */
     RAL(RALStatement.class, "ral-integration-test-cases", true, Collections.singletonList("proxy")),
-
+    
     /**
      * Resource & Rule Definition Language.
      */
     RDL(RDLStatement.class, "rdl-integration-test-cases", true, Collections.singletonList("proxy")),
-
+    
     /**
      * Resource & Rule Query Language.
      */

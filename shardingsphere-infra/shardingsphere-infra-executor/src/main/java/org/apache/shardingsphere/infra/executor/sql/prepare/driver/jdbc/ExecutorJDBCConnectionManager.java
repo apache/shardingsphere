@@ -15,19 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
+package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorConnectionManager;
+
+import java.sql.Connection;
 
 /**
- * Compute node instance offline event.
+ * Executor JDBC connection manager.
  */
-@RequiredArgsConstructor
-@Getter
-public final class InstanceOfflineEvent implements GovernanceEvent {
-    
-    private final InstanceDefinition instanceDefinition;
+public interface ExecutorJDBCConnectionManager extends ExecutorConnectionManager<Connection> {
 }

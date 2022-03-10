@@ -15,19 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
+package org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import io.vertx.core.Future;
+import io.vertx.sqlclient.SqlClient;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorConnectionManager;
 
 /**
- * Compute node instance offline event.
+ * Executor connection manager for Vert.x.
  */
-@RequiredArgsConstructor
-@Getter
-public final class InstanceOfflineEvent implements GovernanceEvent {
-    
-    private final InstanceDefinition instanceDefinition;
+public interface ExecutorVertxConnectionManager extends ExecutorConnectionManager<Future<? extends SqlClient>> {
 }
