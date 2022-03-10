@@ -135,6 +135,8 @@
         <rule>shadow_algorithm_2</rule>
     </drop-shadow-algorithm>
 
+    <drop-shadow-algorithm sql-case-id="drop-default-shadow-algorithm-if-exists" contains-exist-clause="true"/>
+
     <drop-default-single-table sql-case-id="drop-default-single-table" />
     
     <drop-default-single-table sql-case-id="drop-default-single-table-if-exists" contains-exist-clause="true"/>

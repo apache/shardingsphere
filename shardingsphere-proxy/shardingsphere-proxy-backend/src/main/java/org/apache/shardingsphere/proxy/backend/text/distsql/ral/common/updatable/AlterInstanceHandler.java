@@ -50,8 +50,16 @@ public final class AlterInstanceHandler extends UpdatableRALBackendHandler<Alter
             throw new UnsupportedOperationException(String.format("No persistence configuration found, unable to set '%s'", sqlStatement.getKey()));
         }
         Collection<ComputeNodeInstance> instances = persistService.get().getComputeNodePersistService().loadAllComputeNodeInstances();
+        checkExisted(instances, sqlStatement);
         checkDuplicated(instances, sqlStatement);
         persistService.get().getComputeNodePersistService().persistInstanceXaRecoveryId(sqlStatement.getInstanceId(), sqlStatement.getValue());
+    }
+    
+    private void checkExisted(final Collection<ComputeNodeInstance> instances, final AlterInstanceStatement sqlStatement) {
+        Collection<String> instanceIds = instances.stream().map(each -> each.getInstanceDefinition().getInstanceId().getId()).collect(Collectors.toSet());
+        if (!instanceIds.contains(sqlStatement.getInstanceId())) {
+            throw new UnsupportedOperationException(String.format("'%s' does not exist", sqlStatement.getValue()));
+        }
     }
     
     private void checkDuplicated(final Collection<ComputeNodeInstance> instances, final AlterInstanceStatement sqlStatement) {

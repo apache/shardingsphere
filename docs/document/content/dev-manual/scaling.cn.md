@@ -36,7 +36,7 @@ chapter = true
 | *已知实现类*                                  | *详细说明*                                            |
 | ------------------------------------------- | ---------------------------------------------------- |
 | DataMatchDataConsistencyCheckAlgorithm      | 基于数据匹配的一致性校验算法。类型名：DATA_MATCH。          |
-| CRC32MatchDataConsistencyCheckAlgorithm     | 基于数据CRC32匹配的一致性校验算法。类型名：CRC32_MATCH。    |
+| CRC32MatchDataConsistencyCheckAlgorithm     | 基于数据 CRC32 匹配的一致性校验算法。类型名：CRC32_MATCH。    |
 
 ## SingleTableDataCalculator
 
