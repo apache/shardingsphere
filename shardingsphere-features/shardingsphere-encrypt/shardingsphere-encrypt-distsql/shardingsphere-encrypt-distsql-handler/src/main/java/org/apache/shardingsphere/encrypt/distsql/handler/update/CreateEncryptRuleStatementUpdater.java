@@ -72,7 +72,7 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     private void checkDataType(final CreateEncryptRuleStatement sqlStatement) throws DistSQLException {
         Collection<String> invalidRules = sqlStatement.getRules().stream()
                 .map(each -> getInvalidColumns(each.getTableName(), each.getColumns())).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));
-        DistSQLException.predictionThrow(invalidRules.isEmpty(), new InvalidRuleConfigurationException("encrypt", invalidRules, Collections.singleton("incomplete data type")));
+        DistSQLException.predictionThrow(invalidRules.isEmpty(), () -> new InvalidRuleConfigurationException("encrypt", invalidRules, Collections.singleton("incomplete data type")));
     }
     
     private Collection<String> getInvalidColumns(final String tableName, final Collection<EncryptColumnSegment> columns) {
