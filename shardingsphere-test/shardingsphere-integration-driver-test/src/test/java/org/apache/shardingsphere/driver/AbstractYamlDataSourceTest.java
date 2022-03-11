@@ -22,10 +22,7 @@ import org.h2.tools.RunScript;
 import org.junit.BeforeClass;
 
 import javax.sql.DataSource;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -50,18 +47,6 @@ public abstract class AbstractYamlDataSourceTest {
         result.setUsername("sa");
         result.setMaximumPoolSize(100);
         return result;
-    }
-    
-    protected final byte[] getYamlBytes(final File yamlFile) throws IOException {
-        try (FileInputStream inputStream = new FileInputStream(yamlFile);
-             ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            byte[] bytes = new byte[1024];
-            int n;
-            while ((n = inputStream.read(bytes)) != -1) {
-                outputStream.write(bytes, 0, n);
-            }
-            return outputStream.toByteArray();
-        }
     }
     
     private static String getFileName(final String dataSetFile) {
