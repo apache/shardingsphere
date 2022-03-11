@@ -128,15 +128,15 @@ public final class DataSourceReflection {
     @SneakyThrows(ReflectiveOperationException.class)
     private void setField(final Method method, final Object fieldValue) {
         Class<?> paramType = method.getParameterTypes()[0];
-        if (paramType == int.class) {
+        if (int.class == paramType || Integer.class == paramType) {
             method.invoke(dataSource, Integer.parseInt(fieldValue.toString()));
-        } else if (paramType == long.class) {
+        } else if (long.class == paramType || Long.class == paramType) {
             method.invoke(dataSource, Long.parseLong(fieldValue.toString()));
-        } else if (paramType == boolean.class || paramType == Boolean.class) {
+        } else if (boolean.class == paramType || Boolean.class == paramType) {
             method.invoke(dataSource, Boolean.parseBoolean(fieldValue.toString()));
-        } else if (paramType == String.class) {
+        } else if (String.class == paramType) {
             method.invoke(dataSource, fieldValue.toString());
-        } else if (paramType == Properties.class) {
+        } else if (Properties.class == paramType) {
             Properties props = new Properties();
             props.putAll((Map) fieldValue);
             method.invoke(dataSource, props);

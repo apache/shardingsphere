@@ -38,6 +38,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DropDatabaseDiscoveryTypeStatementUpdaterTest {
@@ -77,6 +78,7 @@ public final class DropDatabaseDiscoveryTypeStatementUpdaterTest {
         DropDatabaseDiscoveryTypeStatement dropDatabaseDiscoveryRuleStatement = createSQLStatementWithIfExists();
         updater.checkSQLStatement(shardingSphereMetaData, dropDatabaseDiscoveryRuleStatement, databaseDiscoveryRuleConfiguration);
         assertFalse(updater.updateCurrentRuleConfiguration(dropDatabaseDiscoveryRuleStatement, databaseDiscoveryRuleConfiguration));
+        assertTrue(databaseDiscoveryRuleConfiguration.getDiscoveryTypes().containsKey("type_name"));
         assertThat(databaseDiscoveryRuleConfiguration.getDiscoveryTypes().size(), is(2));
     }
     

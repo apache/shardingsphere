@@ -83,9 +83,7 @@ public final class DropDatabaseDiscoveryTypeStatementUpdater implements RuleDefi
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropDatabaseDiscoveryTypeStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
-        return isExistRuleConfig(currentRuleConfig)
-                && !getIdenticalData(currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getDiscoveryTypeName).collect(Collectors.toSet()),
-                sqlStatement.getTypes()).isEmpty();
+        return isExistRuleConfig(currentRuleConfig) && !getIdenticalData(currentRuleConfig.getDiscoveryTypes().keySet(), sqlStatement.getTypes()).isEmpty();
     }
     
     private boolean isNotInUse(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String toBeDroppedDiscoveryTypeName) {
