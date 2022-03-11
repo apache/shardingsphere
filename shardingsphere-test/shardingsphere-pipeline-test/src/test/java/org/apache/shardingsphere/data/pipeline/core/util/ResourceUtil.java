@@ -91,10 +91,10 @@ public final class ResourceUtil {
     }
 
     /**
-     * Ignore comments to read configuration from YAML.
+     * Read file and ignore comments.
      * 
-     * @param fileName YAML file name.
-     * @return YAML configuration.
+     * @param fileName file name
+     * @return file content without comments
      */
     @SneakyThrows({IOException.class, URISyntaxException.class})
     public static String readFileAndIgnoreComments(final String fileName) {
