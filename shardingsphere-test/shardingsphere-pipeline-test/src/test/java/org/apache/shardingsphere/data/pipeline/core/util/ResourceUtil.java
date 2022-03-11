@@ -55,8 +55,8 @@ public final class ResourceUtil {
         JobConfiguration result = new JobConfiguration();
         result.setWorkflowConfig(new WorkflowConfiguration("logic_db", Collections.singletonList(YamlShardingRuleConfiguration.class.getName()), "0"));
         PipelineConfiguration pipelineConfig = new PipelineConfiguration();
-        pipelineConfig.setSource(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(readFileToString("/config_sharding_sphere_jdbc_source.yaml"))));
-        pipelineConfig.setTarget(createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(readFileToString("/config_standard_jdbc_target.yaml"))));
+        pipelineConfig.setSource(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(readFile("/config_sharding_sphere_jdbc_source.yaml"))));
+        pipelineConfig.setTarget(createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(readFile("/config_standard_jdbc_target.yaml"))));
         result.setPipelineConfig(pipelineConfig);
         result.buildHandleConfig();
         return result;
@@ -70,13 +70,13 @@ public final class ResourceUtil {
     }
     
     /**
-     * Read file to string.
+     * Read file content.
      *
      * @param fileName file name
      * @return file content
      */
     @SneakyThrows(IOException.class)
-    public static String readFileToString(final String fileName) {
+    public static String readFile(final String fileName) {
         try (
                 InputStream inputStream = Objects.requireNonNull(ResourceUtil.class.getResourceAsStream(fileName), "Get " + fileName + " as stream return null.");
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream()
