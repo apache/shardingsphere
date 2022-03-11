@@ -29,10 +29,10 @@ import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
 /**
- * Resource util.
+ * Configuration file util.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ResourceUtil {
+public final class ConfigurationFileUtil {
     
     /**
      * Read file content.
