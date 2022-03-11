@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.readwritesplitting.rule;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RoundRobinReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
