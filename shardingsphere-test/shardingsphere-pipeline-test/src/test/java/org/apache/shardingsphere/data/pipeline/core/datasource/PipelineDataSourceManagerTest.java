@@ -40,7 +40,7 @@ public final class PipelineDataSourceManagerTest {
     
     @Before
     public void setUp() {
-        jobConfig = ResourceUtil.mockJobConfig();
+        jobConfig = ResourceUtil.createJobConfiguration();
     }
     
     @Test

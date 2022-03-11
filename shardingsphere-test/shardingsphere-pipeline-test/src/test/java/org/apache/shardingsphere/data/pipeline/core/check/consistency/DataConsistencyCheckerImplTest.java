@@ -46,7 +46,7 @@ public final class DataConsistencyCheckerImplTest {
     
     @Test
     public void assertCountAndDataCheck() {
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(ResourceUtil.mockJobConfig());
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(ResourceUtil.createJobConfiguration());
         initTableData(jobContext.getTaskConfig().getDumperConfig().getDataSourceConfig());
         initTableData(jobContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
         PipelineContextUtil.mockContextManager();
@@ -72,7 +72,7 @@ public final class DataConsistencyCheckerImplTest {
     @Test(expected = InvocationTargetException.class)
     @SneakyThrows(ReflectiveOperationException.class)
     public void assertCheckDatabaseTypeSupported() {
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(ResourceUtil.mockJobConfig());
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(ResourceUtil.createJobConfiguration());
         DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobContext.getJobConfig());
         Method method = dataConsistencyChecker.getClass().getDeclaredMethod("checkDatabaseTypeSupportedOrNot", Collection.class, String.class);
         method.setAccessible(true);

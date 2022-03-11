@@ -49,7 +49,7 @@ public final class InventoryTaskTest {
     @BeforeClass
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfig();
-        taskConfig = new RuleAlteredJobContext(ResourceUtil.mockJobConfig()).getTaskConfig();
+        taskConfig = new RuleAlteredJobContext(ResourceUtil.createJobConfiguration()).getTaskConfig();
     }
     
     @AfterClass

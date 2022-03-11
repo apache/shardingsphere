@@ -70,7 +70,8 @@
         <commons-codec.version>1.15</commons-codec.version>
         <commons-cli.version>1.4</commons-cli.version>
         <commons-collections4.version>4.2</commons-collections4.version>
-        <commons-io.version>2.8.0</commons-io.version>
+        
+        <vertx.version>4.2.3</vertx.version>
         
         <javax.transaction.version>1.1</javax.transaction.version>
         <atomikos.version>5.0.8</atomikos.version>
@@ -103,8 +104,6 @@
         <mssql.version>6.1.7.jre8-preview</mssql.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
         <bytebuddy.version>1.11.18</bytebuddy.version>
-        
-        <vertx.version>4.2.3</vertx.version>
         
         <elasticjob.version>3.0.1</elasticjob.version>
         
@@ -309,7 +308,7 @@
                 <artifactId>commons-collections4</artifactId>
                 <version>${commons-collections4.version}</version>
             </dependency>
-
+            
             <dependency>
                 <groupId>org.apache.calcite</groupId>
                 <artifactId>calcite-core</artifactId>
