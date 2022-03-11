@@ -63,11 +63,14 @@ public final class InstanceContext {
     public void updateInstanceStatus(final String instanceId, final Collection<String> status) {
         if (instance.getInstanceDefinition().getInstanceId().getId().equals(instanceId)) {
             instance.switchState(status);
-        } else {
-            for (ComputeNodeInstance each : computeNodeInstances) {
-                if (each.getInstanceDefinition().getInstanceId().getId().equals(instanceId)) {
-                    each.switchState(status);
-                }
+        }
+        updateRelatedComputeNodeInstancesStatus(instanceId, status);
+    }
+    
+    private void updateRelatedComputeNodeInstancesStatus(final String instanceId, final Collection<String> status) {
+        for (ComputeNodeInstance each : computeNodeInstances) {
+            if (each.getInstanceDefinition().getInstanceId().getId().equals(instanceId)) {
+                each.switchState(status);
             }
         }
     }
