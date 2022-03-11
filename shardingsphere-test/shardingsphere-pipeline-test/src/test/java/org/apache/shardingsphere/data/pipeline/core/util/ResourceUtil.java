@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
@@ -29,18 +30,20 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Standa
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
  * Resource util.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResourceUtil {
     
     /**
@@ -84,11 +87,16 @@ public final class ResourceUtil {
      */
     @SneakyThrows(IOException.class)
     public static String readFileToString(final String fileName) {
-        try (InputStream in = ResourceUtil.class.getResourceAsStream(fileName)) {
-            if (null == in) {
-                throw new NullPointerException("get " + fileName + " as stream return null");
+        try (
+                InputStream inputStream = Objects.requireNonNull(ResourceUtil.class.getResourceAsStream(fileName), "Get " + fileName + " as stream return null.");
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream()
+        ) {
+            byte[] bytes = new byte[1024];
+            int n;
+            while ((n = inputStream.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, n);
             }
-            return IOUtils.toString(in, StandardCharsets.UTF_8);
+            return outputStream.toString("UTF-8");
         }
     }
 

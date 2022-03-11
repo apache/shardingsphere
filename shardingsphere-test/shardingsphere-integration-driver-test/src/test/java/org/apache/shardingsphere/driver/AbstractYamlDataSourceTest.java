@@ -54,8 +54,8 @@ public abstract class AbstractYamlDataSourceTest {
     
     protected final byte[] getYamlBytes(final File yamlFile) throws IOException {
         try (FileInputStream inputStream = new FileInputStream(yamlFile);
-             ByteArrayOutputStream outputStream = new ByteArrayOutputStream(1000)) {
-            byte[] bytes = new byte[1000];
+             ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            byte[] bytes = new byte[1024];
             int n;
             while ((n = inputStream.read(bytes)) != -1) {
                 outputStream.write(bytes, 0, n);
