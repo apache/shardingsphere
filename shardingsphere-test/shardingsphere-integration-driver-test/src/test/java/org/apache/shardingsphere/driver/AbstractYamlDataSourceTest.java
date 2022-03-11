@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver;
 
-import org.apache.commons.dbcp2.BasicDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 import org.h2.tools.RunScript;
 import org.junit.BeforeClass;
 
@@ -43,24 +43,24 @@ public abstract class AbstractYamlDataSourceTest {
         }
     }
     
-    protected static DataSource createDataSource(final String dsName) {
-        BasicDataSource result = new BasicDataSource();
+    protected static DataSource createDataSource(final String dataSourceName) {
+        HikariDataSource result = new HikariDataSource();
         result.setDriverClassName("org.h2.Driver");
-        result.setUrl(String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", dsName));
+        result.setJdbcUrl(String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", dataSourceName));
         result.setUsername("sa");
-        result.setMaxTotal(100);
+        result.setMaximumPoolSize(100);
         return result;
     }
     
     protected final byte[] getYamlBytes(final File yamlFile) throws IOException {
-        try (FileInputStream fis = new FileInputStream(yamlFile);
-             ByteArrayOutputStream bos = new ByteArrayOutputStream(1000)) {
+        try (FileInputStream inputStream = new FileInputStream(yamlFile);
+             ByteArrayOutputStream outputStream = new ByteArrayOutputStream(1000)) {
             byte[] bytes = new byte[1000];
             int n;
-            while ((n = fis.read(bytes)) != -1) {
-                bos.write(bytes, 0, n);
+            while ((n = inputStream.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, n);
             }
-            return bos.toByteArray();
+            return outputStream.toByteArray();
         }
     }
     
