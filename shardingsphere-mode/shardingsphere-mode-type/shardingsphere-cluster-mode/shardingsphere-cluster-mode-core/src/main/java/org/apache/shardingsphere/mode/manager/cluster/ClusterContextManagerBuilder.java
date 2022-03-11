@@ -84,7 +84,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Optional<TransactionConfigurationFileGenerator> fileGenerator = transactionRule.isPresent()
                 ? TransactionConfigurationFileGeneratorFactory.newInstance(transactionRule.get().getProviderType()) : Optional.empty();
         if (!schemaName.isPresent() || !fileGenerator.isPresent()) {
-            return new Properties();
+            return transactionRule.isPresent() ? transactionRule.get().getProps() : new Properties();
         }
         ShardingSphereMetaData metaData = metaDataContexts.getMetaData(schemaName.get());
         Properties result = fileGenerator.get().getTransactionProps(transactionRule.get().getProps(),
