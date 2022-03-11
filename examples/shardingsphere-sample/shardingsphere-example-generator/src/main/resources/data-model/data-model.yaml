@@ -15,11 +15,20 @@
 # limitations under the License.
 #
 
+# support: jdbc、proxy
 product: jdbc
+
+# support: memory、cluster-zooKeeper、cluster-etcd、standalone-file
 mode: memory
+
+# support: local
 transaction: local
-features: sharding,readwrite-splitting,encrypt
-frameworks: jdbc,spring-boot-starter-jdbc
+
+# support: sharding、readwrite-splitting、encrypt、db-discovery
+features: sharding,readwrite-splitting,encrypt,shadow,db-discovery
+
+# support：jdbc、spring-boot-starter-jdbc、spring-boot-starter-jpa、spring-boot-starter-mybatis、spring-namespace-jpa、spring-namespace-mybatis
+frameworks: jdbc,spring-boot-starter-jdbc,spring-boot-starter-jpa,spring-boot-starter-mybatis,spring-namespace-jpa,spring-namespace-mybatis
 
 host: localhost
 port: 3306
