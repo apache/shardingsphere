@@ -16,7 +16,7 @@ rules:
           assistedQueryColumn (?):  # 查询辅助列名称
           plainColumn (?): # 原文列名称
           encryptorName: # 加密算法名称
-    queryWithCipherColumn(?): # 该表是否使用加密列进行查询
+      queryWithCipherColumn(?): # 该表是否使用加密列进行查询
     
   # 加密算法配置
   encryptors:
