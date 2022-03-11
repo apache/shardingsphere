@@ -24,7 +24,6 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
 import org.apache.curator.framework.api.ACLProvider;
-import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
@@ -129,10 +128,6 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     @Override
     public String get(final String key) {
-        if (Optional.ofNullable(curatorCache).isPresent() && curatorCache.get(key).isPresent()) {
-            Optional<ChildData> resultInCache = curatorCache.get(key);
-            return null == resultInCache.get().getData() ? null : new String(resultInCache.get().getData(), StandardCharsets.UTF_8);
-        }
         return getDirectly(key);
     }
     
