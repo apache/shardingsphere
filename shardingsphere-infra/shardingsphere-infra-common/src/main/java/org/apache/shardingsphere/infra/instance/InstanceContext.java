@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.state.StateContext;
-import org.apache.shardingsphere.infra.state.StateType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,23 +50,29 @@ public final class InstanceContext {
     
     public InstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator, final ModeConfiguration modeConfiguration) {
         this.instance = instance;
-        switchInstanceState(instance.getStatus());
         this.workerIdGenerator = workerIdGenerator;
         this.modeConfiguration = modeConfiguration;
     }
     
     /**
      * Update instance status.
-     * 
+     *
+     * @param instanceId instance id
      * @param status collection of status
      */
-    public void updateInstanceStatus(final Collection<String> status) {
-        instance.setStatus(status);
-        switchInstanceState(status);
+    public void updateInstanceStatus(final String instanceId, final Collection<String> status) {
+        if (instance.getInstanceDefinition().getInstanceId().getId().equals(instanceId)) {
+            instance.switchState(status);
+        }
+        updateRelatedComputeNodeInstancesStatus(instanceId, status);
     }
     
-    private void switchInstanceState(final Collection<String> status) {
-        state.switchState(StateType.CIRCUIT_BREAK, null != status && status.contains(StateType.CIRCUIT_BREAK.name()));
+    private void updateRelatedComputeNodeInstancesStatus(final String instanceId, final Collection<String> status) {
+        for (ComputeNodeInstance each : computeNodeInstances) {
+            if (each.getInstanceDefinition().getInstanceId().getId().equals(instanceId)) {
+                each.switchState(status);
+            }
+        }
     }
     
     /**

@@ -28,7 +28,9 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Random;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -42,21 +44,23 @@ public final class InstanceContextTest {
 
     @Test
     public void assertUpdateInstanceStatus() {
-        InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfiguration);
-        StateType actual = context.getState().getCurrentState();
+        InstanceDefinition instanceDefinition = mock(InstanceDefinition.class);
+        when(instanceDefinition.getInstanceId()).thenReturn(new InstanceId("127.0.0.1@3307"));
+        InstanceContext context = new InstanceContext(new ComputeNodeInstance(instanceDefinition), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfiguration);
+        StateType actual = context.getInstance().getState().getCurrentState();
         assertThat(actual, is(StateType.OK));
-        context.updateInstanceStatus(Lists.newArrayList(StateType.CIRCUIT_BREAK.name()));
-        actual = context.getState().getCurrentState();
+        context.updateInstanceStatus(instanceDefinition.getInstanceId().getId(), Lists.newArrayList(StateType.CIRCUIT_BREAK.name()));
+        actual = context.getInstance().getState().getCurrentState();
         assertThat(actual, is(StateType.CIRCUIT_BREAK));
-        context.updateInstanceStatus(Lists.newArrayList());
-        actual = context.getState().getCurrentState();
+        context.updateInstanceStatus(instanceDefinition.getInstanceId().getId(), Lists.newArrayList());
+        actual = context.getInstance().getState().getCurrentState();
         assertThat(actual, is(StateType.OK));
     }
 
     @Test
     public void assertUpdateWorkerId() {
         InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfiguration);
-        Long actual = context.getWorkerId();
+        long actual = context.getWorkerId();
         assertThat(actual, is(Long.MIN_VALUE));
         Random random = new Random();
         Long expected = random.nextLong();
@@ -70,7 +74,7 @@ public final class InstanceContextTest {
         InstanceDefinition instanceDefinition = mock(InstanceDefinition.class);
         when(instanceDefinition.getInstanceId()).thenReturn(new InstanceId("127.0.0.1@3307"));
         InstanceContext context = new InstanceContext(new ComputeNodeInstance(instanceDefinition), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfiguration);
-        Collection<String> expected = Arrays.asList("label_1", "label_2");
+        Set<String> expected = new LinkedHashSet<>(Arrays.asList("label_1", "label_2"));
         context.updateLabel("127.0.0.1@3307", expected);
         Collection<String> actual = context.getInstance().getLabels();
         assertThat(actual, is(expected));
@@ -87,7 +91,7 @@ public final class InstanceContextTest {
     @Test
     public void assertGetState() {
         InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfiguration);
-        StateContext actual = context.getState();
+        StateContext actual = context.getInstance().getState();
         assertNotNull(actual);
     }
 

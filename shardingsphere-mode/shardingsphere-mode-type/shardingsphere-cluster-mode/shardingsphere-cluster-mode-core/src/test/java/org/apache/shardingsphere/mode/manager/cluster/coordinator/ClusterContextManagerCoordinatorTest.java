@@ -82,6 +82,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
@@ -271,13 +272,12 @@ public final class ClusterContextManagerCoordinatorTest {
     public void assertRenewInstanceStatus() {
         Collection<String> testStates = new LinkedList<>();
         testStates.add(StateType.OK.name());
-        testStates.add(StateType.LOCK.name());
         StateEvent mockStateEvent = new StateEvent(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId(), testStates);
         coordinator.renew(mockStateEvent);
-        assertThat(contextManager.getInstanceContext().getInstance().getStatus(), is(testStates));
+        assertThat(contextManager.getInstanceContext().getInstance().getState().getCurrentState(), is(StateType.OK));
         testStates.add(StateType.CIRCUIT_BREAK.name());
         coordinator.renew(mockStateEvent);
-        assertThat(contextManager.getInstanceContext().getState().getCurrentState(), is(StateType.CIRCUIT_BREAK));
+        assertThat(contextManager.getInstanceContext().getInstance().getState().getCurrentState(), is(StateType.CIRCUIT_BREAK));
     }
     
     @Test
@@ -289,7 +289,7 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertRenewInstanceLabels() {
-        Collection<String> labels = new LinkedList<>();
+        Collection<String> labels = new LinkedHashSet<>();
         labels.add("test");
         LabelsEvent mockLabelsEvent = new LabelsEvent(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId(), labels);
         coordinator.renew(mockLabelsEvent);
