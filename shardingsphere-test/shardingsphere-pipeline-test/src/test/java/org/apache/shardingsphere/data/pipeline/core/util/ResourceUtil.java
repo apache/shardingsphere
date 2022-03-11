@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
@@ -30,9 +31,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPi
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -41,30 +40,21 @@ import java.util.stream.Collectors;
 /**
  * Resource util.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResourceUtil {
     
     /**
-     * Mock job configuration.
+     * Create job configuration.
      *
-     * @return job configuration
+     * @return created job configuration
      */
-    public static JobConfiguration mockJobConfig() {
-        return mockStandardJdbcTargetJobConfig();
-    }
-    
-    /**
-     * Mock standard JDBC as target job configuration.
-     *
-     * @return standard JDBC as target job configuration
-     */
-    public static JobConfiguration mockStandardJdbcTargetJobConfig() {
+    public static JobConfiguration createJobConfiguration() {
         JobConfiguration result = new JobConfiguration();
-        WorkflowConfiguration workflowConfig = new WorkflowConfiguration("logic_db", Collections.singletonList(YamlShardingRuleConfiguration.class.getName()), "0");
-        result.setWorkflowConfig(workflowConfig);
+        result.setWorkflowConfig(new WorkflowConfiguration("logic_db", Collections.singletonList(YamlShardingRuleConfiguration.class.getName()), "0"));
         PipelineConfiguration pipelineConfig = new PipelineConfiguration();
+        pipelineConfig.setSource(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(readFile("config_sharding_sphere_jdbc_source.yaml"))));
+        pipelineConfig.setTarget(createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(readFile("config_standard_jdbc_target.yaml"))));
         result.setPipelineConfig(pipelineConfig);
-        pipelineConfig.setSource(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(readFileToString("/config_sharding_sphere_jdbc_source.yaml"))));
-        pipelineConfig.setTarget(createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(readFileToString("/config_standard_jdbc_target.yaml"))));
         result.buildHandleConfig();
         return result;
     }
@@ -77,26 +67,21 @@ public final class ResourceUtil {
     }
     
     /**
-     * Read file to string.
+     * Read file content.
      *
      * @param fileName file name
      * @return file content
      */
-    @SneakyThrows(IOException.class)
-    public static String readFileToString(final String fileName) {
-        try (InputStream in = ResourceUtil.class.getResourceAsStream(fileName)) {
-            if (null == in) {
-                throw new NullPointerException("get " + fileName + " as stream return null");
-            }
-            return IOUtils.toString(in, StandardCharsets.UTF_8);
-        }
+    @SneakyThrows({IOException.class, URISyntaxException.class})
+    public static String readFile(final String fileName) {
+        return String.join(System.lineSeparator(), Files.readAllLines(Paths.get(ClassLoader.getSystemResource(fileName).toURI())));
     }
 
     /**
-     * Ignore comments to read configuration from YAML.
+     * Read file and ignore comments.
      * 
-     * @param fileName YAML file name.
-     * @return YAML configuration.
+     * @param fileName file name
+     * @return file content without comments
      */
     @SneakyThrows({IOException.class, URISyntaxException.class})
     public static String readFileAndIgnoreComments(final String fileName) {
