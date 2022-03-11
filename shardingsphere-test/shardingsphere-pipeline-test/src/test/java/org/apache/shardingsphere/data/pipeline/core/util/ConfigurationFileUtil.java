@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.core.util;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -54,6 +54,6 @@ public final class ConfigurationFileUtil {
     @SneakyThrows({IOException.class, URISyntaxException.class})
     public static String readFileAndIgnoreComments(final String fileName) {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(fileName).toURI()))
-                .stream().filter(each -> StringUtils.isNotBlank(each) && !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+                .stream().filter(each -> !Strings.isNullOrEmpty(each) && !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }
