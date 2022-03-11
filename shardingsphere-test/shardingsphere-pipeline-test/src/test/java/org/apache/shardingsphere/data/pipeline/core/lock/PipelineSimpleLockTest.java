@@ -29,12 +29,12 @@ public final class PipelineSimpleLockTest {
 
     @Before
     public void setUp() {
-       pipelineSimpleLock = PipelineSimpleLock.getInstance();
+        pipelineSimpleLock = PipelineSimpleLock.getInstance();
     }
 
     @Test
     public void assertTryLock() {
-        assertTrue(pipelineSimpleLock.tryLock("pl",1000));
+        assertTrue(pipelineSimpleLock.tryLock("pl", 1));
     }
 
     @Test
