@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.core;
 
+import lombok.Getter;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -33,16 +34,17 @@ public final class ParseASTNode implements ASTNode {
     
     private final ParseTree parseTree;
     
+    @Getter
     private final Collection<Token> hiddenTokens;
     
     public ParseASTNode(final ParseTree parseTree) {
         this.parseTree = parseTree;
-        this.hiddenTokens = new LinkedList<>();
+        hiddenTokens = new LinkedList<>();
     }
     
     public ParseASTNode(final ParseTree parseTree, final CommonTokenStream tokenStream) {
         this.parseTree = parseTree;
-        this.hiddenTokens = tokenStream.getTokens().stream().filter(each -> Token.HIDDEN_CHANNEL == each.getChannel()).collect(Collectors.toList());
+        hiddenTokens = tokenStream.getTokens().stream().filter(each -> Token.HIDDEN_CHANNEL == each.getChannel()).collect(Collectors.toList());
     }
     
     /**
@@ -52,14 +54,5 @@ public final class ParseASTNode implements ASTNode {
      */
     public ParseTree getRootNode() {
         return parseTree.getChild(0);
-    }
-    
-    /**
-     * Get hidden tokens.
-     *
-     * @return token collection
-     */
-    public Collection<Token> getHiddenTokens() {
-        return hiddenTokens;
     }
 }
