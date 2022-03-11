@@ -72,8 +72,8 @@ chapter = true
     </tr>
     <tr>
         <td>
-            <a href="https://github.com/kimmking" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/807508?v=4" width="200px">
+            <a href="https://github.com/beckhampu" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/14846369?v=4" width="200px">
             </a>
         </td>
         <td>
