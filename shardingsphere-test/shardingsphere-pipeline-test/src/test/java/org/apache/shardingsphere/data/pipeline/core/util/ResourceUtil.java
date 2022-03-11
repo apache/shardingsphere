@@ -78,7 +78,7 @@ public final class ResourceUtil {
     @SneakyThrows(IOException.class)
     public static String readFile(final String fileName) {
         try (
-                InputStream inputStream = Objects.requireNonNull(ResourceUtil.class.getResourceAsStream(fileName), "Get " + fileName + " as stream return null.");
+                InputStream inputStream = Objects.requireNonNull(ResourceUtil.class.getResourceAsStream(fileName), "Can not get file `" + fileName + "`.");
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream()
         ) {
             byte[] bytes = new byte[1024];
