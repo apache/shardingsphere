@@ -47,11 +47,11 @@ import java.util.stream.Collectors;
 public final class ResourceUtil {
     
     /**
-     * Mock job configuration.
+     * Create job configuration.
      *
-     * @return job configuration
+     * @return created job configuration
      */
-    public static JobConfiguration mockJobConfig() {
+    public static JobConfiguration createJobConfiguration() {
         JobConfiguration result = new JobConfiguration();
         WorkflowConfiguration workflowConfig = new WorkflowConfiguration("logic_db", Collections.singletonList(YamlShardingRuleConfiguration.class.getName()), "0");
         result.setWorkflowConfig(workflowConfig);

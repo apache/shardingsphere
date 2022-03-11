@@ -51,6 +51,6 @@ public final class RuleAlteredJobTest {
     }
     
     private ShardingContext mockShardingContext() {
-        return new ShardingContext("1", null, 2, YamlEngine.marshal(ResourceUtil.mockJobConfig()), 0, null);
+        return new ShardingContext("1", null, 2, YamlEngine.marshal(ResourceUtil.createJobConfiguration()), 0, null);
     }
 }
