@@ -17,6 +17,16 @@ chapter = true
             </a>
         </td>
         <td>
+            <a href="https://github.com/terrymanu" target="_blank">
+               <img src="https://avatars.githubusercontent.com/u/5516298?v=4" width="200px">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/tristaZero" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/27757146?v=4" width="200px">
+            </a>
+        </td>
+        <td>
             <a href="https://github.com/haocao" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/687732?v=4" width="200px">
             </a>
@@ -32,24 +42,20 @@ chapter = true
             </a>
         </td>
         <td>
-            <a href="https://github.com/tristaZero" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/27757146?v=4" width="200px">
-            </a>
-        </td>
-        <td>
             <a href="https://github.com/cherrylzhao" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/8317649?v=4" width="200px">
-            </a>
-        </td>
-        <td>
-            <a href="https://github.com/terrymanu" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/5516298?v=4" width="200px">
             </a>
         </td>
     </tr>
     <tr align="center">
         <td>
             <b>Craig L Russell</b>
+        </td>
+        <td>
+            <b>张亮 (Chair)</b>
+        </td>
+        <td>
+            <b>潘娟</b>
         </td>
         <td>
             <b>曹昊</b>
@@ -61,13 +67,7 @@ chapter = true
             <b>高洪涛</b>
         </td>
         <td>
-            <b>潘娟</b>
-        </td>
-        <td>
             <b>赵俊</b>
-        </td>
-        <td>
-            <b>张亮 (Chair)</b>
         </td>
     </tr>
     <tr>
