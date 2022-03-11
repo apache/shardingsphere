@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.spi;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.instance.definition.InstanceId;
-import org.apache.shardingsphere.spi.required.RequiredSPI;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Traffic load balance algorithm.
+ * Start scaling statement test case.
  */
-public interface TrafficLoadBalanceAlgorithm extends ShardingSphereAlgorithm, RequiredSPI {
+@Getter
+@Setter
+public final class StartScalingStatementTestCase extends SQLParserTestCase {
     
-    /**
-     * Get instance id.
-     * 
-     * @param name traffic strategy name
-     * @param instanceIds instance id collection
-     * @return instance id
-     */
-    InstanceId getInstanceId(String name, List<InstanceId> instanceIds);
+    @XmlElement(name = "job-id")
+    private final List<String> jobIds = new LinkedList<>();
 }

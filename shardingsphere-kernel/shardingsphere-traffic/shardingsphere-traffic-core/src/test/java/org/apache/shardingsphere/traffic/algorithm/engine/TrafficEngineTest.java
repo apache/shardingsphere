@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.traffic.algorithm.engine;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.traffic.context.TrafficContext;
 import org.apache.shardingsphere.traffic.engine.TrafficEngine;
@@ -32,10 +31,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -92,22 +91,19 @@ public final class TrafficEngineTest {
         when(trafficRule.findMatchedStrategyRule(logicSQL, false)).thenReturn(Optional.of(strategyRule));
         when(strategyRule.getLabels()).thenReturn(Arrays.asList("OLTP", "OLAP"));
         TrafficLoadBalanceAlgorithm loadBalancer = mock(TrafficLoadBalanceAlgorithm.class);
-        when(loadBalancer.getInstanceId("traffic", Arrays.asList("127.0.0.1@3307", "127.0.0.1@3308"))).thenReturn("127.0.0.1@3307");
+        List<InstanceId> instanceIds = mockComputeNodeInstances();
+        when(loadBalancer.getInstanceId("traffic", instanceIds)).thenReturn(new InstanceId("127.0.0.1@3307"));
         when(strategyRule.getLoadBalancer()).thenReturn(loadBalancer);
         when(strategyRule.getName()).thenReturn("traffic");
-        when(instanceContext.getComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(mockComputeNodeInstances());
+        when(instanceContext.getComputeNodeInstanceIds(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(instanceIds);
         TrafficContext actual = trafficEngine.dispatch(logicSQL, false);
         assertThat(actual.getInstanceId(), is("127.0.0.1@3307"));
     }
     
-    private Collection<ComputeNodeInstance> mockComputeNodeInstances() {
-        Collection<ComputeNodeInstance> result = new LinkedList<>();
-        ComputeNodeInstance instanceOLAP = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
-        instanceOLAP.setLabels(Collections.singletonList("OLAP"));
-        result.add(instanceOLAP);
-        ComputeNodeInstance instanceOLTP = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3308"));
-        instanceOLTP.setLabels(Collections.singletonList("OLTP"));
-        result.add(instanceOLTP);
+    private List<InstanceId> mockComputeNodeInstances() {
+        List<InstanceId> result = new ArrayList<>();
+        result.add(new InstanceId("127.0.0.1@3307"));
+        result.add(new InstanceId("127.0.0.1@3308"));
         return result;
     }
 }
