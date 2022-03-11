@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.datasource.props;
 
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,14 +46,14 @@ public final class DataSourcePropertiesTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGetDataSourceConfigurationWithConnectionInitSqls() {
-        BasicDataSource actualDataSource = new BasicDataSource();
+        MockedDataSource actualDataSource = new MockedDataSource();
         actualDataSource.setDriverClassName(MockedDataSource.class.getName());
         actualDataSource.setUrl("jdbc:mock://127.0.0.1/foo_ds");
         actualDataSource.setUsername("root");
         actualDataSource.setPassword("root");
         actualDataSource.setConnectionInitSqls(Arrays.asList("set names utf8mb4;", "set names utf8;"));
         DataSourceProperties actual = DataSourcePropertiesCreator.create(actualDataSource);
-        assertThat(actual.getDataSourceClassName(), is(BasicDataSource.class.getName()));
+        assertThat(actual.getDataSourceClassName(), is(MockedDataSource.class.getName()));
         assertThat(actual.getAllLocalProperties().get("url").toString(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getAllLocalProperties().get("username").toString(), is("root"));
         assertThat(actual.getAllLocalProperties().get("password").toString(), is("root"));
