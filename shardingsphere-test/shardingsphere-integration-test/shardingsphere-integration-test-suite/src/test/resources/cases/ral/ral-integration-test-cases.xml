@@ -33,7 +33,7 @@
     <test-case sql="preview select * from t_user_item">
         <assertion expected-data-file="preview_sql.xml"/>
     </test-case>
-
+    
     <test-case sql="PREVIEW SELECT * FROM t_single_table s INNER JOIN t_user_item i ON s.single_id = i.item_id WHERE i.user_id = 1">
         <assertion expected-data-file="preview_federation_select.xml"/>
     </test-case>
@@ -66,7 +66,6 @@
             <destroy-sql sql="clear sharding hint"/>
         </assertion>
     </test-case>
-    
     
     <test-case sql="show sharding hint status">
         <assertion expected-data-file="add_table_value_hint.xml">
