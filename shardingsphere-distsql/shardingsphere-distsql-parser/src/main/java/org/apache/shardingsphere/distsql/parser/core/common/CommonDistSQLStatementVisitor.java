@@ -275,7 +275,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
         }
         List<PropertyContext> properties = ctx.properties().property();
         for (PropertyContext each : properties) {
-            result.setProperty(new IdentifierValue(each.key.getText()).getValue(), new IdentifierValue(each.value.getText()).getValue());
+            result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
         }
         return result;
     }
@@ -463,7 +463,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
             return result;
         }
         for (AlgorithmPropertyContext each : algorithmProperties.algorithmProperty()) {
-            result.setProperty(new IdentifierValue(each.key.getText()).getValue(), new IdentifierValue(each.value.getText()).getValue());
+            result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
         }
         return result;
     }
