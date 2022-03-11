@@ -306,31 +306,22 @@ public final class ContextManager implements AutoCloseable {
     /**
      * Alter global rule configuration.
      * 
-     * @param ruleConfigurations global rule configuration
+     * @param ruleConfigs global rule configuration
      */
-    public void alterGlobalRuleConfiguration(final Collection<RuleConfiguration> ruleConfigurations) {
-        if (!ruleConfigurations.isEmpty()) {
-            boolean needRenewTransaction = needRenewTransactionContext(ruleConfigurations);
-            ShardingSphereRuleMetaData newGlobalRuleMetaData = new ShardingSphereRuleMetaData(ruleConfigurations,
-                    GlobalRulesBuilder.buildRules(ruleConfigurations, metaDataContexts.getMetaDataMap()));
+    public void alterGlobalRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs) {
+        if (!ruleConfigs.isEmpty()) {
+            ShardingSphereRuleMetaData newGlobalRuleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, GlobalRulesBuilder.buildRules(ruleConfigs, metaDataContexts.getMetaDataMap()));
             renewMetaDataContexts(rebuildMetaDataContexts(newGlobalRuleMetaData));
-            if (needRenewTransaction) {
+            if (isNeedRenewTransactionContext(ruleConfigs)) {
                 renewAllTransactionContext();
             }
         }
     }
     
-    private boolean needRenewTransactionContext(final Collection<RuleConfiguration> ruleConfigurations) {
-        for (RuleConfiguration each : ruleConfigurations) {
-            if (each instanceof TransactionRuleConfiguration) {
-                Optional<TransactionRuleConfiguration> old = metaDataContexts.getGlobalRuleMetaData().findSingleRuleConfiguration(TransactionRuleConfiguration.class);
-                if (old.isPresent() && !((TransactionRuleConfiguration) each).compare(old.get())) {
-                    return true;
-                }
-                break;
-            }
-        }
-        return false;
+    private boolean isNeedRenewTransactionContext(final Collection<RuleConfiguration> ruleConfigs) {
+        Optional<RuleConfiguration> newConfig = ruleConfigs.stream().filter(each -> each instanceof TransactionRuleConfiguration).findFirst();
+        Optional<TransactionRuleConfiguration> oldConfig = metaDataContexts.getGlobalRuleMetaData().findSingleRuleConfiguration(TransactionRuleConfiguration.class);
+        return newConfig.isPresent() && oldConfig.isPresent() && !newConfig.get().equals(oldConfig.get());
     }
     
     /**

@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.transaction.config;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
 
-import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -30,6 +30,7 @@ import java.util.Properties;
  */
 @RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode
 public final class TransactionRuleConfiguration implements GlobalRuleConfiguration {
     
     private final String defaultType;
@@ -37,15 +38,4 @@ public final class TransactionRuleConfiguration implements GlobalRuleConfigurati
     private final String providerType;
     
     private final Properties props;
-    
-    /**
-     * Compare to another transaction rule configuration.
-     *
-     * @param transactionRuleConfiguration transaction rule configuration
-     * @return return true if the two transactionRuleConfiguration are the same
-     */
-    public boolean compare(final TransactionRuleConfiguration transactionRuleConfiguration) {
-        return Objects.equals(defaultType, transactionRuleConfiguration.defaultType) && Objects.equals(providerType, transactionRuleConfiguration.providerType)
-                && Objects.equals(props, transactionRuleConfiguration.props);
-    }
 }
