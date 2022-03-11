@@ -53,12 +53,11 @@ public final class ResourceUtil {
      */
     public static JobConfiguration createJobConfiguration() {
         JobConfiguration result = new JobConfiguration();
-        WorkflowConfiguration workflowConfig = new WorkflowConfiguration("logic_db", Collections.singletonList(YamlShardingRuleConfiguration.class.getName()), "0");
-        result.setWorkflowConfig(workflowConfig);
+        result.setWorkflowConfig(new WorkflowConfiguration("logic_db", Collections.singletonList(YamlShardingRuleConfiguration.class.getName()), "0"));
         PipelineConfiguration pipelineConfig = new PipelineConfiguration();
-        result.setPipelineConfig(pipelineConfig);
         pipelineConfig.setSource(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(readFileToString("/config_sharding_sphere_jdbc_source.yaml"))));
         pipelineConfig.setTarget(createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(readFileToString("/config_standard_jdbc_target.yaml"))));
+        result.setPipelineConfig(pipelineConfig);
         result.buildHandleConfig();
         return result;
     }
