@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
@@ -82,20 +83,19 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                 metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
         Optional<TransactionConfigurationFileGenerator> fileGenerator = transactionRule.isPresent()
                 ? TransactionConfigurationFileGeneratorFactory.newInstance(transactionRule.get().getProviderType()) : Optional.empty();
-        if (schemaName.isPresent() && fileGenerator.isPresent()) {
-            ShardingSphereMetaData metaData = metaDataContexts.getMetaData(schemaName.get());
-            Properties result = fileGenerator.get().getTransactionProps(transactionRule.get().getProps(),
-                    new DataSourceProvidedSchemaConfiguration(metaData.getResource().getDataSources(), metaData.getRuleMetaData().getConfigurations()), getType());
-            Optional<TransactionRuleConfiguration> transactionRuleConfiguration = metaDataContexts.getGlobalRuleMetaData().findSingleRuleConfiguration(TransactionRuleConfiguration.class);
-            if (transactionRule.isPresent()) {
-                transactionRuleConfiguration.get().getProps().clear();
-                transactionRuleConfiguration.get().getProps().putAll(result);
-                transactionRule.get().getProps().clear();
-                transactionRule.get().getProps().putAll(result);
-            }
-            return result;
+        if (!schemaName.isPresent() || !fileGenerator.isPresent()) {
+            return new Properties();
         }
-        return new Properties();
+        ShardingSphereMetaData metaData = metaDataContexts.getMetaData(schemaName.get());
+        Properties result = fileGenerator.get().getTransactionProps(transactionRule.get().getProps(),
+                new DataSourceProvidedSchemaConfiguration(metaData.getResource().getDataSources(), metaData.getRuleMetaData().getConfigurations()), getType());
+        Optional<TransactionRuleConfiguration> transactionRuleConfig = metaDataContexts.getGlobalRuleMetaData().findSingleRuleConfiguration(TransactionRuleConfiguration.class);
+        Preconditions.checkState(transactionRuleConfig.isPresent());
+        transactionRuleConfig.get().getProps().clear();
+        transactionRuleConfig.get().getProps().putAll(result);
+        transactionRule.get().getProps().clear();
+        transactionRule.get().getProps().putAll(result);
+        return result;
     }
     
     private void persistTransactionConfiguration(final ContextManagerBuilderParameter parameter, final MetaDataPersistService metaDataPersistService, final Properties transactionProps) {
