@@ -32,8 +32,8 @@
 <!--            <destroy-sql sql="DROP RESOURCE rdl_test_0;"/>-->
 <!--        </assertion>-->
 <!--    </test-case>-->
-    
-    <!-- TODO Need to be redesigned:
+
+    <!-- FIXME #16005 Need to be redesigned:
     1. The SQL of case should be RDL, not RQL;
     2. Should not change current rules, which are used to RAL and RQL, it is better to CREATE/ALTER/DROP new rule for assertion.
     -->
