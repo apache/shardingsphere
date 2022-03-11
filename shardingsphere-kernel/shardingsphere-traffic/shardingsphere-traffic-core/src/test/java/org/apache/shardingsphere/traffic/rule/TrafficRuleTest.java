@@ -63,7 +63,7 @@ public final class TrafficRuleTest {
         Optional<TrafficStrategyRule> actual = trafficRule.findMatchedStrategyRule(createLogicSQL(true), false);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("sql_hint_traffic"));
-        assertThat(actual.get().getLabels(), is(Arrays.asList("OLTP", "OLAP")));
+        assertThat(actual.get().getLabels(), is(Sets.newHashSet("OLTP", "OLAP")));
         assertThat(actual.get().getTrafficAlgorithm(), instanceOf(SQLHintTrafficAlgorithm.class));
         assertThat(actual.get().getLoadBalancer(), instanceOf(RandomTrafficLoadBalanceAlgorithm.class));
     }
@@ -81,7 +81,7 @@ public final class TrafficRuleTest {
         Optional<TrafficStrategyRule> actual = trafficRule.findMatchedStrategyRule(createLogicSQL(false), true);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("transaction_traffic"));
-        assertThat(actual.get().getLabels(), is(Collections.singletonList("OLAP")));
+        assertThat(actual.get().getLabels(), is(Sets.newHashSet("OLAP")));
         assertThat(actual.get().getTrafficAlgorithm(), instanceOf(ProxyTrafficAlgorithm.class));
         assertThat(actual.get().getLoadBalancer(), instanceOf(RandomTrafficLoadBalanceAlgorithm.class));
     }
