@@ -21,20 +21,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -42,29 +33,6 @@ import java.util.stream.Collectors;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResourceUtil {
-    
-    /**
-     * Create job configuration.
-     *
-     * @return created job configuration
-     */
-    public static JobConfiguration createJobConfiguration() {
-        JobConfiguration result = new JobConfiguration();
-        result.setWorkflowConfig(new WorkflowConfiguration("logic_db", Collections.singletonList(YamlShardingRuleConfiguration.class.getName()), "0"));
-        PipelineConfiguration pipelineConfig = new PipelineConfiguration();
-        pipelineConfig.setSource(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(readFile("config_sharding_sphere_jdbc_source.yaml"))));
-        pipelineConfig.setTarget(createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(readFile("config_standard_jdbc_target.yaml"))));
-        result.setPipelineConfig(pipelineConfig);
-        result.buildHandleConfig();
-        return result;
-    }
-    
-    private static YamlPipelineDataSourceConfiguration createYamlPipelineDataSourceConfiguration(final PipelineDataSourceConfiguration config) {
-        YamlPipelineDataSourceConfiguration result = new YamlPipelineDataSourceConfiguration();
-        result.setType(config.getType());
-        result.setParameter(config.getParameter());
-        return result;
-    }
     
     /**
      * Read file content.
