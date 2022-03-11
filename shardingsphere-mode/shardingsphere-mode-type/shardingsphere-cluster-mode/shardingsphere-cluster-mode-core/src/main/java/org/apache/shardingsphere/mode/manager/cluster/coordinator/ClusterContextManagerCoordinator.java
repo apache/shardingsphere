@@ -187,9 +187,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final StateEvent event) {
-        if (contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId().equals(event.getInstanceId())) {
-            contextManager.getInstanceContext().updateInstanceStatus(event.getStatus());
-        }
+        contextManager.getInstanceContext().updateInstanceStatus(event.getInstanceId(), event.getStatus());
     }
     
     /**

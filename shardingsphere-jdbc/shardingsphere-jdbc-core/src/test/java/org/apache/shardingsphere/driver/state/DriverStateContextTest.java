@@ -56,7 +56,7 @@ public final class DriverStateContextTest {
         Map<String, ShardingSphereMetaData> metaDataMap = mockMetaDataMap();
         when(contextManager.getMetaDataContexts()).thenReturn(new MetaDataContexts(mock(MetaDataPersistService.class), metaDataMap, 
                 mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), mock(ConfigurationProperties.class)));
-        when(contextManager.getInstanceContext().getState()).thenReturn(new StateContext());
+        when(contextManager.getInstanceContext().getInstance().getState()).thenReturn(new StateContext());
     }
     
     private Map<String, ShardingSphereMetaData> mockMetaDataMap() {
