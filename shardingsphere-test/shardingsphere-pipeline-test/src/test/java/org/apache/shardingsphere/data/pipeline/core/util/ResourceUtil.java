@@ -30,14 +30,11 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Standa
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -55,8 +52,8 @@ public final class ResourceUtil {
         JobConfiguration result = new JobConfiguration();
         result.setWorkflowConfig(new WorkflowConfiguration("logic_db", Collections.singletonList(YamlShardingRuleConfiguration.class.getName()), "0"));
         PipelineConfiguration pipelineConfig = new PipelineConfiguration();
-        pipelineConfig.setSource(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(readFile("/config_sharding_sphere_jdbc_source.yaml"))));
-        pipelineConfig.setTarget(createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(readFile("/config_standard_jdbc_target.yaml"))));
+        pipelineConfig.setSource(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(readFile("config_sharding_sphere_jdbc_source.yaml"))));
+        pipelineConfig.setTarget(createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(readFile("config_standard_jdbc_target.yaml"))));
         result.setPipelineConfig(pipelineConfig);
         result.buildHandleConfig();
         return result;
@@ -75,19 +72,9 @@ public final class ResourceUtil {
      * @param fileName file name
      * @return file content
      */
-    @SneakyThrows(IOException.class)
+    @SneakyThrows({IOException.class, URISyntaxException.class})
     public static String readFile(final String fileName) {
-        try (
-                InputStream inputStream = Objects.requireNonNull(ResourceUtil.class.getResourceAsStream(fileName), "Can not get file `" + fileName + "`.");
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream()
-        ) {
-            byte[] bytes = new byte[1024];
-            int n;
-            while ((n = inputStream.read(bytes)) != -1) {
-                outputStream.write(bytes, 0, n);
-            }
-            return outputStream.toString("UTF-8");
-        }
+        return String.join(System.lineSeparator(), Files.readAllLines(Paths.get(ClassLoader.getSystemResource(fileName).toURI())));
     }
 
     /**

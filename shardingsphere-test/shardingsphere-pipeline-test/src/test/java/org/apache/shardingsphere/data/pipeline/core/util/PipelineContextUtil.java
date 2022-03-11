@@ -57,7 +57,7 @@ public final class PipelineContextUtil {
      */
     public static void mockContextManager() {
         ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig = new ShardingSpherePipelineDataSourceConfiguration(
-                ResourceUtil.readFile("/config_sharding_sphere_jdbc_source.yaml"));
+                ResourceUtil.readFile("config_sharding_sphere_jdbc_source.yaml"));
         ShardingSphereDataSource shardingSphereDataSource = (ShardingSphereDataSource) new PipelineDataSourceFactory().newInstance(pipelineDataSourceConfig).getDataSource();
         ContextManager contextManager = shardingSphereDataSource.getContextManager();
         PipelineContext.initContextManager(contextManager);
