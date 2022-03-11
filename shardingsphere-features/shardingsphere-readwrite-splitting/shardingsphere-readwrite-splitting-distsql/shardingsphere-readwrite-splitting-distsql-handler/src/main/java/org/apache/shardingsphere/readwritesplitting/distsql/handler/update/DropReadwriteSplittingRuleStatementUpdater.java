@@ -67,7 +67,8 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
         }
     }
     
-    private void checkToBeDroppedInUsed(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, final ShardingSphereMetaData shardingSphereMetaData) throws RuleInUsedException {
+    private void checkToBeDroppedInUsed(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, 
+                                        final ShardingSphereMetaData shardingSphereMetaData) throws RuleInUsedException {
         Collection<String> resourceBeUsed = shardingSphereMetaData.getRuleMetaData().findRuleConfiguration(ResourceRequiredRuleConfiguration.class).stream()
                 .map(ResourceRequiredRuleConfiguration::getRequiredResource).flatMap(Collection::stream).collect(Collectors.toSet());
         Collection<String> ruleInUsed = sqlStatement.getRuleNames().stream().filter(resourceBeUsed::contains).collect(Collectors.toSet());
