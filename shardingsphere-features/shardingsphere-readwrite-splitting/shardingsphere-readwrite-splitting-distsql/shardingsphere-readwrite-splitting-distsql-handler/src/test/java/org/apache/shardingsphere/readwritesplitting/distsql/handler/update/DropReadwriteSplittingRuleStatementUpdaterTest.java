@@ -66,6 +66,7 @@ public final class DropReadwriteSplittingRuleStatementUpdaterTest {
     
     @Test
     public void assertCheckSQLStatementWithIfExists() throws RuleDefinitionViolationException {
+        when(shardingSphereMetaData.getRuleMetaData().findRuleConfiguration(ResourceRequiredRuleConfiguration.class)).thenReturn(Collections.emptyList());
         updater.checkSQLStatement(shardingSphereMetaData, new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")),
                 new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
         updater.checkSQLStatement(shardingSphereMetaData, new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")), null);
