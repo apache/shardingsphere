@@ -44,9 +44,8 @@ public final class ScalingIT {
     
     private static final long WAIT_MS_BEFORE_CHECK_JOB = 15 * 1000;
     
-    @SneakyThrows(InterruptedException.class)
     @Test
-    public void assertScaling() {
+    public void assertScaling() throws InterruptedException {
         if (IntegrationTestEnvironment.getInstance().isEnvironmentPrepared()) {
             IntegrationTestEnvironment.getInstance().waitForEnvironmentReady();
             DataImporter dataImporter = new DataImporter();
@@ -60,19 +59,15 @@ public final class ScalingIT {
         }
     }
     
-    @SneakyThrows(IOException.class)
     private String assertStartJob() {
         String configuration = ITEnvironmentContext.INSTANCE.getScalingConfiguration();
-        Pair<Boolean, String> response = ScalingUtil.getInstance().startJob(configuration);
-        assertTrue(response.getLeft());
-        return response.getRight();
+        return ScalingUtil.getInstance().startJob(configuration);
     }
     
     private void waitInventoryFinish(final String jobId) {
         new ExecuteUtil(() -> "EXECUTE_INCREMENTAL_TASK".equals(ScalingUtil.getInstance().getJobStatus(jobId)), (int) (TIMEOUT_MS - WAIT_MS_BEFORE_START_JOB) / (10 * 1000), 10 * 1000).execute();
     }
     
-    @SneakyThrows(IOException.class)
     private void assertJobCheck(final String jobId) {
         Map<String, Pair<Boolean, Boolean>> checkResult = ScalingUtil.getInstance().getJobCheckResult(jobId);
         for (Entry<String, Pair<Boolean, Boolean>> entry : checkResult.entrySet()) {

@@ -46,19 +46,18 @@ public final class ScalingUtil {
     /**
      * Start job.
      *
-     * @param configuration configuration
-     * @return result
-     * @throws IOException io exception
+     * @param jobConfig job configuration
+     * @return started job Id
      */
-    public Pair<Boolean, String> startJob(final String configuration) throws IOException {
+    public String startJob(final String jobConfig) {
         // TODO startJob
-        return Pair.of(false, "");
+        return "";
     }
     
     /**
      * Get job status.
      *
-     * @param jobId job id
+     * @param jobId job ID
      * @return job status
      */
     public String getJobStatus(final String jobId) {
@@ -75,11 +74,10 @@ public final class ScalingUtil {
     /**
      * Check job.
      *
-     * @param jobId job id
+     * @param jobId job ID
      * @return check result
-     * @throws IOException io exception
      */
-    public Map<String, Pair<Boolean, Boolean>> getJobCheckResult(final String jobId) throws IOException {
+    public Map<String, Pair<Boolean, Boolean>> getJobCheckResult(final String jobId) {
         // TODO getJobCheckResult
         return Collections.emptyMap();
     }
@@ -88,7 +86,7 @@ public final class ScalingUtil {
      * Get job list.
      *
      * @return result
-     * @throws IOException io exception
+     * @throws IOException IO exception
      */
     public JsonElement getJobList() throws IOException {
         // TODO getJobList
