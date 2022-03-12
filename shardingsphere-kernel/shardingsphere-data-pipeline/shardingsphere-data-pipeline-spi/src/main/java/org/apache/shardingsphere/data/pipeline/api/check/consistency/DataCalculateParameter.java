@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.api.check.consistency;
 
+import com.google.common.collect.Range;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.commons.lang3.Range;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 
 import java.util.Collection;
@@ -67,7 +67,7 @@ public final class DataCalculateParameter {
     /**
      * Used for range query.
      */
-    private volatile Range<Object> uniqueKeyValueRange;
+    private volatile Range<String> uniqueKeyValueRange;
     
     /**
      * Used for multiple records query.
