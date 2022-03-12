@@ -370,6 +370,13 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     }
     
     @Override
+    public ASTNode visitDropDatabaseLink(final DropDatabaseLinkContext ctx) {
+        OracleDropDatabaseLinkStatement result = new OracleDropDatabaseLinkStatement();
+        result.getTables().add((SimpleTableSegment) visit(ctx.tableName()));
+        return result;
+    }
+    
+    @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
         OracleTruncateStatement result = new OracleTruncateStatement();
         result.getTables().add((SimpleTableSegment) visit(ctx.tableName()));
