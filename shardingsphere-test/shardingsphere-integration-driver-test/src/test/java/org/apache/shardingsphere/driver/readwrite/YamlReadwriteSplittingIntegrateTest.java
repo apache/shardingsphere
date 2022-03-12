@@ -81,7 +81,7 @@ public final class YamlReadwriteSplittingIntegrateTest extends AbstractYamlDataS
             dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
         } else {
             dataSource = YamlShardingSphereDataSourceFactory.createDataSource(
-                    Maps.asMap(Sets.newHashSet("db_write", "read_ds_0", "read_ds_1"), AbstractYamlDataSourceTest::createDataSource), getYamlBytes(yamlFile));
+                    Maps.asMap(Sets.newHashSet("db_write", "read_ds_0", "read_ds_1"), AbstractYamlDataSourceTest::createDataSource), yamlFile);
         }
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
