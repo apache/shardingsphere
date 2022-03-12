@@ -22,12 +22,12 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.junit.Test;
 
-import java.util.*;
-import static org.hamcrest.CoreMatchers.*;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.assertThat;
 
 public final class RecordUtilTest {
@@ -35,7 +35,7 @@ public final class RecordUtilTest {
     @Test
     public void assertExtractPrimaryColumns() {
         DataRecord dataRecord = mockDataRecord("t2");
-        List<Column> actual = RecordUtil.extractPrimaryColumns(dataRecord);
+        Collection<Column> actual = RecordUtil.extractPrimaryColumns(dataRecord);
         assertThat(actual.size(), is(2));
         assertThat(Arrays.asList("sc", "id"), hasItems(actual.iterator().next().getName()));
     }
