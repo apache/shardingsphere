@@ -17,5 +17,5 @@
   -->
 
 <sql-cases>
-    <sql-case id="drop_database_link" value="DROP PUBLIC DATABASE LINK remote USING 'remote'" db-types="Oracle" />
+    <sql-case id="drop_database_link" value="DROP PUBLIC DATABASE LINK remote" db-types="Oracle" />
 </sql-cases>
