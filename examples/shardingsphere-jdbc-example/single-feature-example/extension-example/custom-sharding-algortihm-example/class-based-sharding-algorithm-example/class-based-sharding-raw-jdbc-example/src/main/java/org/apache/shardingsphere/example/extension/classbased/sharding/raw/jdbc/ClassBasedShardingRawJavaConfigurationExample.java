@@ -24,15 +24,14 @@ import org.apache.shardingsphere.example.extension.classbased.sharding.raw.jdbc.
 import org.apache.shardingsphere.example.type.ShardingType;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.SQLException;
 
 public final class ClassBasedShardingAlgorithmExample {
-    
+
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
     
-    public static void main(final String[] args) throws SQLException, IOException {
-        DataSource dataSource = YamlDataSourceFactory.newInstance(shardingType);
+    public static void main(final String[] args) throws SQLException {
+        DataSource dataSource = DataSourceFactory.newInstance(shardingType);
         ExampleExecuteTemplate.run(getExampleService(dataSource));
     }
     
