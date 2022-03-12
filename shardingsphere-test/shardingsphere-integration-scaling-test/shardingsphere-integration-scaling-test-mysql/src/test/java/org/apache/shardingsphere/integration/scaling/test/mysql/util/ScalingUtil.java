@@ -18,30 +18,18 @@
 package org.apache.shardingsphere.integration.scaling.test.mysql.util;
 
 import com.google.gson.JsonElement;
-import org.apache.commons.lang3.tuple.Pair;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
 /**
- * Ok http utils.
+ * Scaling util.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ScalingUtil {
-    
-    private static final ScalingUtil INSTANCE = new ScalingUtil();
-    
-    private ScalingUtil() {
-    }
-    
-    /**
-     * Get instance.
-     *
-     * @return instance
-     */
-    public static ScalingUtil getInstance() {
-        return INSTANCE;
-    }
     
     /**
      * Start job.
@@ -49,7 +37,7 @@ public final class ScalingUtil {
      * @param jobConfig job configuration
      * @return started job Id
      */
-    public String startJob(final String jobConfig) {
+    public static String startJob(final String jobConfig) {
         // TODO startJob
         return "";
     }
@@ -60,7 +48,7 @@ public final class ScalingUtil {
      * @param jobId job ID
      * @return job status
      */
-    public String getJobStatus(final String jobId) {
+    public static String getJobStatus(final String jobId) {
         try {
             // TODO getJobStatus
             return "";
@@ -77,7 +65,7 @@ public final class ScalingUtil {
      * @param jobId job ID
      * @return check result
      */
-    public Map<String, Pair<Boolean, Boolean>> getJobCheckResult(final String jobId) {
+    public static Map<String, Boolean> getJobCheckResult(final String jobId) {
         // TODO getJobCheckResult
         return Collections.emptyMap();
     }
@@ -88,7 +76,7 @@ public final class ScalingUtil {
      * @return result
      * @throws IOException IO exception
      */
-    public JsonElement getJobList() throws IOException {
+    public static JsonElement getJobList() throws IOException {
         // TODO getJobList
         return null;
     }
