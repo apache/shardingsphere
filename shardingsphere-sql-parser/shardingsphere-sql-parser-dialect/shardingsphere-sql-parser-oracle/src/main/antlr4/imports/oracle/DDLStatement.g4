@@ -2017,7 +2017,6 @@ createDatabaseLink
     
 dropDatabaseLink
     : DROP PUBLIC? DATABASE LINK dbLink 
-    (connectToClause | dbLinkAuthentication)* (USING connectString)?
     ;
 
 connectToClause
