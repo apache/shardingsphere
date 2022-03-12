@@ -129,21 +129,21 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         if (cipherColumnPresent && cipherValueColumnPresent) {
             String cipherColumn = encryptRule.getCipherColumn(tableName, column);
             String cipherValueColumn = encryptRule.getCipherColumn(tableName, valueColumn);
-            result.addAssignment(cipherColumn, String.format("VALUES(%s)", cipherValueColumn));
+            result.addAssignment(cipherColumn, "VALUES(" + cipherValueColumn + ")");
         } else if (cipherColumnPresent != cipherValueColumnPresent) {
             throw new ShardingSphereException("The SQL clause `%s` is unsupported in encrypt rule.", String.format("%s=VALUES(%s)", column, valueColumn));
         }
         Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, column);
         Optional<String> valueAssistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, valueColumn);
         if (assistedQueryColumn.isPresent() && valueAssistedQueryColumn.isPresent()) {
-            result.addAssignment(assistedQueryColumn.get(), String.format("VALUES(%s)", valueAssistedQueryColumn.get()));
+            result.addAssignment(assistedQueryColumn.get(), "VALUES(" + valueAssistedQueryColumn.get() + ")");
         } else if (assistedQueryColumn.isPresent() != valueAssistedQueryColumn.isPresent()) {
             throw new ShardingSphereException("The SQL clause `%s` is unsupported in encrypt rule.", String.format("%s=VALUES(%s)", column, valueColumn));
         }
         Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, column);
         Optional<String> valuePlainColumn = encryptRule.findPlainColumn(tableName, valueColumn);
         if (plainColumn.isPresent() && valuePlainColumn.isPresent()) {
-            result.addAssignment(plainColumn.get(), String.format("VALUES(%s)", valuePlainColumn.get()));
+            result.addAssignment(plainColumn.get(), "VALUES(" + valuePlainColumn.get() + ")");
         } else if (plainColumn.isPresent() != valuePlainColumn.isPresent()) {
             throw new ShardingSphereException("The SQL clause `%s` is unsupported in encrypt rule.", String.format("%s=VALUES(%s)", column, valueColumn));
         }

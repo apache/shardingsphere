@@ -19,9 +19,9 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
+import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
-import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.BeforeClass;
@@ -51,6 +51,6 @@ public final class RuleAlteredJobTest {
     }
     
     private ShardingContext mockShardingContext() {
-        return new ShardingContext("1", null, 2, YamlEngine.marshal(ResourceUtil.mockJobConfig()), 0, null);
+        return new ShardingContext("1", null, 2, YamlEngine.marshal(JobConfigurationBuilder.createJobConfiguration()), 0, null);
     }
 }

@@ -32,8 +32,8 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
 import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureDataConsistencyCheckAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
-import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -66,7 +66,7 @@ public final class RuleAlteredJobAPIImplTest {
     
     @Test
     public void assertStartAndList() {
-        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         JobInfo jobInfo = getNonNullJobInfo(jobId.get());
         assertTrue(jobInfo.isActive());
@@ -88,7 +88,7 @@ public final class RuleAlteredJobAPIImplTest {
     
     @Test
     public void assertStartOrStopById() {
-        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         assertTrue(getNonNullJobInfo(jobId.get()).isActive());
         ruleAlteredJobAPI.stop(jobId.get());
@@ -99,7 +99,7 @@ public final class RuleAlteredJobAPIImplTest {
     
     @Test
     public void assertRemove() {
-        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         assertTrue(getJobInfo(jobId.get()).isPresent());
         ruleAlteredJobAPI.remove(jobId.get());
@@ -108,7 +108,7 @@ public final class RuleAlteredJobAPIImplTest {
     
     @Test
     public void assertGetProgress() {
-        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         Map<Integer, JobProgress> jobProgressMap = ruleAlteredJobAPI.getProgress(jobId.get());
         assertThat(jobProgressMap.size(), is(1));
@@ -130,14 +130,14 @@ public final class RuleAlteredJobAPIImplTest {
     
     @Test
     public void assertIsDataConsistencyCheckNeeded() {
-        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         assertThat(ruleAlteredJobAPI.isDataConsistencyCheckNeeded(jobId.get()), is(true));
     }
     
     @Test
     public void assertDataConsistencyCheck() {
-        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
@@ -148,7 +148,7 @@ public final class RuleAlteredJobAPIImplTest {
     
     @Test
     public void assertDataConsistencyCheckWithAlgorithm() {
-        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
@@ -184,7 +184,7 @@ public final class RuleAlteredJobAPIImplTest {
     
     @Test
     public void assertResetTargetTable() {
-        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());

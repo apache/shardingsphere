@@ -22,9 +22,15 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.junit.Test;
 
+<<<<<<< HEAD
 import java.util.*;
 
 import static org.hamcrest.CoreMatchers.*;
+=======
+import java.util.Collections;
+import java.util.Collection;
+
+>>>>>>> 3cb10f6475820a84dfdc028efe16484decf7bbb4
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -33,9 +39,14 @@ public final class RecordUtilTest {
     @Test
     public void assertExtractPrimaryColumns() {
         DataRecord dataRecord = mockDataRecord("t2");
+<<<<<<< HEAD
         List<Column> actual = RecordUtil.extractPrimaryColumns(dataRecord);
         assertThat(actual.size(), is(2));
         assertThat(Arrays.asList("sc", "id"), hasItems(actual.iterator().next().getName()));
+=======
+        Collection<Column> actual = RecordUtil.extractPrimaryColumns(dataRecord);
+        assertThat(actual.size(), is(2));
+>>>>>>> 3cb10f6475820a84dfdc028efe16484decf7bbb4
     }
 
     @Test
@@ -43,7 +54,10 @@ public final class RecordUtilTest {
         DataRecord dataRecord = mockDataRecord("t2");
         Collection<Column> actual = RecordUtil.extractConditionColumns(dataRecord, Collections.singleton("c1"));
         assertThat(actual.size(), is(3));
+<<<<<<< HEAD
         assertThat(Arrays.asList("sc", "id", "c1"), hasItems(actual.iterator().next().getName()));
+=======
+>>>>>>> 3cb10f6475820a84dfdc028efe16484decf7bbb4
     }
 
     @Test
@@ -51,7 +65,10 @@ public final class RecordUtilTest {
         DataRecord dataRecord = mockDataRecord("t2");
         Collection<Column> actual = RecordUtil.extractUpdatedColumns(dataRecord);
         assertThat(actual.size(), is(3));
+<<<<<<< HEAD
         assertThat(Arrays.asList("c2", "c3", "c1"), hasItems(actual.iterator().next().getName()));
+=======
+>>>>>>> 3cb10f6475820a84dfdc028efe16484decf7bbb4
     }
 
     private DataRecord mockDataRecord(final String tableName) {
@@ -64,4 +81,8 @@ public final class RecordUtilTest {
         result.addColumn(new Column("c3", "", true, false));
         return result;
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 3cb10f6475820a84dfdc028efe16484decf7bbb4
