@@ -1243,6 +1243,7 @@ public final class SQLParserTestCases {
         putAll(createFunctionTestCase, result);
         putAll(createDatabaseTestCase, result);
         putAll(createDatabaseLinkTestCase, result);
+        putAll(DropDatabaseLinkTestCase, result);
         putAll(createDimensionTestCase, result);
         putAll(dropDimensionTestCase, result);
         putAll(dropViewTestCase, result);
