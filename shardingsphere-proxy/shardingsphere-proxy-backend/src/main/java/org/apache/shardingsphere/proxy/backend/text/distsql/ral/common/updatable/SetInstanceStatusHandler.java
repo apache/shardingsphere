@@ -72,7 +72,7 @@ public final class SetInstanceStatusHandler extends UpdatableRALBackendHandler<S
         Optional<MetaDataPersistService> metaDataPersistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
         if (metaDataPersistService.isPresent()) {
             metaDataPersistService.get().getComputeNodePersistService().loadAllComputeNodeInstances().forEach(each -> {
-                if (each.getStatus().contains(StateType.CIRCUIT_BREAK.name()) && isIdenticalInstance(each.getInstanceDefinition(), operationInstanceId)) {
+                if (StateType.CIRCUIT_BREAK == each.getState().getCurrentState() && isIdenticalInstance(each.getInstanceDefinition(), operationInstanceId)) {
                     throw new UnsupportedOperationException(String.format("`%s` compute node has been disabled", operationInstanceId.getId()));
                 }
             });
