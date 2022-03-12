@@ -18,6 +18,4 @@
 
 <sql-cases>
     <sql-case id="drop_database_link" value="DROP PUBLIC DATABASE LINK remote USING 'remote'" db-types="Oracle" />
-    <sql-case id="drop_database_link_connect_to_user" value="DROP DATABASE LINK local CONNECT TO hr IDENTIFIED BY password USING 'local';" db-types="Oracle" />
-    <sql-case id="drop_database_link_connect_to_current_user" value="DROP DATABASE LINK remote.us.example.com CONNECT TO CURRENT_USER USING 'remote';" db-types="Oracle" />
 </sql-cases>
