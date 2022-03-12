@@ -18,6 +18,4 @@
 
 <sql-parser-test-cases>
     <drop-database-link sql-case-id="drop_database_link" />
-    <drop-database-link sql-case-id="drop_database_link_connect_to_user" />
-    <drop-database-link sql-case-id="drop_database_link_connect_to_current_user" />
 </sql-parser-test-cases>
