@@ -181,7 +181,6 @@ public final class RuleAlteredJobWorker {
         Optional<String> jobId = jobConfigOptional.isPresent() ? PipelineJobAPIFactory.getRuleAlteredJobAPI().start(jobConfigOptional.get()) : Optional.empty();
         if (!jobId.isPresent()) {
             log.info("Switch rule configuration immediately.");
-            YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getTargetDataSource(), event.getTargetRule());
             ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(event.getSchemaName(), event.getSchemaVersion());
             ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
         }
@@ -216,8 +215,8 @@ public final class RuleAlteredJobWorker {
         return Optional.of(new JobConfiguration(workflowConfig, pipelineConfig));
     }
     
-    private Collection<Pair<YamlRuleConfiguration, YamlRuleConfiguration>> groupSourceTargetRuleConfigsByType(
-            final Collection<YamlRuleConfiguration> sourceRules, final Collection<YamlRuleConfiguration> targetRules) {
+    private Collection<Pair<YamlRuleConfiguration, YamlRuleConfiguration>> groupSourceTargetRuleConfigsByType(final Collection<YamlRuleConfiguration> sourceRules, 
+                                                                                                              final Collection<YamlRuleConfiguration> targetRules) {
         Map<Class<? extends YamlRuleConfiguration>, YamlRuleConfiguration> sourceRulesMap = sourceRules.stream().collect(Collectors.toMap(YamlRuleConfiguration::getClass, Function.identity()));
         Map<Class<? extends YamlRuleConfiguration>, YamlRuleConfiguration> targetRulesMap = targetRules.stream().collect(Collectors.toMap(YamlRuleConfiguration::getClass, Function.identity()));
         Collection<Pair<YamlRuleConfiguration, YamlRuleConfiguration>> result = new LinkedList<>();
