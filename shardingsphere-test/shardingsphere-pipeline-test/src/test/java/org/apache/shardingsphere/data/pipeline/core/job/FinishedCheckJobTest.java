@@ -22,9 +22,9 @@ import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
+import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
-import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -61,7 +61,7 @@ public final class FinishedCheckJobTest {
     
     @Test
     public void assertExecuteAllDisabledJob() {
-        Optional<String> jobId = PipelineJobAPIFactory.getRuleAlteredJobAPI().start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = PipelineJobAPIFactory.getRuleAlteredJobAPI().start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         List<JobInfo> jobInfos = PipelineJobAPIFactory.getRuleAlteredJobAPI().list();
         jobInfos.forEach(each -> each.setActive(false));
@@ -71,7 +71,7 @@ public final class FinishedCheckJobTest {
     
     @Test
     public void assertExecuteActiveJob() {
-        Optional<String> jobId = PipelineJobAPIFactory.getRuleAlteredJobAPI().start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = PipelineJobAPIFactory.getRuleAlteredJobAPI().start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         List<JobInfo> jobInfos = PipelineJobAPIFactory.getRuleAlteredJobAPI().list();
         jobInfos.forEach(each -> each.setActive(true));

@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.pojo;
+package org.apache.shardingsphere.infra.config.function;
+
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+
+import java.util.Collection;
 
 /**
- * Generated key assignment token for literal.
+ * Resource Required rule configuration.
  */
-public final class LiteralGeneratedKeyAssignmentToken extends GeneratedKeyAssignmentToken {
+public interface ResourceRequiredRuleConfiguration extends RuleConfiguration {
     
-    private final Object value;
-    
-    public LiteralGeneratedKeyAssignmentToken(final int startIndex, final String columnName, final Object value) {
-        super(startIndex, columnName);
-        this.value = value;
-    }
-    
-    @Override
-    protected String getRightValue() {
-        return value instanceof String ? "'" + value + "'" : value.toString();
-    }
+    /**
+     * Get Required Resource.
+     * @return required resource names
+     */
+    Collection<String> getRequiredResource();
 }
