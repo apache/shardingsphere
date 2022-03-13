@@ -32,11 +32,13 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-proxy-frontend-core</artifactId>
+            <scope>compile</scope>
         </dependency>
         
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy-agent</artifactId>
+            <scope>compile</scope>
         </dependency>
         
         <dependency>
