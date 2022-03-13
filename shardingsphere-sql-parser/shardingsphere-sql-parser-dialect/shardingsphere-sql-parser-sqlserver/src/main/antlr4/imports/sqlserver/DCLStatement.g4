@@ -56,7 +56,15 @@ principal
     ;
 
 revoke
-    : REVOKE (optionForClause? classPrivilegesClause | classTypePrivilegesClause | roleClause)
+    : REVOKE (optionForClause? revokeClassPrivilegesClause | revokeClassTypePrivilegesClause)
+    ;
+
+revokeClassPrivilegesClause
+    : grantClassPrivileges (ON grantOnClassClause)? (TO | FROM) principal (COMMA_ principal)* (CASCADE)? (AS principal)?
+    ;
+
+revokeClassTypePrivilegesClause
+    : grantClassTypePrivileges (ON grantOnClassTypeClause)? (TO | FROM) principal (COMMA_ principal)* (CASCADE)?
     ;
 
 deny

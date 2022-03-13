@@ -41,6 +41,8 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Gra
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GrantContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.IgnoredNameIdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OwnerContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RevokeClassPrivilegesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RevokeClassTypePrivilegesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SecurableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetUserContext;
@@ -96,23 +98,7 @@ public final class SQLServerDCLStatementSQLVisitor extends SQLServerStatementSQL
             }
         }
         if (null != ctx.grantClassTypePrivilegesClause()) {
-            for (SimpleTableSegment each : getTableFromGrantPrivilegeClause(ctx.grantClassTypePrivilegesClause())) {
-                result.getTables().add(each);
-            }
-        }
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitRevoke(final RevokeContext ctx) {
-        SQLServerRevokeStatement result = new SQLServerRevokeStatement();
-        if (null != ctx.classPrivilegesClause()) {
-            for (SimpleTableSegment each : getTableFromPrivilegeClause(ctx.classPrivilegesClause())) {
-                result.getTables().add(each);
-            }
-        }
-        if (null != ctx.classTypePrivilegesClause()) {
-            for (SimpleTableSegment each : getTableFromPrivilegeClause(ctx.classTypePrivilegesClause())) {
+            for (SimpleTableSegment each : getTableFromGrantTypePrivilegeClause(ctx.grantClassTypePrivilegesClause())) {
                 result.getTables().add(each);
             }
         }
@@ -135,7 +121,52 @@ public final class SQLServerDCLStatementSQLVisitor extends SQLServerStatementSQL
         return result;
     }
     
-    private Collection<SimpleTableSegment> getTableFromGrantPrivilegeClause(final GrantClassTypePrivilegesClauseContext ctx) {
+    private Collection<SimpleTableSegment> getTableFromGrantTypePrivilegeClause(final GrantClassTypePrivilegesClauseContext ctx) {
+        Collection<SimpleTableSegment> result = new ArrayList<>();
+        if (null != ctx.grantOnClassTypeClause() && null != ctx.grantOnClassTypeClause().grantClassType() && null != ctx.grantOnClassTypeClause().grantClassType().OBJECT()) {
+            result = Collections.singletonList((SimpleTableSegment) visit(ctx.grantOnClassTypeClause().securable()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitRevoke(final RevokeContext ctx) {
+        SQLServerRevokeStatement result = new SQLServerRevokeStatement();
+        if (null != ctx.revokeClassPrivilegesClause()) {
+            for (SimpleTableSegment each : getTableFromRevokeClassPrivilegesClause(ctx.revokeClassPrivilegesClause())) {
+                result.getTables().add(each);
+            }
+            if (null != ctx.revokeClassPrivilegesClause().grantClassPrivileges().columnNames()) {
+                for (ColumnNamesContext each : ctx.revokeClassPrivilegesClause().grantClassPrivileges().columnNames()) {
+                    result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(each)).getValue());
+                }
+            }
+        }
+        if (null != ctx.revokeClassTypePrivilegesClause()) {
+            for (SimpleTableSegment each : getTableFromRevokeClassTypePrivilegesClause(ctx.revokeClassTypePrivilegesClause())) {
+                result.getTables().add(each);
+            }
+        }
+        return result;
+    }
+    
+    private Collection<SimpleTableSegment> getTableFromRevokeClassPrivilegesClause(final RevokeClassPrivilegesClauseContext ctx) {
+        Collection<SimpleTableSegment> result = new ArrayList<>();
+        if (null != ctx.grantOnClassClause()) {
+            if (null != ctx.grantOnClassClause().classItem() && null != ctx.grantOnClassClause().classItem().OBJECT()) {
+                result = Collections.singletonList((SimpleTableSegment) visit(ctx.grantOnClassClause().securable()));
+            }
+            if (null != ctx.grantClassPrivileges().privilegeType().get(0).objectPermission()) {
+                result = Collections.singletonList((SimpleTableSegment) visit(ctx.grantOnClassClause().securable()));
+            }
+            if (null != ctx.grantClassPrivileges().privilegeType().get(0).PRIVILEGES()) {
+                result = Collections.singletonList((SimpleTableSegment) visit(ctx.grantOnClassClause().securable()));
+            }
+        }
+        return result;
+    }
+    
+    private Collection<SimpleTableSegment> getTableFromRevokeClassTypePrivilegesClause(final RevokeClassTypePrivilegesClauseContext ctx) {
         Collection<SimpleTableSegment> result = new ArrayList<>();
         if (null != ctx.grantOnClassTypeClause() && null != ctx.grantOnClassTypeClause().grantClassType() && null != ctx.grantOnClassTypeClause().grantClassType().OBJECT()) {
             result = Collections.singletonList((SimpleTableSegment) visit(ctx.grantOnClassTypeClause().securable()));

@@ -15,36 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.sqlserver;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLRevokeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerRevokeStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.mysql.MySQLRevokeStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.sqlserver.SQLServerRevokeStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.column.ColumnAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.RevokeStatementTestCase;
 
+
 /**
- * Revoke statement assert.
+ * SQLServer Revoke statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RevokeStatementAssert {
+public final class SQLServerRevokeStatementAssert {
     
     /**
-     * Assert revoke statement is correct with expected parser result.
-     * 
+     * Assert SQLServer Revoke statement is correct with expected parser result.
+     *
      * @param assertContext assert context
-     * @param actual actual revoke statement
+     * @param actual actual SQLServer revoke statement
      * @param expected expected revoke statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final RevokeStatement actual, final RevokeStatementTestCase expected) {
-        if (actual instanceof MySQLRevokeStatement) {
-            MySQLRevokeStatementAssert.assertIs(assertContext, (MySQLRevokeStatement) actual, expected);
-        } else if (actual instanceof SQLServerRevokeStatement) {
-            SQLServerRevokeStatementAssert.assertIs(assertContext, (SQLServerRevokeStatement) actual, expected);
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SQLServerRevokeStatement actual, final RevokeStatementTestCase expected) {
+        if (0 != expected.getTables().size()) {
+            TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
+        }
+        if (0 != expected.getColumns().size()) {
+            ColumnAssert.assertIs(assertContext, actual.getColumns(), expected.getColumns());
         }
     }
 }
