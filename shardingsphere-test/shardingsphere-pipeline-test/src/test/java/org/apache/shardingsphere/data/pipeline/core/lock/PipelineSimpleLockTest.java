@@ -33,7 +33,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PipelineSimpleLockTest {
@@ -49,17 +51,17 @@ public final class PipelineSimpleLockTest {
 
     private PipelineSimpleLock pipelineSimpleLock;
 
-    String decoratedLockName;
+    private String decoratedLockName;
 
     @Before
     public void setUp() throws ReflectiveOperationException {
+        decoratedLockName = "scaling-test";
         metaDataPersistService = new MetaDataPersistService(clusterPersistRepository);
         metaDataContexts = new MetaDataContexts(metaDataPersistService);
         ContextManager contextManager = new ContextManager();
         contextManager.init(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class));
         PipelineContext.initContextManager(contextManager);
         pipelineSimpleLock = PipelineSimpleLock.getInstance();
-        decoratedLockName = "scaling-test";
         when(clusterPersistRepository.tryLock(LockNode.getLockNodePath(decoratedLockName), 50L, TimeUnit.MILLISECONDS)).thenReturn(true);
     }
 
