@@ -50,6 +50,7 @@ public final class ModeScheduleContext {
     private final ModeConfiguration modeConfig;
     
     private final LazyInitializer<CoordinatorRegistryCenter> registryCenterLazyInitializer = new LazyInitializer<CoordinatorRegistryCenter>() {
+        
         @Override
         protected CoordinatorRegistryCenter initialize() {
             return initRegistryCenter(modeConfig);
@@ -132,7 +133,7 @@ public final class ModeScheduleContext {
      *
      * @param job cron job
      */
-    @SuppressWarnings("all")
+    @SuppressWarnings("unchecked")
     public void startCronJob(final CronJob job) {
         CoordinatorRegistryCenter registryCenter = getRegistryCenter();
         if (null == registryCenter) {
