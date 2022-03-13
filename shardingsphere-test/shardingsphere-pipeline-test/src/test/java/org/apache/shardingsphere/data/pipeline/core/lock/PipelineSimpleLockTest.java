@@ -21,7 +21,6 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockNode;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -32,11 +31,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.util.concurrent.TimeUnit;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PipelineSimpleLockTest {
@@ -52,6 +49,8 @@ public final class PipelineSimpleLockTest {
 
     private PipelineSimpleLock pipelineSimpleLock;
 
+    String decoratedLockName;
+
     @Before
     public void setUp() throws ReflectiveOperationException {
         metaDataPersistService = new MetaDataPersistService(clusterPersistRepository);
@@ -59,22 +58,17 @@ public final class PipelineSimpleLockTest {
         ContextManager contextManager = new ContextManager();
         contextManager.init(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class));
         PipelineContext.initContextManager(contextManager);
-        LockRegistryService lockService = new LockRegistryService(clusterPersistRepository);
-        Field field = lockService.getClass().getDeclaredField("repository");
-        field.setAccessible(true);
-        field.set(lockService, clusterPersistRepository);
         pipelineSimpleLock = PipelineSimpleLock.getInstance();
+        decoratedLockName = "scaling-test";
+        when(clusterPersistRepository.tryLock(LockNode.getLockNodePath(decoratedLockName), 50L, TimeUnit.MILLISECONDS)).thenReturn(true);
     }
 
     @Test
-    public void assertTryLock() {
+    public void assertTryLockAndReleaseLock() {
         pipelineSimpleLock.tryLock("test", 50L);
-        verify(clusterPersistRepository).tryLock(LockNode.getLockNodePath("test"), 50L, TimeUnit.MILLISECONDS);
+        verify(clusterPersistRepository).tryLock(LockNode.getLockNodePath(decoratedLockName), 50L, TimeUnit.MILLISECONDS);
+        pipelineSimpleLock.releaseLock("test");
+        verify(clusterPersistRepository).releaseLock(LockNode.getLockNodePath(decoratedLockName));
     }
 
-    @Test
-    public void assertReleaseLock() {
-        pipelineSimpleLock.releaseLock("test");
-        verify(clusterPersistRepository).releaseLock(LockNode.getLockNodePath("test"));
-    }
 }
