@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.service;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
@@ -32,10 +33,10 @@ import java.util.Collection;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.isA;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ComputeNodePersistServiceTest {
@@ -111,8 +112,12 @@ public final class ComputeNodePersistServiceTest {
     
     @Test
     public void assertLoadAllComputeNodeInstances() {
+        when(repository.getChildrenKeys("/nodes/compute_nodes/online/proxy")).thenReturn(Lists.newArrayList("127.0.0.1@3307"));
+        when(repository.getChildrenKeys("/nodes/compute_nodes/online/jdbc")).thenReturn(Lists.newArrayList("127.0.0.1@3308"));
         Collection<ComputeNodeInstance> actual = new ComputeNodePersistService(repository).loadAllComputeNodeInstances();
-        assertThat(actual, isA(Collection.class));
+        assertThat(actual.size(), is(2));
+        assertThat(actual.iterator().next().getInstanceDefinition().getInstanceId().getId(), is("127.0.0.1@3307"));
+        assertThat(actual.iterator().next().getInstanceDefinition().getInstanceId().getId(), is("127.0.0.1@3307"));
     }
     
     @Test
