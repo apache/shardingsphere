@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class ShowEventsStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement(name = "from")
     private ExpectedFromSchema fromSchema;
     

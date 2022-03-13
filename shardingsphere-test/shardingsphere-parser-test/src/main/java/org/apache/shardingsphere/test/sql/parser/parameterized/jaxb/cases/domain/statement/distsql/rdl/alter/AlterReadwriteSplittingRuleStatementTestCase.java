@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExceptedReadwriteSplittingRule;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
@@ -30,9 +29,8 @@ import java.util.List;
  * Alter readwrite-splitting rule statement test case.
  */
 @Getter
-@Setter
 public final class AlterReadwriteSplittingRuleStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "rule")
-    private List<ExceptedReadwriteSplittingRule> rules = new LinkedList<>();
+    private final List<ExceptedReadwriteSplittingRule> rules = new LinkedList<>();
 }

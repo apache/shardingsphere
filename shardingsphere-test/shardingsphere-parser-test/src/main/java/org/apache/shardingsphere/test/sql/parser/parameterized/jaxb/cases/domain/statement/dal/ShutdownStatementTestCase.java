@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
 
-import lombok.Getter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
  * MySQL shutdown statement test case.
  */
-@Getter
 public final class ShutdownStatementTestCase extends SQLParserTestCase {
 }
