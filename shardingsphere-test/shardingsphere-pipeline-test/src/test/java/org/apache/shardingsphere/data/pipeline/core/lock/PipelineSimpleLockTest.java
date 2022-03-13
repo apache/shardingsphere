@@ -17,8 +17,14 @@
 
 package org.apache.shardingsphere.data.pipeline.core.lock;
 
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +33,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -35,12 +42,25 @@ public final class PipelineSimpleLockTest {
     @Mock
     private ClusterPersistRepository clusterPersistRepository;
 
+    @Mock
+    private MetaDataPersistService metaDataPersistService;
+
+    @Mock
+    private MetaDataContexts metaDataContexts;
+
+    private ContextManager contextManager;
+
     private LockRegistryService lockService;
 
     private PipelineSimpleLock pipelineSimpleLock;
 
     @Before
     public void setUp() throws ReflectiveOperationException {
+        metaDataPersistService = new MetaDataPersistService(clusterPersistRepository);
+        metaDataContexts = new MetaDataContexts(metaDataPersistService);
+        contextManager = new ContextManager();
+        contextManager.init(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class));
+        PipelineContext.initContextManager(contextManager);
         lockService = new LockRegistryService(clusterPersistRepository);
         Field field = lockService.getClass().getDeclaredField("repository");
         field.setAccessible(true);
