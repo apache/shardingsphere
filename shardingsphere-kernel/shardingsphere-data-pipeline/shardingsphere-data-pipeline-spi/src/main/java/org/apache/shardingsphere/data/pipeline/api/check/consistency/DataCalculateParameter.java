@@ -67,7 +67,7 @@ public final class DataCalculateParameter {
     /**
      * Used for range query.
      */
-    private volatile Range<String> uniqueKeyValueRange;
+    private volatile Range<? extends Comparable<?>> uniqueKeyValueRange;
     
     /**
      * Used for multiple records query.
