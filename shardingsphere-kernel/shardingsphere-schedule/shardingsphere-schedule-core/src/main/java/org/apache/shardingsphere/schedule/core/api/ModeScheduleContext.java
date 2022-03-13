@@ -57,10 +57,11 @@ public final class ModeScheduleContext {
     };
     
     private final LazyInitializer<JobConfigurationAPI> jobConfigAPILazyInitializer = new LazyInitializer<JobConfigurationAPI>() {
+        
         @Override
         protected JobConfigurationAPI initialize() throws ConcurrentException {
             CoordinatorRegistryCenter registryCenter = registryCenterLazyInitializer.get();
-            return null != registryCenter ? new JobConfigurationAPIImpl(registryCenter) : null;
+            return null == registryCenter ? null : new JobConfigurationAPIImpl(registryCenter);
         }
     };
     
