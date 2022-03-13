@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.HandleConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
@@ -36,6 +35,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreatio
 import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExecutor;
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
 import org.apache.shardingsphere.data.pipeline.core.lock.PipelineSimpleLock;
+import org.apache.shardingsphere.data.pipeline.core.util.Pair;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
