@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.lock;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -32,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
+import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -71,12 +73,14 @@ public final class PipelineSimpleLockTest {
     @Test
     public void assertTryLock() {
         pipelineSimpleLock.tryLock("test", 50L);
-        verify(lockService).tryLock("test", 50L);
+        lockService.tryLock("test", 50L);
+        verify(clusterPersistRepository).tryLock(LockNode.getLockNodePath("test"), 50L, TimeUnit.MILLISECONDS);
     }
 
     @Test
     public void assertReleaseLock() {
         pipelineSimpleLock.releaseLock("test");
-        verify(lockService).releaseLock("test");
+        lockService.releaseLock("test");
+        verify(clusterPersistRepository).releaseLock(LockNode.getLockNodePath("test"));
     }
 }
