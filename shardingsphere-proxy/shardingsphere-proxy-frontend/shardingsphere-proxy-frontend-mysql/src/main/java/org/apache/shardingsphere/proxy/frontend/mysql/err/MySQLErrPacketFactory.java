@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.err;
 
-import jdk.internal.joptsimple.internal.Strings;
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
