@@ -18,11 +18,14 @@
 package org.apache.shardingsphere.data.pipeline.core.lock;
 
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.lang.reflect.Field;
 
 import static org.mockito.Mockito.verify;
 
@@ -30,12 +33,18 @@ import static org.mockito.Mockito.verify;
 public final class PipelineSimpleLockTest {
 
     @Mock
+    private ClusterPersistRepository clusterPersistRepository;
+
     private LockRegistryService lockService;
 
     private PipelineSimpleLock pipelineSimpleLock;
 
     @Before
-    public void setUp() {
+    public void setUp() throws ReflectiveOperationException {
+        lockService = new LockRegistryService(clusterPersistRepository);
+        Field field = lockService.getClass().getDeclaredField("repository");
+        field.setAccessible(true);
+        field.set(lockService, clusterPersistRepository);
         pipelineSimpleLock = PipelineSimpleLock.getInstance();
     }
 
