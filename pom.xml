@@ -58,9 +58,9 @@
         
         <guava.version>30.0-jre</guava.version>
         <commons-lang3.version>3.8</commons-lang3.version>
+        <commons-collections4.version>4.2</commons-collections4.version>
         <commons-codec.version>1.15</commons-codec.version>
         <commons-cli.version>1.4</commons-cli.version>
-        <commons-collections4.version>4.2</commons-collections4.version>
         
         <jaxb.version>2.3.0</jaxb.version>
         <annotation-api.version>1.3.2</annotation-api.version>
