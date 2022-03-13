@@ -372,7 +372,7 @@
                 <groupId>io.seata</groupId>
                 <artifactId>seata-all</artifactId>
                 <version>${seata.version}</version>
-                <scope>provided</scope>
+                <scope>test</scope>
             </dependency>
             
             <dependency>
