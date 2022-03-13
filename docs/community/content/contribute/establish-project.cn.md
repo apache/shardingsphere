@@ -12,6 +12,15 @@ chapter = true
 
 如果你运行的是 macOS 或者 Linux 系统，那也可以从相关软件仓库直接安装。
 
+### Git 配置
+
+如果系统是 Windows，请在克隆 ShardingSphere 代码之前完成以下配置。
+
+在 PowerShell 或者 cmd 执行以下命令，预防克隆 ShardingSphere 代码的时候出现 `filename too long` 错误：
+```shell
+git config --global core.longpaths true
+```
+
 ## 安装 JDK
 
 使用 JDK 8 或以上版本。

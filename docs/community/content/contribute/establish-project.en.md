@@ -12,6 +12,15 @@ You could download Git from [Git Downloads]( https://git-scm.com/downloads ).
 
 If you're running macOS or Linux, you could install Git from software repository.
 
+### Git Settings
+
+If you're running Windows, following settings should be done before cloning ShardingSphere code.
+
+Execute following command in PowerShell or cmd to prevent from `filename too long` error on cloning ShardingSphere code:
+```shell
+git config --global core.longpaths true
+```
+
 ## JDK Installation
 
 Use JDK8+.
