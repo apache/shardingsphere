@@ -153,12 +153,11 @@ public final class MetaDataPersistService {
      * @param isOverwrite whether overwrite registry center's configuration if existed
      */
     public void persistTransactionRule(final Properties props, final boolean isOverwrite) {
-        Collection<RuleConfiguration> ruleConfigurations = globalRuleService.load();
-        Optional<RuleConfiguration> ruleConfiguration = ruleConfigurations.stream().filter(each -> each instanceof TransactionRuleConfiguration).findFirst();
-        Preconditions.checkState(ruleConfiguration.isPresent());
-        if (props.equals(((TransactionRuleConfiguration) ruleConfiguration.get()).getProps())) {
-            return;
+        Collection<RuleConfiguration> ruleConfigs = globalRuleService.load();
+        Optional<RuleConfiguration> ruleConfig = ruleConfigs.stream().filter(each -> each instanceof TransactionRuleConfiguration).findFirst();
+        Preconditions.checkState(ruleConfig.isPresent());
+        if (!props.equals(((TransactionRuleConfiguration) ruleConfig.get()).getProps())) {
+            globalRuleService.persist(ruleConfigs, isOverwrite);
         }
-        globalRuleService.persist(ruleConfigurations, isOverwrite);
     }
 }
