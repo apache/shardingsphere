@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.scaling.query;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.scaling.distsql.statement.CheckScalingStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
@@ -54,7 +53,7 @@ public final class CheckScalingStatementAssert {
     }
     
     private static void assertJobIds(final SQLCaseAssertContext assertContext, final String actual, final List<String> expected) {
-        if (CollectionUtils.isEmpty(expected)) {
+        if (expected.isEmpty()) {
             assertNull(assertContext.getText("Actual job id should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual job id should exist."), actual);
@@ -63,7 +62,7 @@ public final class CheckScalingStatementAssert {
     }
     
     private static void assertTypeStrategy(final SQLCaseAssertContext assertContext, final AlgorithmSegment actual, final List<ExpectedAlgorithm> expected) {
-        if (CollectionUtils.isEmpty(expected)) {
+        if (expected.isEmpty()) {
             assertNull(assertContext.getText("Actual type strategy should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual type strategy should exist."), actual);
