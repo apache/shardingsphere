@@ -116,11 +116,6 @@
         </dependency>
         
         <dependency>
-            <groupId>org.apache.groovy</groupId>
-            <artifactId>groovy</artifactId>
-        </dependency>
-        
-        <dependency>
             <groupId>me.ahoo.cosid</groupId>
             <artifactId>cosid-core</artifactId>
         </dependency>
