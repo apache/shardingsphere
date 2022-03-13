@@ -37,5 +37,5 @@ public final class CheckScalingStatementTestCase extends SQLParserTestCase {
     private final List<String> jobIds = new LinkedList<>();
     
     @XmlElement(name = "type-strategy")
-    private List<ExpectedAlgorithm> tableStrategies;
+    private final List<ExpectedAlgorithm> tableStrategies = new LinkedList<>();
 }
