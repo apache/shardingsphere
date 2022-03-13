@@ -182,6 +182,11 @@
                 <artifactId>snakeyaml</artifactId>
                 <version>${snakeyaml.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
             
             <dependency>
                 <groupId>net.bytebuddy</groupId>
@@ -199,11 +204,6 @@
                 <groupId>me.ahoo.cosid</groupId>
                 <artifactId>cosid-core</artifactId>
                 <version>${cosid.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>${gson.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>

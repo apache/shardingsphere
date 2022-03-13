@@ -104,10 +104,7 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
     
     @SuppressWarnings("unchecked")
     private Map<String, String> convertToMap(final Object obj) {
-        if (null == obj) {
-            return Collections.emptyMap();
-        }
-        return new Gson().fromJson(new Gson().toJson(obj), LinkedHashMap.class);
+        return null == obj ? Collections.emptyMap() : new Gson().fromJson(new Gson().toJson(obj), LinkedHashMap.class);
     }
     
     @Override
