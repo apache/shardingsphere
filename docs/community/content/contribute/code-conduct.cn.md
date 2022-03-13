@@ -18,9 +18,8 @@ chapter = true
 
 ## 代码提交行为规范
 
- - 确保通过全部测试用例，确保执行 `./mvnw -T 1C clean install` 可以编译和测试通过。
+ - 确保构建流程中的各个步骤都成功完成，包括：Apache协议文件头检查、Checkstyle检查、编译、单元测试等。构建流程启动命令：`mvn -T 1C clean install` 或者 `./mvnw -T 1C clean install`。执行目录有2种选择，根据自己的熟悉程度做选择：1）对项目还不太熟悉，在项目根目录执行构建，所有模块都会执行构建，2）明确知道这次改动会影响到哪些模块，在这些模块执行构建，可以大大缩短构建时间。
  - 确保覆盖率不低于 master 分支。
- - 确保使用 Checkstyle 检查代码，违反验证规则的需要有特殊理由。模板位置在`https://github.com/apache/shardingsphere/blob/master/src/resources/checkstyle.xml`，请使用 checkstyle 8.8 运行规则。
  - 应尽量将设计精细化拆分；做到小幅度修改，多次数提交，但应保证提交的完整性。
  - 确保遵守编码规范。
  - 如果您使用 IDEA，可导入推荐的 [Settings](https://shardingsphere.apache.org/community/data/shardingsphere-settings.jar)。

@@ -33,6 +33,13 @@ git remote add apache https://github.com/apache/shardingsphere.git
 git remote -v
 ```
 
+编译并安装所有模块到 Maven 本地仓库缓存，同时会生成 ANTLR `.g4` 语法文件对应的解析器 Java 类，这样在 IDE 就不会有相关的编译错误了。
+```shell
+cd shardingsphere
+mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Prelease
+```
+当你以后从 ShardingSphere 拉取最新代码并新建分支，可能会遇到类似的解析器编译错误，可以重新运行这个命令来解决问题。
+
 **2. 选择 issue**
 
  - 请在选择您要修改的issue。如果是您新发现的问题或想提供issue中没有的功能增强，请先新建一个 issue 并设置正确的标签。
