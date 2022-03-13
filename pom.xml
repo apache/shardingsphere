@@ -54,6 +54,7 @@
         <maven.version.range>[3.0.4,)</maven.version.range>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locale>zh_CN</project.build.locale>
+        <maven.deploy.skip>false</maven.deploy.skip>
         
         <guava.version>30.0-jre</guava.version>
         <commons-lang3.version>3.8</commons-lang3.version>
@@ -147,7 +148,6 @@
         <checksum-maven-plugin.version>1.10</checksum-maven-plugin.version>
         <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
         <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
-        <maven.deploy.skip>false</maven.deploy.skip>
     </properties>
     
     <dependencyManagement>
