@@ -261,12 +261,9 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     private String getAlgorithmExpression(final TableRule tableRule, final boolean databaseOrTable) {
-        ShardingStrategyConfiguration shardingStrategyConfig;
-        if (databaseOrTable) {
-            shardingStrategyConfig = null == tableRule.getDatabaseShardingStrategyConfig() ? defaultDatabaseShardingStrategyConfig : tableRule.getDatabaseShardingStrategyConfig();
-        } else {
-            shardingStrategyConfig = null == tableRule.getTableShardingStrategyConfig() ? defaultTableShardingStrategyConfig : tableRule.getTableShardingStrategyConfig();
-        }
+        ShardingStrategyConfiguration shardingStrategyConfig = databaseOrTable
+                ? null == tableRule.getDatabaseShardingStrategyConfig() ? defaultDatabaseShardingStrategyConfig : tableRule.getDatabaseShardingStrategyConfig()
+                : null == tableRule.getTableShardingStrategyConfig() ? defaultTableShardingStrategyConfig : tableRule.getTableShardingStrategyConfig();
         ShardingAlgorithm shardingAlgorithm = shardingAlgorithms.get(shardingStrategyConfig.getShardingAlgorithmName());
         return null == shardingAlgorithm ? "" : StringUtils.defaultString(shardingAlgorithm.getProps().getProperty("algorithm-expression"), "");
     }
