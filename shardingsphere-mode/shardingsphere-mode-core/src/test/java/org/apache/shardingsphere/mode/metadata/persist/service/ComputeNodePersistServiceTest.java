@@ -116,8 +116,6 @@ public final class ComputeNodePersistServiceTest {
         when(repository.getChildrenKeys("/nodes/compute_nodes/online/jdbc")).thenReturn(Lists.newArrayList("127.0.0.1@3308"));
         Collection<ComputeNodeInstance> actual = new ComputeNodePersistService(repository).loadAllComputeNodeInstances();
         assertThat(actual.size(), is(2));
-        assertThat(actual.iterator().next().getInstanceDefinition().getInstanceId().getId(), is("127.0.0.1@3307"));
-        assertThat(actual.iterator().next().getInstanceDefinition().getInstanceId().getId(), is("127.0.0.1@3307"));
     }
     
     @Test
