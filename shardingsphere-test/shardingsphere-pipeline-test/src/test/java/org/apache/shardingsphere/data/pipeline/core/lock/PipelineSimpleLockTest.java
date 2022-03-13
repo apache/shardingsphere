@@ -50,20 +50,16 @@ public final class PipelineSimpleLockTest {
     @Mock
     private MetaDataContexts metaDataContexts;
 
-    private ContextManager contextManager;
-
-    private LockRegistryService lockService;
-
     private PipelineSimpleLock pipelineSimpleLock;
 
     @Before
     public void setUp() throws ReflectiveOperationException {
         metaDataPersistService = new MetaDataPersistService(clusterPersistRepository);
         metaDataContexts = new MetaDataContexts(metaDataPersistService);
-        contextManager = new ContextManager();
+        ContextManager contextManager = new ContextManager();
         contextManager.init(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class));
         PipelineContext.initContextManager(contextManager);
-        lockService = new LockRegistryService(clusterPersistRepository);
+        LockRegistryService lockService = new LockRegistryService(clusterPersistRepository);
         Field field = lockService.getClass().getDeclaredField("repository");
         field.setAccessible(true);
         field.set(lockService, clusterPersistRepository);
@@ -73,14 +69,12 @@ public final class PipelineSimpleLockTest {
     @Test
     public void assertTryLock() {
         pipelineSimpleLock.tryLock("test", 50L);
-        lockService.tryLock("test", 50L);
         verify(clusterPersistRepository).tryLock(LockNode.getLockNodePath("test"), 50L, TimeUnit.MILLISECONDS);
     }
 
     @Test
     public void assertReleaseLock() {
         pipelineSimpleLock.releaseLock("test");
-        lockService.releaseLock("test");
         verify(clusterPersistRepository).releaseLock(LockNode.getLockNodePath("test"));
     }
 }
