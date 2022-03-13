@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
@@ -30,9 +29,8 @@ import java.util.List;
  * Checksum table statement test case.
  */
 @Getter
-@Setter
 public final class ChecksumTableStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "table")
-    private List<ExpectedSimpleTable> tables = new LinkedList<>();
+    private final List<ExpectedSimpleTable> tables = new LinkedList<>();
 }

@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.err;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
 import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
@@ -40,7 +41,6 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception
 import org.apache.shardingsphere.proxy.frontend.exception.FrontendTooManyConnectionsException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.exception.UnknownCharacterSetException;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
@@ -137,7 +137,7 @@ public final class MySQLErrPacketFactory {
     }
     
     private static String getErrorMessage(final SQLException cause) {
-        if (null != cause.getNextException() && StringUtils.isBlank(cause.getMessage())) {
+        if (null != cause.getNextException() && Strings.isNullOrEmpty(cause.getMessage())) {
             return cause.getNextException().getMessage();
         }
         return cause.getMessage();

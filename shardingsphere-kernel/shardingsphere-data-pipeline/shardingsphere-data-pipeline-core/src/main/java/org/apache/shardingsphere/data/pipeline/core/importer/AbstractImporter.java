@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.importer;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
@@ -109,24 +108,18 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
     }
     
     private void flush(final DataSource dataSource, final List<Record> buffer) {
-        List<GroupedDataRecord> groupedDataRecords = MERGER.group(buffer.stream()
-                .filter(each -> each instanceof DataRecord)
-                .map(each -> (DataRecord) each)
-                .collect(Collectors.toList()));
+        List<GroupedDataRecord> groupedDataRecords = MERGER.group(buffer.stream().filter(each -> each instanceof DataRecord).map(each -> (DataRecord) each).collect(Collectors.toList()));
         groupedDataRecords.forEach(each -> {
-            if (CollectionUtils.isNotEmpty(each.getDeleteDataRecords())) {
-                flushInternal(dataSource, each.getDeleteDataRecords());
-            }
-            if (CollectionUtils.isNotEmpty(each.getInsertDataRecords())) {
-                flushInternal(dataSource, each.getInsertDataRecords());
-            }
-            if (CollectionUtils.isNotEmpty(each.getUpdateDataRecords())) {
-                flushInternal(dataSource, each.getUpdateDataRecords());
-            }
+            flushInternal(dataSource, each.getDeleteDataRecords());
+            flushInternal(dataSource, each.getInsertDataRecords());
+            flushInternal(dataSource, each.getUpdateDataRecords());
         });
     }
     
     private void flushInternal(final DataSource dataSource, final List<DataRecord> buffer) {
+        if (null == buffer || buffer.isEmpty()) {
+            return;
+        }
         boolean success = tryFlush(dataSource, buffer);
         if (isRunning() && !success) {
             throw new PipelineJobExecutionException("write failed.");
@@ -140,7 +133,7 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
                 return true;
             } catch (final SQLException ex) {
                 log.error("flush failed {}/{} times.", i, importerConfig.getRetryTimes(), ex);
-                ThreadUtil.sleep(Math.min(5 * 60 * 1000L, 1000 << i));
+                ThreadUtil.sleep(Math.min(5 * 60 * 1000L, 1000L << i));
             }
         }
         return false;

@@ -15,22 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.plugin.ExpectedPlugin;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Install plugin statement test case.
+ * Oracle drop database link statement.
  */
-@Getter
-@Setter
-public final class InstallPluginStatementTestCase extends SQLParserTestCase {
-    
-    @XmlElement(name = "plugin")
-    private ExpectedPlugin plugin;
+@ToString
+public final class OracleDropDatabaseLinkStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
 }
