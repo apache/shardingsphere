@@ -174,7 +174,6 @@ public final class TablesContextTest {
         assertThat(actual.get("col"), is("TABLE_1"));
     }
 
-
     private SimpleTableSegment createTableSegment(final String tableName, final String alias) {
         SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(tableName)));
         AliasSegment aliasSegment = new AliasSegment(0, 0, new IdentifierValue(alias));
