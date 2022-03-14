@@ -26,33 +26,33 @@
     <artifactId>shardingsphere-proxy-distribution</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-proxy-bootstrap</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <scope>compile</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <scope>runtime</scope>
         </dependency>
     </dependencies>
-    
+
     <profiles>
         <profile>
             <id>release</id>
@@ -101,6 +101,32 @@
                         <configuration>
                             <repository>apache/shardingsphere-proxy</repository>
                             <tag>${project.version}</tag>
+                            <buildArgs>
+                                <APP_NAME>${project.build.finalName}-shardingsphere-proxy-bin</APP_NAME>
+                            </buildArgs>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>docker-per-commit</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.spotify</groupId>
+                        <artifactId>dockerfile-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>shardingsphere-proxy-bin</id>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <repository>ghcr.io/apache/shardingsphere-proxy</repository>
+                            <tag>PER_COMMIT</tag>
                             <buildArgs>
                                 <APP_NAME>${project.build.finalName}-shardingsphere-proxy-bin</APP_NAME>
                             </buildArgs>
