@@ -39,11 +39,15 @@ rules:
         amount:
           cipherColumn: cipher_amount
           encryptorName: normal
+        amount_new:
+          cipherColumn: amount_new_cipher
+          encryptorName: normal
     t_account_bak:
       columns:
         certificate_number:
           cipherColumn: cipher_certificate_number
           assistedQueryColumn: assisted_query_certificate_number
+          plainColumn: plain_certificate_number
           encryptorName: assisted_query
         password:
           cipherColumn: cipher_password
@@ -64,6 +68,7 @@ rules:
         certificate_number:
           cipherColumn: cipher_certificate_number
           assistedQueryColumn: assisted_query_certificate_number
+          plainColumn: plain_certificate_number
           encryptorName: assisted_query
         password:
           cipherColumn: cipher_password
