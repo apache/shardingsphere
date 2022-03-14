@@ -194,10 +194,6 @@ Check out [Wiki](https://github.com/apache/shardingsphere/wiki) section for deta
 ### Landscapes
 
 
-### Contributors
-
-[shardingsphere-contributors](https://shardingsphere.apache.org/community/en/team)
-
 <hr>
 
 <p align="center">
@@ -206,5 +202,9 @@ Check out [Wiki](https://github.com/apache/shardingsphere/wiki) section for deta
 <br/><br/>
 Apache ShardingSphere enriches the <a href="https://landscape.cncf.io/landscape=observability-and-analysis&license=apache-license-2-0">CNCF CLOUD NATIVE Landscape</a>.
 </p>
+
+### Team
+
+[Roster](https://shardingsphere.apache.org/community/en/team)
 
 ##

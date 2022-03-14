@@ -12,13 +12,8 @@ chapter = true
 <table>
     <tr>
         <td>
-            <a href="https://github.com/craiglrussell" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/2467238?v=4" width="200px">
-            </a>
-        </td>
-        <td>
             <a href="https://github.com/terrymanu" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/5516298?v=4" width="200px">
+               <img src="https://avatars.githubusercontent.com/u/5516298?v=4" width="200px">
             </a>
         </td>
         <td>
@@ -27,53 +22,8 @@ chapter = true
             </a>
         </td>
         <td>
-            <a href="https://github.com/haocao" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/687732?v=4" width="200px">
-            </a>
-        </td>
-        <td>
-            <a href="https://github.com/codefairy08" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/39583929?v=4" width="200px">
-            </a>
-        </td>
-        <td>
-            <a href="https://github.com/hanahmily" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/1960537?v=4" width="200px">
-            </a>
-        </td>
-        <td>
-            <a href="https://github.com/cherrylzhao" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/8317649?v=4" width="200px">
-            </a>
-        </td>
-    </tr>
-    <tr align="center">
-        <td>
-            <b>Craig L Russell</b>
-        </td>
-        <td>
-            <b>Liang Zhang (Chair)</b>
-        <td>
-            <b>Juan Pan</b>
-        </td>
-        </td>
-        <td>
-            <b>Hao Cao</b>
-        </td>
-        <td>
-            <b>Hongjun Du</b>
-        </td>
-        <td>
-            <b>Hongtao Gao</b>
-        </td>
-        <td>
-            <b>Jun Zhao</b>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <a href="https://github.com/beckhampu" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/14846369?v=4" width="200px">
+            <a href="https://github.com/craiglrussell" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/2467238?v=4" width="200px">
             </a>
         </td>
         <td>
@@ -82,18 +32,53 @@ chapter = true
             </a>
         </td>
         <td>
-            <a href="https://github.com/vongosling" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/635581?v=4" width="200px">
-            </a>
-        </td>
-        <td>
             <a href="https://github.com/WillemJiang" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/219644?v=4" width="200px">
             </a>
         </td>
         <td>
-            <a href="https://github.com/maxiaoguang64" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/6637227?v=4" width="200px">
+            <a href="https://github.com/menghaoranss" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/60651792?v=4" width="200px">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/kimmking" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/807508?v=4" width="200px">
+            </a>
+        </td>
+    </tr>
+    <tr align="center">
+        <td>
+            <b>Liang Zhang (Chair)</b>
+        </td>
+        <td>
+            <b>Juan Pan</b>
+        </td>
+        <td>
+            <b>Craig L Russell</b>
+        </td>
+        <td>
+            <b>Sheng Wu</b>
+        </td>
+        <td>
+            <b>Willem Ning Jiang</b>
+        </td>
+        <td>
+            <b>Haoran Meng</b>
+        </td>
+        <td>
+            <b>Kimm King</b>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="https://github.com/tuohai666" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/24643893?v=4" width="200px">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/cherrylzhao" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/8317649?v=4" width="200px">
             </a>
         </td>
         <td>
@@ -102,52 +87,67 @@ chapter = true
             </a>
         </td>
         <td>
-            <a href="https://github.com/tuohai666" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/24643893?v=4" width="200px">
+            <a href="https://github.com/beckhampu" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/14846369?v=4" width="200px">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/vongosling" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/635581?v=4" width="200px">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/hanahmily" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/1960537?v=4" width="200px">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/codefairy08" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/39583929?v=4" width="200px">
             </a>
         </td>
     </tr>
     <tr align="center">
         <td>
-            <b>QingYang Chen</b>
+            <b>Yonglun Zhang</b>
         </td>
         <td>
-            <b>Sheng Wu</b>
+            <b>Jun Zhao</b>
+        </td>
+        <td>
+            <b>Yi Yang</b>
+        </td>
+        <td>
+            <b>QingYang Chen</b>
         </td>
         <td>
             <b>vongosling</b>
         </td>
         <td>
-            <b>Willem Ning Jiang</b>
+            <b>Hongtao Gao</b>
         </td>
         <td>
-            <b>Xiaoguang Ma</b>
-        </td>
-        <td>
-            <b>Yang Yi</b>
-        </td>
-        <td>
-            <b>Yonglun Zhang</b>
+            <b>Hongjun Du</b>
         </td>
     </tr>
     <tr>
         <td>
-            <a href="https://github.com/kimmking" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/807508?v=4" width="200px">
+            <a href="https://github.com/haocao" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/687732?v=4" width="200px">
             </a>
         </td>
         <td>
-            <a href="https://github.com/menghaoranss" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/60651792?v=4" width="200px">
+            <a href="https://github.com/maxiaoguang64" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/6637227?v=4" width="200px">
             </a>
         </td>
     </tr>
     <tr align="center">
         <td>
-            <b>Kimm King</b>
+            <b>Hao Cao</b>
         </td>
         <td>
-            <b>Haoran Meng</b>
+            <b>Xiaoguang Ma</b>
         </td>
     </tr>
 </table>
