@@ -39,24 +39,12 @@ public final class TableMetaDataTest {
     
     @Test
     public void assertGetColumnMetaData() {
-        ColumnMetaData actual = tableMetaData.getColumnMetaData(0);
+        ColumnMetaData actual = tableMetaData.getColumns().get(tableMetaData.getColumnNames().get(0));
         assertThat(actual.getName(), is("test"));
         assertThat(actual.getDataType(), is(Types.INTEGER));
         assertTrue(actual.isPrimaryKey());
         assertFalse(actual.isGenerated());
         assertTrue(actual.isCaseSensitive());
-    }
-    
-    @Test
-    public void assertFindColumnIndex() {
-        assertThat(tableMetaData.findColumnIndex("test"), is(0));
-        assertThat(tableMetaData.findColumnIndex("non_exist"), is(-1));
-    }
-    
-    @Test
-    public void assertIsPrimaryKey() {
-        assertTrue(tableMetaData.isPrimaryKey(0));
-        assertFalse(tableMetaData.isPrimaryKey(1));
     }
     
     @Test

@@ -87,8 +87,9 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
         Map<String, TableMetaData> actual = getTableMetaDataLoader().load(dataSource, Collections.emptyList());
         assertTableMetaDataMap(actual);
-        assertThat(actual.get("tbl").getColumnMetaData(0), is(new ColumnMetaData("id", 4, true, true, true)));
-        assertThat(actual.get("tbl").getColumnMetaData(1), is(new ColumnMetaData("name", 12, false, false, false)));
+        TableMetaData actualTableMetaData = actual.get("tbl");
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(0)), is(new ColumnMetaData("id", 4, true, true, true)));
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
     }
     
     @Test
@@ -104,8 +105,9 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(1);
         Map<String, TableMetaData> actual = getTableMetaDataLoader().load(dataSource, Collections.emptyList());
         assertTableMetaDataMap(actual);
-        assertThat(actual.get("tbl").getColumnMetaData(0), is(new ColumnMetaData("id", 4, true, true, false)));
-        assertThat(actual.get("tbl").getColumnMetaData(1), is(new ColumnMetaData("name", 12, false, false, false)));
+        TableMetaData actualTableMetaData = actual.get("tbl");
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(0)), is(new ColumnMetaData("id", 4, true, true, false)));
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
     }
     
     @Test
@@ -121,8 +123,9 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
         Map<String, TableMetaData> actual = getTableMetaDataLoader().load(dataSource, Collections.emptyList());
         assertTableMetaDataMap(actual);
-        assertThat(actual.get("tbl").getColumnMetaData(0), is(new ColumnMetaData("id", 4, true, false, false)));
-        assertThat(actual.get("tbl").getColumnMetaData(1), is(new ColumnMetaData("name", 12, false, false, false)));
+        TableMetaData actualTableMetaData = actual.get("tbl");
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(0)), is(new ColumnMetaData("id", 4, true, false, false)));
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
     }
     
     @Test
@@ -138,8 +141,9 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
         Map<String, TableMetaData> actual = getTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"));
         assertTableMetaDataMap(actual);
-        assertThat(actual.get("tbl").getColumnMetaData(0), is(new ColumnMetaData("id", 4, true, true, true)));
-        assertThat(actual.get("tbl").getColumnMetaData(1), is(new ColumnMetaData("name", 12, false, false, false)));
+        TableMetaData actualTableMetaData = actual.get("tbl");
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(0)), is(new ColumnMetaData("id", 4, true, true, true)));
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
     }
     
     @Test
@@ -155,8 +159,9 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(1);
         Map<String, TableMetaData> actual = getTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"));
         assertTableMetaDataMap(actual);
-        assertThat(actual.get("tbl").getColumnMetaData(0), is(new ColumnMetaData("id", 4, true, true, false)));
-        assertThat(actual.get("tbl").getColumnMetaData(1), is(new ColumnMetaData("name", 12, false, false, false)));
+        TableMetaData actualTableMetaData = actual.get("tbl");
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(0)), is(new ColumnMetaData("id", 4, true, true, false)));
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
     }
     
     @Test
@@ -172,8 +177,9 @@ public final class OracleTableMetaDataLoaderTest {
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
         Map<String, TableMetaData> actual = getTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"));
         assertTableMetaDataMap(actual);
-        assertThat(actual.get("tbl").getColumnMetaData(0), is(new ColumnMetaData("id", 4, true, false, false)));
-        assertThat(actual.get("tbl").getColumnMetaData(1), is(new ColumnMetaData("name", 12, false, false, false)));
+        TableMetaData actualTableMetaData = actual.get("tbl");
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(0)), is(new ColumnMetaData("id", 4, true, false, false)));
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
     }
     
     private DataSource mockDataSource() throws SQLException {

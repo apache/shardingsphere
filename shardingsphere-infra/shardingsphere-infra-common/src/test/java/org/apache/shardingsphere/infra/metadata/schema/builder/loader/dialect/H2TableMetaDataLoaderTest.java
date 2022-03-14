@@ -155,10 +155,11 @@ public final class H2TableMetaDataLoaderTest {
 
     private void assertTableMetaDataMap(final Map<String, TableMetaData> actual) {
         assertThat(actual.size(), is(1));
-        assertThat(actual.get("tbl").getColumns().size(), is(2));
-        assertThat(actual.get("tbl").getColumnMetaData(0), is(new ColumnMetaData("id", 4, true, false, true)));
-        assertThat(actual.get("tbl").getColumnMetaData(1), is(new ColumnMetaData("name", 12, false, false, true)));
-        assertThat(actual.get("tbl").getIndexes().size(), is(1));
-        assertThat(actual.get("tbl").getIndexes().get("id"), is(new IndexMetaData("id")));
+        TableMetaData actualTableMetaData = actual.get("tbl");
+        assertThat(actualTableMetaData.getColumns().size(), is(2));
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(0)), is(new ColumnMetaData("id", 4, true, false, true)));
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(1)), is(new ColumnMetaData("name", 12, false, false, true)));
+        assertThat(actualTableMetaData.getIndexes().size(), is(1));
+        assertThat(actualTableMetaData.getIndexes().get("id"), is(new IndexMetaData("id")));
     }
 }

@@ -114,13 +114,14 @@ public final class MySQLTableMetaDataLoaderTest {
 
     private void assertTableMetaDataMap(final Map<String, TableMetaData> actual) {
         assertThat(actual.size(), is(1));
-        assertThat(actual.get("tbl").getColumns().size(), is(5));
-        assertThat(actual.get("tbl").getColumnMetaData(0), is(new ColumnMetaData("id", 4, true, true, true)));
-        assertThat(actual.get("tbl").getColumnMetaData(1), is(new ColumnMetaData("name", 12, false, false, false)));
-        assertThat(actual.get("tbl").getColumnMetaData(2), is(new ColumnMetaData("doc", -1, false, false, false)));
-        assertThat(actual.get("tbl").getColumnMetaData(3), is(new ColumnMetaData("geo", -2, false, false, false)));
-        assertThat(actual.get("tbl").getColumnMetaData(4), is(new ColumnMetaData("t_year", 91, false, false, false)));
-        assertThat(actual.get("tbl").getIndexes().size(), is(1));
-        assertThat(actual.get("tbl").getIndexes().get("id"), is(new IndexMetaData("id")));
+        TableMetaData actualTableMetaData = actual.get("tbl");
+        assertThat(actualTableMetaData.getColumns().size(), is(5));
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(0)), is(new ColumnMetaData("id", 4, true, true, true)));
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(2)), is(new ColumnMetaData("doc", -1, false, false, false)));
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(3)), is(new ColumnMetaData("geo", -2, false, false, false)));
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(4)), is(new ColumnMetaData("t_year", 91, false, false, false)));
+        assertThat(actualTableMetaData.getIndexes().size(), is(1));
+        assertThat(actualTableMetaData.getIndexes().get("id"), is(new IndexMetaData("id")));
     }
 }

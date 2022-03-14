@@ -179,9 +179,9 @@ public final class EncryptTableMetaDataBuilderTest {
         Map<String, TableMetaData> actual = loader.load(Collections.singleton(TABLE_NAME), encryptRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource),
                 rules, props));
         TableMetaData tableMetaData = actual.values().iterator().next();
-        assertThat(tableMetaData.getColumnMetaData(0).getName(), is("id"));
-        assertThat(tableMetaData.getColumnMetaData(1).getName(), is("pwd_cipher"));
-        assertThat(tableMetaData.getColumnMetaData(2).getName(), is("pwd_plain"));
+        assertThat(tableMetaData.getColumns().get(tableMetaData.getColumnNames().get(0)).getName(), is("id"));
+        assertThat(tableMetaData.getColumns().get(tableMetaData.getColumnNames().get(1)).getName(), is("pwd_cipher"));
+        assertThat(tableMetaData.getColumns().get(tableMetaData.getColumnNames().get(2)).getName(), is("pwd_plain"));
     }
     
     @Test
@@ -270,9 +270,9 @@ public final class EncryptTableMetaDataBuilderTest {
     
     private void assertResult(final Map<String, TableMetaData> actual) {
         TableMetaData tableMetaData = actual.values().iterator().next();
-        assertThat(tableMetaData.getColumnMetaData(0).getName(), is("id"));
-        assertThat(tableMetaData.getColumnMetaData(1).getName(), is("pwd_cipher"));
-        assertThat(tableMetaData.getColumnMetaData(2).getName(), is("pwd_plain"));
+        assertThat(tableMetaData.getColumns().get(tableMetaData.getColumnNames().get(0)).getName(), is("id"));
+        assertThat(tableMetaData.getColumns().get(tableMetaData.getColumnNames().get(1)).getName(), is("pwd_cipher"));
+        assertThat(tableMetaData.getColumns().get(tableMetaData.getColumnNames().get(2)).getName(), is("pwd_plain"));
     }
     
     @Test
@@ -297,9 +297,9 @@ public final class EncryptTableMetaDataBuilderTest {
         Map<String, TableMetaData> metaDataMap = loader.load(Collections.singleton(TABLE_NAME), encryptRule, new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
         assertFalse(metaDataMap.isEmpty());
         TableMetaData actual = metaDataMap.values().iterator().next();
-        assertThat(actual.getColumnMetaData(0).getName(), is("id"));
-        assertThat(actual.getColumnMetaData(1).getName(), is("pwd_cipher"));
-        assertThat(actual.getColumnMetaData(2).getName(), is("pwd_plain"));
+        assertThat(actual.getColumns().get(actual.getColumnNames().get(0)).getName(), is("id"));
+        assertThat(actual.getColumns().get(actual.getColumnNames().get(1)).getName(), is("pwd_cipher"));
+        assertThat(actual.getColumns().get(actual.getColumnNames().get(2)).getName(), is("pwd_plain"));
     }
     
     @Test

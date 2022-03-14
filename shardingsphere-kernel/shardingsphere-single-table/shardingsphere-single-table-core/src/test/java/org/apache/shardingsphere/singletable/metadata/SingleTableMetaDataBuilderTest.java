@@ -122,10 +122,11 @@ public final class SingleTableMetaDataBuilderTest {
         Map<String, TableMetaData> actual = builder.load(Collections.singleton("tbl"), singleTableRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource),
                 rules, props));
         assertFalse(actual.isEmpty());
-        assertThat(actual.get("tbl").getColumns().size(), is(3));
-        assertThat(actual.get("tbl").getColumnMetaData(0), is(new ColumnMetaData("id", 4, true, false, false)));
-        assertThat(actual.get("tbl").getColumnMetaData(1), is(new ColumnMetaData("name", 12, false, false, false)));
-        assertThat(actual.get("tbl").getColumnMetaData(2), is(new ColumnMetaData("doc", -1, false, false, false)));
+        TableMetaData actualTableMetaData = actual.get("tbl");
+        assertThat(actualTableMetaData.getColumns().size(), is(3));
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(0)), is(new ColumnMetaData("id", 4, true, false, false)));
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(2)), is(new ColumnMetaData("doc", -1, false, false, false)));
     }
     
     @Test
@@ -135,14 +136,15 @@ public final class SingleTableMetaDataBuilderTest {
         Map<String, TableMetaData> actual = builder.load(Collections.singleton("tbl"), singleTableRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource),
                 rules, props));
         assertFalse(actual.isEmpty());
-        assertThat(actual.get("tbl").getColumns().size(), is(3));
-        assertThat(actual.get("tbl").getColumnMetaData(0), is(new ColumnMetaData("id", 4, true, false, false)));
-        assertThat(actual.get("tbl").getColumnMetaData(1), is(new ColumnMetaData("name", 12, false, false, false)));
-        assertThat(actual.get("tbl").getColumnMetaData(2), is(new ColumnMetaData("doc", -1, false, false, false)));
+        TableMetaData actualTableMetaData = actual.get("tbl");
+        assertThat(actualTableMetaData.getColumns().size(), is(3));
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(0)), is(new ColumnMetaData("id", 4, true, false, false)));
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
+        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(2)), is(new ColumnMetaData("doc", -1, false, false, false)));
         TableMetaData tableMetaData = builder.decorate(actual, singleTableRule, mock(SchemaBuilderMaterials.class)).get("tbl");
-        assertThat(tableMetaData.getColumnMetaData(0), is(new ColumnMetaData("id", 4, true, false, false)));
-        assertThat(tableMetaData.getColumnMetaData(1), is(new ColumnMetaData("name", 12, false, false, false)));
-        assertThat(tableMetaData.getColumnMetaData(2), is(new ColumnMetaData("doc", -1, false, false, false)));
+        assertThat(tableMetaData.getColumns().get(tableMetaData.getColumnNames().get(0)), is(new ColumnMetaData("id", 4, true, false, false)));
+        assertThat(tableMetaData.getColumns().get(tableMetaData.getColumnNames().get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
+        assertThat(tableMetaData.getColumns().get(tableMetaData.getColumnNames().get(2)), is(new ColumnMetaData("doc", -1, false, false, false)));
         assertThat(tableMetaData.getIndexes().size(), is(2));
         assertThat(tableMetaData.getIndexes().get("id"), is(new IndexMetaData("id")));
         assertThat(tableMetaData.getIndexes().get("idx_name"), is(new IndexMetaData("idx_name")));
