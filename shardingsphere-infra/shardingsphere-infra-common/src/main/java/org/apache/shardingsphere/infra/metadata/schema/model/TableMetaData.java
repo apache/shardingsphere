@@ -50,10 +50,6 @@ public final class TableMetaData {
         this("", Collections.emptyList(), Collections.emptyList());
     }
     
-    public TableMetaData(final String name) {
-        this(name, Collections.emptyList(), Collections.emptyList());
-    }
-    
     public TableMetaData(final String name, final Collection<ColumnMetaData> columnMetaDataList, final Collection<IndexMetaData> indexMetaDataList) {
         this.name = name;
         columns = getColumns(columnMetaDataList);
