@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.instance;
 
 import lombok.Getter;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
@@ -152,7 +151,7 @@ public final class InstanceContext {
     public List<InstanceId> getComputeNodeInstanceIds(final InstanceType instanceType, final Collection<String> labels) {
         List<InstanceId> result = new ArrayList<>(computeNodeInstances.size());
         for (ComputeNodeInstance each : computeNodeInstances) {
-            if (each.getInstanceDefinition().getInstanceType() == instanceType && CollectionUtils.containsAny(labels, each.getLabels())) {
+            if (each.getInstanceDefinition().getInstanceType() == instanceType && labels.stream().anyMatch(((Collection<String>) each.getLabels())::contains)) {
                 result.add(each.getInstanceDefinition().getInstanceId());
             }
         }

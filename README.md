@@ -193,6 +193,11 @@ Check out [Wiki](https://github.com/apache/shardingsphere/wiki) section for deta
 
 ### Landscapes
 
+
+### Contributors
+
+[shardingsphere-contributors](https://shardingsphere.apache.org/community/en/team)
+
 <hr>
 
 <p align="center">

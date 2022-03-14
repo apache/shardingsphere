@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.scaling.update;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.scaling.distsql.statement.DropScalingStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.DropScalingStatementTestCase;
@@ -25,8 +24,8 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -51,7 +50,7 @@ public final class DropScalingStatementAssert {
     }
     
     private static void assertJobIds(final SQLCaseAssertContext assertContext, final String actual, final List<String> expected) {
-        if (CollectionUtils.isEmpty(expected)) {
+        if (expected.isEmpty()) {
             assertNull(assertContext.getText("Actual job id should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual job id should exist."), actual);
