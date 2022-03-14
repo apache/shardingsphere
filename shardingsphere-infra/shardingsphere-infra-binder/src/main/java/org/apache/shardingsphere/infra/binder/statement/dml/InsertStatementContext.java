@@ -117,7 +117,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
             result.add(insertValueContext);
             parametersOffset.addAndGet(insertValueContext.getParameterCount());
         }
-        if (parameters.size() > parametersOffset.get()) {
+        if (!valueExpressions.isEmpty() && parameters.size() > parametersOffset.get()) {
             appendBatchInsertValueContext(result, parameters, parametersOffset, valueExpressions);
         }
         return result;
