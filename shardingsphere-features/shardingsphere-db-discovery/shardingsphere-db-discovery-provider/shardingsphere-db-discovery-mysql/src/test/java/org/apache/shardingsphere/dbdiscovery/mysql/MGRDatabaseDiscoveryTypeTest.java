@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.mgr;
+package org.apache.shardingsphere.dbdiscovery.mysql;
 
 import com.google.common.eventbus.EventBus;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
