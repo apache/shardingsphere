@@ -19,8 +19,12 @@ package org.apache.shardingsphere.driver.jdbc.adapter.invocation;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class MethodInvocationRecorderTest {
     
@@ -34,5 +38,16 @@ public final class MethodInvocationRecorderTest {
     @Test(expected = NoSuchMethodException.class)
     public void assertRecordMethodInvocationFailure() {
         new MethodInvocationRecorder().record(String.class, "none", new Class[]{}, new Object[]{});
+    }
+    
+    @Test
+    public void assertRecordSameMethodTwice() {
+        MethodInvocationRecorder methodInvocationRecorder = new MethodInvocationRecorder();
+        methodInvocationRecorder.record(List.class, "add", new Class[]{Object.class}, new Object[]{1});
+        methodInvocationRecorder.record(List.class, "add", new Class[]{Object.class}, new Object[]{2});
+        List<Integer> actual = new ArrayList<>();
+        methodInvocationRecorder.replay(actual);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0), is(2));
     }
 }

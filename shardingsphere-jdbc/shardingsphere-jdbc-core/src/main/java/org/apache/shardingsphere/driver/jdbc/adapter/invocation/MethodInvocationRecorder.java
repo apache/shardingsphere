@@ -19,15 +19,16 @@ package org.apache.shardingsphere.driver.jdbc.adapter.invocation;
 
 import lombok.SneakyThrows;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.lang.reflect.Method;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Method invocation recorder.
  */
 public final class MethodInvocationRecorder {
     
-    private final Collection<MethodInvocation> methodInvocations = new LinkedList<>();
+    private final Map<Method, MethodInvocation> methodInvocations = new LinkedHashMap<>();
     
     /**
      * Record method invocation.
@@ -39,7 +40,8 @@ public final class MethodInvocationRecorder {
      */
     @SneakyThrows(ReflectiveOperationException.class)
     public void record(final Class<?> targetClass, final String methodName, final Class<?>[] argumentTypes, final Object[] arguments) {
-        methodInvocations.add(new MethodInvocation(targetClass.getMethod(methodName, argumentTypes), arguments));
+        Method method = targetClass.getMethod(methodName, argumentTypes);
+        methodInvocations.put(method, new MethodInvocation(method, arguments));
     }
     
     /**
@@ -48,6 +50,6 @@ public final class MethodInvocationRecorder {
      * @param target target object
      */
     public void replay(final Object target) {
-        methodInvocations.forEach(each -> each.invoke(target));
+        methodInvocations.forEach((unused, each) -> each.invoke(target));
     }
 }
