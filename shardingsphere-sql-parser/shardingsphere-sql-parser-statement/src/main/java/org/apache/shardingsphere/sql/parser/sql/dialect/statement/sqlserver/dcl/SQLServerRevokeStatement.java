@@ -23,8 +23,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * SQLServer revoke statement.
@@ -33,5 +33,5 @@ import java.util.List;
 @Getter
 public final class SQLServerRevokeStatement extends RevokeStatement implements SQLServerStatement {
     
-    private final List<ColumnSegment> columns = new LinkedList<>();
+    private final Collection<ColumnSegment> columns = new LinkedList<>();
 }
