@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.service;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
@@ -112,8 +111,8 @@ public final class ComputeNodePersistServiceTest {
     
     @Test
     public void assertLoadAllComputeNodeInstances() {
-        when(repository.getChildrenKeys("/nodes/compute_nodes/online/proxy")).thenReturn(Lists.newArrayList("127.0.0.1@3307"));
-        when(repository.getChildrenKeys("/nodes/compute_nodes/online/jdbc")).thenReturn(Lists.newArrayList("127.0.0.1@3308"));
+        when(repository.getChildrenKeys("/nodes/compute_nodes/online/proxy")).thenReturn(Collections.singletonList("127.0.0.1@3307"));
+        when(repository.getChildrenKeys("/nodes/compute_nodes/online/jdbc")).thenReturn(Collections.singletonList("127.0.0.1@3308"));
         Collection<ComputeNodeInstance> actual = new ComputeNodePersistService(repository).loadAllComputeNodeInstances();
         assertThat(actual.size(), is(2));
     }
