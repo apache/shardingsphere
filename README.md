@@ -193,7 +193,6 @@ Check out [Wiki](https://github.com/apache/shardingsphere/wiki) section for deta
 
 ### Landscapes
 
-
 <hr>
 
 <p align="center">
@@ -205,6 +204,6 @@ Apache ShardingSphere enriches the <a href="https://landscape.cncf.io/landscape=
 
 ### Team
 
-[Roster](https://shardingsphere.apache.org/community/en/team)
+We deeply appreciate [community contributors](https://shardingsphere.apache.org/community/cn/team) for their dedication to Apache ShardingSphere.
 
 ##
