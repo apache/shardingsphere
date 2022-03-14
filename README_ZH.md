@@ -127,4 +127,4 @@ ShardingSphere 进入了<a href="https://landscape.cncf.io/landscape=observabili
 
 ## 团队成员
 
-[名单](https://shardingsphere.apache.org/community/cn/team)
+感谢[社区贡献者](https://shardingsphere.apache.org/community/cn/team)对 Apache ShardingSphere 的奉献。
