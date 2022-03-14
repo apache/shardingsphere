@@ -118,6 +118,10 @@ Apache ShardingSphere 是多接入端共同组成的生态圈。
 
 ## 全景图
 
+## 贡献者
+
+[shardingsphere-contributors](https://shardingsphere.apache.org/community/cn/team)
+
 <p align="center">
 <br/><br/>
 <img src="https://landscape.cncf.io/images/left-logo.svg" width="150"/>&nbsp;&nbsp;<img src="https://landscape.cncf.io/images/right-logo.svg" width="200"/>
