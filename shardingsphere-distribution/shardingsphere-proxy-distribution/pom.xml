@@ -52,7 +52,7 @@
             <scope>runtime</scope>
         </dependency>
     </dependencies>
-
+    
     <profiles>
         <profile>
             <id>release</id>
