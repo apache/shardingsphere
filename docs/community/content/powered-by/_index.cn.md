@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 174 家公司。
+共计 177 家公司。
 
 ### 基础设施
 <ul>
@@ -137,6 +137,9 @@ chapter = true
     <li><a href="http://www.didano.com/" rel="nofollow">谛达诺科技</a></li>
     <li><a href="https://willclass.com/" rel="nofollow">会通教育</a></li>
     <li><a href="https://kada.hhdd.com/" rel="nofollow">KaDa故事</a></li>
+    <li><a href="http://www.swydedu.com/" rel="nofollow">数维原动</a></li>
+    <li><a href="https://www.codemao.cn/" rel="nofollow">编程猫</a></li>
+    <li><a href="https://www.yxt.com/" rel="nofollow">云学堂</a></li>
 </ul>
 
 ### 互联网文娱
