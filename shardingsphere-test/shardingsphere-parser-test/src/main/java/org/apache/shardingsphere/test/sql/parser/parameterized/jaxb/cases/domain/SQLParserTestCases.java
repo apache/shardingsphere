@@ -576,7 +576,7 @@ public final class SQLParserTestCases {
     private final List<DropFunctionStatementTestCase> dropFunctionTestCase = new LinkedList<>();
     
     @XmlElement(name = "drop-policy")
-    private final List<DropPolicyStatementTestCase> DropPolicyStatementTestCase = new LinkedList<>();
+    private final List<DropPolicyStatementTestCase> dropPolicyTestCase = new LinkedList<>();
     
     @XmlElement(name = "drop-procedure")
     private final List<DropProcedureStatementTestCase> dropProcedureTestCase = new LinkedList<>();
