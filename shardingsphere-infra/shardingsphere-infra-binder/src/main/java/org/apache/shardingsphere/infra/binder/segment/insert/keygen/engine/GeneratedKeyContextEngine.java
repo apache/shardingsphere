@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.insert.keygen.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
+import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
@@ -28,8 +29,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.P
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -48,14 +47,14 @@ public final class GeneratedKeyContextEngine {
      * Create generate key context.
      *
      * @param insertColumnNames insert column names
-     * @param valueExpressions value expressions
+     * @param insertValueContexts insert value contexts
      * @param parameters SQL parameters
      * @return generate key context
      */
-    public Optional<GeneratedKeyContext> createGenerateKeyContext(final List<String> insertColumnNames, final List<List<ExpressionSegment>> valueExpressions, final List<Object> parameters) {
+    public Optional<GeneratedKeyContext> createGenerateKeyContext(final List<String> insertColumnNames, final List<InsertValueContext> insertValueContexts, final List<Object> parameters) {
         String tableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
         return findGenerateKeyColumn(tableName).map(optional -> containsGenerateKey(insertColumnNames, optional)
-                ? findGeneratedKey(insertColumnNames, valueExpressions, parameters, optional) : new GeneratedKeyContext(optional, true));
+                ? findGeneratedKey(insertColumnNames, insertValueContexts, parameters, optional) : new GeneratedKeyContext(optional, true));
     }
     
     private Optional<String> findGenerateKeyColumn(final String tableName) {
@@ -89,26 +88,19 @@ public final class GeneratedKeyContextEngine {
         return 0;
     }
     
-    private GeneratedKeyContext findGeneratedKey(final List<String> insertColumnNames, final List<List<ExpressionSegment>> valueExpressions, 
+    private GeneratedKeyContext findGeneratedKey(final List<String> insertColumnNames, final List<InsertValueContext> insertValueContexts, 
                                                  final List<Object> parameters, final String generateKeyColumnName) {
         GeneratedKeyContext result = new GeneratedKeyContext(generateKeyColumnName, false);
-        for (ExpressionSegment each : findGenerateKeyExpressions(insertColumnNames, valueExpressions, generateKeyColumnName)) {
-            if (each instanceof ParameterMarkerExpressionSegment) {
+        for (InsertValueContext each : insertValueContexts) {
+            ExpressionSegment expression = each.getValueExpressions().get(findGenerateKeyIndex(insertColumnNames, generateKeyColumnName.toLowerCase()));
+            if (expression instanceof ParameterMarkerExpressionSegment) {
                 if (parameters.isEmpty()) {
                     continue;
                 }
-                result.getGeneratedValues().add((Comparable<?>) parameters.get(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex()));
-            } else if (each instanceof LiteralExpressionSegment) {
-                result.getGeneratedValues().add((Comparable<?>) ((LiteralExpressionSegment) each).getLiterals());
+                result.getGeneratedValues().add((Comparable<?>) parameters.get(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex() + each.getLastParametersOffset()));
+            } else if (expression instanceof LiteralExpressionSegment) {
+                result.getGeneratedValues().add((Comparable<?>) ((LiteralExpressionSegment) expression).getLiterals());
             }
-        }
-        return result;
-    }
-    
-    private Collection<ExpressionSegment> findGenerateKeyExpressions(final List<String> insertColumnNames, final List<List<ExpressionSegment>> valueExpressions, final String generateKeyColumnName) {
-        Collection<ExpressionSegment> result = new LinkedList<>();
-        for (List<ExpressionSegment> each : valueExpressions) {
-            result.add(each.get(findGenerateKeyIndex(insertColumnNames, generateKeyColumnName.toLowerCase())));
         }
         return result;
     }

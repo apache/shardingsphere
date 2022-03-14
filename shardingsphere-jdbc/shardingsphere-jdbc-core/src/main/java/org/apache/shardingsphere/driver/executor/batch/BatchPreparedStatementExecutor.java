@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.executor.batch;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
@@ -37,11 +38,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Queue;
 
 /**
  * Prepared statement executor to process add batch.
@@ -60,6 +63,11 @@ public final class BatchPreparedStatementExecutor {
     private int batchCount;
     
     private final String schemaName;
+    
+    @Getter
+    private final List<Object> parameters = new ArrayList<>();
+    
+    private final Map<BatchExecutionParameter, Queue<Integer>> parametersBatchCounts = new LinkedHashMap<>();
     
     public BatchPreparedStatementExecutor(final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor, final String schemaName) {
         this.schemaName = schemaName;
@@ -82,11 +90,48 @@ public final class BatchPreparedStatementExecutor {
      * Add batch for execution units.
      *
      * @param executionUnits execution units
+     * @param executeBatch execute batch
      */
-    public void addBatchForExecutionUnits(final Collection<ExecutionUnit> executionUnits) {
+    public void addBatchForExecutionUnits(final Collection<ExecutionUnit> executionUnits, final boolean executeBatch) {
         Collection<BatchExecutionUnit> batchExecutionUnits = createBatchExecutionUnits(executionUnits);
-        handleOldBatchExecutionUnits(batchExecutionUnits);
-        handleNewBatchExecutionUnits(batchExecutionUnits);
+        if (executeBatch) {
+            handleKernelBatchExecutionUnits(batchExecutionUnits);
+        } else {
+            handleOldBatchExecutionUnits(batchExecutionUnits);
+            handleNewBatchExecutionUnits(batchExecutionUnits);
+        }
+        batchCount++;
+    }
+    
+    private void handleKernelBatchExecutionUnits(final Collection<BatchExecutionUnit> kernelBatchExecutionUnits) {
+        int parameterSize = parametersBatchCounts.keySet().iterator().next().getParameters().size();
+        for (BatchExecutionUnit each : kernelBatchExecutionUnits) {
+            for (List<Object> parameters : groupParameters(each.getExecutionUnit().getSqlUnit().getParameters(), parameterSize)) {
+                each.mapAddBatchCount(getBatchCount(parameters));
+            }
+        }
+        batchExecutionUnits.addAll(kernelBatchExecutionUnits);
+    }
+    
+    private List<List<Object>> groupParameters(final List<Object> parameters, final int parameterSize) {
+        return Lists.partition(parameters, parameterSize);
+    }
+    
+    private Integer getBatchCount(final List<Object> parameters) {
+        return parametersBatchCounts.get(new BatchExecutionParameter(new LinkedList<>(parameters))).poll();
+    }
+    
+    /**
+     * Add parameters.
+     *
+     * @param parameters parameters
+     */
+    public void addParameters(final List<Object> parameters) {
+        this.parameters.addAll(parameters);
+        BatchExecutionParameter parameter = new BatchExecutionParameter(new LinkedList<>(parameters));
+        Queue<Integer> batchCounts = parametersBatchCounts.getOrDefault(parameter, new LinkedList<>());
+        batchCounts.offer(batchCount);
+        parametersBatchCounts.put(parameter, batchCounts);
         batchCount++;
     }
     

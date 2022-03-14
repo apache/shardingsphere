@@ -95,7 +95,8 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
                 continue;
             }
             if (each instanceof SimpleExpressionSegment) {
-                result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(getShardingValue((SimpleExpressionSegment) each, parameters))));
+                Comparable<?> shardingValue = getShardingValue((SimpleExpressionSegment) each, parameters, insertValueContext.getLastParametersOffset());
+                result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(shardingValue)));
             } else if (ExpressionConditionUtils.isNowExpression(each)) {
                 if (null == datetimeService) {
                     datetimeService = RequiredSPIRegistry.getRegisteredService(DatetimeService.class);
@@ -109,10 +110,10 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
     }
     
     @SuppressWarnings("rawtypes")
-    private Comparable<?> getShardingValue(final SimpleExpressionSegment expressionSegment, final List<Object> parameters) {
+    private Comparable<?> getShardingValue(final SimpleExpressionSegment expressionSegment, final List<Object> parameters, final int lastParametersOffset) {
         Object result;
         if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
-            result = parameters.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
+            result = parameters.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex() + lastParametersOffset);
         } else {
             result = ((LiteralExpressionSegment) expressionSegment).getLiterals();
         }

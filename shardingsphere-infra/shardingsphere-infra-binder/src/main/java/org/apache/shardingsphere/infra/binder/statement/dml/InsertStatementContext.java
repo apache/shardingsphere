@@ -92,7 +92,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
         columnNames = useDefaultColumns() ? schema.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames;
-        generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema).createGenerateKeyContext(insertColumnNames, getAllValueExpressions(sqlStatement), parameters).orElse(null);
+        generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema).createGenerateKeyContext(insertColumnNames, insertValueContexts, parameters).orElse(null);
     }
     
     private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {
@@ -117,7 +117,22 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
             result.add(insertValueContext);
             parametersOffset.addAndGet(insertValueContext.getParameterCount());
         }
+        if (parameters.size() > parametersOffset.get()) {
+            appendBatchInsertValueContext(parameters, parametersOffset, valueExpressions, result);
+        }
         return result;
+    }
+    
+    private void appendBatchInsertValueContext(final List<Object> parameters, final AtomicInteger parametersOffset, final List<List<ExpressionSegment>> valueExpressions, final List<InsertValueContext> result) {
+        int lastParametersOffset = parametersOffset.get();
+        for (int index = 1; index < parameters.size() / lastParametersOffset; index++) {
+            for (Collection<ExpressionSegment> each : valueExpressions) {
+                InsertValueContext insertValueContext = new InsertValueContext(each, parameters, lastParametersOffset);
+                insertValueContext.setLastParametersOffset(lastParametersOffset);
+                parametersOffset.addAndGet(insertValueContext.getParameterCount());
+                result.add(insertValueContext);
+            }
+        }
     }
     
     private Optional<InsertSelectContext> getInsertSelectContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, 
@@ -271,6 +286,6 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultSchemaName).orElse(null);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
-        generatedKeyContext = new GeneratedKeyContextEngine(getSqlStatement(), schema).createGenerateKeyContext(insertColumnNames, valueExpressions, parameters).orElse(null);
+        generatedKeyContext = new GeneratedKeyContextEngine(getSqlStatement(), schema).createGenerateKeyContext(insertColumnNames, insertValueContexts, parameters).orElse(null);
     }
 }

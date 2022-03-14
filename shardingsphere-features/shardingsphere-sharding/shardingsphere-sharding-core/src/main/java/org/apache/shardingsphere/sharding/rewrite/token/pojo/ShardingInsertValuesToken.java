@@ -23,6 +23,10 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValu
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValuesToken;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+
 /**
  * Insert values token for sharding.
  */
@@ -41,8 +45,10 @@ public final class ShardingInsertValuesToken extends InsertValuesToken implement
     }
     
     private void appendInsertValue(final RouteUnit routeUnit, final StringBuilder stringBuilder) {
-        for (InsertValue each : getInsertValues()) {
-            if (isAppend(routeUnit, (ShardingInsertValue) each)) {
+        List<InsertValue> insertValues = getInsertValues();
+        Collection<Integer> indexes = new HashSet<>(insertValues.size(), 1);
+        for (InsertValue each : insertValues) {
+            if (isAppend(routeUnit, (ShardingInsertValue) each) && indexes.add(each.getValues().iterator().next().getStartIndex())) {
                 stringBuilder.append(each).append(", ");
             }
         }

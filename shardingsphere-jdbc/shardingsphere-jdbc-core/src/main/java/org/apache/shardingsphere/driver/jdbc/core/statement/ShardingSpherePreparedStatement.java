@@ -78,6 +78,7 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.traffic.context.TrafficContext;
 import org.apache.shardingsphere.traffic.context.TrafficContextHolder;
 import org.apache.shardingsphere.traffic.engine.TrafficEngine;
@@ -202,7 +203,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 return statements.iterator().next().executeQuery();
             }
             clearPrevious();
-            LogicSQL logicSQL = createLogicSQL();
+            LogicSQL logicSQL = createLogicSQL(false);
             trafficContext = getTrafficContext(logicSQL);
             if (trafficContext.isMatchTraffic()) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficContext, logicSQL);
@@ -298,7 +299,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 return statements.iterator().next().executeUpdate();
             }
             clearPrevious();
-            LogicSQL logicSQL = createLogicSQL();
+            LogicSQL logicSQL = createLogicSQL(false);
             trafficContext = getTrafficContext(logicSQL);
             if (trafficContext.isMatchTraffic()) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficContext, logicSQL);
@@ -353,7 +354,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 return statements.iterator().next().execute();
             }
             clearPrevious();
-            LogicSQL logicSQL = createLogicSQL();
+            LogicSQL logicSQL = createLogicSQL(false);
             trafficContext = getTrafficContext(logicSQL);
             if (trafficContext.isMatchTraffic()) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficContext, logicSQL);
@@ -470,8 +471,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return result;
     }
     
-    private LogicSQL createLogicSQL() {
-        List<Object> parameters = new ArrayList<>(getParameters());
+    private LogicSQL createLogicSQL(final boolean executeBatch) {
+        List<Object> parameters = executeBatch ? batchPreparedStatementExecutor.getParameters() : getParameters();
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(parameters);    
         }
@@ -537,8 +538,12 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     @Override
     public void addBatch() {
         try {
-            executionContext = createExecutionContext(createLogicSQL());
-            batchPreparedStatementExecutor.addBatchForExecutionUnits(executionContext.getExecutionUnits());
+            if (sqlStatement instanceof InsertStatement) {
+                batchPreparedStatementExecutor.addParameters(getParameters());
+            } else {
+                executionContext = createExecutionContext(createLogicSQL(false));
+                batchPreparedStatementExecutor.addBatchForExecutionUnits(executionContext.getExecutionUnits(), false);
+            }
         } finally {
             currentResultSet = null;
             clearParameters();
@@ -547,6 +552,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     @Override
     public int[] executeBatch() throws SQLException {
+        if (sqlStatement instanceof InsertStatement) {
+            executionContext = createExecutionContext(createLogicSQL(true));
+            batchPreparedStatementExecutor.addBatchForExecutionUnits(executionContext.getExecutionUnits(), true);
+        }
         if (null == executionContext) {
             return new int[0];
         }

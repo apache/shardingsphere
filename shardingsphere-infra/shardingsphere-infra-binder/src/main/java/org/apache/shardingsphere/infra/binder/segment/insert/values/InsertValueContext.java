@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.insert.values;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -45,6 +46,9 @@ public final class InsertValueContext {
     private final List<ParameterMarkerExpressionSegment> parameterMarkerExpressions;
     
     private final List<Object> parameters;
+    
+    @Setter
+    private int lastParametersOffset;
     
     public InsertValueContext(final Collection<ExpressionSegment> assignments, final List<Object> parameters, final int parametersOffset) {
         valueExpressions = getValueExpressions(assignments);
