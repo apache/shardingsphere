@@ -12,11 +12,6 @@ chapter = true
 <table>
     <tr>
         <td>
-            <a href="https://github.com/craiglrussell" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/2467238?v=4" width="200px">
-            </a>
-        </td>
-        <td>
             <a href="https://github.com/terrymanu" target="_blank">
                <img src="https://avatars.githubusercontent.com/u/5516298?v=4" width="200px">
             </a>
@@ -27,53 +22,8 @@ chapter = true
             </a>
         </td>
         <td>
-            <a href="https://github.com/haocao" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/687732?v=4" width="200px">
-            </a>
-        </td>
-        <td>
-            <a href="https://github.com/codefairy08" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/39583929?v=4" width="200px">
-            </a>
-        </td>
-        <td>
-            <a href="https://github.com/hanahmily" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/1960537?v=4" width="200px">
-            </a>
-        </td>
-        <td>
-            <a href="https://github.com/cherrylzhao" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/8317649?v=4" width="200px">
-            </a>
-        </td>
-    </tr>
-    <tr align="center">
-        <td>
-            <b>Craig L Russell</b>
-        </td>
-        <td>
-            <b>张亮 (Chair)</b>
-        </td>
-        <td>
-            <b>潘娟</b>
-        </td>
-        <td>
-            <b>曹昊</b>
-        </td>
-        <td>
-            <b>杜红军</b>
-        </td>
-        <td>
-            <b>高洪涛</b>
-        </td>
-        <td>
-            <b>赵俊</b>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <a href="https://github.com/beckhampu" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/14846369?v=4" width="200px">
+            <a href="https://github.com/craiglrussell" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/2467238?v=4" width="200px">
             </a>
         </td>
         <td>
@@ -82,18 +32,53 @@ chapter = true
             </a>
         </td>
         <td>
-            <a href="https://github.com/vongosling" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/635581?v=4" width="200px">
-            </a>
-        </td>
-        <td>
             <a href="https://github.com/WillemJiang" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/219644?v=4" width="200px">
             </a>
         </td>
         <td>
-            <a href="https://github.com/maxiaoguang64" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/6637227?v=4" width="200px">
+            <a href="https://github.com/menghaoranss" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/60651792?v=4" width="200px">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/kimmking" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/807508?v=4" width="200px">
+            </a>
+        </td>
+    </tr>
+    <tr align="center">
+        <td>
+            <b>张亮 (Chair)</b>
+        </td>
+        <td>
+            <b>潘娟</b>
+        </td>
+        <td>
+            <b>Craig L Russell</b>
+        </td>
+        <td>
+            <b>吴晟</b>
+        </td>
+        <td>
+            <b>姜宁</b>
+        </td>
+        <td>
+            <b>孟浩然</b>
+        </td>
+        <td>
+            <b>秦金卫</b>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="https://github.com/tuohai666" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/24643893?v=4" width="200px">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/cherrylzhao" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/8317649?v=4" width="200px">
             </a>
         </td>
         <td>
@@ -102,52 +87,67 @@ chapter = true
             </a>
         </td>
         <td>
-            <a href="https://github.com/tuohai666" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/24643893?v=4" width="200px">
+            <a href="https://github.com/beckhampu" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/14846369?v=4" width="200px">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/vongosling" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/635581?v=4" width="200px">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/hanahmily" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/1960537?v=4" width="200px">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/codefairy08" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/39583929?v=4" width="200px">
             </a>
         </td>
     </tr>
     <tr align="center">
         <td>
-            <b>陈清阳</b>
+            <b>张永伦</b>
         </td>
         <td>
-            <b>吴晟</b>
-        </td>
-        <td>
-            <b>冯嘉</b>
-        </td>
-        <td>
-            <b>姜宁</b>
-        </td>
-        <td>
-            <b>马晓光</b>
+            <b>赵俊</b>
         </td>
         <td>
             <b>杨翊</b>
         </td>
         <td>
-            <b>张永伦</b>
+            <b>陈清阳</b>
+        </td>
+        <td>
+            <b>冯嘉</b>
+        </td>
+        <td>
+            <b>高洪涛</b>
+        </td>
+        <td>
+            <b>杜红军</b>
         </td>
     </tr>
     <tr>
         <td>
-            <a href="https://github.com/kimmking" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/807508?v=4" width="200px">
+            <a href="https://github.com/haocao" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/687732?v=4" width="200px">
             </a>
         </td>
         <td>
-            <a href="https://github.com/menghaoranss" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/60651792?v=4" width="200px">
+            <a href="https://github.com/maxiaoguang64" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/6637227?v=4" width="200px">
             </a>
         </td>
     </tr>
     <tr align="center">
         <td>
-            <b>秦金卫</b>
+            <b>曹昊</b>
         </td>
         <td>
-            <b>孟浩然</b>
+            <b>马晓光</b>
         </td>
     </tr>
 </table>
