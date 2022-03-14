@@ -90,7 +90,7 @@ public final class DropDatabaseBackendHandlerTest {
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
-
+    
     @Test
     public void assertExecuteDropCurrentDatabase() {
         when(connectionSession.getSchemaName()).thenReturn("test_db");
@@ -100,7 +100,7 @@ public final class DropDatabaseBackendHandlerTest {
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
-
+    
     @Test
     public void assertExecuteDropOtherDatabase() {
         when(connectionSession.getSchemaName()).thenReturn("test_db");
