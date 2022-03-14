@@ -118,12 +118,13 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
             parametersOffset.addAndGet(insertValueContext.getParameterCount());
         }
         if (parameters.size() > parametersOffset.get()) {
-            appendBatchInsertValueContext(parameters, parametersOffset, valueExpressions, result);
+            appendBatchInsertValueContext(result, parameters, parametersOffset, valueExpressions);
         }
         return result;
     }
     
-    private void appendBatchInsertValueContext(final List<Object> parameters, final AtomicInteger parametersOffset, final List<List<ExpressionSegment>> valueExpressions, final List<InsertValueContext> result) {
+    private void appendBatchInsertValueContext(final List<InsertValueContext> result, final List<Object> parameters, 
+                                               final AtomicInteger parametersOffset, final List<List<ExpressionSegment>> valueExpressions) {
         int lastParametersOffset = parametersOffset.get();
         for (int index = 1; index < parameters.size() / lastParametersOffset; index++) {
             for (Collection<ExpressionSegment> each : valueExpressions) {
