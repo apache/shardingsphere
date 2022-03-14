@@ -29,7 +29,9 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -151,8 +153,9 @@ public final class PostgreSQLTableMetaDataLoaderTest {
         assertThat(actual.size(), is(1));
         TableMetaData actualTableMetaData = actual.get("tbl");
         assertThat(actualTableMetaData.getColumns().size(), is(2));
-        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(0)), is(new ColumnMetaData("id", Types.INTEGER, true, true, true)));
-        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(1)), is(new ColumnMetaData("name", Types.VARCHAR, false, false, true)));
+        List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
+        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", Types.INTEGER, true, true, true)));
+        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", Types.VARCHAR, false, false, true)));
         assertThat(actualTableMetaData.getIndexes().size(), is(1));
         assertThat(actualTableMetaData.getIndexes().get("id"), is(new IndexMetaData("id")));
     }

@@ -42,8 +42,6 @@ public final class TableMetaData {
     
     private final Map<String, IndexMetaData> indexes;
     
-    private final List<String> columnNames = new ArrayList<>();
-    
     private final List<String> primaryKeyColumns = new ArrayList<>();
     
     public TableMetaData() {
@@ -60,7 +58,6 @@ public final class TableMetaData {
         Map<String, ColumnMetaData> result = new LinkedHashMap<>(columnMetaDataList.size(), 1);
         for (ColumnMetaData each : columnMetaDataList) {
             String lowerColumnName = each.getName().toLowerCase();
-            columnNames.add(lowerColumnName);
             result.put(lowerColumnName, each);
             if (each.isPrimaryKey()) {
                 primaryKeyColumns.add(lowerColumnName);

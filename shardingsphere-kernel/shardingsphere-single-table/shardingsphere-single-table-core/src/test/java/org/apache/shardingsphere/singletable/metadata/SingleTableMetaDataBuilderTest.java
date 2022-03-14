@@ -40,8 +40,10 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -124,9 +126,10 @@ public final class SingleTableMetaDataBuilderTest {
         assertFalse(actual.isEmpty());
         TableMetaData actualTableMetaData = actual.get("tbl");
         assertThat(actualTableMetaData.getColumns().size(), is(3));
-        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(0)), is(new ColumnMetaData("id", 4, true, false, false)));
-        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
-        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(2)), is(new ColumnMetaData("doc", -1, false, false, false)));
+        List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
+        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, false, false)));
+        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
+        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(2)), is(new ColumnMetaData("doc", -1, false, false, false)));
     }
     
     @Test
@@ -138,13 +141,15 @@ public final class SingleTableMetaDataBuilderTest {
         assertFalse(actual.isEmpty());
         TableMetaData actualTableMetaData = actual.get("tbl");
         assertThat(actualTableMetaData.getColumns().size(), is(3));
-        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(0)), is(new ColumnMetaData("id", 4, true, false, false)));
-        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
-        assertThat(actualTableMetaData.getColumns().get(actualTableMetaData.getColumnNames().get(2)), is(new ColumnMetaData("doc", -1, false, false, false)));
+        List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
+        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, false, false)));
+        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
+        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(2)), is(new ColumnMetaData("doc", -1, false, false, false)));
         TableMetaData tableMetaData = builder.decorate(actual, singleTableRule, mock(SchemaBuilderMaterials.class)).get("tbl");
-        assertThat(tableMetaData.getColumns().get(tableMetaData.getColumnNames().get(0)), is(new ColumnMetaData("id", 4, true, false, false)));
-        assertThat(tableMetaData.getColumns().get(tableMetaData.getColumnNames().get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
-        assertThat(tableMetaData.getColumns().get(tableMetaData.getColumnNames().get(2)), is(new ColumnMetaData("doc", -1, false, false, false)));
+        actualColumnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
+        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, false, false)));
+        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
+        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(2)), is(new ColumnMetaData("doc", -1, false, false, false)));
         assertThat(tableMetaData.getIndexes().size(), is(2));
         assertThat(tableMetaData.getIndexes().get("id"), is(new IndexMetaData("id")));
         assertThat(tableMetaData.getIndexes().get("idx_name"), is(new IndexMetaData("idx_name")));
