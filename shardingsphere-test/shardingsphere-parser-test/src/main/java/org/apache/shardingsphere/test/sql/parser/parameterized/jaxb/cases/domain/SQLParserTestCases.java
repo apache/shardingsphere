@@ -1254,6 +1254,7 @@ public final class SQLParserTestCases {
         putAll(dropTriggerTestCase, result);
         putAll(showTriggerTestCase, result);
         putAll(dropServerTestCase, result);
+        putAll(dropPolicyTestCase, result);
         putAll(dropProcedureTestCase, result);
         putAll(dropFunctionTestCase, result);
         putAll(dropDatabaseTestCase, result);
