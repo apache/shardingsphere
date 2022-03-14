@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import com.google.common.io.CharStreams;
 import lombok.Getter;
+import org.apache.commons.io.IOUtils;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
@@ -198,17 +199,29 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     
     @Override
     public final void setBinaryStream(final int parameterIndex, final InputStream x) {
-        setParameter(parameterIndex, x);
+        try {
+            setParameter(parameterIndex, IOUtils.toByteArray(x));
+        } catch (IOException ex) {
+            throw new ShardingSphereException(ex);
+        }
     }
     
     @Override
     public final void setBinaryStream(final int parameterIndex, final InputStream x, final int length) {
-        setParameter(parameterIndex, x);
+        try {
+            setParameter(parameterIndex, IOUtils.toByteArray(x));
+        } catch (IOException ex) {
+            throw new ShardingSphereException(ex);
+        }
     }
     
     @Override
     public final void setBinaryStream(final int parameterIndex, final InputStream x, final long length) {
-        setParameter(parameterIndex, x);
+        try {
+            setParameter(parameterIndex, IOUtils.toByteArray(x));
+        } catch (IOException ex) {
+            throw new ShardingSphereException(ex);
+        }
     }
     
     @Override
@@ -289,7 +302,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
             setParameterMethodInvocations.add(preparedStatement -> preparedStatement.setObject(index, each));
         }
     }
-    
+
     @Override
     public final void clearParameters() {
         parameters.clear();
