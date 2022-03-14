@@ -88,8 +88,8 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
         MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
         ShardingSphereMetaData metaData = metaDataContexts.getMetaData(schemaName);
         Collection<String> allReadResources = getAllReadResources(metaData);
-        Collection<String> disabledResources = getDisabledReadResource(schemaName, metaDataContexts.getMetaDataPersistService().orElse(null));
-        return buildRows(allReadResources, disabledResources);
+        Collection<String> disabledReadResources = getDisabledReadResources(schemaName, metaDataContexts.getMetaDataPersistService().orElse(null));
+        return buildRows(allReadResources, disabledReadResources);
     }
     
     private Collection<String> getAllReadResources(final ShardingSphereMetaData metaData) {
@@ -119,7 +119,7 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
                 .map(Map::entrySet).flatMap(Collection::stream).filter(entry -> !entry.getValue().isEmpty()).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     
-    private Collection<String> getDisabledReadResource(final String schemaName, final MetaDataPersistService persistService) {
+    private Collection<String> getDisabledReadResources(final String schemaName, final MetaDataPersistService persistService) {
         if (null == persistService || null == persistService.getRepository()) {
             return Collections.emptyList();
         }
