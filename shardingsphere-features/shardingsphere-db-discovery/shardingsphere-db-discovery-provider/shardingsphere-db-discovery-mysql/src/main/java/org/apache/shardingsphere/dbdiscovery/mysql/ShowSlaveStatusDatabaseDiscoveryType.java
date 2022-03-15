@@ -116,25 +116,25 @@ public final class ShowSlaveStatusDatabaseDiscoveryType implements DatabaseDisco
         if (!disabledDataSourceNames.isEmpty()) {
             activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
         }
-        determineDatasourceState(schemaName, activeDataSourceMap);
+        for (Entry<String, DataSource> entry : activeDataSourceMap.entrySet()) {
+            if (oldPrimaryDataSource.equals(entry.getKey())) {
+                continue;
+            }
+            determineDatasourceState(schemaName, entry.getKey(), entry.getValue());
+        }
     }
     
-    private void determineDatasourceState(final String schemaName, final Map<String, DataSource> dataSourceMap) {
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            try (Connection connection = entry.getValue().getConnection();
-                 Statement statement = connection.createStatement()) {
-                if (oldPrimaryDataSource.equals(entry.getKey())) {
-                    continue;
-                }
-                long replicationDelayTime = getSecondsBehindMaster(statement);
-                if (replicationDelayTime * 1000 < Integer.parseInt(props.getProperty("delay_milliseconds_threshold"))) {
-                    ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, entry.getKey(), false));
-                } else {
-                    ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, entry.getKey(), true));
-                }
-            } catch (SQLException ex) {
-                log.error("An exception occurred while find member data source `Seconds_Behind_Master`", ex);
+    private void determineDatasourceState(final String schemaName, final String datasourceName, final DataSource dataSource) {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            long replicationDelayTime = getSecondsBehindMaster(statement);
+            if (replicationDelayTime * 1000 < Integer.parseInt(props.getProperty("delay_milliseconds_threshold"))) {
+                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, datasourceName, false));
+            } else {
+                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, datasourceName, true));
             }
+        } catch (SQLException ex) {
+            log.error("An exception occurred while find member data source `Seconds_Behind_Master`", ex);
         }
     }
     
