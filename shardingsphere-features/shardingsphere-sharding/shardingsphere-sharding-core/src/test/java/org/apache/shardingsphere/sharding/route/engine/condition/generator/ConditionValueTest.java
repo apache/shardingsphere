@@ -34,7 +34,7 @@ public class ConditionValueTest {
     @Before
     public void setUp() {
         ExpressionSegment expressionSegment = new LiteralExpressionSegment(0, 0, "shardingsphere");
-        conditionValue = new ConditionValue(expressionSegment,new LinkedList<>());
+        conditionValue = new ConditionValue(expressionSegment ,new LinkedList<>());
     }
 
     @Test
