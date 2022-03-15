@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.driver.jdbc.adapter;
 
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.executor.DriverExecutor;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
@@ -37,23 +37,18 @@ import java.util.Collection;
 /**
  * Adapter for {@code Statement}.
  */
-@RequiredArgsConstructor
+@Getter
 public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperationStatement {
     
-    private final Class<? extends Statement> targetClass;
-    
+    @Getter(AccessLevel.NONE)
     private final ForceExecuteTemplate<Statement> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
-    @Getter
     private boolean poolable;
     
-    @Getter
     private int fetchSize;
     
-    @Getter
     private int fetchDirection;
     
-    @Getter
     private boolean closed;
     
     @SuppressWarnings({"unchecked", "rawtypes"})

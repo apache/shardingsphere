@@ -131,7 +131,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     public ShardingSphereStatement(final ShardingSphereConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
-        super(Statement.class);
         this.connection = connection;
         metaDataContexts = connection.getContextManager().getMetaDataContexts();
         statements = new LinkedList<>();
