@@ -60,7 +60,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @Override
     public final void setPoolable(final boolean poolable) throws SQLException {
         this.poolable = poolable;
-        getMethodInvocationRecorder().record(targetClass, "setPoolable", new Class[] {boolean.class}, new Object[] {poolable});
+        getMethodInvocationRecorder().record("setPoolable", statement -> statement.setPoolable(poolable));
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setPoolable(poolable));
     }
     
@@ -68,7 +68,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @Override
     public final void setFetchSize(final int rows) throws SQLException {
         fetchSize = rows;
-        getMethodInvocationRecorder().record(targetClass, "setFetchSize", new Class[] {int.class}, new Object[] {rows});
+        getMethodInvocationRecorder().record("setFetchSize", statement -> statement.setFetchSize(rows));
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setFetchSize(rows));
     }
     
@@ -76,7 +76,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @Override
     public final void setFetchDirection(final int direction) throws SQLException {
         fetchDirection = direction;
-        getMethodInvocationRecorder().record(targetClass, "setFetchDirection", new Class[] {int.class}, new Object[] {direction});
+        getMethodInvocationRecorder().record("setFetchDirection", statement -> statement.setFetchDirection(direction));
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setFetchDirection(direction));
     }
     
@@ -88,7 +88,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void setMaxFieldSize(final int max) throws SQLException {
-        getMethodInvocationRecorder().record(targetClass, "setMaxFieldSize", new Class[] {int.class}, new Object[] {max});
+        getMethodInvocationRecorder().record("setMaxFieldSize", statement -> statement.setMaxFieldSize(max));
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setMaxFieldSize(max));
     }
     
@@ -101,7 +101,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void setMaxRows(final int max) throws SQLException {
-        getMethodInvocationRecorder().record(targetClass, "setMaxRows", new Class[] {int.class}, new Object[] {max});
+        getMethodInvocationRecorder().record("setMaxRows", statement -> statement.setMaxRows(max));
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setMaxRows(max));
     }
     
@@ -113,14 +113,14 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void setQueryTimeout(final int seconds) throws SQLException {
-        getMethodInvocationRecorder().record(targetClass, "setQueryTimeout", new Class[] {int.class}, new Object[] {seconds});
+        getMethodInvocationRecorder().record("setQueryTimeout", statement -> statement.setQueryTimeout(seconds));
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setQueryTimeout(seconds));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void setEscapeProcessing(final boolean enable) throws SQLException {
-        getMethodInvocationRecorder().record(targetClass, "setEscapeProcessing", new Class[] {boolean.class}, new Object[] {enable});
+        getMethodInvocationRecorder().record("setEscapeProcessing", statement -> statement.setEscapeProcessing(enable));
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setEscapeProcessing(enable));
     }
     

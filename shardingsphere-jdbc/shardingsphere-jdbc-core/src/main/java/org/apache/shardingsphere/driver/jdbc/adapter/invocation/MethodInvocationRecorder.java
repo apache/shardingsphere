@@ -17,39 +17,40 @@
 
 package org.apache.shardingsphere.driver.jdbc.adapter.invocation;
 
-import lombok.SneakyThrows;
+import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteCallback;
 
-import java.lang.reflect.Method;
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
  * Method invocation recorder.
+ *
+ * @param <T> type of target
  */
-public final class MethodInvocationRecorder {
+public final class MethodInvocationRecorder<T> {
     
-    private final Map<Method, MethodInvocation> methodInvocations = new LinkedHashMap<>();
+    private final Map<String, ForceExecuteCallback<T>> methodInvocations = new LinkedHashMap<>();
     
     /**
      * Record method invocation.
      *
-     * @param targetClass target class
      * @param methodName method name
-     * @param argumentTypes argument types
-     * @param arguments arguments
+     * @param callback callback
      */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void record(final Class<?> targetClass, final String methodName, final Class<?>[] argumentTypes, final Object[] arguments) {
-        Method method = targetClass.getMethod(methodName, argumentTypes);
-        methodInvocations.put(method, new MethodInvocation(method, arguments));
+    public void record(final String methodName, final ForceExecuteCallback<T> callback) {
+        methodInvocations.put(methodName, callback);
     }
     
     /**
      * Replay methods invocation.
      *
      * @param target target object
+     * @throws SQLException SQL Exception
      */
-    public void replay(final Object target) {
-        methodInvocations.forEach((unused, each) -> each.invoke(target));
+    public void replay(final T target) throws SQLException {
+        for (ForceExecuteCallback<T> each : methodInvocations.values()) {
+            each.execute(target);
+        }
     }
 }
