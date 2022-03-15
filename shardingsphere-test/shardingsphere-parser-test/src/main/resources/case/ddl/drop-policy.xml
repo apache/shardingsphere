@@ -17,5 +17,5 @@
   -->
 
 <sql-parser-test-cases>
-    <alter-group sql-case-id="drop_policy" />
+    <drop-policy sql-case-id="drop_policy" />
 </sql-parser-test-cases>
