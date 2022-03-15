@@ -73,10 +73,10 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
     }
     
     @Override
-    public boolean writeQueryData(final ChannelHandlerContext context,
-                                  final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
+    public void writeQueryData(final ChannelHandlerContext context,
+                               final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
         if (ResponseType.QUERY != queryCommandExecutor.getResponseType() || !context.channel().isActive()) {
-            return true;
+            return;
         }
         int count = 0;
         int flushThreshold = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD);
@@ -96,6 +96,5 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
             currentSequenceId++;
         }
         context.write(new MySQLEofPacket(++currentSequenceId + headerPackagesCount));
-        return true;
     }
 }
