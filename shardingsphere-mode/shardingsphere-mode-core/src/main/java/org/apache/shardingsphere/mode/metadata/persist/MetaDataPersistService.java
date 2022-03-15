@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
@@ -39,6 +40,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -151,12 +153,11 @@ public final class MetaDataPersistService {
      * @param isOverwrite whether overwrite registry center's configuration if existed
      */
     public void persistTransactionRule(final Properties props, final boolean isOverwrite) {
-        Collection<RuleConfiguration> ruleConfigurations = globalRuleService.load();
-        for (RuleConfiguration each : ruleConfigurations) {
-            if (each instanceof TransactionRuleConfiguration) {
-                ((TransactionRuleConfiguration) each).getProps().putAll(props);
-            }
+        Collection<RuleConfiguration> ruleConfigs = globalRuleService.load();
+        Optional<RuleConfiguration> ruleConfig = ruleConfigs.stream().filter(each -> each instanceof TransactionRuleConfiguration).findFirst();
+        Preconditions.checkState(ruleConfig.isPresent());
+        if (!props.equals(((TransactionRuleConfiguration) ruleConfig.get()).getProps())) {
+            globalRuleService.persist(ruleConfigs, isOverwrite);
         }
-        globalRuleService.persist(ruleConfigurations, isOverwrite);
     }
 }

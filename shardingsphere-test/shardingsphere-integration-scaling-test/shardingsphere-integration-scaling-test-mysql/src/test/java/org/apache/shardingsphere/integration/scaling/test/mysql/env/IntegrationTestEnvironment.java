@@ -64,7 +64,7 @@ public final class IntegrationTestEnvironment {
     
     private boolean isScalingReady() {
         try {
-            ScalingUtil.getInstance().getJobList();
+            ScalingUtil.getJobList();
         } catch (final IOException ignore) {
             return false;
         }

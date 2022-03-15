@@ -96,6 +96,8 @@ public enum SQLVisitorRule {
     
     DROP_DATABASE("DropDatabase", SQLStatementType.DDL),
     
+    DROP_DATABASE_LINK("DropDatabaseLink", SQLStatementType.DDL),
+    
     CREATE_DIMENSION("CreateDimension", SQLStatementType.DDL),
 
     ALTER_DIMENSION("AlterDimension", SQLStatementType.DDL),

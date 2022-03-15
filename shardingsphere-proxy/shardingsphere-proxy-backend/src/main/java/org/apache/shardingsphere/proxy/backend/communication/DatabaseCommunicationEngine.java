@@ -218,5 +218,4 @@ public abstract class DatabaseCommunicationEngine<T> {
     protected boolean isBinary() {
         return !JDBCDriverType.STATEMENT.equals(driverType);
     }
-    
 }

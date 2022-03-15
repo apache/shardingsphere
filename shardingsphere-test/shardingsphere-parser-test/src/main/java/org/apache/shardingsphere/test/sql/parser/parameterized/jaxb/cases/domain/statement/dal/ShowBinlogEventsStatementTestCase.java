@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class ShowBinlogEventsStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlAttribute(name = "log-name")
     private String logName;
     

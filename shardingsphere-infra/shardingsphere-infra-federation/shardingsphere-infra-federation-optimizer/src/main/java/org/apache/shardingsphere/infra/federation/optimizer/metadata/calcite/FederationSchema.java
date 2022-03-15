@@ -20,10 +20,10 @@ package org.apache.shardingsphere.infra.federation.optimizer.metadata.calcite;
 import lombok.Getter;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
-import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationTableMetaData;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -39,7 +39,7 @@ public final class FederationSchema extends AbstractSchema {
     }
     
     private Map<String, Table> getTableMap(final FederationSchemaMetaData metaData) {
-        Map<String, Table> result = new LinkedMap<>(metaData.getTables().size(), 1);
+        Map<String, Table> result = new LinkedHashMap<>(metaData.getTables().size(), 1);
         for (FederationTableMetaData each : metaData.getTables().values()) {
             result.put(each.getName(), new FederationTable(each));
         }

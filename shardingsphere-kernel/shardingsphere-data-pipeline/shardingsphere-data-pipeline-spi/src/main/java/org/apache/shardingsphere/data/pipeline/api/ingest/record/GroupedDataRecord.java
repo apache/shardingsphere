@@ -23,8 +23,8 @@ import lombok.ToString;
 
 import java.util.List;
 
-@Getter
 @RequiredArgsConstructor
+@Getter
 @ToString
 public final class GroupedDataRecord {
     
