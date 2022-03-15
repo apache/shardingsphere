@@ -80,7 +80,7 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
 
     private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final ShardingRule shardingRule) {
         return shardingRule.findTableRule(tableName).map(tableRule -> new TableMetaData(tableName, getColumnMetaDataList(tableMetaData, tableRule), 
-                getIndexMetaDataList(tableMetaData, tableRule), getConstraintMetaDataList(tableMetaData, tableRule, shardingRule))).orElse(tableMetaData);
+                getIndexMetaDataList(tableMetaData, tableRule), getConstraintMetaDataList(tableMetaData, shardingRule, tableRule))).orElse(tableMetaData);
     }
     
     private void checkTableMetaData(final Collection<TableMetaData> tableMetaDataList, final ShardingRule rule) {
@@ -150,12 +150,13 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
         return result;
     }
     
-    private Collection<ConstraintMetaData> getConstraintMetaDataList(final TableMetaData tableMetaData, final TableRule tableRule, final ShardingRule shardingRule) {
+    private Collection<ConstraintMetaData> getConstraintMetaDataList(final TableMetaData tableMetaData, final ShardingRule shardingRule, final TableRule tableRule) {
         Collection<ConstraintMetaData> result = new HashSet<>();
         for (Entry<String, ConstraintMetaData> entry : tableMetaData.getConstrains().entrySet()) {
             for (DataNode each : tableRule.getActualDataNodes()) {
-                String referencedTableName = shardingRule.getLogicTablesByActualTable(entry.getValue().getReferencedTableName()).stream().findFirst().orElse(entry.getValue().getReferencedTableName());
-                getLogicIndex(entry.getKey(), each.getTableName()).ifPresent(logicIndex -> result.add(new ConstraintMetaData(logicIndex, referencedTableName)));
+                String referencedTableName = entry.getValue().getReferencedTableName();
+                getLogicIndex(entry.getKey(), each.getTableName()).ifPresent(logicConstraint -> result.add(
+                        new ConstraintMetaData(logicConstraint, shardingRule.findLogicTableByActualTable(referencedTableName).orElse(referencedTableName))));
             }
         }
         return result;
