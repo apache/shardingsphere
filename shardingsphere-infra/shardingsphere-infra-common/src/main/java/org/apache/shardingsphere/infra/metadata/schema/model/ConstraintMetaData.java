@@ -15,26 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.schema.pojo;
+package org.apache.shardingsphere.infra.metadata.schema.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
-
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
- * Table meta data for YAML.
+ * Constraint meta data.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlTableMetaData implements YamlConfiguration {
+@EqualsAndHashCode
+@ToString
+public final class ConstraintMetaData {
     
-    private String name;
+    private final String name;
     
-    private Map<String, YamlColumnMetaData> columns;
-    
-    private Map<String, YamlIndexMetaData> indexes;
-    
-    private Map<String, YamlConstraintMetaData> constraints;
+    private final String referencedTableName;
 }

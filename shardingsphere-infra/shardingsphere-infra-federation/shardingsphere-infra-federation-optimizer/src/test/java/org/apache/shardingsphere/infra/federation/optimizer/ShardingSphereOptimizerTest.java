@@ -126,13 +126,13 @@ public final class ShardingSphereOptimizerTest {
         ColumnMetaData orderIdColumn = new ColumnMetaData("order_id", Types.VARCHAR, true, false, false);
         ColumnMetaData userIdColumn = new ColumnMetaData("user_id", Types.VARCHAR, false, false, false);
         ColumnMetaData statusColumn = new ColumnMetaData("status", Types.VARCHAR, false, false, false);
-        return new TableMetaData("t_order_federate", Arrays.asList(orderIdColumn, userIdColumn, statusColumn), Collections.emptyList());
+        return new TableMetaData("t_order_federate", Arrays.asList(orderIdColumn, userIdColumn, statusColumn), Collections.emptyList(), Collections.emptyList());
     }
     
     private TableMetaData createUserInfoTableMetaData() {
         ColumnMetaData userIdColumn = new ColumnMetaData("user_id", Types.VARCHAR, true, false, false);
         ColumnMetaData informationColumn = new ColumnMetaData("information", Types.VARCHAR, false, false, false);
-        return new TableMetaData("t_user_info", Arrays.asList(userIdColumn, informationColumn), Collections.emptyList());
+        return new TableMetaData("t_user_info", Arrays.asList(userIdColumn, informationColumn), Collections.emptyList(), Collections.emptyList());
     }
     
     @Test

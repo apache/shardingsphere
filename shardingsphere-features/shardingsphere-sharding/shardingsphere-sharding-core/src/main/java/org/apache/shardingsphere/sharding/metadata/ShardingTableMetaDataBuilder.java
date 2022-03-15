@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaD
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.util.TableMetaDataUtil;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
@@ -78,8 +79,8 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
     }  
 
     private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final ShardingRule shardingRule) {
-        return shardingRule.findTableRule(tableName).map(
-            tableRule -> new TableMetaData(tableName, getColumnMetaDataList(tableMetaData, tableRule), getIndexMetaDataList(tableMetaData, tableRule))).orElse(tableMetaData);
+        return shardingRule.findTableRule(tableName).map(tableRule -> new TableMetaData(tableName, getColumnMetaDataList(tableMetaData, tableRule), 
+                getIndexMetaDataList(tableMetaData, tableRule), getConstraintMetaDataList(tableMetaData, tableRule, shardingRule))).orElse(tableMetaData);
     }
     
     private void checkTableMetaData(final Collection<TableMetaData> tableMetaDataList, final ShardingRule rule) {
@@ -144,6 +145,17 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
         for (Entry<String, IndexMetaData> entry : tableMetaData.getIndexes().entrySet()) {
             for (DataNode each : tableRule.getActualDataNodes()) {
                 getLogicIndex(entry.getKey(), each.getTableName()).ifPresent(logicIndex -> result.add(new IndexMetaData(logicIndex)));
+            }
+        }
+        return result;
+    }
+    
+    private Collection<ConstraintMetaData> getConstraintMetaDataList(final TableMetaData tableMetaData, final TableRule tableRule, final ShardingRule shardingRule) {
+        Collection<ConstraintMetaData> result = new HashSet<>();
+        for (Entry<String, ConstraintMetaData> entry : tableMetaData.getConstrains().entrySet()) {
+            for (DataNode each : tableRule.getActualDataNodes()) {
+                String referencedTableName = shardingRule.getLogicTablesByActualTable(entry.getValue().getReferencedTableName()).stream().findFirst().orElse(entry.getValue().getReferencedTableName());
+                getLogicIndex(entry.getKey(), each.getTableName()).ifPresent(logicIndex -> result.add(new ConstraintMetaData(logicIndex, referencedTableName)));
             }
         }
         return result;
