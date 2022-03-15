@@ -17,5 +17,5 @@
   -->
 
 <sql-cases>
-    <sql-case id="drop-policy" value="DROP POLICY p1 ON my_table;" db-types="PostgreSQL" />
+    <sql-case id="drop_policy" value="DROP POLICY p1 ON my_table;" db-types="PostgreSQL" />
 </sql-cases>
