@@ -67,7 +67,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
-    private final MethodInvocationRecorder methodInvocationRecorder = new MethodInvocationRecorder();
+    private final MethodInvocationRecorder<Connection> methodInvocationRecorder = new MethodInvocationRecorder<>();
     
     private final ForceExecuteTemplate<Connection> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
@@ -137,7 +137,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
      * @throws SQLException SQL exception
      */
     public void setAutoCommit(final boolean autoCommit) throws SQLException {
-        methodInvocationRecorder.record(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
+        methodInvocationRecorder.record("setAutoCommit", target -> target.setAutoCommit(autoCommit));
         forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setAutoCommit(autoCommit));
     }
     
@@ -186,7 +186,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
      * @throws SQLException SQL exception
      */
     public void setTransactionIsolation(final int level) throws SQLException {
-        methodInvocationRecorder.record(Connection.class, "setTransactionIsolation", new Class[]{int.class}, new Object[]{level});
+        methodInvocationRecorder.record("setTransactionIsolation", connection -> connection.setTransactionIsolation(level));
         forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setTransactionIsolation(level));
     }
     
@@ -197,7 +197,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
      * @throws SQLException SQL exception
      */
     public void setReadOnly(final boolean readOnly) throws SQLException {
-        methodInvocationRecorder.record(Connection.class, "setReadOnly", new Class[]{boolean.class}, new Object[]{readOnly});
+        methodInvocationRecorder.record("setReadOnly", connection -> connection.setReadOnly(readOnly));
         forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setReadOnly(readOnly));
     }
     

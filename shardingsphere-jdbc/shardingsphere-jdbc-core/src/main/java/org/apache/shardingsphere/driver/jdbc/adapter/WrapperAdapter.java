@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
 
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Wrapper;
 
 /**
@@ -29,7 +30,7 @@ import java.sql.Wrapper;
 @Getter
 public abstract class WrapperAdapter implements Wrapper {
     
-    private final MethodInvocationRecorder methodInvocationRecorder = new MethodInvocationRecorder();
+    private final MethodInvocationRecorder<Statement> methodInvocationRecorder = new MethodInvocationRecorder<>();
     
     @SuppressWarnings("unchecked")
     @Override
