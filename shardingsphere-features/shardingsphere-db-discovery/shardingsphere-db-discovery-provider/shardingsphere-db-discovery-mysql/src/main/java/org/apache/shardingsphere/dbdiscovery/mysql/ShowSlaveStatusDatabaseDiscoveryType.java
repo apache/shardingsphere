@@ -82,8 +82,8 @@ public final class ShowSlaveStatusDatabaseDiscoveryType implements DatabaseDisco
     private String findPrimaryDataSourceURL(final Map<String, DataSource> dataSourceMap) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             try (Connection connection = entry.getValue().getConnection();
-                 Statement statement = connection.createStatement()) {
-                ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS);
+                 Statement statement = connection.createStatement();
+                 ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
                 if (resultSet.next()) {
                     return String.format("%s:%s", resultSet.getString("Master_Host"), resultSet.getString("Master_Port"));
                 }
@@ -139,11 +139,12 @@ public final class ShowSlaveStatusDatabaseDiscoveryType implements DatabaseDisco
     }
     
     private long getSecondsBehindMaster(final Statement statement) throws SQLException {
-        ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS);
-        if (resultSet.next()) {
-            return resultSet.getLong("Seconds_Behind_Master");
+        try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
+            if (resultSet.next()) {
+                return resultSet.getLong("Seconds_Behind_Master");
+            }
+            return 0L;
         }
-        return 0L;
     }
     
     @Override
