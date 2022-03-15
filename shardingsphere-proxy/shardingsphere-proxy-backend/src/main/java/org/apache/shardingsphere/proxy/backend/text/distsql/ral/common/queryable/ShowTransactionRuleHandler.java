@@ -32,6 +32,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Show transaction rule handler.
+ */
 @RequiredArgsConstructor
 public final class ShowTransactionRuleHandler extends QueryableRALBackendHandler<ShowTransactionRuleStatement, ShowTransactionRuleHandler> {
     

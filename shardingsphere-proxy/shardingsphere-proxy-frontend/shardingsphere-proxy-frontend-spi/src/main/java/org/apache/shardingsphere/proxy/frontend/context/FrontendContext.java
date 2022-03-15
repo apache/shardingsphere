@@ -28,6 +28,4 @@ import lombok.RequiredArgsConstructor;
 public final class FrontendContext {
     
     private final boolean requiredSameThreadForConnection;
-    
-    private final boolean flushForPerCommandPacket;
 }
