@@ -25,5 +25,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
  * PostgreSQL drop policy statement.
  */
 @ToString
-public final class PostgreSQLAlterGroupStatement extends DropPolicyStatement implements PostgreSQLStatement {
+public final class PostgreSQLDropPolicyStatement extends DropPolicyStatement implements PostgreSQLStatement {
 }
