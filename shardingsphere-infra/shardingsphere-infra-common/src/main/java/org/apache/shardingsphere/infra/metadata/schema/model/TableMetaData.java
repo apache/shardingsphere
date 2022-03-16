@@ -44,6 +44,8 @@ public final class TableMetaData {
     
     private final Map<String, ConstraintMetaData> constrains;
     
+    private final List<String> columnNames = new ArrayList<>();
+    
     private final List<String> primaryKeyColumns = new ArrayList<>();
     
     public TableMetaData() {
@@ -63,6 +65,7 @@ public final class TableMetaData {
         for (ColumnMetaData each : columnMetaDataList) {
             String lowerColumnName = each.getName().toLowerCase();
             result.put(lowerColumnName, each);
+            columnNames.add(each.getName());
             if (each.isPrimaryKey()) {
                 primaryKeyColumns.add(lowerColumnName);
             }
