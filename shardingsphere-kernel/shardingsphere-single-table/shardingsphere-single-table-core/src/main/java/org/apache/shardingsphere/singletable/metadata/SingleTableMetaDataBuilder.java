@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.singletable.metadata;
 
-import org.apache.shardingsphere.singletable.constant.SingleTableOrder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoaderEngine;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.infra.metadata.schema.builder.util.TableMetaDataUtil;
+import org.apache.shardingsphere.infra.metadata.schema.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.singletable.constant.SingleTableOrder;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 
 import java.sql.SQLException;
@@ -67,11 +68,16 @@ public final class SingleTableMetaDataBuilder implements RuleBasedTableMetaDataB
     }
     
     private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final SingleTableRule rule) {
-        return rule.getTables().contains(tableName) ? new TableMetaData(tableName, tableMetaData.getColumns().values(), getIndex(tableMetaData)) : tableMetaData;
+        return rule.getTables().contains(tableName) ? new TableMetaData(tableName, tableMetaData.getColumns().values(), getIndex(tableMetaData), getConstraint(tableMetaData)) : tableMetaData;
     }
     
     private Collection<IndexMetaData> getIndex(final TableMetaData tableMetaData) {
         return tableMetaData.getIndexes().values().stream().map(each -> new IndexMetaData(IndexMetaDataUtil.getLogicIndexName(each.getName(), tableMetaData.getName()))).collect(Collectors.toList());
+    }
+    
+    private Collection<ConstraintMetaData> getConstraint(final TableMetaData tableMetaData) {
+        return tableMetaData.getConstrains().values().stream().map(each 
+            -> new ConstraintMetaData(IndexMetaDataUtil.getLogicIndexName(each.getName(), tableMetaData.getName()), each.getReferencedTableName())).collect(Collectors.toList());
     }
     
     @Override

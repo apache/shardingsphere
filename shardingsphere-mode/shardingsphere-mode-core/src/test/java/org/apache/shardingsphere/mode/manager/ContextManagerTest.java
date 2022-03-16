@@ -118,7 +118,8 @@ public final class ContextManagerTest {
     
     @Test
     public void assertAlterSchema() {
-        contextManager.alterSchema("foo_schema", new ShardingSphereSchema(Collections.singletonMap("foo_table", new TableMetaData("foo_table", Collections.emptyList(), Collections.emptyList()))));
+        contextManager.alterSchema("foo_schema", new ShardingSphereSchema(Collections.singletonMap("foo_table", 
+                new TableMetaData("foo_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))));
         assertTrue(contextManager.getMetaDataContexts().getMetaDataMap().get("foo_schema").getSchema().containsTable("foo_table"));
         assertTrue(contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getSchemas().get("foo_schema").getTables().containsKey("foo_table"));
     }
