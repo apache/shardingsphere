@@ -129,21 +129,21 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
     }
     
     private void handleSavepoint() throws SQLException {
-        if (!connectionSession.getTransactionStatus().isInTransaction() && checkPostgreSQLOrOpengauss()){
+        if (!connectionSession.getTransactionStatus().isInTransaction() && checkPostgreSQLOrOpengauss()) {
             throw new SQLFeatureNotSupportedException("SAVEPOINT can only be used in transaction blocks");
         }
         backendTransactionManager.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
     }
     
     private void handleRollbackToSavepoint() throws SQLException {
-        if (!connectionSession.getTransactionStatus().isInTransaction() && checkPostgreSQLOrOpengauss()){
+        if (!connectionSession.getTransactionStatus().isInTransaction() && checkPostgreSQLOrOpengauss()) {
             throw new SQLFeatureNotSupportedException("ROLLBACK TO SAVEPOINT can only be used in transaction blocks");
         }
         backendTransactionManager.rollbackTo(((RollbackStatement) tclStatement).getSavepointName().get());
     }
     
     private void handleReleaseSavepoint() throws SQLException {
-        if (!connectionSession.getTransactionStatus().isInTransaction() && checkPostgreSQLOrOpengauss()){
+        if (!connectionSession.getTransactionStatus().isInTransaction() && checkPostgreSQLOrOpengauss()) {
             throw new SQLFeatureNotSupportedException("RELEASE SAVEPOINT can only be used in transaction blocks");
         }
         backendTransactionManager.releaseSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());
