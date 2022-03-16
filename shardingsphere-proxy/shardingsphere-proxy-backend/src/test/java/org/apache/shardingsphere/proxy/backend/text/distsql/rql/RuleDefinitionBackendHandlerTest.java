@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
 import io.netty.util.DefaultAttributeMap;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionUpdater;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -59,7 +60,7 @@ public final class RuleDefinitionBackendHandlerTest {
     
     @Test
     public void assertExecute() throws SQLException {
-        ConnectionSession connectionSession = new ConnectionSession(TransactionType.LOCAL, new DefaultAttributeMap());
+        ConnectionSession connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap());
         connectionSession.setCurrentSchema("test");
         ResponseHeader response = new RuleDefinitionBackendHandler<>(new CreateFixtureRuleStatement(), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));

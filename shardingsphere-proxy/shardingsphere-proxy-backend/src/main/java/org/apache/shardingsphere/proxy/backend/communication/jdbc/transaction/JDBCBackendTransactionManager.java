@@ -18,14 +18,18 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 
 import org.apache.shardingsphere.proxy.backend.communication.TransactionManager;
-import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.transaction.ConnectionSavepointManager;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Backend transaction manager.
@@ -102,37 +106,51 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
     
     @Override
     public Void setSavepoint(final String savepointName) throws SQLException {
-        if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
-            return null;
+        for (Connection each : connection.getCachedConnections().values()) {
+            ConnectionSavepointManager.getInstance().setSavepoint(each, savepointName);
         }
-        if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
-            localTransactionManager.setSavepoint(savepointName);
-        }
+        connection.getConnectionPostProcessors().add(target -> {
+            try {
+                ConnectionSavepointManager.getInstance().setSavepoint(target, savepointName);
+            } catch (final SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
         return null;
-        // TODO Non-local transaction manager
     }
     
     @Override
     public Void rollbackTo(final String savepointName) throws SQLException {
-        if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
-            return null;
+        Collection<SQLException> result = new LinkedList<>();
+        for (Connection each : connection.getCachedConnections().values()) {
+            try {
+                ConnectionSavepointManager.getInstance().rollbackToSavepoint(each, savepointName);
+            } catch (final SQLException ex) {
+                result.add(ex);
+            }
         }
-        if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
-            localTransactionManager.rollbackTo(savepointName);
-        }
-        return null;
-        // TODO Non-local transaction manager
+        return throwSQLExceptionIfNecessary(result);
     }
     
     @Override
     public Void releaseSavepoint(final String savepointName) throws SQLException {
-        if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
+        Collection<SQLException> result = new LinkedList<>();
+        for (Connection each : connection.getCachedConnections().values()) {
+            try {
+                ConnectionSavepointManager.getInstance().releaseSavepoint(each, savepointName);
+            } catch (final SQLException ex) {
+                result.add(ex);
+            }
+        }
+        return throwSQLExceptionIfNecessary(result);
+    }
+    
+    private Void throwSQLExceptionIfNecessary(final Collection<SQLException> exceptions) throws SQLException {
+        if (exceptions.isEmpty()) {
             return null;
         }
-        if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
-            localTransactionManager.releaseSavepoint(savepointName);
-        }
-        return null;
-        // TODO Non-local transaction manager
+        SQLException ex = new SQLException("");
+        exceptions.forEach(ex::setNextException);
+        throw ex;
     }
 }
