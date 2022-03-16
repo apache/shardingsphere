@@ -13,7 +13,7 @@ chapter = true
 1. 启动 MySQL 服务；
 1. 创建待注册资源的 MySQL 数据库；
 1. 在 MySQL 中为 ShardingSphere-Proxy 创建一个拥有创建权限的角色或者用户；
-1. 启动 Zookeeper 服务；
+1. 启动 ZooKeeper 服务；
 1. 添加 `mode` 和 `authentication` 配置参数到 `server.yaml`；
 1. 启动 ShardingSphere-Proxy；
 1. 通过应用程序或终端连接到 ShardingSphere-Proxy；
