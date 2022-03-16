@@ -125,7 +125,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
     
     @Test
     public void assertUpdateMemberState() throws SQLException, IllegalAccessException, NoSuchFieldException {
-        Field declaredField = MGRDatabaseDiscoveryType.class.getDeclaredField("oldPrimaryDataSource");
+        Field declaredField = AbstractDatabaseDiscoveryType.class.getDeclaredField("oldPrimaryDataSource");
         declaredField.setAccessible(true);
         declaredField.set(mgrHaType, "ds_0");
         EventBus eventBus = mock(EventBus.class);
