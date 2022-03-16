@@ -19,9 +19,11 @@ package org.apache.shardingsphere.mode.manager.cluster.process;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessReportContext;
 import org.junit.Test;
 
 import java.util.UUID;
@@ -40,8 +42,10 @@ public final class GovernanceExecuteProcessReporterTest {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = mockExecutionGroupContext();
         ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(logicSQL.getSql(), executionGroupContext, ExecuteProcessConstants.EXECUTE_ID);
         GovernanceExecuteProcessReporter reporter = new GovernanceExecuteProcessReporter();
+        ExecutorDataMap.getValue().put(ExecuteProcessConstants.EXECUTE_ID.name(), mock(ExecuteProcessReportContext.class));
         reporter.report(logicSQL, executionGroupContext, ExecuteProcessConstants.EXECUTE_ID);
         assertThat(subscriber.getValue(), is(executeProcessContext.getExecutionID()));
+        ExecutorDataMap.getValue().remove(ExecuteProcessConstants.EXECUTE_ID.name());
     }
     
     @SuppressWarnings("unchecked")

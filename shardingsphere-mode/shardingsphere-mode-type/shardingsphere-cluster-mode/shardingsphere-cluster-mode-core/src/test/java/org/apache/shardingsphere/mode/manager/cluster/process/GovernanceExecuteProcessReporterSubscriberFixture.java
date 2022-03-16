@@ -40,7 +40,7 @@ public final class GovernanceExecuteProcessReporterSubscriberFixture {
      */
     @Subscribe
     public void onExecuteProcessSummaryReportEvent(final ExecuteProcessSummaryReportEvent executeProcessSummaryReportEvent) {
-        value = executeProcessSummaryReportEvent.getExecuteProcessContext().getExecutionID();
+        value = executeProcessSummaryReportEvent.getExecutionID();
     }
     
     /**

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcess
 import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessReporter;
 
 import java.util.LinkedList;
+import java.util.Map;
 
 public class ExecuteProcessReporterFixture implements ExecuteProcessReporter {
 
@@ -35,7 +36,7 @@ public class ExecuteProcessReporterFixture implements ExecuteProcessReporter {
     }
 
     @Override
-    public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessConstants constants) {
+    public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessConstants constants, final Map<String, Object> dataMap) {
         ACTIONS.add("Report a unit of this task.");
     }
 

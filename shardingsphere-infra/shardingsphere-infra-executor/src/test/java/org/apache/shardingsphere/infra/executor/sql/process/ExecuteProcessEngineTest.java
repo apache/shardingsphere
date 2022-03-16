@@ -29,6 +29,8 @@ import org.apache.shardingsphere.infra.executor.sql.process.fixture.ExecuteProce
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.LinkedHashMap;
 import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -44,13 +46,13 @@ public final class ExecuteProcessEngineTest {
     public void setUp() {
         executionGroupContext = createMockedExecutionGroups();
         ExecuteProcessEngine.initialize(createLogicSQL(), executionGroupContext, createConfigurationProperties());
-        assertThat(ExecutorDataMap.getValue().get("EXECUTE_ID"), is(executionGroupContext.getExecutionID()));
+        assertThat(ExecutorDataMap.getValue().get("EXECUTE_ID").toString(), is(executionGroupContext.getExecutionID()));
         assertThat(ExecuteProcessReporterFixture.ACTIONS.get(0), is("Report the summary of this task."));
     }
     
     @Test
     public void assertFinish() {
-        ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), mock(RawSQLExecutionUnit.class));
+        ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), mock(RawSQLExecutionUnit.class), new LinkedHashMap<>());
         assertThat(ExecuteProcessReporterFixture.ACTIONS.get(1), is("Report a unit of this task."));
         ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
         assertThat(ExecuteProcessReporterFixture.ACTIONS.get(2), is("Report this task on completion."));
@@ -74,6 +76,7 @@ public final class ExecuteProcessEngineTest {
         ConfigurationProperties result = mock(ConfigurationProperties.class);
         when(result.getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(Boolean.TRUE);
         when(result.getValue(ConfigurationPropertyKey.SHOW_PROCESS_LIST_ENABLED)).thenReturn(Boolean.TRUE);
+        when(result.getValue(ConfigurationPropertyKey.SHOW_PROCESS_LIST_NO_REPORT_THRESHOLD_MILLIS)).thenReturn(100L);
         return result;
     }
     

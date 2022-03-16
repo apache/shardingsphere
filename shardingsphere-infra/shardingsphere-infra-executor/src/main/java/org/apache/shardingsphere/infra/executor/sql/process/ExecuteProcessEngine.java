@@ -19,22 +19,28 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessReportContext;
 import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessReporter;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Execute process engine.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class ExecuteProcessEngine {
     
     private static final Collection<ExecuteProcessReporter> HANDLERS;
@@ -54,7 +60,9 @@ public final class ExecuteProcessEngine {
     public static void initialize(final LogicSQL logicSQL, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ConfigurationProperties props) {
         SQLStatementContext<?> context = logicSQL.getSqlStatementContext();
         if (!HANDLERS.isEmpty() && ExecuteProcessStrategyEvaluator.evaluate(context, executionGroupContext, props)) {
-            ExecutorDataMap.getValue().put(ExecuteProcessConstants.EXECUTE_ID.name(), executionGroupContext.getExecutionID());
+            long noReportThresholdMillis = props.getValue(ConfigurationPropertyKey.SHOW_PROCESS_LIST_NO_REPORT_THRESHOLD_MILLIS);
+            ExecuteProcessReportContext reportContext = new ExecuteProcessReportContext(executionGroupContext.getExecutionID(), noReportThresholdMillis);
+            ExecutorDataMap.getValue().put(ExecuteProcessConstants.EXECUTE_ID.name(), reportContext);
             HANDLERS.iterator().next().report(logicSQL, executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START);
         }
     }
@@ -63,7 +71,10 @@ public final class ExecuteProcessEngine {
      * Clean.
      */
     public static void clean() {
-        ExecutorDataMap.getValue().remove(ExecuteProcessConstants.EXECUTE_ID.name());
+        Object reportContext = ExecutorDataMap.getValue().remove(ExecuteProcessConstants.EXECUTE_ID.name());
+        if (log.isDebugEnabled()) {
+            log.debug("clean, reportContext={}", YamlEngine.marshal(reportContext));
+        }
     }
     
     /**
@@ -71,10 +82,11 @@ public final class ExecuteProcessEngine {
      *
      * @param executionID execution ID
      * @param executionUnit execution unit
+     * @param dataMap data map
      */
-    public static void finish(final String executionID, final SQLExecutionUnit executionUnit) {
+    public static void finish(final String executionID, final SQLExecutionUnit executionUnit, final Map<String, Object> dataMap) {
         if (!HANDLERS.isEmpty()) {
-            HANDLERS.iterator().next().report(executionID, executionUnit, ExecuteProcessConstants.EXECUTE_STATUS_DONE);
+            HANDLERS.iterator().next().report(executionID, executionUnit, ExecuteProcessConstants.EXECUTE_STATUS_DONE, dataMap);
         }
     }
     

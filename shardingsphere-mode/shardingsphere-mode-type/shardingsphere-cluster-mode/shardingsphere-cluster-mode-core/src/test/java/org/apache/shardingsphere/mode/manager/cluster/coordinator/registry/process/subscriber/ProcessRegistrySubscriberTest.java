@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber;
 
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessReportContext;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessReportEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessSummaryReportEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessUnitReportEvent;
@@ -28,7 +29,6 @@ import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcess
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
-import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,8 +36,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -66,12 +67,12 @@ public final class ProcessRegistrySubscriberTest {
     
     @Test
     public void assertReportExecuteProcessSummary() {
-        ExecuteProcessContext executeProcessContext = mock(ExecuteProcessContext.class);
         ExecuteProcessSummaryReportEvent event = mock(ExecuteProcessSummaryReportEvent.class);
-        when(event.getExecuteProcessContext()).thenReturn(executeProcessContext);
-        when(executeProcessContext.getExecutionID()).thenReturn("id");
+        when(event.getExecutionID()).thenReturn("id");
+        Map<String, Object> dataMap = mockDataMap();
+        when(event.getDataMap()).thenReturn(dataMap);
         processRegistrySubscriber.reportExecuteProcessSummary(event);
-        verify(event, times(1)).getExecuteProcessContext();
+        verify(event, times(1)).getDataMap();
         verify(repository, times(1)).persist(anyString(), any());
     }
     
@@ -79,8 +80,12 @@ public final class ProcessRegistrySubscriberTest {
     public void assertReportExecuteProcessSummaryWithId() {
         ExecutionGroupContext executionGroupContext = mock(ExecutionGroupContext.class);
         when(executionGroupContext.getExecutionID()).thenReturn("id");
+        ExecuteProcessReportContext executeProcessReportContext = new ExecuteProcessReportContext("id", -1);
         ExecuteProcessContext executeProcessContext = new ExecuteProcessContext("sql1", executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START);
-        ExecuteProcessSummaryReportEvent event = new ExecuteProcessSummaryReportEvent(executeProcessContext);
+        executeProcessReportContext.setYamlExecuteProcessContext(new YamlExecuteProcessContext(executeProcessContext));
+        Map<String, Object> dataMap = new LinkedHashMap<>();
+        dataMap.put(ExecuteProcessConstants.EXECUTE_ID.name(), executeProcessReportContext);
+        ExecuteProcessSummaryReportEvent event = new ExecuteProcessSummaryReportEvent("id", dataMap);
         ProcessRegistrySubscriber subscriber = new ProcessRegistrySubscriber(repository);
         subscriber.reportExecuteProcessSummary(event);
         verify(repository).persist("/execution_nodes/id", YamlEngine.marshal(new YamlExecuteProcessContext(executeProcessContext)));
@@ -89,8 +94,9 @@ public final class ProcessRegistrySubscriberTest {
     @Test
     public void assertReportExecuteProcessUnit() {
         ExecuteProcessUnitReportEvent event = mock(ExecuteProcessUnitReportEvent.class);
+        Map<String, Object> dataMap = mockDataMap();
+        when(event.getDataMap()).thenReturn(dataMap);
         when(event.getExecutionID()).thenReturn("id");
-        when(repository.get(anyString())).thenReturn(mockYamlExecuteProcessContext());
         when(event.getExecuteProcessUnit()).thenReturn(mockExecuteProcessUnit());
         processRegistrySubscriber.reportExecuteProcessUnit(event);
         verify(repository, times(1)).persist(any(), any());
@@ -100,23 +106,29 @@ public final class ProcessRegistrySubscriberTest {
     public void assertReportExecuteProcess() {
         ExecuteProcessReportEvent event = mock(ExecuteProcessReportEvent.class);
         when(event.getExecutionID()).thenReturn("id");
-        when(repository.get(anyString())).thenReturn(mockYamlExecuteProcessContext());
+        Map<String, Object> dataMap = mockDataMap();
+        when(event.getDataMap()).thenReturn(dataMap);
         processRegistrySubscriber.reportExecuteProcess(event);
         verify(repository, times(1)).delete(any());
-    }
-    
-    private String mockYamlExecuteProcessContext() {
-        YamlExecuteProcessUnit yamlExecuteProcessUnit = new YamlExecuteProcessUnit();
-        yamlExecuteProcessUnit.setUnitID("159917166");
-        yamlExecuteProcessUnit.setStatus(ExecuteProcessConstants.EXECUTE_STATUS_DONE);
-        Collection<YamlExecuteProcessUnit> unitStatuses = Collections.singletonList(yamlExecuteProcessUnit);
-        YamlExecuteProcessContext yamlExecuteProcessContext = new YamlExecuteProcessContext();
-        yamlExecuteProcessContext.setUnitStatuses(unitStatuses);
-        return YamlEngine.marshal(yamlExecuteProcessContext);
     }
     
     private ExecuteProcessUnit mockExecuteProcessUnit() {
         ExecutionUnit executionUnit = mock(ExecutionUnit.class);
         return new ExecuteProcessUnit(executionUnit, ExecuteProcessConstants.EXECUTE_STATUS_DONE);
+    }
+    
+    private Map<String, Object> mockDataMap() {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put(ExecuteProcessConstants.EXECUTE_ID.name(), mockExecuteProcessReportContext());
+        return result;
+    }
+    
+    private ExecuteProcessReportContext mockExecuteProcessReportContext() {
+        ExecuteProcessReportContext executeProcessReportContext = new ExecuteProcessReportContext("id", -1);
+        YamlExecuteProcessContext yamlExecuteProcessContext = mock(YamlExecuteProcessContext.class);
+        when(yamlExecuteProcessContext.getStartTimeMillis()).thenReturn(System.currentTimeMillis());
+        executeProcessReportContext.setYamlExecuteProcessContext(yamlExecuteProcessContext);
+        executeProcessReportContext.setReportToGovernanceDonePartially(true);
+        return executeProcessReportContext;
     }
 }

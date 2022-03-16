@@ -15,21 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event;
+package org.apache.shardingsphere.infra.executor.sql.process.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Map;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 
 /**
- * Execute process report event.
+ * Execute process report context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ExecuteProcessReportEvent {
+@Setter
+public final class ExecuteProcessReportContext {
     
     private final String executionID;
     
-    private final Map<String, Object> dataMap;
+    private final long showProcessListNoReportThresholdMillis;
+    
+    private volatile YamlExecuteProcessContext yamlExecuteProcessContext;
+    
+    private boolean reportToGovernanceDonePartially;
+    
+    @Override
+    public String toString() {
+        return executionID;
+    }
 }

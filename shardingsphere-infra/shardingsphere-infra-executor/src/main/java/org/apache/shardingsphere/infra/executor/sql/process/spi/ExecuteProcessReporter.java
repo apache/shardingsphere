@@ -22,6 +22,8 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupConte
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 
+import java.util.Map;
+
 /**
  * Execute process report.
  */
@@ -40,8 +42,9 @@ public interface ExecuteProcessReporter {
      * @param executionID execution ID
      * @param executionUnit execution unit
      * @param constants constants
+     * @param dataMap data map
      */
-    void report(String executionID, SQLExecutionUnit executionUnit, ExecuteProcessConstants constants);
+    void report(String executionID, SQLExecutionUnit executionUnit, ExecuteProcessConstants constants, Map<String, Object> dataMap);
     
     /**
      * Report this task on completion.

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.proc
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
+import java.util.Map;
 
 /**
  * Execute process summary report event.
@@ -28,5 +28,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcess
 @Getter
 public final class ExecuteProcessSummaryReportEvent {
     
-    private final ExecuteProcessContext executeProcessContext;
+    private final String executionID;
+    
+    private final Map<String, Object> dataMap;
 }

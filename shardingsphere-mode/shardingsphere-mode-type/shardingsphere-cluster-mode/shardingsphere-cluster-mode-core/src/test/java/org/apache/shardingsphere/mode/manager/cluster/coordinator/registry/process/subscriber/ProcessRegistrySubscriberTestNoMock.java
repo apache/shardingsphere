@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessReportContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
@@ -41,6 +42,8 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -57,10 +60,13 @@ public final class ProcessRegistrySubscriberTestNoMock {
     
     private final ExecutionUnit executionUnit;
     
+    private final Map<String, Object> dataMap;
+    
     public ProcessRegistrySubscriberTestNoMock() {
         ExecutionUnit executionUnit = new ExecutionUnit("ds_0", new SQLUnit("sql1_0", Collections.emptyList()));
         this.executionUnit = executionUnit;
         executeProcessContext = createExecuteProcessContext(executionUnit);
+        dataMap = getDataMap(executeProcessContext);
     }
     
     private ExecuteProcessContext createExecuteProcessContext(final ExecutionUnit executionUnit) {
@@ -89,8 +95,8 @@ public final class ProcessRegistrySubscriberTestNoMock {
     }
     
     private void assertReportExecuteProcessSummary() {
-        subscriber.reportExecuteProcessSummary(new ExecuteProcessSummaryReportEvent(executeProcessContext));
         String executionID = executeProcessContext.getExecutionID();
+        subscriber.reportExecuteProcessSummary(new ExecuteProcessSummaryReportEvent(executionID, dataMap));
         String executeProcessText = repository.get(ProcessNode.getExecutionPath(executionID));
         assertNotNull(executeProcessText);
         YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(executeProcessText, YamlExecuteProcessContext.class);
@@ -107,9 +113,17 @@ public final class ProcessRegistrySubscriberTestNoMock {
         assertThat(yamlExecuteProcessUnit.getStatus(), is(ExecuteProcessConstants.EXECUTE_STATUS_START));
     }
     
+    private Map<String, Object> getDataMap(final ExecuteProcessContext executeProcessContext) {
+        ExecuteProcessReportContext reportContext = new ExecuteProcessReportContext(executeProcessContext.getExecutionID(), -1);
+        reportContext.setYamlExecuteProcessContext(new YamlExecuteProcessContext(executeProcessContext));
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put(ExecuteProcessConstants.EXECUTE_ID.name(), reportContext);
+        return result;
+    }
+    
     private void assertReportExecuteProcessUnit(final ExecuteProcessConstants processConstants) {
         String executionID = executeProcessContext.getExecutionID();
-        ExecuteProcessUnitReportEvent event = new ExecuteProcessUnitReportEvent(executionID, new ExecuteProcessUnit(executionUnit, processConstants));
+        ExecuteProcessUnitReportEvent event = new ExecuteProcessUnitReportEvent(executionID, new ExecuteProcessUnit(executionUnit, processConstants), dataMap);
         subscriber.reportExecuteProcessUnit(event);
         String executeProcessText = repository.get(ProcessNode.getExecutionPath(executionID));
         assertNotNull(executeProcessText);
@@ -121,7 +135,7 @@ public final class ProcessRegistrySubscriberTestNoMock {
     
     private void assertReportExecuteProcess(final ExecuteProcessConstants processConstants) {
         String executionID = executeProcessContext.getExecutionID();
-        ExecuteProcessReportEvent event = new ExecuteProcessReportEvent(executionID);
+        ExecuteProcessReportEvent event = new ExecuteProcessReportEvent(executionID, dataMap);
         subscriber.reportExecuteProcess(event);
         String executeProcessText = repository.get(ProcessNode.getExecutionPath(executionID));
         if (ExecuteProcessConstants.EXECUTE_STATUS_DONE == processConstants) {

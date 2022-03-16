@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
 
+import java.util.Map;
+
 /**
  * Execute process unit report event.
  */
@@ -31,4 +33,6 @@ public final class ExecuteProcessUnitReportEvent {
     private final String executionID;
     
     private final ExecuteProcessUnit executeProcessUnit;
+    
+    private final Map<String, Object> dataMap;
 }

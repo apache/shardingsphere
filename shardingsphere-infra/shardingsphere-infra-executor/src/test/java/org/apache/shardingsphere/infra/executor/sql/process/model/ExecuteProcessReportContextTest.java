@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event;
+package org.apache.shardingsphere.infra.executor.sql.process.model;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.junit.Test;
 
-import java.util.Map;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * Execute process report event.
- */
-@RequiredArgsConstructor
-@Getter
-public final class ExecuteProcessReportEvent {
+public final class ExecuteProcessReportContextTest {
     
-    private final String executionID;
-    
-    private final Map<String, Object> dataMap;
+    @Test
+    public void assertToString() {
+        String executionID = "738b1fb3-655e-4973-ae94-c15bdce2cf38";
+        ExecuteProcessReportContext context = new ExecuteProcessReportContext(executionID, 100);
+        assertThat(context.toString(), is(executionID));
+    }
 }
