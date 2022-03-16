@@ -24,10 +24,11 @@ import org.junit.Test;
 
 import java.util.LinkedList;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class ConditionValueTest {
+public final class ConditionValueTest {
 
     private ConditionValue conditionValue;
 
@@ -40,6 +41,7 @@ public class ConditionValueTest {
     @Test
     public void assertGetValue() {
         assertTrue(conditionValue.getValue().isPresent());
-        assertEquals(conditionValue.getValue().get(), "shardingsphere");
+        assertThat(conditionValue.getValue().get(), is("shardingsphere"));
     }
 }
+
