@@ -160,30 +160,6 @@ public final class JDBCBackendTransactionManagerTest {
         verify(shardingSphereTransactionManager, times(0)).rollback();
     }
     
-    @Test
-    public void assertSetSavepointWithoutTransaction() throws SQLException {
-        newBackendTransactionManager(TransactionType.LOCAL, false);
-        String savepointName = "JDBC_SAVEPOINT_0";
-        backendTransactionManager.setSavepoint(savepointName);
-        verify(localTransactionManager, never()).setSavepoint(savepointName);
-    }
-    
-    @Test
-    public void assertRollbackToSavepointWithoutTransaction() throws SQLException {
-        newBackendTransactionManager(TransactionType.LOCAL, false);
-        String savepointName = "JDBC_SAVEPOINT_0";
-        backendTransactionManager.rollbackTo(savepointName);
-        verify(localTransactionManager, never()).rollbackTo(savepointName);
-    }
-    
-    @Test
-    public void assertReleaseSavepointWithoutTransaction() throws SQLException {
-        newBackendTransactionManager(TransactionType.LOCAL, false);
-        String savepointName = "JDBC_SAVEPOINT_0";
-        backendTransactionManager.releaseSavepoint(savepointName);
-        verify(localTransactionManager, never()).releaseSavepoint(savepointName);
-    }
-    
     private void newBackendTransactionManager(final TransactionType transactionType, final boolean inTransaction) {
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(transactionType);
         when(transactionStatus.isInTransaction()).thenReturn(inTransaction);
