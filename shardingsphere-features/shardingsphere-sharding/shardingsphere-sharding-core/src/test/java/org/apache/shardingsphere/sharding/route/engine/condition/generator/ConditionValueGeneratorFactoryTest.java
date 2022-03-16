@@ -25,10 +25,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.generator.impl.
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.*;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -56,8 +53,9 @@ public final class ConditionValueGeneratorFactoryTest {
     @Test
     public void assertGenerateBinaryOperationExpression() {
         ConditionValueCompareOperatorGenerator conditionValueCompareOperatorGenerator = new ConditionValueCompareOperatorGenerator();
-        Optional<ShardingConditionValue> expected = conditionValueCompareOperatorGenerator.generate(new BinaryOperationExpression(0, 0, mock(ColumnSegment.class), new LiteralExpressionSegment(0, 0, 1), "=", null), column, new LinkedList<>());
-        Optional<ShardingConditionValue> conditionValueGeneratorFactory = ConditionValueGeneratorFactory.generate(new BinaryOperationExpression(0, 0, mock(ColumnSegment.class), new LiteralExpressionSegment(0, 0, 1), "=", null), column, new LinkedList<>());
+        BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, mock(ColumnSegment.class), new LiteralExpressionSegment(0, 0, 1), "=", null);
+        Optional<ShardingConditionValue> expected = conditionValueCompareOperatorGenerator.generate(rightValue, column, new LinkedList<>());
+        Optional<ShardingConditionValue> conditionValueGeneratorFactory = ConditionValueGeneratorFactory.generate(rightValue, column, new LinkedList<>());
         assertTrue(conditionValueGeneratorFactory.isPresent() && expected.isPresent());
         assertThat(expected.get().getTableName(), is(conditionValueGeneratorFactory.get().getTableName()));
         assertThat(expected.get().getColumnName(), is(conditionValueGeneratorFactory.get().getColumnName()));
@@ -79,10 +77,12 @@ public final class ConditionValueGeneratorFactoryTest {
     @Test
     public void assertGenerateBetweenExpression() {
         ConditionValueBetweenOperatorGenerator conditionValueBetweenOperatorGenerator = new ConditionValueBetweenOperatorGenerator();
-        Optional<ShardingConditionValue> expected = conditionValueBetweenOperatorGenerator.generate(new BetweenExpression(0, 0, null, new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2), false), column, new LinkedList<>());
-        Optional<ShardingConditionValue> conditionValueGeneratorFactory = ConditionValueGeneratorFactory.generate(new BetweenExpression(0, 0, null, new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2), false), column, new LinkedList<>());
-        assertTrue(expected.isPresent() && conditionValueGeneratorFactory.isPresent());
-        assertThat(expected.get().getColumnName(), is(conditionValueGeneratorFactory.get().getColumnName()));
-        assertThat(expected.get().getTableName(), is(conditionValueGeneratorFactory.get().getTableName()));
+        ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, 1);
+        ExpressionSegment andSegment = new LiteralExpressionSegment(0, 0, 2);
+        Optional<ShardingConditionValue> expected = conditionValueBetweenOperatorGenerator.generate(new BetweenExpression(0, 0, null, betweenSegment, andSegment, false), column, new LinkedList<>());
+        Optional<ShardingConditionValue> conditionValGenFactory = ConditionValueGeneratorFactory.generate(new BetweenExpression(0, 0, null, betweenSegment, andSegment, false), column, new LinkedList<>());
+        assertTrue(expected.isPresent() && conditionValGenFactory.isPresent());
+        assertThat(expected.get().getColumnName(), is(conditionValGenFactory.get().getColumnName()));
+        assertThat(expected.get().getTableName(), is(conditionValGenFactory.get().getTableName()));
     }
 }
