@@ -82,9 +82,9 @@ rules:
       queryWithCipherColumn: false
     t_order:
       columns:
-        content:
-          cipherColumn: cipher_content
-          plainColumn: plain_content
+        CONTENT:
+          cipherColumn: CIPHER_CONTENT
+          plainColumn: PLAIN_CONTENT
           encryptorName: schema_based
   encryptors:
     normal:

@@ -42,16 +42,6 @@
         <output sql="SELECT t_account.account_id FROM t_account WHERE account_id = ?" parameters="100" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_with_schema_based_algorithm_for_plain" db-types="MySQL">
-        <input sql="SELECT * FROM t_order WHERE content = 'TEST'" />
-        <output sql="SELECT `t_order`.`order_id`, `t_order`.`user_id`, `t_order`.`plain_content` AS `content` FROM t_order WHERE plain_content = 'TEST'" />
-    </rewrite-assertion>
-    
-    <rewrite-assertion id="select_with_schema_based_algorithm_for_parameters" db-types="MySQL">
-        <input sql="SELECT * FROM t_order WHERE content = ?" parameters="TEST" />
-        <output sql="SELECT `t_order`.`order_id`, `t_order`.`user_id`, `t_order`.`plain_content` AS `content` FROM t_order WHERE plain_content = ?" parameters="TEST" />
-    </rewrite-assertion>
-    
     <rewrite-assertion id="select_for_predicate_and_right_value_should_be_matched" db-types="MySQL">
         <input sql="SELECT account_id, password, amount AS a, status AS s FROM t_account WHERE account_id = 1 AND password = 'aaa' AND amount = 1000 AND status = 'OK'" />
         <output sql="SELECT account_id, cipher_password AS password, cipher_amount AS a, status AS s FROM t_account WHERE account_id = 1 AND assisted_query_password = 'assisted_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
@@ -70,5 +60,15 @@
     <rewrite-assertion id="select_with_mix_qualified_shorthand_and_other_projection_for_plain" db-types="MySQL">
         <input sql="SELECT a.*, account_id, 1+1 FROM t_account a" />
         <output sql="SELECT `a`.`account_id`, `a`.`cipher_certificate_number` AS `certificate_number`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount`, `a`.`status`, account_id, 1+1 FROM t_account a" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_shorthand_with_upper_column_and_schema_based_algorithm_for_plain" db-types="MySQL">
+        <input sql="SELECT * FROM t_order WHERE content = 'TEST'" />
+        <output sql="SELECT `t_order`.`ORDER_ID`, `t_order`.`USER_ID`, `t_order`.`PLAIN_CONTENT` AS `CONTENT` FROM t_order WHERE PLAIN_CONTENT = 'TEST'" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_shorthand_with_upper_column_and_schema_based_algorithm_for_parameters" db-types="MySQL">
+        <input sql="SELECT * FROM t_order WHERE content = ?" parameters="TEST" />
+        <output sql="SELECT `t_order`.`ORDER_ID`, `t_order`.`USER_ID`, `t_order`.`PLAIN_CONTENT` AS `CONTENT` FROM t_order WHERE PLAIN_CONTENT = ?" parameters="TEST" />
     </rewrite-assertion>
 </rewrite-assertions>

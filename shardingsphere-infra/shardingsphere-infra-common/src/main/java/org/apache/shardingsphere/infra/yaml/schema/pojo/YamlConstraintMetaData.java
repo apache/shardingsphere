@@ -15,32 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.adapter.invocation;
+package org.apache.shardingsphere.infra.yaml.schema.pojo;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-
-import java.lang.reflect.Method;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 
 /**
- * Invocation that reflected call for method.
+ * Constraint meta data for YAML.
  */
-@RequiredArgsConstructor
 @Getter
-public class MethodInvocation {
+@Setter
+public final class YamlConstraintMetaData implements YamlConfiguration {
     
-    private final Method method;
+    private String name;
     
-    private final Object[] arguments;
-    
-    /**
-     * Invoke method.
-     * 
-     * @param target target object
-     */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void invoke(final Object target) {
-        method.invoke(target, arguments);
-    }
+    private String referencedTableName;
 }

@@ -105,9 +105,8 @@ public final class TablesContextTest {
     public void assertFindTableNameWhenColumnSegmentOwnerAbsentAndSchemaMetaDataContainsColumnInUpperCase() {
         SimpleTableSegment tableSegment1 = createTableSegment("TABLE_1", "TBL_1");
         SimpleTableSegment tableSegment2 = createTableSegment("TABLE_2", "TBL_2");
-        TableMetaData tableMetaData = new TableMetaData("TABLE_1",
-                Arrays.asList(new ColumnMetaData("COL", 0, false, false, true)),
-                Collections.EMPTY_LIST);
+        TableMetaData tableMetaData = new TableMetaData("TABLE_1", 
+                Arrays.asList(new ColumnMetaData("COL", 0, false, false, true)), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema(Arrays.asList(tableMetaData).stream().collect(Collectors.toMap(TableMetaData::getName, v -> v)));
         ColumnSegment columnSegment = createColumnSegment(null, "COL");
         Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableNamesByColumnSegment(Collections.singletonList(columnSegment), schema);
@@ -165,7 +164,7 @@ public final class TablesContextTest {
         SimpleTableSegment tableSegment2 = createTableSegment("TABLE_2", "TBL_2");
         TableMetaData tableMetaData = new TableMetaData("TABLE_1",
                 Arrays.asList(new ColumnMetaData("COL", 0, false, false, true)),
-                Collections.EMPTY_LIST);
+                Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema(Arrays.asList(tableMetaData).stream().collect(Collectors.toMap(TableMetaData::getName, v -> v)));
         ColumnProjection columnProjection = createColumnProjection(null, "COL", "CL");
         Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2))
