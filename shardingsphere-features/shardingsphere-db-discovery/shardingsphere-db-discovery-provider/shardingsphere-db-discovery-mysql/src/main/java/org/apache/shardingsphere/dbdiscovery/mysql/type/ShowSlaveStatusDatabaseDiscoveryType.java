@@ -15,23 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.mysql;
+package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.mysql.AbstractDatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
-import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -52,20 +49,25 @@ public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabase
     public void checkDatabaseDiscoveryConfiguration(final String schemaName, final Map<String, DataSource> dataSourceMap) {
         //TODO Check master-slave mode
     }
-
+    
     @Override
-    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
-        Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
-        if (!disabledDataSourceNames.isEmpty()) {
-            activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
+    protected String getPrimaryDataSourceURL(final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
+            if (resultSet.next()) {
+                return String.format("%s:%s", resultSet.getString("Master_Host"), resultSet.getString("Master_Port"));
+            }
+            return "";
         }
-        for (Entry<String, DataSource> entry : activeDataSourceMap.entrySet()) {
+    }
+    
+    @Override
+    protected void determineMemberDataSourceState(final String schemaName, final Map<String, DataSource> dataSourceMap) {
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (getOldPrimaryDataSource().equals(entry.getKey())) {
                 continue;
             }
             determineDatasourceState(schemaName, entry.getKey(), entry.getValue());
         }
-    
     }
     
     private void determineDatasourceState(final String schemaName, final String datasourceName, final DataSource dataSource) {
@@ -79,16 +81,6 @@ public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabase
             }
         } catch (SQLException ex) {
             log.error("An exception occurred while find member data source `Seconds_Behind_Master`", ex);
-        }
-    }
-    
-    @Override
-    protected String getPrimaryDataSourceURL(final Statement statement) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
-            if (resultSet.next()) {
-                return String.format("%s:%s", resultSet.getString("Master_Host"), resultSet.getString("Master_Port"));
-            }
-            return "";
         }
     }
     

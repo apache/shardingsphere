@@ -15,15 +15,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Abstract database discovery type
+ * Abstract database discovery type.
  */
 @Slf4j
-    public abstract class AbstractDatabaseDiscoveryType implements DatabaseDiscoveryType {
+public abstract class AbstractDatabaseDiscoveryType implements DatabaseDiscoveryType {
     
     @Getter
     private String oldPrimaryDataSource;
     
-    protected abstract String getPrimaryDataSourceURL(final Statement statement) throws SQLException;
+    protected abstract String getPrimaryDataSourceURL(Statement statement) throws SQLException;
+    
+    protected abstract void determineMemberDataSourceState(String schemaName, Map<String, DataSource> dataSourceMap);
     
     @Override
     public void updatePrimaryDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
@@ -33,7 +35,6 @@ import java.util.Map;
         }
         String newPrimaryDataSource = determinePrimaryDataSource(activeDataSourceMap);
         if (newPrimaryDataSource.isEmpty()) {
-            oldPrimaryDataSource = "";
             return;
         }
         if (!newPrimaryDataSource.equals(oldPrimaryDataSource)) {
@@ -42,8 +43,13 @@ import java.util.Map;
         }
     }
     
+    @Override
     public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
-        
+        Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
+        if (!disabledDataSourceNames.isEmpty()) {
+            activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
+        }
+        determineMemberDataSourceState(schemaName, activeDataSourceMap);
     }
     
     private String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {

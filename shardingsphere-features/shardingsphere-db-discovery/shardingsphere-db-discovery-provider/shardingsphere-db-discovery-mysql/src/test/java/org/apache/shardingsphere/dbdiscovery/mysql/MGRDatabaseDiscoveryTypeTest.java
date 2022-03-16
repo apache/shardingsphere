@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.dbdiscovery.mysql;
 
 import com.google.common.eventbus.EventBus;
+import org.apache.shardingsphere.dbdiscovery.mysql.type.MGRDatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.junit.Test;

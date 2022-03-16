@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.mysql;
+package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.mysql.AbstractDatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
-import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -43,7 +42,7 @@ import java.util.Properties;
  * MGR database discovery type.
  */
 @Slf4j
-public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryType implements DatabaseDiscoveryType {
+public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryType {
     
     private static final String PLUGIN_STATUS = "SELECT * FROM information_schema.PLUGINS WHERE PLUGIN_NAME='group_replication'";
     
@@ -152,23 +151,19 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     }
     
     @Override
-    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
-        Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
-        if (!disabledDataSourceNames.isEmpty()) {
-            activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
-        }
-        List<String> memberDataSourceURLs = findMemberDataSourceURLs(activeDataSourceMap);
+    protected void determineMemberDataSourceState(final String schemaName, final Map<String, DataSource> dataSourceMap) {
+        List<String> memberDataSourceURLs = findMemberDataSourceURLs(dataSourceMap);
         if (memberDataSourceURLs.isEmpty()) {
             return;
         }
         Map<String, String> dataSourceURLs = new HashMap<>(16, 1);
-        determineDisabledDataSource(schemaName, activeDataSourceMap, memberDataSourceURLs, dataSourceURLs);
+        determineDisabledDataSource(schemaName, dataSourceMap, memberDataSourceURLs, dataSourceURLs);
         determineEnabledDataSource(dataSourceMap, schemaName, memberDataSourceURLs, dataSourceURLs);
     }
     
-    private List<String> findMemberDataSourceURLs(final Map<String, DataSource> activeDataSourceMap) {
+    private List<String> findMemberDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
         List<String> result = new LinkedList<>();
-        try (Connection connection = activeDataSourceMap.get(getOldPrimaryDataSource()).getConnection();
+        try (Connection connection = dataSourceMap.get(getOldPrimaryDataSource()).getConnection();
              Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(MEMBER_LIST);
             while (resultSet.next()) {
@@ -183,8 +178,8 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
         return result;
     }
     
-    private void determineDisabledDataSource(final String schemaName, final Map<String, DataSource> activeDataSourceMap,
-                                             final List<String> memberDataSourceURLs, final Map<String, String> dataSourceURLs) {
+    private void determineDisabledDataSource(final String schemaName, final Map<String, DataSource> activeDataSourceMap, final List<String> memberDataSourceURLs,
+                                             final Map<String, String> dataSourceURLs) {
         for (Entry<String, DataSource> entry : activeDataSourceMap.entrySet()) {
             boolean disable = true;
             String url = null;
@@ -207,8 +202,8 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
         }
     }
     
-    private void determineEnabledDataSource(final Map<String, DataSource> dataSourceMap, final String schemaName,
-                                            final List<String> memberDataSourceURLs, final Map<String, String> dataSourceURLs) {
+    private void determineEnabledDataSource(final Map<String, DataSource> dataSourceMap, final String schemaName, final List<String> memberDataSourceURLs,
+                                            final Map<String, String> dataSourceURLs) {
         for (String each : memberDataSourceURLs) {
             boolean enable = true;
             for (Entry<String, String> entry : dataSourceURLs.entrySet()) {
