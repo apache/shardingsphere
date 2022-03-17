@@ -97,7 +97,7 @@ public final class ReadwriteSplittingDataSourceRuleTest {
     }
 
     @Test
-    public void assertGetStaticWriteDataSource() {
+    public void assertGetWriteDataSource() {
         String writeDataSourceName = readwriteSplittingDataSourceRule.getWriteDataSource();
         assertThat(writeDataSourceName, is("write_ds"));
     }
