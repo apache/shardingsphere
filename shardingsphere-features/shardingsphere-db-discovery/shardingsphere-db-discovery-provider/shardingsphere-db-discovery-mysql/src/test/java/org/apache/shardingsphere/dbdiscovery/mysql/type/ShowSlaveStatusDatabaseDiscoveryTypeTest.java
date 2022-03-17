@@ -1,14 +1,8 @@
 package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
-import com.google.common.eventbus.EventBus;
-import org.apache.shardingsphere.dbdiscovery.mysql.AbstractDatabaseDiscoveryType;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -48,7 +42,6 @@ public final class ShowSlaveStatusDatabaseDiscoveryTypeTest {
         if (slave) {
             when(resultSet.getString("Master_Host")).thenReturn("127.0.0.1");
             when(resultSet.getString("Master_Port")).thenReturn(Integer.toString(3306));
-            when(resultSet.getLong("Seconds_Behind_Master")).thenReturn(secondsBehindMaster);
         }
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
