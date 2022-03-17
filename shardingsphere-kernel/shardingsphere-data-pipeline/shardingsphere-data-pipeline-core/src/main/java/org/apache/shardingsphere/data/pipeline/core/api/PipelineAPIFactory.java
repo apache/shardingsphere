@@ -30,10 +30,11 @@ import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobOperateAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobStatisticsAPI;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+
+import java.util.Optional;
 
 /**
  * Pipeline API factory.
@@ -47,7 +48,12 @@ public final class PipelineAPIFactory {
      * @return governance repository API
      */
     public static GovernanceRepositoryAPI getGovernanceRepositoryAPI() {
-        return GovernanceRepositoryAPIHolder.getInstance();
+        Optional<MetaDataPersistService> persistServiceOptional = PipelineContext.getContextManager().getMetaDataContexts().getMetaDataPersistService();
+        if (!persistServiceOptional.isPresent()) {
+            throw new RuntimeException("persistService is not present");
+        }
+        ClusterPersistRepository repository = (ClusterPersistRepository) persistServiceOptional.get().getRepository();
+        return new GovernanceRepositoryAPIImpl(repository);
     }
     
     /**
@@ -84,33 +90,6 @@ public final class PipelineAPIFactory {
      */
     public static CoordinatorRegistryCenter getRegistryCenter() {
         return RegistryCenterHolder.getInstance();
-    }
-    
-    private static final class GovernanceRepositoryAPIHolder {
-        
-        private static volatile GovernanceRepositoryAPI instance;
-        
-        static {
-            ShardingSphereServiceLoader.register(ClusterPersistRepository.class);
-        }
-        
-        public static GovernanceRepositoryAPI getInstance() {
-            if (null == instance) {
-                synchronized (PipelineAPIFactory.class) {
-                    if (null == instance) {
-                        instance = createGovernanceRepositoryAPI();
-                    }
-                }
-            }
-            return instance;
-        }
-        
-        private static GovernanceRepositoryAPI createGovernanceRepositoryAPI() {
-            ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) PipelineContext.getModeConfig().getRepository();
-            ClusterPersistRepository repository = TypedSPIRegistry.getRegisteredService(ClusterPersistRepository.class, repositoryConfig.getType(), repositoryConfig.getProps());
-            repository.init(repositoryConfig);
-            return new GovernanceRepositoryAPIImpl(repository);
-        }
     }
     
     @Getter

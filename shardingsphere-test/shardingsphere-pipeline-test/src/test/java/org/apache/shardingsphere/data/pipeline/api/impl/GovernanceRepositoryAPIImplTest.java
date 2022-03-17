@@ -68,6 +68,7 @@ public final class GovernanceRepositoryAPIImplTest {
     public static void beforeClass() {
         EmbedTestingServer.start();
         PipelineContextUtil.mockModeConfig();
+        PipelineContextUtil.mockContextManager();
         governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
     }
     

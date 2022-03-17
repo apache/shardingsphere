@@ -61,6 +61,7 @@ public final class RuleAlteredJobAPIImplTest {
     public static void beforeClass() {
         EmbedTestingServer.start();
         PipelineContextUtil.mockModeConfig();
+        PipelineContextUtil.mockContextManager();
         ruleAlteredJobAPI = PipelineJobAPIFactory.getRuleAlteredJobAPI();
     }
     

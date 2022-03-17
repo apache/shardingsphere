@@ -19,6 +19,8 @@ package org.apache.shardingsphere.data.pipeline.core.util;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.concurrent.ConcurrentException;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
@@ -29,7 +31,11 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChanne
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryFactory;
 
 import java.util.Properties;
 
@@ -40,6 +46,20 @@ public final class PipelineContextUtil {
     
     private static final PipelineChannelFactory PIPELINE_CHANNEL_FACTORY = new MemoryPipelineChannelFactory();
     
+    private static final ClusterPersistRepositoryConfiguration PERSIST_REPOSITORY_CONFIG;
+    
+    private static final LazyInitializer<ClusterPersistRepository> PERSIST_REPOSITORY_LAZY_INITIALIZER;
+    
+    static {
+        PERSIST_REPOSITORY_CONFIG = new ClusterPersistRepositoryConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), new Properties());
+        PERSIST_REPOSITORY_LAZY_INITIALIZER = new LazyInitializer<ClusterPersistRepository>() {
+            @Override
+            protected ClusterPersistRepository initialize() {
+                return ClusterPersistRepositoryFactory.newInstance(PERSIST_REPOSITORY_CONFIG);
+            }
+        };
+    }
+    
     /**
      * Mock mode configuration.
      */
@@ -49,7 +69,7 @@ public final class PipelineContextUtil {
     }
     
     private static ModeConfiguration createModeConfig() {
-        return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), new Properties()), true);
+        return new ModeConfiguration("Cluster", PERSIST_REPOSITORY_CONFIG, true);
     }
     
     /**
@@ -60,14 +80,19 @@ public final class PipelineContextUtil {
                 ConfigurationFileUtil.readFile("config_sharding_sphere_jdbc_source.yaml"));
         ShardingSphereDataSource shardingSphereDataSource = (ShardingSphereDataSource) new PipelineDataSourceFactory().newInstance(pipelineDataSourceConfig).getDataSource();
         ContextManager contextManager = shardingSphereDataSource.getContextManager();
+        MetaDataPersistService metaDataPersistService = new MetaDataPersistService(getClusterPersistRepository());
+        MetaDataContexts metaDataContexts = renewMetaDataContexts(contextManager.getMetaDataContexts(), metaDataPersistService);
+        contextManager.init(metaDataContexts, contextManager.getTransactionContexts(), contextManager.getInstanceContext());
         PipelineContext.initContextManager(contextManager);
-        try {
-            shardingSphereDataSource.close();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            log.error("close data source failed", ex);
-        }
+    }
+    
+    @SneakyThrows(ConcurrentException.class)
+    private static ClusterPersistRepository getClusterPersistRepository() {
+        return PERSIST_REPOSITORY_LAZY_INITIALIZER.get();
+    }
+    
+    private static MetaDataContexts renewMetaDataContexts(final MetaDataContexts old, final MetaDataPersistService metaDataPersistService) {
+        return new MetaDataContexts(metaDataPersistService, old.getMetaDataMap(), old.getGlobalRuleMetaData(), old.getExecutorEngine(), old.getOptimizerContext(), old.getProps());
     }
     
     /**
