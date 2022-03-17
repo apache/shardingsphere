@@ -35,6 +35,7 @@ import java.sql.SQLException;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 /**
  * ShardingSphere proxy container.
@@ -73,7 +74,7 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
     @Override
     protected void configure() {
         mapConfigurationFiles();
-        setWaitStrategy(new JDBCConnectionWaitStrategy(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), scenario), "root", "root"));
+        setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), scenario), "root", "root"));
     }
     
     private void mapConfigurationFiles() {
@@ -106,7 +107,7 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
     @RequiredArgsConstructor
     private static class JDBCConnectionWaitStrategy extends AbstractWaitStrategy {
         
-        private final String jdbcUrl;
+        private final Supplier<String> jdbcUrl;
         
         private final String username;
         
@@ -117,7 +118,7 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
             Unreliables.retryUntilSuccess((int) startupTimeout.getSeconds(), TimeUnit.SECONDS,
                 () -> {
                     getRateLimiter().doWhenReady(() -> {
-                        try (Connection unused = DriverManager.getConnection(jdbcUrl, username, password)) {
+                        try (Connection unused = DriverManager.getConnection(jdbcUrl.get(), username, password)) {
                             log.info("Container ready");
                         } catch (final SQLException ex) {
                             throw new RuntimeException("Not Ready yet.");
