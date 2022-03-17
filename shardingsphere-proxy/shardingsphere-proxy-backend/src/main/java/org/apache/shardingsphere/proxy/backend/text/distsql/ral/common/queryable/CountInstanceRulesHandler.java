@@ -35,13 +35,12 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Count instance rules handler.
@@ -52,7 +51,13 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
     
     private static final String SINGLE_TABLE = "single_table";
     
-    private static final String SHARDING = "sharding";
+    private static final String SHARDING_TABLE = "sharding_table";
+    
+    private static final String SHARDING_BINDING_TABLE = "sharding_binding_table";
+    
+    private static final String SHARDING_BROADCAST_TABLE = "sharding_broadcast_table";
+    
+    private static final String SHARDING_SCALING = "sharding_scaling";
     
     private static final String READWRITE_SPLITTING = "readwrite_splitting";
     
@@ -62,53 +67,35 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
     
     private static final String SHADOW = "shadow";
     
-    private static final String SHARDING_TABLE = "sharding_table";
-    
-    private static final String BINDING_TABLE = "binding_table";
-    
-    private static final String BROADCAST_TABLE = "broadcast_table";
-    
-    private static final String DATA_SOURCE = "data_source";
-    
-    private static final String TABLE = "table";
-    
-    private static final Map<String, Class<? extends RuleConfiguration>> FEATURE_MAP = new HashMap<>(5, 1);
-    
-    static {
-        FEATURE_MAP.put(SHARDING, ShardingRuleConfiguration.class);
-        FEATURE_MAP.put(READWRITE_SPLITTING, ReadwriteSplittingRuleConfiguration.class);
-        FEATURE_MAP.put(DB_DISCOVERY, DatabaseDiscoveryRuleConfiguration.class);
-        FEATURE_MAP.put(ENCRYPT, EncryptRuleConfiguration.class);
-        FEATURE_MAP.put(SHADOW, ShadowRuleConfiguration.class);
-    }
-    
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("feature", "type", "count");
+        return Arrays.asList("rule_name", "count");
     }
     
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) throws SQLException {
         Map<String, List<Object>> dataMap = new LinkedHashMap<>();
-        ProxyContext.getInstance().getAllSchemaNames().forEach(each -> {
-            addSchemaData(dataMap, ProxyContext.getInstance().getMetaData(each));
-        });
+        ProxyContext.getInstance().getAllSchemaNames().forEach(each ->
+                addSchemaData(dataMap, ProxyContext.getInstance().getMetaData(each))
+        );
         return dataMap.values();
     }
     
     private void addSchemaData(final Map<String, List<Object>> dataMap, final ShardingSphereMetaData metaData) {
-        addSingleTableData(dataMap, metaData.getRuleMetaData().findRules(SingleTableRule.class));
+        initData(dataMap);
+        Collection<SingleTableRule> singleTableRules = metaData.getRuleMetaData().findRules(SingleTableRule.class);
+        if (!singleTableRules.isEmpty()) {
+            addSingleTableData(dataMap, singleTableRules);
+        }
         if (hasRuleConfiguration(metaData)) {
             addConfigurationData(dataMap, metaData.getRuleMetaData().getConfigurations());
-        } else {
-            addDefaultData(dataMap);
         }
     }
     
     private void addSingleTableData(final Map<String, List<Object>> dataMap, final Collection<SingleTableRule> rules) {
         Optional<Integer> count = rules.stream().map(each -> (Collection) each.export(ExportableConstants.EXPORTABLE_KEY_SINGLE_TABLES).orElse(Collections.emptyMap()))
                 .map(Collection::size).reduce(Integer::sum);
-        dataMap.compute(SINGLE_TABLE, (key, value) -> buildRow(value, SINGLE_TABLE, TABLE, count.orElse(DEFAULT_COUNT)));
+        dataMap.compute(SINGLE_TABLE, (key, value) -> buildRow(value, SINGLE_TABLE, count.orElse(DEFAULT_COUNT)));
     }
     
     private boolean hasRuleConfiguration(final ShardingSphereMetaData metaData) {
@@ -116,12 +103,8 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
         return null != configurations && !configurations.isEmpty();
     }
     
-    private void addDefaultData(final Map<String, List<Object>> dataMap) {
-        addShardingData(dataMap, null);
-        addReadwriteSplittingData(dataMap, null);
-        addDBDiscoveryData(dataMap, null);
-        addEncryptData(dataMap, null);
-        addShadowData(dataMap, null);
+    private void initData(final Map<String, List<Object>> dataMap) {
+        addDefaultData(dataMap, SINGLE_TABLE, SHARDING_TABLE, SHARDING_BINDING_TABLE, SHARDING_BROADCAST_TABLE, SHARDING_SCALING, READWRITE_SPLITTING, DB_DISCOVERY, ENCRYPT, SHADOW);
     }
     
     private void addConfigurationData(final Map<String, List<Object>> dataMap, final Collection<RuleConfiguration> configurations) {
@@ -135,57 +118,64 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
     }
     
     private void addShardingData(final Map<String, List<Object>> dataMap, final RuleConfiguration ruleConfiguration) {
-        addData(dataMap, String.join("_", SHARDING, SHARDING_TABLE), SHARDING, SHARDING_TABLE, ruleConfiguration,
-            config -> ((ShardingRuleConfiguration) config).getTables().size() + ((ShardingRuleConfiguration) config).getAutoTables().size());
-        addData(dataMap, String.join("_", SHARDING, BINDING_TABLE), SHARDING, BINDING_TABLE, ruleConfiguration, config -> ((ShardingRuleConfiguration) config).getBindingTableGroups().size());
-        addData(dataMap, String.join("_", SHARDING, BROADCAST_TABLE), SHARDING, BROADCAST_TABLE, ruleConfiguration, config -> ((ShardingRuleConfiguration) config).getBroadcastTables().size());
+        if (!(ruleConfiguration instanceof ShardingRuleConfiguration)) {
+            return;
+        }
+        addData(dataMap, SHARDING_TABLE,
+            () -> ((ShardingRuleConfiguration) ruleConfiguration).getTables().size() + ((ShardingRuleConfiguration) ruleConfiguration).getAutoTables().size());
+        addData(dataMap, SHARDING_BINDING_TABLE, () -> ((ShardingRuleConfiguration) ruleConfiguration).getBindingTableGroups().size());
+        addData(dataMap, SHARDING_BROADCAST_TABLE, () -> ((ShardingRuleConfiguration) ruleConfiguration).getBroadcastTables().size());
+        addData(dataMap, SHARDING_SCALING, () -> ((ShardingRuleConfiguration) ruleConfiguration).getScaling().size());
     }
     
     private void addReadwriteSplittingData(final Map<String, List<Object>> dataMap, final RuleConfiguration ruleConfiguration) {
-        addData(dataMap, READWRITE_SPLITTING, DATA_SOURCE, ruleConfiguration, config -> ((ReadwriteSplittingRuleConfiguration) config).getDataSources().size());
+        if (!(ruleConfiguration instanceof ReadwriteSplittingRuleConfiguration)) {
+            return;
+        }
+        addData(dataMap, READWRITE_SPLITTING, () -> ((ReadwriteSplittingRuleConfiguration) ruleConfiguration).getDataSources().size());
     }
     
     private void addDBDiscoveryData(final Map<String, List<Object>> dataMap, final RuleConfiguration ruleConfiguration) {
-        addData(dataMap, DB_DISCOVERY, DATA_SOURCE, ruleConfiguration, config -> ((DatabaseDiscoveryRuleConfiguration) config).getDataSources().size());
+        if (!(ruleConfiguration instanceof DatabaseDiscoveryRuleConfiguration)) {
+            return;
+        }
+        addData(dataMap, DB_DISCOVERY, () -> ((DatabaseDiscoveryRuleConfiguration) ruleConfiguration).getDataSources().size());
     }
     
     private void addEncryptData(final Map<String, List<Object>> dataMap, final RuleConfiguration ruleConfiguration) {
-        addData(dataMap, ENCRYPT, TABLE, ruleConfiguration, config -> ((EncryptRuleConfiguration) config).getTables().size());
+        if (!(ruleConfiguration instanceof EncryptRuleConfiguration)) {
+            return;
+        }
+        addData(dataMap, ENCRYPT, () -> ((EncryptRuleConfiguration) ruleConfiguration).getTables().size());
     }
     
     private void addShadowData(final Map<String, List<Object>> dataMap, final RuleConfiguration ruleConfiguration) {
-        addData(dataMap, SHADOW, DATA_SOURCE, ruleConfiguration, config -> ((ShadowRuleConfiguration) config).getDataSources().size());
-    }
-    
-    private void addData(final Map<String, List<Object>> dataMap, final String feature, final String type,
-                         final RuleConfiguration ruleConfiguration, final Function<RuleConfiguration, Integer> apply) {
-        addData(dataMap, feature, feature, type, ruleConfiguration, apply);
-    }
-    
-    private void addData(final Map<String, List<Object>> dataMap, final String dataKey, final String feature, final String type,
-                         final RuleConfiguration ruleConfiguration, final Function<RuleConfiguration, Integer> apply) {
-        if (null == ruleConfiguration) {
-            dataMap.putIfAbsent(dataKey, buildRow(feature, type, DEFAULT_COUNT));
+        if (!(ruleConfiguration instanceof ShadowRuleConfiguration)) {
             return;
         }
-        Class<? extends RuleConfiguration> clz = FEATURE_MAP.get(feature);
-        if (!(ruleConfiguration.getClass().getCanonicalName().equals(clz.getCanonicalName()))) {
-            dataMap.putIfAbsent(dataKey, buildRow(feature, type, DEFAULT_COUNT));
-            return;
-        }
-        dataMap.compute(dataKey, (key, value) -> buildRow(value, feature, type, apply.apply(ruleConfiguration)));
+        addData(dataMap, SHADOW, () -> ((ShadowRuleConfiguration) ruleConfiguration).getDataSources().size());
     }
     
-    private List<Object> buildRow(final Collection<Object> value, final String type, final String name, final Integer count) {
+    private void addData(final Map<String, List<Object>> dataMap, final String dataKey, final Supplier<Integer> apply) {
+        dataMap.compute(dataKey, (key, value) -> buildRow(value, dataKey, apply.get()));
+    }
+    
+    private void addDefaultData(final Map<String, List<Object>> dataMap, final String... dataKey) {
+        for (String each : dataKey) {
+            dataMap.putIfAbsent(each, buildRow(each, DEFAULT_COUNT));
+        }
+    }
+    
+    private List<Object> buildRow(final Collection<Object> value, final String ruleName, final Integer count) {
         if (value == null) {
-            return Arrays.asList(type, name, count);
+            return Arrays.asList(ruleName, count);
         } else {
             Integer oldCount = (Integer) new LinkedList<>(value).getLast();
-            return Arrays.asList(type, name, Integer.sum(oldCount, count));
+            return Arrays.asList(ruleName, Integer.sum(oldCount, count));
         }
     }
     
-    private List<Object> buildRow(final String type, final String name, final Integer count) {
-        return Arrays.asList(type, name, count);
+    private List<Object> buildRow(final String ruleName, final Integer count) {
+        return Arrays.asList(ruleName, count);
     }
 }

@@ -57,7 +57,7 @@ public final class ShardingSphereDataSourceTest {
         assertNotNull(actual.getContextManager());
         assertTrue(actual.getContextManager().getMetaDataContexts().getMetaDataMap().containsKey(DefaultSchema.LOGIC_NAME));
         assertTrue(actual.getContextManager().getTransactionContexts().getEngines().containsKey(DefaultSchema.LOGIC_NAME));
-        assertThat(actual.getContextManager().getInstanceContext().getState().getCurrentState(), is(StateType.OK));
+        assertThat(actual.getContextManager().getInstanceContext().getInstance().getState().getCurrentState(), is(StateType.OK));
         assertThat(actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).size(), is(0));
     }
     
@@ -70,7 +70,7 @@ public final class ShardingSphereDataSourceTest {
         assertNotNull(actual.getContextManager());
         assertTrue(actual.getContextManager().getMetaDataContexts().getMetaDataMap().containsKey(DefaultSchema.LOGIC_NAME));
         assertTrue(actual.getContextManager().getTransactionContexts().getEngines().containsKey(DefaultSchema.LOGIC_NAME));
-        assertThat(actual.getContextManager().getInstanceContext().getState().getCurrentState(), is(StateType.OK));
+        assertThat(actual.getContextManager().getInstanceContext().getInstance().getState().getCurrentState(), is(StateType.OK));
         assertThat(actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).size(), is(1));
         assertThat(actual.getContextManager().getDataSourceMap(DefaultSchema.LOGIC_NAME).get("ds").getConnection().getMetaData().getURL(), is("jdbc:mock://127.0.0.1/foo_ds"));
     }

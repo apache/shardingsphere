@@ -131,7 +131,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     public ShardingSphereStatement(final ShardingSphereConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
-        super(Statement.class);
         this.connection = connection;
         metaDataContexts = connection.getContextManager().getMetaDataContexts();
         statements = new LinkedList<>();
@@ -485,14 +484,14 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 .prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
     }
     
-    private void cacheStatements(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups) {
+    private void cacheStatements(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups) throws SQLException {
         for (ExecutionGroup<JDBCExecutionUnit> each : executionGroups) {
             statements.addAll(each.getInputs().stream().map(JDBCExecutionUnit::getStorageResource).collect(Collectors.toList()));
         }
         replay();
     }
     
-    private void replay() {
+    private void replay() throws SQLException {
         for (Statement each : statements) {
             getMethodInvocationRecorder().replay(each);
         }

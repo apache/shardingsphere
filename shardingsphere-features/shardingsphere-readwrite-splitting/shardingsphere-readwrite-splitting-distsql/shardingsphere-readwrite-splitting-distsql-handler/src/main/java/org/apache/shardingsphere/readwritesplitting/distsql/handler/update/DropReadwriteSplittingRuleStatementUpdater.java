@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
+import org.apache.shardingsphere.infra.config.function.ResourceRequiredRuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -44,6 +46,7 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
         }
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeDroppedRuleNames(schemaName, sqlStatement, currentRuleConfig);
+        checkToBeDroppedInUsed(schemaName, sqlStatement, shardingSphereMetaData);
     }
     
     private void checkCurrentRuleConfiguration(final String schemaName, final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
@@ -61,6 +64,16 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
         Collection<String> notExistedRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
         if (!notExistedRuleNames.isEmpty()) {
             throw new RequiredRuleMissedException("Readwrite splitting", schemaName, sqlStatement.getRuleNames());
+        }
+    }
+    
+    private void checkToBeDroppedInUsed(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, 
+                                        final ShardingSphereMetaData shardingSphereMetaData) throws RuleInUsedException {
+        Collection<String> resourceBeUsed = shardingSphereMetaData.getRuleMetaData().findRuleConfiguration(ResourceRequiredRuleConfiguration.class).stream()
+                .map(ResourceRequiredRuleConfiguration::getRequiredResource).flatMap(Collection::stream).collect(Collectors.toSet());
+        Collection<String> ruleInUsed = sqlStatement.getRuleNames().stream().filter(resourceBeUsed::contains).collect(Collectors.toSet());
+        if (!ruleInUsed.isEmpty()) {
+            throw new RuleInUsedException("Readwrite splitting", schemaName, ruleInUsed);
         }
     }
     

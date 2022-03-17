@@ -8,9 +8,9 @@
 [![codecov](https://codecov.io/gh/apache/shardingsphere/branch/master/graph/badge.svg)](https://codecov.io/gh/apache/shardingsphere)
 [![snyk](https://snyk.io/test/github/apache/shardingsphere/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/apache/shardingsphere?targetFile=pom.xml)
 [![Maintainability](https://cloud.quality-gate.com/dashboard/api/badge?projectName=apache_shardingsphere&branchName=master)](https://cloud.quality-gate.com/dashboard/branches/30#overview)
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5394/badge)](https://bestpractices.coreinfrastructure.org/projects/5394)
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/apache/skywalking)
-[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5394/badge)](https://bestpractices.coreinfrastructure.org/projects/5394)
 
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/ShardingSphere.svg?style=social&label=Follow%20%40ShardingSphere)](https://twitter.com/ShardingSphere)
 [![Slack](https://img.shields.io/badge/%20Slack-ShardingSphere%20Channel-blueviolet)](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
@@ -41,7 +41,7 @@ Virtually all databases are [supported](https://shardingsphere.apache.org/docume
 
 ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) Top-Level Project on April 16, 2020.
  
-### DOCUMENTATION📜: 
+### DOCUMENTATION📜
 
 <hr>
 
@@ -50,15 +50,21 @@ ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) T
 
 For full documentation & more details, visit: [Docs](https://shardingsphere.apache.org/document/current/en/overview/)
 
-### CONTRIBUTION🚀🧑‍💻:
+### CONTRIBUTION🚀🧑‍💻
 
 <hr>
 
 For guides on how to get started and setup your environment, contributor & committer guides, visit: [Contribution Guidelines](https://shardingsphere.apache.org/community/en/contribute/)
 
+### Team
+
+<hr>
+
+We deeply appreciate [community contributors](https://shardingsphere.apache.org/community/cn/team) for their dedication to Apache ShardingSphere.
+
 ##
 
-### COMMUNITY & SUPPORT💝🖤:
+### COMMUNITY & SUPPORT💝🖤
 
 <hr>
 
@@ -74,14 +80,13 @@ For guides on how to get started and setup your environment, contributor & commi
 
 ##
 
-### STATUS👀:
+### STATUS👀
 
 <hr>
 
 :white_check_mark: Version 5.1.0: released :tada:
 
 🔗 For the release notes, follow this link to the relevant [GitHub page](https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md).
-
 
 :soon: Version 5.1.1
 
@@ -112,14 +117,12 @@ Keep an eye on the [milestones page](https://github.com/apache/shardingsphere/mi
  
 ##
 
-### How it Works:
+### How it Works
 
 <hr>
 
 Apache ShardingSphere includes 2 independent products: JDBC & Proxy.
 They all provide functions of data scale-out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism, heterogeneous language and Cloud-Native.
-
-##
 
 ### ShardingSphere-JDBC
 
@@ -132,8 +135,6 @@ With the client end connecting directly to the database, it provides services in
 
 :link: For more details, follow this [link to the official website](https://shardingsphere.apache.org/document/current/en/overview/#shardingsphere-jdbc).
 
-##
- 
 ### ShardingSphere-Proxy
 
 <hr>
@@ -145,8 +146,6 @@ A transparent database proxy, providing a database server that encapsulates data
 Friendlier to DBAs, the MySQL and PostgreSQL version now provided can use any kind of terminal.
 
 :link: For more details, follow this [link to the official website](https://shardingsphere.apache.org/document/current/en/overview/#shardingsphere-proxy).
-
-##
 
 ### Hybrid Architecture
 
@@ -183,7 +182,7 @@ Through the mixed use of ShardingSphere-JDBC & ShardingSphere-Proxy together wit
 
 ##
 
-### How to Build Apache ShardingSphere:
+### How to Build Apache ShardingSphere
 
 <hr>
 

@@ -18,7 +18,7 @@ chapter = true
 | ComplexInlineShardingAlgorithm      | 基于行表达式的复合分片算法    |
 | AutoIntervalShardingAlgorithm       | 基于可变时间范围的分片算法    |
 | ClassBasedShardingAlgorithm         | 基于自定义类的分片算法       |
-| HintInlineShardingAlgorithm         | 基于行表达式的Hint分片算法   |
+| HintInlineShardingAlgorithm         | 基于行表达式的 Hint 分片算法   |
 | IntervalShardingAlgorithm           | 基于固定时间范围的分片算法    |
 | HashModShardingAlgorithm            | 基于哈希取模的分片算法       |
 | InlineShardingAlgorithm             | 基于行表达式的分片算法       |

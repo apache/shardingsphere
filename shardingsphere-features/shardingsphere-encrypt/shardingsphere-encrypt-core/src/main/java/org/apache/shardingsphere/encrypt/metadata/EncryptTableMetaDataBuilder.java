@@ -22,8 +22,8 @@ import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoaderEngine;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.util.TableMetaDataUtil;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
@@ -70,8 +70,8 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
     
     private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final EncryptRule encryptRule) {
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        return encryptTable.map(optional ->
-                new TableMetaData(tableName, getEncryptColumnMetaDataList(optional, tableMetaData.getColumns().values()), tableMetaData.getIndexes().values())).orElse(tableMetaData);
+        return encryptTable.map(optional -> new TableMetaData(tableName, getEncryptColumnMetaDataList(optional, tableMetaData.getColumns().values()), 
+                tableMetaData.getIndexes().values(), tableMetaData.getConstrains().values())).orElse(tableMetaData);
     }
     
     private Collection<ColumnMetaData> getEncryptColumnMetaDataList(final EncryptTable encryptTable, final Collection<ColumnMetaData> originalColumnMetaDataList) {

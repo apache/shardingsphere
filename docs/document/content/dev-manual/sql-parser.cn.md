@@ -33,3 +33,4 @@ chapter = true
 | SQLServerStatementSQLVisitorFacade  | 基于 SQLServer 的提取 SQL 语句的语法树访问器   |
 | OracleStatementSQLVisitorFacade     | 基于 Oracle 的提取 SQL 语句的语法树访问器      |
 | SQL92StatementSQLVisitorFacade      | 基于 SQL92 的提取 SQL 语句的语法树访问器       |
+| OpenGaussStatementSQLVisitorFacade  | 基于 openGauss 的提取 SQL 语句的语法树访问器   |

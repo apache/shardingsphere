@@ -34,19 +34,23 @@ import java.util.stream.Collectors;
  */
 public final class DropDatabaseDiscoveryHeartbeatStatementUpdater implements RuleDefinitionDropUpdater<DropDatabaseDiscoveryHeartbeatStatement, DatabaseDiscoveryRuleConfiguration> {
     
-    private static final String RULE_TYPE = "database discovery";
+    private static final String RULE_TYPE = "Database discovery";
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropDatabaseDiscoveryHeartbeatStatement sqlStatement, 
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropDatabaseDiscoveryHeartbeatStatement sqlStatement,
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         String schemaName = shardingSphereMetaData.getName();
-        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
-        checkIsExist(schemaName, sqlStatement, currentRuleConfig);
+        checkCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
         checkIsInUse(schemaName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkCurrentRuleConfiguration(final String schemaName, final DropDatabaseDiscoveryHeartbeatStatement sqlStatement,
+                                               final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+        if (sqlStatement.isContainsExistClause()) {
+            return;
+        }
         DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException(RULE_TYPE, schemaName));
+        checkIsExist(schemaName, sqlStatement, currentRuleConfig);
     }
     
     private void checkIsExist(final String schemaName, final DropDatabaseDiscoveryHeartbeatStatement sqlStatement,
@@ -73,6 +77,11 @@ public final class DropDatabaseDiscoveryHeartbeatStatementUpdater implements Rul
     
     private void dropRule(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String heartbeatName) {
         currentRuleConfig.getDiscoveryHeartbeats().remove(heartbeatName);
+    }
+    
+    @Override
+    public boolean hasAnyOneToBeDropped(final DropDatabaseDiscoveryHeartbeatStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+        return isExistRuleConfig(currentRuleConfig) && !getIdenticalData(currentRuleConfig.getDiscoveryHeartbeats().keySet(), sqlStatement.getHeartbeatNames()).isEmpty();
     }
     
     @Override

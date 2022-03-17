@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -64,6 +65,14 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
         updater.checkSQLStatement(mock(ShardingSphereMetaData.class), createSQLStatement("TEST"), getCurrentRuleConfig());
     }
     
+    @Test(expected = InvalidRuleConfigurationException.class)
+    public void assertCheckSQLStatementWithDuplicateResource() throws DistSQLException {
+        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
+        when(shardingSphereMetaData.getResource()).thenReturn(resource);
+        when(resource.getDataSources()).thenReturn(Collections.singletonMap("write_ds", null));
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("write_ds", "TEST"), getCurrentRuleConfig());
+    }
+    
     @Test(expected = RequiredResourceMissedException.class)
     public void assertCheckSQLStatementWithoutExistedResources() throws DistSQLException {
         when(resource.getNotExistedResources(any())).thenReturn(Arrays.asList("read_ds_0", "read_ds_1"));
@@ -78,6 +87,11 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
     
     private CreateReadwriteSplittingRuleStatement createSQLStatement(final String loadBalancerName) {
         ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment("readwrite_ds", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), loadBalancerName, new Properties());
+        return new CreateReadwriteSplittingRuleStatement(Collections.singleton(ruleSegment));
+    }
+    
+    private CreateReadwriteSplittingRuleStatement createSQLStatement(final String ruleName, final String loadBalancerName) {
+        ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment(ruleName, "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), loadBalancerName, new Properties());
         return new CreateReadwriteSplittingRuleStatement(Collections.singleton(ruleSegment));
     }
     

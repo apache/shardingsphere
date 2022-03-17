@@ -23,10 +23,7 @@ import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.ScheduleJobBootstrap;
-import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationAPI;
-import org.apache.shardingsphere.elasticjob.lite.lifecycle.internal.settings.JobConfigurationAPIImpl;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
@@ -50,17 +47,10 @@ public final class ModeScheduleContext {
     private final ModeConfiguration modeConfig;
     
     private final LazyInitializer<CoordinatorRegistryCenter> registryCenterLazyInitializer = new LazyInitializer<CoordinatorRegistryCenter>() {
+        
         @Override
         protected CoordinatorRegistryCenter initialize() {
             return initRegistryCenter(modeConfig);
-        }
-    };
-    
-    private final LazyInitializer<JobConfigurationAPI> jobConfigAPILazyInitializer = new LazyInitializer<JobConfigurationAPI>() {
-        @Override
-        protected JobConfigurationAPI initialize() throws ConcurrentException {
-            CoordinatorRegistryCenter registryCenter = registryCenterLazyInitializer.get();
-            return null != registryCenter ? new JobConfigurationAPIImpl(registryCenter) : null;
         }
     };
     
@@ -103,24 +93,6 @@ public final class ModeScheduleContext {
         return null;
     }
     
-    /**
-     * Schedule with cron.
-     *
-     * @param jobName job name
-     * @param job job implementation
-     * @param cron cron expression
-     */
-    public void scheduleWithCron(final String jobName, final Consumer<JobParameter> job, final String cron) {
-        CoordinatorRegistryCenter registryCenter = getRegistryCenter();
-        if (null == registryCenter) {
-            log.warn("registryCenter is null, ignore, jobName={}, cron={}", job, cron);
-            return;
-        }
-        JobConfiguration jobConfig = JobConfiguration.newBuilder(jobName, 1).cron(cron).build();
-        ScheduleJobBootstrap bootstrap = new ScheduleJobBootstrap(registryCenter, new ConsumerSimpleJob(job), jobConfig);
-        bootstrap.schedule();
-    }
-    
     @SneakyThrows(ConcurrentException.class)
     private CoordinatorRegistryCenter getRegistryCenter() {
         return registryCenterLazyInitializer.get();
@@ -131,7 +103,7 @@ public final class ModeScheduleContext {
      *
      * @param job cron job
      */
-    @SuppressWarnings("all")
+    @SuppressWarnings("unchecked")
     public void startCronJob(final CronJob job) {
         CoordinatorRegistryCenter registryCenter = getRegistryCenter();
         if (null == registryCenter) {
@@ -145,30 +117,6 @@ public final class ModeScheduleContext {
         ScheduleJobBootstrap bootstrap = new ScheduleJobBootstrap(registryCenter, new ConsumerSimpleJob(job.getJob()), jobConfig);
         SCHEDULE_JOB_BOOTSTRAP_MAP.put(job.getJobName(), bootstrap);
         SCHEDULE_JOB_BOOTSTRAP_MAP.get(job.getJobName()).schedule();
-    }
-    
-    /**
-     * Update job cron.
-     *
-     * @param jobName job name
-     * @param cron cron expression
-     */
-    public void updateJobCron(final String jobName, final String cron) {
-        JobConfigurationAPI jobConfigAPI = getJobConfigAPI();
-        if (null == jobConfigAPI) {
-            log.warn("jobConfigAPI is null, ignore, jobName={}, cron={}", jobName, cron);
-            return;
-        }
-        JobConfigurationPOJO jobConfig = new JobConfigurationPOJO();
-        jobConfig.setJobName(jobName);
-        jobConfig.setCron(cron);
-        jobConfig.setShardingTotalCount(1);
-        jobConfigAPI.updateJobConfiguration(jobConfig);
-    }
-    
-    @SneakyThrows(ConcurrentException.class)
-    private JobConfigurationAPI getJobConfigAPI() {
-        return jobConfigAPILazyInitializer.get();
     }
     
     private static final class ConsumerSimpleJob implements SimpleJob {

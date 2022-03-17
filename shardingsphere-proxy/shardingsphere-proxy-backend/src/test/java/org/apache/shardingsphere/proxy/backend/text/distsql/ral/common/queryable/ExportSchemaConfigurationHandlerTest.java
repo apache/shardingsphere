@@ -118,7 +118,7 @@ public final class ExportSchemaConfigurationHandlerTest {
         Map<String, TableMetaData> result = new HashMap<>(1, 1);
         List<ColumnMetaData> columns = Collections.singletonList(new ColumnMetaData("order_id", 0, false, false, false));
         List<IndexMetaData> indexes = Collections.singletonList(new IndexMetaData("primary"));
-        result.put("t_order", new TableMetaData("t_order", columns, indexes));
+        result.put("t_order", new TableMetaData("t_order", columns, indexes, Collections.emptyList()));
         return result;
     }
     

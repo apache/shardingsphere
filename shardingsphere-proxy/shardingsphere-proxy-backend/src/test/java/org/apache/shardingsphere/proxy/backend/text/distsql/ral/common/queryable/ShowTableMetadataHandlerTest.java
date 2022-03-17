@@ -76,7 +76,7 @@ public final class ShowTableMetadataHandlerTest {
         Map<String, TableMetaData> result = new HashMap<>();
         List<ColumnMetaData> columns = Collections.singletonList(new ColumnMetaData("order_id", 0, false, false, false));
         List<IndexMetaData> indexes = Collections.singletonList(new IndexMetaData("primary"));
-        result.put("t_order", new TableMetaData("t_order", columns, indexes));
+        result.put("t_order", new TableMetaData("t_order", columns, indexes, Collections.emptyList()));
         return result;
     }
     

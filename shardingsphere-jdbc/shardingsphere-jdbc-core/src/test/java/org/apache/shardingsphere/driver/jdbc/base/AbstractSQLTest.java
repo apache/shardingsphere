@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.base;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.h2.tools.RunScript;
 import org.junit.BeforeClass;
 
@@ -44,7 +45,7 @@ public abstract class AbstractSQLTest {
     }
     
     private static void createDataSources(final String dataSourceName) throws SQLException {
-        ACTUAL_DATA_SOURCES.put(dataSourceName, DataSourceBuilder.build(dataSourceName));
+        ACTUAL_DATA_SOURCES.put(dataSourceName, buildDataSource(dataSourceName));
         initializeSchema(dataSourceName);
     }
     
@@ -58,6 +59,16 @@ public abstract class AbstractSQLTest {
                 RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_init.sql"))));
             }
         }
+    }
+    
+    private static DataSource buildDataSource(final String dataSourceName) {
+        HikariDataSource result = new HikariDataSource();
+        result.setDriverClassName("org.h2.Driver");
+        result.setJdbcUrl(String.format("jdbc:h2:mem:%s;DATABASE_TO_UPPER=false;MODE=MySQL", dataSourceName));
+        result.setUsername("sa");
+        result.setPassword("");
+        result.setMaximumPoolSize(50);
+        return result;
     }
     
     protected static Map<String, DataSource> getActualDataSources() {

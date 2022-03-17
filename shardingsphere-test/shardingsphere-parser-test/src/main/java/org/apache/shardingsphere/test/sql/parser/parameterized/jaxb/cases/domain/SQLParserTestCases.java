@@ -120,6 +120,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CommentStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateConversionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDatabaseLinkStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDatabaseLinkStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDimensionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDomainStatementTestCase;
@@ -519,6 +520,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-database-link")
     private final List<CreateDatabaseLinkStatementTestCase> createDatabaseLinkTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "drop-database-link")
+    private final List<DropDatabaseLinkStatementTestCase> dropDatabaseLinkTestCase = new LinkedList<>();
     
     @XmlElement(name = "create-dimension")
     private final List<CreateDimensionStatementTestCase> createDimensionTestCase = new LinkedList<>();
@@ -1243,6 +1247,7 @@ public final class SQLParserTestCases {
         putAll(createFunctionTestCase, result);
         putAll(createDatabaseTestCase, result);
         putAll(createDatabaseLinkTestCase, result);
+        putAll(dropDatabaseLinkTestCase, result);
         putAll(createDimensionTestCase, result);
         putAll(dropDimensionTestCase, result);
         putAll(dropViewTestCase, result);

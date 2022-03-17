@@ -105,7 +105,7 @@ public final class ShowTableStatusMergedResultTest {
     
     private ShardingSphereSchema buildSchema() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
-        tableMetaDataMap.put("table", new TableMetaData("table", Collections.emptyList(), Collections.emptyList()));
+        tableMetaDataMap.put("table", new TableMetaData("table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         return new ShardingSphereSchema(tableMetaDataMap);
     }
 }
