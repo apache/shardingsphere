@@ -83,8 +83,8 @@ public final class PostgreSQLAdminExecutorFactory implements DatabaseAdminExecut
                     return Optional.of(new PostgreSQLSetCharsetExecutor(setStatement));
                 case "extra_float_digits":
                 case "application_name":
+                    return Optional.of(connectionSession -> { });
                 default:
-                    return Optional.of(connectionSession -> {});
             }
         }
         return Optional.empty();
