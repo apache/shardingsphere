@@ -152,6 +152,9 @@ public final class ExportSchemaConfigurationHandler extends QueryableRALBackendH
     }
     
     private void getRulesConfig(final Collection<RuleConfiguration> ruleConfigurations, final StringBuilder result) {
+        if (null == ruleConfigurations || ruleConfigurations.isEmpty()) {
+            return;
+        }
         configItem(ZERO, "rules", result);
         ruleConfigurations.forEach(each -> {
             getRulesConfigForSharding(each, result);
