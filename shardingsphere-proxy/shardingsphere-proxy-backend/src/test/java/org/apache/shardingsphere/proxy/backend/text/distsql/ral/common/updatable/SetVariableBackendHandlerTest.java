@@ -75,7 +75,7 @@ public final class SetVariableBackendHandlerTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ProxyContext.getInstance().init(contextManager);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        connectionSession = new ConnectionSession(TransactionType.LOCAL, new DefaultAttributeMap());
+        connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap());
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {

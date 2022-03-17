@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.mysql;
+package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
 import com.google.common.eventbus.EventBus;
+import org.apache.shardingsphere.dbdiscovery.mysql.AbstractDatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.junit.Test;
@@ -56,10 +57,10 @@ public final class MGRDatabaseDiscoveryTypeTest {
     
     private static final String GROUP_MEMBER = "SELECT MEMBER_HOST, MEMBER_PORT, MEMBER_STATE FROM performance_schema.replication_group_members";
     
-    private final MGRDatabaseDiscoveryType mgrHaType = new MGRDatabaseDiscoveryType();
+    private final MGRDatabaseDiscoveryType mgrDatabaseDiscoveryType = new MGRDatabaseDiscoveryType();
     
     @Test
-    public void assertCheckHAConfig() throws SQLException {
+    public void assertCheckMGRConfig() throws SQLException {
         DataSource dataSource = mock(DataSource.class);
         Connection connection = mock(Connection.class);
         Statement statement = mock(Statement.class);
@@ -81,10 +82,10 @@ public final class MGRDatabaseDiscoveryTypeTest {
         when(resultSet.getString("MEMBER_STATE")).thenReturn("ONLINE");
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(databaseMetaData.getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/ds_0?serverTimezone=UTC&useSSL=false");
-        mgrHaType.getProps().setProperty("group-name", "group_name");
+        mgrDatabaseDiscoveryType.getProps().setProperty("group-name", "group_name");
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("ds_0", dataSource);
-        mgrHaType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSourceMap);
+        mgrDatabaseDiscoveryType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSourceMap);
     }
     
     @Test
@@ -117,16 +118,16 @@ public final class MGRDatabaseDiscoveryTypeTest {
         for (int i = 0; i < 3; i++) {
             dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
         }
-        mgrHaType.getProps().setProperty("group-name", "group_name");
-        mgrHaType.updatePrimaryDataSource("discovery_db", dataSourceMap, Collections.emptySet(), "group_name");
-        assertThat(mgrHaType.getPrimaryDataSource(), is("ds_2"));
+        mgrDatabaseDiscoveryType.getProps().setProperty("group-name", "group_name");
+        mgrDatabaseDiscoveryType.updatePrimaryDataSource("discovery_db", dataSourceMap, Collections.emptySet(), "group_name");
+        assertThat(mgrDatabaseDiscoveryType.getPrimaryDataSource(), is("ds_2"));
     }
     
     @Test
     public void assertUpdateMemberState() throws SQLException, IllegalAccessException, NoSuchFieldException {
-        Field declaredField = MGRDatabaseDiscoveryType.class.getDeclaredField("oldPrimaryDataSource");
+        Field declaredField = AbstractDatabaseDiscoveryType.class.getDeclaredField("oldPrimaryDataSource");
         declaredField.setAccessible(true);
-        declaredField.set(mgrHaType, "ds_0");
+        declaredField.set(mgrDatabaseDiscoveryType, "ds_0");
         EventBus eventBus = mock(EventBus.class);
         mockStatic(ShardingSphereEventBus.class);
         when(ShardingSphereEventBus.getInstance()).thenReturn(eventBus);
@@ -159,7 +160,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
         for (int i = 0; i < 3; i++) {
             dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
         }
-        mgrHaType.updateMemberState("discovery_db", dataSourceMap, disabledDataSourceNames);
+        mgrDatabaseDiscoveryType.updateMemberState("discovery_db", dataSourceMap, disabledDataSourceNames);
         verify(eventBus).post(Mockito.refEq(new DataSourceDisabledEvent("discovery_db", "ds_2", true)));
     }
 }
