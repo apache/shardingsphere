@@ -21,8 +21,6 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public final class ShowSlaveStatusDatabaseDiscoveryTypeTest {
@@ -36,23 +34,6 @@ public final class ShowSlaveStatusDatabaseDiscoveryTypeTest {
         dataSourceMap.put("ds_1", getDataSource(true, 3307, 0));
         showSlaveStatusDatabaseDiscoveryType.updatePrimaryDataSource("discovery_db", dataSourceMap, Collections.emptySet(), "group_name");
         assertThat(showSlaveStatusDatabaseDiscoveryType.getPrimaryDataSource(), is("ds_0"));
-    }
-    
-    @Test
-    public void assertUpdateMemberState() throws SQLException, IllegalAccessException, NoSuchFieldException {
-        Field declaredField = AbstractDatabaseDiscoveryType.class.getDeclaredField("oldPrimaryDataSource");
-        declaredField.setAccessible(true);
-        declaredField.set(showSlaveStatusDatabaseDiscoveryType, "ds_0");
-        EventBus eventBus = mock(EventBus.class);
-        mockStatic(ShardingSphereEventBus.class);
-        when(ShardingSphereEventBus.getInstance()).thenReturn(eventBus);
-        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
-        dataSourceMap.put("ds_0", getDataSource(false, 3306, 0));
-        dataSourceMap.put("ds_1", getDataSource(true, 3307, 1));
-        dataSourceMap.put("ds_2", getDataSource(true, 3308, 2));
-        showSlaveStatusDatabaseDiscoveryType.getProps().setProperty("delay-milliseconds-threshold", "2000");
-        showSlaveStatusDatabaseDiscoveryType.updateMemberState("discovery_db", dataSourceMap, Collections.emptySet());
-        verify(eventBus).post(Mockito.refEq(new DataSourceDisabledEvent("discovery_db", "ds_2", true)));
     }
     
     private DataSource getDataSource(final boolean slave, final int port, final long secondsBehindMaster) throws SQLException {
