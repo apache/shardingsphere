@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
 import org.testcontainers.containers.BindMode;
-import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
+import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 
 import javax.sql.DataSource;
 import java.util.Objects;
@@ -67,7 +67,7 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
     @Override
     protected void configure() {
         mapConfigurationFiles();
-        setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*ShardingSphere-Proxy .* mode started successfully.*"));
+        setWaitStrategy(new HostPortWaitStrategy());
     }
     
     private void mapConfigurationFiles() {
