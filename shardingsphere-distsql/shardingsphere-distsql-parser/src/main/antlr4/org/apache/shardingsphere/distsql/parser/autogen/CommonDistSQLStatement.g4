@@ -59,5 +59,6 @@ execute
     | alterTrafficRule
     | exportSchemaConfiguration
     | showRulesUsedResource
+    | importSchemaConfiguration
     ) SEMI?
     ;

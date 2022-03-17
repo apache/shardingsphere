@@ -180,6 +180,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.DiscardDistSQLStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.DropTrafficRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ExportSchemaConfigurationStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ImportSchemaConfigurationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.LabelInstanceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ParseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.PrepareDistSQLStatementTestCase;
@@ -777,19 +778,19 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "apply-scaling")
     private final List<ApplyScalingStatementTestCase> applyScalingStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "reset-scaling")
     private final List<ResetScalingStatementTestCase> resetScalingStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-scaling")
     private final List<DropScalingStatementTestCase> dropScalingStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "stop-scaling")
     private final List<StopScalingStatementTestCase> stopScalingStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "start-scaling")
     private final List<StartScalingStatementTestCase> startScalingStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "create-sharding-scaling-rule")
     private final List<CreateShardingScalingRuleStatementTestCase> createShardingScalingRuleStatementTestCases = new LinkedList<>();
     
@@ -1061,17 +1062,17 @@ public final class SQLParserTestCases {
     private final List<LabelInstanceStatementTestCase> labelStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "unlabel-instance")
-    private final List<UnlabelInstanceStatementTestCase> unlabelStatementTestCases = new LinkedList<>(); 
+    private final List<UnlabelInstanceStatementTestCase> unlabelStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-instance")
     private final List<AlterInstanceStatementTestCase> alterInstanceStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "prepare-distsql")
     private final List<PrepareDistSQLStatementTestCase> prepareDistSQLStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "apply-distsql")
     private final List<ApplyDistSQLStatementTestCase> applyDistSQLStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "discard-distsql")
     private final List<DiscardDistSQLStatementTestCase> discardDistSQLStatementTestCases = new LinkedList<>();
     
@@ -1152,13 +1153,13 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-rules-used-resource")
     private final List<ShowRulesUsedResourceStatementTestCase> showRulesUsedResourceStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show-sharding-table-rules-used-algorithm")
     private final List<ShowShardingTableRulesUsedAlgorithmStatementTestCase> showShardingTableRulesUsedAlgorithmStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-sharding-table-rules-used-key-generator")
     private final List<ShowShardingTableRulesUsedKeyGeneratorStatementTestCase> showShardingTableRulesUsedKeyGeneratorStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "prepared")
     private final List<PreparedStatementTestCase> preparedStatementTestCases = new LinkedList<>();
     
@@ -1167,6 +1168,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-sharding-algorithm")
     private final List<DropShardingAlgorithmStatementTestCase> dropShardingAlgorithmStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "import-schema-config")
+    private final List<ImportSchemaConfigurationStatementTestCase> importSchemaConfigurationStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -1459,6 +1463,7 @@ public final class SQLParserTestCases {
         putAll(showShardingTableRulesUsedKeyGeneratorStatementTestCases, result);
         putAll(setUserStatementTestCases, result);
         putAll(dropShardingAlgorithmStatementTestCases, result);
+        putAll(importSchemaConfigurationStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON
