@@ -95,7 +95,13 @@ public final class ReadwriteSplittingDataSourceRuleTest {
         Map<String, Collection<String>> expected = ImmutableMap.of("test_pr", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"));
         assertThat(actual, is(expected));
     }
-    
+
+    @Test
+    public void assertGetStaticWriteDataSource() {
+        String writeDataSourceName = readwriteSplittingDataSourceRule.getWriteDataSource();
+        assertThat(writeDataSourceName, is("write_ds"));
+    }
+
     private Properties getProperties(final String writeDataSource, final String readDataSources) {
         Properties result = new Properties();
         result.setProperty("write-data-source-name", writeDataSource);
