@@ -20,9 +20,9 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
@@ -32,9 +32,9 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -62,9 +62,11 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
         validator.validate(dataSourcePropsMap);
         try {
             ProxyContext.getInstance().getContextManager().addResource(schemaName, dataSourcePropsMap);
-        } catch (final SQLException ex) {
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
             log.error("Add resource failed", ex);
-            DistSQLException.predictionThrow(false, () -> new InvalidResourcesException(dataSourcePropsMap.keySet()));
+            throw new InvalidResourcesException(Collections.singleton(ex.getMessage()));
         }
         return new UpdateResponseHeader(sqlStatement);
     }
