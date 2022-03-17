@@ -60,7 +60,7 @@ public final class OpenGaussFrontendEngine implements DatabaseProtocolFrontendEn
     
     @Override
     public void handleException(final ConnectionSession connectionSession) {
-        if (connectionSession.getTransactionStatus().isInTransaction()) {
+        if (connectionSession.getTransactionStatus().isInTransaction() && !connectionSession.getTransactionStatus().isRollbackOnly()) {
             connectionSession.getTransactionStatus().setRollbackOnly(true);
         }
     }
