@@ -44,7 +44,7 @@
             <artifactId>shardingsphere-shadow-distsql-parser</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-infra-binder</artifactId>
@@ -60,7 +60,7 @@
             <artifactId>shardingsphere-infra-rewrite</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-test-common</artifactId>
