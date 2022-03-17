@@ -31,6 +31,10 @@ showAllVariables
     : SHOW ALL VARIABLES
     ;
 
+alterInstance
+    : ALTER INSTANCE instanceId SET variableName EQ variableValue
+    ;
+
 enableInstance
     : ENABLE INSTANCE (instanceId | instanceDefination)
     ;
@@ -102,7 +106,11 @@ labelInstance
 unlabelInstance
     : UNLABEL INSTANCE (instanceDefination | instanceId) (WITH label (COMMA label)*)?
     ;
-    
+
+countInstanceRules
+    : COUNT INSTANCE RULES (FROM schemaName)?
+    ;
+
 trafficRuleDefinition
     : ruleName LP (labelDefinition COMMA)? trafficAlgorithmDefinition (COMMA loadBalancerDefinition)? RP
     ;
@@ -160,7 +168,7 @@ variableName
     ;
 
 variableValue
-    : IDENTIFIER | STRING | (MINUS)? INT | TRUE | FALSE
+    : IDENTIFIER | STRING | (MINUS)? INT | TRUE | FALSE | instanceId
     ;
 
 instanceDefination
@@ -168,7 +176,7 @@ instanceDefination
     ;
 
 instanceId
-    : ip AT port
+    : ip AT port | IDENTIFIER | STRING
     ;
 
 refreshScope
@@ -221,4 +229,16 @@ algorithmProperty
 
 ifExists
     : IF EXISTS
+    ;
+
+prepareDistSQL
+    : PREPARE DISTSQL
+    ;
+
+applyDistSQL
+    : APPLY DISTSQL
+    ;
+
+discardDistSQL
+    : DISCARD DISTSQL
     ;

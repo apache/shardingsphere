@@ -31,4 +31,9 @@ import java.util.Collection;
 public final class DropDatabaseDiscoveryHeartbeatStatement extends DropRuleStatement {
     
     private final Collection<String> heartbeatNames;
+    
+    public DropDatabaseDiscoveryHeartbeatStatement(final Collection<String> heartbeatNames, final boolean containsExistClause) {
+        setContainsExistClause(containsExistClause);
+        this.heartbeatNames = heartbeatNames;
+    }
 }

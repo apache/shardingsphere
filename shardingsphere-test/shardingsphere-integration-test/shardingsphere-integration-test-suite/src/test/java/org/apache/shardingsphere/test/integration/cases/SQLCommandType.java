@@ -30,6 +30,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * SQL command type.
  */
@@ -42,55 +46,59 @@ public enum SQLCommandType {
      * 
      * <p>Such as {@code SELECT}.</p>
      */
-    DQL(SelectStatement.class, "dql-integration-test-cases"),
+    DQL(SelectStatement.class, "dql-integration-test-cases", false, Arrays.asList("jdbc", "proxy")),
     
     /**
      * Data Manipulation Language.
      *
      * <p>Such as {@code INSERT}, {@code UPDATE}, {@code DELETE}.</p>
      */
-    DML(DMLStatement.class, "dml-integration-test-cases"),
+    DML(DMLStatement.class, "dml-integration-test-cases", false, Arrays.asList("jdbc", "proxy")),
     
     /**
      * Data Definition Language.
      *
      * <p>Such as {@code CREATE}, {@code ALTER}, {@code DROP}, {@code TRUNCATE}.</p>
      */
-    DDL(DDLStatement.class, "ddl-integration-test-cases"),
+    DDL(DDLStatement.class, "ddl-integration-test-cases", false, Arrays.asList("jdbc", "proxy")),
     
     /**
      * Transaction Control Language.
      *
      * <p>Such as {@code SET}, {@code COMMIT}, {@code ROLLBACK}, {@code SAVEPOIINT}, {@code BEGIN}.</p>
      */
-    TCL(TCLStatement.class, "tcl-integration-test-cases"),
+    TCL(TCLStatement.class, "tcl-integration-test-cases", true, Arrays.asList("jdbc", "proxy")),
     
     /**
      * Database administrator Language.
      */
-    DAL(DALStatement.class, "dal-integration-test-cases"),
+    DAL(DALStatement.class, "dal-integration-test-cases", true, Collections.singletonList("proxy")),
     
     /**
      * Database control Language.
      */
-    DCL(DCLStatement.class, "dcl-integration-test-cases"),
-
+    DCL(DCLStatement.class, "dcl-integration-test-cases", false, Arrays.asList("jdbc", "proxy")),
+    
     /**
      * Resource & Rule Administration Language.
      */
-    RAL(RALStatement.class, "ral-integration-test-cases"),
-
+    RAL(RALStatement.class, "ral-integration-test-cases", true, Collections.singletonList("proxy")),
+    
     /**
      * Resource & Rule Definition Language.
      */
-    RDL(RDLStatement.class, "rdl-integration-test-cases"),
-
+    RDL(RDLStatement.class, "rdl-integration-test-cases", true, Collections.singletonList("proxy")),
+    
     /**
      * Resource & Rule Query Language.
      */
-    RQL(RQLStatement.class, "rql-integration-test-cases");
+    RQL(RQLStatement.class, "rql-integration-test-cases", true, Collections.singletonList("proxy"));
     
     private final Class<? extends SQLStatement> sqlStatementClass;
     
     private final String filePrefix;
+    
+    private final boolean literalOnly;
+    
+    private final Collection<String> runningAdaptors;
 }

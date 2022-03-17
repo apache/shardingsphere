@@ -37,7 +37,7 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 @Getter
 public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine {
     
-    private final FrontendContext frontendContext = new FrontendContext(false, true);
+    private final FrontendContext frontendContext = new FrontendContext(false);
     
     private final AuthenticationEngine authenticationEngine = new MySQLAuthenticationEngine();
     
@@ -53,6 +53,10 @@ public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine
     @Override
     public void release(final ConnectionSession connectionSession) {
         MySQLPreparedStatementRegistry.getInstance().unregisterConnection(connectionSession.getConnectionId());
+    }
+    
+    @Override
+    public void handleException(final ConnectionSession connectionSession) {
     }
     
     @Override

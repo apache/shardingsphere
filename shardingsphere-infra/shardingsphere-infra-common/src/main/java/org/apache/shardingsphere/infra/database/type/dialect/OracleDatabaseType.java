@@ -52,6 +52,11 @@ public final class OracleDatabaseType implements DatabaseType {
         return new OracleDataSourceMetaData(url, username);
     }
     
+    @Override
+    public Optional<String> getDataSourceClassName() {
+        return Optional.empty();
+    }
+    
     @SuppressWarnings("ReturnOfNull")
     @Override
     public String getSchema(final Connection connection) {

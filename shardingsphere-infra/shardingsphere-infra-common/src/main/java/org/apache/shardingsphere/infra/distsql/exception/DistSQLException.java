@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.distsql.exception;
 
 import java.sql.SQLException;
+import java.util.function.Supplier;
 
 /**
  * Dist SQL exception.
@@ -34,12 +35,12 @@ public abstract class DistSQLException extends SQLException {
      * Predict and throw an exception.
      *
      * @param state state
-     * @param exception exception
+     * @param exceptionSupplier exception supplier
      * @throws DistSQLException distSQLException
      */
-    public static void predictionThrow(final boolean state, final DistSQLException exception) throws DistSQLException {
+    public static void predictionThrow(final boolean state, final Supplier<DistSQLException> exceptionSupplier) throws DistSQLException {
         if (!state) {
-            throw exception;
+            throw exceptionSupplier.get();
         }
     }
 }

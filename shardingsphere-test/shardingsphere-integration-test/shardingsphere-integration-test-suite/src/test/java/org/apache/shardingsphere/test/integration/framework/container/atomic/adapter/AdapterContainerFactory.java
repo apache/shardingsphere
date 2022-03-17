@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl.ShardingSphereJDBCContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl.ShardingSphereProxyContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 
 /**
  * Adapter container factory.
@@ -34,15 +35,16 @@ public final class AdapterContainerFactory {
      *
      * @param adapter adapter
      * @param databaseType database type
+     * @param storageContainer storage container
      * @param scenario scenario
      * @return new instance of adapter container
      */
-    public static AdapterContainer newInstance(final String adapter, final DatabaseType databaseType, final String scenario) {
+    public static AdapterContainer newInstance(final String adapter, final DatabaseType databaseType, final StorageContainer storageContainer, final String scenario) {
         switch (adapter) {
             case "proxy":
                 return new ShardingSphereProxyContainer(databaseType, scenario);
             case "jdbc":
-                return new ShardingSphereJDBCContainer(scenario);
+                return new ShardingSphereJDBCContainer(storageContainer, scenario);
             default:
                 throw new RuntimeException(String.format("Adapter [%s] is unknown.", adapter));
         }

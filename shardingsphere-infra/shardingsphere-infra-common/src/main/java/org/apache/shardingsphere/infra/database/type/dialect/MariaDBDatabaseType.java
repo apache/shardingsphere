@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Database type of MariaDB.
@@ -49,6 +50,11 @@ public final class MariaDBDatabaseType implements BranchDatabaseType {
     @Override
     public MariaDBDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new MariaDBDataSourceMetaData(url);
+    }
+    
+    @Override
+    public Optional<String> getDataSourceClassName() {
+        return Optional.of("org.mariadb.jdbc.MariaDbDataSource");
     }
     
     @Override

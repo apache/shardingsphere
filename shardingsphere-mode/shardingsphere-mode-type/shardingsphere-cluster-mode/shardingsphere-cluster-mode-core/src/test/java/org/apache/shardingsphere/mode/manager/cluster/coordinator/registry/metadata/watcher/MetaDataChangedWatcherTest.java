@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.watcher;
 
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
@@ -26,7 +25,6 @@ import org.junit.Test;
 
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -77,7 +75,7 @@ public final class MetaDataChangedWatcherTest {
     
     @Test
     public void assertCreateDataSourceChangedEvent() {
-        String key = "/metadata/sharding_db/dataSources";
+        String key = "/metadata/sharding_db/versions/0/dataSources";
         String value = "{}";
         Optional<GovernanceEvent> actual = createEvent(key, value, Type.UPDATED);
         assertTrue(actual.isPresent());
@@ -85,19 +83,9 @@ public final class MetaDataChangedWatcherTest {
     
     @Test
     public void assertCreateRuleChangedEvent() {
-        String key = "/metadata/sharding_db/rules";
+        String key = "/metadata/sharding_db/versions/0/rules";
         Optional<GovernanceEvent> actual = createEvent(key, "[]", Type.UPDATED);
         assertTrue(actual.isPresent());
-    }
-    
-    @Test
-    public void assertCreateCachedEvent() {
-        String key = "/metadata/sharding_db/rules/cache/cacheId";
-        Optional<GovernanceEvent> actual = createEvent(key, "[]", Type.ADDED);
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(RuleConfigurationCachedEvent.class));
-        RuleConfigurationCachedEvent event = (RuleConfigurationCachedEvent) actual.get();
-        assertThat(event.getCacheId(), is("cacheId"));
     }
     
     @Test

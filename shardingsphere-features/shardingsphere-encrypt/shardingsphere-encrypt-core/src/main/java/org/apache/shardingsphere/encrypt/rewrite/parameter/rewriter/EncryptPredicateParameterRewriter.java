@@ -38,7 +38,7 @@ import java.util.Map.Entry;
  * Predicate parameter rewriter for encrypt.
  */
 @Setter
-public final class EncryptPredicateParameterRewriter implements ParameterRewriter<SQLStatementContext>, EncryptRuleAware, EncryptConditionsAware, SchemaNameAware {
+public final class EncryptPredicateParameterRewriter implements ParameterRewriter<SQLStatementContext<?>>, EncryptRuleAware, EncryptConditionsAware, SchemaNameAware {
     
     private EncryptRule encryptRule;
     
@@ -47,12 +47,12 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     private String schemaName;
     
     @Override
-    public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
+    public boolean isNeedRewrite(final SQLStatementContext<?> sqlStatementContext) {
         return sqlStatementContext instanceof WhereAvailable && !((WhereAvailable) sqlStatementContext).getWhereSegments().isEmpty();
     }
     
     @Override
-    public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
+    public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
         for (EncryptCondition each : encryptConditions) {
             boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(each.getTableName());
             if (queryWithCipherColumn) {

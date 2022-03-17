@@ -17,64 +17,27 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder.util;
 
-import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoaderMaterial;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class TableMetaDataUtilTest {
-
-    @Mock
-    private SchemaBuilderMaterials materials;
-
-    @Mock
-    private DataSourceContainedRule dataSourceContainedRule;
-
-    @Mock
-    private DataNodeContainedRule dataNodeContainedRule;
-
-    @Mock
-    private DataSource dataSource1;
-
-    @Mock
-    private DataSource dataSource2;
-
+    
     @Test
     public void assertGetTableMetaDataLoadMaterial() {
-        Map<String, Collection<DataNode>> dataNodes = new HashMap<>();
-        dataNodes.put("t_user", Collections.singletonList(new DataNode("ds0.t_user")));
-        dataNodes.put("t_order", Collections.singletonList(new DataNode("ds1.t_order")));
-        when(dataNodeContainedRule.getAllDataNodes()).thenReturn(dataNodes);
-        Map<String, Collection<String>> dataSourceMapper = new HashMap<>();
-        Collection<ShardingSphereRule> rules = new LinkedList<>();
-        rules.add(dataNodeContainedRule);
-        rules.add(dataSourceContainedRule);
-        when(materials.getRules()).thenReturn(rules);
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("ds0", dataSource1);
-        dataSourceMap.put("ds1", dataSource2);
-        when(materials.getDataSourceMap()).thenReturn(dataSourceMap);
-        Collection<String> tableNames = new LinkedList<>();
-        tableNames.add("t_user");
-        Collection<TableMetaDataLoaderMaterial> results = TableMetaDataUtil.getTableMetaDataLoadMaterial(tableNames, materials, false);
-        assertThat(results.size(), is(1));
+        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(mock(DatabaseType.class), 
+                Collections.singletonMap("foo_ds", new MockedDataSource()), Arrays.asList(mock(DataNodeContainedRule.class), mock(DataSourceContainedRule.class)), mock(ConfigurationProperties.class));
+        assertThat(TableMetaDataUtil.getTableMetaDataLoadMaterial(Collections.singleton("t_user"), materials, false).size(), is(1));
     }
 }

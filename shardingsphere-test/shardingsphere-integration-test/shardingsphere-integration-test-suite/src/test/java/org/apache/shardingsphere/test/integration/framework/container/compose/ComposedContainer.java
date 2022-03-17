@@ -17,18 +17,22 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.compose;
 
+import org.testcontainers.lifecycle.Startable;
+
 import javax.sql.DataSource;
 import java.util.Map;
 
 /**
  * Composed container.
  */
-public interface ComposedContainer extends AutoCloseable {
+public interface ComposedContainer extends Startable {
     
     /**
-     * Start composed container.
+     * Get target data source.
+     *
+     * @return target data source
      */
-    void start();
+    DataSource getTargetDataSource();
     
     /**
      * Get actual data source map.
@@ -38,9 +42,9 @@ public interface ComposedContainer extends AutoCloseable {
     Map<String, DataSource> getActualDataSourceMap();
     
     /**
-     * Get target data source.
+     * Get expected data source map.
      * 
-     * @return target data source
+     * @return expected data source map
      */
-    DataSource getTargetDataSource();
+    Map<String, DataSource> getExpectedDataSourceMap();
 }

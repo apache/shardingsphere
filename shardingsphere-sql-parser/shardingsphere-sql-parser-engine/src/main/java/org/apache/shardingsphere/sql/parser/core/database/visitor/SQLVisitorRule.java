@@ -96,6 +96,8 @@ public enum SQLVisitorRule {
     
     DROP_DATABASE("DropDatabase", SQLStatementType.DDL),
     
+    DROP_DATABASE_LINK("DropDatabaseLink", SQLStatementType.DDL),
+    
     CREATE_DIMENSION("CreateDimension", SQLStatementType.DDL),
 
     ALTER_DIMENSION("AlterDimension", SQLStatementType.DDL),
@@ -184,6 +186,10 @@ public enum SQLVisitorRule {
     
     DROP_EXTENSION("DropExtension", SQLStatementType.DDL),
     
+    DECLARE("Declare", SQLStatementType.DDL),
+    
+    DISCARD("Discard", SQLStatementType.DDL),
+    
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
     
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),
@@ -241,6 +247,8 @@ public enum SQLVisitorRule {
     DENY_USER("Deny", SQLStatementType.DCL),
     
     RENAME_USER("RenameUser", SQLStatementType.DCL),
+    
+    SET_USER("SetUser", SQLStatementType.DCL),
     
     CREATE_ROLE("CreateRole", SQLStatementType.DCL),
     

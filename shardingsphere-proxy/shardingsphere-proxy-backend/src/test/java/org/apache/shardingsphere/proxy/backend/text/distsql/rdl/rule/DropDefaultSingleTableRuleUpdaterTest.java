@@ -63,6 +63,14 @@ public final class DropDefaultSingleTableRuleUpdaterTest {
     }
     
     @Test
+    public void assertCheckWithIfExists() throws Exception {
+        DropDefaultSingleTableRuleStatement statement = new DropDefaultSingleTableRuleStatement(true);
+        SingleTableRuleConfiguration currentConfiguration = new SingleTableRuleConfiguration();
+        updater.checkSQLStatement(shardingSphereMetaData, statement, currentConfiguration);
+        updater.checkSQLStatement(shardingSphereMetaData, statement, null);
+    }
+    
+    @Test
     public void assertUpdate() {
         DropDefaultSingleTableRuleStatement statement = new DropDefaultSingleTableRuleStatement();
         SingleTableRuleConfiguration currentConfiguration = new SingleTableRuleConfiguration();

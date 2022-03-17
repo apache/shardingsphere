@@ -98,7 +98,7 @@ public final class TextProtocolBackendHandlerFactory {
             return backendHandler.get();
         }
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), 
-                Collections.emptyList(), sqlStatement, connectionSession.getDefaultSchemaName());
+                sqlStatement, connectionSession.getDefaultSchemaName());
         // TODO optimize SQLStatementSchemaHolder
         if (sqlStatementContext instanceof TableAvailable) {
             ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().ifPresent(SQLStatementSchemaHolder::set);
@@ -129,7 +129,12 @@ public final class TextProtocolBackendHandlerFactory {
     }
     
     private static Optional<ExtraTextProtocolBackendHandler> findExtraTextProtocolBackendHandler(final SQLStatement sqlStatement) {
-        return ShardingSphereServiceLoader.getSingletonServiceInstances(ExtraTextProtocolBackendHandler.class).stream().filter(each -> each.accept(sqlStatement)).findFirst();
+        for (ExtraTextProtocolBackendHandler each : ShardingSphereServiceLoader.getSingletonServiceInstances(ExtraTextProtocolBackendHandler.class)) {
+            if (each.accept(sqlStatement)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
     }
     
     private static Optional<TextProtocolBackendHandler> findDatabaseOperateBackendHandler(final SQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {

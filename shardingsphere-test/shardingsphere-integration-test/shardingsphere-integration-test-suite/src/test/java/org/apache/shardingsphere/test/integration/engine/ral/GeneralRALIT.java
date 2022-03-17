@@ -18,13 +18,10 @@
 package org.apache.shardingsphere.test.integration.engine.ral;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRegistry;
-import org.apache.shardingsphere.test.integration.framework.param.ParameterizedArrayFactory;
+import org.apache.shardingsphere.test.integration.framework.param.array.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
-import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -34,42 +31,27 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralRALIT extends BaseRALIT {
     
-    private static final ComposedContainerRegistry COMPOSED_CONTAINER_REGISTRY = new ComposedContainerRegistry();
-    
     public GeneralRALIT(final AssertionParameterizedArray parameterizedArray) {
-        super(parameterizedArray, COMPOSED_CONTAINER_REGISTRY.getComposedContainer(GeneralRALIT.class.getSimpleName(), parameterizedArray));
+        super(parameterizedArray);
     }
     
     @Parameters(name = "{0}")
     public static Collection<AssertionParameterizedArray> getParameters() {
-        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.RAL).stream()
-                .filter(each -> SQLExecuteType.Literal == each.getSqlExecuteType())
-                .filter(each -> "proxy".equals(each.getAdapter()))
-                .collect(Collectors.toList());
-    }
-    
-    @AfterClass
-    public static void closeContainers() {
-        COMPOSED_CONTAINER_REGISTRY.close();
+        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.RAL);
     }
     
     @Test
     public void assertExecute() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
-            assertExecuteForStatement(connection);
-        }
-    }
-    
-    private void assertExecuteForStatement(final Connection connection) throws SQLException, ParseException {
-        try (
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(getSQL())) {
-            assertResultSet(resultSet);
+            try (
+                    Statement statement = connection.createStatement();
+                    ResultSet resultSet = statement.executeQuery(getSQL())) {
+                assertResultSet(resultSet);
+            }
         }
     }
 }

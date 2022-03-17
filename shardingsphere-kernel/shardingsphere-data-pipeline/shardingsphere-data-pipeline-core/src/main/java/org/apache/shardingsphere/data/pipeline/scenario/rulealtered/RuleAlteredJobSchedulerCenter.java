@@ -25,14 +25,11 @@ import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * Rule altered job scheduler center.
@@ -49,8 +46,7 @@ public final class RuleAlteredJobSchedulerCenter {
     private static final GovernanceRepositoryAPI REGISTRY_REPOSITORY_API = PipelineAPIFactory.getGovernanceRepositoryAPI();
     
     static {
-        // TODO it's too slow to persist job progress
-        JOB_PERSIST_EXECUTOR.scheduleWithFixedDelay(new PersistJobContextRunnable(), 1, 1, TimeUnit.MINUTES);
+        JOB_PERSIST_EXECUTOR.scheduleWithFixedDelay(new PersistJobContextRunnable(), 10, 10, TimeUnit.SECONDS);
     }
     
     /**
@@ -78,6 +74,7 @@ public final class RuleAlteredJobSchedulerCenter {
      * @param jobId job id
      */
     public static void stop(final String jobId) {
+        log.info("remove and stop {}", jobId);
         Map<Integer, RuleAlteredJobScheduler> schedulerMap = JOB_SCHEDULER_MAP.remove(jobId);
         if (null == schedulerMap) {
             return;
@@ -88,26 +85,12 @@ public final class RuleAlteredJobSchedulerCenter {
     }
     
     /**
-     * Get job contexts.
-     *
+     * Check whether the same job exists.
      * @param jobId job id
-     * @return job context
+     * @return exist then true else false
      */
-    public static Optional<Collection<RuleAlteredJobContext>> getJobContexts(final String jobId) {
-        Map<Integer, RuleAlteredJobScheduler> schedulerMap = JOB_SCHEDULER_MAP.get(jobId);
-        if (null == schedulerMap) {
-            return Optional.empty();
-        }
-        return Optional.of(schedulerMap.values().stream().map(RuleAlteredJobScheduler::getJobContext).collect(Collectors.toList()));
-    }
-    
-    /**
-     * Persist job progress.
-     *
-     * @param jobContext job context
-     */
-    public static void persistJobProgress(final RuleAlteredJobContext jobContext) {
-        REGISTRY_REPOSITORY_API.persistJobProgress(jobContext);
+    public static boolean existJob(final String jobId) {
+        return JOB_SCHEDULER_MAP.containsKey(jobId);
     }
     
     private static final class PersistJobContextRunnable implements Runnable {

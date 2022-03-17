@@ -25,12 +25,13 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
-import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.junit.After;
 import org.junit.Before;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -47,8 +48,8 @@ import static org.junit.Assert.assertThat;
 
 public abstract class BaseDDLIT extends SingleITCase {
     
-    public BaseDDLIT(final AssertionParameterizedArray parameterizedArray, final ComposedContainer composedContainer) {
-        super(parameterizedArray, composedContainer);
+    public BaseDDLIT(final AssertionParameterizedArray parameterizedArray) {
+        super(parameterizedArray);
     }
     
     @Before
@@ -60,14 +61,15 @@ public abstract class BaseDDLIT extends SingleITCase {
         }
     }
     
-    @Override
-    public final void tearDown() throws Exception {
+    @After
+    public final void tearDown() {
         try (Connection connection = getTargetDataSource().getConnection()) {
             String dropSql = String.format("DROP TABLE %s", getAssertion().getInitialSQL().getAffectedTable());
-            executeUpdateForPrepareStatement(connection, dropSql);
+            try (PreparedStatement preparedStatement = connection.prepareStatement(dropSql)) {
+                preparedStatement.executeUpdate();
+            }
         } catch (final SQLException | NoSuchTableException ignored) {
         }
-        super.tearDown();
     }
     
     private void executeInitSQLs(final Connection connection) throws SQLException {
@@ -75,7 +77,9 @@ public abstract class BaseDDLIT extends SingleITCase {
             return;
         }
         for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getInitialSQL().getSql())) {
-            executeUpdateForPrepareStatement(connection, each);
+            try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
+                preparedStatement.executeUpdate();
+            }
         }
     }
     

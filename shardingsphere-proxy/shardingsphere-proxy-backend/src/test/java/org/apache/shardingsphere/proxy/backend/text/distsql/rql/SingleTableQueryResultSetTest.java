@@ -128,9 +128,9 @@ public final class SingleTableQueryResultSetTest {
     }
     
     private SingleTableRule mockSingleTableRule(final Map<String, Collection<DataNode>> singleTableDataNodeMap) {
-        SingleTableRule singleTableRule = mock(SingleTableRule.class);
-        when(singleTableRule.getSingleTableDataNodes()).thenReturn(singleTableDataNodeMap);
-        return singleTableRule;
+        SingleTableRule result = mock(SingleTableRule.class);
+        when(result.getSingleTableDataNodes()).thenReturn(singleTableDataNodeMap);
+        return result;
     }
     
     private void addShardingSphereRule(final ShardingSphereRule... rules) {

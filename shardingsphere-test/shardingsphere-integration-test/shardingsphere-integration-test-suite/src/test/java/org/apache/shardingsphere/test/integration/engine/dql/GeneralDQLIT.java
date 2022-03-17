@@ -20,12 +20,10 @@ package org.apache.shardingsphere.test.integration.engine.dql;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
-import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRegistry;
-import org.apache.shardingsphere.test.integration.framework.param.ParameterizedArrayFactory;
+import org.apache.shardingsphere.test.integration.framework.param.array.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
-import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -42,10 +40,8 @@ import static org.junit.Assert.assertTrue;
 @ParallelRuntimeStrategy(ParallelLevel.CASE)
 public final class GeneralDQLIT extends BaseDQLIT {
     
-    private static final ComposedContainerRegistry COMPOSED_CONTAINER_REGISTRY = new ComposedContainerRegistry();
-    
     public GeneralDQLIT(final AssertionParameterizedArray parameterizedArray) {
-        super(parameterizedArray, COMPOSED_CONTAINER_REGISTRY.getComposedContainer(GeneralDQLIT.class.getSimpleName(), parameterizedArray));
+        super(parameterizedArray);
     }
     
     @Parameters(name = "{0}")
@@ -53,69 +49,84 @@ public final class GeneralDQLIT extends BaseDQLIT {
         return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DQL);
     }
     
-    @AfterClass
-    public static void closeContainers() {
-        COMPOSED_CONTAINER_REGISTRY.close();
-    }
-    
     @Test
     public void assertExecuteQuery() throws SQLException, ParseException {
-        try (Connection connection = getTargetDataSource().getConnection()) {
-            if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                assertExecuteQueryForStatement(connection);
-            } else {
-                assertExecuteQueryForPreparedStatement(connection);
-            }
-        }
-    }
-    
-    private void assertExecuteQueryForStatement(final Connection connection) throws SQLException, ParseException {
         try (
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(getSQL())) {
-            assertResultSet(resultSet);
+                Connection actualConnection = getTargetDataSource().getConnection();
+                Connection expectedConnection = getExpectedDataSource().getConnection()) {
+            if (SQLExecuteType.Literal == getSqlExecuteType()) {
+                assertExecuteQueryForStatement(actualConnection, expectedConnection);
+            } else {
+                assertExecuteQueryForPreparedStatement(actualConnection, expectedConnection);
+            }
         }
     }
     
-    private void assertExecuteQueryForPreparedStatement(final Connection connection) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
+    private void assertExecuteQueryForStatement(final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
+        try (
+                Statement actualStatement = actualConnection.createStatement();
+                ResultSet actualResultSet = actualStatement.executeQuery(getSQL());
+                Statement expectedStatement = expectedConnection.createStatement();
+                ResultSet expectedResultSet = expectedStatement.executeQuery(getSQL())) {
+            assertResultSet(actualResultSet, expectedResultSet);
+        }
+    }
+    
+    private void assertExecuteQueryForPreparedStatement(final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
+        try (
+                PreparedStatement actualPreparedStatement = actualConnection.prepareStatement(getSQL());
+                PreparedStatement expectedPreparedStatement = expectedConnection.prepareStatement(getSQL())) {
             for (SQLValue each : getAssertion().getSQLValues()) {
-                preparedStatement.setObject(each.getIndex(), each.getValue());
+                actualPreparedStatement.setObject(each.getIndex(), each.getValue());
+                expectedPreparedStatement.setObject(each.getIndex(), each.getValue());
             }
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                assertResultSet(resultSet);
+            try (
+                    ResultSet actualResultSet = actualPreparedStatement.executeQuery();
+                    ResultSet expectedResultSet = expectedPreparedStatement.executeQuery()) {
+                assertResultSet(actualResultSet, expectedResultSet);
             }
         }
     }
     
     @Test
     public void assertExecute() throws SQLException, ParseException {
-        try (Connection connection = getTargetDataSource().getConnection()) {
+        try (
+                Connection actualConnection = getTargetDataSource().getConnection();
+                Connection expectedConnection = getExpectedDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                assertExecuteForStatement(connection);
+                assertExecuteForStatement(actualConnection, expectedConnection);
             } else {
-                assertExecuteForPreparedStatement(connection);
+                assertExecuteForPreparedStatement(actualConnection, expectedConnection);
             }
         }
     }
     
-    private void assertExecuteForStatement(final Connection connection) throws SQLException, ParseException {
-        try (Statement statement = connection.createStatement()) {
-            assertTrue("Not a query statement.", statement.execute(getSQL()));
-            try (ResultSet resultSet = statement.getResultSet()) {
-                assertResultSet(resultSet);
+    private void assertExecuteForStatement(final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
+        try (
+                Statement actualStatement = actualConnection.createStatement();
+                Statement expectedStatement = expectedConnection.createStatement()) {
+            assertTrue("Not a query statement.", actualStatement.execute(getSQL()) && expectedStatement.execute(getSQL()));
+            try (
+                    ResultSet actualResultSet = actualStatement.getResultSet();
+                    ResultSet expectedResultSet = expectedStatement.getResultSet()) {
+                assertResultSet(actualResultSet, expectedResultSet);
             }
         }
     }
     
-    private void assertExecuteForPreparedStatement(final Connection connection) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
+    private void assertExecuteForPreparedStatement(final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
+        try (
+                PreparedStatement actualPreparedStatement = actualConnection.prepareStatement(getSQL());
+                PreparedStatement expectedPreparedStatement = expectedConnection.prepareStatement(getSQL())) {
             for (SQLValue each : getAssertion().getSQLValues()) {
-                preparedStatement.setObject(each.getIndex(), each.getValue());
+                actualPreparedStatement.setObject(each.getIndex(), each.getValue());
+                expectedPreparedStatement.setObject(each.getIndex(), each.getValue());
             }
-            assertTrue("Not a query statement.", preparedStatement.execute());
-            try (ResultSet resultSet = preparedStatement.getResultSet()) {
-                assertResultSet(resultSet);
+            assertTrue("Not a query statement.", actualPreparedStatement.execute() && expectedPreparedStatement.execute());
+            try (
+                    ResultSet actualResultSet = actualPreparedStatement.getResultSet();
+                    ResultSet expectedResultSet = expectedPreparedStatement.getResultSet()) {
+                assertResultSet(actualResultSet, expectedResultSet);
             }
         }
     }

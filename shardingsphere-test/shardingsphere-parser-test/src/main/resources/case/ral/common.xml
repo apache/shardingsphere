@@ -25,11 +25,12 @@
     <clear-readwrite-splitting-hint-source sql-case-id="clear-readwrite-splitting-hint-source" />
     <clear-sharding-hint sql-case-id="clear-sharding-hint" />
     <clear-hint sql-case-id="clear-hint" />
-    <show-variable sql-case-id="show-variable" />
-    <show-all-variables sql-case-id="show-all-variables" />
+    <show-variable sql-case-id="show-variable" name="CACHED_CONNECTIONS"/>
+    <show-variable sql-case-id="show-all-variables" />
     <show-readwrite-splitting-hint-source sql-case-id="show-readwrite-splitting-hint-source" />
     <show-sharding-hint-status sql-case-id="show-sharding-hint-status" />
     <show-instance sql-case-id="show-instance" />
+    <count-instance-rules sql-case-id="count-instance-rules" />
     <show-readwrite-splitting-read-resources sql-case-id="show-readwrite-splitting-read-resources" />
     <show-table-metadata sql-case-id="show-table-metadata" >
         <table-name>t_order</table-name>
@@ -97,4 +98,8 @@
     </unlabel-instance>
     <unlabel-instance sql-case-id="unlabel-instance-without-label" ip="127.0.0.1" port="3309">
     </unlabel-instance>
+    <prepare-distsql sql-case-id="prepare-distsql"/>
+    <apply-distsql sql-case-id="apply-distsql"/>
+    <discard-distsql sql-case-id="discard-distsql"/>
+    <alter-instance sql-case-id="alter-instance-xa-recovery-id" instance-id="1.2.3.4@3307"  key="XA_RECOVERY_ID" value="test"/>
 </sql-parser-test-cases>

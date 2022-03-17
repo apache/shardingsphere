@@ -25,23 +25,13 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * Example generator.
+ * JDBC example generator.
  */
 public final class JDBCExampleGenerator implements ExampleGenerator {
     
-    private static final String OUTPUT_PATH = "./examples/shardingsphere-sample/shardingsphere-example-generator/target/shardingsphere-example-generated"
-            + "/shardingsphere-${product}-sample/${feature?replace(',', '-')}--${framework}--${mode}--${transaction}/";
-    
     private static final String JAVA_CLASS_PATH = "src/main/java/org/apache/shardingsphere/example/"
-            + "<#assign package=\"\">"
-            + "<#if feature?split(\",\")?size gt 1>"
-            + "<#assign package=\"mixed\">"
-            + "<#else>"
-            + "<#assign package=feature?replace('-', '/') />"
-            + "</#if>"
+            + "<#assign package = feature?replace('-', '.')?replace(',', '.') />"
             + "${package}/${framework?replace('-', '/')}";
-    
-    private static final String RESOURCES_PATH = "src/main/resources";
     
     @Override
     public void generate(final Configuration templateConfig, final Map<String, String> dataModel) throws IOException, TemplateException {
@@ -51,14 +41,12 @@ public final class JDBCExampleGenerator implements ExampleGenerator {
             for (String eachFeature : GenerateUtil.generateCombination(features.split(","))) {
                 dataModel.put("feature", eachFeature);
                 dataModel.put("framework", eachFramework);
-                String feature = dataModel.get("feature");
-                String framework = dataModel.get("framework");
-                GenerateUtil.generateDirs(templateConfig, dataModel, new ExampleScenarioFactory(feature, framework).getJavaClassPaths(), OUTPUT_PATH + JAVA_CLASS_PATH);
-                GenerateUtil.generateDirs(templateConfig, dataModel, new ExampleScenarioFactory(feature, framework).getResourcePaths(), OUTPUT_PATH + RESOURCES_PATH);
-                GenerateUtil.generateFile(templateConfig, dataModel, new ExampleScenarioFactory(feature, framework).getJavaClassTemplateMap(), OUTPUT_PATH + JAVA_CLASS_PATH);
-                GenerateUtil.generateFile(templateConfig, dataModel, new ExampleScenarioFactory(feature, framework).getResourceTemplateMap(), OUTPUT_PATH + RESOURCES_PATH);
+                GenerateUtil.generateDirs(templateConfig, dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getJavaClassPaths(), OUTPUT_PATH + JAVA_CLASS_PATH);
+                GenerateUtil.generateDirs(templateConfig, dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getResourcePaths(), OUTPUT_PATH + RESOURCES_PATH);
+                GenerateUtil.generateFile(templateConfig, getType(), dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getJavaClassTemplateMap(), OUTPUT_PATH + JAVA_CLASS_PATH);
+                GenerateUtil.generateFile(templateConfig, getType(), dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getResourceTemplateMap(), OUTPUT_PATH + RESOURCES_PATH);
                 String outputPath = GenerateUtil.generatePath(templateConfig, dataModel, OUTPUT_PATH);
-                GenerateUtil.processFile(templateConfig, dataModel, "pom.ftl", outputPath + "pom.xml");
+                GenerateUtil.processFile(templateConfig, dataModel, getType() + "/pom.ftl", outputPath + "pom.xml");
             }
         }
     }

@@ -27,6 +27,7 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -43,21 +44,21 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ResultSetUtilTest {
+    
     @Test
-    public void assertConvertValue() {
+    public void assertConvertValue() throws SQLException {
         Object object = new Object();
         assertThat(ResultSetUtil.convertValue(object, String.class), is(object.toString()));
-        assertThat(ResultSetUtil.convertValue("1", int.class), is("1"));
     }
     
     @Test
-    public void assertConvertLocalDateTimeValue() {
+    public void assertConvertLocalDateTimeValue() throws SQLException {
         LocalDateTime localDateTime = LocalDateTime.of(2021, Month.DECEMBER, 23, 19, 30);
         assertThat(ResultSetUtil.convertValue(localDateTime, Timestamp.class), is(Timestamp.valueOf(localDateTime)));
     }
     
     @Test
-    public void assertConvertTimestampValue() {
+    public void assertConvertTimestampValue() throws SQLException {
         LocalDateTime localDateTime = LocalDateTime.of(2021, Month.DECEMBER, 23, 19, 30);
         Timestamp timestamp = Timestamp.valueOf(localDateTime);
         assertThat(ResultSetUtil.convertValue(timestamp, LocalDateTime.class), is(localDateTime));
@@ -66,7 +67,7 @@ public final class ResultSetUtilTest {
     }
 
     @Test
-    public void assertConvertBooleanValue() {
+    public void assertConvertBooleanValue() throws SQLException {
         String dbFalse = "-2";
         String dbTrue = "1";
         assertThat(ResultSetUtil.convertValue(dbFalse, boolean.class), is(false));
@@ -74,7 +75,7 @@ public final class ResultSetUtilTest {
     }
     
     @Test
-    public void assertConvertNumberValueSuccess() {
+    public void assertConvertNumberValueSuccess() throws SQLException {
         assertThat(ResultSetUtil.convertValue("1", String.class), is("1"));
         assertTrue((boolean) ResultSetUtil.convertValue(1, boolean.class));
         assertThat(ResultSetUtil.convertValue((byte) 1, byte.class), is((byte) 1));
@@ -88,15 +89,20 @@ public final class ResultSetUtilTest {
         assertThat(ResultSetUtil.convertValue(new Date(0L), Date.class), is(new Date(0L)));
         assertThat(ResultSetUtil.convertValue((short) 1, Object.class), is(Short.valueOf("1")));
         assertThat(ResultSetUtil.convertValue((short) 1, String.class), is("1"));
+        assertThat(ResultSetUtil.convertValue(1, Byte.class), is(Byte.valueOf("1")));
+        assertThat(ResultSetUtil.convertValue(1, Short.class), is(Short.valueOf("1")));
+        assertThat(ResultSetUtil.convertValue(1, Long.class), is(Long.valueOf("1")));
+        assertThat(ResultSetUtil.convertValue(1, Double.class), is(Double.valueOf("1")));
+        assertThat(ResultSetUtil.convertValue(1, Float.class), is(Float.valueOf("1")));
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertConvertNumberValueError() {
+    public void assertConvertNumberValueError() throws SQLException {
         ResultSetUtil.convertValue(1, Date.class);
     }
     
     @Test
-    public void assertConvertNullValue() {
+    public void assertConvertNullValue() throws SQLException {
         assertFalse((boolean) ResultSetUtil.convertValue(null, boolean.class));
         assertThat(ResultSetUtil.convertValue(null, byte.class), is((byte) 0));
         assertThat(ResultSetUtil.convertValue(null, short.class), is((short) 0));
@@ -110,8 +116,13 @@ public final class ResultSetUtilTest {
         assertThat(ResultSetUtil.convertValue(null, Date.class), is((Object) null));
     }
     
+    @Test(expected = SQLException.class)
+    public void assertConvertNullType() throws SQLException {
+        ResultSetUtil.convertValue(null, null);
+    }
+    
     @Test
-    public void assertConvertDateValueSuccess() {
+    public void assertConvertDateValueSuccess() throws SQLException {
         Date now = new Date();
         assertThat(ResultSetUtil.convertValue(now, Date.class), is(now));
         assertThat(ResultSetUtil.convertValue(now, java.sql.Date.class), is(now));
@@ -121,7 +132,7 @@ public final class ResultSetUtilTest {
     }
     
     @Test
-    public void assertConvertByteArrayValueSuccess() {
+    public void assertConvertByteArrayValueSuccess() throws SQLException {
         byte[] bytesValue = {};
         assertThat(ResultSetUtil.convertValue(bytesValue, byte.class), is(bytesValue));
         assertThat(ResultSetUtil.convertValue(new byte[]{1}, byte.class), is((byte) 1));
@@ -135,7 +146,7 @@ public final class ResultSetUtilTest {
     
     @SneakyThrows(MalformedURLException.class)
     @Test
-    public void assertConvertURLValue() {
+    public void assertConvertURLValue() throws SQLException {
         String urlString = "http://apache.org";
         URL url = (URL) ResultSetUtil.convertValue(urlString, URL.class);
         assertNotNull(url);
@@ -143,7 +154,7 @@ public final class ResultSetUtilTest {
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertConvertURLValueError() {
+    public void assertConvertURLValueError() throws SQLException {
         String urlString = "no-exist:apache.org";
         ResultSetUtil.convertValue(urlString, URL.class);
     }
@@ -172,7 +183,7 @@ public final class ResultSetUtilTest {
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertConvertDateValueError() {
+    public void assertConvertDateValueError() throws SQLException {
         ResultSetUtil.convertValue(new Date(), int.class);
     }
 }

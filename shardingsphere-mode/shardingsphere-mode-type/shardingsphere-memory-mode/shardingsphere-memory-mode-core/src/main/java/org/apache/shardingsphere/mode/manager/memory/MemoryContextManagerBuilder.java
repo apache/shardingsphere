@@ -50,7 +50,8 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
             metaDataContextsBuilder.addSchema(entry.getKey(), entry.getValue(), parameter.getProps());
         }
         MetaDataContexts metaDataContexts = metaDataContextsBuilder.build(null);
-        generateTransactionConfigurationFile(parameter.getInstanceDefinition().getInstanceId().getId(), metaDataContexts);
+        InstanceContext instanceContext = buildInstanceContext(parameter);
+        generateTransactionConfigurationFile(instanceContext, metaDataContexts);
         TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
         ContextManager result = new ContextManager();
         result.init(metaDataContexts, transactionContexts, buildInstanceContext(parameter));
@@ -58,20 +59,19 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
         return result;
     }
     
-    private void generateTransactionConfigurationFile(final String instanceId, final MetaDataContexts metaDataContexts) {
+    private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter parameter) {
+        ComputeNodeInstance instance = new ComputeNodeInstance(parameter.getInstanceDefinition());
+        instance.setLabels(parameter.getLabels());
+        return new InstanceContext(instance, new MemoryWorkerIdGenerator(), buildMemoryModeConfiguration(parameter.getModeConfig()));
+    }
+    
+    private void generateTransactionConfigurationFile(final InstanceContext instanceContext, final MetaDataContexts metaDataContexts) {
         Optional<TransactionRule> transactionRule =
                 metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
         if (transactionRule.isPresent()) {
             Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(transactionRule.get().getProviderType());
-            fileGenerator.ifPresent(optional -> optional.generateFile(transactionRule.get(), instanceId));
+            fileGenerator.ifPresent(optional -> optional.generateFile(transactionRule.get().getProps(), instanceContext));
         }
-    }
-    
-    private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter parameter) {
-        ComputeNodeInstance instance = new ComputeNodeInstance();
-        instance.setInstanceDefinition(parameter.getInstanceDefinition());
-        instance.setLabels(parameter.getLabels());
-        return new InstanceContext(instance, new MemoryWorkerIdGenerator(), buildMemoryModeConfiguration(parameter.getModeConfig()));
     }
     
     private void setInstanceContext(final ContextManager contextManager) {

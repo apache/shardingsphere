@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced;
 
 import com.google.common.base.Strings;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.preview.PreviewStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.PreviewStatement;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -47,59 +45,64 @@ import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutorFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Preview dist sql backend handler.
  */
-@RequiredArgsConstructor
-@Getter
-public final class PreviewDistSQLBackendHandler implements TextProtocolBackendHandler {
+public final class PreviewDistSQLBackendHandler extends QueryableRALBackendHandler<PreviewStatement, PreviewDistSQLBackendHandler> {
     
-    private final PreviewStatement previewStatement;
+    private static final String DATA_SOURCE_NAME = "data_source_name";
     
-    private final ConnectionSession connectionSession;
+    private static final String ACTUAL_SQL = "actual_sql";
+    
+    private ConnectionSession connectionSession;
     
     private final KernelProcessor kernelProcessor = new KernelProcessor();
     
-    private List<QueryHeader> queryHeaders;
-    
-    private Iterator<ExecutionUnit> executionUnits;
+    @Override
+    public PreviewDistSQLBackendHandler init(final HandlerParameter<PreviewStatement> parameter) {
+        connectionSession = parameter.getConnectionSession();
+        return super.init(parameter);
+    }
     
     @Override
-    public ResponseHeader execute() throws SQLException {
+    protected Collection<String> getColumnNames() {
+        return Arrays.asList(DATA_SOURCE_NAME, ACTUAL_SQL);
+    }
+    
+    @Override
+    protected Collection<List<Object>> getRows(final ContextManager contextManager) throws SQLException {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String schemaName = getSchemaName();
         String databaseType = DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType());
         Optional<SQLParserRule> sqlParserRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
-        SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(databaseType, sqlParserRule.get()).parse(previewStatement.getSql(), false);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), Collections.emptyList(), sqlStatement, schemaName);
+        SQLStatement previewedStatement = new ShardingSphereSQLParserEngine(databaseType, sqlParserRule.get()).parse(sqlStatement.getSql(), false);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), previewedStatement, schemaName);
         // TODO optimize SQLStatementSchemaHolder
         if (sqlStatementContext instanceof TableAvailable) {
             ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().ifPresent(SQLStatementSchemaHolder::set);
@@ -108,14 +111,15 @@ public final class PreviewDistSQLBackendHandler implements TextProtocolBackendHa
         if (!metaData.isComplete()) {
             throw new RuleNotExistedException();
         }
-        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, previewStatement.getSql(), Collections.emptyList());
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sqlStatement.getSql(), Collections.emptyList());
         ExecutionContext executionContext = kernelProcessor.generateExecutionContext(logicSQL, metaData, metaDataContexts.getProps());
-        executionUnits = executionContext.getRouteContext().isFederated() 
-                ? getFederationExecutionUnits(logicSQL, schemaName, metaDataContexts).iterator() : executionContext.getExecutionUnits().iterator();
-        queryHeaders = new ArrayList<>(2);
-        queryHeaders.add(new QueryHeader("", "", "data_source_name", "", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        queryHeaders.add(new QueryHeader("", "", "sql", "", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        return new QueryResponseHeader(queryHeaders);
+        Collection<ExecutionUnit> executionUnits = executionContext.getRouteContext().isFederated()
+                ? getFederationExecutionUnits(logicSQL, schemaName, metaDataContexts) : executionContext.getExecutionUnits();
+        return executionUnits.stream().map(this::buildRow).collect(Collectors.toCollection(LinkedList::new));
+    }
+    
+    private List<Object> buildRow(final ExecutionUnit unit) {
+        return Arrays.asList(unit.getDataSourceName(), unit.getSqlUnit().getSql());
     }
     
     private Collection<ExecutionUnit> getFederationExecutionUnits(final LogicSQL logicSQL, final String schemaName, final MetaDataContexts metaDataContexts) throws SQLException {
@@ -147,22 +151,8 @@ public final class PreviewDistSQLBackendHandler implements TextProtocolBackendHa
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final boolean isReturnGeneratedKeys, final MetaDataContexts metaData) {
         int maxConnectionsSizePerQuery = metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, (JDBCBackendConnection) connectionSession.getBackendConnection(), 
-                new StatementOption(isReturnGeneratedKeys), metaData.getMetaData(getSchemaName()).getRuleMetaData().getRules());
-    }
-    
-    @Override
-    public boolean next() {
-        return null != executionUnits && executionUnits.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        ExecutionUnit executionUnit = executionUnits.next();
-        Collection<Object> result = new LinkedList<>();
-        result.add(executionUnit.getDataSourceName());
-        result.add(executionUnit.getSqlUnit().getSql());
-        return result;
+        return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, (JDBCBackendConnection) connectionSession.getBackendConnection(),
+                (JDBCBackendStatement) connectionSession.getStatementManager(), new StatementOption(isReturnGeneratedKeys), metaData.getMetaData(getSchemaName()).getRuleMetaData().getRules());
     }
     
     private String getSchemaName() {

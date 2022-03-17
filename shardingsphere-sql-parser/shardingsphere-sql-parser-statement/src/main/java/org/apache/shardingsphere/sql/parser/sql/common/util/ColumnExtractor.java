@@ -24,6 +24,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenE
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -57,5 +59,25 @@ public final class ColumnExtractor {
             result.add((ColumnSegment) ((BetweenExpression) expression).getLeft());
         }
         return result;
+    }
+    
+    /**
+     * Extract column segments.
+     *
+     * @param columnSegments column segments
+     * @param whereSegments where segments
+     */
+    public static void extractColumnSegments(final Collection<ColumnSegment> columnSegments, final Collection<WhereSegment> whereSegments) {
+        for (WhereSegment each : whereSegments) {
+            for (AndPredicate andPredicate : ExpressionExtractUtil.getAndPredicates(each.getExpr())) {
+                extractColumnSegments(columnSegments, andPredicate);
+            }
+        }
+    }
+    
+    private static void extractColumnSegments(final Collection<ColumnSegment> columnSegments, final AndPredicate andPredicate) {
+        for (ExpressionSegment each : andPredicate.getPredicates()) {
+            columnSegments.addAll(ColumnExtractor.extract(each));
+        }
     }
 }

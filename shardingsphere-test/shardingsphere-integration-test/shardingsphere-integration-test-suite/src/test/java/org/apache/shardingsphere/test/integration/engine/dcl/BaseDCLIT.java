@@ -18,29 +18,28 @@
 package org.apache.shardingsphere.test.integration.engine.dcl;
 
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
-import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
-import org.apache.shardingsphere.test.integration.env.authority.AuthorityEnvironmentManager;
-import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
+import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioCommonPath;
+import org.apache.shardingsphere.test.integration.env.scenario.authority.AuthorityEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.junit.After;
 import org.junit.Before;
 
 public abstract class BaseDCLIT extends SingleITCase {
     
     private AuthorityEnvironmentManager authorityEnvironmentManager;
     
-    public BaseDCLIT(final AssertionParameterizedArray parameterizedArray, final ComposedContainer composedContainer) {
-        super(parameterizedArray, composedContainer);
+    public BaseDCLIT(final AssertionParameterizedArray parameterizedArray) {
+        super(parameterizedArray);
     }
     
     @Before
     public final void init() throws Exception {
-        authorityEnvironmentManager = new AuthorityEnvironmentManager(EnvironmentPath.getAuthorityFile(getScenario()), getActualDataSourceMap(), getDatabaseType());
+        authorityEnvironmentManager = new AuthorityEnvironmentManager(new ScenarioCommonPath(getScenario()).getAuthorityFile(), getActualDataSourceMap(), getDatabaseType());
         authorityEnvironmentManager.initialize();
     }
     
-    @Override
+    @After
     public final void tearDown() throws Exception {
         authorityEnvironmentManager.clean();
-        super.tearDown();
     }
 }

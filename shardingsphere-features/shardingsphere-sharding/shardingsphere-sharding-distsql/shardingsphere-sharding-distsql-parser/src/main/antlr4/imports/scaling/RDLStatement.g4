@@ -24,7 +24,7 @@ createShardingScalingRule
     ;
 
 dropShardingScalingRule
-    : DROP SHARDING SCALING RULE scalingName
+    : DROP SHARDING SCALING RULE existsClause? scalingName
     ;
 
 enableShardingScalingRule
@@ -44,11 +44,11 @@ scalingRuleDefinition
     ;
 
 inputDefinition
-    : INPUT LP workerThread COMMA batchSize COMMA rateLimiter RP
+    : INPUT LP workerThread? (COMMA? batchSize)? (COMMA? rateLimiter)? RP
     ;
 
 outputDefinition
-    : OUTPUT LP workerThread COMMA batchSize COMMA rateLimiter RP
+    : OUTPUT LP workerThread? (COMMA? batchSize)? (COMMA? rateLimiter)? RP
     ;
 
 completionDetector
@@ -77,4 +77,8 @@ streamChannel
 
 intValue
     : INT
+    ;
+
+existsClause
+    : IF EXISTS
     ;

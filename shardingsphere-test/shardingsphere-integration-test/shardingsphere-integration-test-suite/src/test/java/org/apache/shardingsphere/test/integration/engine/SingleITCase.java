@@ -24,7 +24,6 @@ import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTes
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
-import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.watcher.ITWatcher;
 import org.junit.Rule;
@@ -38,6 +37,7 @@ import java.util.stream.Collectors;
 public abstract class SingleITCase extends BaseITCase {
     
     @Rule
+    @Getter(AccessLevel.NONE)
     public ITWatcher watcher = new ITWatcher();
     
     private final SQLExecuteType sqlExecuteType;
@@ -46,18 +46,19 @@ public abstract class SingleITCase extends BaseITCase {
     
     private final DataSet dataSet;
     
-    public SingleITCase(final AssertionParameterizedArray parameterizedArray, final ComposedContainer composedContainer) {
-        super(parameterizedArray, composedContainer);
-        this.sqlExecuteType = parameterizedArray.getSqlExecuteType();
-        this.assertion = parameterizedArray.getAssertion();
-        this.dataSet = null == assertion ? null : DataSetLoader.load(parameterizedArray.getTestCaseContext().getParentPath(), getScenario(), getDatabaseType(), assertion.getExpectedDataFile());
+    public SingleITCase(final AssertionParameterizedArray parameterizedArray) {
+        super(parameterizedArray);
+        sqlExecuteType = parameterizedArray.getSqlExecuteType();
+        assertion = parameterizedArray.getAssertion();
+        dataSet = null == assertion || null == assertion.getExpectedDataFile()
+                ? null : DataSetLoader.load(parameterizedArray.getTestCaseContext().getParentPath(), getScenario(), getDatabaseType(), assertion.getExpectedDataFile());
     }
     
     protected final String getSQL() throws ParseException {
-        return sqlExecuteType == SQLExecuteType.Literal ? getLiteralSQL(getIntegrationTestCase().getSql()) : getIntegrationTestCase().getSql();
+        return sqlExecuteType == SQLExecuteType.Literal ? getLiteralSQL(getItCase().getSql()) : getItCase().getSql();
     }
     
-    protected final String getLiteralSQL(final String sql) throws ParseException {
+    private String getLiteralSQL(final String sql) throws ParseException {
         List<Object> parameters = null == assertion ? Collections.emptyList() : assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
         return parameters.isEmpty() ? sql : String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%").replace("%%", "%").replace("'%'", "'%%'");
     }

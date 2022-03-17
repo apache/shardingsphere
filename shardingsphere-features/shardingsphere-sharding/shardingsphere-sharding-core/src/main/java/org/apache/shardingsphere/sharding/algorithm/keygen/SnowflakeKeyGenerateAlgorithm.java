@@ -100,15 +100,6 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
         maxTolerateTimeDifferenceMilliseconds = getMaxTolerateTimeDifferenceMilliseconds();
     }
     
-    private long getWorkerId() {
-        if (null == instanceContext) {
-            return DEFAULT_WORKER_ID;
-        }
-        long result = instanceContext.getWorkerId();
-        Preconditions.checkArgument(result >= 0L && result < WORKER_ID_MAX_VALUE, "Illegal worker id.");
-        return result;
-    }
-    
     private int getMaxVibrationOffset() {
         int result = Integer.parseInt(props.getOrDefault(MAX_VIBRATION_OFFSET_KEY, DEFAULT_VIBRATION_VALUE).toString());
         Preconditions.checkArgument(result >= 0 && result <= SEQUENCE_MASK, "Illegal max vibration offset.");
@@ -159,6 +150,15 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     private void vibrateSequenceOffset() {
         sequenceOffset = sequenceOffset >= maxVibrationOffset ? 0 : sequenceOffset + 1;
+    }
+    
+    private long getWorkerId() {
+        if (null == instanceContext) {
+            return DEFAULT_WORKER_ID;
+        }
+        long result = instanceContext.getWorkerId();
+        Preconditions.checkArgument(result >= 0L && result < WORKER_ID_MAX_VALUE, "Illegal worker id.");
+        return result;
     }
     
     @Override

@@ -59,7 +59,7 @@ jobs:
       - name: Build Project
         run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
       - name: Run Integration Test
-        run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.adapters=${{ matrix.adapter }} -Dit.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }} -Dit.env.type=DOCKER
+        run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
   
   it-single-rule:
     name: single rule
@@ -90,7 +90,7 @@ jobs:
       - name: Build Project
         run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
       - name: Run Integration Test
-        run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.adapters=${{ matrix.adapter }} -Dit.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }} -Dit.env.type=DOCKER
+        run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.culster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
   
   it-mixture-rule:
     name: mixture rule
@@ -121,7 +121,7 @@ jobs:
       - name: Build Project
         run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
       - name: Run Integration Test
-        run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.adapters=${{ matrix.adapter }} -Dit.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }} -Dit.env.type=DOCKER
+        run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
   
   mysql-proxy-agent-metrics:
     name: MySQL-Proxy with Agent Metrics

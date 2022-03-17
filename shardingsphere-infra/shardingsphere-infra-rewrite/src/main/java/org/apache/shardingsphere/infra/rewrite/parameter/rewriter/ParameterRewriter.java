@@ -27,7 +27,7 @@ import java.util.List;
  * 
  * @param <T> type of SQL statement context
  */
-public interface ParameterRewriter<T extends SQLStatementContext> {
+public interface ParameterRewriter<T extends SQLStatementContext<?>> {
     
     /**
      * Judge whether need rewrite.
@@ -35,7 +35,7 @@ public interface ParameterRewriter<T extends SQLStatementContext> {
      * @param sqlStatementContext SQL statement context
      * @return is need rewrite or not
      */
-    boolean isNeedRewrite(SQLStatementContext sqlStatementContext);
+    boolean isNeedRewrite(SQLStatementContext<?> sqlStatementContext);
     
     /**
      * Rewrite SQL parameters.

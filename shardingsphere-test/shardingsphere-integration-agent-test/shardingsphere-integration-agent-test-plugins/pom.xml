@@ -23,12 +23,12 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-integration-agent-test</artifactId>
-        <version>5.0.1-SNAPSHOT</version>
+        <version>5.1.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-integration-agent-test-plugins</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
-
+    
     <modules>
         <module>shardingsphere-integration-agent-test-metrics</module>
         <module>shardingsphere-integration-agent-test-common</module>
@@ -36,6 +36,4 @@
         <module>shardingsphere-integration-agent-test-jaeger</module>
         <module>shardingsphere-integration-agent-test-opentelemetry</module>
     </modules>
-
 </project>
-

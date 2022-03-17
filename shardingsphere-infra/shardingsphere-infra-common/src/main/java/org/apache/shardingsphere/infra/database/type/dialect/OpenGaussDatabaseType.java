@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Database type of openGauss.
@@ -47,5 +48,10 @@ public final class OpenGaussDatabaseType implements DatabaseType {
     @Override
     public OpenGaussDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new OpenGaussDataSourceMetaData(url);
+    }
+    
+    @Override
+    public Optional<String> getDataSourceClassName() {
+        return Optional.of("org.opengauss.ds.PGSimpleDataSource");
     }
 }

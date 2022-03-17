@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.config.schema.impl;
 
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
@@ -50,6 +49,6 @@ public final class DataSourceGeneratedSchemaConfiguration implements SchemaConfi
     
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Map<String, DataSourceConfiguration> dataSources) {
         return dataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
-            entry -> DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+            entry -> DataSourcePropertiesCreator.create("com.zaxxer.hikari.HikariDataSource", entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
 }

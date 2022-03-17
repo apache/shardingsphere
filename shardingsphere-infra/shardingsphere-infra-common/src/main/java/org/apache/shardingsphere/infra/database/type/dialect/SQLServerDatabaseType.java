@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Database type of SQLServer.
@@ -47,5 +48,10 @@ public final class SQLServerDatabaseType implements DatabaseType {
     @Override
     public SQLServerDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new SQLServerDataSourceMetaData(url);
+    }
+    
+    @Override
+    public Optional<String> getDataSourceClassName() {
+        return Optional.of("com.microsoft.sqlserver.jdbc.SQLServerDataSource");
     }
 }

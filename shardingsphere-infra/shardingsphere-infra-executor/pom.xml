@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-infra</artifactId>
-        <version>5.0.1-SNAPSHOT</version>
+        <version>5.1.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-infra-executor</artifactId>
     <name>${project.artifactId}</name>
@@ -38,6 +38,11 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-infra-rewrite</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-mysql-client</artifactId>
         </dependency>
     </dependencies>
     

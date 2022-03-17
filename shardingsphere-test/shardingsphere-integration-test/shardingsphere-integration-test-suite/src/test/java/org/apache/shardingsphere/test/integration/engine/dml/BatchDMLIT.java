@@ -21,13 +21,11 @@ import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.engine.BatchITCase;
-import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRegistry;
-import org.apache.shardingsphere.test.integration.framework.param.ParameterizedArrayFactory;
+import org.apache.shardingsphere.test.integration.framework.param.array.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.CaseParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
-import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -43,10 +41,8 @@ import static org.junit.Assert.assertThat;
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class BatchDMLIT extends BatchITCase {
     
-    private static final ComposedContainerRegistry COMPOSED_CONTAINER_REGISTRY = new ComposedContainerRegistry();
-    
     public BatchDMLIT(final CaseParameterizedArray parameterizedArray) {
-        super(parameterizedArray, COMPOSED_CONTAINER_REGISTRY.getComposedContainer(BatchDMLIT.class.getSimpleName(), parameterizedArray));
+        super(parameterizedArray);
     }
     
     @Parameters(name = "{0}")
@@ -54,16 +50,8 @@ public final class BatchDMLIT extends BatchITCase {
         return ParameterizedArrayFactory.getCaseParameterized(SQLCommandType.DML);
     }
     
-    @AfterClass
-    public static void closeContainers() {
-        COMPOSED_CONTAINER_REGISTRY.close();
-    }
-    
     @Test
     public void assertExecuteBatch() throws SQLException, ParseException {
-        if ("shadow".equals(getScenario()) && "PostgreSQL".equals(getDatabaseType().getName())) {
-            return;
-        }
         switch (getScenario()) {
             case "replica_query":
             case "encrypt":
@@ -78,8 +66,8 @@ public final class BatchDMLIT extends BatchITCase {
     }
     
     private int[] executeBatchForPreparedStatement(final Connection connection) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
-            for (IntegrationTestCaseAssertion each : getIntegrationTestCase().getAssertions()) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getItCase().getSql())) {
+            for (IntegrationTestCaseAssertion each : getItCase().getAssertions()) {
                 addBatch(preparedStatement, each);
             }
             return preparedStatement.executeBatch();
@@ -95,10 +83,6 @@ public final class BatchDMLIT extends BatchITCase {
     
     @Test
     public void assertClearBatch() throws SQLException, ParseException {
-        // TODO fix replica_query
-        if ("shadow".equals(getScenario()) && "PostgreSQL".equals(getDatabaseType().getName())) {
-            return;
-        }
         switch (getScenario()) {
             case "replica_query":
             case "encrypt":
@@ -106,8 +90,8 @@ public final class BatchDMLIT extends BatchITCase {
             default:
         }
         try (Connection connection = getTargetDataSource().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
-            for (IntegrationTestCaseAssertion each : getIntegrationTestCase().getAssertions()) {
+             PreparedStatement preparedStatement = connection.prepareStatement(getItCase().getSql())) {
+            for (IntegrationTestCaseAssertion each : getItCase().getAssertions()) {
                 addBatch(preparedStatement, each);
             }
             preparedStatement.clearBatch();

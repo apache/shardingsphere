@@ -43,7 +43,7 @@ public final class SourceConfiguration {
     
     private static final String SOURCE_JDBC_URL = "jdbc:mysql://%s/ds_src?useSSL=false";
     
-    private static final Properties ENGINE_ENV_PROPS = IntegrationTestEnvironment.getInstance().getEngineEnvProps();
+    private static final Properties ENGINE_ENV_PROPS = IntegrationTestEnvironment.getInstance().getProps();
     
     /**
      * Get docker sharding jdbc configuration.

@@ -35,7 +35,7 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExecutor;
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
-import org.apache.shardingsphere.data.pipeline.core.lock.ScalingSchemaNameDistributeLock;
+import org.apache.shardingsphere.data.pipeline.core.lock.PipelineSimpleLock;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -181,8 +181,7 @@ public final class RuleAlteredJobWorker {
         Optional<String> jobId = jobConfigOptional.isPresent() ? PipelineJobAPIFactory.getRuleAlteredJobAPI().start(jobConfigOptional.get()) : Optional.empty();
         if (!jobId.isPresent()) {
             log.info("Switch rule configuration immediately.");
-            YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(event.getSchemaName(), event.getTargetDataSource(), event.getTargetRule());
-            ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(event.getSchemaName(), targetRootConfig, event.getRuleCacheId());
+            ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(event.getSchemaName(), event.getSchemaVersion());
             ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
         }
     }
@@ -211,13 +210,13 @@ public final class RuleAlteredJobWorker {
             log.error("more than 1 rule altered");
             throw new PipelineJobCreationException("more than 1 rule altered");
         }
-        WorkflowConfiguration workflowConfig = new WorkflowConfiguration(event.getSchemaName(), new ArrayList<>(alteredRuleYamlClassNames), event.getRuleCacheId());
+        WorkflowConfiguration workflowConfig = new WorkflowConfiguration(event.getSchemaName(), new ArrayList<>(alteredRuleYamlClassNames), event.getSchemaVersion());
         PipelineConfiguration pipelineConfig = getPipelineConfiguration(sourceRootConfig, targetRootConfig);
         return Optional.of(new JobConfiguration(workflowConfig, pipelineConfig));
     }
     
-    private Collection<Pair<YamlRuleConfiguration, YamlRuleConfiguration>> groupSourceTargetRuleConfigsByType(
-            final Collection<YamlRuleConfiguration> sourceRules, final Collection<YamlRuleConfiguration> targetRules) {
+    private Collection<Pair<YamlRuleConfiguration, YamlRuleConfiguration>> groupSourceTargetRuleConfigsByType(final Collection<YamlRuleConfiguration> sourceRules, 
+                                                                                                              final Collection<YamlRuleConfiguration> targetRules) {
         Map<Class<? extends YamlRuleConfiguration>, YamlRuleConfiguration> sourceRulesMap = sourceRules.stream().collect(Collectors.toMap(YamlRuleConfiguration::getClass, Function.identity()));
         Map<Class<? extends YamlRuleConfiguration>, YamlRuleConfiguration> targetRulesMap = targetRules.stream().collect(Collectors.toMap(YamlRuleConfiguration::getClass, Function.identity()));
         Collection<Pair<YamlRuleConfiguration, YamlRuleConfiguration>> result = new LinkedList<>();
@@ -297,7 +296,7 @@ public final class RuleAlteredJobWorker {
         boolean isUncompletedJobOfSameSchema = false;
         for (JobInfo each : PipelineJobAPIFactory.getRuleAlteredJobAPI().list()) {
             if (PipelineJobAPIFactory.getRuleAlteredJobAPI().getProgress(each.getJobId()).values().stream()
-                    .allMatch(progress -> progress.getStatus().equals(JobStatus.FINISHED))) {
+                    .allMatch(progress -> null != progress && progress.getStatus().equals(JobStatus.FINISHED))) {
                 continue;
             }
             JobConfiguration jobConfiguration = YamlEngine.unmarshal(each.getJobParameter(), JobConfiguration.class, true);
@@ -326,6 +325,6 @@ public final class RuleAlteredJobWorker {
      */
     @Subscribe
     public void scalingReleaseSchemaNameLock(final ScalingReleaseSchemaNameLockEvent event) {
-        ScalingSchemaNameDistributeLock.getInstance().releaseLock(event.getSchemaName());
+        PipelineSimpleLock.getInstance().releaseLock(event.getSchemaName());
     }
 }

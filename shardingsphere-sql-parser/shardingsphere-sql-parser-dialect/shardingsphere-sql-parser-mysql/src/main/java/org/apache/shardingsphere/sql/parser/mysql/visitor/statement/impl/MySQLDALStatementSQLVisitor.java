@@ -974,13 +974,15 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitSetCharacter(final SetCharacterContext ctx) {
-        MySQLSetStatement result = new MySQLSetStatement();
         VariableAssignSegment characterSet = new VariableAssignSegment();
         VariableSegment variable = new VariableSegment();
         String variableName = (null != ctx.CHARSET()) ? ctx.CHARSET().getText() : "charset";
         variable.setVariable(variableName);
+        characterSet.setVariable(variable);
         String assignValue = (null != ctx.DEFAULT()) ? ctx.DEFAULT().getText() : ctx.charsetName().getText();
         characterSet.setAssignValue(assignValue);
+        MySQLSetStatement result = new MySQLSetStatement();
+        result.getVariableAssigns().add(characterSet);
         return result;
     }
     

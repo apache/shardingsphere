@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.BackendDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -32,7 +33,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Backend data source of JDBC.
@@ -108,8 +108,11 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     }
     
     private TransactionRule getTransactionRule() {
-        Optional<TransactionRule> transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules().stream().filter(
-            each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
-        return transactionRule.orElseGet(() -> new TransactionRule(new DefaultTransactionRuleConfigurationBuilder().build()));
+        for (ShardingSphereRule each : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules()) {
+            if (each instanceof TransactionRule) {
+                return (TransactionRule) each;
+            }
+        }
+        return new TransactionRule(new DefaultTransactionRuleConfigurationBuilder().build());
     }
 }

@@ -24,7 +24,6 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
 import org.apache.curator.framework.api.ACLProvider;
-import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
@@ -48,10 +47,8 @@ import org.apache.zookeeper.data.ACL;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
@@ -63,7 +60,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class CuratorZookeeperRepository implements ClusterPersistRepository {
     
-    private final Map<String, CuratorCache> caches = new HashMap<>();
+    private CuratorCache curatorCache;
     
     private CuratorFramework client;
     
@@ -131,19 +128,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     @Override
     public String get(final String key) {
-        CuratorCache cache = findTreeCache(key);
-        if (null == cache) {
-            return getDirectly(key);
-        }
-        Optional<ChildData> resultInCache = cache.get(key);
-        if (resultInCache.isPresent()) {
-            return null == resultInCache.get().getData() ? null : new String(resultInCache.get().getData(), StandardCharsets.UTF_8);
-        }
         return getDirectly(key);
-    }
-    
-    private CuratorCache findTreeCache(final String key) {
-        return caches.entrySet().stream().filter(entry -> key.startsWith(entry.getKey())).findFirst().map(Entry::getValue).orElse(null);
     }
     
     @Override
@@ -249,21 +234,19 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     @Override
     public void watch(final String key, final DataChangedEventListener listener) {
-        String path = key + PATH_SEPARATOR;
-        if (!caches.containsKey(path)) {
-            addCacheData(key);
-            CuratorCache cache = caches.get(path);
-            CuratorCacheListener curatorCacheListener = CuratorCacheListener.builder()
+        if (!Optional.ofNullable(curatorCache).isPresent()) {
+            curatorCache = CuratorCache.build(client, "/");
+        }
+        CuratorCacheListener curatorCacheListener = CuratorCacheListener.builder()
                 .forTreeCache(client, (framework, treeCacheListener) -> {
                     Type changedType = getChangedType(treeCacheListener.getType());
                     if (Type.IGNORED != changedType) {
-                        listener.onChange(new DataChangedEvent(treeCacheListener.getData().getPath(), 
+                        listener.onChange(new DataChangedEvent(treeCacheListener.getData().getPath(),
                                 new String(treeCacheListener.getData().getData(), StandardCharsets.UTF_8), changedType));
                     }
                 }).build();
-            cache.listenable().addListener(curatorCacheListener);
-            start(cache);
-        }
+        curatorCache.listenable().addListener(curatorCacheListener);
+        start(curatorCache);
     }
     
     private void start(final CuratorCache cache) {
@@ -274,11 +257,6 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
             // CHECKSTYLE:ON
             CuratorZookeeperExceptionHandler.handleException(ex);
         }
-    }
-    
-    private void addCacheData(final String cachePath) {
-        CuratorCache cache = CuratorCache.build(client, cachePath);
-        caches.put(cachePath + PATH_SEPARATOR, cache);
     }
     
     private Type getChangedType(final TreeCacheEvent.Type type) {
@@ -334,7 +312,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     @Override
     public void close() {
-        caches.values().forEach(CuratorCache::close);
+        curatorCache.close();
         waitForCacheClose();
         CloseableUtils.closeQuietly(client);
     }

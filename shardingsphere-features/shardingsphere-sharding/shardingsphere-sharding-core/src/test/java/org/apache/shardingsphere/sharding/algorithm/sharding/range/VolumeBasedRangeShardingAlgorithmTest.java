@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.range;
 
 import com.google.common.collect.Range;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.junit.Before;
@@ -33,20 +34,22 @@ import static org.junit.Assert.assertTrue;
 
 public final class VolumeBasedRangeShardingAlgorithmTest {
     
+    private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("t_order_", 1, '0');
+    
     private VolumeBasedRangeShardingAlgorithm shardingAlgorithm;
     
     @Before
     public void setUp() {
         shardingAlgorithm = new VolumeBasedRangeShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("range-lower", "10");
-        shardingAlgorithm.getProps().setProperty("range-upper", "45");
-        shardingAlgorithm.getProps().setProperty("sharding-volume", "10");
+        shardingAlgorithm.getProps().put("range-lower", 10);
+        shardingAlgorithm.getProps().put("range-upper", 45);
+        shardingAlgorithm.getProps().put("sharding-volume", 10);
         shardingAlgorithm.init();
     }
     
     @Test
     public void assertPreciseDoSharding() {
-        assertPreciseDoSharding(new PreciseShardingValue<>("t_order", "order_id", 0L));
+        assertPreciseDoSharding(new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0L));
     }
     
     private void assertPreciseDoSharding(final PreciseShardingValue<Comparable<?>> shardingValue) {
@@ -56,12 +59,12 @@ public final class VolumeBasedRangeShardingAlgorithmTest {
     
     @Test
     public void assertPreciseDoShardingWithIntShardingValue() {
-        assertPreciseDoSharding(new PreciseShardingValue<>("t_order", "order_id", 0));
+        assertPreciseDoSharding(new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0));
     }
     
     @Test
     public void assertRangeDoShardingWithoutLowerBound() {
-        assertRangeDoShardingWithoutLowerBound(new RangeShardingValue<>("t_order", "order_id", Range.lessThan(12L)));
+        assertRangeDoShardingWithoutLowerBound(new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.lessThan(12L)));
     }
     
     private void assertRangeDoShardingWithoutLowerBound(final RangeShardingValue<Comparable<?>> shardingValue) {
@@ -74,12 +77,12 @@ public final class VolumeBasedRangeShardingAlgorithmTest {
     
     @Test
     public void assertRangeDoShardingWithoutLowerBoundWithIntShardingValue() {
-        assertRangeDoShardingWithoutLowerBound(new RangeShardingValue<>("t_order", "order_id", Range.lessThan(12)));
+        assertRangeDoShardingWithoutLowerBound(new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.lessThan(12)));
     }
     
     @Test
     public void assertRangeDoShardingWithoutUpperBound() {
-        assertRangeDoShardingWithoutUpperBound(new RangeShardingValue<>("t_order", "order_id", Range.greaterThan(40L)));
+        assertRangeDoShardingWithoutUpperBound(new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.greaterThan(40L)));
     }
     
     private void assertRangeDoShardingWithoutUpperBound(final RangeShardingValue<Comparable<?>> shardingValue) {
@@ -92,12 +95,12 @@ public final class VolumeBasedRangeShardingAlgorithmTest {
     
     @Test
     public void assertRangeDoShardingWithoutUpperBoundWithIntShardingValue() {
-        assertRangeDoShardingWithoutUpperBound(new RangeShardingValue<>("t_order", "order_id", Range.greaterThan(40)));
+        assertRangeDoShardingWithoutUpperBound(new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.greaterThan(40)));
     }
     
     @Test
     public void assertRangeDoSharding() {
-        assertRangeDoSharding(new RangeShardingValue<>("t_order", "order_id", Range.closed(12L, 55L)));
+        assertRangeDoSharding(new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(12L, 55L)));
     }
     
     private void assertRangeDoSharding(final RangeShardingValue<Comparable<?>> shardingValue) {
@@ -113,7 +116,7 @@ public final class VolumeBasedRangeShardingAlgorithmTest {
     
     @Test
     public void assertRangeDoShardingWithIntegerShardingValue() {
-        assertRangeDoSharding(new RangeShardingValue<>("t_order", "order_id", Range.closed(12, 55)));
+        assertRangeDoSharding(new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(12, 55)));
     }
     
     @Test

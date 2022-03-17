@@ -28,7 +28,7 @@ alterResource
     ;
 
 dropResource
-    : DROP RESOURCE IDENTIFIER (COMMA IDENTIFIER)* ignoreSingleTables?
+    : DROP RESOURCE existClause? IDENTIFIER (COMMA IDENTIFIER)* ignoreSingleTables?
     ;
 
 createDefaultSingleTableRule
@@ -40,7 +40,7 @@ alterDefaultSingleTableRule
     ;
 
 dropDefaultSingleTableRule
-    : DROP DEFAULT SINGLE TABLE RULE
+    : DROP  DEFAULT SINGLE TABLE RULE existClause?
     ;
 
 dataSource
@@ -80,9 +80,13 @@ password
     | TILDE | NOT | AT | POUND | DL | MOD | CARET 
     | AMPERSAND | ASTERISK | LP | RP | UL | MINUS | PLUS 
     | EQ| LBE | RBE | LBT | RBT | SLASH | LT | GT | COMMA 
-    | DOT | SEMI | QUESTION | SQ | COLON | VERTICALBAR                    
+    | DOT | SEMI | QUESTION | SQ | COLON | VERTICALBAR | PASSWORD                    
     ;
 
 ignoreSingleTables
     : IGNORE SINGLE TABLES
+    ;
+
+existClause
+    : IF EXISTS
     ;

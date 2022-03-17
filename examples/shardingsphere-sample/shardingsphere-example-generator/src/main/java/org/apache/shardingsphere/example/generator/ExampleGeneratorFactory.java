@@ -19,6 +19,7 @@ package org.apache.shardingsphere.example.generator;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
+import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -59,6 +60,7 @@ public final class ExampleGeneratorFactory {
         try (InputStream input = ExampleGeneratorFactory.class.getResourceAsStream(DATA_MODEL_PATH)) {
             Map<String, String> dataModel = new Yaml().loadAs(input, Map.class);
             String product = dataModel.get("product");
+            dataModel.put("shardingsphereVersion", ShardingSphereVersion.VERSION);
             for (ExampleGenerator each : ServiceLoader.load(ExampleGenerator.class)) {
                 if (product.equals(each.getType())) {
                     each.generate(templateConfig, dataModel);

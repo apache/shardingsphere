@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
  * Data source environment.
  */
 public final class DataSourceEnvironment {
-
+    
     /**
      * Get driver class name.
      *
@@ -46,7 +46,7 @@ public final class DataSourceEnvironment {
                 throw new UnsupportedOperationException(databaseType.getName());
         }
     }
-
+    
     /**
      * Get URL.
      *
@@ -58,7 +58,7 @@ public final class DataSourceEnvironment {
     public static String getURL(final DatabaseType databaseType, final String host, final int port) {
         switch (databaseType.getName()) {
             case "H2":
-                return "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
+                return "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL;USER=root;PASSWORD=root";
             case "MySQL":
                 return String.format("jdbc:mysql://%s:%s?useServerPrepStmts=true&serverTimezone=UTC&useSSL=false&useLocalSessionState=true&characterEncoding=utf-8", host, port);
             case "PostgreSQL":
@@ -71,7 +71,7 @@ public final class DataSourceEnvironment {
                 throw new UnsupportedOperationException(databaseType.getName());
         }
     }
-
+    
     /**
      * Get URL.
      *
@@ -84,7 +84,7 @@ public final class DataSourceEnvironment {
     public static String getURL(final DatabaseType databaseType, final String host, final int port, final String dataSourceName) {
         switch (databaseType.getName()) {
             case "H2":
-                return String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", dataSourceName);
+                return String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL;USER=root;PASSWORD=root", dataSourceName);
             case "MySQL":
                 return String.format("jdbc:mysql://%s:%s/%s?useServerPrepStmts=true&serverTimezone=UTC&useSSL=false&useLocalSessionState=true&characterEncoding=utf-8", host, port, dataSourceName);
             case "PostgreSQL":

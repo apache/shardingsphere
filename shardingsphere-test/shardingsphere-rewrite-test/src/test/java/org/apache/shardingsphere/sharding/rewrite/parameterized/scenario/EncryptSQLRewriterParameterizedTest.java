@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.rewrite.parameterized.scenario;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
@@ -65,6 +67,8 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
         when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
         when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
         when(result.getAllColumnNames("t_account_detail")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
+        when(result.getAllColumnNames("t_order")).thenReturn(Arrays.asList("ORDER_ID", "USER_ID", "CONTENT"));
+        when(result.get("t_order")).thenReturn(new TableMetaData("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         return result;
     }
     
@@ -75,6 +79,7 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
             singleTableRule.get().put("t_account", "encrypt_ds");
             singleTableRule.get().put("t_account_bak", "encrypt_ds");
             singleTableRule.get().put("t_account_detail", "encrypt_ds");
+            singleTableRule.get().put("t_order", "encrypt_ds");
         }
     }
 }

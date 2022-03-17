@@ -63,18 +63,18 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     
     @Override
     public void init() {
-        dateTimeLower = getDateTime(DATE_TIME_LOWER_KEY);
+        dateTimeLower = getDateTime();
         shardingSeconds = getShardingSeconds();
         autoTablesAmount = (int) (Math.ceil((double) (parseDate(props.getProperty(DATE_TIME_UPPER_KEY)) / shardingSeconds)) + 2);
     }
     
-    private LocalDateTime getDateTime(final String dateTimeKey) {
-        String value = props.getProperty(dateTimeKey);
-        Preconditions.checkNotNull(value, "%s cannot be null.", dateTimeKey);
+    private LocalDateTime getDateTime() {
+        String value = props.getProperty(DATE_TIME_LOWER_KEY);
+        Preconditions.checkNotNull(value, "%s cannot be null.", DATE_TIME_LOWER_KEY);
         try {
             return LocalDateTime.parse(value, DATE_TIME_FORMAT);
         } catch (final DateTimeParseException ex) {
-            throw new ShardingSphereConfigurationException("Invalid %s, datetime pattern should be `yyyy-MM-dd HH:mm:ss`, value is `%s`", dateTimeKey, value);
+            throw new ShardingSphereConfigurationException("Invalid %s, datetime pattern should be `yyyy-MM-dd HH:mm:ss`, value is `%s`", DATE_TIME_LOWER_KEY, value);
         }
     }
     
@@ -86,12 +86,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         String tableNameSuffix = String.valueOf(doSharding(parseDate(shardingValue.getValue())));
-        for (String each : availableTargetNames) {
-            if (each.endsWith(tableNameSuffix)) {
-                return each;
-            }
-        }
-        return null;
+        return findMatchedTargetName(availableTargetNames, tableNameSuffix, shardingValue.getDataNodeInfo()).orElse(null);
     }
     
     @Override
@@ -100,15 +95,8 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
         int firstPartition = getFirstPartition(shardingValue.getValueRange());
         int lastPartition = getLastPartition(shardingValue.getValueRange());
         for (int i = firstPartition; i <= lastPartition; i++) {
-            for (String each : availableTargetNames) {
-                if (each.endsWith(String.valueOf(i))) {
-                    result.add(each);
-                    break;
-                }
-                if (result.size() == availableTargetNames.size()) {
-                    return result;
-                }
-            }
+            String suffix = String.valueOf(i);
+            findMatchedTargetName(availableTargetNames, suffix, shardingValue.getDataNodeInfo()).ifPresent(result::add);
         }
         return result;
     }

@@ -53,7 +53,6 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(StandalonePersistRepositoryFactory.newInstance(parameter.getModeConfig().getRepository()));
         persistConfigurations(metaDataPersistService, parameter);
         MetaDataContexts metaDataContexts = createMetaDataContexts(metaDataPersistService, parameter);
-        generateTransactionConfigurationFile(parameter.getInstanceDefinition().getInstanceId().getId(), metaDataContexts);
         return createContextManager(metaDataPersistService, parameter, metaDataContexts);
     }
     
@@ -77,23 +76,24 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         return builder.build(metaDataPersistService);
     }
     
-    private void generateTransactionConfigurationFile(final String instanceId, final MetaDataContexts metaDataContexts) {
+    private ContextManager createContextManager(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter, final MetaDataContexts metaDataContexts) {
+        ContextManager result = new ContextManager();
+        InstanceContext instanceContext = new InstanceContext(
+                metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(parameter.getInstanceDefinition()), new StandaloneWorkerIdGenerator(), parameter.getModeConfig());
+        generateTransactionConfigurationFile(instanceContext, metaDataContexts);
+        TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
+        result.init(metaDataContexts, transactionContexts, instanceContext);
+        setInstanceContext(result);
+        return result;
+    }
+    
+    private void generateTransactionConfigurationFile(final InstanceContext instanceContext, final MetaDataContexts metaDataContexts) {
         Optional<TransactionRule> transactionRule =
                 metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
         if (transactionRule.isPresent()) {
             Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(transactionRule.get().getProviderType());
-            fileGenerator.ifPresent(optional -> optional.generateFile(transactionRule.get(), instanceId));
+            fileGenerator.ifPresent(optional -> optional.generateFile(transactionRule.get().getProps(), instanceContext));
         }
-    }
-    
-    private ContextManager createContextManager(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter, final MetaDataContexts metaDataContexts) {
-        ContextManager result = new ContextManager();
-        TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
-        InstanceContext instanceContext = new InstanceContext(
-                metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(parameter.getInstanceDefinition()), new StandaloneWorkerIdGenerator(), parameter.getModeConfig());
-        result.init(metaDataContexts, transactionContexts, instanceContext);
-        setInstanceContext(result);
-        return result;
     }
     
     private void setInstanceContext(final ContextManager contextManager) {

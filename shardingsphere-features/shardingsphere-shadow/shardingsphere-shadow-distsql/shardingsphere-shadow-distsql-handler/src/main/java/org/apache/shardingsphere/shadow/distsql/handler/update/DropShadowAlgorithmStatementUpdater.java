@@ -46,6 +46,9 @@ public final class DropShadowAlgorithmStatementUpdater implements RuleDefinition
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData metaData, final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
         String schemaName = metaData.getName();
+        if (sqlStatement.isContainsExistClause() && !isExistRuleConfig(currentRuleConfig)) {
+            return;
+        }
         checkConfigurationExist(schemaName, currentRuleConfig);
         checkAlgorithm(schemaName, sqlStatement, currentRuleConfig);
     }
@@ -58,9 +61,11 @@ public final class DropShadowAlgorithmStatementUpdater implements RuleDefinition
         Collection<String> currentAlgorithms = ShadowRuleStatementSupporter.getAlgorithmNames(currentRuleConfig);
         Collection<String> requireAlgorithms = sqlStatement.getAlgorithmNames();
         String defaultShadowAlgorithmName = currentRuleConfig.getDefaultShadowAlgorithmName();
-        ShadowRuleStatementChecker.checkAlgorithmExist(requireAlgorithms, currentAlgorithms, different -> new RequiredAlgorithmMissedException(SHADOW, schemaName, different));
+        if (!sqlStatement.isContainsExistClause()) {
+            ShadowRuleStatementChecker.checkAlgorithmExist(requireAlgorithms, currentAlgorithms, different -> new RequiredAlgorithmMissedException(SHADOW, schemaName, different));
+        }
         checkAlgorithmInUsed(requireAlgorithms, getAlgorithmInUse(currentRuleConfig), identical -> new AlgorithmInUsedException(schemaName, identical));
-        DistSQLException.predictionThrow(!requireAlgorithms.contains(defaultShadowAlgorithmName), new AlgorithmInUsedException(schemaName, Collections.singleton(defaultShadowAlgorithmName)));
+        DistSQLException.predictionThrow(!requireAlgorithms.contains(defaultShadowAlgorithmName), () -> new AlgorithmInUsedException(schemaName, Collections.singleton(defaultShadowAlgorithmName)));
     }
     
     private void checkAlgorithmInUsed(final Collection<String> requireAlgorithms, final Collection<String> currentAlgorithms, 
@@ -71,6 +76,12 @@ public final class DropShadowAlgorithmStatementUpdater implements RuleDefinition
     private Collection<String> getAlgorithmInUse(final ShadowRuleConfiguration currentRuleConfig) {
         return currentRuleConfig.getTables().values().stream().filter(each -> !each.getDataSourceNames().isEmpty()).map(ShadowTableConfiguration::getShadowAlgorithmNames)
                 .flatMap(Collection::stream).collect(Collectors.toSet());
+    }
+    
+    @Override
+    public boolean hasAnyOneToBeDropped(final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+        return null != currentRuleConfig
+                && !getIdenticalData(ShadowRuleStatementSupporter.getAlgorithmNames(currentRuleConfig), sqlStatement.getAlgorithmNames()).isEmpty();
     }
     
     @Override

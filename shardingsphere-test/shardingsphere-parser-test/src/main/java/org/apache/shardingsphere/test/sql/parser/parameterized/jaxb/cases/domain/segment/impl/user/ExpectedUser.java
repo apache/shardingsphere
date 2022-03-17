@@ -19,12 +19,17 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Expected user.
  */
 @Getter
 @Setter
-public final class ExpectedUser extends AbstractExpectedIdentifierSQLSegment {
+public final class ExpectedUser extends AbstractExpectedSQLSegment {
+    
+    @XmlAttribute(name = "name")
+    private String name;
 }

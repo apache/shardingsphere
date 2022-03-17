@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.datasource.props;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -35,7 +34,6 @@ public final class DataSourcePropertiesValidatorTest {
     
     private Map<String, Object> createValidProperties() {
         Map<String, Object> result = new HashMap<>();
-        result.put("driverClassName", MockedDataSource.class.getName());
         result.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
         result.put("username", "root");
         result.put("password", "root");
@@ -49,7 +47,7 @@ public final class DataSourcePropertiesValidatorTest {
     
     private Map<String, Object> createInvalidProperties() {
         Map<String, Object> result = new HashMap<>();
-        result.put("driverClassName", "InvalidDriver");
+        result.put("jdbcUrl", "InvalidJdbcUrl");
         return result;
     }
 }

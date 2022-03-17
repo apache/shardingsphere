@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import Symbol, Keyword, MySQLKeyword, Literals, BaseRule, DMLStatement, DALStatement;
+import DMLStatement, DALStatement;
 
 alterStatement
     : alterTable
@@ -113,10 +113,10 @@ alterOrderList
     ;
 
 tableConstraintDef
-    : keyOrIndex indexNameAndType? keyListWithExpression indexOption*
+    : keyOrIndex indexName? indexTypeClause? keyListWithExpression indexOption*
     | FULLTEXT keyOrIndex? indexName? keyListWithExpression fulltextIndexOption*
     | SPATIAL keyOrIndex? indexName? keyListWithExpression commonIndexOption*
-    | constraintClause? (PRIMARY KEY | UNIQUE keyOrIndex?) indexNameAndType? keyListWithExpression indexOption*
+    | constraintClause? (PRIMARY KEY | UNIQUE keyOrIndex?) indexName? indexTypeClause? keyListWithExpression indexOption*
     | constraintClause? FOREIGN KEY indexName? keyParts referenceDefinition
     | constraintClause? checkConstraint (constraintEnforcement)?
     ;
@@ -178,10 +178,6 @@ restrict
 fulltextIndexOption
     : commonIndexOption
     | WITH PARSER identifier
-    ;
-
-partitionNames
-    : partitionName (COMMA_ partitionName)*
     ;
 
 dropTable
@@ -477,10 +473,6 @@ onUpdateDelete
 
 referenceOption
     : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
-    ;
-
-indexNameAndType
-    : indexName indexTypeClause?
     ;
 
 indexType

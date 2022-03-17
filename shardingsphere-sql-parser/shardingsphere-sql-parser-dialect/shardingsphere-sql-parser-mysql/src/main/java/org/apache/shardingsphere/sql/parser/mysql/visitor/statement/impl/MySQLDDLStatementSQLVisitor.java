@@ -210,6 +210,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
         MySQLCreateDatabaseStatement result = new MySQLCreateDatabaseStatement();
         result.setDatabaseName(new IdentifierValue(ctx.schemaName().getText()).getValue());
+        result.setContainsNotExistClause(null != ctx.notExistClause());
         return result;
     }
     
@@ -222,9 +223,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
         MySQLDropDatabaseStatement result = new MySQLDropDatabaseStatement();
         result.setDatabaseName(new IdentifierValue(ctx.schemaName().getText()).getValue());
-        if (null != ctx.existClause()) {
-            result.setContainsExistClause(true);
-        }
+        result.setContainsExistClause(null != ctx.existClause());
         return result;
     }
     
@@ -488,8 +487,8 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         if (null != ctx.UNIQUE()) {
             result.getIndexColumns().addAll(getKeyColumnsFromKeyListWithExpression(ctx.keyListWithExpression()));
-            if (null != ctx.indexNameAndType()) {
-                result.setIndexName((IndexSegment) visit(ctx.indexNameAndType().indexName()));
+            if (null != ctx.indexName()) {
+                result.setIndexName((IndexSegment) visit(ctx.indexName()));
             }
             return result;
         }
@@ -499,9 +498,6 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.getIndexColumns().addAll(getKeyColumnsFromKeyListWithExpression(ctx.keyListWithExpression()));
         if (null != ctx.indexName()) {
             result.setIndexName((IndexSegment) visit(ctx.indexName()));
-        }
-        if (null != ctx.indexNameAndType()) {
-            result.setIndexName((IndexSegment) visit(ctx.indexNameAndType().indexName()));
         }
         return result;
     }

@@ -72,11 +72,7 @@
                     <property key="sharding-count" value="4"/>
                 </properties>
             </table-strategy>
-            <key-generate-strategy algorithm-name="snowflake">
-                <properties>
-                    <property key="worker-id" value="123"/>
-                </properties>
-            </key-generate-strategy>
+            <key-generate-strategy algorithm-name="snowflake" />
         </rule>
     </alter-sharding-auto-table-rule>
 
@@ -88,11 +84,7 @@
                     <property key="sharding-count" value="4"/>
                 </properties>
             </table-strategy>
-            <key-generate-strategy algorithm-name="snowflake">
-                <properties>
-                    <property key="worker-id" value="123"/>
-                </properties>
-            </key-generate-strategy>
+            <key-generate-strategy algorithm-name="snowflake" />
         </rule>
     </alter-sharding-auto-table-rule>
 
@@ -101,11 +93,7 @@
             <data-source>ms_group_${0..1}</data-source>
             <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline"></table-strategy>
             <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline"></database-strategy>
-            <key-generate-strategy algorithm-name="snowflake">
-                <properties>
-                    <property key="worker-id" value="123"/>
-                </properties>
-            </key-generate-strategy>
+            <key-generate-strategy algorithm-name="snowflake" />
         </rule>
     </alter-sharding-table-rule>
 
@@ -114,11 +102,7 @@
             <data-source>ms_group_${0..1}</data-source>
             <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline"></table-strategy>
             <database-strategy type="complex" sharding-column="order_id,user_id" sharding-algorithm-name="database_inline"></database-strategy>
-            <key-generate-strategy algorithm-name="snowflake">
-                <properties>
-                    <property key="worker-id" value="123"/>
-                </properties>
-            </key-generate-strategy>
+            <key-generate-strategy algorithm-name="snowflake" />
         </rule>
     </alter-sharding-table-rule>
     
@@ -291,11 +275,7 @@
 
     <alter-sharding-key-generator sql-case-id="alter-sharding-key-generator">
         <shardingKeyGenerator key-generator-name="uuid_key_generator">
-            <algorithm algorithm-name="uuid">
-                <properties>
-                    <property key="worker-id" value="123"/>
-                </properties>
-            </algorithm>
+            <algorithm algorithm-name="uuid" />
         </shardingKeyGenerator>
     </alter-sharding-key-generator>
 

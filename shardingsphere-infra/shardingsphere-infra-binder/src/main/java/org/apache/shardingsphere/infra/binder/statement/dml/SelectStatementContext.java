@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.statement.dml;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.engine.GroupByContextEngine;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
@@ -44,6 +45,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.SubqueryType;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
@@ -58,6 +60,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtil;
@@ -75,7 +78,8 @@ import java.util.stream.Collectors;
  * Select SQL statement context.
  */
 @Getter
-public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable, WhereAvailable {
+@Setter
+public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable, WhereAvailable, ParameterAware {
     
     private final TablesContext tablesContext;
     
@@ -85,22 +89,23 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private final OrderByContext orderByContext;
     
-    private final PaginationContext paginationContext;
-    
     private final Map<Integer, SelectStatementContext> subqueryContexts;
     
     private final Collection<WhereSegment> whereSegments = new LinkedList<>();
     
-    @Setter
+    private final Collection<ColumnSegment> columnSegments = new LinkedList<>();
+    
     private SubqueryType subqueryType;
     
-    @Setter
     private boolean needAggregateRewrite;
     
-    public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, 
+    private PaginationContext paginationContext;
+    
+    public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters,
                                   final SelectStatement sqlStatement, final String defaultSchemaName) {
         super(sqlStatement);
-        whereSegments.addAll(getWhereSegments(sqlStatement));
+        extractWhereSegments(whereSegments, sqlStatement);
+        ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
         subqueryContexts = createSubqueryContexts(metaDataMap, parameters, defaultSchemaName);
         tablesContext = new TablesContext(getAllTableSegments(), subqueryContexts);
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
@@ -300,12 +305,15 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         return whereSegments;
     }
     
-    private Collection<WhereSegment> getWhereSegments(final SelectStatement selectStatement) {
-        Collection<WhereSegment> result = new LinkedList<>();
-        selectStatement.getWhere().ifPresent(result::add);
-        result.addAll(WhereExtractUtil.getSubqueryWhereSegments(selectStatement));
-        result.addAll(WhereExtractUtil.getJoinWhereSegments(selectStatement));
-        return result;
+    @Override
+    public Collection<ColumnSegment> getColumnSegments() {
+        return columnSegments;
+    }
+    
+    private void extractWhereSegments(final Collection<WhereSegment> whereSegments, final SelectStatement selectStatement) {
+        selectStatement.getWhere().ifPresent(whereSegments::add);
+        whereSegments.addAll(WhereExtractUtil.getSubqueryWhereSegments(selectStatement));
+        whereSegments.addAll(WhereExtractUtil.getJoinWhereSegments(selectStatement));
     }
     
     private Collection<TableSegment> getAllTableSegments() {
@@ -318,5 +326,10 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
             }
         }
         return result;
+    }
+    
+    @Override
+    public void setUpParameters(final List<Object> parameters) {
+        paginationContext = new PaginationContextEngine().createPaginationContext(getSqlStatement(), projectionsContext, parameters, whereSegments);
     }
 }

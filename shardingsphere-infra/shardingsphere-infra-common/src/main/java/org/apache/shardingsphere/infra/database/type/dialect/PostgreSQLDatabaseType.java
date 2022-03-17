@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Database type of PostgreSQL.
@@ -47,5 +48,10 @@ public final class PostgreSQLDatabaseType implements DatabaseType {
     @Override
     public PostgreSQLDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new PostgreSQLDataSourceMetaData(url);
+    }
+    
+    @Override
+    public Optional<String> getDataSourceClassName() {
+        return Optional.of("org.postgresql.ds.PGSimpleDataSource");
     }
 }

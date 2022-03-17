@@ -70,7 +70,7 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
             Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(connection, tables);
             Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(connection, columnMetaDataMap.keySet());
             for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
-                result.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList())));
+                result.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList()), Collections.emptyList()));
             }
         }
         return result;
@@ -104,8 +104,7 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
         String columnName = resultSet.getString("COLUMN_NAME");
         String typeName = resultSet.getString("TYPE_NAME");
         boolean primaryKey = primaryKeys.contains(columnName);
-        // tableGenerated.getOrDefault(columnName, Boolean.FALSE);
-        boolean generated = false;
+        boolean generated = tableGenerated.getOrDefault(columnName, Boolean.FALSE);
         // H2 database case sensitive is always true
         return new ColumnMetaData(columnName, dataTypeMap.get(typeName), primaryKey, generated, true);
     }

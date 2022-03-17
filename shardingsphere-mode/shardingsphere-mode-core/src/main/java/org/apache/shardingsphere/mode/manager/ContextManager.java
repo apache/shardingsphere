@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
@@ -44,10 +45,14 @@ import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.rule.builder.DefaultTransactionRuleConfigurationBuilder;
+import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGenerator;
+import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGeneratorFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -57,6 +62,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -275,29 +281,48 @@ public final class ContextManager implements AutoCloseable {
     public void alterDataSourceConfiguration(final String schemaName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
         try {
             MetaDataContexts changedMetaDataContext = buildChangedMetaDataContextWithChangedDataSource(metaDataContexts.getMetaDataMap().get(schemaName), dataSourcePropsMap);
-            metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().putAll(changedMetaDataContext.getOptimizerContext().getFederationMetaData().getSchemas());
-            Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
-            metaDataMap.putAll(changedMetaDataContext.getMetaDataMap());
-            Collection<DataSource> pendingClosedDataSources = getPendingClosedDataSources(schemaName, dataSourcePropsMap);
-            renewMetaDataContexts(rebuildMetaDataContexts(metaDataMap));
-            renewTransactionContext(schemaName, metaDataContexts.getMetaData(schemaName).getResource());
-            closeDataSources(schemaName, pendingClosedDataSources);
+            refreshMetaDataContext(schemaName, changedMetaDataContext, dataSourcePropsMap);
         } catch (final SQLException ex) {
             log.error("Alter schema:{} data source configuration failed", schemaName, ex);
         }
     }
     
     /**
+     * Alter data source and rule configuration.
+     * 
+     * @param schemaName schema name
+     * @param dataSourcePropsMap data source props map
+     * @param ruleConfigs rule configurations
+     */
+    public void alterDataSourceAndRuleConfiguration(final String schemaName, final Map<String, DataSourceProperties> dataSourcePropsMap, final Collection<RuleConfiguration> ruleConfigs) {
+        try {
+            MetaDataContexts changedMetaDataContext = buildChangedMetaDataContextWithChangedDataSourceAndRule(metaDataContexts.getMetaDataMap().get(schemaName), dataSourcePropsMap, ruleConfigs);
+            refreshMetaDataContext(schemaName, changedMetaDataContext, dataSourcePropsMap);
+        } catch (SQLException ex) {
+            log.error("Alter schema:{} data source and rule configuration failed", schemaName, ex);
+        }
+    }
+    
+    /**
      * Alter global rule configuration.
      * 
-     * @param ruleConfigurations global rule configuration
+     * @param ruleConfigs global rule configuration
      */
-    public void alterGlobalRuleConfiguration(final Collection<RuleConfiguration> ruleConfigurations) {
-        if (!ruleConfigurations.isEmpty()) {
-            ShardingSphereRuleMetaData newGlobalRuleMetaData = new ShardingSphereRuleMetaData(ruleConfigurations,
-                    GlobalRulesBuilder.buildRules(ruleConfigurations, metaDataContexts.getMetaDataMap()));
+    public void alterGlobalRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs) {
+        if (!ruleConfigs.isEmpty()) {
+            boolean needRenewTransaction = isNeedRenewTransactionContext(ruleConfigs);
+            ShardingSphereRuleMetaData newGlobalRuleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, GlobalRulesBuilder.buildRules(ruleConfigs, metaDataContexts.getMetaDataMap()));
             renewMetaDataContexts(rebuildMetaDataContexts(newGlobalRuleMetaData));
+            if (needRenewTransaction) {
+                renewAllTransactionContext();
+            }
         }
+    }
+    
+    private boolean isNeedRenewTransactionContext(final Collection<RuleConfiguration> ruleConfigs) {
+        Optional<RuleConfiguration> newConfig = ruleConfigs.stream().filter(each -> each instanceof TransactionRuleConfiguration).findFirst();
+        Optional<TransactionRuleConfiguration> oldConfig = metaDataContexts.getGlobalRuleMetaData().findSingleRuleConfiguration(TransactionRuleConfiguration.class);
+        return newConfig.isPresent() && oldConfig.isPresent() && !newConfig.get().equals(oldConfig.get());
     }
     
     /**
@@ -428,16 +453,37 @@ public final class ContextManager implements AutoCloseable {
         renewTransactionContext(schemaName, metaDataContexts.getMetaData(schemaName).getResource());
     }
     
+    private void refreshMetaDataContext(final String schemaName, final MetaDataContexts changedMetaDataContext, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas().putAll(changedMetaDataContext.getOptimizerContext().getFederationMetaData().getSchemas());
+        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
+        metaDataMap.putAll(changedMetaDataContext.getMetaDataMap());
+        Collection<DataSource> pendingClosedDataSources = getPendingClosedDataSources(schemaName, dataSourcePropsMap);
+        renewMetaDataContexts(rebuildMetaDataContexts(metaDataMap));
+        renewTransactionContext(schemaName, metaDataContexts.getMetaData(schemaName).getResource());
+        closeDataSources(schemaName, pendingClosedDataSources);
+    }
+    
     private MetaDataContexts buildChangedMetaDataContextWithAddedDataSource(final ShardingSphereMetaData originalMetaData, 
                                                                             final Map<String, DataSourceProperties> addedDataSourceProps) throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(originalMetaData.getResource().getDataSources());
         dataSourceMap.putAll(DataSourcePoolCreator.create(addedDataSourceProps));
         Properties props = metaDataContexts.getProps().getProps();
+        SchemaConfiguration schemaConfiguration = new DataSourceProvidedSchemaConfiguration(dataSourceMap, originalMetaData.getRuleMetaData().getConfigurations());
+        Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
+        metaDataPersistService.ifPresent(optional -> persistTransactionConfiguration(schemaConfiguration, optional));
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), props);
-        metaDataContextsBuilder.addSchema(originalMetaData.getName(), new DataSourceProvidedSchemaConfiguration(dataSourceMap, originalMetaData.getRuleMetaData().getConfigurations()), props);
+        metaDataContextsBuilder.addSchema(originalMetaData.getName(), schemaConfiguration, props);
         metaDataContexts.getMetaDataPersistService().ifPresent(
             optional -> optional.getSchemaMetaDataService().persist(originalMetaData.getName(), metaDataContextsBuilder.getSchemaMap().get(originalMetaData.getName())));
         return metaDataContextsBuilder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
+    }
+    
+    private void persistTransactionConfiguration(final SchemaConfiguration schemaConfiguration, final MetaDataPersistService metaDataPersistService) {
+        Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(getTransactionRule().getProviderType());
+        if (fileGenerator.isPresent()) {
+            Properties transactionProps = fileGenerator.get().getTransactionProps(getTransactionRule().getProps(), schemaConfiguration, instanceContext.getModeConfiguration().getType());
+            metaDataPersistService.persistTransactionRule(transactionProps, true);
+        }
     }
     
     private MetaDataContexts buildChangedMetaDataContext(final ShardingSphereMetaData originalMetaData, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
@@ -463,6 +509,19 @@ public final class ContextManager implements AutoCloseable {
         return metaDataContextsBuilder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
     }
     
+    private MetaDataContexts buildChangedMetaDataContextWithChangedDataSourceAndRule(final ShardingSphereMetaData originalMetaData, final Map<String, DataSourceProperties> newDataSourceProps, 
+                                                                                     final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
+        Collection<String> deletedDataSources = getDeletedDataSources(originalMetaData, newDataSourceProps).keySet();
+        Map<String, DataSource> changedDataSources = buildChangedDataSources(originalMetaData, newDataSourceProps);
+        Properties props = metaDataContexts.getProps().getProps();
+        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), props);
+        metaDataContextsBuilder.addSchema(originalMetaData.getName(), new DataSourceProvidedSchemaConfiguration(getNewDataSources(originalMetaData.getResource().getDataSources(), 
+                getAddedDataSources(originalMetaData, newDataSourceProps), changedDataSources, deletedDataSources), ruleConfigs), props);
+        metaDataContexts.getMetaDataPersistService().ifPresent(
+            optional -> optional.getSchemaMetaDataService().persist(originalMetaData.getName(), metaDataContextsBuilder.getSchemaMap().get(originalMetaData.getName())));
+        return metaDataContextsBuilder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
+    }
+    
     private Map<String, DataSource> getNewDataSources(final Map<String, DataSource> originalDataSources,
                                                       final Map<String, DataSource> addedDataSources, final Map<String, DataSource> changedDataSources, final Collection<String> deletedDataSources) {
         Map<String, DataSource> result = new LinkedHashMap<>(originalDataSources);
@@ -480,6 +539,15 @@ public final class ContextManager implements AutoCloseable {
         return DataSourcePoolCreator.create(getChangedDataSourceConfiguration(originalMetaData, newDataSourcePropsMap));
     }
     
+    /**
+     * Reload all transaction context.
+     */
+    public void renewAllTransactionContext() {
+        for (Entry<String, ShardingSphereMetaData> entry : metaDataContexts.getMetaDataMap().entrySet()) {
+            renewTransactionContext(entry.getKey(), entry.getValue().getResource());
+        }
+    }
+    
     private void renewTransactionContext(final String schemaName, final ShardingSphereResource resource) {
         ShardingSphereTransactionManagerEngine changedStaleEngine = transactionContexts.getEngines().get(schemaName);
         if (null != changedStaleEngine) {
@@ -489,6 +557,8 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private ShardingSphereTransactionManagerEngine createNewEngine(final DatabaseType databaseType, final Map<String, DataSource> dataSources) {
+        Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(getTransactionRule().getProviderType());
+        fileGenerator.ifPresent(optional -> optional.generateFile(getTransactionRule().getProps(), instanceContext));
         ShardingSphereTransactionManagerEngine result = new ShardingSphereTransactionManagerEngine();
         result.init(databaseType, dataSources, getTransactionRule());
         return result;
@@ -509,21 +579,13 @@ public final class ContextManager implements AutoCloseable {
     
     private void closeDataSources(final ShardingSphereMetaData removeMetaData) {
         if (null != removeMetaData.getResource()) {
-            removeMetaData.getResource().getDataSources().values().forEach(each -> closeDataSource(removeMetaData.getResource(), each));
+            removeMetaData.getResource().getDataSources().values().forEach(each -> removeMetaData.getResource().close(each));
         }
     }
     
     private void closeDataSources(final String schemaName, final Collection<DataSource> dataSources) {
         ShardingSphereResource resource = metaDataContexts.getMetaData(schemaName).getResource();
-        dataSources.forEach(each -> closeDataSource(resource, each));
-    }
-    
-    private void closeDataSource(final ShardingSphereResource resource, final DataSource dataSource) {
-        try {
-            resource.close(dataSource);
-        } catch (final SQLException ex) {
-            log.error("Close data source failed", ex);
-        }
+        dataSources.forEach(resource::close);
     }
     
     private void removeAndCloseTransactionEngine(final String schemaName) {

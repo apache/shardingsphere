@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.assignment.ExpectedValueAssign;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
@@ -30,9 +29,8 @@ import java.util.List;
  * Set parameter statement test case.
  */
 @Getter
-@Setter
 public final class SetParameterStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "parameter-assign")
-    private List<ExpectedValueAssign> valueAssigns = new LinkedList<>();
+    private final List<ExpectedValueAssign> valueAssigns = new LinkedList<>();
 }
