@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.dbdiscovery.mysql;
 
 import com.google.common.eventbus.EventBus;
+import org.apache.shardingsphere.dbdiscovery.mysql.type.MGRDatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.junit.Test;
@@ -124,7 +125,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
     
     @Test
     public void assertUpdateMemberState() throws SQLException, IllegalAccessException, NoSuchFieldException {
-        Field declaredField = MGRDatabaseDiscoveryType.class.getDeclaredField("oldPrimaryDataSource");
+        Field declaredField = AbstractDatabaseDiscoveryType.class.getDeclaredField("oldPrimaryDataSource");
         declaredField.setAccessible(true);
         declaredField.set(mgrHaType, "ds_0");
         EventBus eventBus = mock(EventBus.class);

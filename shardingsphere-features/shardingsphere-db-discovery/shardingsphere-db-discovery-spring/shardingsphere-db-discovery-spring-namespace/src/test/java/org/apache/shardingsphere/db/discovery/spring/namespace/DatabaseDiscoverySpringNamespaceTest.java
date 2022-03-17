@@ -20,7 +20,7 @@ package org.apache.shardingsphere.db.discovery.spring.namespace;
 import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
-import org.apache.shardingsphere.dbdiscovery.mysql.MGRDatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.mysql.type.MGRDatabaseDiscoveryType;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
