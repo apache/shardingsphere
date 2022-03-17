@@ -505,7 +505,7 @@
                 <groupId>com.microsoft.sqlserver</groupId>
                 <artifactId>mssql-jdbc</artifactId>
                 <version>${mssql.version}</version>
-                <scope>provided</scope>
+                <scope>runtime</scope>
             </dependency>
             
             <dependency>
