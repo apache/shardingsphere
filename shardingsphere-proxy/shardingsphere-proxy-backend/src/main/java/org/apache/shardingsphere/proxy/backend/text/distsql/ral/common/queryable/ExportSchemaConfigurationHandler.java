@@ -122,6 +122,9 @@ public final class ExportSchemaConfigurationHandler extends QueryableRALBackendH
             return Collections.singleton(Collections.singletonList(result.toString()));
         }
         File outFile = new File(sqlStatement.getFilePath().get());
+        if (!outFile.exists()) {
+            outFile.getParentFile().mkdirs();
+        }
         try (FileOutputStream stream = new FileOutputStream(outFile)) {
             stream.write(result.toString().getBytes());
             stream.flush();
