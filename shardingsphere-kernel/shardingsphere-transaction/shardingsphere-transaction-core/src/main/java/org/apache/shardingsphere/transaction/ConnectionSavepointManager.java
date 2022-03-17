@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
+package org.apache.shardingsphere.transaction;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
