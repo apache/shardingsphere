@@ -57,7 +57,7 @@ public final class DataSourcePropertiesValidator {
         DataSource dataSource = null;
         try {
             dataSource = DataSourcePoolCreator.create(dataSourceProps);
-            checkFail(dataSource);
+            checkFailFast(dataSource);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -69,7 +69,7 @@ public final class DataSourcePropertiesValidator {
         }
     }
     
-    private void checkFail(final DataSource dataSource) throws SQLException {
+    private void checkFailFast(final DataSource dataSource) throws SQLException {
         dataSource.getConnection();
     }
 }
