@@ -96,6 +96,12 @@ public final class ReadwriteSplittingDataSourceRuleTest {
         assertThat(actual, is(expected));
     }
     
+    @Test
+    public void assertGetWriteDataSource() {
+        String writeDataSourceName = readwriteSplittingDataSourceRule.getWriteDataSource();
+        assertThat(writeDataSourceName, is("write_ds"));
+    }
+    
     private Properties getProperties(final String writeDataSource, final String readDataSources) {
         Properties result = new Properties();
         result.setProperty("write-data-source-name", writeDataSource);
