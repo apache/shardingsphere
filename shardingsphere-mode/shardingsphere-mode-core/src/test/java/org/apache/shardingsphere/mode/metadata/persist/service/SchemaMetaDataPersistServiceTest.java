@@ -101,6 +101,13 @@ public final class SchemaMetaDataPersistServiceTest {
         assertThat(actual, hasItems("bar_db"));
     }
     
+    @Test
+    public void assertPersistTableMetaData() {
+        TableMetaData tableMetaData = new TableMetaData("FOO_TABLE", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        new SchemaMetaDataPersistService(repository).persist("foo_db", tableMetaData);
+        verify(repository).persist(eq("/metadata/foo_db/tables/foo_table"), anyString());
+    }
+    
     @SneakyThrows({IOException.class, URISyntaxException.class})
     private String readYAML() {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/schema/schema.yaml").toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
