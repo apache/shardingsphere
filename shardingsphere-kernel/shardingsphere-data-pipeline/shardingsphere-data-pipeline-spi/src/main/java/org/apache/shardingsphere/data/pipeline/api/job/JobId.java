@@ -17,11 +17,27 @@
 
 package org.apache.shardingsphere.data.pipeline.api.job;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 /**
- * Job operation type.
+ * Job id.
  */
-public enum JobOperationType {
+@RequiredArgsConstructor
+@Getter
+public final class JobId {
     
-    INSERT, DELETE, UPDATE, SELECT,
-    SYSTEM_LOAD, CPU_USAGE,
+    public static final String CURRENT_VERSION = "01";
+    
+    private final String formatVersion;
+    
+    private final List<Integer> subTypes;
+    
+    private final int currentMetadataVersion;
+    
+    private final int newMetadataVersion;
+    
+    private final String schemaName;
 }

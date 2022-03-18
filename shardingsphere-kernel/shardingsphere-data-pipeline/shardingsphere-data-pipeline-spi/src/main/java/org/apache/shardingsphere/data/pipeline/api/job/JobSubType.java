@@ -17,11 +17,17 @@
 
 package org.apache.shardingsphere.data.pipeline.api.job;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
- * Job operation type.
+ * Job sub-type.
  */
-public enum JobOperationType {
+@RequiredArgsConstructor
+@Getter
+public enum JobSubType {
     
-    INSERT, DELETE, UPDATE, SELECT,
-    SYSTEM_LOAD, CPU_USAGE,
+    SCALING(1);
+    
+    private final int value;
 }
