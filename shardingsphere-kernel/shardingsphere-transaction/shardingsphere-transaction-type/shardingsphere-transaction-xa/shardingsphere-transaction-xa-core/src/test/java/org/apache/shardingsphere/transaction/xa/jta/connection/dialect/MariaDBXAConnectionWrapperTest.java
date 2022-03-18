@@ -20,7 +20,7 @@ package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
-import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionFactory;
+import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapperFactory;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,7 +59,7 @@ public final class MariaDBXAConnectionWrapperTest {
     
     @Test
     public void assertCreateMariaDBConnection() throws SQLException {
-        XAConnection actual = XAConnectionFactory.createXAConnection(DatabaseTypeRegistry.getActualDatabaseType("MariaDB"), xaDataSource, connection);
+        XAConnection actual = XAConnectionWrapperFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("MariaDB")).wrap(xaDataSource, connection);
         assertThat(actual.getXAResource(), instanceOf(XAResource.class));
         assertThat(actual.getConnection(), instanceOf(Connection.class));
     }
