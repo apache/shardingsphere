@@ -30,6 +30,7 @@ import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.PostgreSQ
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * XA connection factory.
@@ -44,8 +45,9 @@ public final class XAConnectionFactory {
      * @param connection normal connection
      * @param xaDataSource XA data source
      * @return XA connection
+     * @throws SQLException SQL exception
      */
-    public static XAConnection createXAConnection(final DatabaseType databaseType, final XADataSource xaDataSource, final Connection connection) {
+    public static XAConnection createXAConnection(final DatabaseType databaseType, final XADataSource xaDataSource, final Connection connection) throws SQLException {
         switch (databaseType.getName()) {
             case "MySQL":
                 return new MySQLXAConnectionWrapper().wrap(xaDataSource, connection);

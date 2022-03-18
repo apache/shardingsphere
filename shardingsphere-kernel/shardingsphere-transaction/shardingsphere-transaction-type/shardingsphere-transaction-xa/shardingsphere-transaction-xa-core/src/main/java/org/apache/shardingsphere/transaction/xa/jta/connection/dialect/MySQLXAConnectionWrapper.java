@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
 
@@ -30,7 +29,6 @@ import java.sql.SQLException;
 /**
  * XA connection wrapper for MySQL.
  */
-@RequiredArgsConstructor
 public final class MySQLXAConnectionWrapper implements XAConnectionWrapper {
     
     private static final String MYSQL_XA_DATASOURCE_5 = "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource";
