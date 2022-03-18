@@ -25,5 +25,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
  * PostgreSQL drop owned statement.
  */
 @ToString
-public class PostgreSQLDropOwnedStatement extends DropOwnedStatement implements PostgreSQLStatement {
+public final class PostgreSQLDropOwnedStatement extends DropOwnedStatement implements PostgreSQLStatement {
 }
