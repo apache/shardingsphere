@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
@@ -36,8 +35,7 @@ public final class RuleAlteredJobTest {
     
     @BeforeClass
     public static void beforeClass() {
-        EmbedTestingServer.start();
-        PipelineContextUtil.mockModeConfig();
+        PipelineContextUtil.mockModeConfigAndContextManager();
     }
     
     @Test

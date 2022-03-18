@@ -21,7 +21,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
-import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
@@ -48,8 +47,7 @@ public final class FinishedCheckJobTest {
     
     @BeforeClass
     public static void beforeClass() {
-        EmbedTestingServer.start();
-        PipelineContextUtil.mockModeConfig();
+        PipelineContextUtil.mockModeConfigAndContextManager();
         finishedCheckJob = new FinishedCheckJob();
     }
     

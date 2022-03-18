@@ -48,7 +48,7 @@ public final class InventoryTaskTest {
     
     @BeforeClass
     public static void beforeClass() {
-        PipelineContextUtil.mockModeConfig();
+        PipelineContextUtil.mockModeConfigAndContextManager();
         taskConfig = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
     }
     

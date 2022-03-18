@@ -61,10 +61,18 @@ public final class PipelineContextUtil {
     }
     
     /**
-     * Mock mode configuration.
+     * Mock mode configuration and context manager.
      */
-    @SneakyThrows
-    public static void mockModeConfig() {
+    public static void mockModeConfigAndContextManager() {
+        EmbedTestingServer.start();
+        mockModeConfig();
+        mockContextManager();
+    }
+    
+    private static void mockModeConfig() {
+        if (null != PipelineContext.getModeConfig()) {
+            return;
+        }
         PipelineContext.initModeConfig(createModeConfig());
     }
     
@@ -72,10 +80,10 @@ public final class PipelineContextUtil {
         return new ModeConfiguration("Cluster", PERSIST_REPOSITORY_CONFIG, true);
     }
     
-    /**
-     * Mock context manager.
-     */
-    public static void mockContextManager() {
+    private static void mockContextManager() {
+        if (null != PipelineContext.getContextManager()) {
+            return;
+        }
         ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig = new ShardingSpherePipelineDataSourceConfiguration(
                 ConfigurationFileUtil.readFile("config_sharding_sphere_jdbc_source.yaml"));
         ShardingSphereDataSource shardingSphereDataSource = (ShardingSphereDataSource) new PipelineDataSourceFactory().newInstance(pipelineDataSourceConfig).getDataSource();
