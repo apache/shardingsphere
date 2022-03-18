@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.text.transaction;
 
 import io.vertx.core.Future;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.TransactionManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
@@ -105,17 +107,13 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
                 backendTransactionManager.begin();
                 break;
             case SAVEPOINT:
-                backendTransactionManager.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
+                handleSavepoint();
                 break;
             case ROLLBACK_TO_SAVEPOINT:
-                if (((RollbackStatement) tclStatement).getSavepointName().isPresent()) {
-                    backendTransactionManager.rollbackTo(((RollbackStatement) tclStatement).getSavepointName().get());
-                    break;
-                }
-                backendTransactionManager.rollback();
+                handleRollbackToSavepoint();
                 break;
             case RELEASE_SAVEPOINT:
-                backendTransactionManager.releaseSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());
+                handleReleaseSavepoint();
                 break;
             case COMMIT:
                 SQLStatement sqlStatement = getSQLStatementByCommit();
@@ -128,6 +126,34 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
                 throw new SQLFeatureNotSupportedException(operationType.name());
         }
         return new UpdateResponseHeader(tclStatement);
+    }
+    
+    private void handleSavepoint() throws SQLException {
+        if (!connectionSession.getTransactionStatus().isInTransaction() && checkPostgreSQLOrOpengauss()) {
+            throw new SQLFeatureNotSupportedException("SAVEPOINT can only be used in transaction blocks");
+        }
+        backendTransactionManager.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
+    }
+    
+    private void handleRollbackToSavepoint() throws SQLException {
+        if (!connectionSession.getTransactionStatus().isInTransaction() && checkPostgreSQLOrOpengauss()) {
+            throw new SQLFeatureNotSupportedException("ROLLBACK TO SAVEPOINT can only be used in transaction blocks");
+        }
+        backendTransactionManager.rollbackTo(((RollbackStatement) tclStatement).getSavepointName().get());
+    }
+    
+    private void handleReleaseSavepoint() throws SQLException {
+        if (!connectionSession.getTransactionStatus().isInTransaction() && checkPostgreSQLOrOpengauss()) {
+            throw new SQLFeatureNotSupportedException("RELEASE SAVEPOINT can only be used in transaction blocks");
+        }
+        backendTransactionManager.releaseSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());
+    }
+    
+    private boolean checkPostgreSQLOrOpengauss() {
+        if (connectionSession.getDatabaseType() instanceof PostgreSQLDatabaseType || connectionSession.getDatabaseType() instanceof OpenGaussDatabaseType) {
+            return true;
+        }
+        return false;
     }
     
     private SQLStatement getSQLStatementByCommit() {

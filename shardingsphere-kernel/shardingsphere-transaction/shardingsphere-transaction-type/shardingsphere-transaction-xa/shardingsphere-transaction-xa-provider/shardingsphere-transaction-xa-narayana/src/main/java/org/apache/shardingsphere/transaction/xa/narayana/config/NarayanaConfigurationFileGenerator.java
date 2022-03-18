@@ -79,6 +79,7 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         result.getEntries().add(createEntry("RecoveryEnvironmentBean.transactionStatusManagerAddress", ""));
         result.getEntries().add(createEntry("RecoveryEnvironmentBean.recoveryListener", "NO"));
         result.getEntries().add(createEntry("RecoveryEnvironmentBean.recoveryBackoffPeriod", "1"));
+        result.getEntries().add(createEntry("CoordinatorEnvironmentBean.defaultTimeout", "180"));
         return result;
     }
     

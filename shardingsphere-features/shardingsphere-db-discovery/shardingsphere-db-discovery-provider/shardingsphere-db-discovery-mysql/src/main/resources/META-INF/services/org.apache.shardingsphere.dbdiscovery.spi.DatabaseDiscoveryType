@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.dbdiscovery.mysql.MGRDatabaseDiscoveryType
-org.apache.shardingsphere.dbdiscovery.mysql.ShowSlaveStatusDatabaseDiscoveryType
+org.apache.shardingsphere.dbdiscovery.mysql.type.MGRDatabaseDiscoveryType
+org.apache.shardingsphere.dbdiscovery.mysql.type.ShowSlaveStatusDatabaseDiscoveryType

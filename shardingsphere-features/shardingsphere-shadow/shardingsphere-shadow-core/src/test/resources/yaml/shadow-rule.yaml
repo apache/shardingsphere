@@ -17,17 +17,9 @@
 
 dataSources:
   ds:
-    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:primary_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    username: sa
-    password: 
+    dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
   shadow_ds:
-    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:replica_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    username: sa
-    password:
+    dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
 
 rules:
 - !SHADOW

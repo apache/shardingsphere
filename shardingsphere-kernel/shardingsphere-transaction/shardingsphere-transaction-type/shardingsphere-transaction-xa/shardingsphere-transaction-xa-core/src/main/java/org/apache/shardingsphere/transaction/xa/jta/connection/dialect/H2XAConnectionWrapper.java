@@ -19,10 +19,6 @@ package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
-import org.h2.jdbc.JdbcConnection;
-import org.h2.jdbcx.JdbcDataSourceFactory;
-import org.h2.jdbcx.JdbcXAConnection;
-import org.h2.message.TraceObject;
 
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
@@ -38,30 +34,37 @@ public final class H2XAConnectionWrapper implements XAConnectionWrapper {
     
     private static final int XA_DATA_SOURCE = 13;
     
-    private static final Constructor<JdbcXAConnection> CONSTRUCTOR = getH2JdbcXAConstructor();
+    private static final Constructor<?> CONSTRUCTOR = getH2JdbcXAConstructor();
     
     private static final Method NEXT_ID = getNextIdMethod();
     
-    private static final JdbcDataSourceFactory FACTORY = new JdbcDataSourceFactory();
+    private static final Object FACTORY = newFactory();
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static Constructor<JdbcXAConnection> getH2JdbcXAConstructor() {
-        Constructor<JdbcXAConnection> result = JdbcXAConnection.class.getDeclaredConstructor(JdbcDataSourceFactory.class, Integer.TYPE, JdbcConnection.class);
+    private static Constructor<?> getH2JdbcXAConstructor() {
+        Constructor<?> result = Class.forName("org.h2.jdbcx.JdbcXAConnection").getDeclaredConstructor(
+                Class.forName("org.h2.jdbcx.JdbcDataSourceFactory"), Integer.TYPE, Class.forName("org.h2.jdbc.JdbcConnection"));
         result.setAccessible(true);
         return result;
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private static Method getNextIdMethod() {
-        Method result = TraceObject.class.getDeclaredMethod("getNextId", Integer.TYPE);
+        Method result = Class.forName("org.h2.message.TraceObject").getDeclaredMethod("getNextId", Integer.TYPE);
         result.setAccessible(true);
         return result;
     }
     
+    @SneakyThrows(ReflectiveOperationException.class)
+    private static Object newFactory() {
+        return Class.forName("org.h2.jdbcx.JdbcDataSourceFactory").getDeclaredConstructor().newInstance();
+    }
+    
+    @SuppressWarnings("unchecked")
     @SneakyThrows({SQLException.class, ReflectiveOperationException.class})
     @Override
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) {
-        Connection physicalConnection = connection.unwrap(JdbcConnection.class);
-        return CONSTRUCTOR.newInstance(FACTORY, NEXT_ID.invoke(null, XA_DATA_SOURCE), physicalConnection);
+        Connection physicalConnection = connection.unwrap((Class<Connection>) Class.forName("org.h2.jdbc.JdbcConnection"));
+        return (XAConnection) CONSTRUCTOR.newInstance(FACTORY, NEXT_ID.invoke(null, XA_DATA_SOURCE), physicalConnection);
     }
 }

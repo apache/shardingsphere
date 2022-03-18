@@ -18,17 +18,24 @@
 package org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
+import org.rnorth.ducttape.unreliables.Unreliables;
 import org.testcontainers.containers.BindMode;
-import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
+import org.testcontainers.containers.wait.strategy.AbstractWaitStrategy;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 /**
  * ShardingSphere proxy container.
@@ -67,7 +74,7 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
     @Override
     protected void configure() {
         mapConfigurationFiles();
-        setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*ShardingSphere-Proxy .* mode started successfully.*"));
+        setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), scenario), "root", "root"));
     }
     
     private void mapConfigurationFiles() {
@@ -94,5 +101,31 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
+    }
+    
+    @Slf4j
+    @RequiredArgsConstructor
+    private static class JDBCConnectionWaitStrategy extends AbstractWaitStrategy {
+        
+        private final Supplier<String> jdbcUrl;
+        
+        private final String username;
+        
+        private final String password;
+    
+        @Override
+        protected void waitUntilReady() {
+            Unreliables.retryUntilSuccess((int) startupTimeout.getSeconds(), TimeUnit.SECONDS,
+                () -> {
+                    getRateLimiter().doWhenReady(() -> {
+                        try (Connection unused = DriverManager.getConnection(jdbcUrl.get(), username, password)) {
+                            log.info("Container ready");
+                        } catch (final SQLException ex) {
+                            throw new RuntimeException("Not Ready yet.");
+                        }
+                    });
+                    return true;
+                });
+        }
     }
 }

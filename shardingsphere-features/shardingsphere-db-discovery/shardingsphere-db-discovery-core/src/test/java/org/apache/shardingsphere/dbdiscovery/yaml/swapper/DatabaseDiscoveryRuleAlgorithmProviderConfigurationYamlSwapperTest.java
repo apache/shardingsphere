@@ -22,7 +22,7 @@ import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedD
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryOrder;
-import org.apache.shardingsphere.dbdiscovery.mysql.MGRDatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.mysql.type.MGRDatabaseDiscoveryType;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.junit.Test;
 
