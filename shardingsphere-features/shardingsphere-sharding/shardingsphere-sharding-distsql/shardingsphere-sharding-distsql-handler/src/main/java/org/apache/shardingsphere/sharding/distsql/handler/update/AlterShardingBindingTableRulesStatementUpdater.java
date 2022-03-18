@@ -55,7 +55,7 @@ public final class AlterShardingBindingTableRulesStatementUpdater implements Rul
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeAlertedBindingTables(schemaName, sqlStatement, currentRuleConfig);
         checkToBeAlteredDuplicateBindingTables(schemaName, sqlStatement);
-        checkToBeAlteredCanBindBindingTables(sqlStatement, currentRuleConfig);
+        checkToBeAlteredBindableBindingTables(sqlStatement, currentRuleConfig);
     }
     
     private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
@@ -88,11 +88,11 @@ public final class AlterShardingBindingTableRulesStatementUpdater implements Rul
         }
     }
     
-    private void checkToBeAlteredCanBindBindingTables(final AlterShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkToBeAlteredBindableBindingTables(final AlterShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> invalidRules = sqlStatement.getRules().stream().map(BindingTableRuleSegment::getTableGroups)
                 .filter(each -> !isValid(currentRuleConfig, each)).collect(Collectors.toCollection(LinkedList::new));
         DistSQLException.predictionThrow(invalidRules.isEmpty(),
-            () -> new InvalidRuleConfigurationException("binding", invalidRules, Collections.singleton("Unable to bind with different sharding strategies")));
+            () -> new InvalidRuleConfigurationException("binding", invalidRules, Collections.singleton("Unable to bind different sharding strategies")));
     }
     
     private boolean isValid(final ShardingRuleConfiguration currentRuleConfig, final String bindingRule) {
@@ -112,14 +112,14 @@ public final class AlterShardingBindingTableRulesStatementUpdater implements Rul
     
     private Collection<String> getBindableShardingTables(final ShardingRuleConfiguration currentRuleConfig, final ShardingTableRuleConfiguration tableRule) {
         return currentRuleConfig.getTables().stream()
-                .filter(each -> hasSameShardingStrategy(each.getTableShardingStrategy(), tableRule.getTableShardingStrategy()))
-                .filter(each -> hasSameShardingStrategy(each.getDatabaseShardingStrategy(), tableRule.getDatabaseShardingStrategy()))
+                .filter(each -> hasIdenticalShardingStrategy(each.getTableShardingStrategy(), tableRule.getTableShardingStrategy()))
+                .filter(each -> hasIdenticalShardingStrategy(each.getDatabaseShardingStrategy(), tableRule.getDatabaseShardingStrategy()))
                 .map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet());
     }
     
     private Collection<String> getBindableShardingAutoTables(final ShardingRuleConfiguration currentRuleConfig, final ShardingAutoTableRuleConfiguration autoTableRule) {
         return currentRuleConfig.getAutoTables().stream()
-                .filter(each -> hasSameShardingStrategy(each.getShardingStrategy(), autoTableRule.getShardingStrategy()))
+                .filter(each -> hasIdenticalShardingStrategy(each.getShardingStrategy(), autoTableRule.getShardingStrategy()))
                 .map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet());
     }
     
@@ -131,26 +131,26 @@ public final class AlterShardingBindingTableRulesStatementUpdater implements Rul
         return tableConfigurations.stream().filter(each -> each.getLogicTable().equals(tableName)).findAny();
     }
     
-    private boolean hasSameShardingStrategy(final ShardingStrategyConfiguration boundTableShardingStrategy, final ShardingStrategyConfiguration matchedTableShardingStrategy) {
-        if (null == boundTableShardingStrategy && null == matchedTableShardingStrategy) {
+    private boolean hasIdenticalShardingStrategy(final ShardingStrategyConfiguration configuration1, final ShardingStrategyConfiguration configuration2) {
+        if (null == configuration1 && null == configuration2) {
             return true;
         }
-        if (null != boundTableShardingStrategy && null != matchedTableShardingStrategy) {
-            if (!boundTableShardingStrategy.getClass().getCanonicalName().equals(matchedTableShardingStrategy.getClass().getCanonicalName())) {
+        if (null != configuration1 && null != configuration2) {
+            if (!configuration1.getClass().getCanonicalName().equals(configuration2.getClass().getCanonicalName())) {
                 return false;
             }
-            String boundTableColumn;
-            String matchTableColumn;
-            if (boundTableShardingStrategy instanceof StandardShardingStrategyConfiguration) {
-                boundTableColumn = ((StandardShardingStrategyConfiguration) boundTableShardingStrategy).getShardingColumn();
-                matchTableColumn = ((StandardShardingStrategyConfiguration) matchedTableShardingStrategy).getShardingColumn();
-            } else if (boundTableShardingStrategy instanceof ComplexShardingStrategyConfiguration) {
-                boundTableColumn = ((ComplexShardingStrategyConfiguration) boundTableShardingStrategy).getShardingColumns();
-                matchTableColumn = ((ComplexShardingStrategyConfiguration) matchedTableShardingStrategy).getShardingColumns();
+            String column1;
+            String column2;
+            if (configuration1 instanceof StandardShardingStrategyConfiguration) {
+                column1 = ((StandardShardingStrategyConfiguration) configuration1).getShardingColumn();
+                column2 = ((StandardShardingStrategyConfiguration) configuration2).getShardingColumn();
+            } else if (configuration1 instanceof ComplexShardingStrategyConfiguration) {
+                column1 = ((ComplexShardingStrategyConfiguration) configuration1).getShardingColumns();
+                column2 = ((ComplexShardingStrategyConfiguration) configuration2).getShardingColumns();
             } else {
-                return boundTableShardingStrategy instanceof NoneShardingStrategyConfiguration;
+                return configuration1 instanceof NoneShardingStrategyConfiguration;
             }
-            return boundTableColumn.equals(matchTableColumn);
+            return column1.equals(column2);
         }
         return false;
     }
