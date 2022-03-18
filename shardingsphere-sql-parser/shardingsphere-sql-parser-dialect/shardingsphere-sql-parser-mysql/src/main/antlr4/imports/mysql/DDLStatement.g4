@@ -344,7 +344,7 @@ createTablespaceInnodb
       ADD DATAFILE string_
       (FILE_BLOCK_SIZE EQ_ fileSizeLiteral)?
       (ENCRYPTION EQ_ y_or_n=string_)?
-      (ENGINE EQ_? string_)?
+      (ENGINE EQ_? identifier)?
     ;
 
 createTablespaceNdb
