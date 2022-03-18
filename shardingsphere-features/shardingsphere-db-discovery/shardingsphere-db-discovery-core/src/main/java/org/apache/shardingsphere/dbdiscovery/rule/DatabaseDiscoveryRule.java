@@ -193,7 +193,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
                 Map<String, DataSource> dataSources = dataSourceMap.entrySet().stream().filter(dataSource -> !entry.getValue().getDisabledDataSourceNames().contains(dataSource.getKey()))
                         .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-                CronJob job = new CronJob(entry.getValue().getDatabaseDiscoveryType().getType() + "-" + entry.getValue().getGroupName(),
+                CronJob job = new CronJob(entry.getValue().getDatabaseDiscoveryType().getType() + "-" + schemaName + "-" + entry.getValue().getGroupName(),
                     each -> new HeartbeatJob(schemaName, dataSources, entry.getValue().getGroupName(), entry.getValue().getDatabaseDiscoveryType(), entry.getValue().getDisabledDataSourceNames())
                                 .execute(null), entry.getValue().getHeartbeatProps().getProperty("keep-alive-cron"));
                 modeScheduleContext.get().startCronJob(job);

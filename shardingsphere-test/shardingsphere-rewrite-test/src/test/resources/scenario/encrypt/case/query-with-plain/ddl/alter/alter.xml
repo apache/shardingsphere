@@ -46,4 +46,29 @@
         <input sql="ALTER TABLE t_account_bak DROP COLUMN password, DROP COLUMN id" />
         <output sql="ALTER TABLE t_account_bak DROP COLUMN cipher_password, DROP COLUMN assisted_query_password, DROP COLUMN plain_password, DROP COLUMN id" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="modify_column_amount_for_plain" db-types="MySQL">
+        <input sql="ALTER TABLE t_account MODIFY COLUMN amount text"/>
+        <output sql="ALTER TABLE t_account MODIFY COLUMN cipher_amount text"/>
+    </rewrite-assertion>
+
+    <rewrite-assertion id="change_column_amount_for_plain" db-types="MySQL">
+        <input sql="ALTER TABLE t_account CHANGE COLUMN amount amount_new text"/>
+        <output sql="ALTER TABLE t_account CHANGE COLUMN cipher_amount amount_new_cipher text"/>
+    </rewrite-assertion>
+
+    <rewrite-assertion id="add_column_with_position_cipher" db-types="MySQL">
+        <input sql="ALTER TABLE t_account ADD COLUMN status text AFTER amount"/>
+        <output sql="ALTER TABLE t_account ADD COLUMN status text AFTER cipher_amount"/>
+    </rewrite-assertion>
+
+    <rewrite-assertion id="modify_column_with_position_cipher" db-types="MySQL">
+        <input sql="ALTER TABLE t_account MODIFY COLUMN status text AFTER amount"/>
+        <output sql="ALTER TABLE t_account MODIFY COLUMN status text AFTER cipher_amount"/>
+    </rewrite-assertion>
+
+    <rewrite-assertion id="add_column_with_cipher" db-types="MySQL">
+        <input sql="ALTER TABLE t_account ADD COLUMN amount INT"/>
+        <output sql="ALTER TABLE t_account ADD COLUMN cipher_amount INT"/>
+    </rewrite-assertion>
 </rewrite-assertions>

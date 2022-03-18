@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 174 companies.
+Total: 177 companies.
 
 ### Infra
 <ul>
@@ -137,6 +137,9 @@ Total: 174 companies.
     <li><a href="http://www.didano.com/" rel="nofollow">DiDaNo</a></li>
     <li><a href="https://willclass.com/" rel="nofollow">WillClass</a></li>
     <li><a href="https://kada.hhdd.com/" rel="nofollow">KaDa Story</a></li>
+    <li><a href="http://www.swydedu.com/" rel="nofollow">swydEdu</a></li>
+    <li><a href="https://www.codemao.cn/" rel="nofollow">Dianmao</a></li>
+    <li><a href="https://www.yxt.com/" rel="nofollow">YunXueTang</a></li>
 </ul>
 
 ### E-Entertainment

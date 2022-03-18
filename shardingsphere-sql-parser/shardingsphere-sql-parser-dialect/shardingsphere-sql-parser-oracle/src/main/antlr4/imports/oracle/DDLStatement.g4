@@ -2014,6 +2014,10 @@ createDatabaseLink
     : CREATE SHARED? PUBLIC? DATABASE LINK dbLink 
     (connectToClause | dbLinkAuthentication)* (USING connectString)?
     ;
+    
+dropDatabaseLink
+    : DROP PUBLIC? DATABASE LINK dbLink 
+    ;
 
 connectToClause
     : CONNECT TO (CURRENT_USER | username IDENTIFIED BY password dbLinkAuthentication?)

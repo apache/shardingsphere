@@ -18,7 +18,7 @@
 
 <sql-cases>
     <sql-case id="revoke_user_without_hostname" value="REVOKE SELECT, UPDATE on t_order from user_dev" db-types="Oracle,PostgreSQL,openGauss,SQLServer" />
-    <sql-case id="revoke_role" value="REVOKE role_dev from user_dev" db-types="Oracle,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="revoke_role" value="REVOKE role_dev from user_dev" db-types="Oracle,PostgreSQL,openGauss" />
     <sql-case id="revoke_user_from" value="REVOKE ADVISOR, ALTER DATABASE from user_dev" db-types="Oracle" />
     <sql-case id="revoke_user_with_hostname_on_db" value="REVOKE select, insert ON * FROM 'user_dev'@'localhost'" db-types="MySQL" />
     <sql-case id="revoke_user_with_hostname_on_table" value="REVOKE select, insert ON t_order FROM 'user_dev'@'localhost'" db-types="MySQL" />
@@ -102,4 +102,27 @@
     <sql-case id="revoke_crud_on_table" value="REVOKE INSERT, SELECT, UPDATE, DELETE ON t_order FROM user1" db-types="SQLServer" />
     <sql-case id="revoke_select_on_table_for_postgresql" value="REVOKE SELECT ON TABLE t_order FROM role1" db-types="PostgreSQL,openGauss" />
     <sql-case id="revoke_select_on_table_for_sqlserver" value="REVOKE SELECT ON t_order FROM user1" db-types="SQLServer" />
+    <sql-case id="revoke_view_definition_on_availability_group_to_login" value="REVOKE VIEW DEFINITION ON AVAILABILITY GROUP::group1 TO login1" db-types="SQLServer" />
+    <sql-case id="revoke_take_ownership_on_availability_group_to_user" value="REVOKE TAKE OWNERSHIP ON AVAILABILITY GROUP::group1 TO user1 CASCADE" db-types="SQLServer" />
+    <sql-case id="revoke_grant_option_on_availability_group_to_user" value="REVOKE GRANT OPTION FOR CONTROL ON AVAILABILITY GROUP::group1 TO user1 CASCADE" db-types="SQLServer" />
+    <sql-case id="revoke_create_certificate_from_user" value="REVOKE CREATE CERTIFICATE FROM user1" db-types="SQLServer" />
+    <sql-case id="revoke_references_from_role" value="REVOKE REFERENCES FROM role1" db-types="SQLServer" />
+    <sql-case id="revoke_view_definition_from_user" value="REVOKE VIEW DEFINITION FROM user1 CASCADE" db-types="SQLServer" />
+    <sql-case id="revoke_control_on_user" value="REVOKE CONTROL ON USER::user1 FROM user2" db-types="SQLServer" />
+    <sql-case id="revoke_view_definition_on_role_from_user" value="REVOKE VIEW DEFINITION ON ROLE::role1 FROM user1 CASCADE" db-types="SQLServer" />
+    <sql-case id="revoke_impersonate_on_user" value="REVOKE IMPERSONATE ON USER::user1 FROM role1" db-types="SQLServer" />
+    <sql-case id="revoke_view_definition_on_endpoint_from_login" value="REVOKE VIEW DEFINITION ON ENDPOINT::endpoint1 FROM login1" db-types="SQLServer" />
+    <sql-case id="revoke_take_ownership_on_endpoint_from_user" value="REVOKE TAKE OWNERSHIP ON ENDPOINT::endpoint1 FROM user1 CASCADE" db-types="SQLServer" />
+    <sql-case id="revoke_select_on_object_from_user" value="REVOKE SELECT ON OBJECT::db1.t_order FROM user1" db-types="SQLServer" />
+    <sql-case id="revoke_execute_on_object_from_role" value="REVOKE EXECUTE ON OBJECT::db1.t_order FROM role1" db-types="SQLServer" />
+    <sql-case id="revoke_references_on_object_from_user" value="REVOKE REFERENCES (order_id) ON OBJECT::db1.t_order FROM user1 CASCADE" db-types="SQLServer" />
+    <sql-case id="revoke_view_server_state_from_login" value="REVOKE VIEW SERVER STATE FROM login1" db-types="SQLServer" />
+    <sql-case id="revoke_grant_option_for_connect_sql_from_login" value="REVOKE GRANT OPTION FOR CONNECT SQL FROM login1" db-types="SQLServer" />
+    <sql-case id="revoke_impersonate_on_login_from_windows_user" value="REVOKE IMPERSONATE ON LOGIN::login1 FROM [windows\user]" db-types="SQLServer" />
+    <sql-case id="revoke_view_definition_on_login" value="REVOKE VIEW DEFINITION ON LOGIN::login1 FROM login2 CASCADE" db-types="SQLServer" />
+    <sql-case id="revoke_view_definition_on_server_role" value="REVOKE VIEW DEFINITION ON SERVER ROLE::role1 TO role2" db-types="SQLServer" />
+    <sql-case id="revoke_alter_on_symmetric_key_to_user" value="REVOKE ALTER ON SYMMETRIC KEY::key1 TO user1 CASCADE" db-types="SQLServer" />
+    <sql-case id="revoke_execute_on_system_object" value="REVOKE EXECUTE ON sys.sp_addlinkedserver FROM public" db-types="SQLServer" />
+    <sql-case id="revoke_view_definition_on_type" value="REVOKE VIEW DEFINITION ON TYPE::schema1.type1 FROM user1 CASCADE" db-types="SQLServer" />
+    <sql-case id="revoke_execute_on_xml_schema_collection" value="REVOKE EXECUTE ON XML SCHEMA COLLECTION::schema1.xmlschemacollection1 FROM user1" db-types="SQLServer" />
 </sql-cases>

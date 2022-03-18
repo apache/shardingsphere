@@ -100,12 +100,12 @@ public final class CommandExecutorTask implements Runnable {
             }
             responsePackets.forEach(context::write);
             if (commandExecutor instanceof QueryCommandExecutor) {
-                return commandExecuteEngine.writeQueryData(context, connectionSession.getBackendConnection(), (QueryCommandExecutor) commandExecutor, responsePackets.size());
+                commandExecuteEngine.writeQueryData(context, connectionSession.getBackendConnection(), (QueryCommandExecutor) commandExecutor, responsePackets.size());
             }
+            return true;
         } finally {
             commandExecutor.close();
         }
-        return databaseProtocolFrontendEngine.getFrontendContext().isFlushForPerCommandPacket();
     }
     
     private void processException(final Exception cause) {

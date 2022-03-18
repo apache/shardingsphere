@@ -31,4 +31,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 public abstract class CreateDatabaseStatement extends AbstractSQLStatement implements DDLStatement {
     
     private String databaseName;
+    
+    private boolean containsNotExistClause;
 }

@@ -174,7 +174,8 @@ public final class MySQLQueryHeaderBuilderTest {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         ColumnMetaData columnMetaData = new ColumnMetaData("order_id", Types.INTEGER, true, false, false);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.get("t_logic_order")).thenReturn(new TableMetaData("t_logic_order", Collections.singletonList(columnMetaData), Collections.singletonList(new IndexMetaData("order_id"))));
+        when(schema.get("t_logic_order")).thenReturn(new TableMetaData("t_logic_order", 
+                Collections.singletonList(columnMetaData), Collections.singletonList(new IndexMetaData("order_id")), Collections.emptyList()));
         DataSourcesMetaData dataSourcesMetaData = mock(DataSourcesMetaData.class);
         when(dataSourcesMetaData.getDataSourceMetaData("ds_0")).thenReturn(mock(DataSourceMetaData.class));
         when(result.getResource().getDataSourcesMetaData()).thenReturn(dataSourcesMetaData);
