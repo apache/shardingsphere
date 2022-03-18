@@ -46,7 +46,6 @@ public final class OpenGaussXAConnectionWrapper implements XAConnectionWrapper {
         return Class.forName("org.opengauss.xa.PGXAConnection").getConstructor(Class.forName("org.opengauss.core.BaseConnection"));
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
     @Override
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {
         return createXAConnection(connection.unwrap(JDBC_CONNECTION_CLASS));
