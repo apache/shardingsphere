@@ -112,21 +112,16 @@ public final class ImportSchemaConfigurationHandlerTest {
     
     private DataSource createDataSource(final String dbName) {
         HikariDataSource result = new HikariDataSource();
-        result.setJdbcUrl(String.format("jdbc:mysql://127.0.0.1:3306/%s?serverTimezone=UTC&useSSL=false", dbName));
+        result.setJdbcUrl(String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", dbName));
         result.setUsername("root");
         result.setPassword("");
-        result.setConnectionTimeout(30000L);
-        result.setIdleTimeout(60000L);
-        result.setMaxLifetime(1800000L);
-        result.setMaximumPoolSize(50);
-        result.setMinimumIdle(1);
         return result;
     }
     
     private Map<String, TableMetaData> createTableMap() {
-        Map<String, TableMetaData> result = new HashMap<>(1, 1);
         List<ColumnMetaData> columns = Collections.singletonList(new ColumnMetaData("order_id", 0, false, false, false));
         List<IndexMetaData> indexes = Collections.singletonList(new IndexMetaData("primary"));
+        Map<String, TableMetaData> result = new HashMap<>(1, 1);
         result.put("t_order", new TableMetaData("t_order", columns, indexes, Collections.emptyList()));
         return result;
     }
