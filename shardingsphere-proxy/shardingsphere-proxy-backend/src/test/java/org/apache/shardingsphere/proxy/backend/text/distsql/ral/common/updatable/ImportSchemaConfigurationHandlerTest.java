@@ -21,6 +21,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.ImportSchemaConfigurationStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
@@ -39,8 +40,12 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShard
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -58,6 +63,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class ImportSchemaConfigurationHandlerTest {
     
     private final String filePath = "/conf/import/config-sharding.yaml";
@@ -66,8 +72,17 @@ public final class ImportSchemaConfigurationHandlerTest {
     
     private final String scalingName = "default_scaling";
     
+    @Mock
+    private DataSourcePropertiesValidator validator;
+    
+    private ImportSchemaConfigurationHandler importSchemaConfigurationHandler;
+    
     @Before
-    public void init() throws SQLException {
+    public void init() throws Exception {
+        importSchemaConfigurationHandler = new ImportSchemaConfigurationHandler().init(getParameter(createSqlStatement(), mockConnectionSession()));
+        Field field = importSchemaConfigurationHandler.getClass().getDeclaredField("validator");
+        field.setAccessible(true);
+        field.set(importSchemaConfigurationHandler, validator);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getAllSchemaNames()).thenReturn(Collections.singletonList(schemaName));
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
@@ -84,8 +99,7 @@ public final class ImportSchemaConfigurationHandlerTest {
         assertNotNull(dataSourceMap);
         Collection<RuleConfiguration> ruleConfigurations = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getRuleMetaData().getConfigurations();
         assertNotNull(ruleConfigurations);
-        ImportSchemaConfigurationHandler handler = new ImportSchemaConfigurationHandler().init(getParameter(createSqlStatement(), mockConnectionSession()));
-        ResponseHeader responseHeader = handler.execute();
+        ResponseHeader responseHeader = importSchemaConfigurationHandler.execute();
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
