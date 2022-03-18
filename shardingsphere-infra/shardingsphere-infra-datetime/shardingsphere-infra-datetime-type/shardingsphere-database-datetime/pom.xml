@@ -63,7 +63,6 @@
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

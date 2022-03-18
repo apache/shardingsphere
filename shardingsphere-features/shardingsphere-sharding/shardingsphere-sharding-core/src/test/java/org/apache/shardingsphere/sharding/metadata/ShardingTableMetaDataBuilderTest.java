@@ -394,6 +394,6 @@ public class ShardingTableMetaDataBuilderTest {
                 new ColumnMetaData("pwd_cipher", 2, false, false, true),
                 new ColumnMetaData("pwd_plain", 2, false, false, true),
                 new ColumnMetaData("product_id", 2, false, false, true));
-        return new TableMetaData(TABLE_NAME, columns, Collections.emptyList());
+        return new TableMetaData(TABLE_NAME, columns, Collections.emptyList(), Collections.emptyList());
     }
 }

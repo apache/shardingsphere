@@ -372,7 +372,7 @@ public final class EncryptTableMetaDataBuilderTest {
         Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", 1, true, true, true),
                 new ColumnMetaData("pwd_cipher", 2, false, false, true),
                 new ColumnMetaData("pwd_plain", 2, false, false, true));
-        return new TableMetaData(TABLE_NAME, columns, Collections.emptyList());
+        return new TableMetaData(TABLE_NAME, columns, Collections.emptyList(), Collections.emptyList());
     }
     
     private SingleTableRule createSingleTableRule() {

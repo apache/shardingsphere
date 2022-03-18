@@ -62,13 +62,13 @@
         <output sql="SELECT t_account.account_id FROM t_account WHERE account_id = ?" parameters="100" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_with_schema_based_algorithm_for_plain" db-types="MySQL">
+    <rewrite-assertion id="select_shorthand_with_upper_column_and_schema_based_algorithm_for_plain" db-types="MySQL">
         <input sql="SELECT * FROM t_order WHERE content = 'TEST'" />
-        <output sql="SELECT `t_order`.`order_id`, `t_order`.`user_id`, `t_order`.`cipher_content` AS `content` FROM t_order WHERE cipher_content = 'encrypt_TEST_t_order'" />
+        <output sql="SELECT `t_order`.`ORDER_ID`, `t_order`.`USER_ID`, `t_order`.`CIPHER_CONTENT` AS `CONTENT` FROM t_order WHERE CIPHER_CONTENT = 'encrypt_TEST_t_order'" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_with_schema_based_algorithm_for_parameters" db-types="MySQL">
+    <rewrite-assertion id="select_shorthand_with_upper_column_and_schema_based_algorithm_for_parameters" db-types="MySQL">
         <input sql="SELECT * FROM t_order WHERE content = ?" parameters="TEST" />
-        <output sql="SELECT `t_order`.`order_id`, `t_order`.`user_id`, `t_order`.`cipher_content` AS `content` FROM t_order WHERE cipher_content = ?" parameters="encrypt_TEST_t_order" />
+        <output sql="SELECT `t_order`.`ORDER_ID`, `t_order`.`USER_ID`, `t_order`.`CIPHER_CONTENT` AS `CONTENT` FROM t_order WHERE CIPHER_CONTENT = ?" parameters="encrypt_TEST_t_order" />
     </rewrite-assertion>
 </rewrite-assertions>

@@ -202,27 +202,6 @@ public final class JDBCBackendConnectionTest {
     }
     
     @Test
-    public void assertMultiThreadsGetConnection() throws SQLException, InterruptedException {
-        MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtil.mockNewConnections(2));
-        Thread thread1 = new Thread(this::assertOneThreadResult);
-        Thread thread2 = new Thread(this::assertOneThreadResult);
-        thread1.start();
-        thread2.start();
-        thread1.join();
-        thread2.join();
-    }
-    
-    @SneakyThrows(SQLException.class)
-    private void assertOneThreadResult() {
-        connectionSession.getTransactionStatus().setInTransaction(true);
-        List<Connection> actualConnections = backendConnection.getConnections("ds1", 12, ConnectionMode.MEMORY_STRICTLY);
-        assertThat(actualConnections.size(), is(12));
-        assertThat(backendConnection.getConnectionSize(), is(12));
-        assertTrue(connectionSession.getTransactionStatus().isInTransaction());
-    }
-    
-    @Test
     public void assertIsNotSerialExecuteWhenNotInTransaction() {
         connectionSession.getTransactionStatus().setInTransaction(false);
         assertFalse(backendConnection.isSerialExecute());

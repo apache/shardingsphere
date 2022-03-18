@@ -15,14 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.adapter.invocation;
+package org.apache.shardingsphere.infra.metadata.schema.model;
 
-import org.junit.Test;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
-public final class MethodInvocationTest {
+/**
+ * Constraint meta data.
+ */
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
+@ToString
+public final class ConstraintMetaData {
     
-    @Test
-    public void assertInvokeSuccess() throws NoSuchMethodException {
-        new MethodInvocation(String.class.getMethod("length"), new Object[] {}).invoke("");
-    }
+    private final String name;
+    
+    private final String referencedTableName;
 }

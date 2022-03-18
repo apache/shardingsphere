@@ -42,16 +42,22 @@ public final class TableMetaData {
     
     private final Map<String, IndexMetaData> indexes;
     
+    private final Map<String, ConstraintMetaData> constrains;
+    
+    private final List<String> columnNames = new ArrayList<>();
+    
     private final List<String> primaryKeyColumns = new ArrayList<>();
     
     public TableMetaData() {
-        this("", Collections.emptyList(), Collections.emptyList());
+        this("", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     }
     
-    public TableMetaData(final String name, final Collection<ColumnMetaData> columnMetaDataList, final Collection<IndexMetaData> indexMetaDataList) {
+    public TableMetaData(final String name, final Collection<ColumnMetaData> columnMetaDataList, 
+                         final Collection<IndexMetaData> indexMetaDataList, final Collection<ConstraintMetaData> constraintMetaDataList) {
         this.name = name;
         columns = getColumns(columnMetaDataList);
         indexes = getIndexes(indexMetaDataList);
+        constrains = getConstrains(constraintMetaDataList);
     }
     
     private Map<String, ColumnMetaData> getColumns(final Collection<ColumnMetaData> columnMetaDataList) {
@@ -59,6 +65,7 @@ public final class TableMetaData {
         for (ColumnMetaData each : columnMetaDataList) {
             String lowerColumnName = each.getName().toLowerCase();
             result.put(lowerColumnName, each);
+            columnNames.add(each.getName());
             if (each.isPrimaryKey()) {
                 primaryKeyColumns.add(lowerColumnName);
             }
@@ -69,6 +76,14 @@ public final class TableMetaData {
     private Map<String, IndexMetaData> getIndexes(final Collection<IndexMetaData> indexMetaDataList) {
         Map<String, IndexMetaData> result = new LinkedHashMap<>(indexMetaDataList.size(), 1);
         for (IndexMetaData each : indexMetaDataList) {
+            result.put(each.getName().toLowerCase(), each);
+        }
+        return result;
+    }
+    
+    private Map<String, ConstraintMetaData> getConstrains(final Collection<ConstraintMetaData> constraintMetaDataList) {
+        Map<String, ConstraintMetaData> result = new LinkedHashMap<>(constraintMetaDataList.size(), 1);
+        for (ConstraintMetaData each : constraintMetaDataList) {
             result.put(each.getName().toLowerCase(), each);
         }
         return result;

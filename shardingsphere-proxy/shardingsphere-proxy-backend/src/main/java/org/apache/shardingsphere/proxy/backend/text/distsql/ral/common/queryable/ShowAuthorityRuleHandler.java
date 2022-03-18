@@ -31,6 +31,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Show authority rule handler.
+ */
 public final class ShowAuthorityRuleHandler extends QueryableRALBackendHandler<ShowAuthorityRuleStatement, ShowAuthorityRuleHandler> {
     
     private static final String USERS = "users";
