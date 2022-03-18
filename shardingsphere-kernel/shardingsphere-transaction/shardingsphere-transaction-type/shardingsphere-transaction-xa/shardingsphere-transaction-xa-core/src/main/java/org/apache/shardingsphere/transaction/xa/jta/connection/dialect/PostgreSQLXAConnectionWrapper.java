@@ -19,23 +19,40 @@ package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
-import org.postgresql.core.BaseConnection;
-import org.postgresql.xa.PGXAConnection;
 
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
+import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * PostgreSQL XA connection wrapper.
+ * XA connection wrapper for PostgreSQL.
  */
 public final class PostgreSQLXAConnectionWrapper implements XAConnectionWrapper {
     
-    @SneakyThrows({SQLException.class, ClassNotFoundException.class})
+    private static final Class<Connection> JDBC_CONNECTION_CLASS = getJDBCConnectionClass();
+    
+    private static final Constructor<?> XA_CONNECTION_CONSTRUCTOR = getXAConnectionConstructor();
+    
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
+    private static Class<Connection> getJDBCConnectionClass() {
+        return (Class<Connection>) Class.forName("org.postgresql.core.BaseConnection");
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private static Constructor<?> getXAConnectionConstructor() {
+        return Class.forName("org.postgresql.xa.PGXAConnection").getConstructor(Class.forName("org.postgresql.core.BaseConnection"));
+    }
+    
     @Override
-    public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) {
-        BaseConnection physicalConnection = (BaseConnection) connection.unwrap(Class.forName("org.postgresql.core.BaseConnection"));
-        return new PGXAConnection(physicalConnection);
+    public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {
+        return createXAConnection(connection.unwrap(JDBC_CONNECTION_CLASS));
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private XAConnection createXAConnection(final Connection connection) {
+        return (XAConnection) XA_CONNECTION_CONSTRUCTOR.newInstance(connection);
     }
 }
