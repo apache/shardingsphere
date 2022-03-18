@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
-import org.apache.shardingsphere.infra.state.StateContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,8 +37,6 @@ import java.util.Optional;
 public final class InstanceContext {
     
     private final ComputeNodeInstance instance;
-    
-    private final StateContext state = new StateContext();
     
     private final WorkerIdGenerator workerIdGenerator;
     
