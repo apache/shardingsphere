@@ -94,45 +94,45 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements Rul
     }
     
     private void checkToBeCreatedCanBindBindingTables(final CreateShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        Collection<String> cannotBindRules = sqlStatement.getRules().stream().map(BindingTableRuleSegment::getTableGroups)
-                .filter(each -> !canBind(currentRuleConfig, each)).collect(Collectors.toCollection(LinkedList::new));
-        DistSQLException.predictionThrow(cannotBindRules.isEmpty(),
-            () -> new InvalidRuleConfigurationException("binding", cannotBindRules, Collections.singleton("Unable to bind with different sharding strategies")));
+        Collection<String> invalidRules = sqlStatement.getRules().stream().map(BindingTableRuleSegment::getTableGroups)
+                .filter(each -> !isValid(currentRuleConfig, each)).collect(Collectors.toCollection(LinkedList::new));
+        DistSQLException.predictionThrow(invalidRules.isEmpty(),
+            () -> new InvalidRuleConfigurationException("binding", invalidRules, Collections.singleton("Unable to bind with different sharding strategies")));
     }
     
-    private boolean canBind(final ShardingRuleConfiguration currentRuleConfig, final String bindingRule) {
+    private boolean isValid(final ShardingRuleConfiguration currentRuleConfig, final String bindingRule) {
         LinkedList<String> shardingTables = new LinkedList<>(Splitter.on(",").trimResults().splitToList(bindingRule));
-        Collection<String> bindableShardingTables = getBindableShardingTable(currentRuleConfig, shardingTables.getFirst());
+        Collection<String> bindableShardingTables = getBindableShardingTables(currentRuleConfig, shardingTables.getFirst());
         return bindableShardingTables.containsAll(shardingTables);
     }
     
-    private Collection<String> getBindableShardingTable(final ShardingRuleConfiguration currentRuleConfig, final String shardingTable) {
+    private Collection<String> getBindableShardingTables(final ShardingRuleConfiguration currentRuleConfig, final String shardingTable) {
         Collection<String> result = new ArrayList<>();
-        Optional<ShardingTableRuleConfiguration> tableRule = getFromTable(currentRuleConfig.getTables(), shardingTable);
-        tableRule.ifPresent(op -> result.addAll(getBindableShardingTable(currentRuleConfig, op)));
-        Optional<ShardingAutoTableRuleConfiguration> autoTableRule = getFromAutoTable(currentRuleConfig.getAutoTables(), shardingTable);
-        autoTableRule.ifPresent(op -> result.addAll(getBindableShardingAutoTable(currentRuleConfig, op)));
+        Optional<ShardingTableRuleConfiguration> tableRule = getConfigurationFromTable(currentRuleConfig.getTables(), shardingTable);
+        tableRule.ifPresent(op -> result.addAll(getBindableShardingTables(currentRuleConfig, op)));
+        Optional<ShardingAutoTableRuleConfiguration> autoTableRule = getConfigurationFromAutoTable(currentRuleConfig.getAutoTables(), shardingTable);
+        autoTableRule.ifPresent(op -> result.addAll(getBindableShardingAutoTables(currentRuleConfig, op)));
         return result;
     }
     
-    private Collection<String> getBindableShardingTable(final ShardingRuleConfiguration currentRuleConfig, final ShardingTableRuleConfiguration tableRule) {
+    private Collection<String> getBindableShardingTables(final ShardingRuleConfiguration currentRuleConfig, final ShardingTableRuleConfiguration tableRule) {
         return currentRuleConfig.getTables().stream()
                 .filter(each -> hasSameShardingStrategy(each.getTableShardingStrategy(), tableRule.getTableShardingStrategy()))
                 .filter(each -> hasSameShardingStrategy(each.getDatabaseShardingStrategy(), tableRule.getDatabaseShardingStrategy()))
                 .map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet());
     }
     
-    private Collection<String> getBindableShardingAutoTable(final ShardingRuleConfiguration currentRuleConfig, final ShardingAutoTableRuleConfiguration autoTableRule) {
+    private Collection<String> getBindableShardingAutoTables(final ShardingRuleConfiguration currentRuleConfig, final ShardingAutoTableRuleConfiguration autoTableRule) {
         return currentRuleConfig.getAutoTables().stream()
                 .filter(each -> hasSameShardingStrategy(each.getShardingStrategy(), autoTableRule.getShardingStrategy()))
                 .map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet());
     }
     
-    private Optional<ShardingAutoTableRuleConfiguration> getFromAutoTable(final Collection<ShardingAutoTableRuleConfiguration> autoTableConfigurations, final String tableName) {
+    private Optional<ShardingAutoTableRuleConfiguration> getConfigurationFromAutoTable(final Collection<ShardingAutoTableRuleConfiguration> autoTableConfigurations, final String tableName) {
         return autoTableConfigurations.stream().filter(each -> each.getLogicTable().equals(tableName)).findAny();
     }
     
-    private Optional<ShardingTableRuleConfiguration> getFromTable(final Collection<ShardingTableRuleConfiguration> tableConfigurations, final String tableName) {
+    private Optional<ShardingTableRuleConfiguration> getConfigurationFromTable(final Collection<ShardingTableRuleConfiguration> tableConfigurations, final String tableName) {
         return tableConfigurations.stream().filter(each -> each.getLogicTable().equals(tableName)).findAny();
     }
     
