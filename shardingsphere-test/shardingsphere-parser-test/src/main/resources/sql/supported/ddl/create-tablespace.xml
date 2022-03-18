@@ -17,9 +17,8 @@
   -->
 
 <sql-cases>
-    <distsql-case id="show-scaling-list" value="SHOW SCALING LIST;" />
-    <distsql-case id="show-scaling-check-algorithms" value="SHOW SCALING CHECK ALGORITHMS;" />
-    <distsql-case id="check-scaling" value="CHECK SCALING 123;" />
-    <distsql-case id="show-scaling-status" value="SHOW SCALING STATUS 123;" />
-    <distsql-case id="check-scaling-with-type" value="CHECK SCALING 123 by TYPE(name=DEFAULT, PROPERTIES('test-property'=4));" />
+    <sql-case id="create_tablespace_for_innodb" value="CREATE TABLESPACE `ts1` ADD DATAFILE '/my/tablespace/directory/ts1.ibd' Engine=InnoDB;" db-types="MySQL" />
+    <sql-case id="create_tablespace_for_myisam" value="CREATE TABLESPACE ndb_ts1 ADD DATAFILE 'ndb_ts1.dat' USE LOGFILE GROUP ndb_lg1 ENGINE=MyISAM" db-types="MySQL" />
+    <sql-case id="create_undo_tablespace_for_innodb" value="CREATE UNDO TABLESPACE `ts1` ADD DATAFILE '/my/tablespace/directory/ts1.ibd' Engine=InnoDB;" db-types="MySQL" />
+    <sql-case id="create_undo_tablespace_for_myisam" value="CREATE UNDO TABLESPACE ndb_ts1 ADD DATAFILE 'ndb_ts1.dat' USE LOGFILE GROUP ndb_lg1 ENGINE=MyISAM" db-types="MySQL" />
 </sql-cases>

@@ -15,29 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedAlgorithm;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import java.util.Collection;
+import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
- * SQLServer deny user statement.
+ * Show scaling status statement test case.
  */
 @Getter
 @Setter
-@ToString
-public final class SQLServerDenyUserStatement extends AbstractSQLStatement implements DCLStatement, SQLServerStatement {
+public final class ShowScalingStatusStatementTestCase extends SQLParserTestCase {
     
-    private SimpleTableSegment table;
+    @XmlElement(name = "job-id")
+    private final List<String> jobIds = new LinkedList<>();
     
-    private final Collection<ColumnSegment> columns = new LinkedList<>();
+    @XmlElement(name = "type-strategy")
+    private List<ExpectedAlgorithm> tableStrategies;
 }

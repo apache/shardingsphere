@@ -31,21 +31,21 @@ import java.sql.Statement;
 @Slf4j
 public final class ReadWriteSplittingExecutor extends AbstractFeatureExecutor {
     
-    private final static String ADD_RULE = "CREATE READWRITE_SPLITTING RULE ms_group_0 (\n" +
+    private static final String ADD_RULE = "CREATE READWRITE_SPLITTING RULE ms_group_0 (\n" +
             "WRITE_RESOURCE=ds_0,\n" +
             "READ_RESOURCES(ds_1),\n" +
             "TYPE(NAME=random)\n" +
             ");";
     
-    private final static String ALTER_RULE = "ALTER READWRITE_SPLITTING RULE ms_group_0 (\n" +
+    private static final String ALTER_RULE = "ALTER READWRITE_SPLITTING RULE ms_group_0 (\n" +
             "WRITE_RESOURCE=ds_0,\n" +
             "READ_RESOURCES(ds_1),\n" +
             "TYPE(NAME=random,PROPERTIES(read_weight='2:0'))\n" +
             ");";
     
-    private final static String DROP_RULE = "DROP READWRITE_SPLITTING RULE ms_group_0;\n";
+    private static final String DROP_RULE = "DROP READWRITE_SPLITTING RULE ms_group_0;\n";
     
-    private final static String SHOW_RULE = "show readwrite_splitting rules";
+    private static final String SHOW_RULE = "show readwrite_splitting rules";
     
     @Override
     public void init(Statement statement) {

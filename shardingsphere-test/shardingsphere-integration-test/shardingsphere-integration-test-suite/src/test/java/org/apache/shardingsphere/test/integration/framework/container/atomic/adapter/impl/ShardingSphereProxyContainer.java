@@ -31,11 +31,10 @@ import org.testcontainers.containers.wait.strategy.AbstractWaitStrategy;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.Objects;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
 
 /**
  * ShardingSphere proxy container.
@@ -74,7 +73,7 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
     @Override
     protected void configure() {
         mapConfigurationFiles();
-        setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), scenario), "root", "root"));
+        setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), scenario), "root", "root")));
     }
     
     private void mapConfigurationFiles() {
@@ -107,21 +106,19 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
     @RequiredArgsConstructor
     private static class JDBCConnectionWaitStrategy extends AbstractWaitStrategy {
         
-        private final Supplier<String> jdbcUrl;
-        
-        private final String username;
-        
-        private final String password;
+        private final Callable<Connection> connectionSupplier;
     
         @Override
         protected void waitUntilReady() {
             Unreliables.retryUntilSuccess((int) startupTimeout.getSeconds(), TimeUnit.SECONDS,
                 () -> {
                     getRateLimiter().doWhenReady(() -> {
-                        try (Connection unused = DriverManager.getConnection(jdbcUrl.get(), username, password)) {
+                        try (Connection unused = connectionSupplier.call()) {
                             log.info("Container ready");
-                        } catch (final SQLException ex) {
-                            throw new RuntimeException("Not Ready yet.");
+                            // CHECKSTYLE:OFF
+                        } catch (final Exception ex) {
+                            // CHECKSTYLE:ON
+                            throw new RuntimeException("Not Ready yet.", ex);
                         }
                     });
                     return true;

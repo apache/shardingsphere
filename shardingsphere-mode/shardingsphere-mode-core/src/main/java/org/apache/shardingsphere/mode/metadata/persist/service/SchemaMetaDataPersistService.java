@@ -63,7 +63,8 @@ public final class SchemaMetaDataPersistService {
      * @param tableMetaData table meta data
      */
     public void persist(final String schemaName, final TableMetaData tableMetaData) {
-        repository.persist(SchemaMetaDataNode.getTableMetaDataPath(schemaName, tableMetaData.getName()), YamlEngine.marshal(new TableMetaDataYamlSwapper().swapToYamlConfiguration(tableMetaData)));
+        repository.persist(SchemaMetaDataNode.getTableMetaDataPath(schemaName, tableMetaData.getName().toLowerCase()), 
+                YamlEngine.marshal(new TableMetaDataYamlSwapper().swapToYamlConfiguration(tableMetaData)));
     }
     
     /**

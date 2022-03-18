@@ -32,16 +32,42 @@ import java.sql.SQLException;
  */
 public final class H2XAConnectionWrapper implements XAConnectionWrapper {
     
-    private static final int XA_DATA_SOURCE = 13;
+    private static final int XA_DATA_SOURCE_TRACE_TYPE_ID = 13;
     
-    private static final Constructor<?> CONSTRUCTOR = getH2JdbcXAConstructor();
+    private static volatile Class<Connection> jdbcConnectionClass;
     
-    private static final Method NEXT_ID = getNextIdMethod();
+    private static volatile Constructor<?> xaConnectionConstructor;
     
-    private static final Object FACTORY = newFactory();
+    private static volatile Method nextIdMethod;
+    
+    private static volatile Object dataSourceFactory;
+    
+    private volatile boolean initialized;
+    
+    @Override
+    public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {
+        if (!initialized) {
+            loadReflection();
+            initialized = true;
+        }
+        return createXAConnection(connection.unwrap(jdbcConnectionClass));
+    }
+    
+    private void loadReflection() {
+        jdbcConnectionClass = getJDBCConnectionClass();
+        xaConnectionConstructor = getXAConnectionConstructor();
+        nextIdMethod = getNextIdMethod();
+        dataSourceFactory = createDataSourceFactory();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Class<Connection> getJDBCConnectionClass() {
+        return (Class<Connection>) Class.forName("org.h2.jdbc.JdbcConnection");
+    }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static Constructor<?> getH2JdbcXAConstructor() {
+    private Constructor<?> getXAConnectionConstructor() {
         Constructor<?> result = Class.forName("org.h2.jdbcx.JdbcXAConnection").getDeclaredConstructor(
                 Class.forName("org.h2.jdbcx.JdbcDataSourceFactory"), Integer.TYPE, Class.forName("org.h2.jdbc.JdbcConnection"));
         result.setAccessible(true);
@@ -49,22 +75,24 @@ public final class H2XAConnectionWrapper implements XAConnectionWrapper {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static Method getNextIdMethod() {
+    private Method getNextIdMethod() {
         Method result = Class.forName("org.h2.message.TraceObject").getDeclaredMethod("getNextId", Integer.TYPE);
         result.setAccessible(true);
         return result;
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static Object newFactory() {
+    private Object createDataSourceFactory() {
         return Class.forName("org.h2.jdbcx.JdbcDataSourceFactory").getDeclaredConstructor().newInstance();
     }
     
-    @SuppressWarnings("unchecked")
-    @SneakyThrows({SQLException.class, ReflectiveOperationException.class})
+    @SneakyThrows(ReflectiveOperationException.class)
+    private XAConnection createXAConnection(final Connection connection) {
+        return (XAConnection) xaConnectionConstructor.newInstance(dataSourceFactory, nextIdMethod.invoke(null, XA_DATA_SOURCE_TRACE_TYPE_ID), connection);
+    }
+    
     @Override
-    public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) {
-        Connection physicalConnection = connection.unwrap((Class<Connection>) Class.forName("org.h2.jdbc.JdbcConnection"));
-        return (XAConnection) CONSTRUCTOR.newInstance(FACTORY, NEXT_ID.invoke(null, XA_DATA_SOURCE), physicalConnection);
+    public String getType() {
+        return "H2";
     }
 }

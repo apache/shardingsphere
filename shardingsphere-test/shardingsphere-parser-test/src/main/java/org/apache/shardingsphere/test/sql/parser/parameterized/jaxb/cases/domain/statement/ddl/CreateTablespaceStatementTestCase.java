@@ -15,28 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.column.ExpectedColumn;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
-
 /**
- * Deny user statement test case.
+ * Create table space statement test case.
  */
-@Getter
-@Setter
-public final class DenyUserStatementTestCase extends SQLParserTestCase {
-    
-    @XmlElement
-    private ExpectedSimpleTable table;
-    
-    @XmlElement(name = "column")
-    private final List<ExpectedColumn> columns = new LinkedList<>();
+public final class CreateTablespaceStatementTestCase extends SQLParserTestCase {
 }

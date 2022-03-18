@@ -17,25 +17,31 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.connection;
 
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
-import javax.sql.XAConnection;
-import javax.sql.XADataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.util.Properties;
 
 /**
- * XA connection wrapper.
+ * XA connection wrapper factory.
  */
-public interface XAConnectionWrapper extends TypedSPI {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class XAConnectionWrapperFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(XAConnectionWrapper.class);
+    }
     
     /**
-     * Wrap a normal connection to XA connection.
+     * Create new instance of XA connection wrapper.
      *
-     * @param xaDataSource XA data source
-     * @param connection connection
-     * @return sharding XA connection
-     * @throws SQLException SQL exception
+     * @param databaseType database type
+     * @return new instance of XA connection wrapper
      */
-    XAConnection wrap(XADataSource xaDataSource, Connection connection) throws SQLException;
+    public static XAConnectionWrapper newInstance(final DatabaseType databaseType) {
+        return TypedSPIRegistry.getRegisteredService(XAConnectionWrapper.class, databaseType.getName(), new Properties());
+    }
 }

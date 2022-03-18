@@ -17,25 +17,17 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.connection;
 
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.H2XAConnectionWrapper;
+import org.junit.Test;
 
-import javax.sql.XAConnection;
-import javax.sql.XADataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
-/**
- * XA connection wrapper.
- */
-public interface XAConnectionWrapper extends TypedSPI {
+public final class XAConnectionWrapperFactoryTest {
     
-    /**
-     * Wrap a normal connection to XA connection.
-     *
-     * @param xaDataSource XA data source
-     * @param connection connection
-     * @return sharding XA connection
-     * @throws SQLException SQL exception
-     */
-    XAConnection wrap(XADataSource xaDataSource, Connection connection) throws SQLException;
+    @Test
+    public void assertCreateH2XAConnection() {
+        assertThat(XAConnectionWrapperFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("H2")), instanceOf(H2XAConnectionWrapper.class));
+    }
 }

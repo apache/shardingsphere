@@ -23,9 +23,9 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapperFactory;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
+import org.h2.jdbc.JdbcConnection;
+import org.h2.jdbcx.JdbcXAConnection;
 import org.junit.Test;
-import org.postgresql.core.BaseConnection;
-import org.postgresql.xa.PGXAConnection;
 
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
@@ -38,14 +38,14 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class PostgreSQLXAConnectionWrapperTest {
+public final class H2XAConnectionWrapperTest {
     
-    private final DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL");
+    private final DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("H2");
     
     @Test
     public void assertWrap() throws SQLException {
         XAConnection actual = XAConnectionWrapperFactory.newInstance(databaseType).wrap(createXADataSource(), mockConnection());
-        assertThat(actual.getXAResource(), instanceOf(PGXAConnection.class));
+        assertThat(actual.getXAResource(), instanceOf(JdbcXAConnection.class));
     }
     
     private XADataSource createXADataSource() {
@@ -55,7 +55,7 @@ public final class PostgreSQLXAConnectionWrapperTest {
     
     private Connection mockConnection() throws SQLException {
         Connection result = mock(Connection.class);
-        when(result.unwrap(BaseConnection.class)).thenReturn(mock(BaseConnection.class));
+        when(result.unwrap(JdbcConnection.class)).thenReturn(mock(JdbcConnection.class));
         return result;
     }
 }
