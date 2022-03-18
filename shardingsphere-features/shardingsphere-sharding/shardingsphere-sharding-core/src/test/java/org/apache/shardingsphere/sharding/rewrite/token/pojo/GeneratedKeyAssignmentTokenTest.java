@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,19 +26,36 @@ public final class GeneratedKeyAssignmentTokenTest {
     
     private GeneratedKeyAssignmentToken generatedKeyAssignmentToken;
     
-    @Before
-    public void setUp() {
+    @Test
+    public void assertCustomGeneratedKeyAssignmentTokenToString() {
         generatedKeyAssignmentToken = new GeneratedKeyAssignmentToken(0, "id") {
             @Override
             protected String getRightValue() {
                 return "0";
             }
         };
+        String resultGeneratedKeyAssignmentTokenToString = generatedKeyAssignmentToken.toString();
+        assertThat(resultGeneratedKeyAssignmentTokenToString, is(", id = 0"));
     }
     
     @Test
-    public void assertGeneratedKeyAssignmentTokenToString() {
-        String resultGeneratedKeyAssignmentTokenToString = generatedKeyAssignmentToken.toString();
-        assertThat(resultGeneratedKeyAssignmentTokenToString, is(", id = 0"));
+    public void assertLiteralGeneratedKeyAssignmentTokenToString() {
+        generatedKeyAssignmentToken = new LiteralGeneratedKeyAssignmentToken(0, "id", "0");
+        String resultLiteralGeneratedKeyAssignmentTokenToString = generatedKeyAssignmentToken.toString();
+        assertThat(resultLiteralGeneratedKeyAssignmentTokenToString, is(", id = '0'"));
+    }
+    
+    @Test
+    public void assertLiteralGeneratedKeyAssignmentTokenByIntToString() {
+        generatedKeyAssignmentToken = new LiteralGeneratedKeyAssignmentToken(0, "id", 0);
+        String resultLiteralGeneratedKeyAssignmentTokenToString = generatedKeyAssignmentToken.toString();
+        assertThat(resultLiteralGeneratedKeyAssignmentTokenToString, is(", id = 0"));
+    }
+    
+    @Test
+    public void assertParameterMarkerGeneratedKeyAssignmentTokenToString() {
+        generatedKeyAssignmentToken = new ParameterMarkerGeneratedKeyAssignmentToken(0, "id");
+        String resultParameterMarkerGeneratedKeyAssignmentTokenToString = generatedKeyAssignmentToken.toString();
+        assertThat(resultParameterMarkerGeneratedKeyAssignmentTokenToString, is(", id = ?"));
     }
 }
