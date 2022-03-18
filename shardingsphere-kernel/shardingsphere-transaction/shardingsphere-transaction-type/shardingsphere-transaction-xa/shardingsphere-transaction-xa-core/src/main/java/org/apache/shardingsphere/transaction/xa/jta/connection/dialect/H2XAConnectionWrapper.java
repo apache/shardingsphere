@@ -32,6 +32,8 @@ import java.sql.SQLException;
  */
 public final class H2XAConnectionWrapper implements XAConnectionWrapper {
     
+    private static final int XA_DATA_SOURCE_TRACE_TYPE_ID = 13;
+    
     private static volatile Class<Connection> jdbcConnectionClass;
     
     private static volatile Constructor<?> xaConnectionConstructor;
@@ -39,8 +41,6 @@ public final class H2XAConnectionWrapper implements XAConnectionWrapper {
     private static volatile Method nextIdMethod;
     
     private static volatile Object dataSourceFactory;
-    
-    private final static int XA_DATA_SOURCE_TRACE_TYPE_ID = 13;
     
     private volatile boolean initialized;
     
