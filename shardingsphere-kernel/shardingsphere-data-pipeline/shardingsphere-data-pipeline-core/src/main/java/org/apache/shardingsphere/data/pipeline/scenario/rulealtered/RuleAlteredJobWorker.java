@@ -178,8 +178,9 @@ public final class RuleAlteredJobWorker {
             return;
         }
         Optional<JobConfiguration> jobConfigOptional = createJobConfig(event);
-        Optional<String> jobId = jobConfigOptional.isPresent() ? PipelineJobAPIFactory.getRuleAlteredJobAPI().start(jobConfigOptional.get()) : Optional.empty();
-        if (!jobId.isPresent()) {
+        if (jobConfigOptional.isPresent()) {
+            PipelineJobAPIFactory.getRuleAlteredJobAPI().start(jobConfigOptional.get());
+        } else {
             log.info("Switch rule configuration immediately.");
             ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(event.getSchemaName(), event.getActiveVersion(), event.getNewVersion());
             ShardingSphereEventBus.getInstance().post(taskFinishedEvent);

@@ -149,11 +149,16 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
             throw new PipelineJobCreationException("handleConfig shardingTotalCount is 0");
         }
         log.info("Start scaling job by {}", jobConfig.getHandleConfig());
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%s",
-                DataPipelineConstants.DATA_PIPELINE_ROOT, jobConfig.getHandleConfig().getJobId()), RuleAlteredJob.class.getName());
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%s/config",
-                DataPipelineConstants.DATA_PIPELINE_ROOT, jobConfig.getHandleConfig().getJobId()), createJobConfig(jobConfig));
-        return Optional.of(jobConfig.getHandleConfig().getJobId());
+        GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
+        String jobId = jobConfig.getHandleConfig().getJobId();
+        String jobConfigKey = String.format("%s/%s/config", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId);
+        if (repositoryAPI.isExisted(jobConfigKey)) {
+            log.warn("jobId already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
+            return Optional.of(jobId);
+        }
+        repositoryAPI.persist(String.format("%s/%s", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId), RuleAlteredJob.class.getName());
+        repositoryAPI.persist(jobConfigKey, createJobConfig(jobConfig));
+        return Optional.of(jobId);
     }
     
     private String createJobConfig(final JobConfiguration jobConfig) {
@@ -168,7 +173,6 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     @Override
     public Map<Integer, JobProgress> getProgress(final String jobId) {
         checkModeConfig();
-        log.info("getProgress for job {}", jobId);
         JobConfiguration jobConfig = getJobConfig(jobId);
         return getProgress(jobConfig);
     }
@@ -314,7 +318,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
             }
         }
         WorkflowConfiguration workflowConfig = jobConfig.getWorkflowConfig();
-        ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(workflowConfig.getSchemaName(), workflowConfig.getSchemaVersion());
+        ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(workflowConfig.getSchemaName(), workflowConfig.getActiveVersion(), workflowConfig.getNewVersion());
         ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
         for (int each : repositoryAPI.getShardingItems(jobId)) {
             repositoryAPI.updateShardingJobStatus(jobId, each, JobStatus.FINISHED);

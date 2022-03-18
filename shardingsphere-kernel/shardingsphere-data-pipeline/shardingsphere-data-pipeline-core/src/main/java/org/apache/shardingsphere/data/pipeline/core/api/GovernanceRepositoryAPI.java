@@ -31,6 +31,14 @@ import java.util.Optional;
 public interface GovernanceRepositoryAPI {
     
     /**
+     * Whether key existing or not.
+     *
+     * @param key registry center key
+     * @return true if job exists, else false
+     */
+    boolean isExisted(String key);
+    
+    /**
      * Persist job progress.
      *
      * @param jobContext job context
