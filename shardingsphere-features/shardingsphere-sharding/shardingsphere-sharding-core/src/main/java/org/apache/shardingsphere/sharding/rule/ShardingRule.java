@@ -233,7 +233,8 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
                 if (!isValidActualDatasourceName(sampleTableRule, tableRule) || !isValidActualTableName(sampleTableRule, tableRule)) {
                     return false;
                 }
-                if (!isValidDatabaseShardingAlgorithm(sampleTableRule, tableRule) || !isValidTableShardingAlgorithm(sampleTableRule, tableRule)) {
+                if (isInvalidShardingAlgorithm(sampleTableRule, tableRule, true) 
+                        || isInvalidShardingAlgorithm(sampleTableRule, tableRule, false)) {
                     return false;
                 }
             }
@@ -258,16 +259,10 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         return true;
     }
     
-    private boolean isValidDatabaseShardingAlgorithm(final TableRule sampleTableRule, final TableRule tableRule) {
-        String sampleAlgorithmExpression = getAlgorithmExpression(sampleTableRule, true);
-        String algorithmExpression = getAlgorithmExpression(tableRule, true);
-        return sampleAlgorithmExpression.equalsIgnoreCase(algorithmExpression);
-    }
-    
-    private boolean isValidTableShardingAlgorithm(final TableRule sampleTableRule, final TableRule tableRule) {
-        String sampleAlgorithmExpression = getAlgorithmExpression(sampleTableRule, false);
-        String algorithmExpression = getAlgorithmExpression(tableRule, false);
-        return sampleAlgorithmExpression.equalsIgnoreCase(algorithmExpression);
+    private boolean isInvalidShardingAlgorithm(final TableRule sampleTableRule, final TableRule tableRule, final boolean databaseAlgorithm) {
+        String sampleAlgorithmExpression = getAlgorithmExpression(sampleTableRule, databaseAlgorithm);
+        String algorithmExpression = getAlgorithmExpression(tableRule, databaseAlgorithm);
+        return !sampleAlgorithmExpression.equalsIgnoreCase(algorithmExpression);
     }
     
     private String getAlgorithmExpression(final TableRule tableRule, final boolean databaseAlgorithm) {
