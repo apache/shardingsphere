@@ -31,28 +31,44 @@ import java.sql.SQLException;
  */
 public final class OpenGaussXAConnectionWrapper implements XAConnectionWrapper {
     
-    private static final Class<Connection> JDBC_CONNECTION_CLASS = getJDBCConnectionClass();
+    private static volatile Class<Connection> jdbcConnectionClass;
     
-    private static final Constructor<?> XA_CONNECTION_CONSTRUCTOR = getXAConnectionConstructor();
+    private static volatile Constructor<?> xaConnectionConstructor;
+    
+    private volatile boolean initialized;
+    
+    @Override
+    public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {
+        if (!initialized) {
+            loadReflection();
+            initialized = true;
+        }
+        return createXAConnection(connection.unwrap(jdbcConnectionClass));
+    }
+    
+    private void loadReflection() {
+        jdbcConnectionClass = getJDBCConnectionClass();
+        xaConnectionConstructor = getXAConnectionConstructor();
+    }
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private static Class<Connection> getJDBCConnectionClass() {
+    private Class<Connection> getJDBCConnectionClass() {
         return (Class<Connection>) Class.forName("org.opengauss.core.BaseConnection");
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static Constructor<?> getXAConnectionConstructor() {
+    private Constructor<?> getXAConnectionConstructor() {
         return Class.forName("org.opengauss.xa.PGXAConnection").getConstructor(Class.forName("org.opengauss.core.BaseConnection"));
-    }
-    
-    @Override
-    public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {
-        return createXAConnection(connection.unwrap(JDBC_CONNECTION_CLASS));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private XAConnection createXAConnection(final Connection connection) {
-        return (XAConnection) XA_CONNECTION_CONSTRUCTOR.newInstance(connection);
+        return (XAConnection) xaConnectionConstructor.newInstance(connection);
+    }
+    
+    @Override
+    public String getType() {
+        return "openGauss";
     }
 }

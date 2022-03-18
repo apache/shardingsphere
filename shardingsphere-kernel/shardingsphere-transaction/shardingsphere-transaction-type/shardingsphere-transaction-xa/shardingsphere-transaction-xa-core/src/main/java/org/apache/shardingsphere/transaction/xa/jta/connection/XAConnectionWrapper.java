@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.connection;
 
+import org.apache.shardingsphere.spi.typed.TypedSPI;
+
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import java.sql.Connection;
@@ -25,7 +27,7 @@ import java.sql.SQLException;
 /**
  * XA connection wrapper.
  */
-public interface XAConnectionWrapper {
+public interface XAConnectionWrapper extends TypedSPI {
     
     /**
      * Wrap a normal connection to XA connection.

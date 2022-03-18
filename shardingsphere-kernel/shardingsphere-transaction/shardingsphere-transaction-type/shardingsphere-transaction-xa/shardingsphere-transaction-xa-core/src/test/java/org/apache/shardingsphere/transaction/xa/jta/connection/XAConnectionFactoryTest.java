@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.transaction.xa.jta.connection;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
 import org.h2.jdbcx.JdbcXAConnection;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -78,8 +79,8 @@ public final class XAConnectionFactoryTest {
         assertThat(XAConnectionFactory.createXAConnection(DatabaseTypeRegistry.getActualDatabaseType("Oracle"), xaDataSource, connection), instanceOf(clazz));
     }
     
-    @Test(expected = UnsupportedOperationException.class)
-    public void assertCreateUnknownXAConnectionThrowsUnsupportedOperationException() throws SQLException {
+    @Test(expected = ServiceProviderNotFoundException.class)
+    public void assertCreateUnknownXAConnection() throws SQLException {
         XAConnectionFactory.createXAConnection(DatabaseTypeRegistry.getActualDatabaseType("SQL92"), xaDataSource, connection);
     }
 }
