@@ -209,6 +209,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.StopScalingSourceWritingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.StopScalingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.StartScalingStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ShowScalingStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryConstructionRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryDefinitionRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryHeartbeatStatementTestCase;
@@ -765,7 +766,10 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "check-scaling")
     private final List<CheckScalingStatementTestCase> checkScalingStatementTestCase = new LinkedList<>();
-    
+
+    @XmlElement(name = "show-scaling-status")
+    private final List<ShowScalingStatusStatementTestCase> showScalingStatusStatementTestCases = new LinkedList<>();
+
     @XmlElement(name = "show-scaling-check-algorithms")
     private final List<ShowScalingCheckAlgorithmsStatementTestCase> showScalingCheckAlgorithmsStatementTestCase = new LinkedList<>();
     
@@ -1002,13 +1006,13 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "check-table")
     private final List<CheckTableStatementTestCase> checkTableTestCases = new LinkedList<>();
-    
+
     @XmlElement(name = "checksum-table")
     private final List<ChecksumTableStatementTestCase> checksumTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-status")
     private final List<ShowStatusStatementTestCase> showStatusStatementTestCases = new LinkedList<>();
-    
+
     @XmlElement(name = "refresh-table-metadata")
     private final List<RefreshTableMetadataStatementTestCase> refreshTableMetadataStatementTestCases = new LinkedList<>();
     
@@ -1309,6 +1313,7 @@ public final class SQLParserTestCases {
         putAll(showShardingTableRuleTestCase, result);
         putAll(showScalingListStatementTestCase, result);
         putAll(checkScalingStatementTestCase, result);
+        putAll(showScalingStatusStatementTestCases, result);
         putAll(showScalingCheckAlgorithmsStatementTestCase, result);
         putAll(stopScalingSourceWritingStatementTestCase, result);
         putAll(restoreScalingSourceWritingStatementTestCase, result);
