@@ -31,13 +31,29 @@ import java.sql.SQLException;
  */
 public final class MySQLXAConnectionWrapper implements XAConnectionWrapper {
     
-    private static final Class<Connection> JDBC_CONNECTION_CLASS = getJDBCConnectionClass();
+    private static volatile Class<Connection> jdbcConnectionClass;
     
-    private static final Method XA_CONNECTION_CREATOR_METHOD = getXAConnectionCreatorMethod();
+    private static volatile Method xaConnectionCreatorMethod;
+    
+    private volatile boolean initialized;
+    
+    @Override
+    public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {
+        if (!initialized) {
+            loadReflection();
+            initialized = true;
+        }
+        return createXAConnection(xaDataSource, connection.unwrap(jdbcConnectionClass));
+    }
+    
+    private void loadReflection() {
+        jdbcConnectionClass = getJDBCConnectionClass();
+        xaConnectionCreatorMethod = getXAConnectionCreatorMethod();
+    }
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private static Class<Connection> getJDBCConnectionClass() {
+    private Class<Connection> getJDBCConnectionClass() {
         try {
             return (Class<Connection>) Class.forName("com.mysql.jdbc.Connection");
         } catch (final ClassNotFoundException ignored) {
@@ -46,7 +62,7 @@ public final class MySQLXAConnectionWrapper implements XAConnectionWrapper {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static Method getXAConnectionCreatorMethod() {
+    private Method getXAConnectionCreatorMethod() {
         Method result = getXADataSourceClass().getDeclaredMethod("wrapConnection", Connection.class);
         result.setAccessible(true);
         return result;
@@ -54,7 +70,7 @@ public final class MySQLXAConnectionWrapper implements XAConnectionWrapper {
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private static Class<XADataSource> getXADataSourceClass() {
+    private Class<XADataSource> getXADataSourceClass() {
         try {
             return (Class<XADataSource>) Class.forName("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource");
         } catch (final ClassNotFoundException ignored) {
@@ -62,13 +78,13 @@ public final class MySQLXAConnectionWrapper implements XAConnectionWrapper {
         }
     }
     
-    @Override
-    public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {
-        return createXAConnection(xaDataSource, connection.unwrap(JDBC_CONNECTION_CLASS));
-    }
-    
     @SneakyThrows(ReflectiveOperationException.class)
     private XAConnection createXAConnection(final XADataSource xaDataSource, final Connection connection) {
-        return (XAConnection) XA_CONNECTION_CREATOR_METHOD.invoke(xaDataSource, connection);
+        return (XAConnection) xaConnectionCreatorMethod.invoke(xaDataSource, connection);
+    }
+    
+    @Override
+    public String getType() {
+        return "MySQL";
     }
 }
