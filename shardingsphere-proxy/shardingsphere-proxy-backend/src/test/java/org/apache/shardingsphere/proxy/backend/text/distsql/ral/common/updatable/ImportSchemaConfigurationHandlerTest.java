@@ -60,7 +60,7 @@ import static org.mockito.Mockito.when;
 
 public final class ImportSchemaConfigurationHandlerTest {
     
-    private final String filePath = "/yaml/import/config-sharding.yaml";
+    private final String filePath = "/conf/import/config-sharding.yaml";
     
     private final String schemaName = "sharding_db";
     
