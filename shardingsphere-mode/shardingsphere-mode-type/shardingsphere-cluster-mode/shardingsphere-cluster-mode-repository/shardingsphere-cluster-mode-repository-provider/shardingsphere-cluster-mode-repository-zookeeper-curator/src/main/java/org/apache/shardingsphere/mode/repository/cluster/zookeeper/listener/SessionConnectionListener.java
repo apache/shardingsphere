@@ -29,10 +29,13 @@ import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.Curat
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Session connection state listener.
+ */
 @RequiredArgsConstructor
 public final class SessionConnectionListener implements ConnectionStateListener {
     
-    private static final int RECONNECT_INTERVAL_SECONDS = 3;
+    private static final int RECONNECT_INTERVAL_SECONDS = 5;
     
     private final InstanceDefinition instanceDefinition;
     
@@ -40,19 +43,24 @@ public final class SessionConnectionListener implements ConnectionStateListener 
     
     @Override
     public void stateChanged(final CuratorFramework client, final ConnectionState connectionState) {
-        if (connectionState == ConnectionState.LOST) {
-            while (true) {
-                try {
-                    if (client.getZookeeperClient().blockUntilConnectedOrTimedOut()) {
-                        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceDefinition.getInstanceId().getId(), instanceDefinition.getInstanceType()), "");
-                        break;
-                    }
-                    sleepInterval();
-                } catch (InterruptedException ex) {
-                    CuratorZookeeperExceptionHandler.handleException(ex);
-                    break;
-                }
+        if (ConnectionState.LOST == connectionState) {
+            while (reRegister(client)) {
+                return;
             }
+        }
+    }
+    
+    private boolean reRegister(final CuratorFramework client) {
+        try {
+            if (client.getZookeeperClient().blockUntilConnectedOrTimedOut()) {
+                repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceDefinition.getInstanceId().getId(), instanceDefinition.getInstanceType()), "");
+                return true;
+            }
+            sleepInterval();
+            return false;
+        } catch (final InterruptedException ex) {
+            CuratorZookeeperExceptionHandler.handleException(ex);
+            return true;
         }
     }
     
