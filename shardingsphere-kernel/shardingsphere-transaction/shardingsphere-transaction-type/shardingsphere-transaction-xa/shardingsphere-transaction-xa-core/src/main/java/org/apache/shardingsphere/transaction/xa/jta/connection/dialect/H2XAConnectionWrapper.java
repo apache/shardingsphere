@@ -32,16 +32,24 @@ import java.sql.SQLException;
  */
 public final class H2XAConnectionWrapper implements XAConnectionWrapper {
     
-    private static final int XA_DATA_SOURCE = 13;
+    private static final Class<Connection> JDBC_CONNECTION_CLASS = getJDBCConnectionClass();
     
-    private static final Constructor<?> CONSTRUCTOR = getH2JdbcXAConstructor();
+    private static final Constructor<?> XA_CONNECTION_CONSTRUCTOR = getXAConnectionConstructor();
     
-    private static final Method NEXT_ID = getNextIdMethod();
+    private static final Method NEXT_ID_METHOD = getNextIdMethod();
     
-    private static final Object FACTORY = newFactory();
+    private static final Object NEW_DATA_SOURCE_FACTORY = createDataSourceFactory();
+    
+    private static final int XA_DATA_SOURCE_TRACE_TYPE_ID = 13;
+    
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
+    private static Class<Connection> getJDBCConnectionClass() {
+        return (Class<Connection>) Class.forName("org.h2.jdbc.JdbcConnection");
+    }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static Constructor<?> getH2JdbcXAConstructor() {
+    private static Constructor<?> getXAConnectionConstructor() {
         Constructor<?> result = Class.forName("org.h2.jdbcx.JdbcXAConnection").getDeclaredConstructor(
                 Class.forName("org.h2.jdbcx.JdbcDataSourceFactory"), Integer.TYPE, Class.forName("org.h2.jdbc.JdbcConnection"));
         result.setAccessible(true);
@@ -56,15 +64,17 @@ public final class H2XAConnectionWrapper implements XAConnectionWrapper {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static Object newFactory() {
+    private static Object createDataSourceFactory() {
         return Class.forName("org.h2.jdbcx.JdbcDataSourceFactory").getDeclaredConstructor().newInstance();
     }
     
-    @SuppressWarnings("unchecked")
-    @SneakyThrows({SQLException.class, ReflectiveOperationException.class})
     @Override
-    public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) {
-        Connection physicalConnection = connection.unwrap((Class<Connection>) Class.forName("org.h2.jdbc.JdbcConnection"));
-        return (XAConnection) CONSTRUCTOR.newInstance(FACTORY, NEXT_ID.invoke(null, XA_DATA_SOURCE), physicalConnection);
+    public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {
+        return createXAConnection(connection.unwrap(JDBC_CONNECTION_CLASS));
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private XAConnection createXAConnection(final Connection connection) {
+        return (XAConnection) XA_CONNECTION_CONSTRUCTOR.newInstance(NEW_DATA_SOURCE_FACTORY, NEXT_ID_METHOD.invoke(null, XA_DATA_SOURCE_TRACE_TYPE_ID), connection);
     }
 }

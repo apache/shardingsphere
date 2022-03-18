@@ -20,6 +20,7 @@ package org.apache.shardingsphere.transaction.xa.jta.connection;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * XA connection wrapper.
@@ -32,6 +33,7 @@ public interface XAConnectionWrapper {
      * @param xaDataSource XA data source
      * @param connection connection
      * @return sharding XA connection
+     * @throws SQLException SQL exception
      */
-    XAConnection wrap(XADataSource xaDataSource, Connection connection);
+    XAConnection wrap(XADataSource xaDataSource, Connection connection) throws SQLException;
 }
