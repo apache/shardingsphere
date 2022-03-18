@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 
 import java.util.List;
 
@@ -29,7 +28,6 @@ import static org.junit.Assert.assertThat;
 
 public final class OrderByTokenTest {
 
-    @Mock
     private OrderByToken orderByToken;
 
     private List<String> columnLabels;
