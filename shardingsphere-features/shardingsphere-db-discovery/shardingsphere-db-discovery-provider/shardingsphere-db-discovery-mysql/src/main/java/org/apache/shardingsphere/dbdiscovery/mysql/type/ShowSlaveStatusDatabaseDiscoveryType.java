@@ -29,6 +29,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -41,13 +43,15 @@ public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabase
     
     private static final String SHOW_SLAVE_STATUS = "SHOW SLAVE STATUS";
     
+    private static final String SHOW_SLAVE_HOSTS = "SHOW SLAVE HOSTS";
+    
     @Getter
     @Setter
     private Properties props = new Properties();
     
     @Override
-    public void checkDatabaseDiscoveryConfiguration(final String schemaName, final Map<String, DataSource> dataSourceMap) {
-        //TODO Check master-slave mode
+    public void checkDatabaseDiscoveryConfiguration(final String schemaName, final Map<String, DataSource> dataSourceMap) throws SQLException {
+        checkDataSourceValidity(dataSourceMap, getMemberURLS(dataSourceMap));
     }
     
     @Override
@@ -68,6 +72,32 @@ public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabase
             }
             determineDatasourceState(schemaName, entry.getKey(), entry.getValue());
         }
+    }
+    
+    private Collection<String> getMemberURLS(final Map<String, DataSource> dataSourceMap) {
+        Collection<String> result = new ArrayList<>();
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            try (Connection connection = entry.getValue().getConnection();
+                 Statement statement = connection.createStatement()) {
+                Collection<String> memberURLS = getMemberURLS(statement);
+                if (!memberURLS.isEmpty()) {
+                    break;
+                }
+            } catch (SQLException ex) {
+                log.error("An exception occurred while find member data source urls", ex);
+            }
+        }
+        return result;
+    }
+    
+    private Collection<String> getMemberURLS(final Statement statement) throws SQLException {
+        Collection<String> result = new ArrayList<>();
+        try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_HOSTS)) {
+            while (resultSet.next()) {
+                result.add(String.format("%s:%s", resultSet.getString("Host"), resultSet.getString("Port")));
+            }
+        }
+        return result;
     }
     
     private void determineDatasourceState(final String schemaName, final String datasourceName, final DataSource dataSource) {

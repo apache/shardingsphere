@@ -20,6 +20,7 @@ package org.apache.shardingsphere.dbdiscovery.mysql;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 
@@ -44,6 +45,12 @@ public abstract class AbstractDatabaseDiscoveryType implements DatabaseDiscovery
     
     protected abstract void determineMemberDataSourceState(String schemaName, Map<String, DataSource> dataSourceMap);
     
+    protected void checkDataSourceValidity(Map<String, DataSource> dataSourceMap, Collection<String> memberDataSourceURLS) throws SQLException {
+        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            checkDataSourceExistedWithGroupMember(entry.getKey(), entry.getValue(), memberDataSourceURLS);
+        }
+    }
+    
     @Override
     public void updatePrimaryDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
         Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
@@ -67,6 +74,19 @@ public abstract class AbstractDatabaseDiscoveryType implements DatabaseDiscovery
             activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
         }
         determineMemberDataSourceState(schemaName, activeDataSourceMap);
+    }
+    
+    private void checkDataSourceExistedWithGroupMember(final String datasourceName, final DataSource dataSource, final Collection<String> memberDataSourceURLs) throws SQLException {
+        boolean isExisted = false;
+        for (String each : memberDataSourceURLs) {
+            if (dataSource.getConnection().getMetaData().getURL().contains(each)) {
+                isExisted = true;
+                break;
+            }
+        }
+        if (!isExisted) {
+            throw new ShardingSphereConfigurationException("%s is not group member", datasourceName);
+        }
     }
     
     private String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {

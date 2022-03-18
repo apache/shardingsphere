@@ -122,22 +122,7 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
                 memberDataSourceURLs.add(String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")));
             }
         }
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            checkDataSourceExistedWithGroupMember(entry.getKey(), entry.getValue(), memberDataSourceURLs);
-        }
-    }
-    
-    private void checkDataSourceExistedWithGroupMember(final String datasourceName, final DataSource dataSource, final Collection<String> memberDataSourceURLs) throws SQLException {
-        boolean isExisted = false;
-        for (String each : memberDataSourceURLs) {
-            if (dataSource.getConnection().getMetaData().getURL().contains(each)) {
-                isExisted = true;
-                break;
-            }
-        }
-        if (!isExisted) {
-            throw new ShardingSphereConfigurationException("%s is not MGR replication group member", datasourceName);
-        }
+        checkDataSourceValidity(dataSourceMap, memberDataSourceURLs);
     }
     
     @Override
