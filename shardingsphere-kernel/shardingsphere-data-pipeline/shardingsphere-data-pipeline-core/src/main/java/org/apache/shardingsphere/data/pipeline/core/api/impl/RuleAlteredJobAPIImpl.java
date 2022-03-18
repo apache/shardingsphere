@@ -112,14 +112,6 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         return result;
     }
     
-    @Override
-    public List<Long> getUncompletedJobIds(final String schemaName) {
-        return getJobBriefInfos().filter(each -> {
-            String jobId = each.getJobName();
-            return isUncompletedJobOfSchema(schemaName, jobId);
-        }).map(each -> Long.parseLong(each.getJobName())).collect(Collectors.toList());
-    }
-    
     private boolean isUncompletedJobOfSchema(final String schemaName, final String jobId) {
         JobConfigurationPOJO jobConfigPOJO;
         try {
