@@ -43,12 +43,12 @@ public final class H2XAConnectionWrapperTest {
     private final DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("H2");
     
     @Test
-    public void assertCreateMariaDBConnection() throws SQLException {
-        XAConnection actual = XAConnectionWrapperFactory.newInstance(databaseType).wrap(createXaDataSource(), mockConnection());
+    public void assertWrap() throws SQLException {
+        XAConnection actual = XAConnectionWrapperFactory.newInstance(databaseType).wrap(createXADataSource(), mockConnection());
         assertThat(actual.getXAResource(), instanceOf(JdbcXAConnection.class));
     }
     
-    private XADataSource createXaDataSource() {
+    private XADataSource createXADataSource() {
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, databaseType, "foo_ds");
         return XADataSourceFactory.build(databaseType, dataSource);
     }
