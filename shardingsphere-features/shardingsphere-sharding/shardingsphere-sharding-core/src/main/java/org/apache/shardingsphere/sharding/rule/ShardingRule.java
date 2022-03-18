@@ -230,7 +230,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
             TableRule sampleTableRule = getTableRule(iterator.next());
             while (iterator.hasNext()) {
                 TableRule tableRule = getTableRule(iterator.next());
-                if (!isaValidActualDatasourceName(sampleTableRule, tableRule) || !isaValidActualTableName(sampleTableRule, tableRule)) {
+                if (!isValidActualDatasourceName(sampleTableRule, tableRule) || !isValidActualTableName(sampleTableRule, tableRule)) {
                     return false;
                 }
                 if (!isValidDatabaseShardingAlgorithm(sampleTableRule, tableRule) || !isValidTableShardingAlgorithm(sampleTableRule, tableRule)) {
@@ -241,11 +241,11 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         return true;
     }
     
-    private boolean isaValidActualDatasourceName(final TableRule sampleTableRule, final TableRule tableRule) {
+    private boolean isValidActualDatasourceName(final TableRule sampleTableRule, final TableRule tableRule) {
         return sampleTableRule.getActualDatasourceNames().equals(tableRule.getActualDatasourceNames());
     }
     
-    private boolean isaValidActualTableName(final TableRule sampleTableRule, final TableRule tableRule) {
+    private boolean isValidActualTableName(final TableRule sampleTableRule, final TableRule tableRule) {
         for (String each : sampleTableRule.getActualDatasourceNames()) {
             Collection<String> sampleActualTableNames = sampleTableRule.getActualTableNames(each).stream().map(actualTableName 
                 -> actualTableName.replace(sampleTableRule.getTableDataNode().getPrefix(), "")).collect(Collectors.toSet());
