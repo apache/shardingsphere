@@ -768,10 +768,10 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "check-scaling")
     private final List<CheckScalingStatementTestCase> checkScalingStatementTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "show-scaling-status")
     private final List<ShowScalingStatusStatementTestCase> showScalingStatusStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show-scaling-check-algorithms")
     private final List<ShowScalingCheckAlgorithmsStatementTestCase> showScalingCheckAlgorithmsStatementTestCase = new LinkedList<>();
     
@@ -1008,13 +1008,13 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "check-table")
     private final List<CheckTableStatementTestCase> checkTableTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "checksum-table")
     private final List<ChecksumTableStatementTestCase> checksumTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-status")
     private final List<ShowStatusStatementTestCase> showStatusStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "refresh-table-metadata")
     private final List<RefreshTableMetadataStatementTestCase> refreshTableMetadataStatementTestCases = new LinkedList<>();
     
