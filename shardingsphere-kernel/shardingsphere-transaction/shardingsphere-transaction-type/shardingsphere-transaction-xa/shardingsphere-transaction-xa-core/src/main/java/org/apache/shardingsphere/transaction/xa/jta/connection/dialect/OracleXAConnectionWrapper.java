@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
 
@@ -30,15 +29,30 @@ import java.sql.SQLException;
 /**
  * XA connection wrapper for Oracle.
  */
-@RequiredArgsConstructor
 public final class OracleXAConnectionWrapper implements XAConnectionWrapper {
     
-    @SneakyThrows({SQLException.class, ReflectiveOperationException.class})
+    private static final Class<Connection> JDBC_CONNECTION_CLASS = getJDBCConnectionClass();
+    
+    private static final Constructor<?> XA_CONNECTION_CONSTRUCTOR = getXAConnectionConstructor();
+    
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
+    private static Class<Connection> getJDBCConnectionClass() {
+        return (Class<Connection>) Class.forName("oracle.jdbc.internal.OracleConnection");
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private static Constructor<?> getXAConnectionConstructor() {
+        return Class.forName("oracle.jdbc.xa.client.OracleXAConnection").getConstructor(Connection.class);
+    }
+    
     @Override
-    public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) {
-        Connection physicalConnection = (Connection) connection.unwrap(Class.forName("oracle.jdbc.internal.OracleConnection"));
-        Class<?> clazz = Class.forName("oracle.jdbc.xa.client.OracleXAConnection");
-        Constructor<?> constructor = clazz.getConstructor(Connection.class);
-        return (XAConnection) constructor.newInstance(physicalConnection);
+    public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {
+        return createXAConnection(connection.unwrap(JDBC_CONNECTION_CLASS));
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private XAConnection createXAConnection(final Connection connection) {
+        return (XAConnection) XA_CONNECTION_CONSTRUCTOR.newInstance(connection);
     }
 }
