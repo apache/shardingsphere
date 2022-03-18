@@ -26,9 +26,9 @@ import org.apache.shardingsphere.example.type.ShardingType;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-public final class ClassBasedShardingAlgorithmExample {
+public final class ClassBasedShardingRawJavaConfigurationExample {
 
-    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
+    private static ShardingType shardingType = ShardingType.CUSTOM_TYPE;
     
     public static void main(final String[] args) throws SQLException {
         DataSource dataSource = DataSourceFactory.newInstance(shardingType);
