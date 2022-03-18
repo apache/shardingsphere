@@ -460,7 +460,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
         return result;
     }
     
-     @Override
+    @Override
     public ASTNode visitDropPolicy(final DropPolicyContext ctx) {
         return new PostgreSQLDropPolicyStatement();
     }
