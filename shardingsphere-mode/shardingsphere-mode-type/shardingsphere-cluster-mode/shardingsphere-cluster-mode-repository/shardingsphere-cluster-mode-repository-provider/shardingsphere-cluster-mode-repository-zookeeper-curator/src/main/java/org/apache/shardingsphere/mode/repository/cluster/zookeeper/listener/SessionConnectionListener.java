@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.repository.cluster.zookeeper.listener;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
@@ -32,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Session connection state listener.
  */
+@Slf4j
 @RequiredArgsConstructor
 public final class SessionConnectionListener implements ConnectionStateListener {
     
@@ -44,9 +46,11 @@ public final class SessionConnectionListener implements ConnectionStateListener 
     @Override
     public void stateChanged(final CuratorFramework client, final ConnectionState connectionState) {
         if (ConnectionState.LOST == connectionState) {
-            while (reRegister(client)) {
-                return;
-            }
+            boolean reRegistered;
+            do {
+                reRegistered = reRegister(client);
+            } while (!reRegistered);
+            log.debug("instance re-register success instance id: {}", instanceDefinition.getInstanceId().getId());
         }
     }
     
