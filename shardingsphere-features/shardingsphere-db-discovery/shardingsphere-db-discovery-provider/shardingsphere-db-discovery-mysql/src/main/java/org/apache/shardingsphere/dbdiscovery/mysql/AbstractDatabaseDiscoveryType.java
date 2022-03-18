@@ -45,7 +45,7 @@ public abstract class AbstractDatabaseDiscoveryType implements DatabaseDiscovery
     
     protected abstract void determineMemberDataSourceState(String schemaName, Map<String, DataSource> dataSourceMap);
     
-    protected void checkDataSourceValidity(Map<String, DataSource> dataSourceMap, Collection<String> memberDataSourceURLS) throws SQLException {
+    protected void checkDataSourceValidity(final Map<String, DataSource> dataSourceMap, final Collection<String> memberDataSourceURLS) throws SQLException {
         for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             checkDataSourceExistedWithGroupMember(entry.getKey(), entry.getValue(), memberDataSourceURLS);
         }

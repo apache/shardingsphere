@@ -79,8 +79,8 @@ public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabase
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             try (Connection connection = entry.getValue().getConnection();
                  Statement statement = connection.createStatement()) {
-                Collection<String> memberURLS = getMemberURLS(statement);
-                if (!memberURLS.isEmpty()) {
+                result = getMemberURLS(statement);
+                if (!result.isEmpty()) {
                     break;
                 }
             } catch (SQLException ex) {
