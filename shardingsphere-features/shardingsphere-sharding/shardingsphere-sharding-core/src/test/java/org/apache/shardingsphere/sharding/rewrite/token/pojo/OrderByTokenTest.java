@@ -17,24 +17,48 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
+import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class OrderByTokenTest {
 
+    @Mock
     private OrderByToken orderByToken;
+
+    private List<String> columnLabels;
+
+    private List<OrderDirection> orderDirections;
 
     @Before
     public void setup() {
         orderByToken = new OrderByToken(0);
+        columnLabels = orderByToken.getColumnLabels();
+        orderDirections = orderByToken.getOrderDirections();
+        columnLabels.add(0, "Test1");
+        columnLabels.add(1, "Test2");
+        orderDirections.add(0, OrderDirection.ASC);
+        orderDirections.add(1, OrderDirection.ASC);
     }
 
     @Test
     public void assertToString() {
-        assertThat(orderByToken.toString(), is(" ORDER BY  "));
+        StringBuilder result = new StringBuilder();
+        result.append(" ORDER BY ");
+        for (int i = 0; i < columnLabels.size(); i++) {
+            if (0 == i) {
+                result.append(columnLabels.get(0)).append(" ").append(orderDirections.get(i).name());
+            } else {
+                result.append(",").append(columnLabels.get(i)).append(" ").append(orderDirections.get(i).name());
+            }
+        }
+        result.append(" ");
+        assertThat(orderByToken.toString(), is(result.toString()));
     }
-
 }
