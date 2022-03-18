@@ -230,7 +230,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
             TableRule sampleTableRule = getTableRule(iterator.next());
             while (iterator.hasNext()) {
                 TableRule tableRule = getTableRule(iterator.next());
-                if (!isValidActualDatasourceName(sampleTableRule, tableRule) || !isValidActualTableName(sampleTableRule, tableRule)) {
+                if (isInvalidActualDatasourceName(sampleTableRule, tableRule) || isInvalidActualTableName(sampleTableRule, tableRule)) {
                     return false;
                 }
                 if (isInvalidShardingAlgorithm(sampleTableRule, tableRule, true) 
@@ -242,21 +242,21 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         return true;
     }
     
-    private boolean isValidActualDatasourceName(final TableRule sampleTableRule, final TableRule tableRule) {
-        return sampleTableRule.getActualDatasourceNames().equals(tableRule.getActualDatasourceNames());
+    private boolean isInvalidActualDatasourceName(final TableRule sampleTableRule, final TableRule tableRule) {
+        return !sampleTableRule.getActualDatasourceNames().equals(tableRule.getActualDatasourceNames());
     }
     
-    private boolean isValidActualTableName(final TableRule sampleTableRule, final TableRule tableRule) {
+    private boolean isInvalidActualTableName(final TableRule sampleTableRule, final TableRule tableRule) {
         for (String each : sampleTableRule.getActualDatasourceNames()) {
             Collection<String> sampleActualTableNames = sampleTableRule.getActualTableNames(each).stream().map(actualTableName 
                 -> actualTableName.replace(sampleTableRule.getTableDataNode().getPrefix(), "")).collect(Collectors.toSet());
             Collection<String> actualTableNames = tableRule.getActualTableNames(each).stream().map(actualTableName 
                 -> actualTableName.replace(tableRule.getTableDataNode().getPrefix(), "")).collect(Collectors.toSet());
             if (!sampleActualTableNames.equals(actualTableNames)) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
     
     private boolean isInvalidShardingAlgorithm(final TableRule sampleTableRule, final TableRule tableRule, final boolean databaseAlgorithm) {
