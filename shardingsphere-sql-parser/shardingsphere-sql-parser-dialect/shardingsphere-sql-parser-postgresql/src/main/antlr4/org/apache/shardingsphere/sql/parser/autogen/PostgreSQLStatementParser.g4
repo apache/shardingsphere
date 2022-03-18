@@ -118,5 +118,6 @@ execute
     | alterExtension
     | dropExtension
     | dropPolicy
+    | dropOwned
     ) SEMI_?
     ;
