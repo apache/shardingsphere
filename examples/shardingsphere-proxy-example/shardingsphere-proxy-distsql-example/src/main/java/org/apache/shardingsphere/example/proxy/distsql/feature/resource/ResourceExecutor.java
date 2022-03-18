@@ -31,7 +31,7 @@ import java.sql.Statement;
 @Slf4j
 public final class ResourceExecutor extends AbstractFeatureExecutor {
     
-    private final static String ADD_RESOURCE = "ADD RESOURCE resource_0 (\n" +
+    private static final String ADD_RESOURCE = "ADD RESOURCE resource_0 (\n" +
             "    URL=\"jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false\",\n" +
             "    USER=root,\n" +
             "    PASSWORD=root,\n" +
@@ -43,7 +43,7 @@ public final class ResourceExecutor extends AbstractFeatureExecutor {
             "    PROPERTIES(\"maximumPoolSize\"=10,\"idleTimeout\"=\"30000\")\n" +
             ");";
     
-    private final static String ALTER_RESOURCE = "ALTER RESOURCE resource_0 (\n" +
+    private static final String ALTER_RESOURCE = "ALTER RESOURCE resource_0 (\n" +
             "    HOST=127.0.0.1,\n" +
             "    PORT=3306,\n" +
             "    DB=demo_ds,\n" +
@@ -51,9 +51,9 @@ public final class ResourceExecutor extends AbstractFeatureExecutor {
             "    PASSWORD=root\n" +
             ");";
     
-    private final static String DROP_RESOURCE = "DROP RESOURCE resource_0, resource_1;";
+    private static final String DROP_RESOURCE = "DROP RESOURCE resource_0, resource_1;";
     
-    private final static String SHOW_RESOURCE = "show schema resources;";
+    private static final String SHOW_RESOURCE = "show schema resources;";
     
     @Override
     public void init(Statement statement) {
