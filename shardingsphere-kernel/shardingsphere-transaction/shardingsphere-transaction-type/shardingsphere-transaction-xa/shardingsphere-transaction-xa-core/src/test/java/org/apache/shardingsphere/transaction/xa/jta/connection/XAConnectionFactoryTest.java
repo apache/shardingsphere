@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.transaction.xa.jta.connection;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
 import org.h2.jdbcx.JdbcXAConnection;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -29,6 +30,7 @@ import org.postgresql.xa.PGXAConnection;
 
 import javax.sql.XADataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -44,41 +46,41 @@ public final class XAConnectionFactoryTest {
     
     @Test(expected = Exception.class)
     // TODO assert fail
-    public void assertCreateMySQLXAConnection() {
+    public void assertCreateMySQLXAConnection() throws SQLException {
         XAConnectionFactory.createXAConnection(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), xaDataSource, connection);
     }
 
     @Test(expected = Exception.class)
-    public void assertCreateMariaDBXAConnection() {
+    public void assertCreateMariaDBXAConnection() throws SQLException {
         assertThat(XAConnectionFactory.createXAConnection(DatabaseTypeRegistry.getActualDatabaseType("MariaDB"), xaDataSource, connection), instanceOf(MariaXaConnection.class));
     }
 
     @Test
-    public void assertCreatePostgreSQLXAConnection() {
+    public void assertCreatePostgreSQLXAConnection() throws SQLException {
         assertThat(XAConnectionFactory.createXAConnection(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), xaDataSource, connection), instanceOf(PGXAConnection.class));
     }
     
     @Test
     @Ignore("openGauss jdbc driver is not import because of absenting from Maven central repository")
-    public void assertCreateOpenGaussXAConnection() throws ClassNotFoundException {
+    public void assertCreateOpenGaussXAConnection() throws ClassNotFoundException, SQLException {
         Class<?> pgXAConnectionClass = Class.forName("org.opengauss.xa.PGXAConnection");
         assertThat(XAConnectionFactory.createXAConnection(DatabaseTypeRegistry.getActualDatabaseType("openGauss"), xaDataSource, connection), instanceOf(pgXAConnectionClass));
     }
     
     @Test
-    public void assertCreateH2XAConnection() {
+    public void assertCreateH2XAConnection() throws SQLException {
         assertThat(XAConnectionFactory.createXAConnection(DatabaseTypeRegistry.getActualDatabaseType("H2"), xaDataSource, connection), instanceOf(JdbcXAConnection.class));
     }
     
     @Test
     @Ignore("oracle jdbc driver is not import because of the limitations of license")
-    public void assertCreateOracleXAConnection() throws ClassNotFoundException {
+    public void assertCreateOracleXAConnection() throws ClassNotFoundException, SQLException {
         Class<?> clazz = Class.forName("oracle.jdbc.xa.client.OracleXAConnection");
         assertThat(XAConnectionFactory.createXAConnection(DatabaseTypeRegistry.getActualDatabaseType("Oracle"), xaDataSource, connection), instanceOf(clazz));
     }
     
-    @Test(expected = UnsupportedOperationException.class)
-    public void assertCreateUnknownXAConnectionThrowsUnsupportedOperationException() {
+    @Test(expected = ServiceProviderNotFoundException.class)
+    public void assertCreateUnknownXAConnection() throws SQLException {
         XAConnectionFactory.createXAConnection(DatabaseTypeRegistry.getActualDatabaseType("SQL92"), xaDataSource, connection);
     }
 }

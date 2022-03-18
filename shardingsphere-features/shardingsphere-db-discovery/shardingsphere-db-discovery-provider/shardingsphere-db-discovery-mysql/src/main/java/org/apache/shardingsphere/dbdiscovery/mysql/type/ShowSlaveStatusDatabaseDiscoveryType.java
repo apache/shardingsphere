@@ -74,7 +74,7 @@ public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabase
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             long replicationDelayTime = getSecondsBehindMaster(statement);
-            if (replicationDelayTime * 1000 < Integer.parseInt(props.getProperty("delay_milliseconds_threshold"))) {
+            if (replicationDelayTime * 1000 < Long.parseLong(props.getProperty("delay-milliseconds-threshold"))) {
                 ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, datasourceName, false));
             } else {
                 ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, datasourceName, true));

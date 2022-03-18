@@ -122,6 +122,9 @@ public final class ExportSchemaConfigurationHandler extends QueryableRALBackendH
             return Collections.singleton(Collections.singletonList(result.toString()));
         }
         File outFile = new File(sqlStatement.getFilePath().get());
+        if (!outFile.exists()) {
+            outFile.getParentFile().mkdirs();
+        }
         try (FileOutputStream stream = new FileOutputStream(outFile)) {
             stream.write(result.toString().getBytes());
             stream.flush();
@@ -149,6 +152,9 @@ public final class ExportSchemaConfigurationHandler extends QueryableRALBackendH
     }
     
     private void getRulesConfig(final Collection<RuleConfiguration> ruleConfigurations, final StringBuilder result) {
+        if (null == ruleConfigurations || ruleConfigurations.isEmpty()) {
+            return;
+        }
         configItem(ZERO, "rules", result);
         ruleConfigurations.forEach(each -> {
             getRulesConfigForSharding(each, result);

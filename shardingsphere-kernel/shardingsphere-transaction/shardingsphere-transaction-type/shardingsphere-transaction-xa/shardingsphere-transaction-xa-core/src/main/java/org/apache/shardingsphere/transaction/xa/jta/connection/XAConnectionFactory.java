@@ -20,22 +20,24 @@ package org.apache.shardingsphere.transaction.xa.jta.connection;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.H2XAConnectionWrapper;
-import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.MariaDBXAConnectionWrapper;
-import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.MySQLXAConnectionWrapper;
-import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.OpenGaussXAConnectionWrapper;
-import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.OracleXAConnectionWrapper;
-import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.PostgreSQLXAConnectionWrapper;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * XA connection factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class XAConnectionFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(XAConnectionWrapper.class);
+    }
     
     /**
      * Create XA connection from normal connection.
@@ -44,23 +46,9 @@ public final class XAConnectionFactory {
      * @param connection normal connection
      * @param xaDataSource XA data source
      * @return XA connection
+     * @throws SQLException SQL exception
      */
-    public static XAConnection createXAConnection(final DatabaseType databaseType, final XADataSource xaDataSource, final Connection connection) {
-        switch (databaseType.getName()) {
-            case "MySQL":
-                return new MySQLXAConnectionWrapper().wrap(xaDataSource, connection);
-            case "MariaDB":
-                return new MariaDBXAConnectionWrapper().wrap(xaDataSource, connection);
-            case "PostgreSQL":
-                return new PostgreSQLXAConnectionWrapper().wrap(xaDataSource, connection);
-            case "openGauss":
-                return new OpenGaussXAConnectionWrapper().wrap(xaDataSource, connection);
-            case "H2":
-                return new H2XAConnectionWrapper().wrap(xaDataSource, connection);
-            case "Oracle":
-                return new OracleXAConnectionWrapper().wrap(xaDataSource, connection);
-            default:
-                throw new UnsupportedOperationException(String.format("Cannot support database type: `%s`", databaseType));
-        }
+    public static XAConnection createXAConnection(final DatabaseType databaseType, final XADataSource xaDataSource, final Connection connection) throws SQLException {
+        return TypedSPIRegistry.getRegisteredService(XAConnectionWrapper.class, databaseType.getName(), new Properties()).wrap(xaDataSource, connection);
     }
 }
