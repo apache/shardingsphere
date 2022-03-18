@@ -259,25 +259,24 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     private boolean isValidDatabaseShardingAlgorithm(final TableRule sampleTableRule, final TableRule tableRule) {
-        String sampleDataSourcePrefix = sampleTableRule.getDataSourceDataNode().getPrefix();
-        String sampleAlgorithmExpression = getAlgorithmExpression(sampleTableRule, sampleDataSourcePrefix, true);
-        String algorithmExpression = getAlgorithmExpression(tableRule, sampleDataSourcePrefix, true);
+        String sampleAlgorithmExpression = getAlgorithmExpression(sampleTableRule, true);
+        String algorithmExpression = getAlgorithmExpression(tableRule, true);
         return sampleAlgorithmExpression.equalsIgnoreCase(algorithmExpression);
     }
     
     private boolean isValidTableShardingAlgorithm(final TableRule sampleTableRule, final TableRule tableRule) {
-        String sampleDataSourcePrefix = sampleTableRule.getTableDataNode().getPrefix();
-        String sampleAlgorithmExpression = getAlgorithmExpression(sampleTableRule, sampleDataSourcePrefix, false);
-        String algorithmExpression = getAlgorithmExpression(tableRule, sampleDataSourcePrefix, false);
+        String sampleAlgorithmExpression = getAlgorithmExpression(sampleTableRule, false);
+        String algorithmExpression = getAlgorithmExpression(tableRule, false);
         return sampleAlgorithmExpression.equalsIgnoreCase(algorithmExpression);
     }
     
-    private String getAlgorithmExpression(final TableRule tableRule, final String sampleDataNodePrefix, final boolean databaseAlgorithm) {
+    private String getAlgorithmExpression(final TableRule tableRule, final boolean databaseAlgorithm) {
         ShardingStrategyConfiguration shardingStrategyConfig = databaseAlgorithm
                 ? null == tableRule.getDatabaseShardingStrategyConfig() ? defaultDatabaseShardingStrategyConfig : tableRule.getDatabaseShardingStrategyConfig()
                 : null == tableRule.getTableShardingStrategyConfig() ? defaultTableShardingStrategyConfig : tableRule.getTableShardingStrategyConfig();
         ShardingAlgorithm shardingAlgorithm = shardingAlgorithms.get(shardingStrategyConfig.getShardingAlgorithmName());
         String originAlgorithmExpression = null == shardingAlgorithm ? "" : StringUtils.defaultString(shardingAlgorithm.getProps().getProperty("algorithm-expression"), "");
+        String sampleDataNodePrefix = databaseAlgorithm ? tableRule.getDataSourceDataNode().getPrefix() : tableRule.getTableDataNode().getPrefix();
         String shardingColumn = getShardingColumn(tableRule.getDatabaseShardingStrategyConfig());
         return originAlgorithmExpression.replace(sampleDataNodePrefix, "").replace(shardingColumn, "");
     }
