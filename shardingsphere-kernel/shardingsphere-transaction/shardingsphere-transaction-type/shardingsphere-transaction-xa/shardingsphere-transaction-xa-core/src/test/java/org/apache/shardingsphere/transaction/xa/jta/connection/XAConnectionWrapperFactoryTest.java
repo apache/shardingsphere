@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.constant;
+package org.apache.shardingsphere.transaction.xa.jta.connection;
 
-import io.netty.util.AttributeKey;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.H2XAConnectionWrapper;
+import org.junit.Test;
 
-/**
- * MySQL constants.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLConstants {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+
+public final class XAConnectionWrapperFactoryTest {
     
-    public static final AttributeKey<MySQLCharacterSet> MYSQL_CHARACTER_SET_ATTRIBUTE_KEY = AttributeKey.valueOf(MySQLCharacterSet.class.getName());
-    
-    public static final AttributeKey<Integer> MYSQL_OPTION_MULTI_STATEMENTS = AttributeKey.valueOf("MYSQL_OPTION_MULTI_STATEMENTS");
+    @Test
+    public void assertCreateH2XAConnection() {
+        assertThat(XAConnectionWrapperFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("H2")), instanceOf(H2XAConnectionWrapper.class));
+    }
 }
