@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor;
 
 import com.zaxxer.hikari.pool.HikariProxyResultSet;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -91,7 +91,7 @@ public final class SelectTableExecutorTest {
     
     private ShardingSphereMetaData getMetaData() throws SQLException {
         return new ShardingSphereMetaData("sharding_db",
-                new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), mock(MySQLDatabaseType.class)),
+                new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), new PostgreSQLDatabaseType()),
                 mock(ShardingSphereRuleMetaData.class), new ShardingSphereSchema(Collections.singletonMap("t_order", mock(TableMetaData.class))));
     }
     

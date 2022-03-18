@@ -49,7 +49,7 @@ public final class PostgreSQLAdminExecutorFactoryTest {
     private final PostgreSQLAdminExecutorFactory postgreSQLAdminExecutorFactory = new PostgreSQLAdminExecutorFactory();
     
     @Test
-    public void assertNewInstanceWithMySQLShowFunctionStatusStatement() {
+    public void assertNewInstanceWithPostgreSQLSelectPgDatabaseStatement() {
         SelectStatement statement = mock(SelectStatement.class);
         SimpleTableSegment tableSegment = mock(SimpleTableSegment.class);
         when(tableSegment.getTableName()).thenReturn(new TableNameSegment(0, 0, new IdentifierValue("pg_database")));
