@@ -23,32 +23,25 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
-import javax.sql.XAConnection;
-import javax.sql.XADataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Properties;
 
 /**
- * XA connection factory.
+ * XA connection wrapper factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class XAConnectionFactory {
+public final class XAConnectionWrapperFactory {
     
     static {
         ShardingSphereServiceLoader.register(XAConnectionWrapper.class);
     }
     
     /**
-     * Create XA connection from normal connection.
+     * Create new instance of XA connection wrapper.
      *
      * @param databaseType database type
-     * @param connection normal connection
-     * @param xaDataSource XA data source
-     * @return XA connection
-     * @throws SQLException SQL exception
+     * @return new instance of XA connection wrapper
      */
-    public static XAConnection createXAConnection(final DatabaseType databaseType, final XADataSource xaDataSource, final Connection connection) throws SQLException {
-        return TypedSPIRegistry.getRegisteredService(XAConnectionWrapper.class, databaseType.getName(), new Properties()).wrap(xaDataSource, connection);
+    public static XAConnectionWrapper newInstance(final DatabaseType databaseType) {
+        return TypedSPIRegistry.getRegisteredService(XAConnectionWrapper.class, databaseType.getName(), new Properties());
     }
 }

@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
+import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapperFactory;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mariadb.jdbc.MariaDbConnection;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -50,15 +52,14 @@ public final class MariaDBXAConnectionWrapperTest {
     
     @Before
     public void setUp() throws SQLException, ClassNotFoundException {
-        Connection connection = (Connection) mock(Class.forName("org.mariadb.jdbc.MariaDbConnection"));
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseTypeRegistry.getActualDatabaseType("MariaDB"), "ds1");
         xaDataSource = XADataSourceFactory.build(DatabaseTypeRegistry.getActualDatabaseType("MariaDB"), dataSource);
-        when(this.connection.unwrap(any())).thenReturn(connection);
+        when(connection.unwrap(any())).thenReturn(mock(MariaDbConnection.class));
     }
     
     @Test
     public void assertCreateMariaDBConnection() throws SQLException {
-        XAConnection actual = new MariaDBXAConnectionWrapper().wrap(xaDataSource, connection);
+        XAConnection actual = XAConnectionWrapperFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("MariaDB")).wrap(xaDataSource, connection);
         assertThat(actual.getXAResource(), instanceOf(XAResource.class));
         assertThat(actual.getConnection(), instanceOf(Connection.class));
     }
