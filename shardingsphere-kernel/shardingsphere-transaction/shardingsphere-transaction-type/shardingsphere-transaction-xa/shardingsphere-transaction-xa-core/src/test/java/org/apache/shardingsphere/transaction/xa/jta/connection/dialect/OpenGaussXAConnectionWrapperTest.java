@@ -18,16 +18,14 @@
 package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
 import com.zaxxer.hikari.HikariDataSource;
-import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
+import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapperFactory;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.opengauss.core.BaseConnection;
+import org.opengauss.xa.PGXAConnection;
 
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
@@ -37,40 +35,27 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-@Ignore("openGauss jdbc driver is not import because of absenting from Maven central repository")
 public final class OpenGaussXAConnectionWrapperTest {
     
-    private static final String BASE_CONNECTION_CLASS = "org.opengauss.core.BaseConnection";
-    
-    private static final String PG_XA_CONNECTION_CLASS = "org.opengauss.xa.PGXAConnection";
-    
-    private XADataSource xaDataSource;
-    
-    @Mock
-    private Connection connection;
-    
-    @Before
-    public void setUp() throws SQLException, ClassNotFoundException {
-        Object baseConnection = mock(Class.forName(BASE_CONNECTION_CLASS));
-        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseTypeRegistry.getActualDatabaseType("openGauss"), "ds1");
-        xaDataSource = XADataSourceFactory.build(DatabaseTypeRegistry.getActualDatabaseType("openGauss"), dataSource);
-        when(connection.unwrap(any())).thenReturn(baseConnection);
-    }
+    private final DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("openGauss");
     
     @Test
-    public void assertCreateOpenGaussConnection() throws SQLException {
-        XAConnection actual = new OpenGaussXAConnectionWrapper().wrap(xaDataSource, connection);
-        assertThat(actual.getXAResource(), instanceOf(getPGXAConnectionClass()));
-        assertThat(actual.getConnection(), instanceOf(Connection.class));
+    public void assertWrap() throws SQLException {
+        XAConnection actual = XAConnectionWrapperFactory.newInstance(databaseType).wrap(createXADataSource(), mockConnection());
+        assertThat(actual.getXAResource(), instanceOf(PGXAConnection.class));
     }
     
-    @SneakyThrows(ClassNotFoundException.class)
-    private Class<?> getPGXAConnectionClass() {
-        return Class.forName(PG_XA_CONNECTION_CLASS);
+    private XADataSource createXADataSource() {
+        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, databaseType, "foo_ds");
+        return XADataSourceFactory.build(databaseType, dataSource);
+    }
+    
+    private Connection mockConnection() throws SQLException {
+        Connection result = mock(Connection.class);
+        when(result.unwrap(BaseConnection.class)).thenReturn(mock(BaseConnection.class));
+        return result;
     }
 }
