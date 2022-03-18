@@ -20,6 +20,9 @@ package org.apache.shardingsphere.data.pipeline.core.api;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.commons.lang3.concurrent.ConcurrentException;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.GovernanceRepositoryAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
@@ -42,18 +45,26 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineAPIFactory {
     
+    private static final LazyInitializer<GovernanceRepositoryAPI> REPOSITORY_API_LAZY_INITIALIZER = new LazyInitializer<GovernanceRepositoryAPI>() {
+        @Override
+        protected GovernanceRepositoryAPI initialize() {
+            Optional<MetaDataPersistService> persistServiceOptional = PipelineContext.getContextManager().getMetaDataContexts().getMetaDataPersistService();
+            if (!persistServiceOptional.isPresent()) {
+                throw new RuntimeException("persistService is not present");
+            }
+            ClusterPersistRepository repository = (ClusterPersistRepository) persistServiceOptional.get().getRepository();
+            return new GovernanceRepositoryAPIImpl(repository);
+        }
+    };
+    
     /**
      * Get governance repository API.
      *
      * @return governance repository API
      */
+    @SneakyThrows(ConcurrentException.class)
     public static GovernanceRepositoryAPI getGovernanceRepositoryAPI() {
-        Optional<MetaDataPersistService> persistServiceOptional = PipelineContext.getContextManager().getMetaDataContexts().getMetaDataPersistService();
-        if (!persistServiceOptional.isPresent()) {
-            throw new RuntimeException("persistService is not present");
-        }
-        ClusterPersistRepository repository = (ClusterPersistRepository) persistServiceOptional.get().getRepository();
-        return new GovernanceRepositoryAPIImpl(repository);
+        return REPOSITORY_API_LAZY_INITIALIZER.get();
     }
     
     /**
