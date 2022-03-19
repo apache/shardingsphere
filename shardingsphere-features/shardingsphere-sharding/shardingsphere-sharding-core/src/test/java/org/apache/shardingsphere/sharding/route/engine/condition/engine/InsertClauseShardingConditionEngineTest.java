@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.InsertClauseShardingConditionEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -50,30 +49,27 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class InsertClauseShardingConditionEngineTest {
     
+    private final InsertClauseShardingConditionEngine insertClauseShardingConditionEngine = new InsertClauseShardingConditionEngine(mock(ShardingRule.class), mock(ShardingSphereSchema.class));
+    
     @Mock
     private InsertStatementContext insertStatementContext;
     
-    @Mock
-    private ShardingRule shardingRule;
-    
-    private InsertClauseShardingConditionEngine insertClauseShardingConditionEngine;
-    
     @Before
     public void setUp() {
-        InsertStatement insertStatement = mock(InsertStatement.class);
+        InsertStatement insertStatement = mockInsertStatement();
         when(insertStatementContext.getSqlStatement()).thenReturn(insertStatement);
-        when(insertStatementContext.getColumnNames()).thenReturn(Collections.singletonList("columnName"));
-        SimpleTableSegment simpleTableSegment = mock(SimpleTableSegment.class);
-        when(insertStatement.getTable()).thenReturn(simpleTableSegment);
-        TableNameSegment tableNameSegment = mock(TableNameSegment.class);
-        when(simpleTableSegment.getTableName()).thenReturn(tableNameSegment);
-        IdentifierValue identifierValue = mock(IdentifierValue.class);
-        when(tableNameSegment.getIdentifier()).thenReturn(identifierValue);
-        when(identifierValue.getValue()).thenReturn("example");
-        when(insertStatementContext.getInsertValueContexts()).thenReturn(
-                Collections.singletonList(new InsertValueContext(Collections.singleton(new LiteralExpressionSegment(0, 10, "1")), Collections.emptyList(), 0)));
-        when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(new GeneratedKeyContext("columnNameTwo", true)));
-        insertClauseShardingConditionEngine = new InsertClauseShardingConditionEngine(shardingRule, mock(ShardingSphereSchema.class));
+        when(insertStatementContext.getColumnNames()).thenReturn(Collections.singletonList("foo_col"));
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(createInsertValueContext()));
+    }
+    
+    private InsertStatement mockInsertStatement() {
+        InsertStatement result = mock(InsertStatement.class);
+        when(result.getTable()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_table"))));
+        return result;
+    }
+    
+    private InsertValueContext createInsertValueContext() {
+        return new InsertValueContext(Collections.singleton(new LiteralExpressionSegment(0, 10, "1")), Collections.emptyList(), 0);
     }
     
     @Test
@@ -86,6 +82,7 @@ public final class InsertClauseShardingConditionEngineTest {
     
     @Test
     public void assertCreateShardingConditionsInsertStatementWithGeneratedKeyContext() {
+        when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(mock(GeneratedKeyContext.class)));
         List<ShardingCondition> shardingConditions = insertClauseShardingConditionEngine.createShardingConditions(insertStatementContext, Collections.emptyList());
         assertThat(shardingConditions.get(0).getStartIndex(), is(0));
         assertTrue(shardingConditions.get(0).getValues().isEmpty());
@@ -93,7 +90,7 @@ public final class InsertClauseShardingConditionEngineTest {
     
     @Test
     public void assertCreateShardingConditionsInsertStatementWithGeneratedKeyContextAndTableRule() {
-        when(shardingRule.findTableRule("example")).thenReturn(Optional.of(mock(TableRule.class)));
+        when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(mock(GeneratedKeyContext.class)));
         List<ShardingCondition> shardingConditions = insertClauseShardingConditionEngine.createShardingConditions(insertStatementContext, Collections.emptyList());
         assertThat(shardingConditions.get(0).getStartIndex(), is(0));
         assertTrue(shardingConditions.get(0).getValues().isEmpty());
@@ -108,6 +105,7 @@ public final class InsertClauseShardingConditionEngineTest {
     
     @Test
     public void assertCreateShardingConditionsSelectStatementWithGeneratedKeyContext() {
+        when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(mock(GeneratedKeyContext.class)));
         when(insertStatementContext.getInsertSelectContext()).thenReturn(mock(InsertSelectContext.class));
         assertTrue(insertClauseShardingConditionEngine.createShardingConditions(insertStatementContext, Collections.emptyList()).isEmpty());
     }
