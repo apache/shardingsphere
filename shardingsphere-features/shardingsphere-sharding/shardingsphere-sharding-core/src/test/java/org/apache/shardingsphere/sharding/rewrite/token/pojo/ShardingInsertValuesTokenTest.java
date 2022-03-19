@@ -44,9 +44,10 @@ public final class ShardingInsertValuesTokenTest {
     @Before
     public void setup() {
         shardingInsertValuesToken = new ShardingInsertValuesToken(0, 2);
-        RouteMapper routeMapper = new RouteMapper("logic_ds", "actual_ds");
-        RouteMapper routeMapper1 = new RouteMapper("tbl", "tbl_0");
-        RouteMapper routeMapper2 = new RouteMapper("tbl", "tbl_1");
+        final RouteMapper routeMapper = new RouteMapper("logic_ds", "actual_ds");
+        final RouteMapper routeMapper1 = new RouteMapper("tbl", "tbl_0");
+        final RouteMapper routeMapper2 = new RouteMapper("tbl", "tbl_1");
+        routeUnit = new RouteUnit(routeMapper, Arrays.asList(routeMapper1, routeMapper2));
         ExpressionSegment expressionSegment1 = new LiteralExpressionSegment(0, 0, "shardingsphere");
         ExpressionSegment expressionSegment2 = new LiteralExpressionSegment(0, 0, "test");
         List<ExpressionSegment> expressionSegment = new ArrayList<>(2);
@@ -54,9 +55,8 @@ public final class ShardingInsertValuesTokenTest {
         expressionSegment.add(expressionSegment2);
         Collection<DataNode> dataNodes = new LinkedList<>();
         ShardingInsertValue shardingInsertValue = new ShardingInsertValue(expressionSegment, dataNodes);
-        List<InsertValue> insertValues= shardingInsertValuesToken.getInsertValues();
+        List<InsertValue> insertValues = shardingInsertValuesToken.getInsertValues();
         insertValues.add(shardingInsertValue);
-        routeUnit = new RouteUnit(routeMapper, Arrays.asList(routeMapper1, routeMapper2));
     }
 
     @Test
