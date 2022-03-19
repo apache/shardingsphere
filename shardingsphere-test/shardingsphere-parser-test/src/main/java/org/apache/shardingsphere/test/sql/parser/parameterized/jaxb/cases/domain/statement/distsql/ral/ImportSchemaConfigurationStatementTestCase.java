@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import java.util.Collection;
-import java.util.Properties;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Proxy global configuration.
+ * Import schema configuration statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class ProxyGlobalConfiguration {
+@Setter
+public final class ImportSchemaConfigurationStatementTestCase extends SQLParserTestCase {
     
-    private final Collection<RuleConfiguration> rules;
-    
-    private final Properties properties;
-    
-    private final Collection<String> labels;
+    @XmlElement(name = "filePath")
+    private String filePath;
 }

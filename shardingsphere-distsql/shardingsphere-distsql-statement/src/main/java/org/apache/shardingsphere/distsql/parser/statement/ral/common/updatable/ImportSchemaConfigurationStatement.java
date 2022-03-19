@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config;
+package org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.schema.impl.DataSourceGeneratedSchemaConfiguration;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
-import java.util.Map;
+import java.util.Optional;
 
 /**
- * Proxy configuration.
+ * Import schema configuration statement.
  */
-@RequiredArgsConstructor
+@Setter
 @Getter
-public final class ProxyConfiguration {
+public final class ImportSchemaConfigurationStatement extends UpdatableRALStatement {
     
-    private final Map<String, DataSourceGeneratedSchemaConfiguration> schemaConfigurations;
-    
-    private final ProxyGlobalConfiguration globalConfiguration;
+    private Optional<String> filePath;
 }

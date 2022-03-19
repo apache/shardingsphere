@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config;
+package org.apache.shardingsphere.proxy.backend.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.config.yaml.YamlProxySchemaConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
+import org.apache.shardingsphere.infra.config.schema.impl.DataSourceGeneratedSchemaConfiguration;
 
 import java.util.Map;
 
 /**
- * YAML configuration for ShardingSphere-Proxy.
+ * Proxy configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class YamlProxyConfiguration {
+public final class ProxyConfiguration {
     
-    private final YamlProxyServerConfiguration serverConfiguration;
+    private final Map<String, DataSourceGeneratedSchemaConfiguration> schemaConfigurations;
     
-    private final Map<String, YamlProxySchemaConfiguration> schemaConfigurations;
+    private final ProxyGlobalConfiguration globalConfiguration;
 }
