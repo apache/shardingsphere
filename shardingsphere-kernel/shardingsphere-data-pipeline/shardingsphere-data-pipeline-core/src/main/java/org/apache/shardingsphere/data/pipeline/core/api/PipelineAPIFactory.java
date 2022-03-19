@@ -20,6 +20,9 @@ package org.apache.shardingsphere.data.pipeline.core.api;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.commons.lang3.concurrent.ConcurrentException;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.GovernanceRepositoryAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
@@ -30,10 +33,11 @@ import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobOperateAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobStatisticsAPI;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+
+import java.util.Optional;
 
 /**
  * Pipeline API factory.
@@ -41,13 +45,26 @@ import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineAPIFactory {
     
+    private static final LazyInitializer<GovernanceRepositoryAPI> REPOSITORY_API_LAZY_INITIALIZER = new LazyInitializer<GovernanceRepositoryAPI>() {
+        @Override
+        protected GovernanceRepositoryAPI initialize() {
+            Optional<MetaDataPersistService> persistServiceOptional = PipelineContext.getContextManager().getMetaDataContexts().getMetaDataPersistService();
+            if (!persistServiceOptional.isPresent()) {
+                throw new RuntimeException("persistService is not present");
+            }
+            ClusterPersistRepository repository = (ClusterPersistRepository) persistServiceOptional.get().getRepository();
+            return new GovernanceRepositoryAPIImpl(repository);
+        }
+    };
+    
     /**
      * Get governance repository API.
      *
      * @return governance repository API
      */
+    @SneakyThrows(ConcurrentException.class)
     public static GovernanceRepositoryAPI getGovernanceRepositoryAPI() {
-        return GovernanceRepositoryAPIHolder.getInstance();
+        return REPOSITORY_API_LAZY_INITIALIZER.get();
     }
     
     /**
@@ -84,33 +101,6 @@ public final class PipelineAPIFactory {
      */
     public static CoordinatorRegistryCenter getRegistryCenter() {
         return RegistryCenterHolder.getInstance();
-    }
-    
-    private static final class GovernanceRepositoryAPIHolder {
-        
-        private static volatile GovernanceRepositoryAPI instance;
-        
-        static {
-            ShardingSphereServiceLoader.register(ClusterPersistRepository.class);
-        }
-        
-        public static GovernanceRepositoryAPI getInstance() {
-            if (null == instance) {
-                synchronized (PipelineAPIFactory.class) {
-                    if (null == instance) {
-                        instance = createGovernanceRepositoryAPI();
-                    }
-                }
-            }
-            return instance;
-        }
-        
-        private static GovernanceRepositoryAPI createGovernanceRepositoryAPI() {
-            ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) PipelineContext.getModeConfig().getRepository();
-            ClusterPersistRepository repository = TypedSPIRegistry.getRegisteredService(ClusterPersistRepository.class, repositoryConfig.getType(), repositoryConfig.getProps());
-            repository.init(repositoryConfig);
-            return new GovernanceRepositoryAPIImpl(repository);
-        }
     }
     
     @Getter

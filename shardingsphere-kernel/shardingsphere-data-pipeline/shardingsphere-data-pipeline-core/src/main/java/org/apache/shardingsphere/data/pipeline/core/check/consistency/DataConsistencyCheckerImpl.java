@@ -212,6 +212,9 @@ public final class DataConsistencyCheckerImpl implements DataConsistencyChecker 
         ContextManager contextManager = PipelineContext.getContextManager();
         Preconditions.checkNotNull(contextManager, "contextManager null");
         ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData(schemaName);
+        if (null == metaData) {
+            throw new RuntimeException("Can not get metaData by schemaName " + schemaName);
+        }
         return metaData.getSchema().getTables();
     }
     
