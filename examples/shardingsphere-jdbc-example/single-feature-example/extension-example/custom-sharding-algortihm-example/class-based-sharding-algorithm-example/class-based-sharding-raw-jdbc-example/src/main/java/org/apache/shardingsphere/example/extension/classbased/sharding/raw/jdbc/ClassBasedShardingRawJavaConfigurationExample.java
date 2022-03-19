@@ -28,7 +28,7 @@ import java.sql.SQLException;
 
 public final class ClassBasedShardingRawJavaConfigurationExample {
 
-    private static ShardingType shardingType = ShardingType.CUSTOM_TYPE;
+    private static ShardingType shardingType = ShardingType.CLASS_BASED;
     
     public static void main(final String[] args) throws SQLException {
         DataSource dataSource = DataSourceFactory.newInstance(shardingType);
