@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseTimestampUtils;
 import org.opengauss.jdbc.TimestampUtils;
 
@@ -27,18 +27,18 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 /**
- * OpenGauss timestamputils.
+ * Timestamp utils of openGauss.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 public final class OpenGaussTimestampUtils implements BaseTimestampUtils {
     
     private final TimestampUtils timestampUtils;
-
+    
     @Override
     public Time toTime(final Calendar cal, final String input) throws SQLException {
         return timestampUtils.toTime(cal, input);
     }
-
+    
     @Override
     public Timestamp toTimestamp(final Calendar cal, final String input) throws SQLException {
         return timestampUtils.toTimestamp(cal, input);

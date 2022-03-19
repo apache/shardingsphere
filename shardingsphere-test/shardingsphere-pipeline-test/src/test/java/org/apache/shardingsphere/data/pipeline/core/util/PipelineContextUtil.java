@@ -62,6 +62,7 @@ public final class PipelineContextUtil {
     static {
         PERSIST_REPOSITORY_CONFIG = new ClusterPersistRepositoryConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), new Properties());
         PERSIST_REPOSITORY_LAZY_INITIALIZER = new LazyInitializer<ClusterPersistRepository>() {
+            
             @Override
             protected ClusterPersistRepository initialize() {
                 return ClusterPersistRepositoryFactory.newInstance(PERSIST_REPOSITORY_CONFIG, new InstanceDefinition(InstanceType.PROXY));
