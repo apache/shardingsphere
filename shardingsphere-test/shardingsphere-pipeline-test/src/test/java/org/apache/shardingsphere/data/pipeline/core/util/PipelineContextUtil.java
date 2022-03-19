@@ -30,6 +30,8 @@ import org.apache.shardingsphere.data.pipeline.core.spi.ingest.channel.MemoryPip
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -62,7 +64,7 @@ public final class PipelineContextUtil {
         PERSIST_REPOSITORY_LAZY_INITIALIZER = new LazyInitializer<ClusterPersistRepository>() {
             @Override
             protected ClusterPersistRepository initialize() {
-                return ClusterPersistRepositoryFactory.newInstance(PERSIST_REPOSITORY_CONFIG);
+                return ClusterPersistRepositoryFactory.newInstance(PERSIST_REPOSITORY_CONFIG, new InstanceDefinition(InstanceType.PROXY));
             }
         };
     }
