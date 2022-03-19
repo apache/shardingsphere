@@ -66,6 +66,7 @@ public final class FrontendChannelInboundHandlerTest {
     @Before
     public void setup() {
         when(frontendEngine.getAuthenticationEngine()).thenReturn(authenticationEngine);
+        when(frontendEngine.getDatabaseType()).thenReturn("MySQL");
         when(authenticationEngine.handshake(any(ChannelHandlerContext.class))).thenReturn(CONNECTION_ID);
         channel = new EmbeddedChannel(false, true);
         frontendChannelInboundHandler = new FrontendChannelInboundHandler(frontendEngine, channel);

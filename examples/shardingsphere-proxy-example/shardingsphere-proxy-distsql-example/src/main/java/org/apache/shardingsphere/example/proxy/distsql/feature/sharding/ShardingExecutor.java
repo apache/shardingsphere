@@ -31,27 +31,27 @@ import java.sql.Statement;
 @Slf4j
 public final class ShardingExecutor extends AbstractFeatureExecutor {
     
-    private final static String ADD_RULE = "CREATE SHARDING TABLE RULE t_order (\n" +
+    private static final String ADD_RULE = "CREATE SHARDING TABLE RULE t_order (\n" +
             "RESOURCES(ds_0,ds_1),\n" +
             "SHARDING_COLUMN=order_id,\n" +
             "TYPE(NAME=hash_mod,PROPERTIES(\"sharding-count\"=4)),\n" +
             "KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME=snowflake))\n" +
             ");";
     
-    private final static String ALTER_RULE = "ALTER SHARDING TABLE RULE t_order (\n" +
+    private static final String ALTER_RULE = "ALTER SHARDING TABLE RULE t_order (\n" +
             "RESOURCES(ds_0,ds_1),\n" +
             "SHARDING_COLUMN=order_id,\n" +
             "TYPE(NAME=hash_mod,PROPERTIES(\"sharding-count\"=5)),\n" +
             "KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME=snowflake))\n" +
             ");";
     
-    private final static String DROP_RULE = "DROP SHARDING TABLE RULE t_order;\n";
+    private static final String DROP_RULE = "DROP SHARDING TABLE RULE t_order;\n";
     
-    private final static String DROP_ALGORITHM = "DROP SHARDING ALGORITHM t_order_hash_mod";
+    private static final String DROP_ALGORITHM = "DROP SHARDING ALGORITHM t_order_hash_mod";
     
-    private final static String SHOW_RULE = "show sharding table rules;";
+    private static final String SHOW_RULE = "show sharding table rules;";
     
-    private final static String SHOW_ALGORITHM = "show sharding algorithms";
+    private static final String SHOW_ALGORITHM = "show sharding algorithms";
     
     @Override
     public void init(Statement statement) {

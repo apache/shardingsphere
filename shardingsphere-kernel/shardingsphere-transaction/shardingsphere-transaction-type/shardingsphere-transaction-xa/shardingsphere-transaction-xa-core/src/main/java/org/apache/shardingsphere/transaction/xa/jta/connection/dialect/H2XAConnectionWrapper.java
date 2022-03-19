@@ -19,10 +19,6 @@ package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
-import org.h2.jdbc.JdbcConnection;
-import org.h2.jdbcx.JdbcDataSourceFactory;
-import org.h2.jdbcx.JdbcXAConnection;
-import org.h2.message.TraceObject;
 
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
@@ -36,32 +32,67 @@ import java.sql.SQLException;
  */
 public final class H2XAConnectionWrapper implements XAConnectionWrapper {
     
-    private static final int XA_DATA_SOURCE = 13;
+    private static final int XA_DATA_SOURCE_TRACE_TYPE_ID = 13;
     
-    private static final Constructor<JdbcXAConnection> CONSTRUCTOR = getH2JdbcXAConstructor();
+    private static volatile Class<Connection> jdbcConnectionClass;
     
-    private static final Method NEXT_ID = getNextIdMethod();
+    private static volatile Constructor<?> xaConnectionConstructor;
     
-    private static final JdbcDataSourceFactory FACTORY = new JdbcDataSourceFactory();
+    private static volatile Method nextIdMethod;
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private static Constructor<JdbcXAConnection> getH2JdbcXAConstructor() {
-        Constructor<JdbcXAConnection> result = JdbcXAConnection.class.getDeclaredConstructor(JdbcDataSourceFactory.class, Integer.TYPE, JdbcConnection.class);
-        result.setAccessible(true);
-        return result;
-    }
+    private static volatile Object dataSourceFactory;
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private static Method getNextIdMethod() {
-        Method result = TraceObject.class.getDeclaredMethod("getNextId", Integer.TYPE);
-        result.setAccessible(true);
-        return result;
-    }
+    private volatile boolean initialized;
     
-    @SneakyThrows({SQLException.class, ReflectiveOperationException.class})
     @Override
-    public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) {
-        Connection physicalConnection = connection.unwrap(JdbcConnection.class);
-        return CONSTRUCTOR.newInstance(FACTORY, NEXT_ID.invoke(null, XA_DATA_SOURCE), physicalConnection);
+    public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {
+        if (!initialized) {
+            loadReflection();
+            initialized = true;
+        }
+        return createXAConnection(connection.unwrap(jdbcConnectionClass));
+    }
+    
+    private void loadReflection() {
+        jdbcConnectionClass = getJDBCConnectionClass();
+        xaConnectionConstructor = getXAConnectionConstructor();
+        nextIdMethod = getNextIdMethod();
+        dataSourceFactory = createDataSourceFactory();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Class<Connection> getJDBCConnectionClass() {
+        return (Class<Connection>) Class.forName("org.h2.jdbc.JdbcConnection");
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Constructor<?> getXAConnectionConstructor() {
+        Constructor<?> result = Class.forName("org.h2.jdbcx.JdbcXAConnection").getDeclaredConstructor(
+                Class.forName("org.h2.jdbcx.JdbcDataSourceFactory"), Integer.TYPE, Class.forName("org.h2.jdbc.JdbcConnection"));
+        result.setAccessible(true);
+        return result;
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Method getNextIdMethod() {
+        Method result = Class.forName("org.h2.message.TraceObject").getDeclaredMethod("getNextId", Integer.TYPE);
+        result.setAccessible(true);
+        return result;
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Object createDataSourceFactory() {
+        return Class.forName("org.h2.jdbcx.JdbcDataSourceFactory").getDeclaredConstructor().newInstance();
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private XAConnection createXAConnection(final Connection connection) {
+        return (XAConnection) xaConnectionConstructor.newInstance(dataSourceFactory, nextIdMethod.invoke(null, XA_DATA_SOURCE_TRACE_TYPE_ID), connection);
+    }
+    
+    @Override
+    public String getType() {
+        return "H2";
     }
 }
