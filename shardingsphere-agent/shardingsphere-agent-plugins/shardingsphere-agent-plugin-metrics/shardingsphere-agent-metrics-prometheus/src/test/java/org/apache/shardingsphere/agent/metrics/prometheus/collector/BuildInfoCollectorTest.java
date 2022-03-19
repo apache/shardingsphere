@@ -17,19 +17,14 @@
 
 package org.apache.shardingsphere.agent.metrics.prometheus.collector;
 
-import io.prometheus.client.Collector.MetricFamilySamples;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 
 public final class BuildInfoCollectorTest {
-
+    
     @Test
     public void assertCollect() {
-        BuildInfoCollector buildInfoCollector = new BuildInfoCollector();
-        List<MetricFamilySamples> metricFamilySamples = buildInfoCollector.collect();
-        assertFalse(metricFamilySamples.isEmpty());
+        assertFalse(new BuildInfoCollector().collect().isEmpty());
     }
 }
