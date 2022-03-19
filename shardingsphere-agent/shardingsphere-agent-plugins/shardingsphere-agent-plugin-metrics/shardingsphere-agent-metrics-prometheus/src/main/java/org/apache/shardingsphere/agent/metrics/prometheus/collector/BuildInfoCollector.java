@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Build info collector.
+ * Build information collector.
  */
 @Slf4j
 public final class BuildInfoCollector extends Collector {

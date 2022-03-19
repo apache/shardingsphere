@@ -33,7 +33,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Proxy info collector.
+ * Proxy information collector.
  */
 public final class ProxyInfoCollector extends Collector {
     
