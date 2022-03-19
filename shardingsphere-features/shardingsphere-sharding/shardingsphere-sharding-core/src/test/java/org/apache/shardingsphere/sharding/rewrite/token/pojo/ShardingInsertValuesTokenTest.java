@@ -29,7 +29,6 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -44,13 +43,13 @@ public final class ShardingInsertValuesTokenTest {
     @Before
     public void setup() {
         shardingInsertValuesToken = new ShardingInsertValuesToken(0, 2);
-        final RouteMapper routeMapper = new RouteMapper("logic_ds", "actual_ds");
-        final RouteMapper routeMapper1 = new RouteMapper("tbl", "tbl_0");
-        final RouteMapper routeMapper2 = new RouteMapper("tbl", "tbl_1");
+        RouteMapper routeMapper = new RouteMapper("logic_ds", "actual_ds");
+        RouteMapper routeMapper1 = new RouteMapper("tbl", "tbl_0");
+        RouteMapper routeMapper2 = new RouteMapper("tbl", "tbl_1");
         routeUnit = new RouteUnit(routeMapper, Arrays.asList(routeMapper1, routeMapper2));
         ExpressionSegment expressionSegment1 = new LiteralExpressionSegment(0, 0, "shardingsphere");
         ExpressionSegment expressionSegment2 = new LiteralExpressionSegment(0, 0, "test");
-        List<ExpressionSegment> expressionSegment = new ArrayList<>(2);
+        List<ExpressionSegment> expressionSegment = new LinkedList<>();
         expressionSegment.add(expressionSegment1);
         expressionSegment.add(expressionSegment2);
         Collection<DataNode> dataNodes = new LinkedList<>();
