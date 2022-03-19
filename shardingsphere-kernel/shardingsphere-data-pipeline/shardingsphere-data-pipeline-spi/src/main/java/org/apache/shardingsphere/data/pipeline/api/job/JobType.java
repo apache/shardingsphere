@@ -15,35 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
+package org.apache.shardingsphere.data.pipeline.api.job;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
-import java.util.List;
-
-@NoArgsConstructor
+/**
+ * Job type.
+ */
 @Getter
-@Setter
-@ToString
-public final class WorkflowConfiguration {
+public enum JobType {
     
-    private long allowDelayMilliseconds = 60 * 1000L;
+    RULE_ALTERED("01");
     
-    private String schemaName;
+    private final String value;
     
-    private List<String> alteredRuleYamlClassNames;
-    
-    private Integer activeVersion;
-    
-    private Integer newVersion;
-    
-    public WorkflowConfiguration(final String schemaName, final List<String> alteredRuleYamlClassNames, final int activeVersion, final int newVersion) {
-        this.schemaName = schemaName;
-        this.alteredRuleYamlClassNames = alteredRuleYamlClassNames;
-        this.activeVersion = activeVersion;
-        this.newVersion = newVersion;
+    JobType(final String value) {
+        Preconditions.checkArgument(value.length() == 2, "value length is not 2");
+        this.value = value;
     }
 }

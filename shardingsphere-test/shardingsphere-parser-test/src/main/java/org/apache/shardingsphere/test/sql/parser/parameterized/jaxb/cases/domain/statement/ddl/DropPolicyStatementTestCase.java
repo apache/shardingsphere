@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
+
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Job operation type.
+ * Drop policy statement test case.
  */
-public enum JobOperationType {
-    
-    INSERT, DELETE, UPDATE, SELECT,
-    SYSTEM_LOAD, CPU_USAGE,
+public final class DropPolicyStatementTestCase extends SQLParserTestCase {
 }

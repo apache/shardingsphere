@@ -15,35 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
-import java.util.List;
-
-@NoArgsConstructor
-@Getter
-@Setter
+/**
+ * Drop policy statement.
+ */
 @ToString
-public final class WorkflowConfiguration {
-    
-    private long allowDelayMilliseconds = 60 * 1000L;
-    
-    private String schemaName;
-    
-    private List<String> alteredRuleYamlClassNames;
-    
-    private Integer activeVersion;
-    
-    private Integer newVersion;
-    
-    public WorkflowConfiguration(final String schemaName, final List<String> alteredRuleYamlClassNames, final int activeVersion, final int newVersion) {
-        this.schemaName = schemaName;
-        this.alteredRuleYamlClassNames = alteredRuleYamlClassNames;
-        this.activeVersion = activeVersion;
-        this.newVersion = newVersion;
-    }
+public abstract class DropPolicyStatement extends AbstractSQLStatement implements DDLStatement {
 }

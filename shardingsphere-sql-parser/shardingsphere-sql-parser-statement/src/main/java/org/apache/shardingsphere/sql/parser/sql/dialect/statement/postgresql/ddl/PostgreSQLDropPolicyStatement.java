@@ -15,35 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropPolicyStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
-import java.util.List;
-
-@NoArgsConstructor
-@Getter
-@Setter
+/**
+ * PostgreSQL drop policy statement.
+ */
 @ToString
-public final class WorkflowConfiguration {
-    
-    private long allowDelayMilliseconds = 60 * 1000L;
-    
-    private String schemaName;
-    
-    private List<String> alteredRuleYamlClassNames;
-    
-    private Integer activeVersion;
-    
-    private Integer newVersion;
-    
-    public WorkflowConfiguration(final String schemaName, final List<String> alteredRuleYamlClassNames, final int activeVersion, final int newVersion) {
-        this.schemaName = schemaName;
-        this.alteredRuleYamlClassNames = alteredRuleYamlClassNames;
-        this.activeVersion = activeVersion;
-        this.newVersion = newVersion;
-    }
+public final class PostgreSQLDropPolicyStatement extends DropPolicyStatement implements PostgreSQLStatement {
 }

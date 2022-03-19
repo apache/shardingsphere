@@ -15,35 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
-
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+package org.apache.shardingsphere.data.pipeline.api.job;
 
 import java.util.List;
 
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
-public final class WorkflowConfiguration {
+/**
+ * Job id.
+ */
+public interface JobId {
     
-    private long allowDelayMilliseconds = 60 * 1000L;
+    /**
+     * Get type.
+     *
+     * @return type
+     */
+    String getType();
     
-    private String schemaName;
+    /**
+     * Get format version.
+     *
+     * @return format version
+     */
+    String getFormatVersion();
     
-    private List<String> alteredRuleYamlClassNames;
+    /**
+     * Get sub-types.
+     *
+     * @return sub-types
+     */
+    List<String> getSubTypes();
     
-    private Integer activeVersion;
-    
-    private Integer newVersion;
-    
-    public WorkflowConfiguration(final String schemaName, final List<String> alteredRuleYamlClassNames, final int activeVersion, final int newVersion) {
-        this.schemaName = schemaName;
-        this.alteredRuleYamlClassNames = alteredRuleYamlClassNames;
-        this.activeVersion = activeVersion;
-        this.newVersion = newVersion;
-    }
+    /**
+     * Get schema name.
+     *
+     * @return schema name
+     */
+    String getSchemaName();
 }

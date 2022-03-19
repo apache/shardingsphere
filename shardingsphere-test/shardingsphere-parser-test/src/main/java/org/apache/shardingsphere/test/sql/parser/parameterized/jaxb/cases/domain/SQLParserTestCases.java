@@ -151,6 +151,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropLanguageStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropPolicyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropProcedureStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropSchemaStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropSequenceStatementTestCase;
@@ -575,6 +576,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-function")
     private final List<DropFunctionStatementTestCase> dropFunctionTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "drop-policy")
+    private final List<DropPolicyStatementTestCase> dropPolicyTestCase = new LinkedList<>();
     
     @XmlElement(name = "drop-procedure")
     private final List<DropProcedureStatementTestCase> dropProcedureTestCase = new LinkedList<>();
@@ -1258,6 +1262,7 @@ public final class SQLParserTestCases {
         putAll(dropTriggerTestCase, result);
         putAll(showTriggerTestCase, result);
         putAll(dropServerTestCase, result);
+        putAll(dropPolicyTestCase, result);
         putAll(dropProcedureTestCase, result);
         putAll(dropFunctionTestCase, result);
         putAll(dropDatabaseTestCase, result);

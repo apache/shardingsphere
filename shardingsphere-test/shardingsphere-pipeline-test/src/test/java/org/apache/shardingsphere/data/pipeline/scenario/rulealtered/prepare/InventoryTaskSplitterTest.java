@@ -21,6 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfigura
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
@@ -60,6 +61,11 @@ public final class InventoryTaskSplitterTest {
         taskConfig = jobContext.getTaskConfig();
     }
     
+    @After
+    public void tearDown() {
+        dataSourceManager.close();
+    }
+    
     @Test
     public void assertSplitInventoryDataWithEmptyTable() throws SQLException {
         taskConfig.getHandleConfig().setShardingSize(10);
@@ -82,33 +88,22 @@ public final class InventoryTaskSplitterTest {
         assertThat(((PrimaryKeyPosition) actual.get(9).getProgress().getPosition()).getEndValue(), is(100L));
     }
     
-    @Test
+    @Test(expected = PipelineJobCreationException.class)
     public void assertSplitInventoryDataWithCharPrimary() throws SQLException {
         initCharPrimaryEnvironment(taskConfig.getDumperConfig());
-        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext);
-        assertNotNull(actual);
-        assertThat(actual.size(), is(1));
+        inventoryTaskSplitter.splitInventoryData(jobContext);
     }
     
-    @Test
+    @Test(expected = PipelineJobCreationException.class)
     public void assertSplitInventoryDataWithUnionPrimary() throws SQLException {
         initUnionPrimaryEnvironment(taskConfig.getDumperConfig());
-        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext);
-        assertNotNull(actual);
-        assertThat(actual.size(), is(1));
+        inventoryTaskSplitter.splitInventoryData(jobContext);
     }
     
-    @Test
+    @Test(expected = PipelineJobCreationException.class)
     public void assertSplitInventoryDataWithoutPrimary() throws SQLException {
         initNoPrimaryEnvironment(taskConfig.getDumperConfig());
-        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext);
-        assertNotNull(actual);
-        assertThat(actual.size(), is(1));
-    }
-    
-    @After
-    public void tearDown() {
-        dataSourceManager.close();
+        inventoryTaskSplitter.splitInventoryData(jobContext);
     }
     
     private void initEmptyTablePrimaryEnvironment(final DumperConfiguration dumperConfig) throws SQLException {

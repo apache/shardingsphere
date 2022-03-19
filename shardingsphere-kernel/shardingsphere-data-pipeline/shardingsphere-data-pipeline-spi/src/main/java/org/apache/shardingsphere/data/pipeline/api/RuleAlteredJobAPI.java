@@ -43,14 +43,6 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI, Singleto
     List<JobInfo> list();
     
     /**
-     * Get uncompleted job ids of schema.
-     *
-     * @param schemaName schema name
-     * @return uncompleted job ids
-     */
-    List<Long> getUncompletedJobIds(String schemaName);
-    
-    /**
      * Start scaling job by config.
      *
      * @param jobConfig job config
