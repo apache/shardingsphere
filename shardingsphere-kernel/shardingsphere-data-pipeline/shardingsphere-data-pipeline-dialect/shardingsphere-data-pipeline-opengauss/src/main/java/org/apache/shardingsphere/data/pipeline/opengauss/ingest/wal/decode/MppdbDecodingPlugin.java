@@ -120,7 +120,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
         result.setPrimaryKeys(getDeleteColumnDataFromMppDataEvent(data));
         return result;
     }
-
+    
     private List<Object> getColumnDataFromMppDataEvent(final MppTableData data) {
         List<Object> columns = new LinkedList<>();
     

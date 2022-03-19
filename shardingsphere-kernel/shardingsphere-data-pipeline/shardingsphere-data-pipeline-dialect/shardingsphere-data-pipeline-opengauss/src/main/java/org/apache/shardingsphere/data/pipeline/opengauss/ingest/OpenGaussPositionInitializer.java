@@ -43,26 +43,21 @@ public final class OpenGaussPositionInitializer implements PositionInitializer {
     
     @Override
     public WalPosition init(final String data) {
-        return new WalPosition(new OpenGaussLogSequenceNumber(LogSequenceNumber.valueOf(Long.parseLong(data)))
-        );
-    }
-
-    private WalPosition getWalPosition(final Connection connection) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement(getSql());
-             ResultSet rs = ps.executeQuery()) {
-            rs.next();
-            return new WalPosition(new OpenGaussLogSequenceNumber(LogSequenceNumber.valueOf(rs.getString(1))));
-        }
+        return new WalPosition(new OpenGaussLogSequenceNumber(LogSequenceNumber.valueOf(Long.parseLong(data))));
     }
     
-    private String getSql() {
-        return "SELECT PG_CURRENT_XLOG_LOCATION()";
+    private WalPosition getWalPosition(final Connection connection) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT PG_CURRENT_XLOG_LOCATION()");
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            resultSet.next();
+            return new WalPosition(new OpenGaussLogSequenceNumber(LogSequenceNumber.valueOf(resultSet.getString(1))));
+        }
     }
     
     @Override
     public void destroy(final DataSource dataSource) throws SQLException {
-        try (Connection conn = dataSource.getConnection()) {
-            OpenGaussLogicalReplication.dropSlot(conn);
+        try (Connection connection = dataSource.getConnection()) {
+            OpenGaussLogicalReplication.dropSlot(connection);
         }
     }
     
