@@ -48,9 +48,9 @@ public final class MetaDataInfoCollector extends Collector {
     
     private static final String ACTUAL_DB_COUNT = "database_count";
     
-    private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
-    
     private static final String PROXY_CONTEXT_CLASS = "org.apache.shardingsphere.proxy.backend.context.ProxyContext";
+    
+    private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
     
     @Override
     public List<MetricFamilySamples> collect() {
