@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 @Slf4j
@@ -60,12 +61,14 @@ public final class PipelineContextUtil {
     
     private static final LazyInitializer<ClusterPersistRepository> PERSIST_REPOSITORY_LAZY_INITIALIZER;
     
+    private static final InstanceDefinition INSTANCE_DEFINITION = mock(InstanceDefinition.class, RETURNS_DEEP_STUBS);
+    
     static {
         PERSIST_REPOSITORY_CONFIG = new ClusterPersistRepositoryConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), new Properties());
         PERSIST_REPOSITORY_LAZY_INITIALIZER = new LazyInitializer<ClusterPersistRepository>() {
             @Override
             protected ClusterPersistRepository initialize() {
-                return ClusterPersistRepositoryFactory.newInstance(PERSIST_REPOSITORY_CONFIG, mock(InstanceDefinition.class));
+                return ClusterPersistRepositoryFactory.newInstance(PERSIST_REPOSITORY_CONFIG, INSTANCE_DEFINITION);
             }
         };
     }
