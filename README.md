@@ -60,7 +60,7 @@ For guides on how to get started and setup your environment, contributor & commi
 
 <hr>
 
-We deeply appreciate [community contributors](https://shardingsphere.apache.org/community/cn/team) for their dedication to Apache ShardingSphere.
+We deeply appreciate [community contributors](https://shardingsphere.apache.org/community/en/team) for their dedication to Apache ShardingSphere.
 
 ##
 

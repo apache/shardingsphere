@@ -17,60 +17,36 @@
 
 package org.apache.shardingsphere.data.pipeline.core.lock;
 
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockNode;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
-import org.junit.Before;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.concurrent.TimeUnit;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PipelineSimpleLockTest {
-
-    @Mock
-    private ClusterPersistRepository clusterPersistRepository;
-
-    @Mock
-    private MetaDataPersistService metaDataPersistService;
-
-    @Mock
-    private MetaDataContexts metaDataContexts;
-
-    private PipelineSimpleLock pipelineSimpleLock;
-
-    private String decoratedLockName;
-
-    @Before
-    public void setUp() throws ReflectiveOperationException {
-        decoratedLockName = "scaling-test";
-        metaDataPersistService = new MetaDataPersistService(clusterPersistRepository);
-        metaDataContexts = new MetaDataContexts(metaDataPersistService);
-        ContextManager contextManager = new ContextManager();
-        contextManager.init(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class));
-        PipelineContext.initContextManager(contextManager);
-        pipelineSimpleLock = PipelineSimpleLock.getInstance();
-        when(clusterPersistRepository.tryLock(LockNode.getLockNodePath(decoratedLockName), 50L, TimeUnit.MILLISECONDS)).thenReturn(true);
+    
+    @BeforeClass
+    public static void beforeClass() {
+        PipelineContextUtil.mockModeConfigAndContextManager();
     }
-
+    
     @Test
     public void assertTryLockAndReleaseLock() {
-        pipelineSimpleLock.tryLock("test", 50L);
-        verify(clusterPersistRepository).tryLock(LockNode.getLockNodePath(decoratedLockName), 50L, TimeUnit.MILLISECONDS);
-        pipelineSimpleLock.releaseLock("test");
-        verify(clusterPersistRepository).releaseLock(LockNode.getLockNodePath(decoratedLockName));
+        PipelineSimpleLock pipelineSimpleLock = PipelineSimpleLock.getInstance();
+        String lockName = "test";
+        long timeoutMillis = 50L;
+        boolean locked = pipelineSimpleLock.tryLock(lockName, timeoutMillis);
+        assertTrue(locked);
+        assertThat(pipelineSimpleLock.tryLock(lockName, timeoutMillis), is(false));
+        pipelineSimpleLock.releaseLock(lockName);
+        locked = pipelineSimpleLock.tryLock(lockName, timeoutMillis);
+        assertTrue(locked);
+        pipelineSimpleLock.releaseLock(lockName);
     }
 
 }
