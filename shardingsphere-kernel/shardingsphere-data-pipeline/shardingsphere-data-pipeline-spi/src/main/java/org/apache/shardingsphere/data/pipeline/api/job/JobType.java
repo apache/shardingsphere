@@ -21,17 +21,16 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 
 /**
- * Job sub-type.
+ * Job type.
  */
 @Getter
-public enum JobSubType {
+public enum JobType {
     
-    SCALING("01"),
-    ENCRYPTION("02");
+    RULE_ALTERED("01");
     
     private final String value;
     
-    JobSubType(final String value) {
+    JobType(final String value) {
         Preconditions.checkArgument(value.length() == 2, "value length is not 2");
         this.value = value;
     }

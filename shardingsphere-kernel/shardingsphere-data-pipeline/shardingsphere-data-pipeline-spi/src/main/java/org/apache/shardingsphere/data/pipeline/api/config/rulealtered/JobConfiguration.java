@@ -25,9 +25,9 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
-import org.apache.shardingsphere.data.pipeline.api.job.JobId;
-import org.apache.shardingsphere.data.pipeline.api.job.JobIdCodec;
 import org.apache.shardingsphere.data.pipeline.api.job.JobSubType;
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
+import org.apache.shardingsphere.data.pipeline.api.job.RuleAlteredJobId;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
 import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 
@@ -85,9 +85,15 @@ public final class JobConfiguration {
     }
     
     private String generateJobId() {
+        RuleAlteredJobId jobId = new RuleAlteredJobId();
+        // TODO type, subTypes
+        jobId.setType(JobType.RULE_ALTERED.getValue());
+        jobId.setFormatVersion(RuleAlteredJobId.CURRENT_VERSION);
+        jobId.setSubTypes(Collections.singletonList(JobSubType.SCALING.getValue()));
         WorkflowConfiguration workflowConfig = getWorkflowConfig();
-        JobId jobId = new JobId(JobId.CURRENT_VERSION, Collections.singletonList(JobSubType.SCALING.getValue()),
-                workflowConfig.getActiveVersion(), workflowConfig.getNewVersion(), workflowConfig.getSchemaName());
-        return JobIdCodec.marshal(jobId);
+        jobId.setCurrentMetadataVersion(workflowConfig.getActiveVersion());
+        jobId.setNewMetadataVersion(workflowConfig.getNewVersion());
+        jobId.setSchemaName(workflowConfig.getSchemaName());
+        return jobId.marshal();
     }
 }

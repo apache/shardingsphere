@@ -17,22 +17,28 @@
 
 package org.apache.shardingsphere.data.pipeline.api.job;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+
+import java.util.List;
 
 /**
- * Job sub-type.
+ * Abstract job id.
  */
 @Getter
-public enum JobSubType {
+@Setter
+public abstract class AbstractJobId implements JobId {
     
-    SCALING("01"),
-    ENCRYPTION("02");
+    @NonNull
+    private String type;
     
-    private final String value;
+    @NonNull
+    private String formatVersion;
     
-    JobSubType(final String value) {
-        Preconditions.checkArgument(value.length() == 2, "value length is not 2");
-        this.value = value;
-    }
+    @NonNull
+    private List<String> subTypes;
+    
+    @NonNull
+    private String schemaName;
 }

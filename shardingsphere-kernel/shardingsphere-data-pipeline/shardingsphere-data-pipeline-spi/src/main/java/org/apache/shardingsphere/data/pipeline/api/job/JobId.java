@@ -17,27 +17,38 @@
 
 package org.apache.shardingsphere.data.pipeline.api.job;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 import java.util.List;
 
 /**
  * Job id.
  */
-@RequiredArgsConstructor
-@Getter
-public final class JobId {
+public interface JobId {
     
-    public static final String CURRENT_VERSION = "01";
+    /**
+     * Get type.
+     *
+     * @return type
+     */
+    String getType();
     
-    private final String formatVersion;
+    /**
+     * Get format version.
+     *
+     * @return format version
+     */
+    String getFormatVersion();
     
-    private final List<Integer> subTypes;
+    /**
+     * Get sub-types.
+     *
+     * @return sub-types
+     */
+    List<String> getSubTypes();
     
-    private final int currentMetadataVersion;
-    
-    private final int newMetadataVersion;
-    
-    private final String schemaName;
+    /**
+     * Get schema name.
+     *
+     * @return schema name
+     */
+    String getSchemaName();
 }

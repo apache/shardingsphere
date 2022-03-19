@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job;
 
-import org.apache.shardingsphere.data.pipeline.api.job.JobId;
-import org.apache.shardingsphere.data.pipeline.api.job.JobIdCodec;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.shardingsphere.data.pipeline.api.job.JobSubType;
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
+import org.apache.shardingsphere.data.pipeline.api.job.RuleAlteredJobId;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -27,18 +29,29 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class JobIdCodecTest {
+public final class RuleAlteredJobIdTest {
     
     @Test
     public void assertSerialization() {
-        List<Integer> subTypes = Arrays.asList(2, 1);
-        JobId jobId = new JobId(JobId.CURRENT_VERSION, subTypes, 0, 1, "sharding_db");
-        String hexText = JobIdCodec.marshal(jobId);
-        JobId actual = JobIdCodec.unmarshal(hexText);
+        RuleAlteredJobId jobId = new RuleAlteredJobId();
+        jobId.setType(JobType.RULE_ALTERED.getValue());
+        jobId.setFormatVersion(RuleAlteredJobId.CURRENT_VERSION);
+        Pair<List<String>, List<String>> subTypesPair = getSubTypesPair();
+        jobId.setSubTypes(subTypesPair.getLeft());
+        jobId.setCurrentMetadataVersion(0);
+        jobId.setNewMetadataVersion(1);
+        jobId.setSchemaName("sharding_db");
+        String hexText = jobId.marshal();
+        RuleAlteredJobId actual = RuleAlteredJobId.unmarshal(hexText);
         assertThat(actual.getFormatVersion(), is(jobId.getFormatVersion()));
-        assertThat(actual.getSubTypes(), is(Arrays.asList(1, 2)));
+        assertThat(actual.getSubTypes(), is(subTypesPair.getRight()));
         assertThat(actual.getCurrentMetadataVersion(), is(jobId.getCurrentMetadataVersion()));
         assertThat(actual.getNewMetadataVersion(), is(jobId.getNewMetadataVersion()));
         assertThat(actual.getSchemaName(), is(jobId.getSchemaName()));
+    }
+    
+    private Pair<List<String>, List<String>> getSubTypesPair() {
+        return Pair.of(Arrays.asList(JobSubType.ENCRYPTION.getValue(), JobSubType.SCALING.getValue()),
+                Arrays.asList(JobSubType.SCALING.getValue(), JobSubType.ENCRYPTION.getValue()));
     }
 }
