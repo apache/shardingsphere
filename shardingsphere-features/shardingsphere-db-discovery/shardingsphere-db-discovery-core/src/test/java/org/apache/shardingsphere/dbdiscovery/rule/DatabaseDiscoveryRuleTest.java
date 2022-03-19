@@ -22,6 +22,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -31,6 +32,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.HashMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -75,6 +77,14 @@ public final class DatabaseDiscoveryRuleTest {
     public void assertGetRuleType() {
         DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
         assertThat(databaseDiscoveryRule.getType(), is(DatabaseDiscoveryRule.class.getSimpleName()));
+    }
+    
+    @Test
+    public void assertGetExportedMethods() {
+        DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
+        Map<String, String> singleDataSourceRuleMap = new HashMap<>(1, 1);
+        singleDataSourceRuleMap.put("test_pr", "primary");
+        assertThat(databaseDiscoveryRule.getExportedMethods().get(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE).get(), is(singleDataSourceRuleMap));
     }
     
     private DatabaseDiscoveryRule createRule() {
