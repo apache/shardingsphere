@@ -35,7 +35,7 @@ Sharding-Proxy 定位为透明化的数据库代理端，提供封装了数据�
 
 它们既可以独立使用，也可以相互配合，以不同的架构模型、不同的切入点，实现相同的功能目标。而其核心功能，如数据分片、读写分离、柔性事务等，都是同一套实现代码。
 
-举个例子，对于仅使用Java为开发技术栈的场景，Sharding-JDBC 对各种Java的ORM框架支持度非常高，开发人员可以非常便利地将数据分片能力引入到现有的系统中，并将其部署至线上环境运行，而 DBA 就可以通过部署一个 Sharding-Proxy 实例，对数据进行查询和管理。
+举个例子，对于仅使用 Java 为开发技术栈的场景，Sharding-JDBC 对各种 Java 的 ORM 框架支持度非常高，开发人员可以非常便利地将数据分片能力引入到现有的系统中，并将其部署至线上环境运行，而 DBA 就可以通过部署一个 Sharding-Proxy 实例，对数据进行查询和管理。
 
 #### 2\. Sharding-Proxy 架构
 
@@ -145,8 +145,7 @@ http://www.dailymotion.com/video/x2s8uec
 TPS 的增长速度从 50 个连接的时候开始变慢。根据这个结果，PostgreSQL 给出了如下公式：
 
 ```
-connections=((core_count*2)+effective_spindle_count)
-``` 
+connections=((core_count*2)+effective_spindle_count)``` 
 
 连接数=((核心数\* 2 )+磁盘数)。即使是 32 核的机器，60 多个连接也就够用了。所以，小伙伴们在配置 Proxy 数据源的时候，不要动不动就写上几百个连接，不仅浪费资源，还会拖慢速度。
 
@@ -154,7 +153,7 @@ connections=((core_count*2)+effective_spindle_count)
 
 目前 Proxy 访问真实数据库使用的是 JDBC，很快 Netty+MySQLProtocol 异步访问方式也会上线，两者会并存，由用户选择用哪种方法访问。
 
-在Proxy中使用 JDBC 的 ResultSet 会对内存造成非常大的压力。Proxy 前端对应m个 client，后端又对应n个真实数据库，后端把数据传递给前端 client 的过程中，数据都需要经过 Proxy 的内存。如果数据在 Proxy 内存中呆的时间长了，那么内存就可能被打满，造成服务不可用的后果。所以，ResultSet 内存效率可以从两个方向优化，一个是减少数据在 Proxy 中的停留时间，另一个是限流。
+在 Proxy 中使用 JDBC 的 ResultSet 会对内存造成非常大的压力。Proxy 前端对应 m 个 client，后端又对应n个真实数据库，后端把数据传递给前端 client 的过程中，数据都需要经过 Proxy 的内存。如果数据在 Proxy 内存中呆的时间长了，那么内存就可能被打满，造成服务不可用的后果。所以，ResultSet 内存效率可以从两个方向优化，一个是减少数据在 Proxy 中的停留时间，另一个是限流。
 
 我们先看看优化前 Proxy 的内存表现。使用5个客户端连接 Proxy，每个客户端查询出 15 万条数据。结果如下图：
 
@@ -287,7 +286,7 @@ https://m.qlchat.com/topic/details?topicId=2000001395952730&minimal=1
 
 想了解关于 Sharding-Sphere 的更多细节？
 
-**不妨来“ 2018 DAMS 中国数据资产管理峰会”**
+**不妨来“2018 DAMS 中国数据资产管理峰会”**
 
 **听听京东金融数据研发负责人张亮老师的解析**
 
