@@ -80,12 +80,6 @@
             <artifactId>collector</artifactId>
             <version>${prometheus.jmx.version}</version>
         </dependency>
-        
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
     
     <build>
