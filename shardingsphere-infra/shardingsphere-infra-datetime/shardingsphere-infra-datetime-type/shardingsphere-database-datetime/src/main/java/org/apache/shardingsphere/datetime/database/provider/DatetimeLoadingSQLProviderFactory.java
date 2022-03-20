@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.datetime.database.spi;
+package org.apache.shardingsphere.datetime.database.provider;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

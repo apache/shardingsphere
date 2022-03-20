@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.datetime.database;
 
 import org.apache.shardingsphere.datetime.database.config.DatabaseDatetimeServiceConfiguration;
-import org.apache.shardingsphere.datetime.database.spi.DatetimeLoadingSQLProviderFactory;
+import org.apache.shardingsphere.datetime.database.provider.DatetimeLoadingSQLProviderFactory;
 import org.apache.shardingsphere.infra.datetime.DatetimeService;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 

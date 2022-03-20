@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.datetime.database.spi.dialect;
+package org.apache.shardingsphere.datetime.database.provider.dialect;
 
-import org.apache.shardingsphere.datetime.database.spi.DatetimeLoadingSQLProvider;
+import org.apache.shardingsphere.datetime.database.provider.DatetimeLoadingSQLProvider;
 
 /**
  * Datetime loading SQL provider for MySQL.

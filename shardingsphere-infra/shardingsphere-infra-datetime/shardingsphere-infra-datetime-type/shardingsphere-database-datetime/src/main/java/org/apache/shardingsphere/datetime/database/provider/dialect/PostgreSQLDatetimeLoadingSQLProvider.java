@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.datetime.database.spi.dialect;
+package org.apache.shardingsphere.datetime.database.provider.dialect;
 
-import org.apache.shardingsphere.datetime.database.spi.DatetimeLoadingSQLProvider;
+import org.apache.shardingsphere.datetime.database.provider.DatetimeLoadingSQLProvider;
 
 /**
- * Datetime loading SQL provider for SQLServer.
+ * Datetime loading SQL provider for PostgreSQL.
  */
-public final class SQLServerDatetimeLoadingSQLProvider implements DatetimeLoadingSQLProvider {
+public final class PostgreSQLDatetimeLoadingSQLProvider implements DatetimeLoadingSQLProvider {
     
     @Override
     public String getDatetimeLoadingSQL() {
-        return "SELECT GETDATE()";
+        return "SELECT NOW()";
     }
     
     @Override
     public String getType() {
-        return "SQLServer";
+        return "PostgreSQL";
     }
 }
