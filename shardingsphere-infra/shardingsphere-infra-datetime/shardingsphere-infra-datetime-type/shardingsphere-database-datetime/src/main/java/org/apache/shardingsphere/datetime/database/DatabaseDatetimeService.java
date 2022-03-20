@@ -45,9 +45,9 @@ public final class DatabaseDatetimeService implements DatetimeService {
         }
     }
     
-    private Date loadDatetime(final DataSource dataSource, final String sql) throws SQLException {
+    private Date loadDatetime(final DataSource dataSource, final String datetimeLoadingSQL) throws SQLException {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(datetimeLoadingSQL)) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 resultSet.next();
                 return (Date) resultSet.getObject(1);
