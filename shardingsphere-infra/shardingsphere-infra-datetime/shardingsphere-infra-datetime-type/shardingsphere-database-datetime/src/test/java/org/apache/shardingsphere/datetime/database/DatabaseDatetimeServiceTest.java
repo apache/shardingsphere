@@ -22,8 +22,7 @@ import org.junit.Test;
 
 import java.util.Date;
 
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class DatabaseDatetimeServiceTest {
     
@@ -31,6 +30,6 @@ public final class DatabaseDatetimeServiceTest {
     public void assertGetDateTime() {
         Date currentDate = new Date();
         DatetimeService datetimeService = new DatabaseDatetimeService();
-        assertThat(datetimeService.getDatetime(), greaterThanOrEqualTo(currentDate));
+        assertTrue(datetimeService.getDatetime().getTime() >= currentDate.getTime());
     }
 }
