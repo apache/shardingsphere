@@ -71,9 +71,6 @@ execute
     | dropRole
     | setDefaultRole
     | setRole
-    | createTablespaceInnodb
-    | createTablespaceNdb
-    | dropTablespace
     | createSRSStatement
     | dropSRSStatement
     | flush

@@ -17,14 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.api.job;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 /**
  * Job operation type.
  */
-@RequiredArgsConstructor
-@Getter
 public enum JobOperationType {
     
     INSERT, DELETE, UPDATE, SELECT,

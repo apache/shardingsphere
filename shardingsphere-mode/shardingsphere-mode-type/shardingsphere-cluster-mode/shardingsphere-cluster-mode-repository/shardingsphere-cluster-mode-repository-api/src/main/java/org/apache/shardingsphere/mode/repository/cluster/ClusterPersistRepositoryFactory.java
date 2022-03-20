@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.repository.cluster;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
@@ -37,12 +38,14 @@ public final class ClusterPersistRepositoryFactory {
      * Create new instance of cluster persist repository.
      * 
      * @param config persist repository configuration
+     * @param instanceDefinition instance definition
      * @return new instance of cluster persist repository
      */
-    public static ClusterPersistRepository newInstance(final ClusterPersistRepositoryConfiguration config) {
+    public static ClusterPersistRepository newInstance(final ClusterPersistRepositoryConfiguration config, final InstanceDefinition instanceDefinition) {
         Preconditions.checkNotNull(config, "Cluster persist repository configuration cannot be null.");
         ClusterPersistRepository result = TypedSPIRegistry.getRegisteredService(ClusterPersistRepository.class, config.getType(), config.getProps());
         result.init(config);
+        result.watchSessionConnection(instanceDefinition);
         return result;
     }
 }

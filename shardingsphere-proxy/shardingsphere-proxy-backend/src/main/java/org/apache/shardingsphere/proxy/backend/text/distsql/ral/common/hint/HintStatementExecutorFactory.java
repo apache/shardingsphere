@@ -56,7 +56,7 @@ public final class HintStatementExecutorFactory {
      * @return hint command executor
      * @throws SQLException SQL exception
      */
-    public static HintStatementExecutor newInstance(final HintDistSQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
+    public static HintStatementExecutor<? extends HintDistSQLStatement> newInstance(final HintDistSQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
         if (sqlStatement instanceof SetReadwriteSplittingHintStatement) {
             return new SetReadwriteSplittingHintExecutor((SetReadwriteSplittingHintStatement) sqlStatement);
         }

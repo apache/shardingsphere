@@ -31,12 +31,12 @@ import static org.junit.Assert.assertTrue;
 public final class OpenGaussScalingEntryTest {
     
     @Test
-    public void assertGetScalingEntryByDatabaseType() throws IllegalAccessException, InstantiationException {
-        ScalingEntry scalingEntry = ScalingEntryLoader.getInstance("openGauss");
-        assertTrue(scalingEntry instanceof OpenGaussScalingEntry);
-        assertThat(scalingEntry.getEnvironmentCheckerClass(), equalTo(OpenGaussEnvironmentChecker.class));
-        assertThat(scalingEntry.getImporterClass(), equalTo(OpenGaussImporter.class));
-        assertThat(scalingEntry.getInventoryDumperClass(), equalTo(PostgreSQLInventoryDumper.class));
-        assertThat(scalingEntry.getIncrementalDumperClass(), equalTo(OpenGaussWalDumper.class));
+    public void assertGetScalingEntryByDatabaseType() {
+        ScalingEntry actual = ScalingEntryLoader.getInstance("openGauss");
+        assertTrue(actual instanceof OpenGaussScalingEntry);
+        assertThat(actual.getEnvironmentCheckerClass(), equalTo(OpenGaussEnvironmentChecker.class));
+        assertThat(actual.getImporterClass(), equalTo(OpenGaussImporter.class));
+        assertThat(actual.getInventoryDumperClass(), equalTo(PostgreSQLInventoryDumper.class));
+        assertThat(actual.getIncrementalDumperClass(), equalTo(OpenGaussWalDumper.class));
     }
 }
