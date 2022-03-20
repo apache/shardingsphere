@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.datetime.database.impl;
+package org.apache.shardingsphere.datetime.database;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.datetime.database.spi.DatabaseSQLEntryFactory;
 import org.apache.shardingsphere.infra.datetime.DatetimeService;
 
 import javax.sql.DataSource;
@@ -30,23 +30,25 @@ import java.util.Date;
 /**
  * Database datetime service.
  */
-@RequiredArgsConstructor
 public final class DatabaseDatetimeService implements DatetimeService {
-    
-    private final DataSource dataSource;
-    
-    private final String sql;
     
     @Override
     public Date getDatetime() {
+        TimeServiceConfiguration timeServiceConfig = TimeServiceConfiguration.getInstance();
+        try {
+            return loadDatetime(timeServiceConfig.getDataSource(), DatabaseSQLEntryFactory.newInstance(timeServiceConfig.getDatabaseType()).getSQL());
+        } catch (final SQLException ignore) {
+            return new Date();
+        }
+    }
+    
+    private Date loadDatetime(final DataSource dataSource, final String sql) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 resultSet.next();
                 return (Date) resultSet.getObject(1);
             }
-        } catch (final SQLException ignore) {
         }
-        return new Date();
     }
 }
