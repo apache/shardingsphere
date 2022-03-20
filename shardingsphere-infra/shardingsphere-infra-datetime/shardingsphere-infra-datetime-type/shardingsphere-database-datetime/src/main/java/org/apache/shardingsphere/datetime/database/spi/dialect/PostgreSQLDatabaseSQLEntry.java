@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.datetime.database.spi;
+package org.apache.shardingsphere.datetime.database.spi.dialect;
+
+import org.apache.shardingsphere.datetime.database.spi.DatabaseSQLEntry;
 
 /**
- * Oracle entry.
+ * PostgreSQL entry.
  */
-public final class OracleDatabaseSQLEntry implements DatabaseSQLEntry {
+public final class PostgreSQLDatabaseSQLEntry implements DatabaseSQLEntry {
     
     @Override
     public String getSQL() {
-        return "SELECT sysdate FROM DUAL";
+        return "SELECT NOW()";
     }
     
     @Override
     public boolean isSupport(final String driverClassName) {
-        return driverClassName.contains("oracle");
+        return driverClassName.contains("postgresql");
     }
 }
