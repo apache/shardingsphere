@@ -19,17 +19,19 @@ package org.apache.shardingsphere.datetime.database;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import javax.sql.DataSource;
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Properties;
+import java.net.URL;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Time service configuration.
@@ -38,8 +40,6 @@ import java.util.Properties;
 public final class TimeServiceConfiguration {
     
     private static final TimeServiceConfiguration CONFIG = new TimeServiceConfiguration();
-    
-    private String driverClassName;
     
     private DatabaseType databaseType;
     
@@ -50,24 +50,16 @@ public final class TimeServiceConfiguration {
     }
     
     private void init() {
-        try (InputStream inputStream = TimeServiceConfiguration.class.getResourceAsStream("/time-service.properties")) {
-            Properties props = new Properties();
-            props.load(inputStream);
-            String dataSourceType = (String) props.remove("dataSourceType");
-            databaseType = DatabaseTypeRegistry.getTrunkDatabaseType((String) props.remove("databaseType"));
-            driverClassName = props.getProperty("driverClassName");
-            Class<?> dataSourceClass = Class.forName(dataSourceType);
-            dataSource = (DataSource) dataSourceClass.getConstructor().newInstance();
-            for (String each : props.stringPropertyNames()) {
-                PropertyDescriptor propertyDescriptor = new PropertyDescriptor(each, dataSourceClass);
-                Method writeMethod = propertyDescriptor.getWriteMethod();
-                writeMethod.invoke(dataSource, props.getProperty(each));
-            }
-        } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException | IntrospectionException | InvocationTargetException | IOException ex) {
+        URL url = Objects.requireNonNull(getClass().getClassLoader().getResource("time-service.yaml"));
+        Map<String, Map<String, Object>> dataSourceConfigs;
+        try {
+            dataSourceConfigs = YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class).getDataSources();
+        } catch (final IOException ex) {
             throw new ShardingSphereException("please check your time-service.properties", ex);
-        } catch (final NoSuchMethodException ex) {
-            throw new ShardingSphereException(ex.getMessage(), ex);
         }
+        Collection<DataSource> dataSources = new YamlDataSourceConfigurationSwapper().swapToDataSources(dataSourceConfigs).values();
+        databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSources);
+        dataSource = dataSources.iterator().next();
     }
     
     /**

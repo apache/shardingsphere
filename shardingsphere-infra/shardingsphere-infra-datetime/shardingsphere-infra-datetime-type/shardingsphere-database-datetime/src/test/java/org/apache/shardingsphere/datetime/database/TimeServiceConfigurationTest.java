@@ -20,14 +20,11 @@ package org.apache.shardingsphere.datetime.database;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public final class TimeServiceConfigurationTest {
     
     @Test
     public void assertInitDataSource() {
-        PropertiesUtils.createProperties("org.h2.Driver", null);
         assertNotNull(TimeServiceConfiguration.getInstance().getDataSource());
-        assertTrue(PropertiesUtils.remove());
     }
 }
