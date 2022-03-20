@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.datetime.database;
+package org.apache.shardingsphere.datetime.database.fixture;
 
-import org.apache.shardingsphere.test.mock.MockedDataSource;
-import org.junit.Test;
+import org.apache.shardingsphere.datetime.database.spi.DatabaseSQLEntry;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-public final class TimeServiceConfigurationTest {
+/**
+ * Fixture entry.
+ */
+public final class FixtureDatabaseSQLEntry implements DatabaseSQLEntry {
     
-    @Test
-    public void assertInitDataSource() {
-        PropertiesUtils.createProperties(MockedDataSource.class.getName(), null);
-        assertNotNull(TimeServiceConfiguration.getInstance().getDataSource());
-        assertTrue(PropertiesUtils.remove());
+    @Override
+    public String getSQL() {
+        return "SELECT 1";
+    }
+    
+    @Override
+    public boolean isSupport(final String driverClassName) {
+        return driverClassName.contains("mock");
     }
 }
