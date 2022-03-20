@@ -20,6 +20,7 @@ package org.apache.shardingsphere.datetime.database;
 import org.apache.shardingsphere.datetime.database.config.TimeServiceConfiguration;
 import org.apache.shardingsphere.datetime.database.spi.DatabaseSQLEntryFactory;
 import org.apache.shardingsphere.infra.datetime.DatetimeService;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -39,8 +40,8 @@ public final class DatabaseDatetimeService implements DatetimeService {
     public Date getDatetime() {
         try {
             return loadDatetime(timeServiceConfig.getDataSource(), DatabaseSQLEntryFactory.newInstance(timeServiceConfig.getDatabaseType()).getSQL());
-        } catch (final SQLException ignore) {
-            return new Date();
+        } catch (final SQLException ex) {
+            throw new ShardingSphereException("Load timestamp from database error!", ex);
         }
     }
     

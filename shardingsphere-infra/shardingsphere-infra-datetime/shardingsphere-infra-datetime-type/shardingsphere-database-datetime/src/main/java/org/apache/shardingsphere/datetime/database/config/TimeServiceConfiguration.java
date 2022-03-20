@@ -55,7 +55,7 @@ public final class TimeServiceConfiguration {
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(CONFIG_FILE)) {
             return new Yaml().loadAs(inputStream, Map.class);
         } catch (final IOException ex) {
-            throw new ShardingSphereException("please check your " + CONFIG_FILE, ex);
+            throw new ShardingSphereException("Cannot load " + CONFIG_FILE + "file.", ex);
         }
     }
     
