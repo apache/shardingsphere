@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.datetime.database;
+package org.apache.shardingsphere.datetime.database.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.Test;

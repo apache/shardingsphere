@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.datetime.database;
+package org.apache.shardingsphere.datetime.database.config;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
