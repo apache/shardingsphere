@@ -76,7 +76,7 @@ sql-show: true
 
 ### /metadata/${schemaName}/dataSources
 
-多个数据库连接池的集合，不同数据库连接池属性自适配（例如：DBCP，C3P0，Druid, HikariCP）。
+多个数据库连接池的集合，不同数据库连接池属性自适配（例如：DBCP，C3P0，Druid，HikariCP）。
 
 ```yaml
 ds_0:

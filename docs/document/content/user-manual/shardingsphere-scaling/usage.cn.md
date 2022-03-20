@@ -38,7 +38,7 @@ weight = 2
 
 **注意**：
 
-还没开启`自动建表`的数据库需要手动创建分表。
+还没开启 `自动建表` 的数据库需要手动创建分表。
 
 ### 权限要求
 #### MySQL
@@ -159,7 +159,7 @@ ADD RESOURCE ds_2 (
 
 详情请参见 [RDL #数据分片](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/)。
 
-`SHARDING TABLE RULE`支持 2 种类型：`TableRule`和`AutoTableRule`。以下是两种分片规则的对比：
+`SHARDING TABLE RULE` 支持 2 种类型：`TableRule`和`AutoTableRule`。以下是两种分片规则的对比：
 
 | 类型         | AutoTableRule（自动分片）                                      | TableRule（自定义分片）                                        |
 | ----------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
