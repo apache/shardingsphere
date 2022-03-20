@@ -31,10 +31,6 @@ import java.util.Properties;
 
 /**
  * Time service configuration.
- * 
- * <p>
- * Need to create a time-service.properties under the classpath.
- * </p>
  */
 @Getter
 public final class TimeServiceConfiguration {

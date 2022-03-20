@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.datetime.database.spi;
+package org.apache.shardingsphere.datetime.database.spi.dialect;
+
+import org.apache.shardingsphere.datetime.database.spi.DatabaseSQLEntry;
 
 /**
- * SQLServer entry.
+ * MySQL entry.
  */
-public final class SQLServerDatabaseSQLEntry implements DatabaseSQLEntry {
+public final class MySQLDatabaseSQLEntry implements DatabaseSQLEntry {
     
     @Override
     public String getSQL() {
-        return "SELECT GETDATE()";
+        return "SELECT NOW()";
     }
     
     @Override
     public boolean isSupport(final String driverClassName) {
-        return driverClassName.contains("sqlserver");
+        return driverClassName.contains("mysql") || driverClassName.contains("mariadb");
     }
 }
