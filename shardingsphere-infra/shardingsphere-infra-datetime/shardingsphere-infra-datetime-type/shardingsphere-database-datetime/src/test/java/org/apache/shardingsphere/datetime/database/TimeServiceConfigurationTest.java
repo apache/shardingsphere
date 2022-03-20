@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.datetime.database;
 
-import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -27,7 +26,7 @@ public final class TimeServiceConfigurationTest {
     
     @Test
     public void assertInitDataSource() {
-        PropertiesUtils.createProperties(MockedDataSource.class.getName(), null);
+        PropertiesUtils.createProperties("org.h2.Driver", null);
         assertNotNull(TimeServiceConfiguration.getInstance().getDataSource());
         assertTrue(PropertiesUtils.remove());
     }

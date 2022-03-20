@@ -32,9 +32,10 @@ import java.util.Date;
  */
 public final class DatabaseDatetimeService implements DatetimeService {
     
+    private final TimeServiceConfiguration timeServiceConfig = TimeServiceConfiguration.getInstance();
+    
     @Override
     public Date getDatetime() {
-        TimeServiceConfiguration timeServiceConfig = TimeServiceConfiguration.getInstance();
         try {
             return loadDatetime(timeServiceConfig.getDataSource(), DatabaseSQLEntryFactory.newInstance(timeServiceConfig.getDatabaseType()).getSQL());
         } catch (final SQLException ignore) {
