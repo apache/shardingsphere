@@ -24,11 +24,11 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class TimeServiceConfigurationTest {
+public final class DatabaseDatetimeServiceConfigurationTest {
     
     @Test
     public void assertGetInstance() {
-        assertThat(TimeServiceConfiguration.getInstance().getDatabaseType().getName(), is("H2"));
-        assertThat(TimeServiceConfiguration.getInstance().getDataSource(), instanceOf(HikariDataSource.class));
+        assertThat(DatabaseDatetimeServiceConfiguration.getInstance().getDatabaseType().getName(), is("H2"));
+        assertThat(DatabaseDatetimeServiceConfiguration.getInstance().getDataSource(), instanceOf(HikariDataSource.class));
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.datetime.database;
 
-import org.apache.shardingsphere.datetime.database.config.TimeServiceConfiguration;
+import org.apache.shardingsphere.datetime.database.config.DatabaseDatetimeServiceConfiguration;
 import org.apache.shardingsphere.datetime.database.spi.DatabaseSQLEntryFactory;
 import org.apache.shardingsphere.infra.datetime.DatetimeService;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -34,7 +34,7 @@ import java.util.Date;
  */
 public final class DatabaseDatetimeService implements DatetimeService {
     
-    private final TimeServiceConfiguration timeServiceConfig = TimeServiceConfiguration.getInstance();
+    private final DatabaseDatetimeServiceConfiguration timeServiceConfig = DatabaseDatetimeServiceConfiguration.getInstance();
     
     @Override
     public Date getDatetime() {
