@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.datetime.database.spi.dialect;
 
-import org.apache.shardingsphere.datetime.database.spi.DatabaseSQLEntry;
+import org.apache.shardingsphere.datetime.database.spi.DatetimeLoadingSQLProvider;
 
 /**
- * PostgreSQL entry.
+ * Datetime loading SQL provider for Oracle.
  */
-public final class PostgreSQLDatabaseSQLEntry implements DatabaseSQLEntry {
+public final class OracleDatetimeLoadingSQLProvider implements DatetimeLoadingSQLProvider {
     
     @Override
     public String getDatetimeLoadingSQL() {
-        return "SELECT NOW()";
+        return "SELECT sysdate FROM DUAL";
     }
     
     @Override
     public String getType() {
-        return "PostgreSQL";
+        return "Oracle";
     }
 }

@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.datetime.database.spi.dialect;
+package org.apache.shardingsphere.datetime.database.spi;
 
-import org.apache.shardingsphere.datetime.database.spi.DatabaseSQLEntry;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 /**
- * MySQL entry.
+ * Datetime loading SQL provider.
  */
-public final class MySQLDatabaseSQLEntry implements DatabaseSQLEntry {
+public interface DatetimeLoadingSQLProvider extends TypedSPI {
     
-    @Override
-    public String getDatetimeLoadingSQL() {
-        return "SELECT NOW()";
-    }
-    
-    @Override
-    public String getType() {
-        return "MySQL";
-    }
+    /**
+     * Get SQL for datetime loading.
+     *
+     * @return SQL for datetime loading
+     */
+    String getDatetimeLoadingSQL();
 }
