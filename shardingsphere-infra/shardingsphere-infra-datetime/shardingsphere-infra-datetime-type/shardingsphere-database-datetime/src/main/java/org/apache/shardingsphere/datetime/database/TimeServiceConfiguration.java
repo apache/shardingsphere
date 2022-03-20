@@ -20,18 +20,16 @@ package org.apache.shardingsphere.datetime.database;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
+import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.yaml.snakeyaml.Yaml;
 
 import javax.sql.DataSource;
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.util.Collection;
+import java.io.InputStream;
+import java.util.Collections;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Time service configuration.
@@ -39,27 +37,26 @@ import java.util.Objects;
 @Getter
 public final class TimeServiceConfiguration {
     
-    private static final TimeServiceConfiguration CONFIG = new TimeServiceConfiguration();
+    private static final TimeServiceConfiguration INSTANCE = new TimeServiceConfiguration();
     
-    private DatabaseType databaseType;
+    private static final String CONFIG_FILE = "time-service.yaml";
     
-    private DataSource dataSource;
+    private final DataSource dataSource;
+    
+    private final DatabaseType databaseType;
     
     private TimeServiceConfiguration() {
-        init();
+        dataSource = DataSourcePoolCreator.create(new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(loadDataSourceConfiguration()));
+        databaseType = DatabaseTypeRecognizer.getDatabaseType(Collections.singleton(dataSource));
     }
     
-    private void init() {
-        URL url = Objects.requireNonNull(getClass().getClassLoader().getResource("time-service.yaml"));
-        Map<String, Map<String, Object>> dataSourceConfigs;
-        try {
-            dataSourceConfigs = YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class).getDataSources();
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> loadDataSourceConfiguration() {
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(CONFIG_FILE)) {
+            return new Yaml().loadAs(inputStream, Map.class);
         } catch (final IOException ex) {
             throw new ShardingSphereException("please check your time-service.properties", ex);
         }
-        Collection<DataSource> dataSources = new YamlDataSourceConfigurationSwapper().swapToDataSources(dataSourceConfigs).values();
-        databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSources);
-        dataSource = dataSources.iterator().next();
     }
     
     /**
@@ -68,6 +65,6 @@ public final class TimeServiceConfiguration {
      * @return time service configuration
      */
     public static TimeServiceConfiguration getInstance() {
-        return CONFIG;
+        return INSTANCE;
     }
 }
