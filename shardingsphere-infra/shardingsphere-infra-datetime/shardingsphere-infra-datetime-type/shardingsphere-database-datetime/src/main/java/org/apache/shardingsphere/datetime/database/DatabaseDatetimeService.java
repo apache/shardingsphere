@@ -41,7 +41,7 @@ public final class DatabaseDatetimeService implements DatetimeService {
         try {
             return loadDatetime(timeServiceConfig.getDataSource(), DatabaseSQLEntryFactory.newInstance(timeServiceConfig.getDatabaseType()).getDatetimeLoadingSQL());
         } catch (final SQLException ex) {
-            throw new ShardingSphereException("Load timestamp from database error!", ex);
+            throw new ShardingSphereException("Load datetime from database error!", ex);
         }
     }
     
