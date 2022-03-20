@@ -60,7 +60,7 @@ public final class TimeServiceConfiguration {
     }
     
     /**
-     * Get configuration instance.
+     * Get time service configuration instance.
      * 
      * @return time service configuration
      */
