@@ -39,7 +39,7 @@ public final class DatabaseDatetimeService implements DatetimeService {
     @Override
     public Date getDatetime() {
         try {
-            return loadDatetime(timeServiceConfig.getDataSource(), DatabaseSQLEntryFactory.newInstance(timeServiceConfig.getDatabaseType()).getSQL());
+            return loadDatetime(timeServiceConfig.getDataSource(), DatabaseSQLEntryFactory.newInstance(timeServiceConfig.getDatabaseType()).getDatetimeLoadingSQL());
         } catch (final SQLException ex) {
             throw new ShardingSphereException("Load timestamp from database error!", ex);
         }

@@ -25,9 +25,9 @@ import org.apache.shardingsphere.spi.typed.TypedSPI;
 public interface DatabaseSQLEntry extends TypedSPI {
     
     /**
-     * Get SQL for getting time.
+     * Get SQL for datetime loading.
      *
-     * @return SQL
+     * @return SQL for datetime loading
      */
-    String getSQL();
+    String getDatetimeLoadingSQL();
 }

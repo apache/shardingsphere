@@ -25,7 +25,7 @@ import org.apache.shardingsphere.datetime.database.spi.DatabaseSQLEntry;
 public final class SQLServerDatabaseSQLEntry implements DatabaseSQLEntry {
     
     @Override
-    public String getSQL() {
+    public String getDatetimeLoadingSQL() {
         return "SELECT GETDATE()";
     }
     
