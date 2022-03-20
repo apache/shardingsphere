@@ -25,10 +25,13 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.api.job.JobSubType;
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
+import org.apache.shardingsphere.data.pipeline.api.job.RuleAlteredJobId;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
 import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Collections;
 
 /**
  * Scaling job configuration.
@@ -64,8 +67,7 @@ public final class JobConfiguration {
             this.handleConfig = handleConfig;
         }
         if (null == handleConfig.getJobId()) {
-            // TODO use uuid; update pattern
-            handleConfig.setJobId(String.valueOf(System.nanoTime() - ThreadLocalRandom.current().nextLong(100_0000)));
+            handleConfig.setJobId(generateJobId());
         }
         if (Strings.isNullOrEmpty(handleConfig.getSourceDatabaseType())) {
             PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
@@ -80,5 +82,18 @@ public final class JobConfiguration {
         if (null == handleConfig.getJobShardingItem()) {
             handleConfig.setJobShardingItem(0);
         }
+    }
+    
+    private String generateJobId() {
+        RuleAlteredJobId jobId = new RuleAlteredJobId();
+        // TODO type, subTypes
+        jobId.setType(JobType.RULE_ALTERED.getValue());
+        jobId.setFormatVersion(RuleAlteredJobId.CURRENT_VERSION);
+        jobId.setSubTypes(Collections.singletonList(JobSubType.SCALING.getValue()));
+        WorkflowConfiguration workflowConfig = getWorkflowConfig();
+        jobId.setCurrentMetadataVersion(workflowConfig.getActiveVersion());
+        jobId.setNewMetadataVersion(workflowConfig.getNewVersion());
+        jobId.setSchemaName(workflowConfig.getSchemaName());
+        return jobId.marshal();
     }
 }

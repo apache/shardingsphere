@@ -15,28 +15,52 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config.yaml;
+package org.apache.shardingsphere.proxy.backend.config.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
+import java.util.Properties;
 
 /**
- * YAML schema configuration for ShardingSphere-Proxy.
+ * YAML server configuration for ShardingSphere-Proxy.
  */
 @Getter
 @Setter
-public final class YamlProxySchemaConfiguration implements YamlConfiguration {
+public final class YamlProxyServerConfiguration implements YamlConfiguration {
     
-    private String schemaName;
-    
-    private Map<String, YamlProxyDataSourceConfiguration> dataSources = new HashMap<>();
+    private YamlModeConfiguration mode;
     
     private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
+    
+    private Properties props = new Properties();
+    
+    private Collection<String> labels;
+    
+    /**
+     * Set rules if the param rules is not null.
+     *
+     * @param rules the rules to set
+     */
+    public void setRules(final Collection<YamlRuleConfiguration> rules) {
+        if (null != rules) {
+            this.rules = rules;
+        }
+    }
+    
+    /**
+     * Set props if the param props is not null.
+     *
+     * @param props the props to set
+     */
+    public void setProps(final Properties props) {
+        if (null != props) {
+            this.props = props;
+        }
+    }
 }

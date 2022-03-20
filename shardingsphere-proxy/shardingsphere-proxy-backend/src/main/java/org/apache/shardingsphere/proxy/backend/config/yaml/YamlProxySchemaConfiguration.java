@@ -15,38 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config.yaml;
+package org.apache.shardingsphere.proxy.backend.config.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 
-import java.util.Properties;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
- * YAML data source configuration for ShardingSphere-Proxy.
+ * YAML schema configuration for ShardingSphere-Proxy.
  */
 @Getter
 @Setter
-public final class YamlProxyDataSourceConfiguration implements YamlConfiguration {
+public final class YamlProxySchemaConfiguration implements YamlConfiguration {
     
-    private String url;
+    private String schemaName;
     
-    private String username;
+    private Map<String, YamlProxyDataSourceConfiguration> dataSources = new HashMap<>();
     
-    private String password;
-    
-    private Long connectionTimeoutMilliseconds;
-    
-    private Long idleTimeoutMilliseconds;
-    
-    private Long maxLifetimeMilliseconds;
-    
-    private Integer maxPoolSize;
-    
-    private Integer minPoolSize;
-    
-    private Boolean readOnly;
-    
-    private Properties customPoolProps;
+    private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
 }

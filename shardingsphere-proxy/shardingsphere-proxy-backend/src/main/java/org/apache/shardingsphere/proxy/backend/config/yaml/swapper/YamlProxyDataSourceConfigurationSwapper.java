@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config.yaml.swapper;
+package org.apache.shardingsphere.proxy.backend.config.yaml.swapper;
 
 import org.apache.shardingsphere.infra.datasource.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.PoolConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.YamlProxyDataSourceConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 
 /**
  * YAML proxy data source configuration swapper.
@@ -29,7 +29,7 @@ public final class YamlProxyDataSourceConfigurationSwapper {
     
     /**
      * Swap YAML proxy data source configuration to data source configuration.
-     * 
+     *
      * @param yamlConfig YAML proxy data source configuration
      * @return data source configuration
      */

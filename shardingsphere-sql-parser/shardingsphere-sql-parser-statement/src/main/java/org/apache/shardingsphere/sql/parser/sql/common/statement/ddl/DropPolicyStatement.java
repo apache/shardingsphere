@@ -15,23 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.config.yaml.YamlProxySchemaConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
-
-import java.util.Map;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * YAML configuration for ShardingSphere-Proxy.
+ * Drop policy statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class YamlProxyConfiguration {
-    
-    private final YamlProxyServerConfiguration serverConfiguration;
-    
-    private final Map<String, YamlProxySchemaConfiguration> schemaConfigurations;
+@ToString
+public abstract class DropPolicyStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config;
+package org.apache.shardingsphere.proxy.backend.config;
 
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
@@ -24,8 +24,8 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.proxy.config.yaml.YamlProxySchemaConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxySchemaConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
 
 import java.io.File;
 import java.io.IOException;

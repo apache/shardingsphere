@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
@@ -110,7 +109,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
         ShardingSphereUser user = users.iterator().next();
         props.put("username", user.getGrantee().getUsername());
         props.put("password", user.getPassword());
-        return new DataSourceProperties(HikariDataSource.class.getName(), props);
+        return new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", props);
     }
     
     private String createJdbcUrl(final InstanceId instanceId, final String schema, final Map<String, Object> props) {

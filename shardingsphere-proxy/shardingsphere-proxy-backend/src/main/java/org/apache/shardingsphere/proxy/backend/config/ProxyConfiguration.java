@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config;
+package org.apache.shardingsphere.proxy.backend.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.schema.impl.DataSourceGeneratedSchemaConfiguration;
 
-import java.util.Collection;
-import java.util.Properties;
+import java.util.Map;
 
 /**
- * Proxy global configuration.
+ * Proxy configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ProxyGlobalConfiguration {
+public final class ProxyConfiguration {
     
-    private final Collection<RuleConfiguration> rules;
+    private final Map<String, DataSourceGeneratedSchemaConfiguration> schemaConfigurations;
     
-    private final Properties properties;
-    
-    private final Collection<String> labels;
+    private final ProxyGlobalConfiguration globalConfiguration;
 }

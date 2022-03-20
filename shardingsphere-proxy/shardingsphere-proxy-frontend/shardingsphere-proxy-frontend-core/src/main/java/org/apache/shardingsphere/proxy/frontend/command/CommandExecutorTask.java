@@ -69,7 +69,6 @@ public final class CommandExecutorTask implements Runnable {
             isNeedFlush = executeCommand(context, payload);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
-            databaseProtocolFrontendEngine.handleException(connectionSession);
             // CHECKSTYLE:ON
             processException(ex);
         } finally {
@@ -103,6 +102,9 @@ public final class CommandExecutorTask implements Runnable {
                 commandExecuteEngine.writeQueryData(context, connectionSession.getBackendConnection(), (QueryCommandExecutor) commandExecutor, responsePackets.size());
             }
             return true;
+        } catch (final SQLException ex) {
+            databaseProtocolFrontendEngine.handleException(connectionSession);
+            throw ex;
         } finally {
             commandExecutor.close();
         }

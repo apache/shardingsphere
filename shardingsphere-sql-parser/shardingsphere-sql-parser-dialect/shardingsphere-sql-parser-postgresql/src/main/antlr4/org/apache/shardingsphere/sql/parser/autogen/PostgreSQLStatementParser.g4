@@ -117,5 +117,6 @@ execute
     | createExtension
     | alterExtension
     | dropExtension
+    | dropPolicy
     ) SEMI_?
     ;

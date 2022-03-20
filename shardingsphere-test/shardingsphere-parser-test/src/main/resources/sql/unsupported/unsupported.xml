@@ -5933,28 +5933,6 @@
     <sql-case id="drop_by_postgresql_source_test_case148" value="DROP OWNED BY regress_test_role2 CASCADE;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case149" value="DROP OWNED BY regress_test_role2;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case150" value="DROP OWNED BY regress_user_mvtest CASCADE;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case151" value="DROP POLICY p ON t;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case152" value="DROP POLICY p ON tbl1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case153" value="DROP POLICY p1 ON dob_t1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case154" value="DROP POLICY p1 ON dob_t1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case155" value="DROP POLICY p1 ON dob_t1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case156" value="DROP POLICY p1 ON dob_t1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case157" value="DROP POLICY p1 ON dob_t2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case158" value="DROP POLICY p1 ON document;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case159" value="DROP POLICY p1 ON document;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case160" value="DROP POLICY p1 ON document;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case161" value="DROP POLICY p1 ON r2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case162" value="DROP POLICY p1r ON document;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case163" value="DROP POLICY p2 ON document;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case164" value="DROP POLICY p2 ON event_trigger_test;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case165" value="DROP POLICY p2 ON t1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case166" value="DROP POLICY p3 ON document;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case167" value="DROP POLICY p3 on s1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case168" value="DROP POLICY p3_with_default ON document;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case169" value="DROP POLICY policy_range_parted ON range_parted;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case170" value="DROP POLICY policy_range_parted_subplan ON range_parted;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case171" value="DROP POLICY policy_range_parted_wholerow ON range_parted;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case172" value="DROP POLICY pp1 ON part_document;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case173" value="DROP PUBLICATION addr_pub;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case174" value="DROP PUBLICATION addr_pub_schema;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case175" value="DROP PUBLICATION pub;" db-types="PostgreSQL"/>

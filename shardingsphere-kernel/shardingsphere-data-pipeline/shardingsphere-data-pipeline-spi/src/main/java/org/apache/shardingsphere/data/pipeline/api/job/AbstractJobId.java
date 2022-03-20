@@ -15,22 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config;
+package org.apache.shardingsphere.data.pipeline.api.job;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.schema.impl.DataSourceGeneratedSchemaConfiguration;
+import lombok.NonNull;
+import lombok.Setter;
 
-import java.util.Map;
+import java.util.List;
 
 /**
- * Proxy configuration.
+ * Abstract job id.
  */
-@RequiredArgsConstructor
 @Getter
-public final class ProxyConfiguration {
+@Setter
+public abstract class AbstractJobId implements JobId {
     
-    private final Map<String, DataSourceGeneratedSchemaConfiguration> schemaConfigurations;
+    @NonNull
+    private String type;
     
-    private final ProxyGlobalConfiguration globalConfiguration;
+    @NonNull
+    private String formatVersion;
+    
+    @NonNull
+    private List<String> subTypes;
+    
+    @NonNull
+    private String schemaName;
 }

@@ -17,26 +17,15 @@
 
 package org.apache.shardingsphere.agent.metrics.prometheus.definition;
 
-import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.junit.Test;
-
-import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class PrometheusPluginDefinitionServiceTest {
     
-    private final PrometheusPluginDefinitionService metricsPluginDefinitionService = new PrometheusPluginDefinitionService();
-    
     @Test
     public void assertDefine() {
-        Collection<PluginInterceptorPoint> interceptorPointList = metricsPluginDefinitionService.install();
-        assertThat(interceptorPointList.size(), is(5));
-    }
-    
-    @Test
-    public void assertType() {
-        assertThat(metricsPluginDefinitionService.getType(), is("Prometheus"));
+        assertThat(new PrometheusPluginDefinitionService().install().size(), is(5));
     }
 }

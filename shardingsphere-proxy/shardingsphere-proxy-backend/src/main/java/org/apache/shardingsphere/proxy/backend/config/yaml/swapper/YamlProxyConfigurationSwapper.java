@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config.yaml.swapper;
+package org.apache.shardingsphere.proxy.backend.config.yaml.swapper;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.schema.impl.DataSourceGeneratedSchemaConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.ProxyGlobalConfiguration;
-import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.YamlProxyDataSourceConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.YamlProxySchemaConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.ProxyConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.ProxyGlobalConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxySchemaConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -43,13 +43,13 @@ public final class YamlProxyConfigurationSwapper {
     
     /**
      * Swap YAML proxy configuration to proxy configuration.
-     * 
+     *
      * @param yamlConfig YAML proxy configuration
      * @return proxy configuration
      */
     public ProxyConfiguration swap(final YamlProxyConfiguration yamlConfig) {
         Map<String, DataSourceGeneratedSchemaConfiguration> schemaConfigs = swapSchemaConfigurations(yamlConfig);
-        ProxyGlobalConfiguration globalConfig = new ProxyGlobalConfiguration(ruleConfigSwapperEngine.swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules()), 
+        ProxyGlobalConfiguration globalConfig = new ProxyGlobalConfiguration(ruleConfigSwapperEngine.swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules()),
                 yamlConfig.getServerConfiguration().getProps(), yamlConfig.getServerConfiguration().getLabels());
         return new ProxyConfiguration(schemaConfigs, globalConfig);
     }
