@@ -5917,22 +5917,6 @@
     <sql-case id="drop_by_postgresql_source_test_case132" value="DROP OPERATOR IF EXISTS @#@ (int, int);" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case133" value="DROP OPERATOR IF EXISTS no_such_schema.+ (int, int);" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case134" value="DROP OPERATOR |&gt;(bigint, bigint);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case135" value="DROP OWNED BY regress_addr_user;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case136" value="DROP OWNED BY regress_dep_user0, regress_dep_user2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case137" value="DROP OWNED BY regress_dep_user0;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case138" value="DROP OWNED BY regress_dep_user1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case139" value="DROP OWNED BY regress_dep_user1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case140" value="DROP OWNED BY regress_dep_user1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case141" value="DROP OWNED BY regress_dep_user2, regress_dep_user0;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case142" value="DROP OWNED BY regress_evt_user;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case143" value="DROP OWNED BY regress_rls_dob_role1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case144" value="DROP OWNED BY regress_rls_dob_role1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case145" value="DROP OWNED BY regress_rls_dob_role1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case146" value="DROP OWNED BY regress_rls_dob_role1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case147" value="DROP OWNED BY regress_rls_dob_role1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case148" value="DROP OWNED BY regress_test_role2 CASCADE;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case149" value="DROP OWNED BY regress_test_role2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case150" value="DROP OWNED BY regress_user_mvtest CASCADE;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case173" value="DROP PUBLICATION addr_pub;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case174" value="DROP PUBLICATION addr_pub_schema;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case175" value="DROP PUBLICATION pub;" db-types="PostgreSQL"/>
