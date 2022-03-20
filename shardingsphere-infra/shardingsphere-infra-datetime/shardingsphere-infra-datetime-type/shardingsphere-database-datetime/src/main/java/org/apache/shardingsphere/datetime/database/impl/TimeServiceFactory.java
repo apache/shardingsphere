@@ -19,9 +19,9 @@ package org.apache.shardingsphere.datetime.database.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.datetime.DatetimeService;
 import org.apache.shardingsphere.datetime.database.TimeServiceConfiguration;
-import org.apache.shardingsphere.datetime.database.spi.SPIDataBaseSQLEntry;
+import org.apache.shardingsphere.datetime.database.spi.DatabaseSQLEntryFactory;
+import org.apache.shardingsphere.infra.datetime.DatetimeService;
 
 /**
  * Time service factory.
@@ -36,6 +36,6 @@ public final class TimeServiceFactory {
      */
     public static DatetimeService createTimeService() {
         TimeServiceConfiguration timeServiceConfig = TimeServiceConfiguration.getInstance();
-        return new DatabaseDatetimeService(timeServiceConfig.getDataSource(), new SPIDataBaseSQLEntry(timeServiceConfig.getDriverClassName()).getSQL());
+        return new DatabaseDatetimeService(timeServiceConfig.getDataSource(), DatabaseSQLEntryFactory.newInstance(timeServiceConfig.getDatabaseType()).getSQL());
     }
 }

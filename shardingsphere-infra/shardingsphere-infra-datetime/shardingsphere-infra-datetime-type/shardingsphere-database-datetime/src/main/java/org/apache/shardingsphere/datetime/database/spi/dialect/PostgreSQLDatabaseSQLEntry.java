@@ -30,7 +30,7 @@ public final class PostgreSQLDatabaseSQLEntry implements DatabaseSQLEntry {
     }
     
     @Override
-    public boolean isSupport(final String driverClassName) {
-        return driverClassName.contains("postgresql");
+    public String getType() {
+        return "PostgreSQL";
     }
 }

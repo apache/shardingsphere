@@ -30,7 +30,7 @@ public final class SQLServerDatabaseSQLEntry implements DatabaseSQLEntry {
     }
     
     @Override
-    public boolean isSupport(final String driverClassName) {
-        return driverClassName.contains("sqlserver");
+    public String getType() {
+        return "SQLServer";
     }
 }

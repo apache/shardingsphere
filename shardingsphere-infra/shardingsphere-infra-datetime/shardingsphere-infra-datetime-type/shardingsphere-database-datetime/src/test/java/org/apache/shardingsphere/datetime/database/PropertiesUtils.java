@@ -40,6 +40,7 @@ public final class PropertiesUtils {
         try {
             Properties props = new Properties();
             props.setProperty("dataSourceType", "com.zaxxer.hikari.HikariDataSource");
+            props.setProperty("databaseType", "H2");
             props.setProperty("jdbcUrl", "jdbc:test");
             props.setProperty("username", "root");
             props.setProperty("password", "root");

@@ -30,7 +30,7 @@ public final class FixtureDatabaseSQLEntry implements DatabaseSQLEntry {
     }
     
     @Override
-    public boolean isSupport(final String driverClassName) {
-        return driverClassName.contains("mock");
+    public String getType() {
+        return "Mock";
     }
 }

@@ -19,6 +19,8 @@ package org.apache.shardingsphere.datetime.database;
 
 import lombok.Getter;
 import org.apache.shardingsphere.datetime.database.exception.TimeServiceInitException;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 
 import javax.sql.DataSource;
 import java.beans.IntrospectionException;
@@ -39,6 +41,8 @@ public final class TimeServiceConfiguration {
     
     private String driverClassName;
     
+    private DatabaseType databaseType;
+    
     private DataSource dataSource;
     
     private TimeServiceConfiguration() {
@@ -50,6 +54,7 @@ public final class TimeServiceConfiguration {
             Properties props = new Properties();
             props.load(inputStream);
             String dataSourceType = (String) props.remove("dataSourceType");
+            databaseType = DatabaseTypeRegistry.getTrunkDatabaseType((String) props.remove("databaseType"));
             driverClassName = props.getProperty("driverClassName");
             Class<?> dataSourceClass = Class.forName(dataSourceType);
             dataSource = (DataSource) dataSourceClass.getConstructor().newInstance();

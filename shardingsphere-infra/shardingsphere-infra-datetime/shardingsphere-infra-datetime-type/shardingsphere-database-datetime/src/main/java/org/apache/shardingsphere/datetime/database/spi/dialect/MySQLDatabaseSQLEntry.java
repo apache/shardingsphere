@@ -30,7 +30,7 @@ public final class MySQLDatabaseSQLEntry implements DatabaseSQLEntry {
     }
     
     @Override
-    public boolean isSupport(final String driverClassName) {
-        return driverClassName.contains("mysql") || driverClassName.contains("mariadb");
+    public String getType() {
+        return "MySQL";
     }
 }
