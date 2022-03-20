@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.datetime.database.spi.dialect;
+package org.apache.shardingsphere.datetime.database.provider;
 
-import org.apache.shardingsphere.datetime.database.spi.DatabaseSQLEntry;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 /**
- * PostgreSQL entry.
+ * Datetime loading SQL provider.
  */
-public final class PostgreSQLDatabaseSQLEntry implements DatabaseSQLEntry {
+public interface DatetimeLoadingSQLProvider extends TypedSPI {
     
-    @Override
-    public String getSQL() {
-        return "SELECT NOW()";
-    }
-    
-    @Override
-    public String getType() {
-        return "PostgreSQL";
-    }
+    /**
+     * Get SQL for datetime loading.
+     *
+     * @return SQL for datetime loading
+     */
+    String getDatetimeLoadingSQL();
 }

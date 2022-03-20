@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.datetime.database.spi.dialect;
+package org.apache.shardingsphere.datetime.database.provider.dialect;
 
-import org.apache.shardingsphere.datetime.database.spi.DatabaseSQLEntry;
+import org.apache.shardingsphere.datetime.database.provider.DatetimeLoadingSQLProvider;
 
 /**
- * MySQL entry.
+ * Datetime loading SQL provider for Oracle.
  */
-public final class MySQLDatabaseSQLEntry implements DatabaseSQLEntry {
+public final class OracleDatetimeLoadingSQLProvider implements DatetimeLoadingSQLProvider {
     
     @Override
-    public String getSQL() {
-        return "SELECT NOW()";
+    public String getDatetimeLoadingSQL() {
+        return "SELECT sysdate FROM DUAL";
     }
     
     @Override
     public String getType() {
-        return "MySQL";
+        return "Oracle";
     }
 }

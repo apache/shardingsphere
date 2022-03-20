@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.datetime.database.config;
+package org.apache.shardingsphere.datetime.database.provider.dialect;
 
-import com.zaxxer.hikari.HikariDataSource;
-import org.junit.Test;
+import org.apache.shardingsphere.datetime.database.provider.DatetimeLoadingSQLProvider;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class TimeServiceConfigurationTest {
+/**
+ * Datetime loading SQL provider for PostgreSQL.
+ */
+public final class PostgreSQLDatetimeLoadingSQLProvider implements DatetimeLoadingSQLProvider {
     
-    @Test
-    public void assertGetInstance() {
-        assertThat(TimeServiceConfiguration.getInstance().getDatabaseType().getName(), is("H2"));
-        assertThat(TimeServiceConfiguration.getInstance().getDataSource(), instanceOf(HikariDataSource.class));
+    @Override
+    public String getDatetimeLoadingSQL() {
+        return "SELECT NOW()";
+    }
+    
+    @Override
+    public String getType() {
+        return "PostgreSQL";
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.datetime.database.spi;
+package org.apache.shardingsphere.datetime.database.provider;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -27,22 +27,22 @@ import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 import java.util.Properties;
 
 /**
- * Database SQL entry factory.
+ * Datetime loading SQL provider factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseSQLEntryFactory {
+public final class DatetimeLoadingSQLProviderFactory {
     
     static {
-        ShardingSphereServiceLoader.register(DatabaseSQLEntry.class);
+        ShardingSphereServiceLoader.register(DatetimeLoadingSQLProvider.class);
     }
     
     /**
-     * Create new instance of database SQL entry.
+     * Create new instance of datetime loading SQL provider.
      * 
      * @param databaseType database type
-     * @return new instance of database SQL entry
+     * @return new instance of datetime loading SQL provider
      */
-    public static DatabaseSQLEntry newInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.getRegisteredService(DatabaseSQLEntry.class, DatabaseTypeRegistry.getTrunkDatabaseTypeName(databaseType), new Properties());
+    public static DatetimeLoadingSQLProvider newInstance(final DatabaseType databaseType) {
+        return TypedSPIRegistry.getRegisteredService(DatetimeLoadingSQLProvider.class, DatabaseTypeRegistry.getTrunkDatabaseTypeName(databaseType), new Properties());
     }
 }

@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.datetime.database.spi.dialect.PostgreSQLDatabaseSQLEntry
-org.apache.shardingsphere.datetime.database.spi.dialect.MySQLDatabaseSQLEntry
-org.apache.shardingsphere.datetime.database.spi.dialect.SQLServerDatabaseSQLEntry
-org.apache.shardingsphere.datetime.database.spi.dialect.OracleDatabaseSQLEntry
+org.apache.shardingsphere.datetime.database.provider.dialect.PostgreSQLDatetimeLoadingSQLProvider
+org.apache.shardingsphere.datetime.database.provider.dialect.MySQLDatetimeLoadingSQLProvider
+org.apache.shardingsphere.datetime.database.provider.dialect.SQLServerDatetimeLoadingSQLProvider
+org.apache.shardingsphere.datetime.database.provider.dialect.OracleDatetimeLoadingSQLProvider

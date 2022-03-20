@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.datetime.database;
 
-import org.apache.shardingsphere.datetime.database.config.TimeServiceConfiguration;
-import org.apache.shardingsphere.datetime.database.spi.DatabaseSQLEntryFactory;
+import org.apache.shardingsphere.datetime.database.config.DatabaseDatetimeServiceConfiguration;
+import org.apache.shardingsphere.datetime.database.provider.DatetimeLoadingSQLProviderFactory;
 import org.apache.shardingsphere.infra.datetime.DatetimeService;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
@@ -34,20 +34,20 @@ import java.util.Date;
  */
 public final class DatabaseDatetimeService implements DatetimeService {
     
-    private final TimeServiceConfiguration timeServiceConfig = TimeServiceConfiguration.getInstance();
+    private final DatabaseDatetimeServiceConfiguration timeServiceConfig = DatabaseDatetimeServiceConfiguration.getInstance();
     
     @Override
     public Date getDatetime() {
         try {
-            return loadDatetime(timeServiceConfig.getDataSource(), DatabaseSQLEntryFactory.newInstance(timeServiceConfig.getDatabaseType()).getSQL());
+            return loadDatetime(timeServiceConfig.getDataSource(), DatetimeLoadingSQLProviderFactory.newInstance(timeServiceConfig.getDatabaseType()).getDatetimeLoadingSQL());
         } catch (final SQLException ex) {
-            throw new ShardingSphereException("Load timestamp from database error!", ex);
+            throw new ShardingSphereException("Load datetime from database error!", ex);
         }
     }
     
-    private Date loadDatetime(final DataSource dataSource, final String sql) throws SQLException {
+    private Date loadDatetime(final DataSource dataSource, final String datetimeLoadingSQL) throws SQLException {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(datetimeLoadingSQL)) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 resultSet.next();
                 return (Date) resultSet.getObject(1);

@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.datetime.database.spi.dialect;
+package org.apache.shardingsphere.datetime.database.config;
 
-import org.apache.shardingsphere.datetime.database.spi.DatabaseSQLEntry;
+import com.zaxxer.hikari.HikariDataSource;
+import org.junit.Test;
 
-/**
- * SQLServer entry.
- */
-public final class SQLServerDatabaseSQLEntry implements DatabaseSQLEntry {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class DatabaseDatetimeServiceConfigurationTest {
     
-    @Override
-    public String getSQL() {
-        return "SELECT GETDATE()";
-    }
-    
-    @Override
-    public String getType() {
-        return "SQLServer";
+    @Test
+    public void assertGetInstance() {
+        assertThat(DatabaseDatetimeServiceConfiguration.getInstance().getDatabaseType().getName(), is("H2"));
+        assertThat(DatabaseDatetimeServiceConfiguration.getInstance().getDataSource(), instanceOf(HikariDataSource.class));
     }
 }

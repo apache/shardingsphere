@@ -32,20 +32,20 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Time service configuration.
+ * Database datetime service configuration.
  */
 @Getter
-public final class TimeServiceConfiguration {
+public final class DatabaseDatetimeServiceConfiguration {
     
-    private static final TimeServiceConfiguration INSTANCE = new TimeServiceConfiguration();
+    private static final DatabaseDatetimeServiceConfiguration INSTANCE = new DatabaseDatetimeServiceConfiguration();
     
-    private static final String CONFIG_FILE = "time-service.yaml";
+    private static final String CONFIG_FILE = "datetime-database-config.yaml";
     
     private final DataSource dataSource;
     
     private final DatabaseType databaseType;
     
-    private TimeServiceConfiguration() {
+    private DatabaseDatetimeServiceConfiguration() {
         dataSource = DataSourcePoolCreator.create(new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(loadDataSourceConfiguration()));
         databaseType = DatabaseTypeRecognizer.getDatabaseType(Collections.singleton(dataSource));
     }
@@ -64,7 +64,7 @@ public final class TimeServiceConfiguration {
      * 
      * @return time service configuration
      */
-    public static TimeServiceConfiguration getInstance() {
+    public static DatabaseDatetimeServiceConfiguration getInstance() {
         return INSTANCE;
     }
 }
