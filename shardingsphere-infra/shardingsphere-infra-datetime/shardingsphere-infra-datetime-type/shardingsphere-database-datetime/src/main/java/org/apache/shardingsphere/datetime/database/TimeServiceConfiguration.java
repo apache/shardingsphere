@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.datetime.database;
 
 import lombok.Getter;
-import org.apache.shardingsphere.datetime.database.exception.TimeServiceInitException;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import javax.sql.DataSource;
 import java.beans.IntrospectionException;
@@ -64,9 +64,9 @@ public final class TimeServiceConfiguration {
                 writeMethod.invoke(dataSource, props.getProperty(each));
             }
         } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException | IntrospectionException | InvocationTargetException | IOException ex) {
-            throw new TimeServiceInitException("please check your time-service.properties", ex);
+            throw new ShardingSphereException("please check your time-service.properties", ex);
         } catch (final NoSuchMethodException ex) {
-            throw new TimeServiceInitException(ex.getMessage(), ex);
+            throw new ShardingSphereException(ex.getMessage(), ex);
         }
     }
     
