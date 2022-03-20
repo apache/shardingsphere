@@ -11,5 +11,6 @@ weight = 2
 ## Unsupported
 
 * Need to process original inventory data before encryption;
+* Encrypted fields cannot support case insensitive queries;
 * The value of encryption columns cannot support comparison, such as: >, <, ORDER BY, BETWEEN, LIKE, etc;
 * The value of encryption columns cannot support calculation, such as AVG, SUM, and calculation expressions.
