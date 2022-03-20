@@ -33,9 +33,4 @@ public final class DatabaseDatetimeServiceDelegate implements DatetimeService {
     public Date getDatetime() {
         return INSTANCE.getDatetime();
     }
-    
-    @Override
-    public boolean isDefault() {
-        return false;
-    }
 }
