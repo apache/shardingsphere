@@ -20,6 +20,7 @@ package org.apache.shardingsphere.datetime.database.spi;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
@@ -42,6 +43,6 @@ public final class DatabaseSQLEntryFactory {
      * @return new instance of database SQL entry
      */
     public static DatabaseSQLEntry newInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.getRegisteredService(DatabaseSQLEntry.class, databaseType.getName(), new Properties());
+        return TypedSPIRegistry.getRegisteredService(DatabaseSQLEntry.class, DatabaseTypeRegistry.getTrunkDatabaseTypeName(databaseType), new Properties());
     }
 }
