@@ -30,7 +30,7 @@ public final class OracleDatabaseSQLEntry implements DatabaseSQLEntry {
     }
     
     @Override
-    public boolean isSupport(final String driverClassName) {
-        return driverClassName.contains("oracle");
+    public String getType() {
+        return "Oracle";
     }
 }

@@ -15,4 +15,9 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.datetime.database.fixture.FixtureDatabaseSQLEntry
+dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+driverClassName: org.h2.Driver
+jdbcUrl: jdbc:h2:mem:db_write;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+username: sa
+password:
+maxTotal: 100

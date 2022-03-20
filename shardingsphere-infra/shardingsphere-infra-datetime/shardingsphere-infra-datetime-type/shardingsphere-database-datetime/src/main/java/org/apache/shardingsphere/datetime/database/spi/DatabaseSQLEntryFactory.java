@@ -17,38 +17,32 @@
 
 package org.apache.shardingsphere.datetime.database.spi;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.datetime.database.exception.NoDatabaseSQLEntrySupportException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
-import java.util.Collection;
+import java.util.Properties;
 
 /**
- * SPI for DatabaseSQLEntry.
+ * Database SQL entry factory.
  */
-@RequiredArgsConstructor
-public final class SPIDataBaseSQLEntry implements DatabaseSQLEntry {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DatabaseSQLEntryFactory {
     
     static {
         ShardingSphereServiceLoader.register(DatabaseSQLEntry.class);
     }
     
-    private final Collection<DatabaseSQLEntry> sqlEntries = ShardingSphereServiceLoader.getSingletonServiceInstances(DatabaseSQLEntry.class);
-    
-    private final String driverClassName;
-    
-    @Override
-    public String getSQL() {
-        for (DatabaseSQLEntry each : sqlEntries) {
-            if (each.isSupport(driverClassName)) {
-                return each.getSQL();
-            }
-        }
-        throw new NoDatabaseSQLEntrySupportException();
-    }
-    
-    @Override
-    public boolean isSupport(final String driverClassName) {
-        return true;
+    /**
+     * Create new instance of database SQL entry.
+     * 
+     * @param databaseType database type
+     * @return new instance of database SQL entry
+     */
+    public static DatabaseSQLEntry newInstance(final DatabaseType databaseType) {
+        return TypedSPIRegistry.getRegisteredService(DatabaseSQLEntry.class, DatabaseTypeRegistry.getTrunkDatabaseTypeName(databaseType), new Properties());
     }
 }

@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.datetime.database.spi;
 
+import org.apache.shardingsphere.spi.typed.TypedSPI;
+
 /**
  * Database SQL entry.
  */
-public interface DatabaseSQLEntry {
+public interface DatabaseSQLEntry extends TypedSPI {
     
     /**
      * Get SQL for getting time.
@@ -28,12 +30,4 @@ public interface DatabaseSQLEntry {
      * @return SQL
      */
     String getSQL();
-    
-    /**
-     * Determine whether it supports.
-     *
-     * @param driverClassName driver class name
-     * @return support or not
-     */
-    boolean isSupport(String driverClassName);
 }

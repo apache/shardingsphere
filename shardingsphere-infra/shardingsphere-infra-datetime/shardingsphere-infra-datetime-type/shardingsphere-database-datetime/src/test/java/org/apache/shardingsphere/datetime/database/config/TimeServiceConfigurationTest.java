@@ -15,16 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.datetime.database.exception;
+package org.apache.shardingsphere.datetime.database.config;
 
-/**
- * Time service init exception.
- */
-public final class TimeServiceInitException extends RuntimeException {
+import com.zaxxer.hikari.HikariDataSource;
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class TimeServiceConfigurationTest {
     
-    private static final long serialVersionUID = -834638295454826244L;
-    
-    public TimeServiceInitException(final String message, final Throwable cause) {
-        super(message, cause);
+    @Test
+    public void assertGetInstance() {
+        assertThat(TimeServiceConfiguration.getInstance().getDatabaseType().getName(), is("H2"));
+        assertThat(TimeServiceConfiguration.getInstance().getDataSource(), instanceOf(HikariDataSource.class));
     }
 }

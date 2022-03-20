@@ -17,18 +17,19 @@
 
 package org.apache.shardingsphere.datetime.database;
 
-import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.infra.datetime.DatetimeService;
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
+import java.util.Date;
+
 import static org.junit.Assert.assertTrue;
 
-public final class TimeServiceConfigurationTest {
+public final class DatabaseDatetimeServiceTest {
     
     @Test
-    public void assertInitDataSource() {
-        PropertiesUtils.createProperties(MockedDataSource.class.getName(), null);
-        assertNotNull(TimeServiceConfiguration.getInstance().getDataSource());
-        assertTrue(PropertiesUtils.remove());
+    public void assertGetDateTime() {
+        Date currentDate = new Date();
+        DatetimeService datetimeService = new DatabaseDatetimeService();
+        assertTrue(datetimeService.getDatetime().getTime() >= currentDate.getTime());
     }
 }
