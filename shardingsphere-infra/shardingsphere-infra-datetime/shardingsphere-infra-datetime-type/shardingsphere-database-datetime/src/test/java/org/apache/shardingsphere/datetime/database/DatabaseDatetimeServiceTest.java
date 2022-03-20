@@ -27,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 public final class DatabaseDatetimeServiceTest {
     
     @Test
-    public void assertGetDateTime() {
+    public void assertGetDatetime() {
         Date currentDate = new Date();
         DatetimeService datetimeService = new DatabaseDatetimeService();
         assertTrue(datetimeService.getDatetime().getTime() >= currentDate.getTime());

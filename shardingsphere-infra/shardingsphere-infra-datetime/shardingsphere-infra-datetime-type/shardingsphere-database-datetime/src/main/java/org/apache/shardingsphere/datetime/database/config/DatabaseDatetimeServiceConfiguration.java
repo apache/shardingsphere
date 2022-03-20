@@ -39,7 +39,7 @@ public final class DatabaseDatetimeServiceConfiguration {
     
     private static final DatabaseDatetimeServiceConfiguration INSTANCE = new DatabaseDatetimeServiceConfiguration();
     
-    private static final String CONFIG_FILE = "time-service.yaml";
+    private static final String CONFIG_FILE = "datetime-database-config.yaml";
     
     private final DataSource dataSource;
     
