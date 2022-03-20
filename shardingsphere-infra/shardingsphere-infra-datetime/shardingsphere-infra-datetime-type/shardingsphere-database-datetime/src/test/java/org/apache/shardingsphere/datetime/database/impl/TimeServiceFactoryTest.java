@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.datetime.database.impl;
 
 import org.apache.shardingsphere.datetime.database.PropertiesUtils;
-import org.apache.shardingsphere.infra.datetime.DatetimeService;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -28,9 +28,8 @@ public final class TimeServiceFactoryTest {
     
     @Test
     public void assertCreateDateTimeService() {
-        PropertiesUtils.createProperties("com.mysql.jdbc.Driver", null);
-        DatetimeService datetimeService = TimeServiceFactory.createTimeService();
-        assertFalse(datetimeService.isDefault());
+        PropertiesUtils.createProperties(MockedDataSource.class.getName(), null);
+        assertFalse(TimeServiceFactory.createTimeService().isDefault());
         assertTrue(PropertiesUtils.remove());
     }
 }
