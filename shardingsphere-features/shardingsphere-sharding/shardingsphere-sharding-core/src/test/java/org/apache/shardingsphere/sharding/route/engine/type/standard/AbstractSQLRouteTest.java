@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -46,6 +47,7 @@ import java.util.Properties;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     
@@ -61,7 +63,9 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine("MySQL", sqlParserRule);
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Arrays.asList(shardingRule, singleTableRule));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, schemas);
+        ShardingSphereResource resource = mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS);
+        when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", resource, ruleMetaData, schemas);
         Map<String, ShardingSphereMetaData> metaDataMap = Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataMap, parameters, sqlStatementParserEngine.parse(sql, false), DefaultSchema.LOGIC_NAME);
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, parameters);
