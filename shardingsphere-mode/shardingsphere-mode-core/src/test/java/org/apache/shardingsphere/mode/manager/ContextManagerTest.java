@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.federation.optimizer.context.parser.OptimizerParserContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
@@ -83,6 +84,7 @@ public final class ContextManagerTest {
         when(metaDataContexts.getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(metaDataContexts.getOptimizerContext().getFederationMetaData().getSchemas()).thenReturn(new LinkedHashMap<>());
         when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        when(metaDataContexts.getMetaData("foo_schema").getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
     }
     
     @Test
