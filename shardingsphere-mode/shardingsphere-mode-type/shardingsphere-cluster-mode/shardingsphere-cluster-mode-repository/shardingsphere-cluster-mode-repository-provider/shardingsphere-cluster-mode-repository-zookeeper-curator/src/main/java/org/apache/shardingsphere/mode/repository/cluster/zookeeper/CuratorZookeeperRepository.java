@@ -49,10 +49,10 @@ import org.apache.zookeeper.data.ACL;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -62,7 +62,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class CuratorZookeeperRepository implements ClusterPersistRepository {
     
-    private CuratorCache curatorCache;
+    private final Map<String, CuratorCache> caches = new HashMap<>();
     
     private CuratorFramework client;
     
@@ -236,8 +236,10 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     @Override
     public void watch(final String key, final DataChangedEventListener listener) {
-        if (!Optional.ofNullable(curatorCache).isPresent()) {
-            curatorCache = CuratorCache.build(client, "/");
+        if (!caches.containsKey(key)) {
+            CuratorCache curatorCache = CuratorCache.build(client, key);
+            start(curatorCache);
+            caches.put(key, curatorCache);
         }
         CuratorCacheListener curatorCacheListener = CuratorCacheListener.builder()
                 .forTreeCache(client, (framework, treeCacheListener) -> {
@@ -247,8 +249,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
                                 new String(treeCacheListener.getData().getData(), StandardCharsets.UTF_8), changedType));
                     }
                 }).build();
-        curatorCache.listenable().addListener(curatorCacheListener);
-        start(curatorCache);
+        caches.get(key).listenable().addListener(curatorCacheListener);
     }
     
     private void start(final CuratorCache cache) {
@@ -314,7 +315,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     @Override
     public void close() {
-        curatorCache.close();
+        caches.values().forEach(CuratorCache::close);
         waitForCacheClose();
         CloseableUtils.closeQuietly(client);
     }
