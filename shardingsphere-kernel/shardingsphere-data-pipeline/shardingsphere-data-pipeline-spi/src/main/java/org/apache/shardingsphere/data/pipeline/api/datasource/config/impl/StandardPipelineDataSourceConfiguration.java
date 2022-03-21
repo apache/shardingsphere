@@ -56,14 +56,14 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     
     @SuppressWarnings("unchecked")
     public StandardPipelineDataSourceConfiguration(final String parameter) {
-        this(YamlEngine.unmarshal(parameter, Map.class), parameter);
+        this(parameter, YamlEngine.unmarshal(parameter, Map.class));
     }
     
     public StandardPipelineDataSourceConfiguration(final Map<String, Object> yamlDataSourceConfig) {
-        this(yamlDataSourceConfig, YamlEngine.marshal(yamlDataSourceConfig));
+        this(YamlEngine.marshal(yamlDataSourceConfig), yamlDataSourceConfig);
     }
     
-    private StandardPipelineDataSourceConfiguration(final Map<String, Object> yamlConfig, final String parameter) {
+    private StandardPipelineDataSourceConfiguration(final String parameter, final Map<String, Object> yamlConfig) {
         this.parameter = parameter;
         if (!yamlConfig.containsKey(DATA_SOURCE_CLASS_NAME)) {
             yamlConfig.put(DATA_SOURCE_CLASS_NAME, HikariDataSource.class.getName());

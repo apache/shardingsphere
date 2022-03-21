@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.datetime.DatetimeService;
 import java.util.Date;
 
 /**
- * Default datetime service.
+ * System datetime service.
  */
 public final class SystemDatetimeService implements DatetimeService {
     
