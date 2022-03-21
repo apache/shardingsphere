@@ -75,7 +75,6 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>${hikari-cp.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

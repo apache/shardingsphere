@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi;
+package org.apache.shardingsphere.scaling.core.spi;
 
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureScalingEntry;
-import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
-import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
-public final class ScalingEntryLoaderTest {
+public final class ScalingEntryFactoryTest {
     
     @Test
     public void assertGetFixtureInstance() {
-        ScalingEntry actual = ScalingEntryLoader.getInstance("H2");
+        ScalingEntry actual = ScalingEntryFactory.getInstance("H2");
         assertTrue(actual instanceof FixtureScalingEntry);
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertGetInstanceFailure() {
-        ScalingEntryLoader.getInstance("None");
+        ScalingEntryFactory.getInstance("None");
     }
 }
