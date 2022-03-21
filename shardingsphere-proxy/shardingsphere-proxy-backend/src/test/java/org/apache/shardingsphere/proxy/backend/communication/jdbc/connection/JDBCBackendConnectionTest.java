@@ -31,6 +31,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -47,8 +48,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -97,6 +96,9 @@ public final class JDBCBackendConnectionTest {
         backendConnection = spy(new JDBCBackendConnection(connectionSession));
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
+        JDBCBackendStatement backendStatement = new JDBCBackendStatement();
+        backendStatement.setSchemaName(connectionSession.getSchemaName());
+        when(connectionSession.getStatementManager()).thenReturn(backendStatement);
     }
     
     private void setContextManager() throws ReflectiveOperationException {
@@ -200,27 +202,6 @@ public final class JDBCBackendConnectionTest {
     }
     
     @Test
-    public void assertMultiThreadsGetConnection() throws SQLException, InterruptedException {
-        MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtil.mockNewConnections(2));
-        Thread thread1 = new Thread(this::assertOneThreadResult);
-        Thread thread2 = new Thread(this::assertOneThreadResult);
-        thread1.start();
-        thread2.start();
-        thread1.join();
-        thread2.join();
-    }
-    
-    @SneakyThrows(SQLException.class)
-    private void assertOneThreadResult() {
-        connectionSession.getTransactionStatus().setInTransaction(true);
-        List<Connection> actualConnections = backendConnection.getConnections("ds1", 12, ConnectionMode.MEMORY_STRICTLY);
-        assertThat(actualConnections.size(), is(12));
-        assertThat(backendConnection.getConnectionSize(), is(12));
-        assertTrue(connectionSession.getTransactionStatus().isInTransaction());
-    }
-    
-    @Test
     public void assertIsNotSerialExecuteWhenNotInTransaction() {
         connectionSession.getTransactionStatus().setInTransaction(false);
         assertFalse(backendConnection.isSerialExecute());
@@ -245,15 +226,6 @@ public final class JDBCBackendConnectionTest {
         connectionSession.getTransactionStatus().setTransactionType(TransactionType.XA);
         connectionSession.getTransactionStatus().setInTransaction(true);
         assertTrue(backendConnection.isSerialExecute());
-    }
-    
-    @Test
-    public void assertSetFetchSizeAsExpected() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, SQLException {
-        Statement statement = mock(Statement.class);
-        Method setFetchSizeMethod = JDBCBackendConnection.class.getDeclaredMethod("setFetchSize", Statement.class);
-        setFetchSizeMethod.setAccessible(true);
-        setFetchSizeMethod.invoke(backendConnection, statement);
-        verify(statement, times(1)).setFetchSize(Integer.MIN_VALUE);
     }
     
     @Test
@@ -306,7 +278,8 @@ public final class JDBCBackendConnectionTest {
         Connection connection = mock(Connection.class);
         Statement statement = mock(Statement.class);
         when(connection.createStatement()).thenReturn(statement);
-        assertThat(backendConnection.createStorageResource(connection, ConnectionMode.MEMORY_STRICTLY, null), is(statement));
+        JDBCBackendStatement backendStatement = (JDBCBackendStatement) connectionSession.getStatementManager();
+        assertThat(backendStatement.createStorageResource(connection, ConnectionMode.MEMORY_STRICTLY, null), is(statement));
         verify(connection, times(1)).createStatement();
     }
     

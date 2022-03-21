@@ -71,4 +71,11 @@ public interface DatabaseProtocolFrontendEngine extends DatabaseTypeAwareSPI {
      * @param connectionSession connection session
      */
     void release(ConnectionSession connectionSession);
+    
+    /**
+     * Handle exception.
+     *
+     * @param connectionSession connection session
+     */
+    void handleException(ConnectionSession connectionSession);
 }

@@ -225,7 +225,7 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitDropShardingScalingRule(final DropShardingScalingRuleContext ctx) {
-        return new DropShardingScalingRuleStatement(getIdentifierValue(ctx.scalingName()));
+        return new DropShardingScalingRuleStatement(null != ctx.existsClause(), getIdentifierValue(ctx.scalingName()));
     }
     
     @Override
@@ -254,7 +254,7 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
             return result;
         }
         for (ScalingStatementParser.AlgorithmPropertyContext each : ctx.algorithmProperties().algorithmProperty()) {
-            result.setProperty(new IdentifierValue(each.key.getText()).getValue(), new IdentifierValue(each.value.getText()).getValue());
+            result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
         }
         return result;
     }

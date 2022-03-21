@@ -36,11 +36,14 @@ public final class WorkflowConfiguration {
     
     private List<String> alteredRuleYamlClassNames;
     
-    private String schemaVersion;
+    private Integer activeVersion;
     
-    public WorkflowConfiguration(final String schemaName, final List<String> alteredRuleYamlClassNames, final String schemaVersion) {
+    private Integer newVersion;
+    
+    public WorkflowConfiguration(final String schemaName, final List<String> alteredRuleYamlClassNames, final int activeVersion, final int newVersion) {
         this.schemaName = schemaName;
         this.alteredRuleYamlClassNames = alteredRuleYamlClassNames;
-        this.schemaVersion = schemaVersion;
+        this.activeVersion = activeVersion;
+        this.newVersion = newVersion;
     }
 }

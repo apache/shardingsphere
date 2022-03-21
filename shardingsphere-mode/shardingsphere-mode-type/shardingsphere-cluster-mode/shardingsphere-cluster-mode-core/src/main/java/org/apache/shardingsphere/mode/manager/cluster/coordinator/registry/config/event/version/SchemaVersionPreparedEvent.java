@@ -19,12 +19,14 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.conf
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
  * Schema version prepared event.
  */
 @RequiredArgsConstructor
 @Getter
+@ToString
 public final class SchemaVersionPreparedEvent {
     
     private final String version;

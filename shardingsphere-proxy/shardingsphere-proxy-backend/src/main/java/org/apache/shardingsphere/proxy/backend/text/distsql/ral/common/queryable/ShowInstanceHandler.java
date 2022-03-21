@@ -20,9 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryabl
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowInstanceStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
@@ -54,13 +52,15 @@ public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowIn
     
     private static final String LABELS = "labels";
     
+    private static final String XA_RECOVERY_ID = "xa_recovery_id";
+    
     private static final String DISABLED = "disabled";
     
     private static final String ENABLED = "enabled";
     
     @Override
     protected Collection<String> getColumnNames() {
-        return Arrays.asList(ID, HOST, PORT, STATUS, MODE_TYPE, LABELS);
+        return Arrays.asList(ID, HOST, PORT, STATUS, MODE_TYPE, LABELS, XA_RECOVERY_ID);
     }
     
     @Override
@@ -74,8 +74,7 @@ public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowIn
     
     private Collection<List<Object>> buildInstanceRows(final InstanceContext instanceContext) {
         List<List<Object>> result = new LinkedList<>();
-        InstanceId instanceId = instanceContext.getInstance().getInstanceDefinition().getInstanceId();
-        result.add(buildRow(instanceId.getId(), ENABLED, instanceContext.getModeConfiguration().getType(), Collections.emptyList()));
+        result.add(buildRow(instanceContext.getInstance(), instanceContext.getModeConfiguration().getType()));
         return result;
     }
     
@@ -83,21 +82,21 @@ public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowIn
         Collection<ComputeNodeInstance> instances = persistService.getComputeNodePersistService().loadAllComputeNodeInstances();
         if (!instances.isEmpty()) {
             return instances.stream().filter(Objects::nonNull)
-                    .map(each -> buildRow(each.getInstanceDefinition().getInstanceId().getId(), getStatus(each.getStatus()), instanceContext.getModeConfiguration().getType(), each.getLabels()))
+                    .map(each -> buildRow(each, instanceContext.getModeConfiguration().getType()))
                     .collect(Collectors.toCollection(LinkedList::new));
         }
         return Collections.emptyList();
     }
     
-    private List<Object> buildRow(final String instanceId, final String status, final String modeType, final Collection<String> instanceLabels) {
+    private List<Object> buildRow(final ComputeNodeInstance instance, final String modeType) {
+        return buildRow(instance.getInstanceDefinition().getInstanceId().getId(), instance.getState().getCurrentState().name(), modeType, instance.getLabels(), instance.getXaRecoveryId());
+    }
+    
+    private List<Object> buildRow(final String instanceId, final String status, final String modeType, final Collection<String> instanceLabels, final String xaRecoveryId) {
         String[] splitInstanceId = instanceId.split(DELIMITER);
         String host = splitInstanceId[0];
         String port = splitInstanceId.length < 2 ? "" : splitInstanceId[1];
         String labels = null == instanceLabels ? "" : String.join(",", instanceLabels);
-        return new LinkedList<>(Arrays.asList(instanceId, host, port, status, modeType, labels));
-    }
-    
-    private String getStatus(final Collection<String> computeNodeStatus) {
-        return computeNodeStatus.isEmpty() || !computeNodeStatus.contains(ComputeNodeStatus.CIRCUIT_BREAK.name()) ? ENABLED : DISABLED;
+        return new LinkedList<>(Arrays.asList(instanceId, host, port, status, modeType, labels, xaRecoveryId));
     }
 }

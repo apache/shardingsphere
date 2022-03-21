@@ -47,6 +47,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.rule.builder.DefaultTransactionRuleConfigurationBuilder;
@@ -61,6 +62,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -304,14 +306,23 @@ public final class ContextManager implements AutoCloseable {
     /**
      * Alter global rule configuration.
      * 
-     * @param ruleConfigurations global rule configuration
+     * @param ruleConfigs global rule configuration
      */
-    public void alterGlobalRuleConfiguration(final Collection<RuleConfiguration> ruleConfigurations) {
-        if (!ruleConfigurations.isEmpty()) {
-            ShardingSphereRuleMetaData newGlobalRuleMetaData = new ShardingSphereRuleMetaData(ruleConfigurations,
-                    GlobalRulesBuilder.buildRules(ruleConfigurations, metaDataContexts.getMetaDataMap()));
+    public void alterGlobalRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs) {
+        if (!ruleConfigs.isEmpty()) {
+            boolean needRenewTransaction = isNeedRenewTransactionContext(ruleConfigs);
+            ShardingSphereRuleMetaData newGlobalRuleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, GlobalRulesBuilder.buildRules(ruleConfigs, metaDataContexts.getMetaDataMap()));
             renewMetaDataContexts(rebuildMetaDataContexts(newGlobalRuleMetaData));
+            if (needRenewTransaction) {
+                renewAllTransactionContext();
+            }
         }
+    }
+    
+    private boolean isNeedRenewTransactionContext(final Collection<RuleConfiguration> ruleConfigs) {
+        Optional<RuleConfiguration> newConfig = ruleConfigs.stream().filter(each -> each instanceof TransactionRuleConfiguration).findFirst();
+        Optional<TransactionRuleConfiguration> oldConfig = metaDataContexts.getGlobalRuleMetaData().findSingleRuleConfiguration(TransactionRuleConfiguration.class);
+        return newConfig.isPresent() && oldConfig.isPresent() && !newConfig.get().equals(oldConfig.get());
     }
     
     /**
@@ -528,6 +539,15 @@ public final class ContextManager implements AutoCloseable {
         return DataSourcePoolCreator.create(getChangedDataSourceConfiguration(originalMetaData, newDataSourcePropsMap));
     }
     
+    /**
+     * Reload all transaction context.
+     */
+    public void renewAllTransactionContext() {
+        for (Entry<String, ShardingSphereMetaData> entry : metaDataContexts.getMetaDataMap().entrySet()) {
+            renewTransactionContext(entry.getKey(), entry.getValue().getResource());
+        }
+    }
+    
     private void renewTransactionContext(final String schemaName, final ShardingSphereResource resource) {
         ShardingSphereTransactionManagerEngine changedStaleEngine = transactionContexts.getEngines().get(schemaName);
         if (null != changedStaleEngine) {
@@ -559,21 +579,13 @@ public final class ContextManager implements AutoCloseable {
     
     private void closeDataSources(final ShardingSphereMetaData removeMetaData) {
         if (null != removeMetaData.getResource()) {
-            removeMetaData.getResource().getDataSources().values().forEach(each -> closeDataSource(removeMetaData.getResource(), each));
+            removeMetaData.getResource().getDataSources().values().forEach(each -> removeMetaData.getResource().close(each));
         }
     }
     
     private void closeDataSources(final String schemaName, final Collection<DataSource> dataSources) {
         ShardingSphereResource resource = metaDataContexts.getMetaData(schemaName).getResource();
-        dataSources.forEach(each -> closeDataSource(resource, each));
-    }
-    
-    private void closeDataSource(final ShardingSphereResource resource, final DataSource dataSource) {
-        try {
-            resource.close(dataSource);
-        } catch (final SQLException ex) {
-            log.error("Close data source failed", ex);
-        }
+        dataSources.forEach(resource::close);
     }
     
     private void removeAndCloseTransactionEngine(final String schemaName) {

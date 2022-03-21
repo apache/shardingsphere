@@ -90,7 +90,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     }
     
     private DropDatabaseDiscoveryRuleStatement createSQLStatement() {
-        return new DropDatabaseDiscoveryRuleStatement(Collections.singleton("ha_group"), false);
+        return new DropDatabaseDiscoveryRuleStatement(Collections.singleton("ha_group"));
     }
     
     private DropDatabaseDiscoveryRuleStatement createSQLStatementWithIfExists() {

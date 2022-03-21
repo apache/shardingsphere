@@ -31,7 +31,6 @@
     
     <modules>
         <module>shardingsphere-example-generator</module>
-        <module>shardingsphere-example-generated</module>
     </modules>
     
     <build>

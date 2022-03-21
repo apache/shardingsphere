@@ -46,10 +46,10 @@ public final class DropEncryptRuleStatementUpdater implements RuleDefinitionDrop
         if (sqlStatement.isContainsExistClause()) {
             return;
         }
-        DistSQLException.predictionThrow(isExistRuleConfig(currentRuleConfig), new RequiredRuleMissedException("Encrypt", schemaName));
+        DistSQLException.predictionThrow(isExistRuleConfig(currentRuleConfig), () -> new RequiredRuleMissedException("Encrypt", schemaName));
         Collection<String> currentEncryptTableNames = currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedTableNames = sqlStatement.getTables().stream().filter(each -> !currentEncryptTableNames.contains(each)).collect(Collectors.toList());
-        DistSQLException.predictionThrow(notExistedTableNames.isEmpty(), new RequiredRuleMissedException("Encrypt", schemaName, notExistedTableNames));
+        DistSQLException.predictionThrow(notExistedTableNames.isEmpty(), () -> new RequiredRuleMissedException("Encrypt", schemaName, notExistedTableNames));
     }
     
     @Override

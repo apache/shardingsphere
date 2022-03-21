@@ -34,10 +34,6 @@ import java.sql.SQLFeatureNotSupportedException;
  */
 public abstract class AbstractUnsupportedOperationPreparedStatement extends AbstractStatementAdapter implements PreparedStatement {
     
-    protected AbstractUnsupportedOperationPreparedStatement() {
-        super(PreparedStatement.class);
-    }
-    
     @Override
     public final ResultSetMetaData getMetaData() throws SQLException {
         throw new SQLFeatureNotSupportedException("getMetaData");

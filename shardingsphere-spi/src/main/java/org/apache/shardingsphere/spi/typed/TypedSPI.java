@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.spi.typed;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Properties;
 
 /**
@@ -46,5 +48,14 @@ public interface TypedSPI {
      * @param props properties
      */
     default void setProps(final Properties props) {
+    }
+    
+    /**
+     * Get type aliases.
+     *
+     * @return type aliases
+     */
+    default Collection<String> getTypeAliases() {
+        return Collections.emptyList();
     }
 }

@@ -14,4 +14,5 @@ chapter = true
 | *Implementation Class*                | *Description*                                           |
 | ------------------------------------- | ------------------------------------------------------- |
 | MGRDatabaseDiscoveryType              | Database discovery of MySQL's MGR                       |
+| ShowSlaveStatusDatabaseDiscoveryType  | Database discovery of MySQL's master-slave delay        |
 | OpenGaussDatabaseDiscoveryType        | Database discovery of openGauss                         |

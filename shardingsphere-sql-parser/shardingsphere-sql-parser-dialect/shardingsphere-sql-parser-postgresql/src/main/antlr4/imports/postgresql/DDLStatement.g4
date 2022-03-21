@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-grammar DDLStatement;
+parser grammar DDLStatement;
 
 import DMLStatement;
+
+options {tokenVocab = ModeLexer;}
 
 createTable
     : CREATE createTableSpecification TABLE notExistClause? tableName

@@ -23,6 +23,9 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.type.DefaultDataSourcePoolFieldMetaData;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
@@ -125,15 +128,15 @@ public final class DataSourceReflection {
     @SneakyThrows(ReflectiveOperationException.class)
     private void setField(final Method method, final Object fieldValue) {
         Class<?> paramType = method.getParameterTypes()[0];
-        if (paramType == int.class) {
+        if (int.class == paramType || Integer.class == paramType) {
             method.invoke(dataSource, Integer.parseInt(fieldValue.toString()));
-        } else if (paramType == long.class) {
+        } else if (long.class == paramType || Long.class == paramType) {
             method.invoke(dataSource, Long.parseLong(fieldValue.toString()));
-        } else if (paramType == boolean.class || paramType == Boolean.class) {
+        } else if (boolean.class == paramType || Boolean.class == paramType) {
             method.invoke(dataSource, Boolean.parseBoolean(fieldValue.toString()));
-        } else if (paramType == String.class) {
+        } else if (String.class == paramType) {
             method.invoke(dataSource, fieldValue.toString());
-        } else if (paramType == Properties.class) {
+        } else if (Properties.class == paramType) {
             Properties props = new Properties();
             props.putAll((Map) fieldValue);
             method.invoke(dataSource, props);
@@ -153,14 +156,13 @@ public final class DataSourceReflection {
     
     /**
      * Add default data source properties.
-     *
-     * @param dataSourcePoolMetaData data source pool meta data
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public void addDefaultDataSourceProperties(final DataSourcePoolMetaData dataSourcePoolMetaData) {
-        String jdbcUrl = dataSourcePoolMetaData.getJdbcUrlMetaData().getJdbcUrl(dataSource);
-        Properties jdbcUrlProps = dataSourcePoolMetaData.getJdbcUrlMetaData().getJdbcUrlProperties(dataSource);
-        if (null == jdbcUrl || null == jdbcUrlProps) {
+    public void addDefaultDataSourceProperties() {
+        DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(dataSource,
+                DataSourcePoolMetaDataFactory.newInstance(dataSource.getClass().getName()).map(DataSourcePoolMetaData::getFieldMetaData).orElseGet(DefaultDataSourcePoolFieldMetaData::new));
+        String jdbcUrl = dataSourcePoolMetaDataReflection.getJdbcUrl();
+        Properties jdbcConnectionProps = dataSourcePoolMetaDataReflection.getJdbcConnectionProperties();
+        if (null == jdbcUrl || null == jdbcConnectionProps) {
             return;
         }
         DataSourceMetaData dataSourceMetaData = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl).getDataSourceMetaData(jdbcUrl, null);
@@ -168,8 +170,8 @@ public final class DataSourceReflection {
         for (Entry<Object, Object> entry : dataSourceMetaData.getDefaultQueryProperties().entrySet()) {
             String defaultPropertyKey = entry.getKey().toString();
             String defaultPropertyValue = entry.getValue().toString();
-            if (!containsDefaultProperty(defaultPropertyKey, jdbcUrlProps, queryProps)) {
-                dataSourcePoolMetaData.getJdbcUrlMetaData().appendJdbcUrlProperties(defaultPropertyKey, defaultPropertyValue, dataSource);
+            if (!containsDefaultProperty(defaultPropertyKey, jdbcConnectionProps, queryProps)) {
+                jdbcConnectionProps.setProperty(defaultPropertyKey, defaultPropertyValue);
             }
         }
     }

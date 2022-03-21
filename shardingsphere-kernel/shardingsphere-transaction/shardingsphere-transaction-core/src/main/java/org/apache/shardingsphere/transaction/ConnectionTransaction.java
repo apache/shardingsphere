@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.transaction;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
@@ -33,6 +35,10 @@ import java.util.Optional;
 public final class ConnectionTransaction {
     
     private final TransactionType transactionType;
+    
+    @Setter
+    @Getter
+    private volatile boolean rollbackOnly;
     
     private final ShardingSphereTransactionManager transactionManager;
     
@@ -100,7 +106,7 @@ public final class ConnectionTransaction {
      * Commit transaction.
      */
     public void commit() {
-        transactionManager.commit();
+        transactionManager.commit(rollbackOnly);
     }
     
     /**

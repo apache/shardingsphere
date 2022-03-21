@@ -75,7 +75,6 @@ public final class DataSourcePropertiesCreator {
         return result;
     }
     
-    @SuppressWarnings("rawtypes")
     private static Map<String, Object> createProperties(final DataSource dataSource) {
         Map<String, Object> result = new LinkedHashMap<>();
         Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSource.getClass().getName());
@@ -89,7 +88,7 @@ public final class DataSourcePropertiesCreator {
         return result;
     }
     
-    private static boolean isValidProperty(final String key, final Object value, final DataSourcePoolMetaData<?> poolMetaData) {
+    private static boolean isValidProperty(final String key, final Object value, final DataSourcePoolMetaData poolMetaData) {
         return !poolMetaData.getInvalidProperties().containsKey(key) || null == value || !value.equals(poolMetaData.getInvalidProperties().get(key));
     }
 }

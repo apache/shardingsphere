@@ -475,84 +475,6 @@
     <sql-case id="create_by_mysql_source_test_case589" value="CREATE TABLE t_illegal (col_1 INT CHECK something)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case590" value="CREATE TABLE tp (a VARCHAR(24), b DATETIME, PRIMARY KEY (a,b)) PARTITION BY RANGE COLUMNS (a, b) (PARTITION p0 VALUES LESS THAN (&quot;Middle&quot;, &apos;0000-00-00&apos;), PARTITION p1 VALUES LESS THAN (MAXVALUE, &apos;9999-12-31 23:59:59&apos;))" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case591" value="CREATE TABLE v0(v1 DEC, v2 INT)" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case594" value="CREATE TABLESPACE `` ADD DATAFILE &apos;x.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case595" value="CREATE TABLESPACE `a𐍈` ADD DATAFILE &apos;x.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case596" value="CREATE TABLESPACE `innodb_file_per_table.2` ADD DATAFILE &apos;f.ibd&apos; ENGINE InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case597" value="CREATE TABLESPACE `mytbsp` ADD DATAFILE &apos;mytbsp.ibd&apos; ENGINE INNODB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case598" value="CREATE TABLESPACE `ts6` ADD DATAFILE &apos;ts6.ibd&apos; ENGINE=INNODB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case599" value="CREATE TABLESPACE `¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥` ADD DATAFILE &apos;x.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case600" value="CREATE TABLESPACE `¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥` ADD DATAFILE &apos;x.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case601" value="CREATE TABLESPACE `€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€` ADD DATAFILE &apos;x.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case602" value="CREATE TABLESPACE `€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€` ADD DATAFILE &apos;x.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case603" value="CREATE TABLESPACE altering ADD DATAFILE &apos;altering.ibd&apos; ENGINE InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case604" value="CREATE TABLESPACE innodb_file_per_table ADD DATAFILE &apos;f.ibd&apos; ENGINE InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case605" value="CREATE TABLESPACE innodb_file_per_table ADD DATAFILE &apos;f.ibd&apos; ENGINE InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case606" value="CREATE TABLESPACE innodb_file_per_table_whatever ADD DATAFILE &apos;f.ibd&apos; ENGINE InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case607" value="CREATE TABLESPACE innodb_system ADD DATAFILE &apos;f.ibd&apos; ENGINE InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case608" value="CREATE TABLESPACE innodb_temporary ADD DATAFILE &apos;f.ibd&apos; ENGINE InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case609" value="CREATE TABLESPACE mysql ADD DATAFILE &apos;f.ibd&apos; ENGINE InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case610" value="CREATE TABLESPACE mysql ADD DATAFILE &apos;new_file.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case611" value="CREATE TABLESPACE s1 ADD DATAFILE &apos;s1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case612" value="CREATE TABLESPACE t1 ADD DATAFILE &apos;t1.ibd&apos; ENGINE=HEAP" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case613" value="CREATE TABLESPACE t1 ADD DATAFILE &apos;t1.ibd&apos; ENGINE=INNODB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case614" value="CREATE TABLESPACE tb1 ADD DATAFILE &apos;t1.ibd&apos; ENGINE=INNODB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case615" value="CREATE TABLESPACE testtablespace ADD DATAFILE &apos;ts.ibd&apos; ENGINE=InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case616" value="CREATE TABLESPACE testtablespace ADD DATAFILE &apos;ts.ibd&apos; ENGINE=InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case617" value="CREATE TABLESPACE testtablespace ADD DATAFILE &apos;ts.ibd&apos; ENGINE=InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case618" value="CREATE TABLESPACE testtablespace ADD DATAFILE &apos;ts.ibd&apos; ENGINE=InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case619" value="CREATE TABLESPACE ts ADD DATAFILE &apos;f.ibd&apos; ENGINE InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case620" value="CREATE TABLESPACE ts ADD DATAFILE &apos;f.ibd&apos; ENGINE InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case621" value="CREATE TABLESPACE ts ADD DATAFILE &apos;f.ibd&apos; ENGINE InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case622" value="CREATE TABLESPACE ts ADD DATAFILE &apos;f.ibd&apos; ENGINE InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case623" value="CREATE TABLESPACE ts ADD DATAFILE &apos;f.ibd&apos; ENGINE InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case624" value="CREATE TABLESPACE ts ADD DATAFILE &apos;ts.ibd&apos; ENGINE=InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case625" value="CREATE TABLESPACE ts Engine=InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case626" value="CREATE TABLESPACE ts1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case627" value="CREATE TABLESPACE ts1" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case628" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;./ts1.ibd&apos; ENGINE=INNODB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case629" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;df1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case630" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;df1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case631" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;df1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case632" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;df1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case633" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;df1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case634" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;df1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case635" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;df1.ibd&apos; ENGINE=InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case636" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;ts1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case637" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;ts1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case638" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;ts1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case639" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;ts1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case640" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;ts1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case641" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;ts1.ibd&apos; ENGINE=INNODB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case642" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;ts1.ibd&apos; Engine=InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case643" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;ts1_1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case644" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;ts1_1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case645" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;ts1_1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case646" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;ts1_1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case647" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;ts1_1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case648" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;ts1_1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case649" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;ts1_1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case650" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;ts1_1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case651" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;ts1_1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case652" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;ts1_1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case653" value="CREATE TABLESPACE ts1 ADD DATAFILE &apos;ts1_1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case654" value="CREATE TABLESPACE ts1 ENGINE_ATTRIBUTE=&apos;&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case655" value="CREATE TABLESPACE ts1 Engine=InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case656" value="CREATE TABLESPACE ts1 Engine=InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case657" value="CREATE TABLESPACE ts2 ADD DATAFILE &apos;ts2.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case658" value="CREATE TABLESPACE ts2 ADD DATAFILE &apos;ts2.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case659" value="CREATE TABLESPACE ts2 ADD DATAFILE &apos;ts2.ibd&apos; Engine=InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case660" value="CREATE TABLESPACE ts2 ADD DATAFILE &apos;ts2_1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case661" value="CREATE TABLESPACE ts2 ADD DATAFILE &apos;ts2_1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case662" value="CREATE TABLESPACE ts2 ADD DATAFILE &apos;ts2_1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case663" value="CREATE TABLESPACE ts2 ENGINE_ATTRIBUTE=&apos;{&quot;c&quot;: &quot;v&quot;}&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case664" value="CREATE TABLESPACE ts2 Engine=InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case665" value="CREATE TABLESPACE ts2 Engine=InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case666" value="CREATE TABLESPACE ts3 ADD DATAFILE &apos;ts3.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case667" value="CREATE TABLESPACE ts3 ADD DATAFILE &apos;ts3_1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case668" value="CREATE TABLESPACE ts3 ADD DATAFILE &apos;ts3_1.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case669" value="CREATE TABLESPACE ts3 ENGINE_ATTRIBUTE=&apos;{&quot;c&quot;: v}&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case670" value="CREATE TABLESPACE xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ADD DATAFILE &apos;x.ibd&apos;" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case671" value="CREATE TABLESPACE xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ADD DATAFILE &apos;x.ibd&apos;" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case672" value="CREATE TEMPORARY TABLE issue_functional_key_part ( sold_on DATETIME NOT NULL DEFAULT NOW(), INDEX sold_on_date ((DATE(sold_on))) ) SELECT NOW() `sold_on`" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case673" value="CREATE TEMPORARY TABLE t1 (f1 INT) START TRANSACTION" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case674" value="CREATE TEMPORARY TABLE t6(a INT) ENGINE = MERGE UNION = ()" db-types="MySQL"/>
@@ -644,8 +566,6 @@
     <sql-case id="create_by_mysql_source_test_case766" value="CREATE TRIGGER trigger_for_normal_insert BEFORE INSERT ON t1 FOR EACH ROW SET @x:= NEW.a" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case767" value="CREATE TRIGGER trigger_for_normal_replace BEFORE INSERT ON t1 FOR EACH ROW SET @x:= NEW.a" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case768" value="CREATE TRIGGER trigger_for_replace_select BEFORE INSERT ON t1 FOR EACH ROW SET @x:= NEW.a" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case772" value="CREATE UNDO TABLESPACE undo_003 ADD DATAFILE &apos;undo_003.ibu&apos; ENGINE InnoDB" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case773" value="CREATE UNDO TABLESPACE undo_003 ADD DATAFILE &apos;undo_003.ibu&apos; ENGINE MyISAM" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case774" value="CREATE USER ACCOUNT LOCK user6@localhost" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case775" value="CREATE USER ACCOUNT UNLOCK user5@localhost" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case776" value="CREATE USER IF NOT EXISTS event_u2@192.1.1.140" db-types="MySQL"/>
@@ -970,9 +890,6 @@
     <sql-case id="create_by_mysql_source_test_case1332" value="create table test_reserved (condition int)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1333" value="create table test_reserved (resignal int)" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1334" value="create table test_reserved (signal int)" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1342" value="create tablespace ndb_ts1 add datafile &apos;ndb_ts1.dat&apos; use logfile group ndb_lg1 engine=myisam" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1343" value="create tablespace ndb_ts1 add datafile &apos;ndb_ts1.dat&apos; use logfile group ndb_lg1 engine=myisam" db-types="MySQL"/>
-    <sql-case id="create_by_mysql_source_test_case1344" value="create tablespace ndb_ts1 add datafile &apos;ndb_ts1.dat&apos; use logfile group ndb_lg1 engine=myisam initial_size=32M" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1345" value="create temporary table tg (i int not null) engine=merge union=()" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1346" value="create trigger ad after delete on t1 for each row set @a:= old.at" db-types="MySQL"/>
     <sql-case id="create_by_mysql_source_test_case1347" value="create trigger ai after insert on t1 for each row set @a:= new.at" db-types="MySQL"/>
@@ -6000,44 +5917,6 @@
     <sql-case id="drop_by_postgresql_source_test_case132" value="DROP OPERATOR IF EXISTS @#@ (int, int);" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case133" value="DROP OPERATOR IF EXISTS no_such_schema.+ (int, int);" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case134" value="DROP OPERATOR |&gt;(bigint, bigint);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case135" value="DROP OWNED BY regress_addr_user;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case136" value="DROP OWNED BY regress_dep_user0, regress_dep_user2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case137" value="DROP OWNED BY regress_dep_user0;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case138" value="DROP OWNED BY regress_dep_user1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case139" value="DROP OWNED BY regress_dep_user1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case140" value="DROP OWNED BY regress_dep_user1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case141" value="DROP OWNED BY regress_dep_user2, regress_dep_user0;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case142" value="DROP OWNED BY regress_evt_user;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case143" value="DROP OWNED BY regress_rls_dob_role1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case144" value="DROP OWNED BY regress_rls_dob_role1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case145" value="DROP OWNED BY regress_rls_dob_role1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case146" value="DROP OWNED BY regress_rls_dob_role1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case147" value="DROP OWNED BY regress_rls_dob_role1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case148" value="DROP OWNED BY regress_test_role2 CASCADE;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case149" value="DROP OWNED BY regress_test_role2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case150" value="DROP OWNED BY regress_user_mvtest CASCADE;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case151" value="DROP POLICY p ON t;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case152" value="DROP POLICY p ON tbl1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case153" value="DROP POLICY p1 ON dob_t1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case154" value="DROP POLICY p1 ON dob_t1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case155" value="DROP POLICY p1 ON dob_t1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case156" value="DROP POLICY p1 ON dob_t1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case157" value="DROP POLICY p1 ON dob_t2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case158" value="DROP POLICY p1 ON document;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case159" value="DROP POLICY p1 ON document;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case160" value="DROP POLICY p1 ON document;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case161" value="DROP POLICY p1 ON r2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case162" value="DROP POLICY p1r ON document;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case163" value="DROP POLICY p2 ON document;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case164" value="DROP POLICY p2 ON event_trigger_test;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case165" value="DROP POLICY p2 ON t1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case166" value="DROP POLICY p3 ON document;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case167" value="DROP POLICY p3 on s1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case168" value="DROP POLICY p3_with_default ON document;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case169" value="DROP POLICY policy_range_parted ON range_parted;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case170" value="DROP POLICY policy_range_parted_subplan ON range_parted;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case171" value="DROP POLICY policy_range_parted_wholerow ON range_parted;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case172" value="DROP POLICY pp1 ON part_document;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case173" value="DROP PUBLICATION addr_pub;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case174" value="DROP PUBLICATION addr_pub_schema;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case175" value="DROP PUBLICATION pub;" db-types="PostgreSQL"/>
@@ -7143,7 +7022,6 @@
     <sql-case id="select_by_postgresql_source_test_case13" value="SELECT  thousand 		FROM onek WHERE thousand &lt; 5 		ORDER BY thousand FETCH FIRST 2 ROW ONLY;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case14" value="SELECT  thousand 		FROM onek WHERE thousand &lt; 5 		ORDER BY thousand FETCH FIRST 2 ROW WITH TIES;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case15" value="SELECT  thousand 		FROM onek WHERE thousand &lt; 5 		ORDER BY thousand FETCH FIRST ROWS WITH TIES;" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case16" value="SELECT $$     SELECT col12, count(distinct a.col1), count(distinct a.col2), count(distinct b.col1), count(distinct b.col2), count(*)     FROM test_mark_restore a         JOIN test_mark_restore b USING(col12)     GROUP BY 1     HAVING count(*) &gt; 1     ORDER BY 2 DESC, 1 DESC, 3 DESC, 4 DESC, 5 DESC, 6 DESC     LIMIT 10 $$ AS qry \gset EXPLAIN (COSTS OFF) :qry;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case17" value="SELECT $$&apos;&apos; &apos;1&apos; &apos;2&apos;$$::tsvector;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case18" value="SELECT $$&apos;\\as&apos; ab\c ab\\c AB\\\c ab\\\\c$$::tsvector;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case19" value="SELECT $$&apos;\\as&apos;$$::tsquery;" db-types="PostgreSQL"/>
@@ -7784,12 +7662,6 @@
     <sql-case id="select_by_postgresql_source_test_case654" value="SELECT c1.f1, c2.f1 FROM CIRCLE_TBL c1, CIRCLE_TBL c2 WHERE c1.f1 |&amp;&gt; c2.f1;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case655" value="SELECT c1.f1, c2.f1 FROM CIRCLE_TBL c1, CIRCLE_TBL c2 WHERE c1.f1 |&gt;&gt; c2.f1;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case656" value="SELECT c1.f1, c2.f1 FROM CIRCLE_TBL c1, CIRCLE_TBL c2 WHERE c1.f1 ~= c2.f1;" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case657" value="SELECT check_ddl_rewrite(&apos;rewrite_test&apos;, $$     ALTER TABLE rewrite_test         ADD COLUMN empty3 text,         ADD COLUMN notempty3_norewrite int default 42; $$);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case658" value="SELECT check_ddl_rewrite(&apos;rewrite_test&apos;, $$     ALTER TABLE rewrite_test         ADD COLUMN empty5 text,         ADD COLUMN notempty5_norewrite int default 42,         ADD COLUMN notempty5_rewrite serial; $$);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case659" value="SELECT check_ddl_rewrite(&apos;rewrite_test&apos;, $$     ALTER TABLE rewrite_test         ADD COLUMN notempty2_rewrite serial,         ADD COLUMN empty2 text; $$);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case660" value="SELECT check_ddl_rewrite(&apos;rewrite_test&apos;, $$     ALTER TABLE rewrite_test         ADD COLUMN notempty4_norewrite int default 42,         ADD COLUMN empty4 text; $$);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case661" value="SELECT check_ddl_rewrite(&apos;rewrite_test&apos;, $$     ALTER TABLE rewrite_test         ADD COLUMN notempty6_rewrite serial,         ADD COLUMN empty6 text,         ADD COLUMN notempty6_norewrite int default 42; $$);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case662" value="SELECT check_ddl_rewrite(&apos;rewrite_test&apos;, $$   ALTER TABLE rewrite_test       ADD COLUMN empty1 text,       ADD COLUMN notempty1_rewrite serial; $$);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case663" value="SELECT circle_center(f1), round(radius(f1)) as radius FROM gcircle_tbl ORDER BY f1 &lt;-&gt; &apos;(200,300)&apos;::point LIMIT 10;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case664" value="SELECT circle_center(f1), round(radius(f1)) as radius FROM gcircle_tbl ORDER BY f1 &lt;-&gt; &apos;(200,300)&apos;::point LIMIT 10;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case665" value="SELECT cosh(float8 &apos;-infinity&apos;);" db-types="PostgreSQL"/>
@@ -7964,8 +7836,6 @@
     <sql-case id="select_by_postgresql_source_test_case834" value="SELECT f1[:1] FROM POINT_TBL;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case835" value="SELECT f1[:] FROM POINT_TBL;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case836" value="SELECT false AS false;" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case837" value="SELECT foo, length(foo) FROM regexp_split_to_table(&apos;the quick brown fox jumps over the lazy dog&apos;, $re$\s*$re$) AS foo;" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case838" value="SELECT foo, length(foo) FROM regexp_split_to_table(&apos;the quick brown fox jumps over the lazy dog&apos;, $re$\s+$re$) AS foo;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case839" value="SELECT get_bit(&apos;\x1234567890abcdef00&apos;::bytea, 43);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case840" value="SELECT get_bit(&apos;\x1234567890abcdef00&apos;::bytea, 99);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case841" value="SELECT get_bit(B&apos;0101011000100&apos;, 10);" db-types="PostgreSQL"/>
@@ -8295,18 +8165,6 @@
     <sql-case id="select_by_postgresql_source_test_case1165" value="SELECT range_merge(nummultirange(numrange(1,2)));" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case1166" value="SELECT range_merge(nummultirange(numrange(1,2), numrange(7,8)));" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case1167" value="SELECT rank() OVER (PARTITION BY four, ORDER BY ten) FROM tenk1;" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case1168" value="SELECT regexp_matches(&apos;foObARbEqUEbAz&apos;, $re$(bar)(beque)$re$, &apos;i&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case1169" value="SELECT regexp_matches(&apos;foobarbequebaz&apos;, $re$(bar)(.*)(beque)$re$);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case1170" value="SELECT regexp_matches(&apos;foobarbequebaz&apos;, $re$(bar)(.+)(beque)$re$);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case1171" value="SELECT regexp_matches(&apos;foobarbequebaz&apos;, $re$(bar)(.+)?(beque)$re$);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case1172" value="SELECT regexp_matches(&apos;foobarbequebaz&apos;, $re$(bar)(beque)$re$);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case1173" value="SELECT regexp_matches(&apos;foobarbequebaz&apos;, $re$(bar)(beque)$re$, &apos;gz&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case1174" value="SELECT regexp_matches(&apos;foobarbequebaz&apos;, $re$(bar)(beque){2,1}$re$);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case1175" value="SELECT regexp_matches(&apos;foobarbequebaz&apos;, $re$(barbeque$re$);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case1176" value="SELECT regexp_matches(&apos;foobarbequebaz&apos;, $re$barbeque$re$);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case1177" value="SELECT regexp_matches(&apos;foobarbequebazilbarfbonk&apos;, $re$(b[^b]+)(b[^b]+)$re$, &apos;g&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case1178" value="SELECT regexp_split_to_array(&apos;the quick brown fox jumps over the lazy dog&apos;, $re$\s*$re$);" db-types="PostgreSQL"/>
-    <sql-case id="select_by_postgresql_source_test_case1179" value="SELECT regexp_split_to_array(&apos;the quick brown fox jumps over the lazy dog&apos;, $re$\s+$re$);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case1180" value="SELECT relname, nspname  FROM pg_class c LEFT JOIN pg_namespace n ON n.oid = relnamespace JOIN pg_attribute a ON (attrelid = c.oid AND attname = &apos;oid&apos;)  WHERE relkind = &apos;r&apos; and c.oid &lt; 16384      AND ((nspname ~ &apos;^pg_&apos;) IS NOT FALSE)      AND NOT EXISTS (SELECT 1 FROM pg_index i WHERE indrelid = c.oid                      AND indkey[0] = a.attnum AND indnatts = 1                      AND indisunique AND indimmediate);" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case1181" value="SELECT reloptions FROM pg_class WHERE oid = :toast_oid;" db-types="PostgreSQL"/>
     <sql-case id="select_by_postgresql_source_test_case1182" value="SELECT reloptions FROM pg_class WHERE oid = :toast_oid;" db-types="PostgreSQL"/>
@@ -9736,7 +9594,6 @@
     <sql-case id="low_refresh_by_postgresql_source_test_case3" value="refresh materialized view parallel_mat_view;" db-types="PostgreSQL"/>
     <sql-case id="low_reindex_by_postgresql_source_test_case1" value="reindex index gist_pointidx;" db-types="PostgreSQL"/>
     <sql-case id="low_reindex_by_postgresql_source_test_case2" value="reindex index spgist_point_idx;" db-types="PostgreSQL"/>
-    <sql-case id="low_select_by_postgresql_source_test_case1" value="select   query,   js-&gt;0-&gt;&apos;Plan&apos;-&gt;&apos;Plans&apos;-&gt;0-&gt;&apos;Actual Rows&apos; as &quot;return by index&quot;,   js-&gt;0-&gt;&apos;Plan&apos;-&gt;&apos;Rows Removed by Index Recheck&apos; as &quot;removed by recheck&quot;,   (res_index = res_heap) as &quot;match&quot; from   (values     ($$ i @&gt; &apos;{}&apos; $$),     ($$ j @&gt; &apos;{}&apos; $$),     ($$ i @&gt; &apos;{}&apos; and j @&gt; &apos;{}&apos; $$),     ($$ i @&gt; &apos;{1}&apos; $$),     ($$ i @&gt; &apos;{1}&apos; and j @&gt; &apos;{}&apos; $$),     ($$ i @&gt; &apos;{1}&apos; and i @&gt; &apos;{}&apos; and j @&gt; &apos;{}&apos; $$),     ($$ j @&gt; &apos;{10}&apos; $$),     ($$ j @&gt; &apos;{10}&apos; and i @&gt; &apos;{}&apos; $$),     ($$ j @&gt; &apos;{10}&apos; and j @&gt; &apos;{}&apos; and i @&gt; &apos;{}&apos; $$),     ($$ i @&gt; &apos;{1}&apos; and j @&gt; &apos;{10}&apos; $$)   ) q(query),   lateral explain_query_json($$select * from t_gin_test_tbl where $$ || query) js,   lateral execute_text_query_index($$select string_agg((i, j)::text, &apos; &apos;) from t_gin_test_tbl where $$ || query) res_index,   lateral execute_text_query_heap($$select string_agg((i, j)::text, &apos; &apos;) from t_gin_test_tbl where $$ || query) res_heap;" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case2" value="select &apos;&quot;\b\f\r\n\t\v\&quot;\&apos;&apos;\\&quot;&apos;::jsonpath;" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case3" value="select &apos;[2010-01-01 01:00:00 -05, 2010-01-01 02:00:00 -08)&apos;::tstzrange;" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case4" value="select &apos;[2010-01-01 01:00:00 -08, 2010-01-01 02:00:00 -05)&apos;::tstzrange;" db-types="PostgreSQL"/>
@@ -9761,10 +9618,6 @@
     <sql-case id="low_select_by_postgresql_source_test_case23" value="select * from array_to_set(array[&apos;one&apos;, &apos;two&apos;]) as t(f1 point,f2 text);" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case24" value="select * from array_to_set(array[&apos;one&apos;, &apos;two&apos;]) as t(f1 point,f2 text);" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case25" value="select * from duplic(int4range(42,49));" db-types="PostgreSQL"/>
-    <sql-case id="low_select_by_postgresql_source_test_case26" value="select * from hash_join_batches( $$   select count(*) from simple r join extremely_skewed s using (id); $$);" db-types="PostgreSQL"/>
-    <sql-case id="low_select_by_postgresql_source_test_case27" value="select * from hash_join_batches( $$   select count(*) from simple r join extremely_skewed s using (id); $$);" db-types="PostgreSQL"/>
-    <sql-case id="low_select_by_postgresql_source_test_case28" value="select * from hash_join_batches( $$   select count(*) from simple r join extremely_skewed s using (id); $$);" db-types="PostgreSQL"/>
-    <sql-case id="low_select_by_postgresql_source_test_case29" value="select * from hash_join_batches( $$   select count(*) from simple r join simple s using (id); $$);" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case30" value="select * from inoutparam_succeed(int4range(1,2));" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case31" value="select * from int8_tbl i where i.* in (values(i.*::int8_tbl));" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case32" value="select * from int8_tbl i, lateral(values(i.*::int8_tbl)) ss;" db-types="PostgreSQL"/>
@@ -10009,11 +9862,6 @@
     <sql-case id="low_select_by_postgresql_source_test_case271" value="select f1(point(3,4));" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case272" value="select f1, f1[1], (f1[1])[1] from dposintatable;" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case273" value="select f1, f1[1], (f1[2])[1] from dposintatable;" db-types="PostgreSQL"/>
-    <sql-case id="low_select_by_postgresql_source_test_case274" value="select final &gt; 1 as multibatch   from hash_join_batches( $$   select count(*) from join_foo     left join (select b1.id, b1.t from join_bar b1 join join_bar b2 using (id)) ss     on join_foo.id &lt; ss.id + 1 and join_foo.id &gt; ss.id - 1; $$);" db-types="PostgreSQL"/>
-    <sql-case id="low_select_by_postgresql_source_test_case275" value="select final &gt; 1 as multibatch   from hash_join_batches( $$   select count(*) from join_foo     left join (select b1.id, b1.t from join_bar b1 join join_bar b2 using (id)) ss     on join_foo.id &lt; ss.id + 1 and join_foo.id &gt; ss.id - 1; $$);" db-types="PostgreSQL"/>
-    <sql-case id="low_select_by_postgresql_source_test_case276" value="select final &gt; 1 as multibatch   from hash_join_batches( $$   select count(*) from join_foo     left join (select b1.id, b1.t from join_bar b1 join join_bar b2 using (id)) ss     on join_foo.id &lt; ss.id + 1 and join_foo.id &gt; ss.id - 1; $$);" db-types="PostgreSQL"/>
-    <sql-case id="low_select_by_postgresql_source_test_case277" value="select final &gt; 1 as multibatch   from hash_join_batches( $$   select count(*) from join_foo     left join (select b1.id, b1.t from join_bar b1 join join_bar b2 using (id)) ss     on join_foo.id &lt; ss.id + 1 and join_foo.id &gt; ss.id - 1; $$);" db-types="PostgreSQL"/>
-    <sql-case id="low_select_by_postgresql_source_test_case278" value="select final &gt; 1 as multibatch   from hash_join_batches( $$   select length(max(s.t))   from wide left join (select id, coalesce(t, &apos;&apos;) || &apos;&apos; as t from wide) s using (id); $$);" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case279" value="select format(&apos;create index on gexec_test(%I)&apos;, attname) from pg_attribute where attrelid = &apos;gexec_test&apos;::regclass and attnum &gt; 0 order by attnum \gexec select &apos;select 1 as ones&apos;, &apos;select x.y, x.y*2 as double from generate_series(1,4) as x(y)&apos; union all select &apos;drop table gexec_test&apos;, NULL union all select &apos;drop table gexec_test&apos;, &apos;select &apos;&apos;2000-01-01&apos;&apos;::date as party_over&apos; \gexec \unset FETCH_COUNT prepare q as select array_to_string(array_agg(repeat(&apos;x&apos;,2*n)),E&apos;\n&apos;) as &quot;ab c&quot;, array_to_string(array_agg(repeat(&apos;y&apos;,20-2*n)),E&apos;\n&apos;) as &quot;a bc&quot; from generate_series(1,10) as n(n) group by n&gt;1 order by n&gt;1;" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case280" value="select id, f_float4, first_value(id) over w, last_value(id) over w from numerics window w as (order by f_float4 range between              1.1 preceding and &apos;NaN&apos; select id, f_float8, first_value(id) over w, last_value(id) over w from numerics window w as (order by f_float8 range between              1 preceding and 1 following);" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case281" value="select id, f_float8, first_value(id) over w, last_value(id) over w from numerics window w as (order by f_float8 range between              1.1 preceding and &apos;NaN&apos; select id, f_numeric, first_value(id) over w, last_value(id) over w from numerics window w as (order by f_numeric range between              1 preceding and 1 following);" db-types="PostgreSQL"/>
@@ -10098,15 +9946,6 @@
     <sql-case id="low_select_by_postgresql_source_test_case360" value="select nummultirange(numrange(3,4), numrange(7,8)) &gt;&gt; nummultirange(numrange(1,2));" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case361" value="select nummultirange(numrange(3,4), numrange(7,8)) &gt;&gt; nummultirange(numrange(1,2), numrange(4,5));" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case362" value="select nummultirange(numrange(5.0, 6.0), numrange(1.0, 2.0));" db-types="PostgreSQL"/>
-    <sql-case id="low_select_by_postgresql_source_test_case363" value="select original &gt; 1 as initially_multibatch, final &gt; original as increased_batches   from hash_join_batches( $$   select count(*) FROM simple r JOIN bigger_than_it_looks s USING (id); $$);" db-types="PostgreSQL"/>
-    <sql-case id="low_select_by_postgresql_source_test_case364" value="select original &gt; 1 as initially_multibatch, final &gt; original as increased_batches   from hash_join_batches( $$   select count(*) from simple r join bigger_than_it_looks s using (id); $$);" db-types="PostgreSQL"/>
-    <sql-case id="low_select_by_postgresql_source_test_case365" value="select original &gt; 1 as initially_multibatch, final &gt; original as increased_batches   from hash_join_batches( $$   select count(*) from simple r join bigger_than_it_looks s using (id); $$);" db-types="PostgreSQL"/>
-    <sql-case id="low_select_by_postgresql_source_test_case366" value="select original &gt; 1 as initially_multibatch, final &gt; original as increased_batches   from hash_join_batches( $$   select count(*) from simple r join simple s using (id); $$);" db-types="PostgreSQL"/>
-    <sql-case id="low_select_by_postgresql_source_test_case367" value="select original &gt; 1 as initially_multibatch, final &gt; original as increased_batches   from hash_join_batches( $$   select count(*) from simple r join simple s using (id); $$);" db-types="PostgreSQL"/>
-    <sql-case id="low_select_by_postgresql_source_test_case368" value="select original &gt; 1 as initially_multibatch, final &gt; original as increased_batches   from hash_join_batches( $$   select count(*) from simple r join simple s using (id); $$);" db-types="PostgreSQL"/>
-    <sql-case id="low_select_by_postgresql_source_test_case369" value="select original &gt; 1 as initially_multibatch, final &gt; original as increased_batches   from hash_join_batches( $$   select count(*) from simple r join simple s using (id); $$);" db-types="PostgreSQL"/>
-    <sql-case id="low_select_by_postgresql_source_test_case370" value="select original &gt; 1 as initially_multibatch, final &gt; original as increased_batches   from hash_join_batches( $$   select count(*) from simple r join simple s using (id); $$);" db-types="PostgreSQL"/>
-    <sql-case id="low_select_by_postgresql_source_test_case371" value="select original &gt; 1 as initially_multibatch, final &gt; original as increased_batches   from hash_join_batches( $$   select count(*) from simple r join simple s using (id); $$);" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case372" value="select p from   (values (box(point(0,0), point(0.5,0.5))),           (box(point(0.5,0.5), point(0.75,0.75))),           (box(point(0.8,0.8), point(1.0,1.0)))) as v(bb) cross join lateral   (select p from gist_tbl where p &lt;@ bb order by p &lt;-&gt; bb[0] limit 2) ss;" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case373" value="select p2text(c1.*) from c1;" db-types="PostgreSQL"/>
     <sql-case id="low_select_by_postgresql_source_test_case374" value="select pg_typeof((f1[1])[1]) from dposintatable;" db-types="PostgreSQL"/>

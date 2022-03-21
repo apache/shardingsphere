@@ -42,7 +42,7 @@ public final class TypedSPIRegistry {
      */
     public static <T extends TypedSPI> Optional<T> findRegisteredService(final Class<T> typedSPIClass, final String type, final Properties props) {
         for (T each : ShardingSphereServiceLoader.newServiceInstances(typedSPIClass)) {
-            if (each.getType().equalsIgnoreCase(type)) {
+            if (each.getType().equalsIgnoreCase(type) || each.getTypeAliases().contains(type)) {
                 setProperties(each, props);
                 return Optional.of(each);
             }

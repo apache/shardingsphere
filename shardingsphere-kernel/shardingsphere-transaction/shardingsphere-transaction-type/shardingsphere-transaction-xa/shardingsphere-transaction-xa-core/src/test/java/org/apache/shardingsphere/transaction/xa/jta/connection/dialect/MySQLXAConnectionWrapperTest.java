@@ -17,49 +17,44 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
+import com.mysql.jdbc.jdbc2.optional.JDBC4MysqlXAConnection;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
+import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapperFactory;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
-import javax.transaction.xa.XAResource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class MySQLXAConnectionWrapperTest {
     
-    private XADataSource xaDataSource;
-    
-    @Mock
-    private Connection connection;
-    
-    @Before
-    public void setUp() throws SQLException, ClassNotFoundException {
-        Connection connection = (Connection) mock(Class.forName("com.mysql.jdbc.Connection"));
-        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseTypeRegistry.getActualDatabaseType("MySQL"), "ds1");
-        xaDataSource = XADataSourceFactory.build(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), dataSource);
-        when(this.connection.unwrap(any())).thenReturn(connection);
-    }
+    private final DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("MySQL");
     
     @Test
-    public void assertCreateMySQLConnection() throws SQLException {
-        XAConnection actual = new MySQLXAConnectionWrapper().wrap(xaDataSource, connection);
-        assertThat(actual.getXAResource(), instanceOf(XAResource.class));
-        assertThat(actual.getConnection(), instanceOf(Connection.class));
+    public void assertWrap() throws SQLException {
+        XAConnection actual = XAConnectionWrapperFactory.newInstance(databaseType).wrap(createXADataSource(), mockConnection());
+        assertThat(actual.getXAResource(), instanceOf(JDBC4MysqlXAConnection.class));
+    }
+    
+    private XADataSource createXADataSource() {
+        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, databaseType, "foo_ds");
+        return XADataSourceFactory.build(databaseType, dataSource);
+    }
+    
+    private Connection mockConnection() throws SQLException {
+        Connection result = mock(Connection.class);
+        when(result.unwrap(com.mysql.jdbc.Connection.class)).thenReturn(mock(com.mysql.jdbc.Connection.class));
+        return result;
     }
 }

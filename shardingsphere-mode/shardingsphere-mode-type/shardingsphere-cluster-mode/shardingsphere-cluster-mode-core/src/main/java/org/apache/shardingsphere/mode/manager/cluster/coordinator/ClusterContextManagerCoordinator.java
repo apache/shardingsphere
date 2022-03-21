@@ -21,6 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
@@ -35,9 +36,12 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.SchemaVersionChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
@@ -183,9 +187,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final StateEvent event) {
-        if (contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId().equals(event.getInstanceId())) {
-            contextManager.getInstanceContext().updateInstanceStatus(event.getStatus());
-        }
+        contextManager.getInstanceContext().updateInstanceStatus(event.getInstanceId(), event.getStatus());
     }
     
     /**
@@ -207,9 +209,41 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final LabelsEvent event) {
+        contextManager.getInstanceContext().updateLabel(event.getInstanceId(), event.getLabels());
+    }
+    
+    /**
+     * Renew instance xa recovery id event.
+     *
+     * @param event xa recovery id event
+     */
+    @Subscribe
+    public synchronized void renew(final XaRecoveryIdEvent event) {
         if (contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId().equals(event.getInstanceId())) {
-            contextManager.getInstanceContext().updateLabel(event.getLabels());
+            contextManager.getInstanceContext().updateXaRecoveryId(event.getXaRecoveryId());
+            contextManager.renewAllTransactionContext();
         }
+    }
+    
+    /**
+     * Renew instance list.
+     *
+     * @param event compute node online event
+     */
+    @Subscribe
+    public synchronized void renew(final InstanceOnlineEvent event) {
+        ComputeNodeInstance instance = metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(event.getInstanceDefinition());
+        contextManager.getInstanceContext().addComputeNodeInstance(instance);
+    }
+    
+    /**
+     * Renew instance list.
+     *
+     * @param event compute node offline event
+     */
+    @Subscribe
+    public synchronized void renew(final InstanceOfflineEvent event) {
+        contextManager.getInstanceContext().deleteComputeNodeInstance(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(event.getInstanceDefinition()));
     }
     
     /**

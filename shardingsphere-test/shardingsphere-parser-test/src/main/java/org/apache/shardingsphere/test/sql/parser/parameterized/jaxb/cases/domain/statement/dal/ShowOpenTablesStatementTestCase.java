@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class ShowOpenTablesStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement(name = "from")
     private ExpectedFromSchema fromSchema;
     

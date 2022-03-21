@@ -23,26 +23,52 @@ import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapp
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * OpenGauss XA connection wrapper.
+ * XA connection wrapper for openGauss.
  */
 public final class OpenGaussXAConnectionWrapper implements XAConnectionWrapper {
     
-    private static final String BASE_CONNECTION_CLASS = "org.opengauss.core.BaseConnection";
+    private static volatile Class<Connection> jdbcConnectionClass;
     
-    private static final String PG_XA_CONNECTION_CLASS = "org.opengauss.xa.PGXAConnection";
+    private static volatile Constructor<?> xaConnectionConstructor;
     
-    @SneakyThrows({SQLException.class, ClassNotFoundException.class, NoSuchMethodException.class, SecurityException.class,
-            InstantiationException.class, IllegalAccessException.class, InvocationTargetException.class})
+    private volatile boolean initialized;
+    
     @Override
-    public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) {
-        Class<?> baseConnectionClass = Class.forName(BASE_CONNECTION_CLASS);
-        Object physicalConnection = connection.unwrap(baseConnectionClass);
-        Constructor<?> pgXAConnectionConstructor = Class.forName(PG_XA_CONNECTION_CLASS).getConstructor(baseConnectionClass);
-        return (XAConnection) pgXAConnectionConstructor.newInstance(physicalConnection);
+    public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {
+        if (!initialized) {
+            loadReflection();
+            initialized = true;
+        }
+        return createXAConnection(connection.unwrap(jdbcConnectionClass));
+    }
+    
+    private void loadReflection() {
+        jdbcConnectionClass = getJDBCConnectionClass();
+        xaConnectionConstructor = getXAConnectionConstructor();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Class<Connection> getJDBCConnectionClass() {
+        return (Class<Connection>) Class.forName("org.opengauss.core.BaseConnection");
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Constructor<?> getXAConnectionConstructor() {
+        return Class.forName("org.opengauss.xa.PGXAConnection").getConstructor(Class.forName("org.opengauss.core.BaseConnection"));
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private XAConnection createXAConnection(final Connection connection) {
+        return (XAConnection) xaConnectionConstructor.newInstance(connection);
+    }
+    
+    @Override
+    public String getType() {
+        return "openGauss";
     }
 }

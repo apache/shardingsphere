@@ -53,10 +53,10 @@ public final class DropTrafficRuleHandler extends UpdatableRALBackendHandler<Dro
     
     private void check(final DropTrafficRuleStatement sqlStatement, final Optional<TrafficRuleConfiguration> configuration) throws DistSQLException {
         if (!sqlStatement.isContainsIfExistClause()) {
-            DistSQLException.predictionThrow(configuration.isPresent(), new RequiredRuleMissedException("Traffic"));
+            DistSQLException.predictionThrow(configuration.isPresent(), () -> new RequiredRuleMissedException("Traffic"));
             Set<String> currentTrafficStrategyNames = configuration.get().getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
             Set<String> notExistRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !currentTrafficStrategyNames.contains(each)).collect(Collectors.toSet());
-            DistSQLException.predictionThrow(notExistRuleNames.isEmpty(), new RequiredRuleMissedException("Traffic"));
+            DistSQLException.predictionThrow(notExistRuleNames.isEmpty(), () -> new RequiredRuleMissedException("Traffic"));
         }
     }
     

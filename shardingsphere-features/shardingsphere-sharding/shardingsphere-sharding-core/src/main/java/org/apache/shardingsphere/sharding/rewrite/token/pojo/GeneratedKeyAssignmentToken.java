@@ -34,7 +34,7 @@ public abstract class GeneratedKeyAssignmentToken extends SQLToken implements At
     
     @Override
     public final String toString() {
-        return String.format(", %s = %s", columnName, getRightValue());
+        return ", " + columnName + " = " + getRightValue();
     }
     
     protected abstract String getRightValue();
