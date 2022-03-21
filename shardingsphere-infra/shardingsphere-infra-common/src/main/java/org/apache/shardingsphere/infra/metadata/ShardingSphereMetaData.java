@@ -54,18 +54,18 @@ public final class ShardingSphereMetaData {
     /**
      * Create ShardingSphere meta data.
      * 
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param schemas schemas
      * @param schemaConfig schema configuration
      * @param rules rules
      * @return ShardingSphere meta data
      * @throws SQLException SQL exception
      */
-    public static ShardingSphereMetaData create(final String schemaName, final Map<String, ShardingSphereSchema> schemas, final SchemaConfiguration schemaConfig,
+    public static ShardingSphereMetaData create(final String databaseName, final Map<String, ShardingSphereSchema> schemas, final SchemaConfiguration schemaConfig,
                                                 final Collection<ShardingSphereRule> rules) throws SQLException {
         ShardingSphereResource resource = createResource(schemaConfig.getDataSources());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(schemaConfig.getRuleConfigurations(), rules);
-        return new ShardingSphereMetaData(schemaName, resource, ruleMetaData, schemas);
+        return new ShardingSphereMetaData(databaseName, resource, ruleMetaData, schemas);
     }
     
     private static ShardingSphereResource createResource(final Map<String, DataSource> dataSourceMap) throws SQLException {

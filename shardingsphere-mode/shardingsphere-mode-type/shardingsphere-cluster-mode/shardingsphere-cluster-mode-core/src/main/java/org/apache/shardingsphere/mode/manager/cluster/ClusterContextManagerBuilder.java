@@ -50,6 +50,7 @@ import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGen
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -69,7 +70,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         persistConfigurations(metaDataPersistService, parameter);
         RegistryCenter registryCenter = new RegistryCenter(repository);
         MetaDataContextsBuilder metaDataContextsBuilder = createMetaDataContextsBuilder(metaDataPersistService, parameter);
-        persistMetaData(metaDataPersistService, metaDataContextsBuilder.getSchemaMap());
+        Map<String, ShardingSphereSchema> schemaMap = metaDataContextsBuilder.getDatabaseMap().isEmpty() 
+                ? Collections.emptyMap() : metaDataContextsBuilder.getDatabaseMap().values().iterator().next().getSchemas();
+        persistMetaData(metaDataPersistService, schemaMap);
         MetaDataContexts metaDataContexts = metaDataContextsBuilder.build(metaDataPersistService);
         Properties transactionProps = getTransactionProperties(metaDataContexts);
         persistTransactionConfiguration(parameter, metaDataPersistService, transactionProps);

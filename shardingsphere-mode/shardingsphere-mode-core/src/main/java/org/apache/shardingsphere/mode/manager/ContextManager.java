@@ -474,7 +474,7 @@ public final class ContextManager implements AutoCloseable {
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), props);
         metaDataContextsBuilder.addSchema(originalMetaData.getName(), schemaConfiguration, props);
         metaDataContexts.getMetaDataPersistService().ifPresent(
-            optional -> optional.getSchemaMetaDataService().persist(originalMetaData.getName(), metaDataContextsBuilder.getSchemaMap().get(originalMetaData.getName())));
+            optional -> optional.getSchemaMetaDataService().persist(originalMetaData.getName(), metaDataContextsBuilder.getSchemaMap(originalMetaData.getName())));
         return metaDataContextsBuilder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
     }
     
@@ -491,7 +491,7 @@ public final class ContextManager implements AutoCloseable {
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), props);
         metaDataContextsBuilder.addSchema(originalMetaData.getName(), new DataSourceProvidedSchemaConfiguration(originalMetaData.getResource().getDataSources(), ruleConfigs), props);
         metaDataContexts.getMetaDataPersistService().ifPresent(
-            optional -> optional.getSchemaMetaDataService().persist(originalMetaData.getName(), metaDataContextsBuilder.getSchemaMap().get(originalMetaData.getName())));
+            optional -> optional.getSchemaMetaDataService().persist(originalMetaData.getName(), metaDataContextsBuilder.getSchemaMap(originalMetaData.getName())));
         return metaDataContextsBuilder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
     }
     
@@ -505,7 +505,7 @@ public final class ContextManager implements AutoCloseable {
                 getNewDataSources(originalMetaData.getResource().getDataSources(), getAddedDataSources(originalMetaData, newDataSourceProps), changedDataSources, deletedDataSources),
                 originalMetaData.getRuleMetaData().getConfigurations()), props);
         metaDataContexts.getMetaDataPersistService().ifPresent(
-            optional -> optional.getSchemaMetaDataService().persist(originalMetaData.getName(), metaDataContextsBuilder.getSchemaMap().get(originalMetaData.getName())));
+            optional -> optional.getSchemaMetaDataService().persist(originalMetaData.getName(), metaDataContextsBuilder.getSchemaMap(originalMetaData.getName())));
         return metaDataContextsBuilder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
     }
     
@@ -518,7 +518,7 @@ public final class ContextManager implements AutoCloseable {
         metaDataContextsBuilder.addSchema(originalMetaData.getName(), new DataSourceProvidedSchemaConfiguration(getNewDataSources(originalMetaData.getResource().getDataSources(), 
                 getAddedDataSources(originalMetaData, newDataSourceProps), changedDataSources, deletedDataSources), ruleConfigs), props);
         metaDataContexts.getMetaDataPersistService().ifPresent(
-            optional -> optional.getSchemaMetaDataService().persist(originalMetaData.getName(), metaDataContextsBuilder.getSchemaMap().get(originalMetaData.getName())));
+            optional -> optional.getSchemaMetaDataService().persist(originalMetaData.getName(), metaDataContextsBuilder.getSchemaMap(originalMetaData.getName())));
         return metaDataContextsBuilder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
     }
     
