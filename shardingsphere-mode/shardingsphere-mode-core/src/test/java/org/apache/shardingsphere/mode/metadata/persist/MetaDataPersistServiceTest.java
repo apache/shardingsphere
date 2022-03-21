@@ -167,8 +167,8 @@ public final class MetaDataPersistServiceTest {
     
     @Test
     public void assertPersistTransactionRule() {
-        Properties props = createProperties();
         Collection<RuleConfiguration> globalRuleConfigs = createGlobalRuleConfigurations();
+        Properties props = createProperties();
         metaDataPersistService.persistTransactionRule(props, false);
         verify(globalRuleService).persist(globalRuleConfigs, false);
     }
