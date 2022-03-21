@@ -25,10 +25,10 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Scaling entry loader.
+ * Scaling entry factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ScalingEntryLoader {
+public final class ScalingEntryFactory {
     
     private static final Map<String, ScalingEntry> SCALING_ENTRY_MAP = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     
@@ -40,11 +40,10 @@ public final class ScalingEntryLoader {
     }
     
     /**
-     * Get {@code ScalingEntry} by database type.
-     * If not found, throw {@code UnsupportedOperationException}
+     * Get instance of scaling entry.
      *
      * @param databaseType database type
-     * @return scaling entry
+     * @return instance of scaling entry
      */
     public static ScalingEntry getInstance(final String databaseType) {
         if (SCALING_ENTRY_MAP.containsKey(databaseType)) {
