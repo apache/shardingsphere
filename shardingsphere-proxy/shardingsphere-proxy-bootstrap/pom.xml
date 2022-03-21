@@ -117,7 +117,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <scope>compile</scope>
+            <scope>runtime</scope>
         </dependency>
         
         <dependency>
