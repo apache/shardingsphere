@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 168 companies.
+Total: 169 companies.
 
 ### Infra
 <ul>
