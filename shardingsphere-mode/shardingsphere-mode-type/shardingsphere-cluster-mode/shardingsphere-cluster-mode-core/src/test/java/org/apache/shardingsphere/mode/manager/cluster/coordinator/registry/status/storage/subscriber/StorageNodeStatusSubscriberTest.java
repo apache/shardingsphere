@@ -69,6 +69,6 @@ public final class StorageNodeStatusSubscriberTest {
         PrimaryDataSourceChangedEvent event = new PrimaryDataSourceChangedEvent(schemaName, groupName, dataSourceName);
         new StorageNodeStatusSubscriber(repository).update(event);
         verify(repository).persist(StorageStatusNode.getStatusPath(new QualifiedSchema(schemaName, groupName, dataSourceName)),
-                YamlEngine.marshal(new StorageNodeDataSource(StorageNodeRole.PRIMARY,StorageNodeStatus.ENABLE )));
+                YamlEngine.marshal(new StorageNodeDataSource(StorageNodeRole.PRIMARY,StorageNodeStatus.ENABLE)));
     }
 }
