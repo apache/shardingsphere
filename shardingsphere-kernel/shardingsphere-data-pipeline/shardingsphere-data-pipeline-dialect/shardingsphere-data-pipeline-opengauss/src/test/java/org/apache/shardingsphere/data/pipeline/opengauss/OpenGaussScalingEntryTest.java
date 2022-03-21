@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.opengauss.importer.OpenGaussImpor
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussWalDumper;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLInventoryDumper;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
-import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
+import org.apache.shardingsphere.scaling.core.spi.ScalingEntryFactory;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -32,7 +32,7 @@ public final class OpenGaussScalingEntryTest {
     
     @Test
     public void assertGetScalingEntryByDatabaseType() {
-        ScalingEntry actual = ScalingEntryLoader.getInstance("openGauss");
+        ScalingEntry actual = ScalingEntryFactory.getInstance("openGauss");
         assertTrue(actual instanceof OpenGaussScalingEntry);
         assertThat(actual.getEnvironmentCheckerClass(), equalTo(OpenGaussEnvironmentChecker.class));
         assertThat(actual.getImporterClass(), equalTo(OpenGaussImporter.class));

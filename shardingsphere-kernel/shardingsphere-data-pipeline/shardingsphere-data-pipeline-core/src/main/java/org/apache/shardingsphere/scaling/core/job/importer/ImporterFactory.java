@@ -25,7 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChanne
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
-import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
+import org.apache.shardingsphere.scaling.core.spi.ScalingEntryFactory;
 
 import java.lang.reflect.Constructor;
 
@@ -46,7 +46,7 @@ public final class ImporterFactory {
     @SneakyThrows(ReflectiveOperationException.class)
     public static Importer createImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
         String databaseType = importerConfig.getDataSourceConfig().getDatabaseType().getName();
-        ScalingEntry scalingEntry = ScalingEntryLoader.getInstance(databaseType);
+        ScalingEntry scalingEntry = ScalingEntryFactory.getInstance(databaseType);
         Constructor<? extends Importer> constructor = scalingEntry.getImporterClass().getConstructor(ImporterConfiguration.class, PipelineDataSourceManager.class, PipelineChannel.class);
         return constructor.newInstance(importerConfig, dataSourceManager, channel);
     }
