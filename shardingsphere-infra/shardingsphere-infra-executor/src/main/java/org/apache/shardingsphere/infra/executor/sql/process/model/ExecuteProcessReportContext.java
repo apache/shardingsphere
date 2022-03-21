@@ -32,11 +32,9 @@ public final class ExecuteProcessReportContext {
     
     private final String executionID;
     
-    private final long showProcessListNoReportThresholdMillis;
+    private final int showProcessListAsyncThreadNumber;
     
     private volatile YamlExecuteProcessContext yamlExecuteProcessContext;
-    
-    private boolean reportToGovernanceDonePartially;
     
     @Override
     public String toString() {

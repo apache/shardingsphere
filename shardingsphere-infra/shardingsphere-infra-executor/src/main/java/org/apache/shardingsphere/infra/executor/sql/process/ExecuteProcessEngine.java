@@ -60,8 +60,8 @@ public final class ExecuteProcessEngine {
     public static void initialize(final LogicSQL logicSQL, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ConfigurationProperties props) {
         SQLStatementContext<?> context = logicSQL.getSqlStatementContext();
         if (!HANDLERS.isEmpty() && ExecuteProcessStrategyEvaluator.evaluate(context, executionGroupContext, props)) {
-            long noReportThresholdMillis = props.getValue(ConfigurationPropertyKey.SHOW_PROCESS_LIST_NO_REPORT_THRESHOLD_MILLIS);
-            ExecuteProcessReportContext reportContext = new ExecuteProcessReportContext(executionGroupContext.getExecutionID(), noReportThresholdMillis);
+            int number = props.getValue(ConfigurationPropertyKey.SHOW_PROCESS_LIST_ASYNC_THREAD_NUM);
+            ExecuteProcessReportContext reportContext = new ExecuteProcessReportContext(executionGroupContext.getExecutionID(), number);
             ExecutorDataMap.getValue().put(ExecuteProcessConstants.EXECUTE_ID.name(), reportContext);
             HANDLERS.iterator().next().report(logicSQL, executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START);
         }

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.proce
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessUnitReportEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ShowProcessListResponseEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.executor.ProcessThreadExecutorGroup;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.node.ProcessNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -77,11 +78,9 @@ public final class ProcessRegistrySubscriber {
                 return;
             }
             YamlExecuteProcessContext yamlExecuteProcessContext = reportContext.getYamlExecuteProcessContext();
-            if (System.currentTimeMillis() - yamlExecuteProcessContext.getStartTimeMillis() <= reportContext.getShowProcessListNoReportThresholdMillis()) {
-                return;
-            }
-            repository.persist(ProcessNode.getExecutionPath(executionID), YamlEngine.marshal(yamlExecuteProcessContext));
-            reportContext.setReportToGovernanceDonePartially(true);
+            String processContext = YamlEngine.marshal(yamlExecuteProcessContext);
+            ProcessThreadExecutorGroup.getInstance().get(executionID, reportContext.getShowProcessListAsyncThreadNumber())
+                    .submit(() -> repository.persist(ProcessNode.getExecutionPath(executionID), processContext));
         }
     }
     
@@ -106,13 +105,9 @@ public final class ProcessRegistrySubscriber {
                     unit.setStatus(executeProcessUnit.getStatus());
                 }
             }
-            if (System.currentTimeMillis() - yamlExecuteProcessContext.getStartTimeMillis() <= reportContext.getShowProcessListNoReportThresholdMillis()
-                    && !reportContext.isReportToGovernanceDonePartially()) {
-                return;
-            }
-            String executionPath = ProcessNode.getExecutionPath(executionID);
-            repository.persist(executionPath, YamlEngine.marshal(yamlExecuteProcessContext));
-            reportContext.setReportToGovernanceDonePartially(true);
+            String processContext = YamlEngine.marshal(yamlExecuteProcessContext);
+            ProcessThreadExecutorGroup.getInstance().get(executionID, reportContext.getShowProcessListAsyncThreadNumber())
+                    .submit(() -> repository.persist(ProcessNode.getExecutionPath(executionID), processContext));
         }
     }
     
@@ -133,11 +128,8 @@ public final class ProcessRegistrySubscriber {
                     return;
                 }
             }
-            if (!reportContext.isReportToGovernanceDonePartially()) {
-                return;
-            }
-            String executionPath = ProcessNode.getExecutionPath(executionID);
-            repository.delete(executionPath);
+            ProcessThreadExecutorGroup.getInstance().get(executionID, reportContext.getShowProcessListAsyncThreadNumber())
+                    .submit(() -> repository.delete(ProcessNode.getExecutionPath(executionID)));
         }
     }
 }

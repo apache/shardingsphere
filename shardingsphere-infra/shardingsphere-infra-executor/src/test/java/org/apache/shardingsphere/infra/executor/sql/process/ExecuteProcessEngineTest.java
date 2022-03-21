@@ -76,7 +76,7 @@ public final class ExecuteProcessEngineTest {
         ConfigurationProperties result = mock(ConfigurationProperties.class);
         when(result.getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(Boolean.TRUE);
         when(result.getValue(ConfigurationPropertyKey.SHOW_PROCESS_LIST_ENABLED)).thenReturn(Boolean.TRUE);
-        when(result.getValue(ConfigurationPropertyKey.SHOW_PROCESS_LIST_NO_REPORT_THRESHOLD_MILLIS)).thenReturn(100L);
+        when(result.getValue(ConfigurationPropertyKey.SHOW_PROCESS_LIST_ASYNC_THREAD_NUM)).thenReturn(16);
         return result;
     }
     
