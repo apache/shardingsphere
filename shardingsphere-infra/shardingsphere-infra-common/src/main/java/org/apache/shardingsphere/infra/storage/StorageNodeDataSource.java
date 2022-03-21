@@ -15,25 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.event.impl;
+package org.apache.shardingsphere.infra.storage;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
-import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
+import lombok.Setter;
 
 /**
- * Data source disabled event.
+ * Data source of storage node.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataSourceDisabledEvent implements DataSourceStatusChangedEvent {
+@Setter
+public final class StorageNodeDataSource {
+
+    private String role;
     
-    private final String schemaName;
+    private String status;
     
-    private final String groupName;
+    private Long replicationDelayTime;
     
-    private final String dataSourceName;
+    public StorageNodeDataSource(final StorageNodeRole role, final StorageNodeStatus status) {
+        this.role = role.name().toLowerCase();
+        this.status = status.name().toLowerCase();
+    }
     
-    private final StorageNodeDataSource storageNodeDataSource;
+    public StorageNodeDataSource(final StorageNodeRole role, final StorageNodeStatus status, final Long replicationDelayTime) {
+        this.role = role.name().toLowerCase();
+        this.status = status.name().toLowerCase();
+        this.replicationDelayTime = replicationDelayTime;
+    }
 }

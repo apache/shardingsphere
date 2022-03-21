@@ -24,6 +24,9 @@ import org.apache.shardingsphere.dbdiscovery.mysql.AbstractDatabaseDiscoveryType
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
+import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.infra.storage.StorageNodeRole;
+import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -151,14 +154,14 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     }
     
     @Override
-    protected void determineMemberDataSourceState(final String schemaName, final Map<String, DataSource> dataSourceMap) {
+    protected void determineMemberDataSourceState(final String schemaName, final Map<String, DataSource> dataSourceMap, final String groupName) {
         List<String> memberDataSourceURLs = findMemberDataSourceURLs(dataSourceMap);
         if (memberDataSourceURLs.isEmpty()) {
             return;
         }
         Map<String, String> dataSourceURLs = new HashMap<>(16, 1);
-        determineDisabledDataSource(schemaName, dataSourceMap, memberDataSourceURLs, dataSourceURLs);
-        determineEnabledDataSource(dataSourceMap, schemaName, memberDataSourceURLs, dataSourceURLs);
+        determineDisabledDataSource(schemaName, dataSourceMap, memberDataSourceURLs, dataSourceURLs, groupName);
+        determineEnabledDataSource(dataSourceMap, schemaName, memberDataSourceURLs, dataSourceURLs, groupName);
     }
     
     private List<String> findMemberDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
@@ -179,7 +182,7 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     }
     
     private void determineDisabledDataSource(final String schemaName, final Map<String, DataSource> activeDataSourceMap, final List<String> memberDataSourceURLs,
-                                             final Map<String, String> dataSourceURLs) {
+                                             final Map<String, String> dataSourceURLs, final String groupName) {
         for (Entry<String, DataSource> entry : activeDataSourceMap.entrySet()) {
             boolean disable = true;
             String url = null;
@@ -195,7 +198,8 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
                 log.error("An exception occurred while find data source urls", ex);
             }
             if (disable) {
-                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, entry.getKey(), true));
+                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, groupName, entry.getKey(),
+                        new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.DISABLE)));
             } else if (!url.isEmpty()) {
                 dataSourceURLs.put(entry.getKey(), url);
             }
@@ -203,7 +207,7 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     }
     
     private void determineEnabledDataSource(final Map<String, DataSource> dataSourceMap, final String schemaName, final List<String> memberDataSourceURLs,
-                                            final Map<String, String> dataSourceURLs) {
+                                            final Map<String, String> dataSourceURLs, final String groupName) {
         for (String each : memberDataSourceURLs) {
             boolean enable = true;
             for (Entry<String, String> entry : dataSourceURLs.entrySet()) {
@@ -220,7 +224,8 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
                 try (Connection connection = entry.getValue().getConnection()) {
                     url = connection.getMetaData().getURL();
                     if (null != url && url.contains(each)) {
-                        ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, entry.getKey(), false));
+                        ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, groupName, entry.getKey(),
+                                new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.ENABLE)));
                         break;
                     }
                 } catch (final SQLException ex) {
