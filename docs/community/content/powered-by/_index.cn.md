@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 167 家公司。
+共计 168 家公司。
 
 ### 基础设施
 <ul>
@@ -26,6 +26,7 @@ chapter = true
     <li><a href="http://www.cmbc.com.cn/" rel="nofollow">中国民生银行股份有限公司</a></li>
     <li><a href="https://www.bestpay.com.cn/" rel="nofollow">中国电信翼支付（甜橙金融）</a></li>
     <li><a href="https://jf.10086.cn/" rel="nofollow">中移动金融科技</a></li>
+    <li><a href="http://jr.jd.com/" rel="nofollow">京东金融</a></li>    
     <li><a href="https://www.360jinrong.net/" rel="nofollow">360数科</a></li>
     <li><a href="https://www.msxf.com/" rel="nofollow">马上金融</a></li>
     <li><a href="https://www.9fgroup.com/" rel="nofollow">玖富数科</a></li>
