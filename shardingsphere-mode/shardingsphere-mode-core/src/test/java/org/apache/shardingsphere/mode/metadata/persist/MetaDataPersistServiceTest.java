@@ -164,4 +164,12 @@ public final class MetaDataPersistServiceTest {
         Map<String, DataSource> resultEffectiveDataSources = metaDataPersistService.getEffectiveDataSources("foo_db", schemaConfigs);
         assertTrue(resultEffectiveDataSources.isEmpty());
     }
+    
+    @Test
+    public void assertPersistTransactionRule() {
+        Properties props = createProperties();
+        Collection<RuleConfiguration> globalRuleConfigs = createGlobalRuleConfigurations();
+        metaDataPersistService.persistTransactionRule(props, true);
+        verify(globalRuleService).persist(globalRuleConfigs, true);
+    }
 }
