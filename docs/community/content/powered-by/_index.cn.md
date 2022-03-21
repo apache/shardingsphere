@@ -48,7 +48,7 @@ chapter = true
     <li><a href="https://www.joybuy.com/" rel="nofollow">京东商城海外站</a></li>
     <li><a href="https://www.jd.ru/" rel="nofollow">京东商城俄文站</a></li>
     <li><a href="https://www.wandougongzhu.cn" rel="nofollow">豌豆公主</a></li>
-    <li><a href="https://www.missfresh.cn/" rel="nofollow">每日优鲜便利购</a></li>
+    <li><a href="https://www.missfresh.cn/" rel="nofollow">每日优鲜</a></li>
     <li><a href="http://www.3songshu.com/" rel="nofollow">三只松鼠</a></li>
     <li><a href="http://www.pagoda.com.cn/" rel="nofollow">百果园</a></li>
     <li><a href="https://www.dayi35.com/" rel="nofollow">大易有塑</a></li>
