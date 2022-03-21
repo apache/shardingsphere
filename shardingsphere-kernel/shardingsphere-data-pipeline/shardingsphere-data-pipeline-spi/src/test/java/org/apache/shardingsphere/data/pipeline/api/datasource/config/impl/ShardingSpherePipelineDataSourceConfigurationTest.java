@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.datasource.config.impl;
+package org.apache.shardingsphere.data.pipeline.api.datasource.config.impl;
 
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.junit.Test;
@@ -31,7 +30,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingSpherePipelineDataSourcePropertiesTest {
+public final class ShardingSpherePipelineDataSourceConfigurationTest {
     
     @Test
     public void assertAppendJDBCParameters() {
