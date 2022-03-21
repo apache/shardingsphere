@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 169 家公司。
+共计 170 家公司。
 
 ### 基础设施
 <ul>
@@ -60,6 +60,7 @@ chapter = true
     <li><a href="http://cs.maifang.com/" rel="nofollow">秒卖房</a></li>
     <li><a href="https://m.51tiangou.com/" rel="nofollow">大商天狗电子商务有限责任公司</a></li>
     <li><a href="https://www.lrlz.com/" rel="nofollow">丽人丽妆</a></li>
+    <li><a href="https://zowiesunglasses.com/" rel="nofollow">卓唯眼镜</a></li>
     <li><a href="http://www.dusto.cn/" rel="nofollow">DUSTO</a></li>
     <li><a href="https://TonySourcing.com/" rel="nofollow">TonySourcing</a></li>
     <li><a href="https://www.sourcingarts.com/" rel="nofollow">SourcingArts</a></li>

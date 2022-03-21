@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 169 companies.
+Total: 170 companies.
 
 ### Infra
 <ul>
@@ -60,6 +60,7 @@ Total: 169 companies.
     <li><a href="http://cs.maifang.com/" rel="nofollow">MiaoMaiFang</a></li>
     <li><a href="https://m.51tiangou.com/" rel="nofollow">51tiangou</a></li>
     <li><a href="https://www.lrlz.com/" rel="nofollow">Lily&Beauty</a></li>
+    <li><a href="https://zowiesunglasses.com/" rel="nofollow">Zowie</a></li>
     <li><a href="http://www.dusto.cn/" rel="nofollow">DUSTO</a></li>
     <li><a href="https://TonySourcing.com/" rel="nofollow">TonySourcing</a></li>
     <li><a href="https://www.sourcingarts.com/" rel="nofollow">SourcingArts</a></li>
