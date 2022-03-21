@@ -102,7 +102,7 @@ public final class MetaDataContextsBuilder {
         Map<String, ShardingSphereMetaData> result = new HashMap<>(schemaConfigMap.size(), 1);
         for (Entry<String, ? extends SchemaConfiguration> entry : schemaConfigMap.entrySet()) {
             String schemaName = entry.getKey();
-            result.put(schemaName, ShardingSphereMetaData.create(schemaName, schemaMap.get(schemaName), entry.getValue(), schemaRulesMap.get(schemaName)));
+            result.put(schemaName, ShardingSphereMetaData.create(schemaName, schemaMap, entry.getValue(), schemaRulesMap.get(schemaName)));
         }
         return result;
     }

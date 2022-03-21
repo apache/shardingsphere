@@ -58,6 +58,11 @@ public final class MariaDBDatabaseType implements BranchDatabaseType {
     }
     
     @Override
+    public Optional<String> getDefaultSchemaName() {
+        return Optional.empty();
+    }
+    
+    @Override
     public DatabaseType getTrunkDatabaseType() {
         return DatabaseTypeRegistry.getActualDatabaseType("MySQL");
     }

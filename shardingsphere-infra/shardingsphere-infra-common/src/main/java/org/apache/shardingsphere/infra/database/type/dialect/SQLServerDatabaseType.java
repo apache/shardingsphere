@@ -54,4 +54,9 @@ public final class SQLServerDatabaseType implements DatabaseType {
     public Optional<String> getDataSourceClassName() {
         return Optional.of("com.microsoft.sqlserver.jdbc.SQLServerDataSource");
     }
+    
+    @Override
+    public Optional<String> getDefaultSchemaName() {
+        return Optional.of("dbo");
+    }
 }
