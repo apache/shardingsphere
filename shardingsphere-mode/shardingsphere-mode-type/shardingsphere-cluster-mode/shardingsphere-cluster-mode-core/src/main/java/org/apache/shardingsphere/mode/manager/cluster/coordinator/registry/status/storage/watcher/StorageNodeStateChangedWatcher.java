@@ -52,17 +52,18 @@ public final class StorageNodeStateChangedWatcher implements GovernanceWatcher<G
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        if (!getWatchingKeys().contains(event.getKey()) || StringUtils.isEmpty(event.getValue())) {
+        if (StringUtils.isEmpty(event.getValue())) {
             return Optional.empty();
         }
-        StorageNodeDataSource storageNodeDataSource = YamlEngine.unmarshal(event.getValue(), StorageNodeDataSource.class);
-        if (StorageNodeRole.PRIMARY.name().toLowerCase().equals(storageNodeDataSource.getRole())) {
-            Optional<GovernanceEvent> primaryStateChangedEvent = StorageStatusNode.extractQualifiedSchema(event.getKey())
-                    .map(schema -> new PrimaryStateChangedEvent(schema, schema.getDataSourceName()));
-            if (primaryStateChangedEvent.isPresent()) {
-                return primaryStateChangedEvent;
+        Optional<QualifiedSchema> qualifiedSchema = StorageStatusNode.extractQualifiedSchema(event.getKey());
+        if (qualifiedSchema.isPresent()) {
+            QualifiedSchema schema = qualifiedSchema.get();
+            StorageNodeDataSource storageNodeDataSource = YamlEngine.unmarshal(event.getValue(), StorageNodeDataSource.class);
+            if (StorageNodeRole.PRIMARY.name().toLowerCase().equals(storageNodeDataSource.getRole())) {
+                return Optional.of(new PrimaryStateChangedEvent(schema, schema.getDataSourceName()));
             }
+            return Optional.of(new DisabledStateChangedEvent(schema, Type.DELETED != event.getType()));
         }
-        return StorageStatusNode.extractQualifiedSchema(event.getKey()).map(schema -> new DisabledStateChangedEvent(schema, Type.DELETED != event.getType()));
+        return Optional.empty();
     }
 }
