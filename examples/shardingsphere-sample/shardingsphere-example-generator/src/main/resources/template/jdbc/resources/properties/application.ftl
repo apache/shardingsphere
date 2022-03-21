@@ -30,23 +30,23 @@ spring.shardingsphere.datasource.names=ds-0,ds-1,ds-2
 
 spring.shardingsphere.datasource.ds-0.type=com.zaxxer.hikari.HikariDataSource
 spring.shardingsphere.datasource.ds-0.driver-class-name=com.mysql.jdbc.Driver
-spring.shardingsphere.datasource.ds-0.jdbc-url=jdbc:mysql://localhost:3306/demo_ds_0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
-spring.shardingsphere.datasource.ds-0.username=root
-spring.shardingsphere.datasource.ds-0.password=root
+spring.shardingsphere.datasource.ds-0.jdbc-url=jdbc:mysql://${host}:${(port)?c}/demo_ds_0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+spring.shardingsphere.datasource.ds-0.username=${username}
+spring.shardingsphere.datasource.ds-0.password=${(password)?string}
 spring.shardingsphere.datasource.ds-0.max-active=16
 
 spring.shardingsphere.datasource.ds-1.type=com.zaxxer.hikari.HikariDataSource
 spring.shardingsphere.datasource.ds-1.driver-class-name=com.mysql.jdbc.Driver
-spring.shardingsphere.datasource.ds-1.jdbc-url=jdbc:mysql://localhost:3306/demo_ds_1?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
-spring.shardingsphere.datasource.ds-1.username=root
-spring.shardingsphere.datasource.ds-1.password=root
+spring.shardingsphere.datasource.ds-1.jdbc-url=jdbc:mysql://${host}:${(port)?c}/demo_ds_1?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+spring.shardingsphere.datasource.ds-1.username=${username}
+spring.shardingsphere.datasource.ds-1.password=${(password)?string}
 spring.shardingsphere.datasource.ds-1.max-active=16
 
 spring.shardingsphere.datasource.ds-2.type=com.zaxxer.hikari.HikariDataSource
 spring.shardingsphere.datasource.ds-2.driver-class-name=com.mysql.jdbc.Driver
-spring.shardingsphere.datasource.ds-2.jdbc-url=jdbc:mysql://localhost:3306/demo_ds_2?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
-spring.shardingsphere.datasource.ds-2.username=root
-spring.shardingsphere.datasource.ds-2.password=root
+spring.shardingsphere.datasource.ds-2.jdbc-url=jdbc:mysql://${host}:${(port)?c}/demo_ds_2?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+spring.shardingsphere.datasource.ds-2.username=${username}
+spring.shardingsphere.datasource.ds-2.password=${(password)?string}
 spring.shardingsphere.datasource.ds-2.max-active=16
 <#list feature?split(",") as item>
     <#include "${item}.ftl">

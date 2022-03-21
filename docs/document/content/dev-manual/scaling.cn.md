@@ -47,4 +47,4 @@ chapter = true
 | *已知实现类*                                  | *详细说明*                                                              |
 | ------------------------------------------- | ---------------------------------------------------------------------- |
 | DataMatchSingleTableDataCalculator          | 给 DATA_MATCH 数据一致性校验算法使用的单表数据计算算法。适用于所有数据库。        |
-| CRC32MatchMySQLSingleTableDataCalculator    | 给 CRC32_MATCH 数据一致性校验算法使用的单表数据计算算法。适用于MySQL。          |
+| CRC32MatchMySQLSingleTableDataCalculator    | 给 CRC32_MATCH 数据一致性校验算法使用的单表数据计算算法。适用于 MySQL。          |

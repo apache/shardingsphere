@@ -16,7 +16,7 @@ rules:
 - !SHARDING
   tables: # 数据分片规则配置
     <logic-table-name> (+): # 逻辑表名称
-      actualDataNodes (?): # 由数据源名 + 表名组成（参考Inline语法规则）
+      actualDataNodes (?): # 由数据源名 + 表名组成（参考 Inline 语法规则）
       databaseStrategy (?): # 分库策略，缺省表示使用默认分库策略，以下的分片策略只能选其一
         standard: # 用于单分片键的标准分片场景
           shardingColumn: # 分片列名称
@@ -210,7 +210,7 @@ shardingRule:
   defaultDataSourceName: # 未配置分片规则的表将通过默认数据源定位  
   defaultDatabaseStrategy: # 默认数据库分片策略，同分库策略
   defaultTableStrategy: # 默认表分片策略，同分库策略
-  defaultKeyGenerator: # 默认的主键生成算法 如果没有设置,默认为 SNOWFLAKE 算法
+  defaultKeyGenerator: # 默认的主键生成算法 如果没有设置，默认为 SNOWFLAKE 算法
     type: # 默认自增列值生成器类型，缺省将使用 org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator。可使用用户自定义的列值生成器或选择内置类型：SNOWFLAKE/UUID
     props:
       <property-name>: # 自增列值生成器属性配置, 比如 SNOWFLAKE 算法的 max.tolerate.time.difference.milliseconds
@@ -388,7 +388,7 @@ shardingRule: # sharding 的配置
       preciseShardingAlgorithm: # preciseShardingAlgorithm 接口的实现类
       rangeShardingAlgorithm: # rangeShardingAlgorithm 接口的实现类
   defaultTableStrategy: # 配置参考 defaultDatabaseShardingStrategy,区别在于,inline 算法的配置中,algorithmExpression 的配置算法结果需要是实际的物理表名称,而非数据源名称
-  defaultKeyGenerator: # 默认的主键生成算法 如果没有设置,默认为 SNOWFLAKE 算法
+  defaultKeyGenerator: # 默认的主键生成算法 如果没有设置，默认为 SNOWFLAKE 算法
     column: # 自增键对应的列名称
     type: # 自增键的类型,主要用于调用内置的主键生成算法有三个可用值:SNOWFLAKE(时间戳 +worker id+ 自增 id),UUID(java.util.UUID 类生成的随机 UUID),LEAF,其中 Snowflake 算法与 UUID 算法已经实现,LEAF 目前(2018-01-14)尚未实现
     className: # 非内置的其他实现了 KeyGenerator 接口的类,需要注意,如果设置这个,就不能设置 type,否则 type 的设置会覆盖 class 的设置

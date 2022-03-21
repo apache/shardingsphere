@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.opengauss.sqlbuilder;
 
 import com.google.common.collect.Collections2;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.AbstractPipelineSQLBuilder;
@@ -31,6 +32,7 @@ import java.util.Set;
 /**
  * Pipeline SQL builder of openGauss.
  */
+@NoArgsConstructor
 public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
     public OpenGaussPipelineSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
