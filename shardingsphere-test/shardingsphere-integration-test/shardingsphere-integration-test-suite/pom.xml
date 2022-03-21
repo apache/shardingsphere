@@ -54,7 +54,6 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>${hikari-cp.version}</version>
         </dependency>
         
         <dependency>
