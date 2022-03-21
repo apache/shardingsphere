@@ -35,8 +35,8 @@ public abstract class BaseShadowConfiguration implements ExampleConfiguration {
     
     protected Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>();
-        result.put("ds", DataSourceUtil.createDataSource("ds"));
-        result.put("ds_shadow", DataSourceUtil.createDataSource("ds_shadow"));
+        result.put("ds", DataSourceUtil.createDataSource("demo_ds"));
+        result.put("ds_shadow", DataSourceUtil.createDataSource("shadow_demo_ds"));
         return result;
     }
     
