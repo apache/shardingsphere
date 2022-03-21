@@ -102,7 +102,7 @@ public final class InsertClauseShardingConditionEngineTest {
     }
 
     @Test(expected = ShardingSphereException.class)
-    public void assertCreateShardingConditionsInsertStatementWithGeneratedKeyContext123() {
+    public void assertCreateShardingConditionsInsertStatementWithGeneratedKeyContextUsingCommonExpressionSegmentEmpty() {
         when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(createInsertValueContextAsCommonExpressionSegmentEmptyText()));
         when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(mock(GeneratedKeyContext.class)));
         when(shardingRule.findShardingColumn(any(), any())).thenReturn(Optional.of("foo_sharding_col"));
@@ -112,7 +112,7 @@ public final class InsertClauseShardingConditionEngineTest {
     }
 
     @Test
-    public void assertCreateShardingConditionsInsertStatementWithGeneratedKeyContext1234() {
+    public void assertCreateShardingConditionsInsertStatementWithGeneratedKeyContextUsingCommonExpressionSegmentNow() {
         when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(createInsertValueContextAsCommonExpressionSegmentWithNow()));
         when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(mock(GeneratedKeyContext.class)));
         when(shardingRule.findShardingColumn(any(), any())).thenReturn(Optional.of("foo_sharding_col"));
