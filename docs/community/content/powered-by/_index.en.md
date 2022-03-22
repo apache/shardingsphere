@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 171 companies.
+Total: 172 companies.
 
 ### Infra Software
 <ul>
@@ -253,6 +253,7 @@ Total: 171 companies.
     <li><a href="https://www.yunyuecloud.com/" rel="nofollow">Digital Yunyue</a></li>
     <li><a href="https://t.itaojin.cn" rel="nofollow">ITaoJin</a></li>
     <li><a href="http://www.hzsun.com" rel="nofollow">hzsun</a></li>
+    <li><a href="https://www.ywwl.com/" rel="nofollow">YOWANT</a></li>
 </ul>
 
 ### Health Care
