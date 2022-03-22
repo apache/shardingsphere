@@ -42,7 +42,7 @@ mode:
   overwrite: false
 ```
 
-4. 开启 scaling
+4. 开启 scaling。
 
 方法1：修改配置文件 `conf/config-sharding.yaml` 的 `scalingName` 和 `scaling` 部分。
 
