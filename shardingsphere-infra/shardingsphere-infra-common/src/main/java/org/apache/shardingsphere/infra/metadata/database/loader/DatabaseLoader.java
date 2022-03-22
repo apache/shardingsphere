@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -29,7 +28,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * Database loader.
@@ -49,12 +47,7 @@ public final class DatabaseLoader {
     public static ShardingSphereDatabase load(final String databaseName, final Map<String, DataSource> dataSourceMap, 
                                               final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
         ShardingSphereSchema schema = SchemaLoader.load(dataSourceMap, rules, props);
-        // TODO add system schema 
-        return new ShardingSphereDatabase(Collections.singletonMap(databaseName, schema));
-    }
-    
-    private static Collection<String> getAllTableNames(final Collection<ShardingSphereRule> rules) {
-        return rules.stream().filter(rule -> rule instanceof TableContainedRule)
-                .flatMap(shardingSphereRule -> ((TableContainedRule) shardingSphereRule).getTables().stream()).collect(Collectors.toSet());
+        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(databaseName, schema);
+        return new ShardingSphereDatabase(schemas);
     }
 }
