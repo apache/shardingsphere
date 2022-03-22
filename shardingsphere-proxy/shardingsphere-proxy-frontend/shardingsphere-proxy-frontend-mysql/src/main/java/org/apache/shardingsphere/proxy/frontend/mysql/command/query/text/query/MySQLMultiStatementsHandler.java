@@ -171,6 +171,7 @@ public final class MySQLMultiStatementsHandler implements TextProtocolBackendHan
                 updated += each;
             }
         }
+        // TODO Each logic SQL should correspond to an OK Packet.
         return new UpdateResponseHeader(sqlStatementSample, Collections.singletonList(new UpdateResult(updated, 0L)));
     }
     
