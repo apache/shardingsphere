@@ -28,10 +28,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * OpenGauss importer.
+ * Importer of openGauss.
  */
 public final class OpenGaussImporter extends AbstractImporter {
-
+    
     public OpenGaussImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
         super(importerConfig, dataSourceManager, channel);
     }
@@ -41,4 +41,3 @@ public final class OpenGaussImporter extends AbstractImporter {
         return new OpenGaussPipelineSQLBuilder(shardingColumnsMap);
     }
 }
-

@@ -27,6 +27,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -49,7 +50,7 @@ public final class TableMetaDataLoader {
             String formattedTableNamePattern = databaseType.formatTableNamePattern(tableNamePattern);
             return isTableExist(connectionAdapter, formattedTableNamePattern)
                     ? Optional.of(new TableMetaData(tableNamePattern, ColumnMetaDataLoader.load(
-                            connectionAdapter, formattedTableNamePattern, databaseType), IndexMetaDataLoader.load(connectionAdapter, formattedTableNamePattern)))
+                            connectionAdapter, formattedTableNamePattern, databaseType), IndexMetaDataLoader.load(connectionAdapter, formattedTableNamePattern), Collections.emptyList()))
                     : Optional.empty();
         }
     }

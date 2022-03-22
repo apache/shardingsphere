@@ -18,16 +18,22 @@
 package org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
+import org.rnorth.ducttape.unreliables.Unreliables;
 import org.testcontainers.containers.BindMode;
-import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
+import org.testcontainers.containers.wait.strategy.AbstractWaitStrategy;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -67,7 +73,7 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
     @Override
     protected void configure() {
         mapConfigurationFiles();
-        setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*ShardingSphere-Proxy .* mode started successfully.*"));
+        setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), scenario), "root", "root")));
     }
     
     private void mapConfigurationFiles() {
@@ -94,5 +100,29 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
+    }
+    
+    @Slf4j
+    @RequiredArgsConstructor
+    private static class JDBCConnectionWaitStrategy extends AbstractWaitStrategy {
+        
+        private final Callable<Connection> connectionSupplier;
+    
+        @Override
+        protected void waitUntilReady() {
+            Unreliables.retryUntilSuccess((int) startupTimeout.getSeconds(), TimeUnit.SECONDS,
+                () -> {
+                    getRateLimiter().doWhenReady(() -> {
+                        try (Connection unused = connectionSupplier.call()) {
+                            log.info("Container ready");
+                            // CHECKSTYLE:OFF
+                        } catch (final Exception ex) {
+                            // CHECKSTYLE:ON
+                            throw new RuntimeException("Not Ready yet.", ex);
+                        }
+                    });
+                    return true;
+                });
+        }
     }
 }

@@ -71,7 +71,7 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
             if (null == indexMetaDataList) {
                 indexMetaDataList = Collections.emptyList();
             }
-            result.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList));
+            result.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, Collections.emptyList()));
         }
         return result;
     }

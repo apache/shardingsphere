@@ -17,27 +17,58 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
-import org.mariadb.jdbc.MariaDbConnection;
-import org.mariadb.jdbc.MariaXaConnection;
 
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
+import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
  * XA connection wrapper for MariaDB.
  */
-@RequiredArgsConstructor
 public final class MariaDBXAConnectionWrapper implements XAConnectionWrapper {
     
-    @SneakyThrows({SQLException.class, ReflectiveOperationException.class})
+    private static volatile Class<Connection> jdbcConnectionClass;
+    
+    private static volatile Constructor<?> xaConnectionConstructor;
+    
+    private volatile boolean initialized;
+    
     @Override
-    public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) {
-        MariaDbConnection physicalConnection = (MariaDbConnection) connection.unwrap(Class.forName("org.mariadb.jdbc.MariaDbConnection"));
-        return new MariaXaConnection(physicalConnection);
+    public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {
+        if (!initialized) {
+            loadReflection();
+            initialized = true;
+        }
+        return createXAConnection(connection.unwrap(jdbcConnectionClass));
+    }
+    
+    private void loadReflection() {
+        jdbcConnectionClass = getJDBCConnectionClass();
+        xaConnectionConstructor = getXAConnectionConstructor();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Class<Connection> getJDBCConnectionClass() {
+        return (Class<Connection>) Class.forName("org.mariadb.jdbc.MariaDbConnection");
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Constructor<?> getXAConnectionConstructor() {
+        return Class.forName("org.mariadb.jdbc.MariaXaConnection").getDeclaredConstructor(Class.forName("org.mariadb.jdbc.MariaDbConnection"));
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private XAConnection createXAConnection(final Connection connection) {
+        return (XAConnection) xaConnectionConstructor.newInstance(connection);
+    }
+    
+    @Override
+    public String getType() {
+        return "MariaDB";
     }
 }

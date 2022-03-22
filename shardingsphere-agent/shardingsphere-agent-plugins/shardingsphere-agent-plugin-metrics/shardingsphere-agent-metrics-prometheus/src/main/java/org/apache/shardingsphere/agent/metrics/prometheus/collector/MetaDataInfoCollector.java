@@ -17,25 +17,26 @@
 
 package org.apache.shardingsphere.agent.metrics.prometheus.collector;
 
-import com.zaxxer.hikari.HikariDataSource;
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.api.util.MetricsUtil;
 import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.PrometheusWrapperFactory;
+import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import javax.sql.DataSource;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Meta data information collector.
@@ -47,42 +48,57 @@ public final class MetaDataInfoCollector extends Collector {
     
     private static final String ACTUAL_DB_COUNT = "database_count";
     
-    private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
+    private static final String PROXY_CONTEXT_CLASS = "org.apache.shardingsphere.proxy.backend.context.ProxyContext";
     
-    private static final String PROXY_CONTEXT_CLASS_STR = "org.apache.shardingsphere.proxy.backend.context.ProxyContext";
+    private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
     
     @Override
     public List<MetricFamilySamples> collect() {
         List<MetricFamilySamples> result = new LinkedList<>();
         Optional<GaugeMetricFamily> metaDataInfo = FACTORY.createGaugeMetricFamily(MetricIds.METADATA_INFO);
-        if (MetricsUtil.classNotExist(PROXY_CONTEXT_CLASS_STR) || !metaDataInfo.isPresent()) {
-            return result;
+        if (metaDataInfo.isPresent() && MetricsUtil.isClassExisted(PROXY_CONTEXT_CLASS)) {
+            collectProxy(metaDataInfo.get());
+            result.add(metaDataInfo.get());
         }
-        collectProxy(metaDataInfo.get());
-        result.add(metaDataInfo.get());
         return result;
     }
     
     private void collectProxy(final GaugeMetricFamily metricFamily) {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         metricFamily.addMetric(Collections.singletonList(LOGIC_DB_COUNT), metaDataContexts.getMetaDataMap().size());
-        Set<String> databaseSet = new HashSet<>();
-        metaDataContexts.getMetaDataMap().values().forEach(each -> each.getResource().getDataSources().values()
-                .forEach(dataSource -> MetaDataInfoCollector.this.countDatabase(databaseSet, dataSource)));
-        metricFamily.addMetric(Collections.singletonList(ACTUAL_DB_COUNT), databaseSet.size());
+        metricFamily.addMetric(Collections.singletonList(ACTUAL_DB_COUNT), getDatabaseNames(metaDataContexts).size());
     }
     
-    private void countDatabase(final Set<String> databaseSet, final DataSource dataSource) {
-        if (dataSource instanceof HikariDataSource) {
-            String jdbcUrl = ((HikariDataSource) dataSource).getJdbcUrl();
-            try {
-                URI uri = new URI(jdbcUrl.substring(5));
-                if (null != uri.getPath()) {
-                    databaseSet.add(uri.getPath());
-                }
-            } catch (URISyntaxException | NullPointerException e) {
-                log.info("Unsupported jdbc url by URI: {}", jdbcUrl);
-            }
+    private Collection<String> getDatabaseNames(final MetaDataContexts metaDataContexts) {
+        Collection<String> result = new HashSet<>();
+        for (ShardingSphereMetaData each : metaDataContexts.getMetaDataMap().values()) {
+            result.addAll(getDatabaseNames(each));
         }
+        return result;
+    }
+    
+    private Collection<String> getDatabaseNames(final ShardingSphereMetaData metaData) {
+        Collection<String> result = new HashSet<>();
+        for (DataSource each : metaData.getResource().getDataSources().values()) {
+            getDatabaseName(each).ifPresent(result::add);
+        }
+        return result;
+    }
+    
+    private Optional<String> getDatabaseName(final DataSource dataSource) {
+        Object jdbcUrl = DataSourcePropertiesCreator.create(dataSource).getAllStandardProperties().get("url");
+        if (null == jdbcUrl) {
+            log.info("Can not get JDBC URL");
+            return Optional.empty();
+        }
+        try {
+            URI uri = new URI(jdbcUrl.toString().substring(5));
+            if (null != uri.getPath()) {
+                return Optional.of(uri.getPath());
+            }
+        } catch (final URISyntaxException | NullPointerException ignored) {
+            log.info("Unsupported JDBC URL by URI: {}", jdbcUrl);
+        }
+        return Optional.empty();
     }
 }

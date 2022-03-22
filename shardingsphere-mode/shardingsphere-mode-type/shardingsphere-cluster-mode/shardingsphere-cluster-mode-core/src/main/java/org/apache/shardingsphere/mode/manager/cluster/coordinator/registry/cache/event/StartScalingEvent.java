@@ -19,12 +19,14 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cach
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
  * Start scaling event.
  */
 @RequiredArgsConstructor
 @Getter
+@ToString(exclude = {"sourceDataSource", "sourceRule", "targetDataSource", "targetRule"})
 public final class StartScalingEvent {
     
     private final String schemaName;
@@ -37,10 +39,7 @@ public final class StartScalingEvent {
     
     private final String targetRule;
     
-    private final String schemaVersion;
+    private final int activeVersion;
     
-    @Override
-    public String toString() {
-        return "StartScalingEvent{" + "schemaName='" + schemaName + '\'' + ", schemaVersion='" + schemaVersion + '\'' + '}';
-    }
+    private final int newVersion;
 }

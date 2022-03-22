@@ -17,11 +17,7 @@
 
 dataSources:
   encrypt_ds:
-    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:ds_encrypt;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    username: sa
-    password:
+    dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
 
 rules:
 - !ENCRYPT
@@ -82,9 +78,9 @@ rules:
       queryWithCipherColumn: true
     t_order:
       columns:
-        content:
-          cipherColumn: cipher_content
-          plainColumn: plain_content
+        CONTENT:
+          cipherColumn: CIPHER_CONTENT
+          plainColumn: PLAIN_CONTENT
           encryptorName: schema_based
   encryptors:
     normal:

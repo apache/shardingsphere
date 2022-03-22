@@ -118,12 +118,12 @@
     </rewrite-assertion>
 
     <rewrite-assertion id="insert_values_with_schema_based_algorithm_for_plain" db-types="MySQL">
-        <input sql="INSERT INTO t_order(order_id, user_id, content) VALUES (1, 1, 'TEST');" />
-        <output sql="INSERT INTO t_order(order_id, user_id, cipher_content, plain_content) VALUES (1, 1, 'encrypt_TEST_t_order', 'TEST');" />
+        <input sql="INSERT INTO t_order(ORDER_ID, USER_ID, CONTENT) VALUES (1, 1, 'TEST');" />
+        <output sql="INSERT INTO t_order(ORDER_ID, USER_ID, CIPHER_CONTENT, PLAIN_CONTENT) VALUES (1, 1, 'encrypt_TEST_t_order', 'TEST');" />
     </rewrite-assertion>
 
     <rewrite-assertion id="insert_values_with_schema_based_algorithm_for_parameters" db-types="MySQL">
-        <input sql="INSERT INTO t_order(order_id, user_id, content) VALUES (?, ?, ?);" parameters="1, 1, TEST" />
-        <output sql="INSERT INTO t_order(order_id, user_id, cipher_content, plain_content) VALUES (?, ?, ?, ?);" parameters="1, 1, encrypt_TEST_t_order, TEST" />
+        <input sql="INSERT INTO t_order(ORDER_ID, USER_ID, CONTENT) VALUES (?, ?, ?);" parameters="1, 1, TEST" />
+        <output sql="INSERT INTO t_order(ORDER_ID, USER_ID, CIPHER_CONTENT, PLAIN_CONTENT) VALUES (?, ?, ?, ?);" parameters="1, 1, encrypt_TEST_t_order, TEST" />
     </rewrite-assertion>
 </rewrite-assertions>

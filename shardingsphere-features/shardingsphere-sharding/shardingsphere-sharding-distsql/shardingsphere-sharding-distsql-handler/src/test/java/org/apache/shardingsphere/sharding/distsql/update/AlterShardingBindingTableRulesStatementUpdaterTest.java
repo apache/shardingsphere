@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingBindingTableRulesStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
@@ -43,13 +45,19 @@ public final class AlterShardingBindingTableRulesStatementUpdaterTest {
     private final AlterShardingBindingTableRulesStatementUpdater updater = new AlterShardingBindingTableRulesStatementUpdater();
     
     @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
+    public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), null);
     }
     
     @Test(expected = DuplicateRuleException.class)
-    public void assertCheckSQLStatementWithDuplicateTables() throws RuleDefinitionViolationException {
+    public void assertCheckSQLStatementWithDuplicateTables() throws DistSQLException {
         updater.checkSQLStatement(shardingSphereMetaData, createDuplicatedSQLStatement(), createCurrentRuleConfiguration());
+    }
+    
+    @Test(expected = InvalidRuleConfigurationException.class)
+    public void assertCheckSQLStatementWithCanNotBindShardingTable() throws DistSQLException {
+        AlterShardingBindingTableRulesStatement statement = new AlterShardingBindingTableRulesStatement(Collections.singletonList(new BindingTableRuleSegment("t_1,t_2")));
+        updater.checkSQLStatement(shardingSphereMetaData, statement, createCurrentRuleConfiguration());
     }
     
     private AlterShardingBindingTableRulesStatement createSQLStatement() {
@@ -64,7 +72,9 @@ public final class AlterShardingBindingTableRulesStatementUpdaterTest {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(new ShardingTableRuleConfiguration("t_order"));
         result.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
-        result.getTables().add(new ShardingTableRuleConfiguration("t_1"));
+        ShardingTableRuleConfiguration tableRule1 = new ShardingTableRuleConfiguration("t_1");
+        tableRule1.setTableShardingStrategy(new StandardShardingStrategyConfiguration("column_name", "algorithmName"));
+        result.getTables().add(tableRule1);
         result.getTables().add(new ShardingTableRuleConfiguration("t_2"));
         result.getBindingTableGroups().addAll(Collections.singletonList("t_order,t_order_item"));
         return result;

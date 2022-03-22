@@ -30,25 +30,25 @@ public final class MppTableData {
     
     @SerializedName("table_name")
     private String tableName;
-
+    
     @SerializedName("op_type")
     private String opType;
-
+    
     @SerializedName("columns_name")
     private String[] columnsName;
-
+    
     @SerializedName("columns_type")
     private String[] columnsType;
-
+    
     @SerializedName("columns_val")
     private String[] columnsVal;
-
+    
     @SerializedName("old_keys_name")
     private String[] oldKeysName;
-
+    
     @SerializedName("old_keys_type")
     private String[] oldKeysType;
-
+    
     @SerializedName("old_keys_val")
     private String[] oldKeysVal;
 }
