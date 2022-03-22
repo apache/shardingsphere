@@ -54,8 +54,8 @@ public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabase
     @Override
     public void checkDatabaseDiscoveryConfiguration(final String schemaName, final Map<String, DataSource> dataSourceMap) throws SQLException {
         Collection<String> result = getPrimaryDataSourceURLS(dataSourceMap);
-        Preconditions.checkState(!result.isEmpty(), "Not found primary data source for schema `%s`", schemaName);
-        Preconditions.checkState(1 == result.size(), "More than one primary data source for `%s`", schemaName);
+        Preconditions.checkState(!result.isEmpty(), "Not found primary data source for schemaName `%s`", schemaName);
+        Preconditions.checkState(1 == result.size(), "More than one primary data source for schemaName `%s`", schemaName);
     }
     
     private Collection<String> getPrimaryDataSourceURLS(final Map<String, DataSource> dataSourceMap) throws SQLException {
