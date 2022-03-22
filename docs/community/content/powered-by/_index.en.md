@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 170 companies.
+Total: 171 companies.
 
 ### Infra
 <ul>
@@ -69,8 +69,9 @@ Total: 170 companies.
 ### Digitalization & Cloud Services
 <ul>
     <li><a href="https://www.jdt.com.cn/" rel="nofollow">JD Digits</a></li>
-    <li>JD’s Big Data and Intelligent Supply Chain Department
     <li><a href="https://www.jdcloud.com/cn/" rel="nofollow">JDCloud</a></li>
+    <li>JD’s Big Data and Intelligent Supply Chain Department
+    <li><a href="https://www.cucloud.cn/" rel="nofollow">CU Cloud</a></li>
     <li><a href="https://aifanfan.baidu.com/" rel="nofollow">Baidu aifanfan</a></li>
     <li><a href="https://www.itrus.com.cn/" rel="nofollow">ITrusChina</a></li>
     <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">ZhenXin Safe</a></li>

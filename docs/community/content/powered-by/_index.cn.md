@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 170 家公司。
+共计 171 家公司。
 
 ### 基础设施
 <ul>
@@ -69,8 +69,9 @@ chapter = true
 ### 数字化与云服务
 <ul>
     <li><a href="https://www.jdt.com.cn/" rel="nofollow">京东科技</a></li>
-    <li>京东大数据与智能供应链</li>
     <li><a href="https://www.jdcloud.com/cn/" rel="nofollow">京东云</a></li>
+    <li>京东大数据与智能供应链</li>
+    <li><a href="https://www.cucloud.cn/" rel="nofollow">联通云</a></li>
     <li><a href="https://aifanfan.baidu.com/" rel="nofollow">百度爱番番</a></li>
     <li><a href="https://www.itrus.com.cn/" rel="nofollow">天威诚信</a></li>
     <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">真信认知科技</a></li>
