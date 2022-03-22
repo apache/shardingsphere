@@ -36,21 +36,23 @@ public final class StorageNodeStateChangedWatcherTest {
     @Test
     public void assertCreatePrimaryStateChangedEvent() {
         Optional<GovernanceEvent> actual = new StorageNodeStateChangedWatcher().createGovernanceEvent(
-                new DataChangedEvent("/nodes/storage_nodes/primary/replica_query_db.replica_ds_0", "new_db", Type.ADDED));
+                new DataChangedEvent("/nodes/storage_nodes/attributes/replica_query_db.readwrite_ds.replica_ds_0", "role: primary\nstatus: enable\n", Type.ADDED));
         assertTrue(actual.isPresent());
         PrimaryStateChangedEvent actualEvent = (PrimaryStateChangedEvent) actual.get();
         assertThat(actualEvent.getQualifiedSchema().getSchemaName(), is("replica_query_db"));
+        assertThat(actualEvent.getQualifiedSchema().getGroupName(), is("readwrite_ds"));
         assertThat(actualEvent.getQualifiedSchema().getDataSourceName(), is("replica_ds_0"));
-        assertThat(actualEvent.getPrimaryDataSourceName(), is("new_db"));
+        assertThat(actualEvent.getPrimaryDataSourceName(), is("replica_ds_0"));
     }
     
     @Test
     public void assertCreateEnabledStateChangedEvent() {
         Optional<GovernanceEvent> actual = new StorageNodeStateChangedWatcher().createGovernanceEvent(
-                new DataChangedEvent("/nodes/storage_nodes/disable/replica_query_db.replica_ds_0", "", Type.ADDED));
+                new DataChangedEvent("/nodes/storage_nodes/attributes/replica_query_db.readwrite_ds.replica_ds_0", "role: member\nstatus: enable\n", Type.ADDED));
         assertTrue(actual.isPresent());
         DisabledStateChangedEvent actualEvent = (DisabledStateChangedEvent) actual.get();
         assertThat(actualEvent.getQualifiedSchema().getSchemaName(), is("replica_query_db"));
+        assertThat(actualEvent.getQualifiedSchema().getGroupName(), is("readwrite_ds"));
         assertThat(actualEvent.getQualifiedSchema().getDataSourceName(), is("replica_ds_0"));
         assertTrue(actualEvent.isDisabled());
     }
@@ -58,10 +60,11 @@ public final class StorageNodeStateChangedWatcherTest {
     @Test
     public void assertCreateDisabledStateChangedEvent() {
         Optional<GovernanceEvent> actual = new StorageNodeStateChangedWatcher().createGovernanceEvent(
-                new DataChangedEvent("/nodes/storage_nodes/disable/replica_query_db.replica_ds_0", "", Type.DELETED));
+                new DataChangedEvent("/nodes/storage_nodes/attributes/replica_query_db.readwrite_ds.replica_ds_0", "role: member\nstatus: disable\n", Type.DELETED));
         assertTrue(actual.isPresent());
         DisabledStateChangedEvent actualEvent = (DisabledStateChangedEvent) actual.get();
         assertThat(actualEvent.getQualifiedSchema().getSchemaName(), is("replica_query_db"));
+        assertThat(actualEvent.getQualifiedSchema().getGroupName(), is("readwrite_ds"));
         assertThat(actualEvent.getQualifiedSchema().getDataSourceName(), is("replica_ds_0"));
         assertFalse(actualEvent.isDisabled());
     }
@@ -69,7 +72,7 @@ public final class StorageNodeStateChangedWatcherTest {
     @Test
     public void assertCreateEmptyEvent() {
         Optional<GovernanceEvent> actual = new StorageNodeStateChangedWatcher().createGovernanceEvent(
-                new DataChangedEvent("/nodes/storage_nodes/other/replica_query_db.replica_ds_0", "new_db", Type.ADDED));
+                new DataChangedEvent("/nodes/storage_nodes/attributes/replica_query_db.readwrite_ds.replica_ds_0", "", Type.ADDED));
         assertFalse(actual.isPresent());
     }
 }

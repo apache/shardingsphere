@@ -23,6 +23,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.mysql.AbstractDatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
+import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.infra.storage.StorageNodeRole;
+import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -61,23 +64,25 @@ public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabase
     }
     
     @Override
-    protected void determineMemberDataSourceState(final String schemaName, final Map<String, DataSource> dataSourceMap) {
+    protected void determineMemberDataSourceState(final String schemaName, final Map<String, DataSource> dataSourceMap, final String groupName) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (getOldPrimaryDataSource().equals(entry.getKey())) {
                 continue;
             }
-            determineDatasourceState(schemaName, entry.getKey(), entry.getValue());
+            determineDatasourceState(schemaName, entry.getKey(), entry.getValue(), groupName);
         }
     }
     
-    private void determineDatasourceState(final String schemaName, final String datasourceName, final DataSource dataSource) {
+    private void determineDatasourceState(final String schemaName, final String datasourceName, final DataSource dataSource, final String groupName) {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
-            long replicationDelayTime = getSecondsBehindMaster(statement);
-            if (replicationDelayTime * 1000 < Long.parseLong(props.getProperty("delay-milliseconds-threshold"))) {
-                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, datasourceName, false));
+            long replicationDelayTime = getSecondsBehindMaster(statement) * 1000L;
+            if (replicationDelayTime < Long.parseLong(props.getProperty("delay-milliseconds-threshold"))) {
+                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, groupName, datasourceName,
+                        new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.ENABLE, replicationDelayTime)));
             } else {
-                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, datasourceName, true));
+                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, groupName, datasourceName,
+                        new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.DISABLE, replicationDelayTime)));
             }
         } catch (SQLException ex) {
             log.error("An exception occurred while find member data source `Seconds_Behind_Master`", ex);
