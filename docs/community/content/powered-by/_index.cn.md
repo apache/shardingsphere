@@ -15,23 +15,36 @@ chapter = true
 
 共计 171 家公司。
 
-### 基础设施
+### 基础软件
 <ul>
     <li><a href="http://www.sphere-ex.com/" rel="nofollow">SphereEx</a></li>
 </ul>
 
-### 金融行业
+### 银行
 <ul>
     <li><a href="https://www.ccbft.com/" rel="nofollow">建信金融科技</a></li>
     <li><a href="http://www.cmbc.com.cn/" rel="nofollow">中国民生银行股份有限公司</a></li>
-    <li><a href="http://jr.jd.com/" rel="nofollow">京东金融</a>：<a href="https://mp.weixin.qq.com/s/Rzr-aKFwmm71QNUs68WQNA" rel="nofollow">用户案例</a></li>
+</ul>
+
+### 支付
+<ul>
     <li><a href="https://www.bestpay.com.cn/" rel="nofollow">中国电信翼支付（甜橙金融）</a></li>
+    <li><a href="https://www.kjtpay.com/" rel="nofollow">快捷通支付服务有限公司</a></li>
+</ul>
+
+### 电信
+<ul>
     <li><a href="https://jf.10086.cn/" rel="nofollow">中移动金融科技</a></li>
+    <li><a href="https://www.cucloud.cn/" rel="nofollow">联通云</a></li>
+</ul>
+
+### 互联网金融
+<ul>
+    <li><a href="http://jr.jd.com/" rel="nofollow">京东金融</a>：<a href="https://mp.weixin.qq.com/s/Rzr-aKFwmm71QNUs68WQNA" rel="nofollow">用户案例</a></li>
     <li><a href="https://www.360jinrong.net/" rel="nofollow">360数科</a></li>
     <li><a href="https://www.msxf.com/" rel="nofollow">马上金融</a></li>
     <li><a href="https://www.9fgroup.com/" rel="nofollow">玖富数科</a></li>
     <li><a href="https://www.haiercash.com/" rel="nofollow">海尔消费金融</a></li>
-    <li><a href="https://www.kjtpay.com/" rel="nofollow">快捷通支付服务有限公司</a></li>
     <li><a href="https://www.ppdai.com/" rel="nofollow">拍拍贷</a></li>
     <li><a href="https://www.niiwoo.com/" rel="nofollow">你我金融</a></li>
     <li><a href="https://www.51credit.com/" rel="nofollow">我爱卡</a></li>
@@ -71,7 +84,6 @@ chapter = true
     <li><a href="https://www.jdt.com.cn/" rel="nofollow">京东科技</a></li>
     <li><a href="https://www.jdcloud.com/cn/" rel="nofollow">京东云</a></li>
     <li>京东大数据与智能供应链</li>
-    <li><a href="https://www.cucloud.cn/" rel="nofollow">联通云</a></li>
     <li><a href="https://aifanfan.baidu.com/" rel="nofollow">百度爱番番</a></li>
     <li><a href="https://www.itrus.com.cn/" rel="nofollow">天威诚信</a></li>
     <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">真信认知科技</a></li>
