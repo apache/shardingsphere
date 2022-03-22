@@ -66,7 +66,7 @@ public final class StorageNodeStatusSubscriberTest {
         String schemaName = "replica_query_db";
         String groupName = "readwrite_ds";
         String dataSourceName = "replica_ds_0";
-        PrimaryDataSourceChangedEvent event = new PrimaryDataSourceChangedEvent(schemaName, groupName, dataSourceName);
+        PrimaryDataSourceChangedEvent event = new PrimaryDataSourceChangedEvent(new QualifiedSchema(schemaName, groupName, dataSourceName));
         new StorageNodeStatusSubscriber(repository).update(event);
         verify(repository).persist(StorageStatusNode.getStatusPath(new QualifiedSchema(schemaName, groupName, dataSourceName)),
                 YamlEngine.marshal(new StorageNodeDataSource(StorageNodeRole.PRIMARY, StorageNodeStatus.ENABLE)));

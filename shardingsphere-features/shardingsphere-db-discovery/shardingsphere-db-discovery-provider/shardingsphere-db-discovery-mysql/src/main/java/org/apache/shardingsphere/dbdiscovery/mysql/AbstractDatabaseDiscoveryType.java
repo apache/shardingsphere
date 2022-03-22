@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 
 import javax.sql.DataSource;
@@ -56,7 +57,7 @@ public abstract class AbstractDatabaseDiscoveryType implements DatabaseDiscovery
         }
         if (!newPrimaryDataSource.equals(oldPrimaryDataSource)) {
             oldPrimaryDataSource = newPrimaryDataSource;
-            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceChangedEvent(schemaName, groupName, newPrimaryDataSource));
+            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceChangedEvent(new QualifiedSchema(schemaName, groupName, newPrimaryDataSource)));
         }
     }
     

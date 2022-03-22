@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -49,15 +52,35 @@ public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabase
     private Properties props = new Properties();
     
     @Override
-    public void checkDatabaseDiscoveryConfiguration(final String schemaName, final Map<String, DataSource> dataSourceMap) {
-        //TODO Check master-slave mode
+    public void checkDatabaseDiscoveryConfiguration(final String schemaName, final Map<String, DataSource> dataSourceMap) throws SQLException {
+        Collection<String> result = getPrimaryDataSourceURLS(dataSourceMap);
+        Preconditions.checkState(!result.isEmpty(), "Not found primary data source for schemaName `%s`", schemaName);
+        Preconditions.checkState(1 == result.size(), "More than one primary data source for schemaName `%s`", schemaName);
+    }
+    
+    private Collection<String> getPrimaryDataSourceURLS(final Map<String, DataSource> dataSourceMap) throws SQLException {
+        Collection<String> result = new ArrayList<>();
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            try (Connection connection = entry.getValue().getConnection();
+                 Statement statement = connection.createStatement()) {
+                String url = getPrimaryDataSourceURL(statement);
+                if (!url.isEmpty() && !result.contains(url)) {
+                    result.add(url);
+                }
+            }
+        }
+        return result;
     }
     
     @Override
     protected String getPrimaryDataSourceURL(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
             if (resultSet.next()) {
-                return String.format("%s:%s", resultSet.getString("Master_Host"), resultSet.getString("Master_Port"));
+                String masterHost = resultSet.getString("Master_Host");
+                String masterPort = resultSet.getString("Master_Port");
+                if (null != masterHost && null != masterPort) {
+                    return String.format("%s:%s", masterHost, masterPort);
+                }
             }
             return "";
         }

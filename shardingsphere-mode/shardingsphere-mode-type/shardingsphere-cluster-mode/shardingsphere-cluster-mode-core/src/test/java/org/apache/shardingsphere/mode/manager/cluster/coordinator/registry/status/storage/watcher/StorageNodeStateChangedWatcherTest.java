@@ -42,7 +42,6 @@ public final class StorageNodeStateChangedWatcherTest {
         assertThat(actualEvent.getQualifiedSchema().getSchemaName(), is("replica_query_db"));
         assertThat(actualEvent.getQualifiedSchema().getGroupName(), is("readwrite_ds"));
         assertThat(actualEvent.getQualifiedSchema().getDataSourceName(), is("replica_ds_0"));
-        assertThat(actualEvent.getPrimaryDataSourceName(), is("replica_ds_0"));
     }
     
     @Test
@@ -54,7 +53,7 @@ public final class StorageNodeStateChangedWatcherTest {
         assertThat(actualEvent.getQualifiedSchema().getSchemaName(), is("replica_query_db"));
         assertThat(actualEvent.getQualifiedSchema().getGroupName(), is("readwrite_ds"));
         assertThat(actualEvent.getQualifiedSchema().getDataSourceName(), is("replica_ds_0"));
-        assertTrue(actualEvent.isDisabled());
+        assertFalse(actualEvent.isDisabled());
     }
     
     @Test
@@ -66,7 +65,7 @@ public final class StorageNodeStateChangedWatcherTest {
         assertThat(actualEvent.getQualifiedSchema().getSchemaName(), is("replica_query_db"));
         assertThat(actualEvent.getQualifiedSchema().getGroupName(), is("readwrite_ds"));
         assertThat(actualEvent.getQualifiedSchema().getDataSourceName(), is("replica_ds_0"));
-        assertFalse(actualEvent.isDisabled());
+        assertTrue(actualEvent.isDisabled());
     }
     
     @Test

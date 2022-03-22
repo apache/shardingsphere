@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 171 家公司。
+共计 175 家公司。
 
 ### 基础软件
 <ul>
@@ -24,6 +24,7 @@ chapter = true
 <ul>
     <li><a href="https://www.ccbft.com/" rel="nofollow">建信金融科技</a></li>
     <li><a href="http://www.cmbc.com.cn/" rel="nofollow">中国民生银行股份有限公司</a></li>
+    <li><a href="https://bank.pingan.com/" rel="nofollow">平安银行</a></li>
 </ul>
 
 ### 支付
@@ -68,6 +69,7 @@ chapter = true
 
 ### 新零售
 <ul>
+    <li><a href="https://www.yuanqisenlin.com/" rel="nofollow">元气森林</a></li>
     <li><a href="http://www.3songshu.com/" rel="nofollow">三只松鼠</a></li>
     <li><a href="http://www.pagoda.com.cn/" rel="nofollow">百果园</a></li>
     <li><a href="https://www.dayi35.com/" rel="nofollow">大易有塑</a></li>
@@ -253,6 +255,8 @@ chapter = true
     <li><a href="https://www.yunyuecloud.com/" rel="nofollow">数字云悦</a></li>
     <li><a href="https://t.itaojin.cn" rel="nofollow">淘金云客服</a></li>
     <li><a href="http://www.hzsun.com" rel="nofollow">正元智慧</a></li>
+    <li><a href="https://www.ywwl.com/" rel="nofollow">遥望网络</a></li>
+    <li><a href="http://www.le7soft.com/" rel="nofollow">乐奇软件</a></li>
 </ul>
 
 ### 医疗与健康
