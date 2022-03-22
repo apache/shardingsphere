@@ -351,15 +351,15 @@ setItem
     ;
 
 createRole
-    : CREATE ROLE
+    : CREATE ROLE name (AUTHORIZATION name)?
     ;
 
 dropRole
-    : DROP ROLE
+    : DROP ROLE (IF EXISTS)? name
     ;
 
 alterRole
-    : ALTER ROLE
+    : ALTER ROLE name (ADD MEMBER principal | DROP MEMBER principal | WITH NAME EQ_ name)
     ;
 
 createLogin

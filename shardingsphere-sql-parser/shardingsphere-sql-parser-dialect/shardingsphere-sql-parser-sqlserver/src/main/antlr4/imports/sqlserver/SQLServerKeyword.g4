@@ -1810,3 +1810,7 @@ LIST
 SEND
     : S E N D
     ;
+
+MEMBER
+    : M E M B E R
+    ;
