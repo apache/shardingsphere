@@ -133,7 +133,7 @@ it.run.additional.cases=false
 
 # 配置环境类型，只支持单值。可选值：docker或空，默认值：空
 it.cluster.env.type=${it.env}
-# 待测试的接入端类型，多个值可用逗号分隔。可选值：jdbc, proxy，默认值：jdbc
+# 待测试的接入端类型，多个值可用逗号分隔。可选值：jdbc, proxy, 默认值：jdbc
 it.cluster.adapters=jdbc
 
 # 场景类型，多个值可用逗号分隔。可选值：H2, MySQL, Oracle, SQLServer, PostgreSQL
