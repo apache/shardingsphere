@@ -15,23 +15,36 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 Total: 171 companies.
 
-### Infra
+### Infra Software
 <ul>
     <li><a href="http://www.sphere-ex.com/" rel="nofollow">SphereEx</a></li>
 </ul>
 
-### Financial Industry
+### Bank
 <ul>
     <li><a href="https://www.ccbft.com/" rel="nofollow">CCB Fintech</a></li>
     <li><a href="http://www.cmbc.com.cn/" rel="nofollow">CHINA MINSHENG BANK</a></li>
-    <li><a href="http://jr.jd.com/" rel="nofollow">JD Finance</a>: <a href="https://www.mysql.com/customers/view/?id=1461" rel="nofollow">User Case</a></li>
+</ul>
+
+### Payment
+<ul>
     <li><a href="https://www.bestpay.com.cn/" rel="nofollow">China Telecom Best Pay(Orange Finance)</a></li>
+    <li><a href="https://www.kjtpay.com/" rel="nofollow">KJT pay</a></li>
+</ul>
+
+### Telecommunications
+<ul>
     <li><a href="https://jf.10086.cn/" rel="nofollow">China Mobile Financial Technology</a></li>
+    <li><a href="https://www.cucloud.cn/" rel="nofollow">CU Cloud</a></li>
+</ul>
+
+### FinTech
+<ul>
+    <li><a href="http://jr.jd.com/" rel="nofollow">JD Finance</a>: <a href="https://www.mysql.com/customers/view/?id=1461" rel="nofollow">User Case</a></li>
     <li><a href="https://www.360jinrong.net/" rel="nofollow">360 ShuKe</a></li>
     <li><a href="https://www.msxf.com/" rel="nofollow">MSXF</a></li>
     <li><a href="https://www.9fgroup.com/" rel="nofollow">9fgroup</a></li>
     <li><a href="https://www.haiercash.com/" rel="nofollow">Haier Cash</a></li>
-    <li><a href="https://www.kjtpay.com/" rel="nofollow">KJT pay</a></li>
     <li><a href="https://www.ppdai.com/" rel="nofollow">PPDai</a></li>
     <li><a href="https://www.niiwoo.com/" rel="nofollow">Niiwoo</a></li>
     <li><a href="https://www.51credit.com/" rel="nofollow">51credit</a></li>
@@ -41,7 +54,7 @@ Total: 171 companies.
     <li><a href="https://www.tansun.com/" rel="nofollow">TANSUN</a></li>
 </ul>
 
-### E-Commerce
+### Internet
 <ul>
     <li><a href="http://www.dangdang.com/" rel="nofollow">DangDang</a></li>
     <li><a href="https://www.zhuanzhuan.com/" rel="nofollow">ZhuanZhuan</a></li>
@@ -51,6 +64,10 @@ Total: 171 companies.
     <li><a href="https://www.jd.ru/" rel="nofollow">JD.ru</a></li>
     <li><a href="https://www.wandougongzhu.cn" rel="nofollow">WanDouGongZhu</a></li>
     <li><a href="https://www.missfresh.cn/" rel="nofollow">MissFresh</a></li>
+</ul>
+
+### E-Commerce
+<ul>
     <li><a href="http://www.3songshu.com/" rel="nofollow">Three Squirrels</a></li>
     <li><a href="http://www.pagoda.com.cn/" rel="nofollow">Pagoda</a></li>
     <li><a href="https://www.dayi35.com/" rel="nofollow">Dayi35</a></li>
@@ -71,7 +88,6 @@ Total: 171 companies.
     <li><a href="https://www.jdt.com.cn/" rel="nofollow">JD Digits</a></li>
     <li><a href="https://www.jdcloud.com/cn/" rel="nofollow">JDCloud</a></li>
     <li>JD’s Big Data and Intelligent Supply Chain Department
-    <li><a href="https://www.cucloud.cn/" rel="nofollow">CU Cloud</a></li>
     <li><a href="https://aifanfan.baidu.com/" rel="nofollow">Baidu aifanfan</a></li>
     <li><a href="https://www.itrus.com.cn/" rel="nofollow">ITrusChina</a></li>
     <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">ZhenXin Safe</a></li>
