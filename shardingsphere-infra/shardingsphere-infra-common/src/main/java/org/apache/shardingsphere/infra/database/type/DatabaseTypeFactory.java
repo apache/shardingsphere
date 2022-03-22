@@ -21,6 +21,9 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 
+import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -28,8 +31,6 @@ import java.util.Optional;
  * Database type factory.
  */
 public final class DatabaseTypeFactory {
-    
-    private static final String DEFAULT_DATABASE_TYPE = "MySQL";
     
     /**
      * Get database type.
@@ -43,19 +44,17 @@ public final class DatabaseTypeFactory {
         if (configuredDatabaseType.isPresent()) {
             return configuredDatabaseType.get();
         }
-        if (schemaConfigs.isEmpty()) {
-            return DatabaseTypeRegistry.getTrunkDatabaseType(DEFAULT_DATABASE_TYPE);
-        }
-        Optional<? extends SchemaConfiguration> schemaConfiguration = schemaConfigs.values().stream()
-                .filter(each -> !each.getDataSources().isEmpty() && !each.getRuleConfigurations().isEmpty()).findFirst();
-        if (!schemaConfiguration.isPresent()) {
-            return DatabaseTypeRegistry.getTrunkDatabaseType(DEFAULT_DATABASE_TYPE);
-        }
-        return DatabaseTypeRecognizer.getDatabaseType(schemaConfiguration.get().getDataSources().values());
+        Collection<DataSource> dataSources = schemaConfigs.values().stream()
+                .filter(DatabaseTypeFactory::isComplete).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList);
+        return DatabaseTypeRecognizer.getDatabaseType(dataSources);
     }
     
     private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
         String configuredDatabaseType = props.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
         return configuredDatabaseType.isEmpty() ? Optional.empty() : Optional.of(DatabaseTypeRegistry.getTrunkDatabaseType(configuredDatabaseType));
+    }
+    
+    private static boolean isComplete(final SchemaConfiguration schemaConfig) {
+        return !schemaConfig.getRuleConfigurations().isEmpty() && !schemaConfig.getDataSources().isEmpty();
     }
 }
