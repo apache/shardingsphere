@@ -9,7 +9,7 @@ chapter = true
 
 欢迎采用了 ShardingSphere 的公司在此登记，您的支持是我们最大的动力。
 
-请按`公司名` + `首页` + `应用案例（可选）` 的格式在[此处](https://github.com/apache/shardingsphere/discussions/12255)登记。
+请按`公司名` + `首页` + `用户案例（可选）` 的格式在[此处](https://github.com/apache/shardingsphere/discussions/12255)登记。
 
 ## 谁在使用 ShardingSphere?
 
@@ -24,7 +24,7 @@ chapter = true
 <ul>
     <li><a href="https://www.ccbft.com/" rel="nofollow">建信金融科技</a></li>
     <li><a href="http://www.cmbc.com.cn/" rel="nofollow">中国民生银行股份有限公司</a></li>
-    <li><a href="http://jr.jd.com/" rel="nofollow">京东金融</a></li>
+    <li><a href="http://jr.jd.com/" rel="nofollow">京东金融</a>：<a href="https://mp.weixin.qq.com/s/Rzr-aKFwmm71QNUs68WQNA" rel="nofollow">用户案例</a></li>
     <li><a href="https://www.bestpay.com.cn/" rel="nofollow">中国电信翼支付（甜橙金融）</a></li>
     <li><a href="https://jf.10086.cn/" rel="nofollow">中移动金融科技</a></li>
     <li><a href="https://www.360jinrong.net/" rel="nofollow">360数科</a></li>
@@ -43,8 +43,8 @@ chapter = true
 
 ### 电子商务
 <ul>
-    <li><a href="http://www.dangdang.com/" rel="nofollow">当当</a></li>
-    <li><a href="https://www.zhuanzhuan.com/" rel="nofollow">转转</a></li>
+    <li><a href="http://www.dangdang.com/" rel="nofollow">当当</a>：<a href="https://mp.weixin.qq.com/s/Dcs_2Mkdvd49_s40rlOHvw" rel="nofollow">用户案例</a></li>
+    <li><a href="https://www.zhuanzhuan.com/" rel="nofollow">转转</a>：<a href="https://mp.weixin.qq.com/s/WftCu5oD4TZ-Xcf4uELtKA" rel="nofollow">用户案例</a></li>
     <li><a href="https://www.dewu.com/" rel="nofollow">得物</a></li>    
     <li><a href="https://www.vip.com/" rel="nofollow">唯品会</a></li>
     <li><a href="https://www.joybuy.com/" rel="nofollow">京东商城海外站</a></li>
@@ -93,7 +93,7 @@ chapter = true
     <li><a href="https://www.01zhuanche.com/" rel="nofollow">首汽约车</a></li>
     <li><a href="https://www.trawe.cn/" rel="nofollow">特微智能</a></li>
     <li><a href="https://www.souche.com/" rel="nofollow">大搜车</a></li>
-    <li><a href="http://www.f6car.com/" rel="nofollow">南京爱福路汽车科技</a></li>
+    <li><a href="http://www.f6car.com/" rel="nofollow">南京爱福路汽车科技</a>：<a href="https://mp.weixin.qq.com/s/EWhgaT_63lVuwVAJNpqLbw" rel="nofollow">用户案例</a></li>
     <li><a href="http://www.juneyao.com/" rel="nofollow">均瑶集团</a></li>
     <li><a href="https://4pyun.com/" rel="nofollow">P云+</a></li>
     <li><a href="http://www.supersoco.com/" rel="nofollow">速珂智能</a></li>
@@ -117,8 +117,8 @@ chapter = true
 
 ### 旅游服务
 <ul>
-    <li><a href="https://www.ctrip.com/" rel="nofollow">携程旅游</a></li>
-    <li><a href="https://www.mafengwo.cn/" rel="nofollow">马蜂窝</a></li>    
+    <li><a href="https://www.ctrip.com/" rel="nofollow">携程旅游</a>：<a href="https://mp.weixin.qq.com/s/Dw9e33Xk9DO7PbYPIfo_kg" rel="nofollow">用户案例</a></li>
+    <li><a href="https://www.mafengwo.cn/" rel="nofollow">马蜂窝</a></li>
     <li><a href="https://www.tujia.com/" rel="nofollow">途家民宿</a></li>
     <li><a href="https://www.fotoplace.cc/" rel="nofollow">足记</a></li>
     <li><a href="https://travelingpin.com" rel="nofollow">travelingpin</a></li>
@@ -184,13 +184,13 @@ chapter = true
     <li><a href="http://www.chiscdc.com/" rel="nofollow">中卫信</a></li>
     <li><a href="http://www.taxchina.com/" rel="nofollow">中税网</a></li>
     <li><a href="http://www.gddxit.com/" rel="nofollow">广东达信</a></li>
-    <li><a href="https://hulucc.com/" rel="nofollow">葫芦</a></li>
+    <li><a href="https://hulucc.com/" rel="nofollow">葫芦</a>：<a href="https://mp.weixin.qq.com/s/fqJ1ecEOYiaNiMKYH7YGVQ" rel="nofollow">用户案例</a></li>
 </ul>
 
 ### 通信科技
 <ul>
     <li><a href="https://www.iflytek.com/" rel="nofollow">科大讯飞</a></li>
-    <li><a href="https://www.oppo.com/" rel="nofollow">OPPO</a></li>
+    <li><a href="https://www.oppo.com/" rel="nofollow">OPPO</a>：<a href="https://mp.weixin.qq.com/s/kLV5oqc9uHLg47TmaSTk4A" rel="nofollow">用户案例</a></li>
     <li><a href="https://www.vivo.com/" rel="nofollow">VIVO</a></li>
     <li><a href="https://www.tcl.com/" rel="nofollow">TCL</a></li>
 </ul>
