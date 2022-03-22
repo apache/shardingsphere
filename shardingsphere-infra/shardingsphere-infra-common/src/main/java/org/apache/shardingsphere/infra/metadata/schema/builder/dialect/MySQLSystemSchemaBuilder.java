@@ -36,7 +36,7 @@ public final class MySQLSystemSchemaBuilder implements DialectSystemSchemaBuilde
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>();
         DatabaseType databaseType = DatabaseTypeRegistry.getTrunkDatabaseType(getDatabaseType());
         for (String each : databaseType.getSystemSchemas().getOrDefault(schemaName, Collections.emptyList())) {
-            // TODO build ShardingSphereSchema according to schema
+            // TODO build ShardingSphereSchema according to MySQL schema
             result.put(each, new ShardingSphereSchema(Collections.emptyMap()));
         }
         return result;
