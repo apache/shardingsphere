@@ -154,7 +154,7 @@ public final class ClusterContextManagerCoordinator {
                 .stream()
                 .filter(each -> each instanceof StatusContainedRule)
                 .forEach(each -> ((StatusContainedRule) each)
-                        .updateStatus(new DataSourceNameDisabledEvent(qualifiedSchema.getDataSourceName(), event.isDisabled())));
+                        .updateStatus(new DataSourceNameDisabledEvent(qualifiedSchema, event.isDisabled())));
     }
     
     /**
@@ -169,7 +169,7 @@ public final class ClusterContextManagerCoordinator {
                 .stream()
                 .filter(each -> each instanceof StatusContainedRule)
                 .forEach(each -> ((StatusContainedRule) each)
-                        .updateStatus(new PrimaryDataSourceChangedEvent(qualifiedSchema.getSchemaName(), qualifiedSchema.getDataSourceName(), event.getPrimaryDataSourceName())));
+                        .updateStatus(new PrimaryDataSourceChangedEvent(qualifiedSchema)));
     }
     
     /**
@@ -283,6 +283,6 @@ public final class ClusterContextManagerCoordinator {
         Map<String, StorageNodeDataSource> storageNodes = registryCenter.getStorageNodeStatusService().loadStorageNodes();
         Map<String, StorageNodeDataSource> disableDataSources = storageNodes.entrySet().stream().filter(entry ->
                 StorageNodeStatus.DISABLE.name().toLowerCase().equals(entry.getValue().getStatus())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        disableDataSources.entrySet().stream().forEach(entry -> rule.updateStatus(new DataSourceNameDisabledEvent(new QualifiedSchema(entry.getKey()).getDataSourceName(), true)));
+        disableDataSources.entrySet().stream().forEach(entry -> rule.updateStatus(new DataSourceNameDisabledEvent(new QualifiedSchema(entry.getKey()), true)));
     }
 }
