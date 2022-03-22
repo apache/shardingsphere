@@ -434,7 +434,9 @@ public enum SQLVisitorRule {
 
     DROP_POLICY("DropPolicy", SQLStatementType.DDL),
 
-    DROP_OWNED("DropOwned", SQLStatementType.DDL);
+    DROP_OWNED("DropOwned", SQLStatementType.DDL),
+    
+    DROP_OPERATOR("DropOperator", SQLStatementType.DDL);
 
     private final String name;
     
