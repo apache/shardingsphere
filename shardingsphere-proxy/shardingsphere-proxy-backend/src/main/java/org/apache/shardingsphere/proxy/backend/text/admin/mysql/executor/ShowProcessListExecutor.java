@@ -82,7 +82,7 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
         if (null == processListData || processListData.isEmpty()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
-        Collection<YamlExecuteProcessContext> processContexts = processListData.stream()
+        Collection<YamlExecuteProcessContext> processContexts = processListData.stream().filter(each -> null != each && !each.isEmpty())
             .map(value -> YamlEngine.unmarshal(value, YamlExecuteProcessContext.class)).collect(Collectors.toList());
         List<MemoryQueryResultDataRow> rows = processContexts.stream().map(processContext -> {
             List<Object> rowValues = new ArrayList<>(8);

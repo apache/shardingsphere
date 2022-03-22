@@ -71,6 +71,8 @@ public final class ProcessRegistrySubscriber {
     @Subscribe
     public void reportExecuteProcessSummary(final ExecuteProcessSummaryReportEvent event) {
         String executionID = event.getExecutionID();
+        final int showProcessListAsyncThreadNumber;
+        final String processContext;
         synchronized (executionID) {
             Map<String, Object> dataMap = event.getDataMap();
             ExecuteProcessReportContext reportContext = (ExecuteProcessReportContext) dataMap.get(ExecuteProcessConstants.EXECUTE_ID.name());
@@ -78,10 +80,11 @@ public final class ProcessRegistrySubscriber {
                 return;
             }
             YamlExecuteProcessContext yamlExecuteProcessContext = reportContext.getYamlExecuteProcessContext();
-            String processContext = YamlEngine.marshal(yamlExecuteProcessContext);
-            ProcessThreadExecutorGroup.getInstance().get(executionID, reportContext.getShowProcessListAsyncThreadNumber())
-                    .submit(() -> repository.persist(ProcessNode.getExecutionPath(executionID), processContext));
+            processContext = YamlEngine.marshal(yamlExecuteProcessContext);
+            showProcessListAsyncThreadNumber = reportContext.getShowProcessListAsyncThreadNumber();
         }
+        ProcessThreadExecutorGroup.getInstance().get(executionID, showProcessListAsyncThreadNumber)
+                .submit(() -> repository.persist(ProcessNode.getExecutionPath(executionID), processContext));
     }
     
     /**
@@ -92,6 +95,8 @@ public final class ProcessRegistrySubscriber {
     @Subscribe
     public void reportExecuteProcessUnit(final ExecuteProcessUnitReportEvent event) {
         String executionID = event.getExecutionID();
+        final int showProcessListAsyncThreadNumber;
+        final String processContext;
         synchronized (executionID) {
             Map<String, Object> dataMap = event.getDataMap();
             ExecuteProcessReportContext reportContext = (ExecuteProcessReportContext) dataMap.get(ExecuteProcessConstants.EXECUTE_ID.name());
@@ -105,10 +110,11 @@ public final class ProcessRegistrySubscriber {
                     unit.setStatus(executeProcessUnit.getStatus());
                 }
             }
-            String processContext = YamlEngine.marshal(yamlExecuteProcessContext);
-            ProcessThreadExecutorGroup.getInstance().get(executionID, reportContext.getShowProcessListAsyncThreadNumber())
-                    .submit(() -> repository.persist(ProcessNode.getExecutionPath(executionID), processContext));
+            processContext = YamlEngine.marshal(yamlExecuteProcessContext);
+            showProcessListAsyncThreadNumber = reportContext.getShowProcessListAsyncThreadNumber();
         }
+        ProcessThreadExecutorGroup.getInstance().get(executionID, showProcessListAsyncThreadNumber)
+                .submit(() -> repository.persist(ProcessNode.getExecutionPath(executionID), processContext));
     }
     
     /**
@@ -119,6 +125,7 @@ public final class ProcessRegistrySubscriber {
     @Subscribe
     public void reportExecuteProcess(final ExecuteProcessReportEvent event) {
         String executionID = event.getExecutionID();
+        final int showProcessListAsyncThreadNumber;
         synchronized (executionID) {
             Map<String, Object> dataMap = event.getDataMap();
             ExecuteProcessReportContext reportContext = (ExecuteProcessReportContext) dataMap.get(ExecuteProcessConstants.EXECUTE_ID.name());
@@ -128,8 +135,9 @@ public final class ProcessRegistrySubscriber {
                     return;
                 }
             }
-            ProcessThreadExecutorGroup.getInstance().get(executionID, reportContext.getShowProcessListAsyncThreadNumber())
-                    .submit(() -> repository.delete(ProcessNode.getExecutionPath(executionID)));
+            showProcessListAsyncThreadNumber = reportContext.getShowProcessListAsyncThreadNumber();
         }
+        ProcessThreadExecutorGroup.getInstance().get(executionID, showProcessListAsyncThreadNumber)
+                .submit(() -> repository.delete(ProcessNode.getExecutionPath(executionID)));
     }
 }
