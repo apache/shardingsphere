@@ -88,4 +88,9 @@ public final class ComputeNodeTest {
         assertThat(actual.get().getInstanceId().getId(), is("127.0.0.1@3307"));
         assertThat(actual.get().getInstanceType(), is(InstanceType.JDBC));
     }
+    
+    @Test
+    public void assertGetComputeNodePath() {
+        assertThat(ComputeNode.getComputeNodePath(), is("/nodes/compute_nodes"));
+    }
 }

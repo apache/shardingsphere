@@ -60,7 +60,7 @@ public final class ExecutionContextBuilderTest {
         when(dataSourcesMetaData.getAllInstanceDataSourceNames()).thenReturn(Arrays.asList(firstDataSourceName, "lastDataSourceName"));
         ShardingSphereResource resource = new ShardingSphereResource(Collections.emptyMap(), dataSourcesMetaData, mock(CachedDatabaseMetaData.class), mock(DatabaseType.class));
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData("name", resource, ruleMetaData, buildSchema());
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("name", resource, ruleMetaData, buildSchemas());
         Collection<ExecutionUnit> actual = ExecutionContextBuilder.build(metaData, genericSQLRewriteResult, mock(SQLStatementContext.class));
         Collection<ExecutionUnit> expected = Collections.singletonList(new ExecutionUnit(firstDataSourceName, new SQLUnit(sql, parameters)));
         assertThat(actual, is(expected));
@@ -77,7 +77,7 @@ public final class ExecutionContextBuilderTest {
         sqlRewriteUnits.put(routeUnit2, sqlRewriteUnit2);
         ShardingSphereResource resource = new ShardingSphereResource(Collections.emptyMap(), mock(DataSourcesMetaData.class), mock(CachedDatabaseMetaData.class), mock(DatabaseType.class));
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData("name", resource, ruleMetaData, buildSchema());
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("name", resource, ruleMetaData, buildSchemas());
         Collection<ExecutionUnit> actual = ExecutionContextBuilder.build(metaData, new RouteSQLRewriteResult(sqlRewriteUnits), mock(SQLStatementContext.class));
         ExecutionUnit expectedUnit1 = new ExecutionUnit("actualName1", new SQLUnit("sql1", Collections.singletonList("parameter1")));
         ExecutionUnit expectedUnit2 = new ExecutionUnit("actualName2", new SQLUnit("sql2", Collections.singletonList("parameter2")));
@@ -95,7 +95,7 @@ public final class ExecutionContextBuilderTest {
         sqlRewriteUnits.put(routeUnit2, sqlRewriteUnit2);
         ShardingSphereResource resource = new ShardingSphereResource(Collections.emptyMap(), mock(DataSourcesMetaData.class), mock(CachedDatabaseMetaData.class), mock(DatabaseType.class));
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData("name", resource, ruleMetaData, buildSchemaWithoutPrimaryKey());
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("name", resource, ruleMetaData, buildSchemasWithoutPrimaryKey());
         Collection<ExecutionUnit> actual = ExecutionContextBuilder.build(metaData, new RouteSQLRewriteResult(sqlRewriteUnits), mock(SQLStatementContext.class));
         ExecutionUnit expectedUnit2 = new ExecutionUnit("actualName2", new SQLUnit("sql2", Collections.singletonList("parameter2")));
         Collection<ExecutionUnit> expected = new LinkedHashSet<>(1, 1);
@@ -103,17 +103,17 @@ public final class ExecutionContextBuilderTest {
         assertThat(actual, is(expected));
     }
     
-    private ShardingSphereSchema buildSchemaWithoutPrimaryKey() {
+    private Map<String, ShardingSphereSchema> buildSchemasWithoutPrimaryKey() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
         tableMetaDataMap.put("logicName1", new TableMetaData("logicName1", Arrays.asList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false),
                 new ColumnMetaData("user_id", Types.INTEGER, false, false, false),
                 new ColumnMetaData("status", Types.INTEGER, false, false, false)), Collections.emptySet(), Collections.emptyList()));
         tableMetaDataMap.put("t_other", new TableMetaData("t_other", Collections.singletonList(
                 new ColumnMetaData("order_id", Types.INTEGER, true, false, false)), Collections.emptySet(), Collections.emptyList()));
-        return new ShardingSphereSchema(tableMetaDataMap);
+        return Collections.singletonMap("name", new ShardingSphereSchema(tableMetaDataMap));
     }
     
-    private ShardingSphereSchema buildSchema() {
+    private Map<String, ShardingSphereSchema> buildSchemas() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
         tableMetaDataMap.put("logicName1", new TableMetaData("logicName1", Arrays.asList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false),
                 new ColumnMetaData("user_id", Types.INTEGER, false, false, false),
@@ -125,6 +125,6 @@ public final class ExecutionContextBuilderTest {
                 new ColumnMetaData("c_date", Types.TIMESTAMP, false, false, false)), Collections.emptySet(), Collections.emptyList()));
         tableMetaDataMap.put("t_other", new TableMetaData("t_other", Collections.singletonList(
                 new ColumnMetaData("order_id", Types.INTEGER, true, false, false)), Collections.emptySet(), Collections.emptyList()));
-        return new ShardingSphereSchema(tableMetaDataMap);
+        return Collections.singletonMap("name", new ShardingSphereSchema(tableMetaDataMap));
     }
 }

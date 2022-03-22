@@ -54,4 +54,9 @@ public final class MySQLDatabaseType implements DatabaseType {
     public Optional<String> getDataSourceClassName() {
         return Optional.of("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
     }
+    
+    @Override
+    public Optional<String> getDefaultSchemaName() {
+        return Optional.empty();
+    }
 }

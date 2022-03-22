@@ -69,6 +69,13 @@ public interface DatabaseType {
     Optional<String> getDataSourceClassName();
     
     /**
+     * Get default schema name.
+     * 
+     * @return default schema name
+     */
+    Optional<String> getDefaultSchemaName();
+    
+    /**
      * Get schema.
      *
      * @param connection connection
