@@ -169,6 +169,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RenameTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.TruncateStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropOwnedStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropOperatorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterInstanceStatementTestCase;
@@ -1187,6 +1188,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "import-schema-config")
     private final List<ImportSchemaConfigurationStatementTestCase> importSchemaConfigurationStatementTestCases = new LinkedList<>();
+
+    @XmlElement(name = "drop-operator")
+    private final List<DropOperatorStatementTestCase> dropOperatorStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -1484,6 +1488,7 @@ public final class SQLParserTestCases {
         putAll(createTablespaceTestCases, result);
         putAll(importSchemaConfigurationStatementTestCases, result);
         putAll(dropOwnedStatementTestCases, result);
+        putAll(dropOperatorStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON
