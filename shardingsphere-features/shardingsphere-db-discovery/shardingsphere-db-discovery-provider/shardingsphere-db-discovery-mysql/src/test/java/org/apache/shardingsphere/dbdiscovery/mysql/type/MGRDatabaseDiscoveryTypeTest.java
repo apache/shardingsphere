@@ -167,7 +167,7 @@ public final class MGRDatabaseDiscoveryTypeTest {
             dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
         }
         mgrDatabaseDiscoveryType.updateMemberState("discovery_db", dataSourceMap, disabledDataSourceNames, "readwrite_ds");
-        verify(eventBus).post(Mockito.refEq(new DataSourceDisabledEvent("discovery_db", "readwrite_ds","ds_2",
+        verify(eventBus).post(Mockito.refEq(new DataSourceDisabledEvent("discovery_db", "readwrite_ds", "ds_2",
                 new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.DISABLE))));
     }
 }
