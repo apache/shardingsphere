@@ -46,7 +46,11 @@ import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Map;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Properties;
+import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -169,13 +173,13 @@ public final class MetaDataPersistServiceTest {
     }
 
     @Test
-    public void assertPersistTransactionRule() {
+    public void assertPersistTransactionRule() throws IllegalStateException {
         Collection<RuleConfiguration> globalRuleConfigs = getChangedGlobalRuleConfigurations();
         Properties props = createProperties();
+        Collection<RuleConfiguration> ruleConfigurations = metaDataPersistService.getGlobalRuleService().load();
+        ruleConfigurations.addAll(globalRuleConfigs);
         globalRuleService.load().addAll(globalRuleConfigs);
-        Optional<RuleConfiguration> ruleConfigs = globalRuleService.load().stream().findFirst();
-        System.out.println(ruleConfigs);
-        //metaDataPersistService.persistTransactionRule(props, false);
-        //verify(globalRuleService).persist(globalRuleConfigs, false);
+        metaDataPersistService.persistTransactionRule(props, true);
+        verify(globalRuleService).persist(globalRuleConfigs, true);
     }
 }
