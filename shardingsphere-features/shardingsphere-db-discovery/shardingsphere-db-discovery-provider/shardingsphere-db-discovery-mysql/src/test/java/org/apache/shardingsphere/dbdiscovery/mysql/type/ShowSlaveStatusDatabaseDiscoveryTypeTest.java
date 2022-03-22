@@ -67,9 +67,6 @@ public final class ShowSlaveStatusDatabaseDiscoveryTypeTest {
         if (slave) {
             when(resultSet.getString("Master_Host")).thenReturn("127.0.0.1");
             when(resultSet.getString("Master_Port")).thenReturn(Integer.toString(3306));
-        } else {
-            when(resultSet.getString("Master_Host")).thenReturn("");
-            when(resultSet.getString("Master_Port")).thenReturn("");
         }
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(connection.getMetaData()).thenReturn(databaseMetaData);

@@ -76,7 +76,11 @@ public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabase
     protected String getPrimaryDataSourceURL(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
             if (resultSet.next()) {
-                return String.format("%s:%s", resultSet.getString("Master_Host"), resultSet.getString("Master_Port"));
+                String masterHost = resultSet.getString("Master_Host");
+                String masterPort = resultSet.getString("Master_Port");
+                if (null != masterHost && null != masterPort) {
+                    return String.format("%s:%s", masterHost, masterPort);
+                }
             }
             return "";
         }
