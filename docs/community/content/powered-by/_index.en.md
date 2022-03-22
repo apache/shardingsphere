@@ -54,7 +54,7 @@ Total: 171 companies.
     <li><a href="https://www.tansun.com/" rel="nofollow">TANSUN</a></li>
 </ul>
 
-### E-Commerce
+### Internet
 <ul>
     <li><a href="http://www.dangdang.com/" rel="nofollow">DangDang</a></li>
     <li><a href="https://www.zhuanzhuan.com/" rel="nofollow">ZhuanZhuan</a></li>
@@ -64,6 +64,10 @@ Total: 171 companies.
     <li><a href="https://www.jd.ru/" rel="nofollow">JD.ru</a></li>
     <li><a href="https://www.wandougongzhu.cn" rel="nofollow">WanDouGongZhu</a></li>
     <li><a href="https://www.missfresh.cn/" rel="nofollow">MissFresh</a></li>
+</ul>
+
+### E-Commerce
+<ul>
     <li><a href="http://www.3songshu.com/" rel="nofollow">Three Squirrels</a></li>
     <li><a href="http://www.pagoda.com.cn/" rel="nofollow">Pagoda</a></li>
     <li><a href="https://www.dayi35.com/" rel="nofollow">Dayi35</a></li>

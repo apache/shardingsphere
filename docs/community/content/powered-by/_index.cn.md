@@ -54,16 +54,20 @@ chapter = true
     <li><a href="https://www.tansun.com/" rel="nofollow">天阳宏业</a></li>
 </ul>
 
-### 电子商务
+### 互联网
 <ul>
     <li><a href="http://www.dangdang.com/" rel="nofollow">当当</a>：<a href="https://mp.weixin.qq.com/s/Dcs_2Mkdvd49_s40rlOHvw" rel="nofollow">用户案例</a></li>
     <li><a href="https://www.zhuanzhuan.com/" rel="nofollow">转转</a>：<a href="https://mp.weixin.qq.com/s/WftCu5oD4TZ-Xcf4uELtKA" rel="nofollow">用户案例</a></li>
-    <li><a href="https://www.dewu.com/" rel="nofollow">得物</a></li>    
+    <li><a href="https://www.dewu.com/" rel="nofollow">得物</a></li>
     <li><a href="https://www.vip.com/" rel="nofollow">唯品会</a></li>
     <li><a href="https://www.joybuy.com/" rel="nofollow">京东商城海外站</a></li>
     <li><a href="https://www.jd.ru/" rel="nofollow">京东商城俄文站</a></li>
     <li><a href="https://www.wandougongzhu.cn" rel="nofollow">豌豆公主</a></li>
     <li><a href="https://www.missfresh.cn/" rel="nofollow">每日优鲜</a></li>
+</ul>
+
+### 新零售
+<ul>
     <li><a href="http://www.3songshu.com/" rel="nofollow">三只松鼠</a></li>
     <li><a href="http://www.pagoda.com.cn/" rel="nofollow">百果园</a></li>
     <li><a href="https://www.dayi35.com/" rel="nofollow">大易有塑</a></li>
