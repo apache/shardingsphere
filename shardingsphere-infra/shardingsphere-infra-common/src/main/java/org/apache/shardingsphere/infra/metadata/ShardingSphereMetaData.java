@@ -49,23 +49,23 @@ public final class ShardingSphereMetaData {
     
     private final ShardingSphereRuleMetaData ruleMetaData;
     
-    private final ShardingSphereSchema schema;
+    private final Map<String, ShardingSphereSchema> schemas;
     
     /**
      * Create ShardingSphere meta data.
      * 
-     * @param schemaName schema name
-     * @param schema schema
+     * @param databaseName database name
+     * @param schemas schemas
      * @param schemaConfig schema configuration
      * @param rules rules
      * @return ShardingSphere meta data
      * @throws SQLException SQL exception
      */
-    public static ShardingSphereMetaData create(final String schemaName, final ShardingSphereSchema schema, final SchemaConfiguration schemaConfig,
+    public static ShardingSphereMetaData create(final String databaseName, final Map<String, ShardingSphereSchema> schemas, final SchemaConfiguration schemaConfig,
                                                 final Collection<ShardingSphereRule> rules) throws SQLException {
         ShardingSphereResource resource = createResource(schemaConfig.getDataSources());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(schemaConfig.getRuleConfigurations(), rules);
-        return new ShardingSphereMetaData(schemaName, resource, ruleMetaData, schema);
+        return new ShardingSphereMetaData(databaseName, resource, ruleMetaData, schemas);
     }
     
     private static ShardingSphereResource createResource(final Map<String, DataSource> dataSourceMap) throws SQLException {
@@ -100,5 +100,14 @@ public final class ShardingSphereMetaData {
      */
     public boolean hasDataSource() {
         return !resource.getDataSources().isEmpty();
+    }
+    
+    /**
+     * Get schema.
+     * 
+     * @return sharding sphere schema
+     */
+    public ShardingSphereSchema getSchema() {
+        return resource.getDatabaseType().getDefaultSchemaName().map(schemas::get).orElseGet(() -> schemas.get(name));
     }
 }

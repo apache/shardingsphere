@@ -57,6 +57,11 @@ public final class OracleDatabaseType implements DatabaseType {
         return Optional.empty();
     }
     
+    @Override
+    public Optional<String> getDefaultSchemaName() {
+        return Optional.empty();
+    }
+    
     @SuppressWarnings("ReturnOfNull")
     @Override
     public String getSchema(final Connection connection) {

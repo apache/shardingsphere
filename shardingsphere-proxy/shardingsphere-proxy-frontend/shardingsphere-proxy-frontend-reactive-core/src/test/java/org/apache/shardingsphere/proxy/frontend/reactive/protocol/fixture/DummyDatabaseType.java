@@ -50,4 +50,9 @@ public final class DummyDatabaseType implements DatabaseType {
     public Optional<String> getDataSourceClassName() {
         return Optional.empty();
     }
+    
+    @Override
+    public Optional<String> getDefaultSchemaName() {
+        return Optional.empty();
+    }
 }
