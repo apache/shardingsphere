@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
+import org.apache.shardingsphere.mode.manager.memory.lock.MemoryLockContext;
 import org.apache.shardingsphere.mode.manager.memory.workerid.generator.MemoryWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
@@ -54,7 +55,7 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
         generateTransactionConfigurationFile(instanceContext, metaDataContexts);
         TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
         ContextManager result = new ContextManager();
-        result.init(metaDataContexts, transactionContexts, buildInstanceContext(parameter));
+        result.init(metaDataContexts, transactionContexts, buildInstanceContext(parameter), new MemoryLockContext());
         setInstanceContext(result);
         return result;
     }
