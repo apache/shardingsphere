@@ -24,7 +24,7 @@ Total: 170 companies.
 <ul>
     <li><a href="https://www.ccbft.com/" rel="nofollow">CCB Fintech</a></li>
     <li><a href="http://www.cmbc.com.cn/" rel="nofollow">CHINA MINSHENG BANK</a></li>
-    <li><a href="http://jr.jd.com/" rel="nofollow">JD Finance</a></li>
+    <li><a href="http://jr.jd.com/" rel="nofollow">JD Finance</a>: <a href="https://www.mysql.com/customers/view/?id=1461" rel="nofollow">User Case</a></li>
     <li><a href="https://www.bestpay.com.cn/" rel="nofollow">China Telecom Best Pay(Orange Finance)</a></li>
     <li><a href="https://jf.10086.cn/" rel="nofollow">China Mobile Financial Technology</a></li>
     <li><a href="https://www.360jinrong.net/" rel="nofollow">360 ShuKe</a></li>
