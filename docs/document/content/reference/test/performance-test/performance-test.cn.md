@@ -34,7 +34,7 @@ weight = 1
 
 ### 数据库表结构
 
-此处表结构参考 sysbench 的 sbtest 表
+此处表结构参考 sysbench 的 sbtest 表。
 
 ```shell
 CREATE TABLE `tbl` (
@@ -398,7 +398,7 @@ DELETE FROM tbl1 WHERE id=?
 
 ### 压测类
 
-参考 [ shardingsphere-benchmark ](https://github.com/apache/shardingsphere-benchmark/tree/master/shardingsphere-benchmark) 实现，注意阅读其中的注释
+参考 [ shardingsphere-benchmark ](https://github.com/apache/shardingsphere-benchmark/tree/master/shardingsphere-benchmark) 实现，注意阅读其中的注释。
 
 ### 编译
 
