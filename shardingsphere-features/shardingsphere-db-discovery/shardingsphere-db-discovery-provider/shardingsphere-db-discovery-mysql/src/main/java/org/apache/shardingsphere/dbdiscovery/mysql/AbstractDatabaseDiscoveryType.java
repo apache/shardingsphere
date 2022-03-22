@@ -42,7 +42,7 @@ public abstract class AbstractDatabaseDiscoveryType implements DatabaseDiscovery
     
     protected abstract String getPrimaryDataSourceURL(Statement statement) throws SQLException;
     
-    protected abstract void determineMemberDataSourceState(String schemaName, Map<String, DataSource> dataSourceMap);
+    protected abstract void determineMemberDataSourceState(String schemaName, Map<String, DataSource> dataSourceMap, String groupName);
     
     @Override
     public void updatePrimaryDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
@@ -61,12 +61,12 @@ public abstract class AbstractDatabaseDiscoveryType implements DatabaseDiscovery
     }
     
     @Override
-    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
+    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
         Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
         if (!disabledDataSourceNames.isEmpty()) {
             activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
         }
-        determineMemberDataSourceState(schemaName, activeDataSourceMap);
+        determineMemberDataSourceState(schemaName, activeDataSourceMap, groupName);
     }
     
     private String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {

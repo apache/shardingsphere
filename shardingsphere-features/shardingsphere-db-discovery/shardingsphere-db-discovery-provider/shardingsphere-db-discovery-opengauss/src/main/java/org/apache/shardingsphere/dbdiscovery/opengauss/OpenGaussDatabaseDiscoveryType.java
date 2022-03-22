@@ -24,6 +24,9 @@ import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
+import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.infra.storage.StorageNodeRole;
+import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -86,7 +89,7 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
     }
     
     @Override
-    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
+    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             boolean disable = true;
             try (Connection connection = entry.getValue().getConnection();
@@ -101,7 +104,8 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
             } catch (final SQLException ex) {
                 log.error("An exception occurred while find data source urls", ex);
             }
-            ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, entry.getKey(), disable));
+            ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, groupName, entry.getKey(),
+                    new StorageNodeDataSource(StorageNodeRole.MEMBER, disable ? StorageNodeStatus.DISABLE : StorageNodeStatus.ENABLE)));
         }
     }
     

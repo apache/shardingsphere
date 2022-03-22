@@ -22,8 +22,6 @@ import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.StorageNodeStatus;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node.StorageStatusNode;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -123,12 +121,13 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
         if (null == persistService || null == persistService.getRepository()) {
             return Collections.emptyList();
         }
+        // TODO fix me
         //TODO API for getting disabled nodes needs to be adjusted
-        List<String> disableResources = persistService.getRepository().getChildrenKeys(StorageStatusNode.getStatusPath(StorageNodeStatus.DISABLE));
+       /* List<String> disableResources = persistService.getRepository().getChildrenKeys(StorageStatusNode.getStatusPath(StorageNodeStatus.DISABLE));
         if (!disableResources.isEmpty()) {
             return disableResources.stream().filter(Objects::nonNull).filter(each -> schemaName.equals(each.split(DELIMITER)[0])).map(each -> each.split(DELIMITER)[1])
                     .collect(Collectors.toCollection(LinkedList::new));
-        }
+        }*/
         return Collections.emptyList();
     }
     

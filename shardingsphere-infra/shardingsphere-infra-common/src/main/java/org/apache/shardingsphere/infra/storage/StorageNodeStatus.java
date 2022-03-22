@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage;
+package org.apache.shardingsphere.infra.storage;
 
 /**
  * Storage node status.
  */
 public enum StorageNodeStatus {
     
-    DISABLE, PRIMARY
+    DISABLE, ENABLE
 }
