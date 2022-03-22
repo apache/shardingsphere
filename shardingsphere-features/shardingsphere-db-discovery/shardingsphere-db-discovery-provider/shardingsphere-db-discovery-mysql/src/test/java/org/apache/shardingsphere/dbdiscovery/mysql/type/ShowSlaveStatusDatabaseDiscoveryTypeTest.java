@@ -39,6 +39,14 @@ public final class ShowSlaveStatusDatabaseDiscoveryTypeTest {
     private final ShowSlaveStatusDatabaseDiscoveryType showSlaveStatusDatabaseDiscoveryType = new ShowSlaveStatusDatabaseDiscoveryType();
     
     @Test
+    public void assertCheckShowSlaveStatusConfig() throws SQLException {
+        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
+        dataSourceMap.put("ds_0", getDataSource(false, 3306));
+        dataSourceMap.put("ds_1", getDataSource(true, 3307));
+        showSlaveStatusDatabaseDiscoveryType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSourceMap);
+    }
+    
+    @Test
     public void assertUpdatePrimaryDataSource() throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds_0", getDataSource(false, 3306));
@@ -59,6 +67,9 @@ public final class ShowSlaveStatusDatabaseDiscoveryTypeTest {
         if (slave) {
             when(resultSet.getString("Master_Host")).thenReturn("127.0.0.1");
             when(resultSet.getString("Master_Port")).thenReturn(Integer.toString(3306));
+        } else {
+            when(resultSet.getString("Master_Host")).thenReturn("");
+            when(resultSet.getString("Master_Port")).thenReturn("");
         }
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
