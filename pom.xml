@@ -55,6 +55,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locale>zh_CN</project.build.locale>
         <maven.deploy.skip>false</maven.deploy.skip>
+        <shade.package>org.apache.shardingsphere.dependencies</shade.package>
         
         <guava.version>30.0-jre</guava.version>
         <commons-lang3.version>3.8</commons-lang3.version>
@@ -132,6 +133,7 @@
         <maven-javadoc-plugin.version>3.3.0</maven-javadoc-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
+        <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
         <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
         <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
@@ -706,6 +708,10 @@
                 <plugin>
                     <artifactId>maven-assembly-plugin</artifactId>
                     <version>${maven-assembly-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>${maven-shade-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
