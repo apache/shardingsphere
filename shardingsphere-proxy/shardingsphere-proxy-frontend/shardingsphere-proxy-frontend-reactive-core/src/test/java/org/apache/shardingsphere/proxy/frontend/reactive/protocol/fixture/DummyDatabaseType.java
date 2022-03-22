@@ -22,6 +22,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 public final class DummyDatabaseType implements DatabaseType {
@@ -52,7 +54,7 @@ public final class DummyDatabaseType implements DatabaseType {
     }
     
     @Override
-    public Optional<String> getDefaultSchemaName() {
-        return Optional.empty();
+    public Map<String, Collection<String>> getSystemSchemas() {
+        return Collections.emptyMap();
     }
 }

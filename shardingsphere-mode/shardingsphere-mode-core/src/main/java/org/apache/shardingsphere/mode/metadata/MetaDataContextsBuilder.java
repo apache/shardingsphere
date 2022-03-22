@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -69,17 +70,30 @@ public final class MetaDataContextsBuilder {
     /**
      * Add schema information.
      * 
-     * @param databaseName database name
+     * @param schemaName schema name
+     * @param databaseType database type
      * @param schemaConfig schema configuration
      * @param props properties
      * @throws SQLException SQL exception
      */
-    public void addSchema(final String databaseName, final SchemaConfiguration schemaConfig, final Properties props) throws SQLException {
-        Collection<ShardingSphereRule> schemaRules = getSchemaRules(databaseName, schemaConfig, props);
-        ShardingSphereDatabase database = DatabaseLoader.load(databaseName, schemaConfig.getDataSources(), schemaRules, props);
-        schemaConfigMap.put(databaseName, schemaConfig);
-        schemaRulesMap.put(databaseName, schemaRules);
-        databaseMap.put(databaseName, database);
+    public void addSchema(final String schemaName, final DatabaseType databaseType, final SchemaConfiguration schemaConfig, final Properties props) throws SQLException {
+        Collection<ShardingSphereRule> schemaRules = getSchemaRules(schemaName, schemaConfig, props);
+        ShardingSphereDatabase database = DatabaseLoader.load(schemaName, databaseType, schemaConfig.getDataSources(), schemaRules, props);
+        schemaConfigMap.put(schemaName, schemaConfig);
+        schemaRulesMap.put(schemaName, schemaRules);
+        databaseMap.put(schemaName, database);
+    }
+    
+    /**
+     * Add system schemas.
+     *
+     * @param databaseType database type
+     */
+    public void addSystemSchemas(final DatabaseType databaseType) {
+        for (Entry<String, Collection<String>> entry : databaseType.getSystemSchemas().entrySet()) {
+            ShardingSphereDatabase database = DatabaseLoader.load(entry.getKey(), databaseType);
+            databaseMap.put(entry.getKey(), database);
+        }
     }
     
     private Collection<ShardingSphereRule> getSchemaRules(final String databaseName, final SchemaConfiguration schemaConfig, final Properties props) {
@@ -102,8 +116,9 @@ public final class MetaDataContextsBuilder {
     private Map<String, ShardingSphereMetaData> getMetaDataMap() throws SQLException {
         Map<String, ShardingSphereMetaData> result = new HashMap<>(schemaConfigMap.size(), 1);
         for (Entry<String, ? extends SchemaConfiguration> entry : schemaConfigMap.entrySet()) {
-            String databaseName = entry.getKey();
-            result.put(databaseName, ShardingSphereMetaData.create(databaseName, databaseMap.get(databaseName).getSchemas(), entry.getValue(), schemaRulesMap.get(databaseName)));
+            String schemaName = entry.getKey();
+            // TODO support database configuration
+            result.put(schemaName, ShardingSphereMetaData.create(schemaName, databaseMap.get(schemaName).getSchemas(), entry.getValue(), schemaRulesMap.get(schemaName)));
         }
         return result;
     }

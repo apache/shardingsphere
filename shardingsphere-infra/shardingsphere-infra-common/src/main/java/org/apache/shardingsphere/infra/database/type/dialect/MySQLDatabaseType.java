@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.infra.database.type.dialect;
 
+import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -56,7 +59,12 @@ public final class MySQLDatabaseType implements DatabaseType {
     }
     
     @Override
-    public Optional<String> getDefaultSchemaName() {
-        return Optional.empty();
+    public Map<String, Collection<String>> getSystemSchemas() {
+        Map<String, Collection<String>> result = new LinkedHashMap<>();
+        result.put("information_schema", Sets.newHashSet("information_schema"));
+        result.put("performance_schema", Sets.newHashSet("performance_schema"));
+        result.put("mysql", Sets.newHashSet("mysql"));
+        result.put("sys", Sets.newHashSet("sys"));
+        return result;
     }
 }

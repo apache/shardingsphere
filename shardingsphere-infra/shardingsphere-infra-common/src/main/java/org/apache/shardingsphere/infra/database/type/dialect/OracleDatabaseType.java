@@ -25,6 +25,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -57,11 +58,6 @@ public final class OracleDatabaseType implements DatabaseType {
         return Optional.empty();
     }
     
-    @Override
-    public Optional<String> getDefaultSchemaName() {
-        return Optional.empty();
-    }
-    
     @SuppressWarnings("ReturnOfNull")
     @Override
     public String getSchema(final Connection connection) {
@@ -70,6 +66,11 @@ public final class OracleDatabaseType implements DatabaseType {
         } catch (final SQLException ignored) {
             return null;
         }
+    }
+    
+    @Override
+    public Map<String, Collection<String>> getSystemSchemas() {
+        return Collections.emptyMap();
     }
     
     @Override
