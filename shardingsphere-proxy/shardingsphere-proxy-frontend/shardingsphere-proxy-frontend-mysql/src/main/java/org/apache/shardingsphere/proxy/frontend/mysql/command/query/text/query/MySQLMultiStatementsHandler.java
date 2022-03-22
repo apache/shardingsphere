@@ -72,9 +72,9 @@ import java.util.regex.Pattern;
  */
 public final class MySQLMultiStatementsHandler implements TextProtocolBackendHandler {
     
-    private static final Pattern MULTI_UPDATE_STATEMENTS = Pattern.compile(";(?=\\s+update)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern MULTI_UPDATE_STATEMENTS = Pattern.compile(";(?=\\s*update)", Pattern.CASE_INSENSITIVE);
     
-    private static final Pattern MULTI_DELETE_STATEMENTS = Pattern.compile(";(?=\\s+delete)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern MULTI_DELETE_STATEMENTS = Pattern.compile(";(?=\\s*delete)", Pattern.CASE_INSENSITIVE);
     
     private final KernelProcessor kernelProcessor = new KernelProcessor();
     
