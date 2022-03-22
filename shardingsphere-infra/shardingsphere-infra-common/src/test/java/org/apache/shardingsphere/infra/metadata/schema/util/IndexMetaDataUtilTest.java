@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.util;
 
-import org.apache.shardingsphere.infra.metadata.schema.util.IndexMetaDataUtil;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

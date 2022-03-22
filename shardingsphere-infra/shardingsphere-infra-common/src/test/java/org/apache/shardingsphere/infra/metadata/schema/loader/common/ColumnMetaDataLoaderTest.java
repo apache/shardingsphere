@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.metadata.schema.loader.common;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.loader.common.ColumnMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.junit.Before;
 import org.junit.Test;

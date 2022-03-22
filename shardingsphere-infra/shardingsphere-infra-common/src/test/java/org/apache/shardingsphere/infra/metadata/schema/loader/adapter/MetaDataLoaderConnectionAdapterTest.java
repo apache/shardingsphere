@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.metadata.schema.loader.adapter;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.metadata.schema.loader.adapter.MetaDataLoaderConnectionAdapter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;

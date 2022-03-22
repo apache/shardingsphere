@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.loader.common;
 
-import org.apache.shardingsphere.infra.metadata.schema.loader.common.DataTypeLoader;
 import org.junit.Test;
 
 import java.sql.DatabaseMetaData;
