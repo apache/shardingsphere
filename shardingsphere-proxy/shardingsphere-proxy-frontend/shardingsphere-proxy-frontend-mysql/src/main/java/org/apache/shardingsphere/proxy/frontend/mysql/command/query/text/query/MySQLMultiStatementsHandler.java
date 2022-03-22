@@ -165,13 +165,13 @@ public final class MySQLMultiStatementsHandler implements TextProtocolBackendHan
         DatabaseType databaseType = metaDataContexts.getMetaData(connectionSession.getSchemaName()).getResource().getDatabaseType();
         JDBCExecutorCallback<int[]> callback = new BatchedJDBCExecutorCallback(databaseType, sqlStatementSample, isExceptionThrown);
         List<int[]> executeResults = jdbcExecutor.execute(executionGroupContext, callback);
-        List<UpdateResult> result = new ArrayList<>(executeResults.size());
+        int updated = 0;
         for (int[] eachResult : executeResults) {
             for (int each : eachResult) {
-                result.add(new UpdateResult(each, 0L));
+                updated += each;
             }
         }
-        return new UpdateResponseHeader(sqlStatementSample, result);
+        return new UpdateResponseHeader(sqlStatementSample, Collections.singletonList(new UpdateResult(updated, 0L)));
     }
     
     private static class BatchedJDBCExecutorCallback extends JDBCExecutorCallback<int[]> {
