@@ -26,6 +26,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * PostgreSQL system schema builder.
+ */
 public final class PostgreSQLSystemSchemaBuilder implements DialectSystemSchemaBuilder {
     
     private static final String POSTGRES_DEFAULT_DATABASE = "postgres";

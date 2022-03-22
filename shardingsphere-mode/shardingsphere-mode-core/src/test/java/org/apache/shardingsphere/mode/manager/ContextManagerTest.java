@@ -141,8 +141,10 @@ public final class ContextManagerTest {
     
     @Test
     public void assertAddResource() throws SQLException {
+        ShardingSphereResource resource = mock(ShardingSphereResource.class);
+        when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(metaDataContexts.getMetaDataMap()).thenReturn(new HashMap<>(Collections.singletonMap("foo_schema", new ShardingSphereMetaData(
-                "foo_schema", mock(ShardingSphereResource.class), new ShardingSphereRuleMetaData(new LinkedList<>(), new LinkedList<>()), Collections.emptyMap()))));
+                "foo_schema", resource, new ShardingSphereRuleMetaData(new LinkedList<>(), new LinkedList<>()), Collections.emptyMap()))));
         contextManager.addResource("foo_schema", createToBeAddedDataSourceProperties());
         assertAddedDataSources(contextManager.getMetaDataContexts().getMetaDataMap().get("foo_schema").getResource().getDataSources());
     }
@@ -177,6 +179,7 @@ public final class ContextManagerTest {
     private ShardingSphereMetaData createOriginalMetaData() {
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
+        when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getConfigurations()).thenReturn(new LinkedList<>());
         return new ShardingSphereMetaData("foo_schema", resource, ruleMetaData, Collections.emptyMap());
@@ -197,8 +200,10 @@ public final class ContextManagerTest {
     
     @Test
     public void assertAlterRuleConfiguration() {
+        ShardingSphereResource resource = mock(ShardingSphereResource.class);
+        when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(metaDataContexts.getMetaDataMap()).thenReturn(Collections.singletonMap("foo_schema", 
-                new ShardingSphereMetaData("foo_schema", mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), Collections.emptyMap())));
+                new ShardingSphereMetaData("foo_schema", resource, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap())));
         when(metaDataContexts.getMetaDataPersistService()).thenReturn(Optional.of(mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS)));
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
         contextManager.alterRuleConfiguration("foo_schema", Collections.singleton(ruleConfig));
@@ -221,6 +226,7 @@ public final class ContextManagerTest {
         originalDataSources.put("ds_1", new MockedDataSource());
         originalDataSources.put("ds_2", new MockedDataSource());
         when(result.getDataSources()).thenReturn(originalDataSources);
+        when(result.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         return result;
     }
     
