@@ -33,6 +33,7 @@ import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPe
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,12 +46,8 @@ import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertTrue;
@@ -164,12 +161,21 @@ public final class MetaDataPersistServiceTest {
         Map<String, DataSource> resultEffectiveDataSources = metaDataPersistService.getEffectiveDataSources("foo_db", schemaConfigs);
         assertTrue(resultEffectiveDataSources.isEmpty());
     }
-    
+
+    private Collection<RuleConfiguration> getChangedGlobalRuleConfigurations() {
+        Properties props = createProperties();
+        RuleConfiguration transactionRuleConfiguration = new TransactionRuleConfiguration("test", "shardingsphere", props);
+        return Collections.singleton(transactionRuleConfiguration);
+    }
+
     @Test
     public void assertPersistTransactionRule() {
-        Collection<RuleConfiguration> globalRuleConfigs = createGlobalRuleConfigurations();
+        Collection<RuleConfiguration> globalRuleConfigs = getChangedGlobalRuleConfigurations();
         Properties props = createProperties();
-        metaDataPersistService.persistTransactionRule(props, false);
-        verify(globalRuleService).persist(globalRuleConfigs, false);
+        globalRuleService.load().addAll(globalRuleConfigs);
+        Optional<RuleConfiguration> ruleConfigs = globalRuleService.load().stream().findFirst();
+        System.out.println(ruleConfigs);
+        //metaDataPersistService.persistTransactionRule(props, false);
+        //verify(globalRuleService).persist(globalRuleConfigs, false);
     }
 }
