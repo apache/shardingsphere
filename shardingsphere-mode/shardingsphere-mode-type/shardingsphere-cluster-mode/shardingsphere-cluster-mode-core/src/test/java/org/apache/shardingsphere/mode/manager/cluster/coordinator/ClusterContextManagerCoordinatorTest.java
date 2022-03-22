@@ -263,7 +263,7 @@ public final class ClusterContextManagerCoordinatorTest {
         ShardingSphereMetaData mockShardingSphereMetaData = mock(ShardingSphereMetaData.class);
         when(mockShardingSphereMetaData.getRuleMetaData()).thenReturn(mockShardingSphereRuleMetaData);
         contextManager.getMetaDataContexts().getMetaDataMap().put("schema", mockShardingSphereMetaData);
-        PrimaryStateChangedEvent mockPrimaryStateChangedEvent = new PrimaryStateChangedEvent(new QualifiedSchema("schema.readwrite_ds.test_ds"), "test_ds");
+        PrimaryStateChangedEvent mockPrimaryStateChangedEvent = new PrimaryStateChangedEvent(new QualifiedSchema("schema.readwrite_ds.test_ds"));
         coordinator.renew(mockPrimaryStateChangedEvent);
         verify(mockStatusContainedRule).updateStatus(any());
     }
