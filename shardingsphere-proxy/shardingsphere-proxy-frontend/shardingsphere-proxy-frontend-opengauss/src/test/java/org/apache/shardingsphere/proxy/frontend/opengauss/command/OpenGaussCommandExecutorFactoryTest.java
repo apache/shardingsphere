@@ -36,7 +36,7 @@ import org.apache.shardingsphere.proxy.frontend.opengauss.command.query.extended
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLComTerminationExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLUnsupportedCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLAggregatedBatchedInsertsCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLAggregatedBatchedStatementsCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLAggregatedCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.bind.PostgreSQLComBindExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.close.PostgreSQLComCloseExecutor;
@@ -140,7 +140,7 @@ public final class OpenGaussCommandExecutorFactoryTest {
         assertTrue(actual instanceof PostgreSQLAggregatedCommandExecutor);
         Iterator<CommandExecutor> actualPacketsIterator = getExecutorsFromAggregatedCommandExecutor((PostgreSQLAggregatedCommandExecutor) actual).iterator();
         assertTrue(actualPacketsIterator.next() instanceof PostgreSQLComParseExecutor);
-        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLAggregatedBatchedInsertsCommandExecutor);
+        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLAggregatedBatchedStatementsCommandExecutor);
         assertTrue(actualPacketsIterator.next() instanceof PostgreSQLComCloseExecutor);
         assertTrue(actualPacketsIterator.next() instanceof PostgreSQLComSyncExecutor);
         assertTrue(actualPacketsIterator.next() instanceof PostgreSQLComTerminationExecutor);

@@ -60,7 +60,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class PostgreSQLAggregatedBatchedInsertsCommandExecutorTest {
+public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
     
     private static final ShardingSphereSQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine("PostgreSQL", new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()));
     
@@ -100,7 +100,7 @@ public final class PostgreSQLAggregatedBatchedInsertsCommandExecutorTest {
         when(backendStatement.createStorageResource(any(ExecutionUnit.class), any(Connection.class), any(ConnectionMode.class), any(StatementOption.class))).thenReturn(preparedStatement);
         when(connectionSession.getStatementManager()).thenReturn(backendStatement);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
-        PostgreSQLAggregatedBatchedInsertsCommandExecutor batchedInsertsCommandExecutor = new PostgreSQLAggregatedBatchedInsertsCommandExecutor(connectionSession, preparePackets());
+        PostgreSQLAggregatedBatchedStatementsCommandExecutor batchedInsertsCommandExecutor = new PostgreSQLAggregatedBatchedStatementsCommandExecutor(connectionSession, preparePackets());
         List<DatabasePacket<?>> actualPackets = new ArrayList<>(batchedInsertsCommandExecutor.execute());
         assertThat(actualPackets.size(), is(BATCH_SIZE * 3));
         for (int i = 0; i < BATCH_SIZE; i++) {

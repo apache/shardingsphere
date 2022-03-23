@@ -49,7 +49,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PostgreSQLBatchedInsertsExecutorTest {
+public final class PostgreSQLBatchedStatementsExecutorTest {
     
     @Mock
     private ConnectionSession connectionSession;
@@ -76,7 +76,7 @@ public final class PostgreSQLBatchedInsertsExecutorTest {
         OpenGaussInsertStatement openGaussInsertStatement = mock(OpenGaussInsertStatement.class, RETURNS_DEEP_STUBS);
         when(openGaussInsertStatement.getTable().getTableName().getIdentifier().getValue()).thenReturn("");
         PostgreSQLPreparedStatement postgreSQLPreparedStatement = new PostgreSQLPreparedStatement("", openGaussInsertStatement, Collections.emptyList());
-        PostgreSQLBatchedInsertsExecutor actual = new PostgreSQLBatchedInsertsExecutor(connectionSession, postgreSQLPreparedStatement, Collections.emptyList());
+        PostgreSQLBatchedStatementsExecutor actual = new PostgreSQLBatchedStatementsExecutor(connectionSession, postgreSQLPreparedStatement, Collections.emptyList());
         ExecutionContext executionContext = mock(ExecutionContext.class);
         setAnyExecutionContext(actual, executionContext);
         actual.executeBatch();
@@ -84,8 +84,8 @@ public final class PostgreSQLBatchedInsertsExecutorTest {
     }
     
     @SneakyThrows
-    private void setAnyExecutionContext(final PostgreSQLBatchedInsertsExecutor executor, final ExecutionContext executionContext) {
-        Field field = PostgreSQLBatchedInsertsExecutor.class.getDeclaredField("anyExecutionContext");
+    private void setAnyExecutionContext(final PostgreSQLBatchedStatementsExecutor executor, final ExecutionContext executionContext) {
+        Field field = PostgreSQLBatchedStatementsExecutor.class.getDeclaredField("anyExecutionContext");
         field.setAccessible(true);
         field.set(executor, executionContext);
     }

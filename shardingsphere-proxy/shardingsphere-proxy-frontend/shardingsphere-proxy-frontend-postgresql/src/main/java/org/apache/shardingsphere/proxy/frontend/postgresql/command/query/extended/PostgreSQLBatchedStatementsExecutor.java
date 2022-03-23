@@ -61,9 +61,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Batched inserts executor for PostgreSQL.
+ * Batched statements executor for PostgreSQL.
  */
-public final class PostgreSQLBatchedInsertsExecutor {
+public final class PostgreSQLBatchedStatementsExecutor {
     
     private final KernelProcessor kernelProcessor = new KernelProcessor();
     
@@ -81,7 +81,7 @@ public final class PostgreSQLBatchedInsertsExecutor {
     
     private ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext;
     
-    public PostgreSQLBatchedInsertsExecutor(final ConnectionSession connectionSession, final PostgreSQLPreparedStatement preparedStatement, final List<List<Object>> parameterSets) {
+    public PostgreSQLBatchedStatementsExecutor(final ConnectionSession connectionSession, final PostgreSQLPreparedStatement preparedStatement, final List<List<Object>> parameterSets) {
         this.connectionSession = connectionSession;
         metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         this.preparedStatement = preparedStatement;
@@ -152,7 +152,7 @@ public final class PostgreSQLBatchedInsertsExecutor {
     private int executeBatchedPreparedStatements() throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         DatabaseType databaseType = metaDataContexts.getMetaData(connectionSession.getSchemaName()).getResource().getDatabaseType();
-        JDBCExecutorCallback<int[]> callback = new BatchedInsertsJDBCExecutorCallback(databaseType, preparedStatement.getSqlStatement(), isExceptionThrown);
+        JDBCExecutorCallback<int[]> callback = new BatchedStatementsJDBCExecutorCallback(databaseType, preparedStatement.getSqlStatement(), isExceptionThrown);
         List<int[]> executeResults = jdbcExecutor.execute(executionGroupContext, callback);
         int result = 0;
         for (int[] eachResult : executeResults) {
@@ -163,9 +163,9 @@ public final class PostgreSQLBatchedInsertsExecutor {
         return result;
     }
     
-    private static class BatchedInsertsJDBCExecutorCallback extends JDBCExecutorCallback<int[]> {
+    private static class BatchedStatementsJDBCExecutorCallback extends JDBCExecutorCallback<int[]> {
     
-        BatchedInsertsJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
+        BatchedStatementsJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
             super(databaseType, sqlStatement, isExceptionThrown);
         }
     

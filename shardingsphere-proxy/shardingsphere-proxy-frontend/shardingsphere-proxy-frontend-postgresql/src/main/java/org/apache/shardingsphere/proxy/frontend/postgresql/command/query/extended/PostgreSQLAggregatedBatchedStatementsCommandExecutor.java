@@ -40,10 +40,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Aggregated batched inserts command executor for PostgreSQL.
+ * Aggregated batched statements command executor for PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLAggregatedBatchedInsertsCommandExecutor implements CommandExecutor {
+public final class PostgreSQLAggregatedBatchedStatementsCommandExecutor implements CommandExecutor {
     
     private final ConnectionSession connectionSession;
     
@@ -52,7 +52,7 @@ public final class PostgreSQLAggregatedBatchedInsertsCommandExecutor implements 
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
         PostgreSQLPreparedStatement preparedStatement = getPreparedStatement();
-        PostgreSQLBatchedInsertsExecutor executor = new PostgreSQLBatchedInsertsExecutor(connectionSession, preparedStatement, readParameterSets(preparedStatement.getParameterTypes()));
+        PostgreSQLBatchedStatementsExecutor executor = new PostgreSQLBatchedStatementsExecutor(connectionSession, preparedStatement, readParameterSets(preparedStatement.getParameterTypes()));
         List<DatabasePacket<?>> result = new ArrayList<>(packets.size());
         int totalInserted = executor.executeBatch();
         int executePacketCount = executePacketCount();
