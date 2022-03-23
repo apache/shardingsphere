@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 172 companies.
+Total: 175 companies.
 
 ### Infra Software
 <ul>
@@ -24,6 +24,7 @@ Total: 172 companies.
 <ul>
     <li><a href="https://www.ccbft.com/" rel="nofollow">CCB Fintech</a></li>
     <li><a href="http://www.cmbc.com.cn/" rel="nofollow">CHINA MINSHENG BANK</a></li>
+    <li><a href="https://bank.pingan.com/" rel="nofollow">Ping An Bank</a></li>
 </ul>
 
 ### Payment
@@ -68,6 +69,7 @@ Total: 172 companies.
 
 ### E-Commerce
 <ul>
+    <li><a href="https://www.yuanqisenlin.com/" rel="nofollow">Yuan Qi Sen Lin</a></li>
     <li><a href="http://www.3songshu.com/" rel="nofollow">Three Squirrels</a></li>
     <li><a href="http://www.pagoda.com.cn/" rel="nofollow">Pagoda</a></li>
     <li><a href="https://www.dayi35.com/" rel="nofollow">Dayi35</a></li>
@@ -254,6 +256,7 @@ Total: 172 companies.
     <li><a href="https://t.itaojin.cn" rel="nofollow">ITaoJin</a></li>
     <li><a href="http://www.hzsun.com" rel="nofollow">hzsun</a></li>
     <li><a href="https://www.ywwl.com/" rel="nofollow">YOWANT</a></li>
+    <li><a href="http://www.le7soft.com/" rel="nofollow">Le7Soft</a></li>
 </ul>
 
 ### Health Care

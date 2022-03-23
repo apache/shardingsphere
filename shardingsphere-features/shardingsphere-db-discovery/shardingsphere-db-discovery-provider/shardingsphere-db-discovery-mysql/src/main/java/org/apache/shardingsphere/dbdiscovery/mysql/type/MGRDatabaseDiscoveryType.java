@@ -154,7 +154,15 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     }
     
     @Override
-    protected void determineMemberDataSourceState(final String schemaName, final Map<String, DataSource> dataSourceMap, final String groupName) {
+    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
+        Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
+        if (!disabledDataSourceNames.isEmpty()) {
+            activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
+        }
+        determineMemberDataSourceState(schemaName, activeDataSourceMap, groupName);
+    }
+    
+    private void determineMemberDataSourceState(final String schemaName, final Map<String, DataSource> dataSourceMap, final String groupName) {
         List<String> memberDataSourceURLs = findMemberDataSourceURLs(dataSourceMap);
         if (memberDataSourceURLs.isEmpty()) {
             return;

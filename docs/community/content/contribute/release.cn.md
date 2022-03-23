@@ -11,38 +11,38 @@ chapter = true
 Release Note 需提供中文/英文两种版本，确认中文描述是否明确，英文翻译是否准确，并按以下标签进行分类：
 
 1. 新功能
-1. API 变更
-1. 功能增强
-1. 重构
-1. 漏洞修复
+2. API 变更
+3. 功能增强
+4. 重构
+5. 漏洞修复
 
 **2. 确认 Issue 列表**
 
 打开 [Github Issues](https://github.com/apache/shardingsphere/issues) ，过滤 Milestone 为 `${RELEASE.VERSION}` 且状态为打开的 Issue:
 
 1. 关闭已完成的 Issue 
-1. 未完成的 Issue 与负责人进行沟通，如果不影响本次发版，修改 Milestone 为下一个版本
-1. 确认发布版本的 Milestone 下没有打开状态的 Issue
+2. 未完成的 Issue 与负责人进行沟通，如果不影响本次发版，修改 Milestone 为下一个版本
+3. 确认发布版本的 Milestone 下没有打开状态的 Issue
 
 **3. 确认 Pull request 列表**
 
 打开 [Github Pull requests](https://github.com/apache/shardingsphere/pulls) ，过滤 Milestone 为 `${RELEASE.VERSION}` 且状态为打开的 Pull request:
 
 1. 对打开的 Pull request 进行 Review 并且 Merge
-1. 无法 Merge 且不影响本次发版的 Pull request，修改 Milestone 为下一个版本
-1. 确认发布版本的 Milestone 下没有打开状态的 Pull request
+2. 无法 Merge 且不影响本次发版的 Pull request，修改 Milestone 为下一个版本
+3. 确认发布版本的 Milestone 下没有打开状态的 Pull request
 
 **4. 关闭 Milestone**
 
 打开 [Github Milestone](https://github.com/apache/shardingsphere/milestones) 
 
 1. 确认 `${RELEASE.VERSION}` 的 Milestone 完成状态为 100%
-1. 点击 `Close` 关闭 Milestone
+2. 点击 `Close` 关闭 Milestone
 
 **5. 发送讨论邮件**
 
 1. 发送邮件至 `dev@shardingsphere.apache.org`，在邮件正文中描述或链接 Release Note
-1. 关注邮件列表，确认社区开发者对 Release Note 没有任何疑问
+2. 关注邮件列表，确认社区开发者对 Release Note 没有任何疑问
 
 ## GPG 设置
 

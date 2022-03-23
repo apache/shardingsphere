@@ -584,8 +584,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             return new GeneratedKeysResultSet(generatedKey.get().getColumnName(), generatedKey.get().getGeneratedValues().iterator(), this);
         }
         Collection<Comparable<?>> generatedValues = new LinkedList<>();
-        for (Statement statement : statements) {
-            ResultSet resultSet = statement.getGeneratedKeys();
+        for (Statement each : statements) {
+            ResultSet resultSet = each.getGeneratedKeys();
             while (resultSet.next()) {
                 generatedValues.add((Comparable<?>) resultSet.getObject(1));
             }
