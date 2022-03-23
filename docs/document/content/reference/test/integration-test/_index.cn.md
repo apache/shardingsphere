@@ -99,19 +99,19 @@ SQL 用例在 `resources/cases/${SQL-TYPE}/${SQL-TYPE}-integration-test-cases.xm
 
 目录：`src/test/resources/env/${SCENARIO-TYPE}`
 
-  - `scenario-env.properties`: 数据源配置
-  - `rules.yaml`: 规则配置
-  - `databases.xml`: 真实库名称
-  - `dataset.xml`: 初始化数据
-  - `init-sql\${DATABASE-TYPE}\init.sql`: 初始化数据库表结构
-  - `authority.xml`: 待补充
+  - `scenario-env.properties`: 数据源配置；
+  - `rules.yaml`: 规则配置；
+  - `databases.xml`: 真实库名称；
+  - `dataset.xml`: 初始化数据；
+  - `init-sql\${DATABASE-TYPE}\init.sql`: 初始化数据库表结构；；；
+  - `authority.xml`: 待补充。
 
 #### Docker 环境配置
 
 目录：`src/test/resources/docker/${SCENARIO-TYPE}`
 
-  - `docker-compose.yml`: Docker-Compose 配置文件，用于 Docker 环境启动
-  - `proxy/conf/config-${SCENARIO-TYPE}.yaml`: 规则配置
+  - `docker-compose.yml`: Docker-Compose 配置文件，用于 Docker 环境启动；
+  - `proxy/conf/config-${SCENARIO-TYPE}.yaml`: 规则配置。
 
 **Docker 环境配置为 ShardingSphere-Proxy 提供了远程调试端口，可以在 `docker-compose.yml` 文件的 `shardingsphere-proxy` 中找到第 2 个暴露的端口用于远程调试。**
 
