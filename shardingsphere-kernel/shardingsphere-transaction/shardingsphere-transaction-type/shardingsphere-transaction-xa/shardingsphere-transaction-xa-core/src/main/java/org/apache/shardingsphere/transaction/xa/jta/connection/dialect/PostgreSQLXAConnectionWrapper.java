@@ -19,23 +19,56 @@ package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
-import org.postgresql.core.BaseConnection;
-import org.postgresql.xa.PGXAConnection;
 
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
+import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * PostgreSQL XA connection wrapper.
+ * XA connection wrapper for PostgreSQL.
  */
 public final class PostgreSQLXAConnectionWrapper implements XAConnectionWrapper {
     
-    @SneakyThrows({SQLException.class, ClassNotFoundException.class})
+    private static volatile Class<Connection> jdbcConnectionClass;
+    
+    private static volatile Constructor<?> xaConnectionConstructor;
+    
+    private volatile boolean initialized;
+    
     @Override
-    public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) {
-        BaseConnection physicalConnection = (BaseConnection) connection.unwrap(Class.forName("org.postgresql.core.BaseConnection"));
-        return new PGXAConnection(physicalConnection);
+    public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {
+        if (!initialized) {
+            loadReflection();
+            initialized = true;
+        }
+        return createXAConnection(connection.unwrap(jdbcConnectionClass));
+    }
+    
+    private void loadReflection() {
+        jdbcConnectionClass = getJDBCConnectionClass();
+        xaConnectionConstructor = getXAConnectionConstructor();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Class<Connection> getJDBCConnectionClass() {
+        return (Class<Connection>) Class.forName("org.postgresql.core.BaseConnection");
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Constructor<?> getXAConnectionConstructor() {
+        return Class.forName("org.postgresql.xa.PGXAConnection").getConstructor(Class.forName("org.postgresql.core.BaseConnection"));
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private XAConnection createXAConnection(final Connection connection) {
+        return (XAConnection) xaConnectionConstructor.newInstance(connection);
+    }
+    
+    @Override
+    public String getType() {
+        return "PostgreSQL";
     }
 }

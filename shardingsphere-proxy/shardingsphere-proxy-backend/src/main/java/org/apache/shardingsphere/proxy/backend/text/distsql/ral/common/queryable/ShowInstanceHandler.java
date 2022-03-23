@@ -21,7 +21,6 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.S
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
@@ -90,7 +89,7 @@ public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowIn
     }
     
     private List<Object> buildRow(final ComputeNodeInstance instance, final String modeType) {
-        return buildRow(instance.getInstanceDefinition().getInstanceId().getId(), getStatus(instance.getStatus()), modeType, instance.getLabels(), instance.getXaRecoveryId());
+        return buildRow(instance.getInstanceDefinition().getInstanceId().getId(), instance.getState().getCurrentState().name(), modeType, instance.getLabels(), instance.getXaRecoveryId());
     }
     
     private List<Object> buildRow(final String instanceId, final String status, final String modeType, final Collection<String> instanceLabels, final String xaRecoveryId) {
@@ -99,9 +98,5 @@ public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowIn
         String port = splitInstanceId.length < 2 ? "" : splitInstanceId[1];
         String labels = null == instanceLabels ? "" : String.join(",", instanceLabels);
         return new LinkedList<>(Arrays.asList(instanceId, host, port, status, modeType, labels, xaRecoveryId));
-    }
-    
-    private String getStatus(final Collection<String> computeNodeStatus) {
-        return computeNodeStatus.isEmpty() || !computeNodeStatus.contains(ComputeNodeStatus.CIRCUIT_BREAK.name()) ? ENABLED : DISABLED;
     }
 }

@@ -555,6 +555,24 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     }
     
     @Test
+    public void assertExecuteBatchRepeatedly() throws SQLException {
+        try (Connection connection = getShardingSphereDataSource().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_GENERATE_KEY_SQL)) {
+            preparedStatement.setInt(1, 3101);
+            preparedStatement.setInt(2, 11);
+            preparedStatement.setInt(3, 11);
+            preparedStatement.setString(4, "BATCH");
+            preparedStatement.addBatch();
+            assertThat(preparedStatement.executeBatch().length, is(1));
+            preparedStatement.setInt(1, 3103);
+            preparedStatement.setInt(2, 13);
+            preparedStatement.setInt(3, 13);
+            preparedStatement.setString(4, "BATCH");
+            preparedStatement.addBatch();
+            assertThat(preparedStatement.executeBatch().length, is(1));
+        }
+    }
+    
+    @Test
     public void assertInitPreparedStatementExecutorWithReplayMethod() throws SQLException {
         try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(SELECT_SQL_WITH_PARAMETER_MARKER)) {
             preparedStatement.setQueryTimeout(1);

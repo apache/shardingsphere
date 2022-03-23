@@ -98,20 +98,20 @@ ShardingSphere 文档使用 Markdown 编写，并使用 Hugo 进行处理生成 
 
 1. 附加出现问题的文档链接。
 
-1. 详细描述问题。
+2. 详细描述问题。
 
-1. 描述问题对用户造成的困扰。
+3. 描述问题对用户造成的困扰。
 
-1. 提出建议修复的方式。
+4. 提出建议修复的方式。
 
-1. 在 [Issues](https://github.com/apache/shardingsphere/issues) 中 `New issue` 提出您的问题。
+5. 在 [Issues](https://github.com/apache/shardingsphere/issues) 中 `New issue` 提出您的问题。
 
 ## 提交更改
 
 **操作步骤如下:**
 
 1. 首先，你需要在 master 分支目录结构中定位出你要操作的文件。
-1. 文件操作完成后，提 pull request 到 master 分支。
+2. 文件操作完成后，提 pull request 到 master 分支。
 
 ## 约定
 

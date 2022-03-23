@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
@@ -29,7 +28,6 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCConnectionManager;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -68,7 +66,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
-    private final MethodInvocationRecorder methodInvocationRecorder = new MethodInvocationRecorder();
+    private final MethodInvocationRecorder<Connection> methodInvocationRecorder = new MethodInvocationRecorder<>();
     
     private final ForceExecuteTemplate<Connection> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
@@ -91,32 +89,31 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
         Preconditions.checkState(!dataSourcePropsMap.isEmpty(), "Can not get data source properties from meta data.");
         DataSourceProperties dataSourcePropsSample = dataSourcePropsMap.values().iterator().next();
         Collection<ShardingSphereUser> users = metaDataPersistService.get().getGlobalRuleService().loadUsers();
-        Collection<ComputeNodeInstance> instances = contextManager.getInstanceContext().getComputeNodeInstances(InstanceType.PROXY, trafficRule.get().getLabels());
-        return DataSourcePoolCreator.create(createDataSourcePropertiesMap(instances, users, dataSourcePropsSample, schema));
+        Collection<InstanceId> instanceIds = contextManager.getInstanceContext().getComputeNodeInstanceIds(InstanceType.PROXY, trafficRule.get().getLabels());
+        return DataSourcePoolCreator.create(createDataSourcePropertiesMap(instanceIds, users, dataSourcePropsSample, schema));
     }
     
-    private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Collection<ComputeNodeInstance> instances, final Collection<ShardingSphereUser> users,
+    private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Collection<InstanceId> instanceIds, final Collection<ShardingSphereUser> users,
                                                                             final DataSourceProperties dataSourcePropsSample, final String schema) {
         Map<String, DataSourceProperties> result = new LinkedHashMap<>();
-        for (ComputeNodeInstance each : instances) {
-            result.put(each.getInstanceDefinition().getInstanceId().getId(), createDataSourceProperties(each, users, dataSourcePropsSample, schema));
+        for (InstanceId each : instanceIds) {
+            result.put(each.getId(), createDataSourceProperties(each, users, dataSourcePropsSample, schema));
         }
         return result;
     }
     
-    private DataSourceProperties createDataSourceProperties(final ComputeNodeInstance instance, final Collection<ShardingSphereUser> users,
+    private DataSourceProperties createDataSourceProperties(final InstanceId instanceId, final Collection<ShardingSphereUser> users,
                                                             final DataSourceProperties dataSourcePropsSample, final String schema) {
         Map<String, Object> props = dataSourcePropsSample.getAllLocalProperties();
-        props.put("jdbcUrl", createJdbcUrl(instance, schema, props));
+        props.put("jdbcUrl", createJdbcUrl(instanceId, schema, props));
         ShardingSphereUser user = users.iterator().next();
         props.put("username", user.getGrantee().getUsername());
         props.put("password", user.getPassword());
-        return new DataSourceProperties(HikariDataSource.class.getName(), props);
+        return new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", props);
     }
     
-    private String createJdbcUrl(final ComputeNodeInstance instance, final String schema, final Map<String, Object> props) {
+    private String createJdbcUrl(final InstanceId instanceId, final String schema, final Map<String, Object> props) {
         String jdbcUrl = String.valueOf(props.get("jdbcUrl"));
-        InstanceId instanceId = instance.getInstanceDefinition().getInstanceId();
         String jdbcUrlPrefix = jdbcUrl.substring(0, jdbcUrl.indexOf("//"));
         String jdbcUrlSuffix = jdbcUrl.contains("?") ? jdbcUrl.substring(jdbcUrl.indexOf("?")) : "";
         return String.format("%s//%s:%s/%s%s", jdbcUrlPrefix, instanceId.getIp(), instanceId.getUniqueSign(), schema, jdbcUrlSuffix);
@@ -139,7 +136,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
      * @throws SQLException SQL exception
      */
     public void setAutoCommit(final boolean autoCommit) throws SQLException {
-        methodInvocationRecorder.record(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
+        methodInvocationRecorder.record("setAutoCommit", target -> target.setAutoCommit(autoCommit));
         forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setAutoCommit(autoCommit));
     }
     
@@ -188,7 +185,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
      * @throws SQLException SQL exception
      */
     public void setTransactionIsolation(final int level) throws SQLException {
-        methodInvocationRecorder.record(Connection.class, "setTransactionIsolation", new Class[]{int.class}, new Object[]{level});
+        methodInvocationRecorder.record("setTransactionIsolation", connection -> connection.setTransactionIsolation(level));
         forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setTransactionIsolation(level));
     }
     
@@ -199,7 +196,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
      * @throws SQLException SQL exception
      */
     public void setReadOnly(final boolean readOnly) throws SQLException {
-        methodInvocationRecorder.record(Connection.class, "setReadOnly", new Class[]{boolean.class}, new Object[]{readOnly});
+        methodInvocationRecorder.record("setReadOnly", connection -> connection.setReadOnly(readOnly));
         forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setReadOnly(readOnly));
     }
     

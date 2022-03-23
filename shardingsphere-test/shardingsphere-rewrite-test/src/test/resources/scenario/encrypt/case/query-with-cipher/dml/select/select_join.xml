@@ -17,11 +17,21 @@
   -->
 
 <rewrite-assertions yaml-rule="scenario/encrypt/config/query-with-cipher.yaml">
+    <rewrite-assertion id="select_join_with_alias_for_cipher" db-types="MySQL">
+        <input sql="SELECT a.password from t_account a, t_account_bak b where a.account_id = b.account_id"/>
+        <output sql="SELECT a.cipher_password AS password from t_account a, t_account_bak b where a.account_id = b.account_id"/>
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_join_with_table_name_for_cipher" db-types="MySQL">
+        <input sql="SELECT t_account.password from t_account, t_account_bak where t_account.account_id = t_account_bak.account_id"/>
+        <output sql="SELECT t_account.cipher_password AS password from t_account, t_account_bak where t_account.account_id = t_account_bak.account_id"/>
+    </rewrite-assertion>
+    
     <rewrite-assertion id="select_unqualified_shorthand_projection_with_join" db-types="MySQL">
         <input sql="SELECT * FROM t_account t INNER JOIN t_account_bak b ON t.id = b.id WHERE t.amount = ? OR b.amount = ?" parameters="1, 2" />
         <output sql="SELECT `t`.`account_id`, `t`.`cipher_certificate_number` AS `certificate_number`, `t`.`cipher_password` AS `password`, `t`.`cipher_amount` AS `amount`, `t`.`status`, `b`.`account_id`, `b`.`cipher_certificate_number` AS `certificate_number`, `b`.`cipher_password` AS `password`, `b`.`cipher_amount` AS `amount`, `b`.`status` FROM t_account t INNER JOIN t_account_bak b ON t.id = b.id WHERE t.cipher_amount = ? OR b.cipher_amount = ?" parameters="encrypt_1, encrypt_2" />
     </rewrite-assertion>
-
+    
     <rewrite-assertion id="select_with_join" db-types="MySQL">
         <input sql="SELECT t_account.amount, t_account_bak.amount FROM t_account LEFT JOIN t_account_bak ON t_account.id = t_account_bak.id WHERE t_account.amount = ? OR t_account_bak.amount = ?" parameters="1, 2" />
         <output sql="SELECT t_account.cipher_amount AS amount, t_account_bak.cipher_amount AS amount FROM t_account LEFT JOIN t_account_bak ON t_account.id = t_account_bak.id WHERE t_account.cipher_amount = ? OR t_account_bak.cipher_amount = ?" parameters="encrypt_1, encrypt_2" />

@@ -22,8 +22,6 @@ import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.StorageNodeStatus;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node.StorageStatusNode;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -37,14 +35,12 @@ import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.Sho
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -58,6 +54,8 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
     private static final String RESOURCE = "resource";
     
     private static final String STATUS = "status";
+    
+    private static final String DELAY_TIME = "delay_time (ms)";
     
     private static final String DISABLED = "disabled";
     
@@ -73,7 +71,7 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
     
     @Override
     protected Collection<String> getColumnNames() {
-        return Arrays.asList(RESOURCE, STATUS);
+        return Arrays.asList(RESOURCE, STATUS, DELAY_TIME);
     }
     
     @Override
@@ -85,32 +83,30 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
         if (!ProxyContext.getInstance().getAllSchemaNames().contains(schemaName)) {
             throw new SchemaNotExistedException(schemaName);
         }
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
+        MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
         ShardingSphereMetaData metaData = metaDataContexts.getMetaData(schemaName);
-        Collection<Object> notShownResourceRows = new LinkedHashSet<>();
-        Collection<List<Object>> enableResourceRows = buildEnableResourceRows(metaData, notShownResourceRows);
-        Collection<List<Object>> disabledResourceRows = buildDisableResourceRows(schemaName, metaDataContexts.getMetaDataPersistService().orElse(null), notShownResourceRows);
-        return mergeRows(enableResourceRows, disabledResourceRows, notShownResourceRows);
+        Collection<String> allReadResources = getAllReadResources(metaData);
+        Collection<String> disabledReadResources = getDisabledReadResources(schemaName, metaDataContexts.getMetaDataPersistService().orElse(null));
+        return buildRows(allReadResources, disabledReadResources);
     }
     
-    private Collection<List<Object>> buildEnableResourceRows(final ShardingSphereMetaData metaData, final Collection<Object> notShownResourceRows) {
-        LinkedList<String> configuredResourceRows = getConfiguredResourceRows(metaData);
-        Collection<String> autoAwareResourceRows = getAutoAwareResourceRows(metaData, notShownResourceRows);
-        return Stream.of(configuredResourceRows, autoAwareResourceRows).flatMap(Collection::stream).distinct()
-                .map(each -> buildRow(each, ENABLED)).collect(Collectors.toCollection(LinkedList::new));
+    private Collection<String> getAllReadResources(final ShardingSphereMetaData metaData) {
+        Collection<String> configuredResources = getConfiguredReadResources(metaData);
+        Collection<String> autoAwareResources = getAutoAwareReadResources(metaData);
+        return Stream.of(configuredResources, autoAwareResources).flatMap(Collection::stream).distinct().collect(Collectors.toCollection(LinkedList::new));
     }
     
-    private LinkedList<String> getConfiguredResourceRows(final ShardingSphereMetaData metaData) {
+    private Collection<String> getConfiguredReadResources(final ShardingSphereMetaData metaData) {
         Collection<ReadwriteSplittingRuleConfiguration> ruleConfiguration = metaData.getRuleMetaData().findRuleConfiguration(ReadwriteSplittingRuleConfiguration.class);
         return ruleConfiguration.stream().map(ReadwriteSplittingRuleConfiguration::getDataSources).flatMap(Collection::stream).filter(Objects::nonNull)
                 .map(ReadwriteSplittingDataSourceRuleConfiguration::getReadDataSourceNames).filter(Optional::isPresent)
                 .map(each -> deconstructString(each.get())).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));
     }
     
-    private Collection<String> getAutoAwareResourceRows(final ShardingSphereMetaData metaData, final Collection<Object> notShownResourceRows) {
+    private Collection<String> getAutoAwareReadResources(final ShardingSphereMetaData metaData) {
         Map<String, Map<String, String>> autoAwareResourceData = getAutoAwareResourceData(metaData);
-        return autoAwareResourceData.entrySet().stream().peek(entry -> notShownResourceRows.add(entry.getValue().get(ExportableConstants.PRIMARY_DATA_SOURCE_NAME)))
-                .map(entry -> entry.getValue().get(ExportableConstants.REPLICA_DATA_SOURCE_NAMES)).filter(Objects::nonNull).map(this::deconstructString)
+        return autoAwareResourceData.values().stream()
+                .map(map -> map.get(ExportableConstants.REPLICA_DATA_SOURCE_NAMES)).filter(Objects::nonNull).map(this::deconstructString)
                 .flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));
     }
     
@@ -121,40 +117,34 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
                 .map(Map::entrySet).flatMap(Collection::stream).filter(entry -> !entry.getValue().isEmpty()).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     
-    private Collection<List<Object>> buildDisableResourceRows(final String schemaName, final MetaDataPersistService persistService, final Collection<Object> notShownResourceRows) {
+    private Collection<String> getDisabledReadResources(final String schemaName, final MetaDataPersistService persistService) {
         if (null == persistService || null == persistService.getRepository()) {
             return Collections.emptyList();
         }
-        Collection<List<Object>> result = Collections.emptyList();
-        List<String> instanceIds = persistService.getRepository().getChildrenKeys(StorageStatusNode.getStatusPath(StorageNodeStatus.DISABLE));
-        if (!instanceIds.isEmpty()) {
-            return instanceIds.stream().filter(Objects::nonNull).filter(each -> schemaName.equals(each.split(DELIMITER)[0])).map(each -> each.split(DELIMITER)[1])
-                    .map(each -> buildRow(each, DISABLED)).collect(Collectors.toCollection(LinkedList::new));
-        }
-        return result;
+        // TODO fix me
+        //TODO API for getting disabled nodes needs to be adjusted
+       /* List<String> disableResources = persistService.getRepository().getChildrenKeys(StorageStatusNode.getStatusPath(StorageNodeStatus.DISABLE));
+        if (!disableResources.isEmpty()) {
+            return disableResources.stream().filter(Objects::nonNull).filter(each -> schemaName.equals(each.split(DELIMITER)[0])).map(each -> each.split(DELIMITER)[1])
+                    .collect(Collectors.toCollection(LinkedList::new));
+        }*/
+        return Collections.emptyList();
     }
     
-    private Collection<List<Object>> mergeRows(final Collection<List<Object>> enableResourceRows, final Collection<List<Object>> disabledResourceRows, final Collection<Object> notShownResourceRows) {
-        Collection<List<Object>> result = replaceDisableResourceRows(enableResourceRows, disabledResourceRows);
-        return result.stream().filter(each -> !notShownResourceRows.contains(getResourceName(each))).collect(Collectors.toCollection(LinkedList::new));
+    private Collection<List<Object>> buildRows(final Collection<String> allReadResources, final Collection<String> disabledResourceRows) {
+        return allReadResources.stream().map(each -> buildRow(each, getDelayTime(), disabledResourceRows.contains(each))).collect(Collectors.toCollection(LinkedList::new));
     }
     
-    private Collection<List<Object>> replaceDisableResourceRows(final Collection<List<Object>> enableResourceRows, final Collection<List<Object>> disabledResourceRows) {
-        Set<Object> disableResourceNames = disabledResourceRows.stream().map(this::getResourceName).collect(Collectors.toSet());
-        Collection<List<Object>> result = enableResourceRows.stream().filter(each -> !disableResourceNames.contains(getResourceName(each))).collect(Collectors.toCollection(LinkedList::new));
-        result.addAll(disabledResourceRows);
-        return result;
+    private String getDelayTime() {
+        //TODO Need to implement api to get delay time
+        return "";
     }
     
     private LinkedList<String> deconstructString(final String str) {
         return new LinkedList<>(Arrays.asList(str.split(",")));
     }
     
-    private List<Object> buildRow(final String resource, final String status) {
-        return Arrays.asList(resource, status);
-    }
-    
-    private Object getResourceName(final List<Object> row) {
-        return row.get(0);
+    private List<Object> buildRow(final String resource, final String delayTime, final boolean isDisabled) {
+        return Arrays.asList(resource, isDisabled ? DISABLED : ENABLED, delayTime);
     }
 }

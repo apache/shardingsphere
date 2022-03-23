@@ -103,10 +103,13 @@ public final class Configuration {
 <#if mode!="memory">
     
     private static ModeConfiguration createModeConfiguration() {
-    <#if mode=="cluster">
+    <#if mode=="cluster-zookeeper">
         return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance-sharding-data-source", "localhost:2181", new Properties()), true);
     </#if>
-    <#if mode=="standalone">
+    <#if mode=="cluster-etcd">
+        return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("etcd", "governance-sharding-data-source", "localhost:2379", new Properties()), true);
+    </#if>
+    <#if mode=="standalone-file">
         return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("File", new Properties()), true);
     </#if> 
     }

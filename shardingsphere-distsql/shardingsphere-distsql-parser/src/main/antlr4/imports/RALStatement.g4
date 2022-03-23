@@ -139,6 +139,10 @@ exportSchemaConfiguration
     : EXPORT SCHEMA (CONFIGURATION | CONFIG) (FROM schemaName)? (COMMA? FILE EQ filePath)?
     ;
 
+importSchemaConfiguration
+    : IMPORT SCHEMA (CONFIGURATION | CONFIG) FILE EQ filePath
+    ;
+
 filePath
     : STRING
     ;
@@ -168,7 +172,7 @@ variableName
     ;
 
 variableValue
-    : IDENTIFIER | STRING | (MINUS)? INT | TRUE | FALSE
+    : IDENTIFIER | STRING | (MINUS)? INT | TRUE | FALSE | instanceId
     ;
 
 instanceDefination

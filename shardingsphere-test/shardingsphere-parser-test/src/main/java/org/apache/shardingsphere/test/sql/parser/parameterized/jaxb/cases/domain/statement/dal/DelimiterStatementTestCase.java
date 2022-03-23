@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -26,8 +27,9 @@ import javax.xml.bind.annotation.XmlAttribute;
  * delimiter statement test case.
  */
 @Getter
+@Setter
 public final class DelimiterStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlAttribute
     private String delimiterName;
 }

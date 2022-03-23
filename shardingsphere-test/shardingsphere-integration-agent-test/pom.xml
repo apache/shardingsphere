@@ -28,19 +28,18 @@
     <artifactId>shardingsphere-integration-agent-test</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
-
+    
     <modules>
         <module>shardingsphere-integration-agent-test-plugins</module>
     </modules>
-
+    
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
-
+    
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <executions>
                     <execution>

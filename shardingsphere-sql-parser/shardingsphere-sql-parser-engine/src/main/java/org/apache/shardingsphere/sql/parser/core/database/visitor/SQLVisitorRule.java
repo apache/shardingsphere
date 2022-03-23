@@ -96,6 +96,8 @@ public enum SQLVisitorRule {
     
     DROP_DATABASE("DropDatabase", SQLStatementType.DDL),
     
+    DROP_DATABASE_LINK("DropDatabaseLink", SQLStatementType.DDL),
+    
     CREATE_DIMENSION("CreateDimension", SQLStatementType.DDL),
 
     ALTER_DIMENSION("AlterDimension", SQLStatementType.DDL),
@@ -428,7 +430,11 @@ public enum SQLVisitorRule {
     
     ALTER_TEXT_SEARCH_TEMPLATE("AlterTextSearchTemplate", SQLStatementType.DDL),
     
-    ALTER_TEXT_SEARCH_PARSER("AlterTextSearchParser", SQLStatementType.DDL);
+    ALTER_TEXT_SEARCH_PARSER("AlterTextSearchParser", SQLStatementType.DDL),
+
+    DROP_POLICY("DropPolicy", SQLStatementType.DDL),
+
+    DROP_OWNED("DropOwned", SQLStatementType.DDL);
 
     private final String name;
     

@@ -85,10 +85,10 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
         Map<String, String> exportDataSources = DYNAMIC.equalsIgnoreCase(dataSourceConfiguration.getType()) ? exportableAutoAwareDataSource.get(name) : exportableDataSourceMap.get(name);
         Optional<ShardingSphereAlgorithmConfiguration> loadBalancer = Optional.ofNullable(loadBalancers.get(dataSourceConfiguration.getLoadBalancerName()));
         return Arrays.asList(name,
-                dataSourceConfiguration.getAutoAwareDataSourceName().orElse(null),
+                dataSourceConfiguration.getAutoAwareDataSourceName().orElse(""),
                 getWriteDataSourceName(dataSourceConfiguration, exportDataSources),
                 getReadDataSourceNames(dataSourceConfiguration, exportDataSources),
-                loadBalancer.map(TypedSPIConfiguration::getType).orElse(null),
+                loadBalancer.map(TypedSPIConfiguration::getType).orElse(""),
                 loadBalancer.map(each -> PropertiesConverter.convert(each.getProps())).orElse(""));
     }
     

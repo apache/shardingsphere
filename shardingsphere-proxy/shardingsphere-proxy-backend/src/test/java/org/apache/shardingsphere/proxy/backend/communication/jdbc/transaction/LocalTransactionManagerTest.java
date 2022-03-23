@@ -82,7 +82,7 @@ public final class LocalTransactionManagerTest {
     @SneakyThrows(SQLException.class)
     public void assertCommit() {
         localTransactionManager.commit();
-        verify(transactionStatus).isInTransaction();
+        verify(transactionStatus).isRollbackOnly();
         verify(connection).commit();
     }
     

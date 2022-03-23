@@ -73,8 +73,7 @@ public final class MetricsPluginIT extends BasePluginIT {
         for (String each : metricsNames) {
             String metricURL = buildMetricURL(url, each);
             try {
-                MetricResult metricResult = OkHttpUtils.getInstance().get(metricURL, MetricResult.class);
-                assertResult(metricResult, each);
+                assertResult(OkHttpUtils.getInstance().get(metricURL, MetricResult.class), each);
             } catch (final IOException ex) {
                 log.info("http get prometheus is error :", ex);
             }

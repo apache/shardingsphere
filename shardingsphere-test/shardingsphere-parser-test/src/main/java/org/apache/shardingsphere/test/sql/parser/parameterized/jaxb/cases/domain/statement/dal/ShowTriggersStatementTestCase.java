@@ -31,10 +31,10 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class ShowTriggersStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement(name = "from")
     private ExpectedFromSchema fromSchema;
-
+    
     @XmlElement
     private ExpectedShowFilter filter;
 }

@@ -23,8 +23,10 @@ import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResour
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
+import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.infra.storage.StorageNodeRole;
+import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node.StorageStatusNode;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -65,6 +67,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     @Override
     protected void update(final ContextManager contextManager, final SetReadwriteSplittingStatusStatement sqlStatement) throws DistSQLException {
         String schemaName = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getSchemaName();
+        String groupName = "";
         String resourceName = sqlStatement.getResourceName();
         checkSchema(schemaName);
         boolean isDisable = DISABLE.equals(sqlStatement.getStatus());
@@ -73,7 +76,8 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
         } else {
             checkEnablingIsValid(schemaName, resourceName);
         }
-        ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, resourceName, isDisable));
+        ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, groupName, resourceName,
+                new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisable ? StorageNodeStatus.DISABLE : StorageNodeStatus.ENABLE)));
     }
     
     private void checkSchema(final String schemaName) {
@@ -125,7 +129,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     }
     
     private Collection<String> getStorageNodeStatusData(final MetaDataPersistService persistService) {
-        return persistService.getRepository().getChildrenKeys(StorageStatusNode.getStatusPath(StorageNodeStatus.DISABLE));
+        return persistService.getRepository().getChildrenKeys(StorageStatusNode.getRootPath());
     }
     
     private Map<String, Map<String, String>> getExportedReadwriteSplittingRules(final String schemaName) {

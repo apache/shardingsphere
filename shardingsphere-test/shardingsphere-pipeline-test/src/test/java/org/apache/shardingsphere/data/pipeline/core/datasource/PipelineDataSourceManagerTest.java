@@ -19,9 +19,9 @@ package org.apache.shardingsphere.data.pipeline.core.datasource;
 
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
-import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
+import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -40,7 +40,7 @@ public final class PipelineDataSourceManagerTest {
     
     @Before
     public void setUp() {
-        jobConfig = ResourceUtil.mockJobConfig();
+        jobConfig = JobConfigurationBuilder.createJobConfiguration();
     }
     
     @Test

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.metadata.persist.service.impl;
 
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
@@ -63,7 +62,7 @@ public final class DataSourcePersistServiceTest {
     @SneakyThrows({IOException.class, URISyntaxException.class})
     private String readDataSourceYaml(final String path) {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(path).toURI()))
-                .stream().filter(each -> StringUtils.isNotBlank(each) && !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+                .stream().filter(each -> !"".equals(each.trim()) && !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
     
     private void assertDataSourceProperties(final DataSourceProperties actual, final DataSourceProperties expected) {

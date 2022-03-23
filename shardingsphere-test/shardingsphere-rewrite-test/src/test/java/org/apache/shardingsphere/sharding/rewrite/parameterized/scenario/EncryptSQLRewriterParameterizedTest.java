@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
@@ -61,14 +63,14 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
     }
     
     @Override
-    protected ShardingSphereSchema mockSchema() {
+    protected Map<String, ShardingSphereSchema> mockSchemas() {
         ShardingSphereSchema result = mock(ShardingSphereSchema.class);
         when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
         when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
         when(result.getAllColumnNames("t_account_detail")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
-        when(result.getAllColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "user_id", "content"));
-        when(result.get("t_order")).thenReturn(new TableMetaData("t_order"));
-        return result;
+        when(result.getAllColumnNames("t_order")).thenReturn(Arrays.asList("ORDER_ID", "USER_ID", "CONTENT"));
+        when(result.get("t_order")).thenReturn(new TableMetaData("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        return Collections.singletonMap("sharding_db", result);
     }
     
     @Override

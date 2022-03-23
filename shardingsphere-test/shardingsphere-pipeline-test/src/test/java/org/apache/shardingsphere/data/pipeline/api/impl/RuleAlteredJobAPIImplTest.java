@@ -30,10 +30,9 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
-import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureDataConsistencyCheckAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
-import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -43,7 +42,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -59,21 +57,18 @@ public final class RuleAlteredJobAPIImplTest {
     
     @BeforeClass
     public static void beforeClass() {
-        EmbedTestingServer.start();
-        PipelineContextUtil.mockModeConfig();
+        PipelineContextUtil.mockModeConfigAndContextManager();
         ruleAlteredJobAPI = PipelineJobAPIFactory.getRuleAlteredJobAPI();
     }
     
     @Test
     public void assertStartAndList() {
-        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         JobInfo jobInfo = getNonNullJobInfo(jobId.get());
         assertTrue(jobInfo.isActive());
         assertThat(jobInfo.getTables(), is("t_order"));
         assertThat(jobInfo.getShardingTotalCount(), is(1));
-        List<Long> uncompletedJobIds = ruleAlteredJobAPI.getUncompletedJobIds("logic_db");
-        assertTrue(uncompletedJobIds.size() > 0);
     }
     
     private Optional<JobInfo> getJobInfo(final String jobId) {
@@ -88,7 +83,7 @@ public final class RuleAlteredJobAPIImplTest {
     
     @Test
     public void assertStartOrStopById() {
-        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         assertTrue(getNonNullJobInfo(jobId.get()).isActive());
         ruleAlteredJobAPI.stop(jobId.get());
@@ -99,7 +94,7 @@ public final class RuleAlteredJobAPIImplTest {
     
     @Test
     public void assertRemove() {
-        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         assertTrue(getJobInfo(jobId.get()).isPresent());
         ruleAlteredJobAPI.remove(jobId.get());
@@ -108,7 +103,7 @@ public final class RuleAlteredJobAPIImplTest {
     
     @Test
     public void assertGetProgress() {
-        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         Map<Integer, JobProgress> jobProgressMap = ruleAlteredJobAPI.getProgress(jobId.get());
         assertThat(jobProgressMap.size(), is(1));
@@ -130,29 +125,27 @@ public final class RuleAlteredJobAPIImplTest {
     
     @Test
     public void assertIsDataConsistencyCheckNeeded() {
-        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         assertThat(ruleAlteredJobAPI.isDataConsistencyCheckNeeded(jobId.get()), is(true));
     }
     
     @Test
     public void assertDataConsistencyCheck() {
-        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
-        PipelineContextUtil.mockContextManager();
         Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get());
         assertThat(checkResultMap.size(), is(1));
     }
     
     @Test
     public void assertDataConsistencyCheckWithAlgorithm() {
-        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
-        PipelineContextUtil.mockContextManager();
         Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get(), FixtureDataConsistencyCheckAlgorithm.TYPE);
         assertThat(checkResultMap.size(), is(1));
         assertTrue(checkResultMap.get("t_order").isRecordsCountMatched());
@@ -184,7 +177,7 @@ public final class RuleAlteredJobAPIImplTest {
     
     @Test
     public void assertResetTargetTable() {
-        Optional<String> jobId = ruleAlteredJobAPI.start(ResourceUtil.mockJobConfig());
+        Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getPipelineConfig());
@@ -205,8 +198,8 @@ public final class RuleAlteredJobAPIImplTest {
         try (Connection connection = pipelineDataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
-            statement.execute("CREATE TABLE t_order (id INT PRIMARY KEY, user_id VARCHAR(12))");
-            statement.execute("INSERT INTO t_order (id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
+            statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id VARCHAR(12))");
+            statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
         }
     }
 }

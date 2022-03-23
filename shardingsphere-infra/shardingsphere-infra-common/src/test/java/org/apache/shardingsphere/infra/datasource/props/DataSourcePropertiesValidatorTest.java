@@ -34,7 +34,8 @@ public final class DataSourcePropertiesValidatorTest {
     
     private Map<String, Object> createValidProperties() {
         Map<String, Object> result = new HashMap<>();
-        result.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
+        result.put("driverClassName", "org.h2.Driver");
+        result.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         result.put("username", "root");
         result.put("password", "root");
         return result;

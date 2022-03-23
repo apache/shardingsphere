@@ -8,7 +8,7 @@ weight = 6
 # data source configuration
 spring.shardingsphere.datasource.names= write-ds0,write-ds1,write-ds0-read0,write-ds1-read0
 
-spring.shardingsphere.datasource.write-ds0.url= # Database URL connection
+spring.shardingsphere.datasource.write-ds0.jdbc-url= # Database URL connection
 spring.shardingsphere.datasource.write-ds0.type=  # Database connection pool type name
 spring.shardingsphere.datasource.write-ds0.driver-class-name= # Database driver class name
 spring.shardingsphere.datasource.write-ds0.username= # Database username

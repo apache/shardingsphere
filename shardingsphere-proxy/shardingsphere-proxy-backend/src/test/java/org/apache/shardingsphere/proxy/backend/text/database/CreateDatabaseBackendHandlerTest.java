@@ -55,7 +55,7 @@ public final class CreateDatabaseBackendHandlerTest {
         handler = new CreateDatabaseBackendHandler(statement);
         when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test_db"));
     }
-
+    
     @SneakyThrows
     @Test
     public void assertExecuteCreateNewDatabase() {
@@ -63,11 +63,20 @@ public final class CreateDatabaseBackendHandlerTest {
         ResponseHeader responseHeader = handler.execute();
         Assert.assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
-
+    
     @SneakyThrows
     @Test(expected = DBCreateExistsException.class)
     public void assertExecuteCreateExistDatabase() {
         when(statement.getDatabaseName()).thenReturn("test_db");
+        ResponseHeader responseHeader = handler.execute();
+        Assert.assertTrue(responseHeader instanceof UpdateResponseHeader);
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertExecuteCreateExistDatabaseWithIfNotExists() {
+        when(statement.getDatabaseName()).thenReturn("test_db");
+        when(statement.isContainsNotExistClause()).thenReturn(true);
         ResponseHeader responseHeader = handler.execute();
         Assert.assertTrue(responseHeader instanceof UpdateResponseHeader);
     }

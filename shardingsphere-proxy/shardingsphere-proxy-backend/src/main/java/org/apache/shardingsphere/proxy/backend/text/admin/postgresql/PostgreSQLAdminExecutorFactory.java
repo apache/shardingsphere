@@ -75,8 +75,17 @@ public final class PostgreSQLAdminExecutorFactory implements DatabaseAdminExecut
                 return Optional.of(new DefaultDatabaseMetadataExecutor(sql));
             }
         }
-        if (sqlStatement instanceof SetStatement && isSetClientEncoding((SetStatement) sqlStatement)) {
-            return Optional.of(new PostgreSQLSetCharsetExecutor((SetStatement) sqlStatement));
+        if (sqlStatement instanceof SetStatement) {
+            SetStatement setStatement = (SetStatement) sqlStatement;
+            // TODO Consider refactoring this with SPI.
+            switch (getSetConfigurationParameter(setStatement)) {
+                case "client_encoding":
+                    return Optional.of(new PostgreSQLSetCharsetExecutor(setStatement));
+                case "extra_float_digits":
+                case "application_name":
+                    return Optional.of(connectionSession -> { });
+                default:
+            }
         }
         return Optional.empty();
     }
@@ -99,9 +108,9 @@ public final class PostgreSQLAdminExecutorFactory implements DatabaseAdminExecut
                 .map(each -> ((SimpleTableSegment) each).getTableName().getIdentifier().getValue()).collect(Collectors.toCollection(LinkedList::new));
     }
     
-    private boolean isSetClientEncoding(final SetStatement setStatement) {
+    private String getSetConfigurationParameter(final SetStatement setStatement) {
         Iterator<VariableAssignSegment> iterator = setStatement.getVariableAssigns().iterator();
-        return iterator.hasNext() && "client_encoding".equalsIgnoreCase(iterator.next().getVariable().getVariable());
+        return iterator.hasNext() ? iterator.next().getVariable().getVariable().toLowerCase() : "";
     }
     
     @Override

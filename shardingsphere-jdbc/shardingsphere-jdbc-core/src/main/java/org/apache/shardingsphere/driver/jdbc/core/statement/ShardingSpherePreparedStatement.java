@@ -578,8 +578,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private void setBatchParametersForStatements() throws SQLException {
         for (Statement each : batchPreparedStatementExecutor.getStatements()) {
             List<List<Object>> parameterSet = batchPreparedStatementExecutor.getParameterSet(each);
-            for (List<Object> parameters : parameterSet) {
-                replaySetParameter((PreparedStatement) each, parameters);
+            for (List<Object> eachParameters : parameterSet) {
+                replaySetParameter((PreparedStatement) each, eachParameters);
                 ((PreparedStatement) each).addBatch();
             }
         }

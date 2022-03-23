@@ -171,7 +171,7 @@ encryptRule:
   encryptors:
     <encryptor-name>:
       type: # 加解密器类型，可自定义或选择内置类型：MD5/AES 
-      props: # 属性配置, 注意：使用 AES 加密器，需要配置 AES 加密器的KEY属性：aes.key.value
+      props: # 属性配置，注意：使用 AES 加密器，需要配置 AES 加密器的KEY属性：aes.key.value
         aes.key.value:
   tables:
     <table-name>:
@@ -197,11 +197,11 @@ props:
 # 省略与 Sharding-JDBC 一致的配置属性
 
 props:
-  acceptor.size: # 用于设置接收客户端请求的工作线程个数，默认为 CPU 核数 *2
+  acceptor.size: # 用于设置接收客户端请求的工作线程个数，默认为 CPU 核数 * 2
   proxy.transaction.type: # 默认为 LOCAL 事务，允许 LOCAL，XA，BASE 三个值，XA 采用 Atomikos 作为事务管理器，BASE 类型需要拷贝实现 ShardingTransactionManager 的接口的 jar 包至 lib 目录中
   proxy.opentracing.enabled: # 是否开启链路追踪功能，默认为不开启。详情请参见[链路追踪](/cn/features/orchestration/apm/)
   check.table.metadata.enabled: # 是否在启动时检查分表元数据一致性，默认值: false
-  proxy.frontend.flush.threshold: # 对于单个大查询,每多少个网络包返回一次
+  proxy.frontend.flush.threshold: # 对于单个大查询，每多少个网络包返回一次
 ```
 
 #### 权限验证
@@ -263,8 +263,8 @@ masterSlaveRule: # 省略读写分离配置，与 Sharding-JDBC 配置一致
 # 省略与 Sharding-JDBC 一致的配置属性
 
 props:
-  acceptor.size: # 用于设置接收客户端请求的工作线程个数，默认为 CPU 核数 *2
-  proxy.transaction.enabled: # 是否开启事务, 目前仅支持XA事务，默认为不开启
+  acceptor.size: # 用于设置接收客户端请求的工作线程个数，默认为 CPU 核数 * 2
+  proxy.transaction.enabled: # 是否开启事务，目前仅支持XA事务，默认为不开启
   proxy.opentracing.enabled: # 是否开启链路追踪功能，默认为不开启。详情请参见[链路追踪](/cn/features/orchestration/apm/)
   check.table.metadata.enabled: # 是否在启动时检查分表元数据一致性，默认值: false
 ```

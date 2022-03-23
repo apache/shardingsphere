@@ -32,13 +32,13 @@ chapter = true
 
 ## SQLExecutionHook
 
-| *SPI 名称*                     | *详细说明*              |
-| ----------------------------- | ---------------------- |
-| SQLExecutionHook              | SQL执行过程监听器         |
+| *SPI 名称*                     | *详细说明*      |
+| ----------------------------- | ------------- |
+| SQLExecutionHook              | SQL 执行过程监听器 |
 
-| *已知实现类*                    | *详细说明*               |
-| ----------------------------- | ----------------------- |
-| TransactionalSQLExecutionHook | 基于事务的SQL执行过程监听器 |
+| *已知实现类*                    | *详细说明*            |
+| ----------------------------- | ------------------- |
+| TransactionalSQLExecutionHook | 基于事务的 SQL 执行过程监听器 |
 
 ## ResultProcessEngine
 

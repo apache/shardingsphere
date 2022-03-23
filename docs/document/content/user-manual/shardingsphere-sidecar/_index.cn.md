@@ -7,7 +7,7 @@ chapter = true
 
 ## 简介
 
-ShardingSphere-Sidecar 是 ShardingSphere 的第三个产品，目前仍然在`规划中`。
+ShardingSphere-Sidecar 是 ShardingSphere 的第三个产品，目前仍然在 `规划中`。
 定位为 Kubernetes 或 Mesos 的云原生数据库代理，以 DaemonSet 的形式代理所有对数据库的访问。
 
 通过无中心、零侵入的方案提供与数据库交互的的啮合层，即 Database Mesh，又可称数据网格。
@@ -21,7 +21,7 @@ Database Mesh 的关注重点在于如何将分布式的数据访问应用与数
 | -------- | --------------------- | ---------------------- | ------------------------ |
 | 数据库    | 任意                  | MySQL/PostgreSQL       | `MySQL/PostgreSQL`        |
 | 连接消耗数 | 高                   | 低                     | `高`                       |
-| 异构语言   | 仅Java               | 任意                    | `任意`                    |
+| 异构语言   | 仅 Java               | 任意                    | `任意`                    |
 | 性能      | 损耗低                | 损耗略高                | `损耗低`                   |
 | 无中心化  | 是                    | 否                     | `是`                       |
 | 静态入口  | 无                    | 有                     | `无`                       |

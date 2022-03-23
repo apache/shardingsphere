@@ -38,7 +38,7 @@ import org.apache.shardingsphere.proxy.frontend.opengauss.command.query.extended
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLComTerminationExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLUnsupportedCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLAggregatedBatchedInsertsCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLAggregatedBatchedStatementsCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLAggregatedCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.bind.PostgreSQLComBindExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.close.PostgreSQLComCloseExecutor;
@@ -76,8 +76,8 @@ public final class OpenGaussCommandExecutorFactory {
             return getCommandExecutor(commandPacketType, commandPacket, connectionSession, connectionContext);
         }
         PostgreSQLAggregatedCommandPacket aggregatedCommandPacket = (PostgreSQLAggregatedCommandPacket) commandPacket;
-        if (aggregatedCommandPacket.isContainsBatchedInserts() && aggregatedCommandPacket.getPackets().stream().noneMatch(each -> each instanceof OpenGaussComBatchBindPacket)) {
-            return new PostgreSQLAggregatedCommandExecutor(getExecutorsOfAggregatedBatchedInserts(aggregatedCommandPacket, connectionSession, connectionContext));
+        if (aggregatedCommandPacket.isContainsBatchedStatements() && aggregatedCommandPacket.getPackets().stream().noneMatch(each -> each instanceof OpenGaussComBatchBindPacket)) {
+            return new PostgreSQLAggregatedCommandExecutor(getExecutorsOfAggregatedBatchedStatements(aggregatedCommandPacket, connectionSession, connectionContext));
         }
         List<CommandExecutor> result = new ArrayList<>(aggregatedCommandPacket.getPackets().size());
         for (PostgreSQLCommandPacket each : aggregatedCommandPacket.getPackets()) {
@@ -86,8 +86,8 @@ public final class OpenGaussCommandExecutorFactory {
         return new PostgreSQLAggregatedCommandExecutor(result);
     }
     
-    private static List<CommandExecutor> getExecutorsOfAggregatedBatchedInserts(final PostgreSQLAggregatedCommandPacket aggregatedCommandPacket,
-                                                                                final ConnectionSession connectionSession, final PostgreSQLConnectionContext connectionContext) throws SQLException {
+    private static List<CommandExecutor> getExecutorsOfAggregatedBatchedStatements(final PostgreSQLAggregatedCommandPacket aggregatedCommandPacket,
+                                                                                   final ConnectionSession connectionSession, final PostgreSQLConnectionContext connectionContext) throws SQLException {
         List<PostgreSQLCommandPacket> packets = aggregatedCommandPacket.getPackets();
         int firstBindIndex = aggregatedCommandPacket.getFirstBindIndex();
         int lastExecuteIndex = aggregatedCommandPacket.getLastExecuteIndex();
@@ -96,7 +96,7 @@ public final class OpenGaussCommandExecutorFactory {
             PostgreSQLCommandPacket each = packets.get(i);
             result.add(getCommandExecutor((CommandPacketType) each.getIdentifier(), each, connectionSession, connectionContext));
         }
-        result.add(new PostgreSQLAggregatedBatchedInsertsCommandExecutor(connectionSession, packets.subList(firstBindIndex, lastExecuteIndex + 1)));
+        result.add(new PostgreSQLAggregatedBatchedStatementsCommandExecutor(connectionSession, packets.subList(firstBindIndex, lastExecuteIndex + 1)));
         for (int i = lastExecuteIndex + 1; i < packets.size(); i++) {
             PostgreSQLCommandPacket each = packets.get(i);
             result.add(getCommandExecutor((CommandPacketType) each.getIdentifier(), each, connectionSession, connectionContext));
