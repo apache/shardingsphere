@@ -118,9 +118,6 @@ public interface DatabaseType {
      * @return whether contains system schema or not
      */
     default boolean containsSystemSchema(final String schemaName) {
-        if (getSystemSchemas().containsKey(schemaName)) {
-            return true;
-        }
         for (Collection<String> each : getSystemSchemas().values()) {
             if (each.contains(schemaName)) {
                 return true;
