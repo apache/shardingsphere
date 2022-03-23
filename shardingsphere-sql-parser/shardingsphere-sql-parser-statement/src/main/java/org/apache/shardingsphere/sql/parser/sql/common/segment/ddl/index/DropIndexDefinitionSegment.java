@@ -21,9 +21,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 
+/**
+ * Drop index definition segment.
+ */
 @RequiredArgsConstructor
 @Getter
-public class DropIndexDefinitionSegment implements AlterDefinitionSegment {
+public final class DropIndexDefinitionSegment implements AlterDefinitionSegment {
 
     private final int startIndex;
 
