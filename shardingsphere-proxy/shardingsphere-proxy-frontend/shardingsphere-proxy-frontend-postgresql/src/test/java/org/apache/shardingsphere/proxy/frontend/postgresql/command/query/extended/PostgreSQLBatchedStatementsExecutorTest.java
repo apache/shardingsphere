@@ -18,34 +18,46 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatement;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLTypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -57,6 +69,9 @@ public final class PostgreSQLBatchedStatementsExecutorTest {
     @Mock
     private JDBCBackendConnection backendConnection;
     
+    @Mock
+    private JDBCBackendStatement backendStatement;
+    
     private ContextManager previousContextManager;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -65,29 +80,48 @@ public final class PostgreSQLBatchedStatementsExecutorTest {
     @Before
     public void setup() {
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
+        when(connectionSession.getStatementManager()).thenReturn(backendStatement);
         previousContextManager = ProxyContext.getInstance().getContextManager();
         ProxyContext.getInstance().init(contextManager);
+        when(contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
+        when(contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
+        when(contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
     }
     
     @Test
-    public void assertExecuteBatchWithEmptyParameterSets() throws SQLException {
-        when(contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
-        when(contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
-        OpenGaussInsertStatement openGaussInsertStatement = mock(OpenGaussInsertStatement.class, RETURNS_DEEP_STUBS);
-        when(openGaussInsertStatement.getTable().getTableName().getIdentifier().getValue()).thenReturn("");
-        PostgreSQLPreparedStatement postgreSQLPreparedStatement = new PostgreSQLPreparedStatement("", openGaussInsertStatement, Collections.emptyList());
-        PostgreSQLBatchedStatementsExecutor actual = new PostgreSQLBatchedStatementsExecutor(connectionSession, postgreSQLPreparedStatement, Collections.emptyList());
-        ExecutionContext executionContext = mock(ExecutionContext.class);
-        setAnyExecutionContext(actual, executionContext);
-        actual.executeBatch();
-        verify(backendConnection, never()).getConnections(nullable(String.class), anyInt(), any(ConnectionMode.class));
+    public void assertExecuteBatch() throws SQLException {
+        PostgreSQLInsertStatement insertStatement = mock(PostgreSQLInsertStatement.class, RETURNS_DEEP_STUBS);
+        when(insertStatement.getTable().getTableName().getIdentifier().getValue()).thenReturn("t");
+        PostgreSQLPreparedStatement postgreSQLPreparedStatement = new PostgreSQLPreparedStatement("insert into t (id, col) values (?, ?)", insertStatement,
+                Arrays.asList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, PostgreSQLColumnType.POSTGRESQL_TYPE_VARCHAR));
+        List<List<Object>> parameterSets = Arrays.asList(Arrays.asList(1, new PostgreSQLTypeUnspecifiedSQLParameter("foo")),
+                Arrays.asList(2, new PostgreSQLTypeUnspecifiedSQLParameter("bar")), Arrays.asList(3, new PostgreSQLTypeUnspecifiedSQLParameter("baz")));
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getURL()).thenReturn("jdbc:postgresql://127.0.0.1/db");
+        when(backendConnection.getConnections(nullable(String.class), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        when(preparedStatement.getConnection()).thenReturn(connection);
+        when(preparedStatement.executeBatch()).thenReturn(new int[]{1, 1, 1});
+        when(backendStatement.createStorageResource(any(ExecutionUnit.class), eq(connection), any(ConnectionMode.class), any(StatementOption.class))).thenReturn(preparedStatement);
+        PostgreSQLBatchedStatementsExecutor actual = new PostgreSQLBatchedStatementsExecutor(connectionSession, postgreSQLPreparedStatement, parameterSets);
+        prepareExecutionUnitParameters(actual, parameterSets);
+        int actualUpdated = actual.executeBatch();
+        assertThat(actualUpdated, is(3));
+        InOrder inOrder = inOrder(preparedStatement);
+        for (List<Object> each : parameterSets) {
+            inOrder.verify(preparedStatement).setObject(1, each.get(0));
+            inOrder.verify(preparedStatement).setObject(2, each.get(1).toString());
+            inOrder.verify(preparedStatement).addBatch();
+        }
     }
     
+    @SuppressWarnings("unchecked")
     @SneakyThrows
-    private void setAnyExecutionContext(final PostgreSQLBatchedStatementsExecutor executor, final ExecutionContext executionContext) {
-        Field field = PostgreSQLBatchedStatementsExecutor.class.getDeclaredField("anyExecutionContext");
-        field.setAccessible(true);
-        field.set(executor, executionContext);
+    private void prepareExecutionUnitParameters(final PostgreSQLBatchedStatementsExecutor target, final List<List<Object>> parameterSets) {
+        Field executionUnitParametersField = PostgreSQLBatchedStatementsExecutor.class.getDeclaredField("executionUnitParameters");
+        executionUnitParametersField.setAccessible(true);
+        Map<ExecutionUnit, List<List<Object>>> map = (Map<ExecutionUnit, List<List<Object>>>) executionUnitParametersField.get(target);
+        map.replaceAll((k, v) -> parameterSets);
     }
     
     @After
