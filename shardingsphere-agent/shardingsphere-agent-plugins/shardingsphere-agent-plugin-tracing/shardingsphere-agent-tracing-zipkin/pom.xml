@@ -27,29 +27,8 @@
     </parent>
     <artifactId>shardingsphere-agent-tracing-zipkin</artifactId>
     <name>${project.artifactId}</name>
-
+    
     <dependencies>
-        <dependency>
-            <groupId>io.zipkin.brave</groupId>
-            <artifactId>brave</artifactId>
-            <version>${zipkin-brave.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>zipkin-reporter-brave</artifactId>
-                    <groupId>io.zipkin.reporter2</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>io.zipkin.reporter2</groupId>
-            <artifactId>zipkin-reporter-brave</artifactId>
-            <version>${zipkin-reporter.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.zipkin.reporter2</groupId>
-            <artifactId>zipkin-sender-okhttp3</artifactId>
-            <version>${zipkin-reporter.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-proxy-frontend-core</artifactId>
@@ -57,6 +36,19 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-agent-tracing-test</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>io.zipkin.brave</groupId>
+            <artifactId>brave</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.zipkin.reporter2</groupId>
+            <artifactId>zipkin-reporter-brave</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.zipkin.reporter2</groupId>
+            <artifactId>zipkin-sender-okhttp3</artifactId>
         </dependency>
     </dependencies>
 </project>
