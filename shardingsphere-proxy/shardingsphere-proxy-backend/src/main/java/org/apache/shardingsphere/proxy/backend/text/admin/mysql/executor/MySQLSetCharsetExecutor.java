@@ -54,14 +54,14 @@ public final class MySQLSetCharsetExecutor implements DatabaseSetCharsetExecutor
     }
     
     private Charset parseCharset(final String value) {
-        String result = value.toLowerCase(Locale.ROOT);
-        if ("default".equals(result)) {
-            return MySQLServerInfo.DEFAULT_CHARSET.getCharset();
+        switch (value.toLowerCase(Locale.ROOT)) {
+            case "default":
+                return MySQLServerInfo.DEFAULT_CHARSET.getCharset();
+            case "utf8mb4":
+                return StandardCharsets.UTF_8;
+            default:
+                return Charset.forName(value);
         }
-        if ("utf8mb4".equals(result)) {
-            return StandardCharsets.UTF_8;
-        }
-        return Charset.forName(value);
     }
     
     @Override
