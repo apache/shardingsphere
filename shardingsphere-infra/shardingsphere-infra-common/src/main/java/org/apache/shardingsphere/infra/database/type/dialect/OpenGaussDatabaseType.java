@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -61,14 +62,14 @@ public final class OpenGaussDatabaseType implements DatabaseType {
     }
     
     @Override
-    public Optional<String> getDefaultSchemaName() {
-        return Optional.of("public");
-    }
-    
-    @Override
     public void handleRollbackOnly(final boolean rollbackOnly, final SQLStatement statement) throws SQLException {
         if (rollbackOnly && !(statement instanceof CommitStatement) && !(statement instanceof RollbackStatement)) {
             throw new SQLFeatureNotSupportedException("ERROR:  current transaction is aborted, commands ignored until end of transaction block.");
         }
+    }
+    
+    @Override
+    public Map<String, Collection<String>> getSystemSchemas() {
+        return Collections.emptyMap();
     }
 }

@@ -108,6 +108,6 @@ public final class ShardingSphereMetaData {
      * @return sharding sphere schema
      */
     public ShardingSphereSchema getSchema() {
-        return resource.getDatabaseType().getDefaultSchemaName().map(schemas::get).orElseGet(() -> schemas.get(name));
+        return schemas.get(name);
     }
 }
