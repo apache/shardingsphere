@@ -27,6 +27,7 @@ import org.apache.shardingsphere.mode.metadata.persist.node.SchemaMetaDataNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -77,10 +78,10 @@ public final class SchemaMetaDataPersistService {
     }
     
     private void compareAndPersist(final String schemaName, final ShardingSphereSchema schema, final ShardingSphereSchema originalSchema) {
-        Map<String, TableMetaData> localTables = schema.getTables();
+        Map<String, TableMetaData> cachedLocalTables = new LinkedHashMap<>(schema.getTables());
         for (Map.Entry<String, TableMetaData> entry : originalSchema.getTables().entrySet()) {
             String onlineTableName = entry.getKey();
-            TableMetaData localTableMetaData = localTables.remove(onlineTableName);
+            TableMetaData localTableMetaData = cachedLocalTables.remove(onlineTableName);
             if (null == localTableMetaData) {
                 delete(schemaName, onlineTableName);
                 continue;
@@ -89,8 +90,8 @@ public final class SchemaMetaDataPersistService {
                 persist(schemaName, localTableMetaData);
             }
         }
-        if (!localTables.isEmpty()) {
-            persistTables(schemaName, localTables);
+        if (!cachedLocalTables.isEmpty()) {
+            persistTables(schemaName, cachedLocalTables);
         }
     }
     
