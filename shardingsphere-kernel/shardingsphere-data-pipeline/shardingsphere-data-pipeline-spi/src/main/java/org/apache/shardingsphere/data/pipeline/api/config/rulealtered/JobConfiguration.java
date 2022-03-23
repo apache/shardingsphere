@@ -63,7 +63,7 @@ public final class JobConfiguration {
         HandleConfiguration handleConfig = getHandleConfig();
         if (null == handleConfig || null == handleConfig.getJobShardingDataNodes()) {
             RuleAlteredJobConfigurationPreparer preparer = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobConfigurationPreparer.class);
-            handleConfig = preparer.createHandleConfiguration(pipelineConfig);
+            handleConfig = preparer.createHandleConfiguration(pipelineConfig, getWorkflowConfig());
             this.handleConfig = handleConfig;
         }
         if (null == handleConfig.getJobId()) {
@@ -71,12 +71,12 @@ public final class JobConfiguration {
         }
         if (Strings.isNullOrEmpty(handleConfig.getSourceDatabaseType())) {
             PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
-                    getPipelineConfig().getSource().getType(), getPipelineConfig().getSource().getParameter());
+                    pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter());
             handleConfig.setSourceDatabaseType(sourceDataSourceConfig.getDatabaseType().getName());
         }
         if (Strings.isNullOrEmpty(handleConfig.getTargetDatabaseType())) {
             PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
-                    getPipelineConfig().getTarget().getType(), getPipelineConfig().getTarget().getParameter());
+                    pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter());
             handleConfig.setTargetDatabaseType(targetDataSourceConfig.getDatabaseType().getName());
         }
         if (null == handleConfig.getJobShardingItem()) {

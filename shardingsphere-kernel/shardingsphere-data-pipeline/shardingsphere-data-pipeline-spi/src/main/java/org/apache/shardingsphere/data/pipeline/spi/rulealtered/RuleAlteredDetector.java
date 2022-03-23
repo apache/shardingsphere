@@ -22,6 +22,8 @@ import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionCon
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.spi.singleton.SingletonSPI;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -44,13 +46,16 @@ public interface RuleAlteredDetector extends SingletonSPI {
     String getRuleConfigClassName();
     
     /**
-     * Is rule altered.
+     * Find rule altered logic tables.
      *
      * @param sourceRuleConfig source YAML rule configuration, may be null
      * @param targetRuleConfig target YAML rule configuration, may be null
-     * @return whether is rule altered or not
+     * @param sourceDataSources source data sources, could not be null
+     * @param targetDataSources target data sources, could not be null
+     * @return rule altered tables, it might be empty
      */
-    boolean isRuleAltered(YamlRuleConfiguration sourceRuleConfig, YamlRuleConfiguration targetRuleConfig);
+    List<String> findRuleAlteredLogicTables(YamlRuleConfiguration sourceRuleConfig, YamlRuleConfiguration targetRuleConfig,
+                                            Map<String, Map<String, Object>> sourceDataSources, Map<String, Map<String, Object>> targetDataSources);
     
     /**
      * Get on rule altered action configuration.
