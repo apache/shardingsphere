@@ -52,8 +52,9 @@ public final class FixtureClusterPersistRepository implements ClusterPersistRepo
     }
     
     @Override
-    public void persistEphemeral(final String key, final String value) {
+    public boolean persistEphemeral(final String key, final String value) {
         REGISTRY_DATA.put(key, value);
+        return true;
     }
     
     @Override

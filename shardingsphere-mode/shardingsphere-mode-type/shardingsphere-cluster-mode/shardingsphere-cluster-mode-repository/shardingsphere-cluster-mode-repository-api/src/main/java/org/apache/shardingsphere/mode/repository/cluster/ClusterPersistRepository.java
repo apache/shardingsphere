@@ -40,8 +40,9 @@ public interface ClusterPersistRepository extends PersistRepository {
      *
      * @param key key of data
      * @param value value of data
+     * @return is persisted or not
      */
-    void persistEphemeral(String key, String value);
+    boolean persistEphemeral(String key, String value);
     
     /**
      * Get sequential id.

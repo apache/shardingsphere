@@ -195,16 +195,18 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
-    public void persistEphemeral(final String key, final String value) {
+    public boolean persistEphemeral(final String key, final String value) {
         try {
             if (isExisted(key)) {
                 client.delete().deletingChildrenIfNeeded().forPath(key);
             }
             client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(key, value.getBytes(StandardCharsets.UTF_8));
+            return true;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             CuratorZookeeperExceptionHandler.handleException(ex);
+            return false;
         }
     }
     

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.memory.lock;
 
 import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
+import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.lock.LockContext;
 
 import java.util.Optional;
@@ -28,7 +29,7 @@ import java.util.Optional;
 public class MemoryLockContext implements LockContext {
     
     @Override
-    public Optional<ShardingSphereGlobalLock> createSchemaLock(final String schemaName) {
+    public Optional<ShardingSphereLock> createSchemaLock(final String schemaName) {
         return Optional.empty();
     }
     

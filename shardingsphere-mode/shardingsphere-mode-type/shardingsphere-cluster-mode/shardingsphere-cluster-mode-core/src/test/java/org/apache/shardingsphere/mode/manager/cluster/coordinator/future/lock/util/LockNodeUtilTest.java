@@ -15,31 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.standalone.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.util;
 
-import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.lock.LockContext;
+import org.junit.Test;
 
-import java.util.Optional;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * Standalone lock context.
- */
-public final class StandaloneLockContext implements LockContext {
+public final class LockNodeUtilTest {
     
-    @Override
-    public Optional<ShardingSphereLock> createSchemaLock(final String schemaName) {
-        return Optional.empty();
+    @Test
+    public void assertGenerateLockName() {
+        assertThat(LockNodeUtil.generateLockName("schema", "127.0.0.1@3307"), is("schema-127.0.0.1@3307"));
     }
     
-    @Override
-    public Optional<ShardingSphereGlobalLock> getSchemaLock(final String schemaName) {
-        return Optional.empty();
-    }
-    
-    @Override
-    public boolean isLockedSchema(final String schemaName) {
-        return false;
+    @Test
+    public void assertParseLockName() {
+        String[] lockName = LockNodeUtil.parseLockName("schema-127.0.0.1@3307");
+        assertThat(lockName.length, is(2));
+        assertThat(lockName[0], is("schema"));
+        assertThat(lockName[1], is("127.0.0.1@3307"));
     }
 }
