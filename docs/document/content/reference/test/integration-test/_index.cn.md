@@ -103,7 +103,7 @@ SQL 用例在 `resources/cases/${SQL-TYPE}/${SQL-TYPE}-integration-test-cases.xm
   - `rules.yaml`: 规则配置；
   - `databases.xml`: 真实库名称；
   - `dataset.xml`: 初始化数据；
-  - `init-sql\${DATABASE-TYPE}\init.sql`: 初始化数据库表结构；；；
+  - `init-sql\${DATABASE-TYPE}\init.sql`: 初始化数据库表结构；
   - `authority.xml`: 待补充。
 
 #### Docker 环境配置
