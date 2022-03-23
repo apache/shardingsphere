@@ -71,8 +71,8 @@ public final class PostgreSQLCommandExecutorFactory {
             return getCommandExecutor(commandPacketType, commandPacket, connectionSession, connectionContext);
         }
         PostgreSQLAggregatedCommandPacket aggregatedCommandPacket = (PostgreSQLAggregatedCommandPacket) commandPacket;
-        if (aggregatedCommandPacket.isContainsBatchedInserts()) {
-            return new PostgreSQLAggregatedCommandExecutor(getExecutorsOfAggregatedBatchedInserts(aggregatedCommandPacket, connectionSession, connectionContext));
+        if (aggregatedCommandPacket.isContainsBatchedStatements()) {
+            return new PostgreSQLAggregatedCommandExecutor(getExecutorsOfAggregatedBatchedStatements(aggregatedCommandPacket, connectionSession, connectionContext));
         }
         List<CommandExecutor> result = new ArrayList<>(aggregatedCommandPacket.getPackets().size());
         for (PostgreSQLCommandPacket each : aggregatedCommandPacket.getPackets()) {
@@ -81,8 +81,8 @@ public final class PostgreSQLCommandExecutorFactory {
         return new PostgreSQLAggregatedCommandExecutor(result);
     }
     
-    private static List<CommandExecutor> getExecutorsOfAggregatedBatchedInserts(final PostgreSQLAggregatedCommandPacket aggregatedCommandPacket,
-                                                                                final ConnectionSession connectionSession, final PostgreSQLConnectionContext connectionContext) throws SQLException {
+    private static List<CommandExecutor> getExecutorsOfAggregatedBatchedStatements(final PostgreSQLAggregatedCommandPacket aggregatedCommandPacket, final ConnectionSession connectionSession,
+                                                                                   final PostgreSQLConnectionContext connectionContext) throws SQLException {
         List<PostgreSQLCommandPacket> packets = aggregatedCommandPacket.getPackets();
         int firstBindIndex = aggregatedCommandPacket.getFirstBindIndex();
         int lastExecuteIndex = aggregatedCommandPacket.getLastExecuteIndex();

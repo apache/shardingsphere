@@ -100,8 +100,8 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
         when(backendStatement.createStorageResource(any(ExecutionUnit.class), any(Connection.class), any(ConnectionMode.class), any(StatementOption.class))).thenReturn(preparedStatement);
         when(connectionSession.getStatementManager()).thenReturn(backendStatement);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
-        PostgreSQLAggregatedBatchedStatementsCommandExecutor batchedInsertsCommandExecutor = new PostgreSQLAggregatedBatchedStatementsCommandExecutor(connectionSession, preparePackets());
-        List<DatabasePacket<?>> actualPackets = new ArrayList<>(batchedInsertsCommandExecutor.execute());
+        PostgreSQLAggregatedBatchedStatementsCommandExecutor batchedStatementsCommandExecutor = new PostgreSQLAggregatedBatchedStatementsCommandExecutor(connectionSession, preparePackets());
+        List<DatabasePacket<?>> actualPackets = new ArrayList<>(batchedStatementsCommandExecutor.execute());
         assertThat(actualPackets.size(), is(BATCH_SIZE * 3));
         for (int i = 0; i < BATCH_SIZE; i++) {
             assertThat(actualPackets.get(i * 3), is(PostgreSQLBindCompletePacket.getInstance()));
