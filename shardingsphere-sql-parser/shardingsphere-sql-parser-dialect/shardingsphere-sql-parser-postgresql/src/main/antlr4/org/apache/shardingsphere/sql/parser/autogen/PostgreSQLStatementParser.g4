@@ -119,5 +119,6 @@ execute
     | dropExtension
     | dropPolicy
     | dropOwned
+    | dropForeignTable
     ) SEMI_?
     ;

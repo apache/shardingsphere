@@ -148,6 +148,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDimensionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDomainStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropExtensionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropForeignTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropLanguageStatementTestCase;
@@ -1115,6 +1116,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "alter-foreign-table")
     private final List<AlterForeignTableTestCase> alterForeignTableTestCase = new LinkedList<>();
+
+    @XmlElement(name = "drop-foreign-table")
+    private final List<DropForeignTableStatementTestCase> dropForeignTableStatementTestCase = new LinkedList<>();
     
     @XmlElement(name = "alter-group")
     private final List<AlterGroupStatementTestCase> alterGroupStatementTestCase = new LinkedList<>();
@@ -1446,6 +1450,7 @@ public final class SQLParserTestCases {
         putAll(alterDefaultPrivilegesTestCase, result);
         putAll(alterForeignDataWrapperTestCase, result);
         putAll(alterForeignTableTestCase, result);
+        putAll(dropForeignTableStatementTestCase, result);
         putAll(alterGroupStatementTestCase, result);
         putAll(alterMaterializedViewStatementTestCase, result);
         putAll(createTextSearchStatementTestCases, result);
