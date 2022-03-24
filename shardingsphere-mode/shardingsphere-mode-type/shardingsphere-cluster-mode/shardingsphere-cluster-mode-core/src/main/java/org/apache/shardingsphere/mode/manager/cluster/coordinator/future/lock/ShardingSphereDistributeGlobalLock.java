@@ -21,27 +21,23 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.service.GlobalLockRegistryService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.util.GlobalLockNode;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.service.GlobalLockNode;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Global distribute lock of ShardingSphere.
  */
 public final class ShardingSphereDistributeGlobalLock implements ShardingSphereGlobalLock {
     
-    private static final ReadWriteLock LOCK = new ReentrantReadWriteLock();
-    
-    private static final int CHECK_ACK_INTERVAL_SECONDS = 1;
+    private static final int CHECK_ACK_INTERVAL_MILLISECONDS = 1000;
     
     private static final long DEFAULT_TRY_LOCK_TIMEOUT_MILLISECONDS = 3 * 60 * 1000;
     
-    private static final long DEFAULT_REGISTRY_TIMEOUT_MILLISECONDS = 3 * 1000;
+    private static final long DEFAULT_REGISTRY_TIMEOUT_MILLISECONDS = 2 * 100;
     
     private final InstanceContext instanceContext;
     
@@ -49,14 +45,13 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
     
     private final GlobalLockRegistryService lockService;
     
-    private final Set<String> lockedInstances = new LinkedHashSet<>();
+    private final Set<String> lockedInstances = new CopyOnWriteArraySet<>();
     
-    public ShardingSphereDistributeGlobalLock(final InstanceContext instanceContext, final GlobalLockRegistryService lockService) {
-        this.lockService = lockService;
+    public ShardingSphereDistributeGlobalLock(final InstanceContext instanceContext, final String ownerInstanceId, final GlobalLockRegistryService lockService) {
         this.instanceContext = instanceContext;
-        this.ownerInstanceId = instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId();
+        this.ownerInstanceId = ownerInstanceId;
+        this.lockService = lockService;
         initLockedInstances(instanceContext);
-        
     }
     
     private void initLockedInstances(final InstanceContext instanceContext) {
@@ -65,7 +60,7 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
     
     @Override
     public boolean tryLock(final String lockName) {
-        return lockService.tryLock(GlobalLockNode.generateSchemaLockName(lockName, ownerInstanceId), DEFAULT_REGISTRY_TIMEOUT_MILLISECONDS);
+        return lockService.tryLock(GlobalLockNode.generateSchemaLockName(lockName, ownerInstanceId));
     }
     
     @Override
@@ -87,14 +82,14 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
                 return true;
             }
             sleepInterval();
-            count += CHECK_ACK_INTERVAL_SECONDS;
+            count += CHECK_ACK_INTERVAL_MILLISECONDS;
         }
         return false;
     }
     
     private void sleepInterval() {
         try {
-            TimeUnit.SECONDS.sleep(CHECK_ACK_INTERVAL_SECONDS);
+            TimeUnit.MILLISECONDS.sleep(CHECK_ACK_INTERVAL_MILLISECONDS);
         } catch (final InterruptedException ignore) {
         }
     }
@@ -102,23 +97,14 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
     @Override
     public void releaseLock(final String lockName) {
         lockService.releaseLock(GlobalLockNode.generateSchemaLockName(lockName, ownerInstanceId));
-        removeLockedInstance(ownerInstanceId);
-    }
-    
-    private void removeLockedInstance(final String instanceId) {
-        LOCK.writeLock().lock();
-        try {
-            lockedInstances.remove(ownerInstanceId);
-        } finally {
-            LOCK.writeLock().unlock();
-        }
+        lockedInstances.remove(ownerInstanceId);
     }
     
     @Override
     public boolean isLocked(final String lockName) {
         String instanceId = instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId();
         if (!isOwnerInstanceId(instanceId)) {
-            return isContainsLockedInstances(instanceId);
+            return lockedInstances.contains(instanceId);
         }
         if (!lockedInstances.contains(ownerInstanceId)) {
             return false;
@@ -126,31 +112,17 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
         return isAckCompleted();
     }
     
-    private boolean isContainsLockedInstances(final String instanceId) {
-        LOCK.readLock().lock();
-        try {
-            return lockedInstances.contains(instanceId);
-        } finally {
-            LOCK.readLock().unlock();
-        }
-    }
-    
     private boolean isAckCompleted() {
         Collection<ComputeNodeInstance> computeNodeInstances = instanceContext.getComputeNodeInstances();
         if (computeNodeInstances.size() > lockedInstances.size()) {
             return false;
         }
-        LOCK.readLock().lock();
-        try {
-            for (ComputeNodeInstance each : computeNodeInstances) {
-                if (!lockedInstances.contains(each.getInstanceDefinition().getInstanceId().getId())) {
-                    return false;
-                }
+        for (ComputeNodeInstance each : computeNodeInstances) {
+            if (!lockedInstances.contains(each.getInstanceDefinition().getInstanceId().getId())) {
+                return false;
             }
-            return true;
-        } finally {
-            LOCK.readLock().unlock();
         }
+        return true;
     }
     
     @Override
@@ -160,24 +132,19 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
     
     @Override
     public void addLockedInstance(final String lockedInstanceId) {
-        LOCK.writeLock().lock();
-        try {
-            lockedInstances.add(ownerInstanceId);
-        } finally {
-            LOCK.writeLock().unlock();
-        }
+        lockedInstances.add(ownerInstanceId);
     }
     
     @Override
     public void ackLock(final String lockName, final String lockedInstanceId) {
         lockService.ackLock(GlobalLockNode.generateSchemaAckLockName(lockName, lockedInstanceId), lockedInstanceId);
-        addLockedInstance(lockedInstanceId);
+        lockedInstances.add(lockedInstanceId);
     }
     
     @Override
     public void releaseAckLock(final String lockName, final String lockedInstanceId) {
         lockService.releaseAckLock(GlobalLockNode.generateSchemaAckLockName(lockName, lockedInstanceId));
-        removeLockedInstance(lockedInstanceId);
+        lockedInstances.remove(lockedInstanceId);
     }
     
     private boolean isOwnerInstanceId(final String lockedInstanceId) {

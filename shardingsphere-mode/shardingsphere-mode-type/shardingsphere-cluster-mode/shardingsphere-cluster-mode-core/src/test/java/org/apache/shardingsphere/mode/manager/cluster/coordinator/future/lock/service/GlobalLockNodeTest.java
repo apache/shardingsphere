@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.util;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.service;
 
 import org.junit.Test;
 
@@ -29,14 +29,14 @@ public final class GlobalLockNodeTest {
     
     @Test
     public void assertGetLockedKey() {
-        Optional<String> lockName = GlobalLockNode.getLockedKey("/lock/global/locks/schema-127.0.0.1@3307/_c_c2d-lock-00000");
+        Optional<String> lockName = GlobalLockNode.getLockedKey("key/lock/global/locks/schema-127.0.0.1@3307");
         assertTrue(lockName.isPresent());
         assertThat(lockName.get(), is("schema-127.0.0.1@3307"));
     }
     
     @Test
     public void assertGetAckLockedKey() {
-        Optional<String> lockName = GlobalLockNode.getAckLockedKey("/lock/global/ack/schema-127.0.0.1@3308/_c_c2d-lock-00000");
+        Optional<String> lockName = GlobalLockNode.getAckLockedKey("/lock/global/ack/schema-127.0.0.1@3308");
         assertTrue(lockName.isPresent());
         assertThat(lockName.get(), is("schema-127.0.0.1@3308"));
     }

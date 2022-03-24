@@ -15,31 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.standalone.lock;
-
-import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.lock.LockContext;
-
-import java.util.Optional;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.service;
 
 /**
- * Standalone lock context.
+ * Lock state.
  */
-public final class StandaloneLockContext implements LockContext {
+public enum LockState {
     
-    @Override
-    public Optional<ShardingSphereLock> createSchemaLock(final String schemaName) {
-        return Optional.empty();
-    }
-    
-    @Override
-    public Optional<ShardingSphereGlobalLock> getSchemaLock(final String schemaName) {
-        return Optional.empty();
-    }
-    
-    @Override
-    public boolean isLockedSchema(final String schemaName) {
-        return false;
-    }
+    LOCKED
 }

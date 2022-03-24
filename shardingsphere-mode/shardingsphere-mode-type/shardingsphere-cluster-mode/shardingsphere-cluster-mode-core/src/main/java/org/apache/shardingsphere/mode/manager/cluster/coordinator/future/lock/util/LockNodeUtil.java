@@ -15,39 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.util;
 
-import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-
-import java.util.Optional;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Lock context.
+ * Lock node util.
  */
-public interface LockContext {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class LockNodeUtil {
+    
+    private static final String LOCK_DELIMITER = "-";
     
     /**
-     * Create schema lock.
+     * Generate lock name.
      *
-     * @param schemaName schema name
-     * @return schema lock
+     * @param schema schema name
+     * @param instanceId instance id
+     * @return lock name
      */
-    Optional<ShardingSphereLock> createSchemaLock(String schemaName);
+    public static String generateLockName(final String schema, final String instanceId) {
+        return schema + LOCK_DELIMITER + instanceId;
+    }
     
     /**
-     * Get schema lock.
+     * Parse lock name.
      *
-     * @param schemaName schema name
-     * @return schema lock
+     * @param lockedName locked name
+     * @return string array of schema name and instance id
      */
-    Optional<ShardingSphereGlobalLock> getSchemaLock(String schemaName);
-    
-    /**
-     *  Is locked schema.
-     *
-     * @param schemaName schema name
-     * @return is locked schema or not
-     */
-    boolean isLockedSchema(String schemaName);
+    public static String[] parseLockName(final String lockedName) {
+        return lockedName.trim().split(LOCK_DELIMITER);
+    }
 }
