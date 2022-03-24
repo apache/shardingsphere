@@ -77,13 +77,21 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
     @Override
     public ASTNode visitEnableReadDataSource(final EnableReadDataSourceContext ctx) {
         SchemaSegment schemaSegment = Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null;
-        return new SetReadwriteSplittingStatusStatement(ctx.ENABLE().getText().toUpperCase(), getIdentifierValue(ctx.resourceName()), schemaSegment);
+        SetReadwriteSplittingStatusStatement result = new SetReadwriteSplittingStatusStatement(ctx.ENABLE().getText().toUpperCase(), getIdentifierValue(ctx.resourceName()), schemaSegment);
+        if (null != ctx.ruleName()) {
+            result.setRuleName(getIdentifierValue(ctx.ruleName()));
+        }
+        return result;
     }
     
     @Override
     public ASTNode visitDisableReadDataSource(final DisableReadDataSourceContext ctx) {
         SchemaSegment schemaSegment = Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null;
-        return new SetReadwriteSplittingStatusStatement(ctx.DISABLE().getText().toUpperCase(), getIdentifierValue(ctx.resourceName()), schemaSegment);
+        SetReadwriteSplittingStatusStatement result = new SetReadwriteSplittingStatusStatement(ctx.DISABLE().getText().toUpperCase(), getIdentifierValue(ctx.resourceName()), schemaSegment);
+        if (null != ctx.ruleName()) {
+            result.setRuleName(getIdentifierValue(ctx.ruleName()));
+        }
+        return result;
     }
     
     @Override
@@ -107,7 +115,7 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
         }
         StaticReadwriteSplittingRuleDefinitionContext staticRuleDefinitionCtx = ctx.staticReadwriteSplittingRuleDefinition();
         return new ReadwriteSplittingRuleSegment(getIdentifierValue(ctx.ruleName()),
-                getIdentifierValue(staticRuleDefinitionCtx.writeResourceName()), 
+                getIdentifierValue(staticRuleDefinitionCtx.writeResourceName()),
                 staticRuleDefinitionCtx.readResourceNames().resourceName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toList()),
                 algorithmName, props);
     }

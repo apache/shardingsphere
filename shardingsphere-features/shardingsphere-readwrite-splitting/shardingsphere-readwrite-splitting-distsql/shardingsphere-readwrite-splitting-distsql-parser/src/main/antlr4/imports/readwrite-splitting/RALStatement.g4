@@ -32,11 +32,11 @@ clearReadwriteSplittingHint
     ;
 
 enableReadDataSource
-    : ENABLE READWRITE_SPLITTING READ resourceName (FROM schemaName)?
+    : ENABLE READWRITE_SPLITTING (READ)? (ruleName DOT)? resourceName (FROM schemaName)?
     ;
 
 disableReadDataSource
-    : DISABLE READWRITE_SPLITTING READ resourceName (FROM schemaName)?
+    : DISABLE READWRITE_SPLITTING (READ)? (ruleName DOT)? resourceName (FROM schemaName)?
     ;
 
 showReadwriteSplittingReadResources
@@ -44,5 +44,9 @@ showReadwriteSplittingReadResources
     ;
 
 sourceValue
+    : IDENTIFIER
+    ;
+
+ruleName
     : IDENTIFIER
     ;

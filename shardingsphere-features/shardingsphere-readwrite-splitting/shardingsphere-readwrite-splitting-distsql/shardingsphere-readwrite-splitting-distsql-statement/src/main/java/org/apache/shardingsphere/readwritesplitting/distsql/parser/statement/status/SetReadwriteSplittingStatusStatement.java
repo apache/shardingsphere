@@ -19,6 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.st
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
@@ -37,6 +38,9 @@ public class SetReadwriteSplittingStatusStatement extends UpdatableRALStatement 
     private final String resourceName;
     
     private final SchemaSegment schema;
+    
+    @Setter
+    private String ruleName;
     
     @Override
     public Optional<SchemaSegment> getSchema() {

@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
@@ -118,9 +119,13 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     @Override
     public void updateStatus(final DataSourceStatusChangedEvent event) {
         if (event instanceof DataSourceNameDisabledEvent) {
+            QualifiedSchema qualifiedSchema = ((DataSourceNameDisabledEvent) event).getQualifiedSchema();
             for (Entry<String, ReadwriteSplittingDataSourceRule> entry : dataSourceRules.entrySet()) {
-                entry.getValue().updateDisabledDataSourceNames(((DataSourceNameDisabledEvent) event).getQualifiedSchema().getDataSourceName(),
-                        ((DataSourceNameDisabledEvent) event).isDisabled());
+                if (!qualifiedSchema.getGroupName().equals(entry.getKey())) {
+                    continue;
+                }
+                entry.getValue().updateDisabledDataSourceNames(qualifiedSchema.getDataSourceName(), ((DataSourceNameDisabledEvent) event).isDisabled());
+                break;
             }
         }
     }
