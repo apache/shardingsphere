@@ -28,7 +28,7 @@ import org.w3c.dom.Element;
 /**
  * Cache option bean parser for spring namespace.
  */
-public class CacheOptionBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class CacheOptionBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
