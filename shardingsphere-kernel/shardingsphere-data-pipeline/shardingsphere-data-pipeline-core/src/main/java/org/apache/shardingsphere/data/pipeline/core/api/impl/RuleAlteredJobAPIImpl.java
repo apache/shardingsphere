@@ -50,7 +50,9 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.mode.lock.LockContext;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.environment.ScalingEnvironmentManager;
@@ -107,6 +109,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         return result;
     }
     
+    // TODO remove it
     private boolean isUncompletedJobOfSchema(final String schemaName, final String jobId) {
         JobConfigurationPOJO jobConfigPOJO;
         try {
@@ -180,7 +183,25 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     @Override
     public void stopClusterWriteDB(final String jobId) {
         checkModeConfig();
-        //TODO stopClusterWriteDB
+        log.info("stopClusterWriteDB for job {}", jobId);
+        JobConfiguration jobConfig = getJobConfig(jobId);
+        String schemaName = jobConfig.getWorkflowConfig().getSchemaName();
+        stopClusterWriteDB(schemaName, jobId);
+    }
+    
+    @Override
+    public void stopClusterWriteDB(final String schemaName, final String jobId) {
+        LockContext lockContext = PipelineContext.getContextManager().getLockContext();
+        ShardingSphereLock lock = lockContext.getSchemaLock(schemaName).orElse(lockContext.createSchemaLock(schemaName).orElse(null));
+        if (null == lock) {
+            log.info("stopClusterWriteDB, lock is null");
+            throw new RuntimeException("Stop source writing failed");
+        }
+        boolean tryLockSuccess = lock.tryLock(schemaName);
+        log.info("stopClusterWriteDB, tryLockSuccess={}", tryLockSuccess);
+        if (!tryLockSuccess) {
+            throw new RuntimeException("Stop source writing failed");
+        }
     }
     
     @Override
@@ -188,12 +209,24 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         checkModeConfig();
         log.info("restoreClusterWriteDB for job {}", jobId);
         JobConfiguration jobConfig = getJobConfig(jobId);
-        restoreClusterWriteDB(jobConfig);
+        String schemaName = jobConfig.getWorkflowConfig().getSchemaName();
+        restoreClusterWriteDB(schemaName, jobId);
     }
     
     @Override
-    public void restoreClusterWriteDB(final JobConfiguration jobConfig) {
-        // TODO restoreClusterWriteDB
+    public void restoreClusterWriteDB(final String schemaName, final String jobId) {
+        LockContext lockContext = PipelineContext.getContextManager().getLockContext();
+        ShardingSphereLock lock = lockContext.getSchemaLock(schemaName).orElse(null);
+        if (null == lock) {
+            log.info("restoreClusterWriteDB, lock is null");
+            throw new RuntimeException("Not necessary to restore source writing");
+        }
+        boolean isLocked = lock.isLocked(schemaName);
+        if (!isLocked) {
+            log.info("restoreClusterWriteDB, isLocked false, schemaName={}", schemaName);
+            throw new RuntimeException("Not necessary to restore source writing");
+        }
+        lock.releaseLock(schemaName);
     }
     
     @Override
