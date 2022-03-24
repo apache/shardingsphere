@@ -89,17 +89,18 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         insertValueContexts = getInsertValueContexts(parameters, parametersOffset, valueExpressions);
         insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultSchemaName).orElse(null);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
-        tablesContext = new TablesContext(getAllSimpleTableSegments());
+        tablesContext = new TablesContext(getAllSimpleTableSegments(), getDatabaseType());
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
         columnNames = useDefaultColumns() ? schema.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames;
-        generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema).createGenerateKeyContext(insertColumnNames, getAllValueExpressions(sqlStatement), parameters).orElse(null);
+        generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema)
+                .createGenerateKeyContext(insertColumnNames, getAllValueExpressions(sqlStatement), parameters).orElse(null);
     }
     
     private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {
-        String schemaName = tablesContext.getSchemaName().orElse(defaultSchemaName);
-        ShardingSphereMetaData metaData = metaDataMap.get(schemaName);
+        String databaseName = tablesContext.getDatabaseName().orElse(defaultSchemaName);
+        ShardingSphereMetaData metaData = metaDataMap.get(databaseName);
         if (null == metaData) {
-            throw new SchemaNotExistedException(schemaName);
+            throw new SchemaNotExistedException(databaseName);
         }
         return metaData.getSchema();
     }
