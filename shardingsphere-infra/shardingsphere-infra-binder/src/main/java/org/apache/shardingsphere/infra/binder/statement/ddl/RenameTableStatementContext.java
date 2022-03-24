@@ -39,7 +39,7 @@ public final class RenameTableStatementContext extends CommonSQLStatementContext
     
     public RenameTableStatementContext(final RenameTableStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getRenameTables().stream().map(RenameTableDefinitionSegment::getRenameTable).collect(Collectors.toList()));
+        tablesContext = new TablesContext(sqlStatement.getRenameTables().stream().map(RenameTableDefinitionSegment::getRenameTable).collect(Collectors.toList()), getDatabaseType());
     }
     
     @Override

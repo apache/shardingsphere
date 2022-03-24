@@ -35,7 +35,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -162,11 +161,10 @@ public final class MGRDatabaseDiscoveryTypeTest {
             when(databaseMetaData.get(i).getURL()).thenReturn("jdbc:mysql://127.0.0.1:" + (3306 + i) + "/ds_0?serverTimezone=UTC&useSSL=false");
         }
         Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
-        List<String> disabledDataSourceNames = Arrays.asList("ds_1");
         for (int i = 0; i < 3; i++) {
             dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
         }
-        mgrDatabaseDiscoveryType.updateMemberState("discovery_db", dataSourceMap, disabledDataSourceNames, "readwrite_ds");
+        mgrDatabaseDiscoveryType.updateMemberState("discovery_db", dataSourceMap, "readwrite_ds");
         verify(eventBus).post(Mockito.refEq(new DataSourceDisabledEvent("discovery_db", "readwrite_ds", "ds_2",
                 new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.DISABLE))));
     }

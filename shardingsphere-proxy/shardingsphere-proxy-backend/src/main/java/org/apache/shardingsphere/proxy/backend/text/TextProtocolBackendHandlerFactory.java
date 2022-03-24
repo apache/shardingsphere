@@ -102,7 +102,7 @@ public final class TextProtocolBackendHandlerFactory {
                 sqlStatement, connectionSession.getDefaultSchemaName());
         // TODO optimize SQLStatementSchemaHolder
         if (sqlStatementContext instanceof TableAvailable) {
-            ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().ifPresent(SQLStatementSchemaHolder::set);
+            ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(SQLStatementSchemaHolder::set);
         }
         Optional<ExtraTextProtocolBackendHandler> extraHandler = findExtraTextProtocolBackendHandler(sqlStatement);
         if (extraHandler.isPresent()) {
@@ -112,8 +112,8 @@ public final class TextProtocolBackendHandlerFactory {
         if (databaseOperateHandler.isPresent()) {
             return databaseOperateHandler.get();
         }
-        String schemaName = sqlStatementContext.getTablesContext().getSchemaName().isPresent()
-                ? sqlStatementContext.getTablesContext().getSchemaName().get() : connectionSession.getSchemaName();
+        String schemaName = sqlStatementContext.getTablesContext().getDatabaseName().isPresent()
+                ? sqlStatementContext.getTablesContext().getDatabaseName().get() : connectionSession.getSchemaName();
         SQLCheckEngine.check(sqlStatement, Collections.emptyList(),
                 getRules(schemaName), schemaName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), connectionSession.getGrantee());
         if (sqlStatement instanceof TCLStatement) {

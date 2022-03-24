@@ -20,8 +20,12 @@ name: Integration Test
 on:
   push:
     branches: [ master, dev ]
+    paths-ignore:
+      - 'docs/**'
   pull_request:
     branches: [ master ]
+    paths-ignore:
+      - 'docs/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

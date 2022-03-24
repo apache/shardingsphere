@@ -90,7 +90,7 @@ public final class OpenGaussDatabaseDiscoveryType implements DatabaseDiscoveryTy
     }
     
     @Override
-    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames, final String groupName) {
+    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final String groupName) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             boolean disable = true;
             try (Connection connection = entry.getValue().getConnection();
