@@ -60,30 +60,33 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
     
     @Override
     public boolean tryLock(final String lockName) {
+        if (isLocked(lockName)) {
+            return true;
+        }
         return lockService.tryLock(GlobalLockNode.generateSchemaLockName(lockName, ownerInstanceId));
     }
     
     @Override
     public boolean tryLock(final String lockName, final long timeout) {
         long count = 0;
-        while (count > timeout) {
+        do {
             if (tryLock(lockName)) {
                 return isAckOK(lockName, DEFAULT_TRY_LOCK_TIMEOUT_MILLISECONDS - count);
             }
             count += DEFAULT_REGISTRY_TIMEOUT_MILLISECONDS;
-        }
+        } while (timeout > count);
         return false;
     }
     
     private boolean isAckOK(final String lockName, final long timeout) {
         long count = 0;
-        while (count > timeout) {
+        do {
             if (isLocked(lockName)) {
                 return true;
             }
             sleepInterval();
             count += CHECK_ACK_INTERVAL_MILLISECONDS;
-        }
+        } while (timeout > count);
         return false;
     }
     
@@ -96,13 +99,25 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
     
     @Override
     public void releaseLock(final String lockName) {
+        if (!isLocked(lockName)) {
+            return;
+        }
         lockService.releaseLock(GlobalLockNode.generateSchemaLockName(lockName, ownerInstanceId));
-        lockedInstances.remove(ownerInstanceId);
+        String currentInstanceId = getCurrentInstanceId();
+        if (isOwnerInstanceId(currentInstanceId)) {
+            lockedInstances.remove(ownerInstanceId);
+            return;
+        }
+        releaseAckLock(lockName, currentInstanceId);
+    }
+    
+    private String getCurrentInstanceId() {
+        return instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId();
     }
     
     @Override
     public boolean isLocked(final String lockName) {
-        String instanceId = instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId();
+        String instanceId = getCurrentInstanceId();
         if (!isOwnerInstanceId(instanceId)) {
             return lockedInstances.contains(instanceId);
         }
