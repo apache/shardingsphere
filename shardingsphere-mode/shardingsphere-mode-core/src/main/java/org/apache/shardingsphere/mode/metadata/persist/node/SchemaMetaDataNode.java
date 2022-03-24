@@ -66,6 +66,7 @@ public final class SchemaMetaDataNode {
     /**
      * Get database name path.
      *
+     * @param databaseName database name
      * @return database name path
      */
     public static String getDatabaseNamePath(final String databaseName) {
