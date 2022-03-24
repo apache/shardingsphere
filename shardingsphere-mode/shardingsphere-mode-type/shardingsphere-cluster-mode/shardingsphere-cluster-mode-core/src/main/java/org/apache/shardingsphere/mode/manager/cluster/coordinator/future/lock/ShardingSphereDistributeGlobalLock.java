@@ -33,11 +33,11 @@ import java.util.concurrent.TimeUnit;
  */
 public final class ShardingSphereDistributeGlobalLock implements ShardingSphereGlobalLock {
     
-    private static final int CHECK_ACK_INTERVAL_SECONDS = 1;
+    private static final int CHECK_ACK_INTERVAL_MILLISECONDS = 1000;
     
     private static final long DEFAULT_TRY_LOCK_TIMEOUT_MILLISECONDS = 3 * 60 * 1000;
     
-    private static final long DEFAULT_REGISTRY_TIMEOUT_MILLISECONDS = 3 * 1000;
+    private static final long DEFAULT_REGISTRY_TIMEOUT_MILLISECONDS = 2 * 100;
     
     private final InstanceContext instanceContext;
     
@@ -60,7 +60,7 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
     
     @Override
     public boolean tryLock(final String lockName) {
-        return lockService.tryLock(GlobalLockNode.generateSchemaLockName(lockName, ownerInstanceId), DEFAULT_REGISTRY_TIMEOUT_MILLISECONDS);
+        return lockService.tryLock(GlobalLockNode.generateSchemaLockName(lockName, ownerInstanceId));
     }
     
     @Override
@@ -82,14 +82,14 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
                 return true;
             }
             sleepInterval();
-            count += CHECK_ACK_INTERVAL_SECONDS;
+            count += CHECK_ACK_INTERVAL_MILLISECONDS;
         }
         return false;
     }
     
     private void sleepInterval() {
         try {
-            TimeUnit.SECONDS.sleep(CHECK_ACK_INTERVAL_SECONDS);
+            TimeUnit.MILLISECONDS.sleep(CHECK_ACK_INTERVAL_MILLISECONDS);
         } catch (final InterruptedException ignore) {
         }
     }

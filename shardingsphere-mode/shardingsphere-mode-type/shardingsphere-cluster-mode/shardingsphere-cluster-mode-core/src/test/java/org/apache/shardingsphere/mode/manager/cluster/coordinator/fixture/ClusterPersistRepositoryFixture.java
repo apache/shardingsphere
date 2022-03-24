@@ -47,8 +47,7 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     }
     
     @Override
-    public boolean persistEphemeral(final String key, final String value) {
-        return true;
+    public void persistEphemeral(final String key, final String value) {
     }
     
     @Override

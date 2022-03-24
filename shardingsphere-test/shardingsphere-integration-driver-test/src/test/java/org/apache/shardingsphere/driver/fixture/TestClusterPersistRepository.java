@@ -54,9 +54,8 @@ public final class TestClusterPersistRepository implements ClusterPersistReposit
     }
     
     @Override
-    public boolean persistEphemeral(final String key, final String value) {
+    public void persistEphemeral(final String key, final String value) {
         registryData.put(key, value);
-        return true;
     }
     
     @Override
