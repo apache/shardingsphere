@@ -186,6 +186,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegm
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeLengthSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
@@ -222,6 +223,8 @@ import java.util.stream.Collectors;
 public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
 
     private int currentParameterIndex;
+    
+    private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     
     public MySQLStatementSQLVisitor(final Properties props) {
     }
@@ -540,7 +543,9 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         if (null != ctx.parameterMarker()) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
-            return new ParameterMarkerExpressionSegment(startIndex, stopIndex, parameterMarker.getValue(), parameterMarker.getType());
+            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(startIndex, stopIndex, parameterMarker.getValue(), parameterMarker.getType());
+            parameterMarkerSegments.add(segment);
+            return segment;
         }
         if (null != ctx.literals()) {
             return SQLUtil.createLiteralExpression(visit(ctx.literals()), startIndex, stopIndex, ctx.literals().start.getInputStream().getText(new Interval(startIndex, stopIndex)));
@@ -608,6 +613,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             result.setLock((LockSegment) visit(ctx.lockClauseList()));
         }
         result.setParameterCount(currentParameterIndex);
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
@@ -1034,6 +1040,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.setParameterCount(currentParameterIndex);
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
@@ -1105,6 +1112,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.setParameterCount(currentParameterIndex);
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
@@ -1177,6 +1185,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             result.setLimit((LimitSegment) visit(ctx.limitClause()));
         }
         result.setParameterCount(currentParameterIndex);
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
@@ -1245,6 +1254,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             result.setLimit((LimitSegment) visit(ctx.limitClause()));
         }
         result.setParameterCount(currentParameterIndex);
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
@@ -1289,6 +1299,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             result = (MySQLSelectStatement) visit(ctx.getChild(0));
         }
         result.setParameterCount(currentParameterIndex);
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
@@ -1586,7 +1597,10 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (null != ctx.numberLiterals()) {
             return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().longValue());
         }
-        return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
+        ParameterMarkerSegment result = new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), 
+                ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
+        parameterMarkerSegments.add(result);
+        return result;
     }
     
     @Override
@@ -1599,7 +1613,10 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (null != ctx.numberLiterals()) {
             return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().longValue());
         }
-        return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
+        ParameterMarkerSegment result = new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), 
+                ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
+        parameterMarkerSegments.add(result);
+        return result;
     }
     
     @Override
@@ -1607,7 +1624,10 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (null != ctx.collationName()) {
             return new LiteralExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.collationName().textOrIdentifier().getText());
         }
-        return new ParameterMarkerExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
+        ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), 
+                ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
+        parameterMarkerSegments.add(segment);
+        return segment;
     }
     
     /**

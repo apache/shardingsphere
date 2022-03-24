@@ -46,7 +46,7 @@ public final class UpdateStatementContext extends CommonSQLStatementContext<Upda
     
     public UpdateStatementContext(final UpdateStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(getAllSimpleTableSegments());
+        tablesContext = new TablesContext(getAllSimpleTableSegments(), getDatabaseType());
         getSqlStatement().getWhere().ifPresent(whereSegments::add);
         ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
     }
