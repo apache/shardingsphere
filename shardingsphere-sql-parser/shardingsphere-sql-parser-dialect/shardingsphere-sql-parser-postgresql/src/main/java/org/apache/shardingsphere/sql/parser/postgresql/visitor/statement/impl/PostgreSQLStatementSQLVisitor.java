@@ -149,6 +149,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegm
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeLengthSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -183,6 +184,8 @@ import java.util.Properties;
 public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementParserBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
+    
+    private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     
     public PostgreSQLStatementSQLVisitor(final Properties props) {
     }
@@ -321,7 +324,9 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         }
         if (null != ctx.parameterMarker()) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
-            return new ParameterMarkerExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), parameterMarker.getValue(), parameterMarker.getType());
+            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), parameterMarker.getValue(), parameterMarker.getType());
+            parameterMarkerSegments.add(segment);
+            return segment;
         }
         if (null != ctx.aexprConst()) {
             ASTNode astNode = visit(ctx.aexprConst());
@@ -589,6 +594,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         PostgreSQLInsertStatement result = (PostgreSQLInsertStatement) visit(ctx.insertRest());
         result.setTable((SimpleTableSegment) visit(ctx.insertTarget()));
         result.setParameterCount(getCurrentParameterIndex());
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
@@ -722,6 +728,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
             result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }
         result.setParameterCount(getCurrentParameterIndex());
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
@@ -740,6 +747,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
             result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }
         result.setParameterCount(getCurrentParameterIndex());
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
@@ -753,6 +761,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         // TODO :Unsupported for withClause.
         PostgreSQLSelectStatement result = (PostgreSQLSelectStatement) visit(ctx.selectNoParens());
         result.setParameterCount(getCurrentParameterIndex());
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     

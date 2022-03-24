@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 /**
- * SQL statement abstract class.
+ * Parameter marker segment.
  */
-@Getter
-@Setter
-public abstract class AbstractSQLStatement implements SQLStatement {
-    
-    private int parameterCount;
-    
-    private Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
-    
-    private Collection<CommentSegment> commentSegments = new LinkedList<>();
+public interface ParameterMarkerSegment extends SQLSegment {
 }
