@@ -40,7 +40,7 @@ public final class ExplainStatementContext extends CommonSQLStatementContext<Exp
     
     public ExplainStatementContext(final ExplainStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(extractTablesFromExplain(sqlStatement));
+        tablesContext = new TablesContext(extractTablesFromExplain(sqlStatement), getDatabaseType());
     }
     
     private Collection<SimpleTableSegment> extractTablesFromExplain(final ExplainStatement sqlStatement) {
