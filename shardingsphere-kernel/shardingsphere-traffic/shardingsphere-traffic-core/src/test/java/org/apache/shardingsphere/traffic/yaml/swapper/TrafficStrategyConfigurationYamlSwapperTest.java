@@ -11,13 +11,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
 
-/**
- * @author : wh
- * @date : 2022/3/24 12:38
- * @description:
- */
 @RunWith(MockitoJUnitRunner.class)
 public final class TrafficStrategyConfigurationYamlSwapperTest {
 
@@ -32,8 +26,6 @@ public final class TrafficStrategyConfigurationYamlSwapperTest {
     private static final String LOAD_BALANCER_NAME = "testLoadBalancerName";
 
     private static final List<String> LABELS = Lists.newArrayList(TEST_LABEL_ONE, TEST_LABEL_TWO);
-
-
 
     private final TrafficStrategyConfigurationYamlSwapper yamlSwapper = new TrafficStrategyConfigurationYamlSwapper();
 
