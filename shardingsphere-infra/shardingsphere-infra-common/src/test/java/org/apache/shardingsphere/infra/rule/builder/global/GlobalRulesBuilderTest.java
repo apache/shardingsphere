@@ -17,35 +17,21 @@
 
 package org.apache.shardingsphere.infra.rule.builder.global;
 
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class GlobalRulesBuilderTest {
     
-    @Mock
-    private RuleConfiguration ruleConfiguration;
-    
-    @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
-    
     @Test
-    public void assertBuildRules() {
-        Map<String, ShardingSphereMetaData> metaDataMap = Maps.newHashMap();
-        metaDataMap.put("logic_db", shardingSphereMetaData);
-        Collection<ShardingSphereRule> shardingSphereRules = GlobalRulesBuilder.buildRules(Collections.singletonList(ruleConfiguration), metaDataMap);
-        assertTrue(shardingSphereRules.isEmpty());
+    public void assertBuildRulesWithoutGlobalRules() {
+        assertTrue(GlobalRulesBuilder.buildRules(Collections.singletonList(mock(RuleConfiguration.class)), Collections.singletonMap("logic_db", mock(ShardingSphereMetaData.class))).isEmpty());
     }
+    
+    // TODO add more test cases for BuildRulesWithGlobalRules
 }
