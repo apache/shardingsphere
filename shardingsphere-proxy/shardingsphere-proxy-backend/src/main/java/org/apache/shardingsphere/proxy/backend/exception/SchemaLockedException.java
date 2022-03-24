@@ -15,38 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock;
+package org.apache.shardingsphere.proxy.backend.exception;
 
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-
-import java.util.Optional;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Lock context.
+ * Schema locked exception.
  */
-public interface LockContext {
+@RequiredArgsConstructor
+@Getter
+public final class SchemaLockedException extends BackendException {
     
-    /**
-     * Create schema lock.
-     *
-     * @param schemaName schema name
-     * @return schema lock
-     */
-    Optional<ShardingSphereLock> createSchemaLock(String schemaName);
+    private static final long serialVersionUID = -5409739222950362541L;
     
-    /**
-     * Get schema lock.
-     *
-     * @param schemaName schema name
-     * @return schema lock
-     */
-    Optional<ShardingSphereLock> getSchemaLock(String schemaName);
-    
-    /**
-     *  Is locked schema.
-     *
-     * @param schemaName schema name
-     * @return is locked schema or not
-     */
-    boolean isLockedSchema(String schemaName);
+    private final String schemaName;
 }

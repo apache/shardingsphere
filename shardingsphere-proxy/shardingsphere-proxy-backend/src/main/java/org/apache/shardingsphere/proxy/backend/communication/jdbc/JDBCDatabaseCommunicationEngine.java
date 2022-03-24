@@ -127,6 +127,7 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
             return new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement());
         }
         proxySQLExecutor.checkExecutePrerequisites(executionContext);
+        checkLockedSchema(executionContext);
         List result = proxySQLExecutor.execute(executionContext);
         refreshMetaData(executionContext);
         Object executeResultSample = result.iterator().next();
