@@ -40,4 +40,4 @@ client {
 }
 ```
 
-根据实际场景修改 Seata 的 `file.conf`和 `registry.conf` 文件。
+根据实际场景修改 Seata 的 `file.conf` 和 `registry.conf` 文件。
