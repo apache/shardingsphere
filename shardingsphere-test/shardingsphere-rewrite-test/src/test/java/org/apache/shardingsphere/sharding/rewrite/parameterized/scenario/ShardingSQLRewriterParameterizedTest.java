@@ -78,7 +78,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     }
     
     @Override
-    protected ShardingSphereSchema mockSchema() {
+    protected Map<String, ShardingSphereSchema> mockSchemas() {
         ShardingSphereSchema result = mock(ShardingSphereSchema.class);
         when(result.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_detail"));
         TableMetaData accountTableMetaData = mock(TableMetaData.class);
@@ -94,7 +94,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         when(result.getAllColumnNames("t_user")).thenReturn(new ArrayList<>(Arrays.asList("id", "content")));
         when(result.getAllColumnNames("t_user_extend")).thenReturn(new ArrayList<>(Arrays.asList("user_id", "content")));
         when(result.containsColumn("t_account", "account_id")).thenReturn(true);
-        return result;
+        return Collections.singletonMap("sharding_db", result);
     }
     
     private Map<String, ColumnMetaData> createColumnMetaDataMap() {

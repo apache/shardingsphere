@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -69,6 +70,13 @@ public interface DatabaseType {
     Optional<String> getDataSourceClassName();
     
     /**
+     * Get system schemas.
+     * 
+     * @return system schemas
+     */
+    Map<String, Collection<String>> getSystemSchemas();
+    
+    /**
      * Get schema.
      *
      * @param connection connection
@@ -101,5 +109,20 @@ public interface DatabaseType {
      * @throws SQLException SQL exception
      */
     default void handleRollbackOnly(final boolean rollbackOnly, final SQLStatement statement) throws SQLException {
+    }
+    
+    /**
+     * Judge whether contains system schema or not.
+     * 
+     * @param schemaName schema name
+     * @return whether contains system schema or not
+     */
+    default boolean containsSystemSchema(final String schemaName) {
+        for (Collection<String> each : getSystemSchemas().values()) {
+            if (each.contains(schemaName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

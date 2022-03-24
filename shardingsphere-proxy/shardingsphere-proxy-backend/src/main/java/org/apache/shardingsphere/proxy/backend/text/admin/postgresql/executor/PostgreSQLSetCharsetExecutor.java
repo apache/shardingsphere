@@ -54,10 +54,13 @@ public final class PostgreSQLSetCharsetExecutor implements DatabaseSetCharsetExe
     
     private Charset parseCharset(final String value) {
         String result = value.toLowerCase(Locale.ROOT);
-        if ("unicode".equals(result)) {
-            return StandardCharsets.UTF_8;
+        switch (result) {
+            case "default":
+            case "unicode":
+                return StandardCharsets.UTF_8;
+            default:
+                return Charset.forName(value);
         }
-        return Charset.forName(value);
     }
     
     @Override

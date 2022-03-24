@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -55,6 +56,11 @@ public final class H2DatabaseType implements BranchDatabaseType {
     @Override
     public Optional<String> getDataSourceClassName() {
         return Optional.of("org.h2.jdbcx.JdbcDataSource");
+    }
+    
+    @Override
+    public Map<String, Collection<String>> getSystemSchemas() {
+        return Collections.emptyMap();
     }
     
     @Override

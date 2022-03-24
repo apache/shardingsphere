@@ -39,6 +39,14 @@ public final class ShowSlaveStatusDatabaseDiscoveryTypeTest {
     private final ShowSlaveStatusDatabaseDiscoveryType showSlaveStatusDatabaseDiscoveryType = new ShowSlaveStatusDatabaseDiscoveryType();
     
     @Test
+    public void assertCheckShowSlaveStatusConfig() throws SQLException {
+        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
+        dataSourceMap.put("ds_0", getDataSource(false, 3306));
+        dataSourceMap.put("ds_1", getDataSource(true, 3307));
+        showSlaveStatusDatabaseDiscoveryType.checkDatabaseDiscoveryConfiguration("discovery_db", dataSourceMap);
+    }
+    
+    @Test
     public void assertUpdatePrimaryDataSource() throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds_0", getDataSource(false, 3306));

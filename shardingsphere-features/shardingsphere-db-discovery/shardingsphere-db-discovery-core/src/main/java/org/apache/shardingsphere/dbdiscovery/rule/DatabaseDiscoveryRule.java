@@ -119,7 +119,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
             }
             databaseDiscoveryType.updatePrimaryDataSource(schemaName, originalDataSourceMap, disabledDataSourceNames, groupName);
             dataSourceRule.updatePrimaryDataSourceName(databaseDiscoveryType.getPrimaryDataSource());
-            databaseDiscoveryType.updateMemberState(schemaName, originalDataSourceMap, disabledDataSourceNames);
+            databaseDiscoveryType.updateMemberState(schemaName, originalDataSourceMap, groupName);
         }
     }
     
@@ -160,15 +160,15 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         if (event instanceof DataSourceNameDisabledEvent) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
                 if (((DataSourceNameDisabledEvent) event).isDisabled()) {
-                    entry.getValue().disableDataSource(((DataSourceNameDisabledEvent) event).getDataSourceName());
+                    entry.getValue().disableDataSource(((DataSourceNameDisabledEvent) event).getQualifiedSchema().getDataSourceName());
                 } else {
-                    entry.getValue().enableDataSource(((DataSourceNameDisabledEvent) event).getDataSourceName());
+                    entry.getValue().enableDataSource(((DataSourceNameDisabledEvent) event).getQualifiedSchema().getDataSourceName());
                 }
             }
         } else if (event instanceof PrimaryDataSourceChangedEvent) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
-                if (entry.getValue().getGroupName().equals(((PrimaryDataSourceChangedEvent) event).getGroupName())) {
-                    entry.getValue().updatePrimaryDataSourceName(((PrimaryDataSourceChangedEvent) event).getDataSourceName());
+                if (entry.getValue().getGroupName().equals(((PrimaryDataSourceChangedEvent) event).getQualifiedSchema().getGroupName())) {
+                    entry.getValue().updatePrimaryDataSourceName(((PrimaryDataSourceChangedEvent) event).getQualifiedSchema().getDataSourceName());
                 }
             }
         }

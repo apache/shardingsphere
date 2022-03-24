@@ -16,7 +16,7 @@ rules:
           shardingColumn: # 分片列名称
           shardingAlgorithmName: # 分片算法名称
         complex: # 用于多分片键的复合分片场景
-          shardingColumns: #分片列名称，多个列以逗号分隔
+          shardingColumns: # 分片列名称，多个列以逗号分隔
           shardingAlgorithmName: # 分片算法名称
         hint: # Hint 分片策略
           shardingAlgorithmName: # 分片算法名称

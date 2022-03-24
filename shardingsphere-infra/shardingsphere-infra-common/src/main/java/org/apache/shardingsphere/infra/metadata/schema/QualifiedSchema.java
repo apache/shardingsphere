@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.metadata.schema;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 
 import java.util.List;
 
@@ -35,21 +34,19 @@ public final class QualifiedSchema {
     
     private final String schemaName;
     
+    private final String groupName;
+    
     private final String dataSourceName;
     
     public QualifiedSchema(final String value) {
-        if (value.contains(DELIMITER)) {
-            List<String> values = Splitter.on(DELIMITER).splitToList(value);
-            schemaName = values.get(0);
-            dataSourceName = values.get(1);
-        } else {
-            schemaName = DefaultSchema.LOGIC_NAME;
-            dataSourceName = value;
-        }
+        List<String> values = Splitter.on(DELIMITER).splitToList(value);
+        schemaName = values.get(0);
+        groupName = values.get(1);
+        dataSourceName = values.get(2);
     }
     
     @Override
     public String toString() {
-        return String.join(DELIMITER, schemaName, dataSourceName);
+        return String.join(DELIMITER, schemaName, groupName, dataSourceName);
     }
 }

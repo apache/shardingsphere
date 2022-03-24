@@ -53,9 +53,9 @@ public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
      *
      * @param schemaName schema name
      * @param dataSourceMap data source map
-     * @param disabledDataSourceNames disabled data source names
+     * @param groupName group name
      */
-    void updateMemberState(String schemaName, Map<String, DataSource> dataSourceMap, Collection<String> disabledDataSourceNames);
+    void updateMemberState(String schemaName, Map<String, DataSource> dataSourceMap, String groupName);
     
     /**
      * Get primary data source.
