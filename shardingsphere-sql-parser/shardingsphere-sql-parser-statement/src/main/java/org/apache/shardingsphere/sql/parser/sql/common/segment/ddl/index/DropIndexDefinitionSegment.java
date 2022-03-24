@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 
 /**
- * SQL statement abstract class.
+ * Drop index definition segment.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public abstract class AbstractSQLStatement implements SQLStatement {
-    
-    private int parameterCount;
-    
-    private Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
-    
-    private Collection<CommentSegment> commentSegments = new LinkedList<>();
+public final class DropIndexDefinitionSegment implements AlterDefinitionSegment {
+
+    private final int startIndex;
+
+    private final int stopIndex;
+
+    private final IndexSegment indexSegment;
 }

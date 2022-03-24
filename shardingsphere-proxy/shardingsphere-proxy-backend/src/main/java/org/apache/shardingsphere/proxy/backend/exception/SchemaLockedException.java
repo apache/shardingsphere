@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement;
+package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import lombok.RequiredArgsConstructor;
 
 /**
- * SQL statement abstract class.
+ * Schema locked exception.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public abstract class AbstractSQLStatement implements SQLStatement {
+public final class SchemaLockedException extends BackendException {
     
-    private int parameterCount;
+    private static final long serialVersionUID = -5409739222950362541L;
     
-    private Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
-    
-    private Collection<CommentSegment> commentSegments = new LinkedList<>();
+    private final String schemaName;
 }
