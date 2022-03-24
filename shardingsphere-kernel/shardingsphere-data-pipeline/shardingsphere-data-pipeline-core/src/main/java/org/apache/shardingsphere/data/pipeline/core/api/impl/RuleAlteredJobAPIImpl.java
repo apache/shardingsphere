@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.HandleConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
@@ -36,7 +35,6 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
@@ -107,28 +105,6 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         result.setStopTime(jobConfigPOJO.getProps().getProperty("stop_time"));
         result.setJobParameter(jobConfigPOJO.getJobParameter());
         return result;
-    }
-    
-    // TODO remove it
-    private boolean isUncompletedJobOfSchema(final String schemaName, final String jobId) {
-        JobConfigurationPOJO jobConfigPOJO;
-        try {
-            jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        } catch (final PipelineJobNotFoundException ex) {
-            log.warn("scaling job not found, jobId={}", jobId);
-            return false;
-        }
-        JobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
-        HandleConfiguration handleConfig = jobConfig.getHandleConfig();
-        WorkflowConfiguration workflowConfig;
-        if (null == handleConfig || null == (workflowConfig = jobConfig.getWorkflowConfig())) {
-            log.warn("handleConfig or workflowConfig null, jobId={}", jobId);
-            return false;
-        }
-        if (!schemaName.equals(workflowConfig.getSchemaName())) {
-            return false;
-        }
-        return !jobConfigPOJO.isDisabled();
     }
     
     @Override
