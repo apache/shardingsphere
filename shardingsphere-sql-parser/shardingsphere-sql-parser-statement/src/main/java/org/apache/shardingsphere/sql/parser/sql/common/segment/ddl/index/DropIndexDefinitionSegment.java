@@ -15,12 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.lock;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index;
 
-import org.apache.shardingsphere.spi.required.RequiredSPI;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 
 /**
- * Rule based job lock algorithm, SPI.
+ * Drop index definition segment.
  */
-public interface RuleBasedJobLockAlgorithm extends JobLock, RequiredSPI {
+@RequiredArgsConstructor
+@Getter
+public final class DropIndexDefinitionSegment implements AlterDefinitionSegment {
+
+    private final int startIndex;
+
+    private final int stopIndex;
+
+    private final IndexSegment indexSegment;
 }

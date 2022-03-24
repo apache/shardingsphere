@@ -143,6 +143,7 @@ public final class ContextManager implements AutoCloseable {
         metaDataContexts.getOptimizerContext().getPlannerContexts().put(schemaName, OptimizerPlannerContextFactory.create(databaseMetaData));
         metaDataContexts.getMetaDataMap().put(schemaName, newMetaDataContexts.getMetaData(schemaName));
         metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persist(schemaName));
+        renewAllTransactionContext();
     }
     
     /**

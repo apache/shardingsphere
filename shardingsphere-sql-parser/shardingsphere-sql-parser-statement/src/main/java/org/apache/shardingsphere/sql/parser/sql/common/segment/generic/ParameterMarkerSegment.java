@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.lock;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
 
-import org.apache.shardingsphere.spi.required.RequiredSPI;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 /**
- * Rule based job lock algorithm, SPI.
+ * Parameter marker segment.
  */
-public interface RuleBasedJobLockAlgorithm extends JobLock, RequiredSPI {
+public interface ParameterMarkerSegment extends SQLSegment {
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.lock;
 
-import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 
 import java.util.Optional;
@@ -41,7 +40,7 @@ public interface LockContext {
      * @param schemaName schema name
      * @return schema lock
      */
-    Optional<ShardingSphereGlobalLock> getSchemaLock(String schemaName);
+    Optional<ShardingSphereLock> getSchemaLock(String schemaName);
     
     /**
      *  Is locked schema.

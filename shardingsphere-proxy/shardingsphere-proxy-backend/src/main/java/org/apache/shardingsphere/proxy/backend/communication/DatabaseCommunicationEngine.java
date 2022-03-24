@@ -39,6 +39,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.SchemaLockedException;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.data.impl.BinaryQueryResponseCell;
@@ -49,6 +50,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryRespon
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -217,5 +219,22 @@ public abstract class DatabaseCommunicationEngine<T> {
     
     protected boolean isBinary() {
         return !JDBCDriverType.STATEMENT.equals(driverType);
+    }
+    
+    protected void checkLockedSchema(final ExecutionContext executionContext) {
+        if (isLockedSchema()) {
+            lockedWrite(executionContext.getSqlStatementContext().getSqlStatement());
+        }
+    }
+    
+    private boolean isLockedSchema() {
+        return ProxyContext.getInstance().getContextManager().getLockContext().isLockedSchema(backendConnection.getConnectionSession().getSchemaName());
+    }
+    
+    private void lockedWrite(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof SelectStatement) {
+            return;
+        }
+        throw new SchemaLockedException(backendConnection.getConnectionSession().getSchemaName());
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.api.datasource.config.impl;
 
-import com.zaxxer.hikari.HikariConfig;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJdbcConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.junit.Before;
@@ -36,11 +36,17 @@ public final class StandardPipelineDataSourceConfigurationTest {
     
     private static final String WINDOWS = "Windows";
     
+    private static final String JDBC_URL = "jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false";
+    
+    private static final String USERNAME = "userName";
+    
+    private static final String PASSWORD = "password";
+    
     private StandardPipelineDataSourceConfiguration dataSourceConfig;
     
     @Before
     public void setUp() throws SQLException {
-        dataSourceConfig = new StandardPipelineDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false", "userName", "password");
+        dataSourceConfig = new StandardPipelineDataSourceConfiguration(JDBC_URL, USERNAME, PASSWORD);
     }
     
     @Test
@@ -69,14 +75,15 @@ public final class StandardPipelineDataSourceConfigurationTest {
     
     @Test
     public void assertGetHikariConfigSuccess() {
-        HikariConfig actualHikariConfig = dataSourceConfig.getHikariConfig();
-        long actualActualHikariConfigConnectionTimeout = actualHikariConfig.getConnectionTimeout();
-        long expectedActualHikariConfigConnectionTimeout = 30000;
-        assertThat(actualActualHikariConfigConnectionTimeout, is(expectedActualHikariConfigConnectionTimeout));
+        YamlJdbcConfiguration actual = dataSourceConfig.getJdbcConfig();
+        assertThat(actual.getJdbcUrl(), is(JDBC_URL));
+        assertThat(actual.getUsername(), is(USERNAME));
+        assertThat(actual.getPassword(), is(PASSWORD));
     }
     
     @Test
     public void assertGetParameterSuccess() {
+        // TODO could be OS independent?
         String os = System.getProperty("os.name");
         String expectedParameter = "jdbcUrl: jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false\n"
                 + "username: userName\n"

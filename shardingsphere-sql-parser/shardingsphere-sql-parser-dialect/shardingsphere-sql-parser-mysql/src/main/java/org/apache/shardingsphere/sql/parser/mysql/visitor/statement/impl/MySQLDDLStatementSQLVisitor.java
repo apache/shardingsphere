@@ -112,6 +112,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.Co
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.DropIndexDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.ValidStatementSegment;
@@ -288,6 +289,8 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
                     result.setRenameTable(((RenameTableDefinitionSegment) each).getRenameTable());
                 } else if (each instanceof ConvertTableDefinitionSegment) {
                     result.setConvertTableDefinition((ConvertTableDefinitionSegment) each);
+                } else if (each instanceof DropIndexDefinitionSegment) {
+                    result.getDropIndexDefinitions().add((DropIndexDefinitionSegment) each);
                 }
             }
         }
@@ -332,6 +335,9 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
                     result.getValue().add(new DropConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), constraintSegment));
                 } else if (null == alterTableDrop.KEY() && null == alterTableDrop.keyOrIndex()) {
                     result.getValue().add(generateDropColumnDefinitionSegment(alterTableDrop));
+                } else if (null != alterTableDrop.keyOrIndex()) {
+                    IndexSegment indexSegment = (IndexSegment) visit(alterTableDrop.indexName());
+                    result.getValue().add(new DropIndexDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), indexSegment));
                 }
             }
             if (each instanceof AddTableConstraintContext) {

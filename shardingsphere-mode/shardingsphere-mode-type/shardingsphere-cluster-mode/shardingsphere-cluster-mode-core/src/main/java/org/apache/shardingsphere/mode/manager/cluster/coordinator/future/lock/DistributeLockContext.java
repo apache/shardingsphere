@@ -64,7 +64,7 @@ public final class DistributeLockContext implements LockContext {
     }
     
     @Override
-    public synchronized Optional<ShardingSphereGlobalLock> getSchemaLock(final String schemaName) {
+    public synchronized Optional<ShardingSphereLock> getSchemaLock(final String schemaName) {
         return Optional.ofNullable(globalLocks.get(schemaName));
     }
     
@@ -128,7 +128,7 @@ public final class DistributeLockContext implements LockContext {
             globalLocks.remove(schema);
             return;
         }
-        getSchemaLock(schema).ifPresent(shardingSphereGlobalLock -> {
+        getGlobalLock(schema).ifPresent(shardingSphereGlobalLock -> {
             shardingSphereGlobalLock.releaseAckLock(schema, getCurrentInstanceId());
             globalLocks.remove(schema);
         });
@@ -143,8 +143,7 @@ public final class DistributeLockContext implements LockContext {
     public synchronized void renew(final AckLockedEvent event) {
         String schema = event.getSchema();
         String lockedInstanceId = event.getLockedInstanceId();
-        Optional<ShardingSphereGlobalLock> globalLock = getSchemaLock(schema);
-        globalLock.ifPresent(shardingSphereGlobalLock -> shardingSphereGlobalLock.addLockedInstance(lockedInstanceId));
+        getGlobalLock(schema).ifPresent(shardingSphereGlobalLock -> shardingSphereGlobalLock.addLockedInstance(lockedInstanceId));
     }
     
     /**
@@ -160,7 +159,10 @@ public final class DistributeLockContext implements LockContext {
             globalLocks.remove(schema);
             return;
         }
-        Optional<ShardingSphereGlobalLock> globalLock = getSchemaLock(schema);
-        globalLock.ifPresent(shardingSphereGlobalLock -> shardingSphereGlobalLock.addLockedInstance(lockedInstanceId));
+        getGlobalLock(schema).ifPresent(shardingSphereGlobalLock -> shardingSphereGlobalLock.addLockedInstance(lockedInstanceId));
+    }
+    
+    private Optional<ShardingSphereGlobalLock> getGlobalLock(final String schemaName) {
+        return Optional.ofNullable(globalLocks.get(schemaName));
     }
 }
