@@ -255,7 +255,7 @@ public final class FilterableTableScanExecutor {
         String sql = sqlString.getSql().replace("\n", " ");
         SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getName(), optimizerContext.getSqlParserRule()).parse(sql, false);
         List<Object> parameters = getParameters(sqlString.getDynamicParameters());
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataMap, parameters, sqlStatement, sql);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataMap, parameters, sqlStatement, executorContext.getSchemaName());
         return new LogicSQL(sqlStatementContext, sql, parameters);
     }
     
