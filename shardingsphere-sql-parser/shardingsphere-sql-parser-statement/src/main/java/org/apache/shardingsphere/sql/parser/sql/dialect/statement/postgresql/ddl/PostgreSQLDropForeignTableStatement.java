@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropForeign
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 @ToString
-public class PostgreSQLDropForeignTableStatement extends DropForeignTableStatement implements PostgreSQLStatement {
+public final class PostgreSQLDropForeignTableStatement extends DropForeignTableStatement implements PostgreSQLStatement {
 }

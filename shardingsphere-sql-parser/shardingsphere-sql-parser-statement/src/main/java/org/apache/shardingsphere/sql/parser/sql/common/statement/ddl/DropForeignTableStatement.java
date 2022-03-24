@@ -21,5 +21,5 @@ import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 @ToString
-public class DropForeignTableStatement extends AbstractSQLStatement implements DDLStatement {
+public abstract class DropForeignTableStatement extends AbstractSQLStatement implements DDLStatement {
 }
