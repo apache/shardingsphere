@@ -91,8 +91,8 @@ public final class OriginalFilterableExecutor implements FederationExecutor {
                            final JDBCExecutorCallback<? extends ExecuteResult> callback, final FederationContext federationContext) throws SQLException {
         FilterableTableScanExecutorContext executorContext = new FilterableTableScanExecutorContext(schemaName, props, federationContext);
         FilterableTableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, executorContext);
-        FilterableSchema schema = new FilterableSchema(optimizerContext.getFederationMetaData().getSchemas().get(schemaName), executor);
-        connection.getRootSchema().add(schemaName, schema);
+//        FilterableSchema schema = new FilterableSchema(optimizerContext.getFederationMetaData().getDatabases().get(schemaName), executor);
+//        connection.getRootSchema().add(schemaName, schema);
         connection.setSchema(schemaName);
     }
     

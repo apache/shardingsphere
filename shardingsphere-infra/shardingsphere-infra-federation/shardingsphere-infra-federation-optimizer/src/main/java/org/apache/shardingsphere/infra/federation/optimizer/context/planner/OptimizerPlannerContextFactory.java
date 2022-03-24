@@ -36,13 +36,15 @@ import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.SqlToRelConverter.Config;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationMetaData;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.calcite.FederationSchema;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.calcite.FederationDatabase;
 import org.apache.shardingsphere.infra.federation.optimizer.planner.QueryOptimizePlannerFactory;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -60,16 +62,16 @@ public final class OptimizerPlannerContextFactory {
      * @return created optimizer planner context map
      */
     public static Map<String, OptimizerPlannerContext> create(final FederationMetaData metaData) {
-        Map<String, OptimizerPlannerContext> result = new HashMap<>(metaData.getSchemas().size(), 1);
-        for (Entry<String, FederationSchemaMetaData> entry : metaData.getSchemas().entrySet()) {
-            String schemaName = entry.getKey();
-            FederationSchema federationSchema = new FederationSchema(entry.getValue());
+        Map<String, OptimizerPlannerContext> result = new HashMap<>(metaData.getDatabases().size(), 1);
+        for (Entry<String, FederationDatabaseMetaData> entry : metaData.getDatabases().entrySet()) {
+            String databaseName = entry.getKey();
+            FederationDatabase federationDatabase = new FederationDatabase(entry.getValue());
             CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(createConnectionProperties());
             RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
-            CalciteCatalogReader catalogReader = createCatalogReader(schemaName, federationSchema, relDataTypeFactory, connectionConfig);
+            CalciteCatalogReader catalogReader = createCatalogReader(databaseName, federationDatabase, relDataTypeFactory, connectionConfig);
             SqlValidator validator = createValidator(catalogReader, relDataTypeFactory, connectionConfig);
             SqlToRelConverter converter = createConverter(catalogReader, validator, relDataTypeFactory);
-            result.put(schemaName, new OptimizerPlannerContext(validator, converter));
+            result.put(databaseName, new OptimizerPlannerContext(validator, converter));
         }
         return result;
     }
@@ -77,14 +79,14 @@ public final class OptimizerPlannerContextFactory {
     /**
      * Create optimizer planner context.
      *
-     * @param schemaMetaData federation schema meta data
+     * @param metaData federation database meta data
      * @return created optimizer planner context
      */
-    public static OptimizerPlannerContext create(final FederationSchemaMetaData schemaMetaData) {
-        FederationSchema federationSchema = new FederationSchema(schemaMetaData);
+    public static OptimizerPlannerContext create(final FederationDatabaseMetaData metaData) {
+        FederationDatabase federationDatabase = new FederationDatabase(metaData);
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(createConnectionProperties());
         RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
-        CalciteCatalogReader catalogReader = createCatalogReader(schemaMetaData.getName(), federationSchema, relDataTypeFactory, connectionConfig);
+        CalciteCatalogReader catalogReader = createCatalogReader(metaData.getName(), federationDatabase, relDataTypeFactory, connectionConfig);
         SqlValidator validator = createValidator(catalogReader, relDataTypeFactory, connectionConfig);
         SqlToRelConverter converter = createConverter(catalogReader, validator, relDataTypeFactory);
         return new OptimizerPlannerContext(validator, converter);
@@ -96,11 +98,25 @@ public final class OptimizerPlannerContextFactory {
         return result;
     }
     
-    private static CalciteCatalogReader createCatalogReader(final String schemaName, 
-                                                            final Schema schema, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
+    private static CalciteCatalogReader createCatalogReader(final String databaseName, final Schema schema, 
+                                                            final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
         CalciteSchema rootSchema = CalciteSchema.createRootSchema(true);
-        rootSchema.add(schemaName, schema);
-        return new CalciteCatalogReader(rootSchema, Collections.singletonList(schemaName), relDataTypeFactory, connectionConfig);
+        rootSchema.add(databaseName, schema);
+        CalciteSchema subSchema = rootSchema.getSubSchema(databaseName, false);
+        for (String each : schema.getSubSchemaNames()) {
+            if (null != subSchema) {
+                subSchema.add(each, schema.getSubSchema(each));
+            }
+        }
+        List<String> schemaPaths = createSchemaPaths(databaseName, schema);
+        return new CalciteCatalogReader(rootSchema, Collections.singletonList(databaseName), relDataTypeFactory, connectionConfig).withSchemaPath(schemaPaths);
+    }
+    
+    private static List<String> createSchemaPaths(final String databaseName, final Schema schema) {
+        List<String> result = new LinkedList<>();
+        result.add(databaseName);
+        result.addAll(schema.getSubSchemaNames());
+        return result;
     }
     
     private static SqlValidator createValidator(final CalciteCatalogReader catalogReader, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
