@@ -63,8 +63,6 @@ public final class ImportSchemaConfigurationHandlerTest {
     
     private final String schemaName = "sharding_db";
     
-    private final String scalingName = "default_scaling";
-    
     @Mock
     private DataSourcePropertiesValidator validator;
     
