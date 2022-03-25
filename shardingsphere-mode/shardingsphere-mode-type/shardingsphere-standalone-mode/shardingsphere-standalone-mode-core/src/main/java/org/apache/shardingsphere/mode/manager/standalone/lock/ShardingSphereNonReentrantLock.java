@@ -51,7 +51,7 @@ public final class ShardingSphereNonReentrantLock implements ShardingSphereLock 
                 locked = true;
             }
             return false;
-        } catch (final InterruptedException isIgnored) {
+        } catch (final InterruptedException ignored) {
             return false;
         }
     }
