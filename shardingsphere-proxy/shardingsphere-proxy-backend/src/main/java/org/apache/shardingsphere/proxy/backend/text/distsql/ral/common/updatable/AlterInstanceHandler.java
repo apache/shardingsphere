@@ -33,11 +33,11 @@ import java.util.stream.Collectors;
  */
 public final class AlterInstanceHandler extends UpdatableRALBackendHandler<AlterInstanceStatement, AlterInstanceHandler> {
     
-    private static final String XA_RECOVERY_ID = "xa_recovery_id";
+    private static final String XA_RECOVERY_NODES = "xa_recovery_nodes";
     
     @Override
     protected void update(final ContextManager contextManager, final AlterInstanceStatement sqlStatement) throws DistSQLException {
-        if (XA_RECOVERY_ID.equalsIgnoreCase(sqlStatement.getKey())) {
+        if (XA_RECOVERY_NODES.equalsIgnoreCase(sqlStatement.getKey())) {
             setXaRecoveryId(contextManager, sqlStatement);
         } else {
             throw new UnsupportedOperationException(String.format("%s is not supported", sqlStatement.getKey()));
@@ -51,22 +51,13 @@ public final class AlterInstanceHandler extends UpdatableRALBackendHandler<Alter
         }
         Collection<ComputeNodeInstance> instances = persistService.get().getComputeNodePersistService().loadAllComputeNodeInstances();
         checkExisted(instances, sqlStatement);
-        checkDuplicated(instances, sqlStatement);
         persistService.get().getComputeNodePersistService().persistInstanceXaRecoveryId(sqlStatement.getInstanceId(), sqlStatement.getValue());
     }
     
     private void checkExisted(final Collection<ComputeNodeInstance> instances, final AlterInstanceStatement sqlStatement) {
         Collection<String> instanceIds = instances.stream().map(each -> each.getInstanceDefinition().getInstanceId().getId()).collect(Collectors.toSet());
         if (!instanceIds.contains(sqlStatement.getInstanceId())) {
-            throw new UnsupportedOperationException(String.format("'%s' does not exist", sqlStatement.getValue()));
-        }
-    }
-    
-    private void checkDuplicated(final Collection<ComputeNodeInstance> instances, final AlterInstanceStatement sqlStatement) {
-        Collection<String> invalid = instances.stream().filter(each -> each.getXaRecoveryId().equals(sqlStatement.getValue()))
-                .map(each -> each.getInstanceDefinition().getInstanceId().getId()).filter(each -> !each.equals(sqlStatement.getInstanceId())).collect(Collectors.toSet());
-        if (!invalid.isEmpty()) {
-            throw new UnsupportedOperationException(String.format("'%s' is already used by %s", sqlStatement.getValue(), invalid));
+            throw new UnsupportedOperationException(String.format("'%s' does not exist", sqlStatement.getInstanceId()));
         }
     }
 }
