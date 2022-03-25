@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.core.database.parser;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.Parser;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -29,6 +30,9 @@ import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
 
+import java.util.Collections;
+import java.util.stream.Collectors;
+
 /**
  * SQL parser executor.
  */
@@ -37,7 +41,7 @@ public final class SQLParserExecutor {
     
     private final String databaseType;
     
-    private final boolean sqlCommentParseEnabled;
+    private final boolean isParseComment;
     
     /**
      * Parse SQL.
@@ -50,12 +54,13 @@ public final class SQLParserExecutor {
         if (result.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException("Unsupported SQL of `%s`", sql);
         }
-        return new ParseContext(result.getRootNode(), result.getHiddenTokens());
+        return new ParseContext(result.getRootNode(), isParseComment
+                ? result.getTokenStream().getTokens().stream().filter(each -> Token.HIDDEN_CHANNEL == each.getChannel()).collect(Collectors.toList()) : Collections.emptyList());
     }
     
     private ParseASTNode twoPhaseParse(final String sql) {
         DatabaseTypedSQLParserFacade sqlParserFacade = DatabaseTypedSQLParserFacadeRegistry.getFacade(databaseType);
-        SQLParser sqlParser = SQLParserFactory.newInstance(sql, sqlParserFacade.getLexerClass(), sqlParserFacade.getParserClass(), sqlCommentParseEnabled);
+        SQLParser sqlParser = SQLParserFactory.newInstance(sql, sqlParserFacade.getLexerClass(), sqlParserFacade.getParserClass());
         try {
             ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.SLL);
             return (ParseASTNode) sqlParser.parse();

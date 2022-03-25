@@ -52,7 +52,7 @@ public final class MySQLParserFormatExample {
     }
     
     public static void main(String[] args) {
-        MYSQL_FORMAT_SQL_LIST.stream().forEach(sql -> {
+        MYSQL_FORMAT_SQL_LIST.forEach(sql -> {
             Properties props = new Properties();
             props.setProperty("parameterized", "false");
             CacheOption cacheOption = new CacheOption(128, 1024L, 4);
