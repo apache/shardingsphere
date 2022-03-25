@@ -40,6 +40,6 @@ public final class CreateViewStatementContext extends CommonSQLStatementContext<
         Optional<SelectStatement> selectStatement = CreateViewStatementHandler.getSelectStatement(sqlStatement);
         TableExtractor extractor = new TableExtractor();
         selectStatement.ifPresent(extractor::extractTablesFromSelect);
-        tablesContext = new TablesContext(extractor.getRewriteTables());
+        tablesContext = new TablesContext(extractor.getRewriteTables(), getDatabaseType());
     }
 }

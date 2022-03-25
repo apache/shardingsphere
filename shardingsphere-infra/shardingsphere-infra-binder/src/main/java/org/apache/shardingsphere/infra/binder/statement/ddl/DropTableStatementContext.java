@@ -36,7 +36,7 @@ public final class DropTableStatementContext extends CommonSQLStatementContext<D
     
     public DropTableStatementContext(final DropTableStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTables());
+        tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType());
     }
     
     @Override

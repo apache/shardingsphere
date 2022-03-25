@@ -31,7 +31,7 @@ import java.util.Optional;
 /**
  * SQL parser bean parser for spring namespace.
  */
-public class SQLParserRuleBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class SQLParserRuleBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {

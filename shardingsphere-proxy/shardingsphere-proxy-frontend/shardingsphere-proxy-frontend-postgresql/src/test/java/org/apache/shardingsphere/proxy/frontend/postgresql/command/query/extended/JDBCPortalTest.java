@@ -52,8 +52,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -205,29 +203,8 @@ public final class JDBCPortalTest {
     @SneakyThrows
     private void setField(final JDBCPortal portal, final String fieldName, final Object value) {
         Field field = JDBCPortal.class.getDeclaredField(fieldName);
-        makeAccessible(field);
-        field.set(portal, value);
-    }
-    
-    @SneakyThrows
-    private void makeAccessible(final Field field) {
         field.setAccessible(true);
-        Field modifiersField = getModifiersField();
-        modifiersField.setAccessible(true);
-        modifiersField.set(field, field.getModifiers() & ~Modifier.FINAL);
-    }
-    
-    @SneakyThrows
-    private Field getModifiersField() {
-        Method getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
-        getDeclaredFields0.setAccessible(true);
-        Field[] fields = (Field[]) getDeclaredFields0.invoke(Field.class, false);
-        for (Field each : fields) {
-            if ("modifiers".equals(each.getName())) {
-                return each;
-            }
-        }
-        throw new UnsupportedOperationException();
+        field.set(portal, value);
     }
     
     @After

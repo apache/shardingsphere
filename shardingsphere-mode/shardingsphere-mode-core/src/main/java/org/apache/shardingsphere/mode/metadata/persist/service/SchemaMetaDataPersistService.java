@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -144,6 +145,9 @@ public final class SchemaMetaDataPersistService {
      * @return all schema names
      */
     public Collection<String> loadAllNames() {
-        return repository.getChildrenKeys(SchemaMetaDataNode.getMetaDataNodePath());
+        Collection<String> result = new LinkedList<>();
+        repository.getChildrenKeys(SchemaMetaDataNode.getMetaDataNodePath()).forEach(each ->
+            result.addAll(repository.getChildrenKeys(SchemaMetaDataNode.getDatabaseNamePath(each))));
+        return result;
     }
 }
