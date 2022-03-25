@@ -21,10 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * MDC constants.
+ * MDC constants of log.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MDCConstants {
+public final class LogMDCConstants {
     
     public static final String SCHEMA_KEY = "schema";
     
