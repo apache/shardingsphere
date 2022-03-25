@@ -41,7 +41,7 @@ import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationM
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.calcite.FederationDatabase;
 import org.apache.shardingsphere.infra.federation.optimizer.planner.QueryOptimizePlannerFactory;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -81,7 +81,7 @@ public final class OptimizerPlannerContextFactory {
         for (Entry<String, Schema> entry : federationDatabase.getSubSchemaMap().entrySet()) {
             CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(createConnectionProperties());
             RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
-            CalciteCatalogReader catalogReader = createCatalogReader(metaData.getName(), entry.getKey(), federationDatabase, relDataTypeFactory, connectionConfig);
+            CalciteCatalogReader catalogReader = createCatalogReader(entry.getKey(), entry.getValue(), relDataTypeFactory, connectionConfig);
             SqlValidator validator = createValidator(catalogReader, relDataTypeFactory, connectionConfig);
             SqlToRelConverter converter = createConverter(catalogReader, validator, relDataTypeFactory);
             validators.put(entry.getKey(), validator);
@@ -96,17 +96,11 @@ public final class OptimizerPlannerContextFactory {
         return result;
     }
     
-    private static CalciteCatalogReader createCatalogReader(final String databaseName, final String schemaName, final Schema schema, 
+    private static CalciteCatalogReader createCatalogReader(final String schemaName, final Schema schema, 
                                                             final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
         CalciteSchema rootSchema = CalciteSchema.createRootSchema(true);
-        rootSchema.add(databaseName, schema);
-        CalciteSchema subSchema = rootSchema.getSubSchema(databaseName, true);
-        for (String each : schema.getSubSchemaNames()) {
-            if (null != subSchema) {
-                subSchema.add(each, schema.getSubSchema(each));
-            }
-        }
-        return new CalciteCatalogReader(rootSchema, Arrays.asList(databaseName, schemaName), relDataTypeFactory, connectionConfig);
+        rootSchema.add(schemaName, schema);
+        return new CalciteCatalogReader(rootSchema, Collections.singletonList(schemaName), relDataTypeFactory, connectionConfig);
     }
     
     private static SqlValidator createValidator(final CalciteCatalogReader catalogReader, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {

@@ -147,9 +147,9 @@ public final class ShardingSphereOptimizerTest {
               "EnumerableCalc(expr#0..6=[{inputs}],order_id=[$t3],user_id=[$t4],user_id0=[$t0])"
             + "  EnumerableHashJoin(condition=[=($2,$6)],joinType=[inner])"
             + "    EnumerableCalc(expr#0..1=[{inputs}],expr#2=[CAST($t0):VARCHAR],proj#0..2=[{exprs}])"
-            + "      EnumerableInterpreterBindableTableScan(table=[[sharding_db,federate_jdbc,t_user_info]],filters=[[=(CAST($0):INTEGER,13)]])"
+            + "      EnumerableInterpreterBindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[=(CAST($0):INTEGER,13)]])"
             + "    EnumerableCalc(expr#0..2=[{inputs}],expr#3=[CAST($t1):VARCHAR],proj#0..3=[{exprs}])"
-            + "      EnumerableTableScan(table=[[sharding_db,federate_jdbc,t_order_federate]])";
+            + "      EnumerableTableScan(table=[[federate_jdbc,t_order_federate]])";
         assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
     }
     
@@ -161,7 +161,7 @@ public final class ShardingSphereOptimizerTest {
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
               "EnumerableInterpreter"
-            + "  BindableTableScan(table=[[sharding_db,federate_jdbc,t_user_info]],filters=[[=(CAST($0):INTEGER,12)]])";
+            + "  BindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[=(CAST($0):INTEGER,12)]])";
         assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
     }
     
@@ -173,7 +173,7 @@ public final class ShardingSphereOptimizerTest {
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
               "EnumerableInterpreter"
-            + "  BindableTableScan(table=[[sharding_db,federate_jdbc,t_user_info]],filters=[[=(CAST($0):INTEGER,12)]],projects=[[0]])";
+            + "  BindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[=(CAST($0):INTEGER,12)]],projects=[[0]])";
         assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
     }
     
@@ -188,10 +188,10 @@ public final class ShardingSphereOptimizerTest {
             + "  EnumerableMergeJoin(condition=[=($2,$6)],joinType=[inner])"
             + "    EnumerableSort(sort0=[$2],dir0=[ASC])"
             + "      EnumerableCalc(expr#0..1=[{inputs}],expr#2=[CAST($t0):VARCHAR],proj#0..2=[{exprs}])"
-            + "        EnumerableTableScan(table=[[sharding_db,federate_jdbc,t_user_info]])"
+            + "        EnumerableTableScan(table=[[federate_jdbc,t_user_info]])"
             + "    EnumerableSort(sort0=[$3],dir0=[ASC])"
             + "      EnumerableCalc(expr#0..2=[{inputs}],expr#3=[CAST($t1):VARCHAR],proj#0..3=[{exprs}])"
-            + "        EnumerableTableScan(table=[[sharding_db,federate_jdbc,t_order_federate]])";
+            + "        EnumerableTableScan(table=[[federate_jdbc,t_order_federate]])";
         assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
     }
     
@@ -206,10 +206,10 @@ public final class ShardingSphereOptimizerTest {
             + "  EnumerableMergeJoin(condition=[=($3,$6)],joinType=[inner])"
             + "    EnumerableSort(sort0=[$3],dir0=[ASC])"
             + "      EnumerableCalc(expr#0..2=[{inputs}],expr#3=[CAST($t1):VARCHAR],proj#0..3=[{exprs}])"
-            + "        EnumerableTableScan(table=[[sharding_db,federate_jdbc,t_order_federate]])"
+            + "        EnumerableTableScan(table=[[federate_jdbc,t_order_federate]])"
             + "    EnumerableSort(sort0=[$2],dir0=[ASC])"
             + "      EnumerableCalc(expr#0..1=[{inputs}],expr#2=[CAST($t0):VARCHAR],proj#0..2=[{exprs}])"
-            + "        EnumerableTableScan(table=[[sharding_db,federate_jdbc,t_user_info]])";
+            + "        EnumerableTableScan(table=[[federate_jdbc,t_user_info]])";
         assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
     }
     
@@ -222,8 +222,8 @@ public final class ShardingSphereOptimizerTest {
         String expected =
               "EnumerableCalc(expr#0..4=[{inputs}],proj#0..1=[{exprs}],user_id0=[$t3])"
             + "  EnumerableInterpreterBindableJoin(condition=[=(CAST($1):VARCHAR,CAST($3):VARCHAR)],joinType=[inner])"
-            + "    BindableTableScan(table=[[sharding_db,federate_jdbc,t_order_federate]])"
-            + "    BindableTableScan(table=[[sharding_db,federate_jdbc,t_user_info]],filters=[[=(CAST($0):INTEGER,13)]])";
+            + "    BindableTableScan(table=[[federate_jdbc,t_order_federate]])"
+            + "    BindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[=(CAST($0):INTEGER,13)]])";
         assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
     }
     
@@ -235,7 +235,7 @@ public final class ShardingSphereOptimizerTest {
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
               "EnumerableInterpreter"
-            + "  BindableTableScan(table=[[sharding_db,federate_jdbc,t_user_info]],filters=[[>(CAST($0):INTEGER,1)]])";
+            + "  BindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[>(CAST($0):INTEGER,1)]])";
         assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
     }
     
@@ -248,10 +248,10 @@ public final class ShardingSphereOptimizerTest {
         String expected = 
               "EnumerableCalc(expr#0..3=[{inputs}],expr#4=[ISNOTNULL($t3)],proj#0..1=[{exprs}],$condition=[$t4])"
             + "  EnumerableCorrelate(correlation=[$cor0],joinType=[left],requiredColumns=[{1}]) "
-            + "    EnumerableTableScan(table=[[sharding_db,federate_jdbc,t_order_federate]]) "
+            + "    EnumerableTableScan(table=[[federate_jdbc,t_order_federate]]) "
             + "    EnumerableInterpreterBindableAggregate(group=[{}],agg#0=[MIN($0)]) "
             + "      BindableProject($f0=[true]) "
-            + "        BindableTableScan(table=[[sharding_db,federate_jdbc,t_user_info]],filters=[[=(CAST($cor0.user_id):VARCHAR,CAST($0):VARCHAR)]],projects=[[0]]) ";
+            + "        BindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[=(CAST($cor0.user_id):VARCHAR,CAST($0):VARCHAR)]],projects=[[0]]) ";
         assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
     }
     
@@ -265,8 +265,8 @@ public final class ShardingSphereOptimizerTest {
                   "EnumerableInterpreter"
                 + "  BindableProject(order_id=[$0],user_id=[$1])"
                 + "    BindableJoin(condition=[=($1,$3)],joinType=[semi])"
-                + "      BindableTableScan(table=[[sharding_db,federate_jdbc,t_order_federate]])"
-                + "      BindableTableScan(table=[[sharding_db,federate_jdbc,t_user_info]],projects=[[0]])";
+                + "      BindableTableScan(table=[[federate_jdbc,t_order_federate]])"
+                + "      BindableTableScan(table=[[federate_jdbc,t_user_info]],projects=[[0]])";
         assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
     }
     
@@ -281,11 +281,11 @@ public final class ShardingSphereOptimizerTest {
             + "  EnumerableInterpreterBindableFilter(condition=[AND(>=($1,$3),<=($1,$4))])"
             + "    BindableJoin(condition=[true],joinType=[left])"
             + "      BindableJoin(condition=[true],joinType=[left])"
-            + "        BindableTableScan(table=[[sharding_db,federate_jdbc,t_order_federate]])"
+            + "        BindableTableScan(table=[[federate_jdbc,t_order_federate]])"
             + "        BindableAggregate(group=[{}],agg#0=[SINGLE_VALUE($0)])"
-            + "          BindableTableScan(table=[[sharding_db,federate_jdbc,t_user_info]],filters=[[=(CAST($1):VARCHAR,'before')]],projects=[[0]])"
+            + "          BindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[=(CAST($1):VARCHAR,'before')]],projects=[[0]])"
             + "        BindableAggregate(group=[{}],agg#0=[SINGLE_VALUE($0)])"
-            + "          BindableTableScan(table=[[sharding_db,federate_jdbc,t_user_info]],filters=[[=(CAST($1):VARCHAR,'after')]],projects=[[0]])";
+            + "          BindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[=(CAST($1):VARCHAR,'after')]],projects=[[0]])";
         assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
     }
 }
