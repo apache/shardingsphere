@@ -20,7 +20,7 @@ package org.apache.shardingsphere.example.parser.sql92.statement;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
-import org.apache.shardingsphere.sql.parser.core.ParseContext;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.SQL92Statement;
 
 import java.util.Arrays;
@@ -53,10 +53,10 @@ public final class SQL92ParserStatementExample {
     public static void main(String[] args) {
         SQL92_PARSER_STATEMENT_LIST.forEach(sql -> {
             CacheOption cacheOption = new CacheOption(128, 1024L, 4);
-            SQLParserEngine parserEngine = new SQLParserEngine("SQL92", cacheOption,false);
-            ParseContext parseContext = parserEngine.parse(sql, false);
-            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("SQL92", "STATEMENT", new Properties());
-            SQL92Statement sqlStatement = visitorEngine.visit(parseContext);
+            SQLParserEngine parserEngine = new SQLParserEngine("SQL92", cacheOption);
+            ParseASTNode parseASTNode = parserEngine.parse(sql, false);
+            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("SQL92", "STATEMENT", false, new Properties());
+            SQL92Statement sqlStatement = visitorEngine.visit(parseASTNode);
             System.out.println(sqlStatement.toString());
         });
     }
