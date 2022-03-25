@@ -87,8 +87,11 @@ public final class ShowSlaveStatusDatabaseDiscoveryType extends AbstractDatabase
     }
     
     @Override
-    protected void determineMemberDataSourceState(final String schemaName, final Map<String, DataSource> dataSourceMap, final String groupName) {
+    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final String groupName) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            if (entry.getKey().equals(getPrimaryDataSource())) {
+                continue;
+            }
             determineDatasourceState(schemaName, entry.getKey(), entry.getValue(), groupName);
         }
     }

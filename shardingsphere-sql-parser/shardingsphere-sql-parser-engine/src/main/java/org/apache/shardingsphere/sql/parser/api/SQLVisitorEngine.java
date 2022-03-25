@@ -57,8 +57,8 @@ public final class SQLVisitorEngine {
     
     private <T> void appendSQLComments(final ParseContext parseContext, final T visitResult) {
         if (!parseContext.getHiddenTokens().isEmpty() && visitResult instanceof AbstractSQLStatement) {
-            Collection<CommentSegment> commentSegments = parseContext.getHiddenTokens().stream().map(each -> new CommentSegment(each.getText(), each.getStartIndex(), each.getStopIndex()))
-                    .collect(Collectors.toList());
+            Collection<CommentSegment> commentSegments = parseContext.getHiddenTokens().stream().map(
+                each -> new CommentSegment(each.getText(), each.getStartIndex(), each.getStopIndex())).collect(Collectors.toList());
             ((AbstractSQLStatement) visitResult).getCommentSegments().addAll(commentSegments);
         }
     }
