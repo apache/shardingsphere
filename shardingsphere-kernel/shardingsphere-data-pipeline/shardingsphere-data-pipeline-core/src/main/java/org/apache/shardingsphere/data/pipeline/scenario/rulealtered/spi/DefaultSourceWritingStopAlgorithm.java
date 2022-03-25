@@ -17,30 +17,28 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi;
 
-import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLockAlgorithm;
 
 /**
  * Default source writing stop algorithm.
  */
-@ToString
+@Slf4j
 public final class DefaultSourceWritingStopAlgorithm implements RowBasedJobLockAlgorithm {
     
-    @Override
-    public void init() {
-    }
+    private final RuleAlteredJobAPI ruleAlteredJobAPI = PipelineJobAPIFactory.getRuleAlteredJobAPI();
     
-    // TODO impl default sourceWritingStopAlgorithm
     @Override
     public void lock(final String schemaName, final String jobId) {
+        log.info("lock, schemaName={}, jobId={}", schemaName, jobId);
+        ruleAlteredJobAPI.stopClusterWriteDB(schemaName, jobId);
     }
     
     @Override
     public void releaseLock(final String schemaName, final String jobId) {
-    }
-    
-    @Override
-    public String getType() {
-        return "DEFAULT";
+        log.info("releaseLock, schemaName={}, jobId={}", schemaName, jobId);
+        ruleAlteredJobAPI.restoreClusterWriteDB(schemaName, jobId);
     }
 }

@@ -120,7 +120,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
             }
             databaseDiscoveryType.updatePrimaryDataSource(schemaName, originalDataSourceMap, disabledDataSourceNames, groupName);
             dataSourceRule.updatePrimaryDataSourceName(databaseDiscoveryType.getPrimaryDataSource());
-            databaseDiscoveryType.updateMemberState(schemaName, originalDataSourceMap, disabledDataSourceNames, groupName);
+            databaseDiscoveryType.updateMemberState(schemaName, originalDataSourceMap, groupName);
         }
     }
     

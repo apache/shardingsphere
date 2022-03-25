@@ -32,7 +32,7 @@ showAllVariables
     ;
 
 alterInstance
-    : ALTER INSTANCE instanceId SET variableName EQ variableValue
+    : ALTER INSTANCE instanceId SET variableName EQ variableValues
     ;
 
 enableInstance
@@ -169,6 +169,10 @@ sqlParserRuleDefinition
 
 variableName
     : IDENTIFIER
+    ;
+
+variableValues
+    : variableValue (COMMA variableValue)*
     ;
 
 variableValue

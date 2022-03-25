@@ -64,6 +64,16 @@ public final class SchemaMetaDataNode {
     }
     
     /**
+     * Get database name path.
+     *
+     * @param databaseName database name
+     * @return database name path
+     */
+    public static String getDatabaseNamePath(final String databaseName) {
+        return String.join("/", getMetaDataNodePath(), databaseName);
+    }
+    
+    /**
      * Get schema name path.
      *
      * @param schemaName schema name
@@ -106,7 +116,7 @@ public final class SchemaMetaDataNode {
     }
     
     private static String getFullMetaDataPath(final String schemaName, final String node) {
-        return String.join("/", "", ROOT_NODE, schemaName, node);
+        return String.join("/", "", ROOT_NODE, schemaName, schemaName, node);
     }
     
     /**

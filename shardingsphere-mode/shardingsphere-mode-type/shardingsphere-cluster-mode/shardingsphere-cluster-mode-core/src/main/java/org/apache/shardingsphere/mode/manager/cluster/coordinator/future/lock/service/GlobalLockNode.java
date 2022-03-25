@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.util;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.service;
 
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.util.LockNodeUtil;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -30,8 +31,6 @@ import java.util.regex.Pattern;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GlobalLockNode {
-    
-    private static final String LOCK_DELIMITER = "-";
     
     private static final String LOCK_ROOT = "lock";
     
@@ -67,7 +66,7 @@ public final class GlobalLockNode {
      * @return schema lock name
      */
     public static String generateSchemaLockName(final String schema, final String instanceId) {
-        return generateLockName(schema, instanceId);
+        return getGlobalLocksNodePath() + "/" + LockNodeUtil.generateLockName(schema, instanceId);
     }
     
     /**
@@ -78,13 +77,8 @@ public final class GlobalLockNode {
      * @return schema ack lock name
      */
     public static String generateSchemaAckLockName(final String schema, final String lockedInstanceId) {
-        return generateLockName(schema, lockedInstanceId);
+        return getGlobalAckNodePath() + "/" + LockNodeUtil.generateLockName(schema, lockedInstanceId);
     }
-    
-    private static String generateLockName(final String schema, final String instanceId) {
-        return schema + LOCK_DELIMITER + instanceId;
-    }
-    
     
     /**
      * Get locked key name by locks node path.
@@ -93,7 +87,7 @@ public final class GlobalLockNode {
      * @return schema name
      */
     public static Optional<String> getLockedKey(final String locksNodePath) {
-        Pattern pattern = Pattern.compile(getGlobalLocksNodePath() + "/" + "(.+)/(.+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getGlobalLocksNodePath() + "/(.+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(locksNodePath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
@@ -105,7 +99,7 @@ public final class GlobalLockNode {
      * @return locked instance id
      */
     public static Optional<String> getAckLockedKey(final String ackNodePath) {
-        Pattern pattern = Pattern.compile(getGlobalAckNodePath() + "/" + "(.+)/(.+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getGlobalAckNodePath() + "/(.+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(ackNodePath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
