@@ -55,12 +55,12 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
-        ShardingSphereSQLParserEngine sqlParserEngine = createShardingSphereSQLParserEngine(connectionSession.getSchemaName());
+        ShardingSphereSQLParserEngine sqlParserEngine = null;
         String sql = packet.getSql();
-        SQLStatement sqlStatement = parseSql(sqlParserEngine, sql);
+        SQLStatement sqlStatement = sql.trim().isEmpty() ? new EmptyStatement() : (sqlParserEngine = createShardingSphereSQLParserEngine(connectionSession.getSchemaName())).parse(sql, true);
         if (sqlStatement.getParameterCount() > 0) {
             sql = convertSQLToJDBCStyle(sqlStatement, sql);
-            sqlStatement = parseSql(sqlParserEngine, sql);
+            sqlStatement = sqlParserEngine.parse(sql, true);
         }
         List<PostgreSQLColumnType> paddedColumnTypes = paddingColumnTypes(sqlStatement.getParameterCount(), packet.readParameterTypes());
         PostgreSQLPreparedStatementRegistry.getInstance().register(connectionSession.getConnectionId(), packet.getStatementId(), sql, sqlStatement, paddedColumnTypes);
@@ -71,10 +71,6 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         return new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType()),
                 metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class).orElse(null));
-    }
-    
-    private SQLStatement parseSql(final ShardingSphereSQLParserEngine sqlStatementParserEngine, final String sql) {
-        return sql.isEmpty() ? new EmptyStatement() : sqlStatementParserEngine.parse(sql, true);
     }
     
     private String convertSQLToJDBCStyle(final SQLStatement sqlStatement, final String sql) {
@@ -94,7 +90,8 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
         }
         List<PostgreSQLColumnType> result = new ArrayList<>(parameterCount);
         result.addAll(specifiedColumnTypes);
-        for (int i = 0; i < parameterCount; i++) {
+        int unspecifiedCount = parameterCount - specifiedColumnTypes.size();
+        for (int i = 0; i < unspecifiedCount; i++) {
             result.add(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED);
         }
         return result;
