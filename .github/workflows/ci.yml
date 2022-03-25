@@ -113,7 +113,6 @@ jobs:
   
   macos:
     name: JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
-    needs: check-license
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
