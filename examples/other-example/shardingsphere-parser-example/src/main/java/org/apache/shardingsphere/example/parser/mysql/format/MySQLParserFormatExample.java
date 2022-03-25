@@ -20,7 +20,7 @@ package org.apache.shardingsphere.example.parser.mysql.format;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
-import org.apache.shardingsphere.sql.parser.core.ParseContext;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 import java.util.Arrays;
 import java.util.List;
@@ -56,10 +56,10 @@ public final class MySQLParserFormatExample {
             Properties props = new Properties();
             props.setProperty("parameterized", "false");
             CacheOption cacheOption = new CacheOption(128, 1024L, 4);
-            SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption, false);
-            ParseContext parseContext = parserEngine.parse(sql, false);
+            SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption);
+            ParseASTNode parseASTNode = parserEngine.parse(sql, false);
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "FORMAT", false, props);
-            String result = visitorEngine.visit(parseContext);
+            String result = visitorEngine.visit(parseASTNode);
             System.out.println(result);
         });
     }

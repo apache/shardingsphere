@@ -20,7 +20,7 @@ package org.apache.shardingsphere.example.parser.mysql.statement;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
-import org.apache.shardingsphere.sql.parser.core.ParseContext;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 import java.util.Arrays;
@@ -55,10 +55,10 @@ public final class MySQLParserStatementExample {
     public static void main(String[] args) {
         MYSQL_PARSER_STATEMENT_LIST.forEach(sql -> {
             CacheOption cacheOption = new CacheOption(128, 1024L, 4);
-            SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption, false);
-            ParseContext parseContext = parserEngine.parse(sql, false);
+            SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption);
+            ParseASTNode parseASTNode = parserEngine.parse(sql, false);
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "STATEMENT", false, new Properties());
-            MySQLStatement sqlStatement = visitorEngine.visit(parseContext);
+            MySQLStatement sqlStatement = visitorEngine.visit(parseASTNode);
             System.out.println(sqlStatement.toString());
         });
     }
