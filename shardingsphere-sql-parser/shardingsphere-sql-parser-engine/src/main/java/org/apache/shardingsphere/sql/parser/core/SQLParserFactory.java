@@ -32,9 +32,7 @@ import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 
-import java.lang.reflect.Method;
 import java.nio.CharBuffer;
-import java.util.Arrays;
 
 /**
  * SQL parser factory.
@@ -48,27 +46,18 @@ public final class SQLParserFactory {
      * @param sql SQL
      * @param lexerClass lexer class
      * @param parserClass parser class
-     * @param sqlCommentParseEnabled enable sql comment parse
      * @return SQL parser
      */
-    public static SQLParser newInstance(final String sql, final Class<? extends SQLLexer> lexerClass, final Class<? extends SQLParser> parserClass, final boolean sqlCommentParseEnabled) {
-        return createSQLParser(createTokenStream(sql, lexerClass), parserClass, sqlCommentParseEnabled);
+    public static SQLParser newInstance(final String sql, final Class<? extends SQLLexer> lexerClass, final Class<? extends SQLParser> parserClass) {
+        return createSQLParser(createTokenStream(sql, lexerClass), parserClass);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static SQLParser createSQLParser(final TokenStream tokenStream, final Class<? extends SQLParser> parserClass, final boolean sqlCommentParseEnabled) {
+    private static SQLParser createSQLParser(final TokenStream tokenStream, final Class<? extends SQLParser> parserClass) {
         SQLParser result = parserClass.getConstructor(TokenStream.class).newInstance(tokenStream);
-        if (sqlCommentParseEnabled) {
-            Arrays.stream(parserClass.getMethods()).filter(each -> "setSqlCommentParseEnabled".equals(each.getName())).findAny().ifPresent(each -> setEnableSqlCommentParse(result, each));
-        }
         ((Parser) result).setErrorHandler(new BailErrorStrategy());
         ((Parser) result).removeErrorListener(ConsoleErrorListener.INSTANCE);
         return result;
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private static void setEnableSqlCommentParse(final SQLParser sqlParser, final Method method) {
-        method.invoke(sqlParser, true);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

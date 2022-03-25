@@ -17,21 +17,17 @@
 
 package org.apache.shardingsphere.sql.parser.oracle.parser;
 
-import lombok.Setter;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
  * SQL parser for Oracle.
  */
-@Setter
 public final class OracleParser extends OracleStatementParser implements SQLParser {
-    
-    private boolean sqlCommentParseEnabled;
     
     public OracleParser(final TokenStream input) {
         super(input);
@@ -39,6 +35,6 @@ public final class OracleParser extends OracleStatementParser implements SQLPars
     
     @Override
     public ASTNode parse() {
-        return sqlCommentParseEnabled ? new ParseASTNode(execute(), (CommonTokenStream) getTokenStream()) : new ParseASTNode(execute());
+        return new ParseASTNode(execute(), (CommonTokenStream) getTokenStream());
     }
 }
