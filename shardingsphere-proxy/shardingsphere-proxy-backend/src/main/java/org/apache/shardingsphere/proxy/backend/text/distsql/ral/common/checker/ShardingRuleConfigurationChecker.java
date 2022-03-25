@@ -66,7 +66,7 @@ public final class ShardingRuleConfigurationChecker {
      * Check sharding rule configuration.
      *
      * @param shardingSphereMetaData ShardingSphere meta data
-     * @param currentRuleConfig      current rule configuration
+     * @param currentRuleConfig current rule configuration
      * @throws DistSQLException definition violation exception
      */
     public void check(final ShardingSphereMetaData shardingSphereMetaData, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
@@ -81,9 +81,9 @@ public final class ShardingRuleConfigurationChecker {
     }
     
     private void checkLogicTables(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        LinkedList<String> tablesLogicTables = currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toCollection(LinkedList::new));
-        LinkedList<String> autoTablesLogicTables = currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toCollection(LinkedList::new));
-        LinkedList<String> allLogicTables = new LinkedList<>();
+        Collection<String> tablesLogicTables = currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> autoTablesLogicTables = currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> allLogicTables = new LinkedList<>();
         allLogicTables.addAll(tablesLogicTables);
         allLogicTables.addAll(autoTablesLogicTables);
         Set<String> duplicatedLogicTables = allLogicTables.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
@@ -114,12 +114,12 @@ public final class ShardingRuleConfigurationChecker {
     }
     
     private Collection<String> getDataSourceNames(final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
-        List<String> actualDataSources = new InlineExpressionParser(shardingAutoTableRuleConfig.getActualDataSources()).splitAndEvaluate();
+        Collection<String> actualDataSources = new InlineExpressionParser(shardingAutoTableRuleConfig.getActualDataSources()).splitAndEvaluate();
         return new HashSet<>(actualDataSources);
     }
     
     private Collection<String> getDataSourceNames(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
-        List<String> actualDataNodes = new InlineExpressionParser(shardingTableRuleConfig.getActualDataNodes()).splitAndEvaluate();
+        Collection<String> actualDataNodes = new InlineExpressionParser(shardingTableRuleConfig.getActualDataNodes()).splitAndEvaluate();
         return actualDataNodes.stream().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toList());
     }
     

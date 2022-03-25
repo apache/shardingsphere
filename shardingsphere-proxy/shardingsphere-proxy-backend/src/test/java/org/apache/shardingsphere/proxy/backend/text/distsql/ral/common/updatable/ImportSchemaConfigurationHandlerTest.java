@@ -33,8 +33,6 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.ShardingRuleConfigurationChecker;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,7 +46,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -120,16 +117,10 @@ public final class ImportSchemaConfigurationHandlerTest {
     }
     
     private Map<String, TableMetaData> createTableMap() {
-        List<ColumnMetaData> columns = Collections.singletonList(new ColumnMetaData("order_id", 0, false, false, false));
-        List<IndexMetaData> indexes = Collections.singletonList(new IndexMetaData("primary"));
+        Collection<ColumnMetaData> columns = Collections.singletonList(new ColumnMetaData("order_id", 0, false, false, false));
+        Collection<IndexMetaData> indexes = Collections.singletonList(new IndexMetaData("primary"));
         Map<String, TableMetaData> result = new HashMap<>(1, 1);
         result.put("t_order", new TableMetaData("t_order", columns, indexes, Collections.emptyList()));
-        return result;
-    }
-    
-    private ShardingTableRuleConfiguration createTableRuleConfiguration() {
-        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..1}");
-        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
         return result;
     }
     
