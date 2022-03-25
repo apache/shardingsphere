@@ -71,13 +71,13 @@ public final class OptimizerPlannerContextFactory {
     /**
      * Create optimizer planner context.
      *
-     * @param metaData federation database meta data
+     * @param schemaMetaData federation schema meta data
      * @return created optimizer planner context
      */
-    public static OptimizerPlannerContext create(final FederationDatabaseMetaData metaData) {
+    public static OptimizerPlannerContext create(final FederationDatabaseMetaData schemaMetaData) {
         Map<String, SqlValidator> validators = new LinkedHashMap<>();
         Map<String, SqlToRelConverter> converters = new LinkedHashMap<>();
-        FederationDatabase federationDatabase = new FederationDatabase(metaData);
+        FederationDatabase federationDatabase = new FederationDatabase(schemaMetaData);
         for (Entry<String, Schema> entry : federationDatabase.getSubSchemaMap().entrySet()) {
             CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(createConnectionProperties());
             RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
