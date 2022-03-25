@@ -31,7 +31,7 @@ import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionExcept
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.constant.MDCConstants;
+import org.apache.shardingsphere.proxy.frontend.constant.LogMDCConstants;
 import org.apache.shardingsphere.proxy.frontend.exception.ExpectedExceptions;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.slf4j.MDC;
@@ -67,7 +67,7 @@ public final class CommandExecutorTask implements Runnable {
     public void run() {
         boolean isNeedFlush = false;
         try (PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get())) {
-            fillMDC();
+            fillLogMDC();
             connectionSession.getBackendConnection().prepareForTaskExecution();
             isNeedFlush = executeCommand(context, payload);
             // CHECKSTYLE:OFF
@@ -87,7 +87,7 @@ public final class CommandExecutorTask implements Runnable {
                 context.flush();
             }
             processClosedExceptions(exceptions);
-            clearMDC();
+            clearLogMDC();
         }
     }
     
@@ -135,12 +135,12 @@ public final class CommandExecutorTask implements Runnable {
         processException(ex);
     }
     
-    private void fillMDC() {
-        MDC.put(MDCConstants.SCHEMA_KEY, connectionSession.getSchemaName());
-        MDC.put(MDCConstants.USER_KEY, connectionSession.getGrantee().toString());
+    private void fillLogMDC() {
+        MDC.put(LogMDCConstants.SCHEMA_KEY, connectionSession.getSchemaName());
+        MDC.put(LogMDCConstants.USER_KEY, connectionSession.getGrantee().toString());
     }
     
-    private void clearMDC() {
+    private void clearLogMDC() {
         MDC.clear();
     }
 }
