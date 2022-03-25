@@ -15,12 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.lock;
+package org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml;
 
-import org.apache.shardingsphere.spi.required.RequiredSPI;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Rule based job lock algorithm, SPI.
+ * JDBC configuration for YAML.
  */
-public interface RuleBasedJobLockAlgorithm extends JobLock, RequiredSPI {
+@Getter
+@Setter
+public final class YamlJdbcConfiguration {
+    
+    private String jdbcUrl;
+    
+    private String username;
+    
+    private String password;
 }

@@ -50,8 +50,8 @@ public final class SchemaRulePersistServiceTest {
     
     @Test
     public void assertLoadWithExistedNode() {
-        when(repository.get("/metadata/foo_db/active_version")).thenReturn("0");
-        when(repository.get("/metadata/foo_db/versions/0/rules")).thenReturn(readYAML());
+        when(repository.get("/metadata/foo_db/foo_db/active_version")).thenReturn("0");
+        when(repository.get("/metadata/foo_db/foo_db/versions/0/rules")).thenReturn(readYAML());
         Collection<RuleConfiguration> actual = new SchemaRulePersistService(repository).load("foo_db");
         assertThat(actual.size(), is(1));
     }
