@@ -53,19 +53,17 @@ public final class DistributeLockContext implements LockContext {
     }
     
     @Override
-    public synchronized Optional<ShardingSphereLock> createSchemaLock(final String schemaName) {
+    public synchronized Optional<ShardingSphereLock> getSchemaLock(final String schemaName) {
         ShardingSphereGlobalLock result = globalLocks.get(schemaName);
-        if (null != result) {
-            return Optional.empty();
+        if (null == result) {
+            result = createGlobalLock(schemaName);
+            globalLocks.put(schemaName, result);
         }
-        result = new ShardingSphereDistributeGlobalLock(instanceContext, instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId(), globalLockService);
-        globalLocks.put(schemaName, result);
         return Optional.of(result);
     }
     
-    @Override
-    public synchronized Optional<ShardingSphereLock> getSchemaLock(final String schemaName) {
-        return Optional.ofNullable(globalLocks.get(schemaName));
+    private ShardingSphereGlobalLock createGlobalLock(final String schemaName) {
+        return new ShardingSphereDistributeGlobalLock(instanceContext, instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId(), globalLockService);
     }
     
     @Override
@@ -111,8 +109,9 @@ public final class DistributeLockContext implements LockContext {
         if (isSameInstanceId(ownerInstanceId)) {
             return;
         }
-        Optional<ShardingSphereLock> globalLock = createSchemaLock(schema);
-        globalLock.ifPresent(shardingSphereLock -> ((ShardingSphereGlobalLock) shardingSphereLock).ackLock(schema, getCurrentInstanceId()));
+        ShardingSphereGlobalLock globalLock = createGlobalLock(schema);
+        globalLocks.put(schema, globalLock);
+        globalLock.ackLock(schema, getCurrentInstanceId());
     }
     
     /**
