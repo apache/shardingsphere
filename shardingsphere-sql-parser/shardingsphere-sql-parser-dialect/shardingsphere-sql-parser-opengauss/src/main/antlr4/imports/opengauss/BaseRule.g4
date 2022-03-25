@@ -404,6 +404,7 @@ unreservedWord
     | UNLOGGED
     | UNTIL
     | UPDATE
+    | USER
     | VACUUM
     | VALID
     | VALIDATE
