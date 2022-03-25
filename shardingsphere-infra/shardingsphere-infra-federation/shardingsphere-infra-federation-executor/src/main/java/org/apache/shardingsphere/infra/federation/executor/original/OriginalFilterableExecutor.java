@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.infra.federation.executor.FederationContext;
+import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.infra.federation.executor.original.table.FilterableTableScanExecutor;
 import org.apache.shardingsphere.infra.federation.executor.original.table.FilterableTableScanExecutorContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
@@ -89,10 +89,11 @@ public final class OriginalFilterableExecutor implements FederationExecutor {
     
     private void addSchema(final CalciteConnection connection, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
                            final JDBCExecutorCallback<? extends ExecuteResult> callback, final FederationContext federationContext) throws SQLException {
-        FilterableTableScanExecutorContext executorContext = new FilterableTableScanExecutorContext(schemaName, props, federationContext);
+        FilterableTableScanExecutorContext executorContext = new FilterableTableScanExecutorContext(schemaName, schemaName, props, federationContext);
         FilterableTableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, executorContext);
-        FilterableSchema schema = new FilterableSchema(optimizerContext.getFederationMetaData().getSchemas().get(schemaName), executor);
-        connection.getRootSchema().add(schemaName, schema);
+        FilterableDatabase database = new FilterableDatabase(optimizerContext.getFederationMetaData().getDatabases().get(schemaName), executor);
+        // TODO support database.schema.table query when switch to CustomizedFilterableExecutor, calcite jdbc just support schema.table query now
+        connection.getRootSchema().add(schemaName, database.getSubSchema(schemaName));
         connection.setSchema(schemaName);
     }
     
