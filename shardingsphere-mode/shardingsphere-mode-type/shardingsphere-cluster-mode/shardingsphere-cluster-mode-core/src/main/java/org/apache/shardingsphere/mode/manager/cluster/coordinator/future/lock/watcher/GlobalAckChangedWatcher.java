@@ -19,7 +19,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.w
 
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.event.AckLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.event.AckLockReleasedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.util.GlobalLockNode;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.service.GlobalLockNode;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.util.LockNodeUtil;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -47,9 +48,9 @@ public final class GlobalAckChangedWatcher implements GovernanceWatcher<Governan
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         String key = event.getKey();
-        Optional<String> ackLockedKey = GlobalLockNode.getAckLockedKey(key);
-        if (ackLockedKey.isPresent()) {
-            String[] schemaInstance = ackLockedKey.get().split("-");
+        Optional<String> ackLockedName = GlobalLockNode.getAckLockedKey(key);
+        if (ackLockedName.isPresent()) {
+            String[] schemaInstance = LockNodeUtil.parseLockName(ackLockedName.get());
             return handleGlobalAckEvent(event.getType(), schemaInstance[0], schemaInstance[1]);
         }
         return Optional.empty();

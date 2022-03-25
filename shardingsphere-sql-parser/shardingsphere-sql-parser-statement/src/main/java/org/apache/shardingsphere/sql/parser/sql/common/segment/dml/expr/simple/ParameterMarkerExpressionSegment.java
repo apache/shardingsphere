@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerT
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
 
 import java.util.Optional;
 
@@ -36,7 +37,7 @@ import java.util.Optional;
 @Getter
 @ToString
 @EqualsAndHashCode
-public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment, ProjectionSegment, AliasAvailable {
+public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment, ProjectionSegment, AliasAvailable, ParameterMarkerSegment {
     
     private final int startIndex;
     

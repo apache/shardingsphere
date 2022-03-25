@@ -40,8 +40,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Map.Entry;
 
 /**
  * Meta data contexts builder.
@@ -82,6 +82,7 @@ public final class MetaDataContextsBuilder {
         schemaConfigMap.put(schemaName, schemaConfig);
         schemaRulesMap.put(schemaName, schemaRules);
         databaseMap.put(schemaName, database);
+        //TODO load system schemas and persist
     }
     
     /**
@@ -91,6 +92,9 @@ public final class MetaDataContextsBuilder {
      */
     public void addSystemSchemas(final DatabaseType databaseType) {
         for (Entry<String, Collection<String>> entry : databaseType.getSystemSchemas().entrySet()) {
+            if (databaseMap.containsKey(entry.getKey())) {
+                continue;
+            }
             ShardingSphereDatabase database = DatabaseLoader.load(entry.getKey(), databaseType);
             databaseMap.put(entry.getKey(), database);
         }

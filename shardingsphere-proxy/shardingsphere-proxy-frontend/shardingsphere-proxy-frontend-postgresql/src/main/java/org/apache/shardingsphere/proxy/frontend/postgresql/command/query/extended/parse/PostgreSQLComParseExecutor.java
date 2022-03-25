@@ -30,12 +30,17 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -50,21 +55,33 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
-        SQLStatement sqlStatement = parseSql(packet.getSql(), connectionSession.getSchemaName());
+        ShardingSphereSQLParserEngine sqlParserEngine = null;
+        String sql = packet.getSql();
+        SQLStatement sqlStatement = sql.trim().isEmpty() ? new EmptyStatement() : (sqlParserEngine = createShardingSphereSQLParserEngine(connectionSession.getSchemaName())).parse(sql, true);
+        if (sqlStatement.getParameterCount() > 0) {
+            sql = convertSQLToJDBCStyle(sqlStatement, sql);
+            sqlStatement = sqlParserEngine.parse(sql, true);
+        }
         List<PostgreSQLColumnType> paddedColumnTypes = paddingColumnTypes(sqlStatement.getParameterCount(), packet.readParameterTypes());
-        PostgreSQLPreparedStatementRegistry.getInstance().register(connectionSession.getConnectionId(), packet.getStatementId(), packet.getSql(), sqlStatement, paddedColumnTypes);
+        PostgreSQLPreparedStatementRegistry.getInstance().register(connectionSession.getConnectionId(), packet.getStatementId(), sql, sqlStatement, paddedColumnTypes);
         return Collections.singletonList(PostgreSQLParseCompletePacket.getInstance());
     }
     
-    private SQLStatement parseSql(final String sql, final String schemaName) {
-        if (sql.isEmpty()) {
-            return new EmptyStatement();
-        }
+    private ShardingSphereSQLParserEngine createShardingSphereSQLParserEngine(final String schemaName) {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(
-                DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType()),
+        return new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType()),
                 metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class).orElse(null));
-        return sqlStatementParserEngine.parse(sql, true);
+    }
+    
+    private String convertSQLToJDBCStyle(final SQLStatement sqlStatement, final String sql) {
+        List<ParameterMarkerSegment> parameterMarkerSegments = new ArrayList<>(((AbstractSQLStatement) sqlStatement).getParameterMarkerSegments());
+        parameterMarkerSegments.sort(Comparator.comparingInt(SQLSegment::getStopIndex));
+        StringBuilder result = new StringBuilder(sql);
+        for (int i = parameterMarkerSegments.size() - 1; i >= 0; i--) {
+            ParameterMarkerSegment each = parameterMarkerSegments.get(i);
+            result.replace(each.getStartIndex(), each.getStopIndex() + 1, ParameterMarkerType.QUESTION.getMarker());
+        }
+        return result.toString();
     }
     
     private List<PostgreSQLColumnType> paddingColumnTypes(final int parameterCount, final List<PostgreSQLColumnType> specifiedColumnTypes) {
@@ -73,7 +90,8 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
         }
         List<PostgreSQLColumnType> result = new ArrayList<>(parameterCount);
         result.addAll(specifiedColumnTypes);
-        for (int i = 0; i < parameterCount; i++) {
+        int unspecifiedCount = parameterCount - specifiedColumnTypes.size();
+        for (int i = 0; i < unspecifiedCount; i++) {
             result.add(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED);
         }
         return result;

@@ -27,7 +27,9 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -65,5 +67,13 @@ public final class PostgreSQLDatabaseTypeTest {
         QuoteCharacter actual = new PostgreSQLDatabaseType().getQuoteCharacter();
         assertThat(actual.getStartDelimiter(), is("\""));
         assertThat(actual.getEndDelimiter(), is("\""));
+    }
+    
+    @Test
+    public void assertContainsSystemSchema() {
+        assertTrue(new PostgreSQLDatabaseType().containsSystemSchema("information_schema"));
+        assertTrue(new PostgreSQLDatabaseType().containsSystemSchema("pg_catalog"));
+        assertFalse(new MySQLDatabaseType().containsSystemSchema("postgres"));
+        assertFalse(new MySQLDatabaseType().containsSystemSchema("sharding_db"));
     }
 }
