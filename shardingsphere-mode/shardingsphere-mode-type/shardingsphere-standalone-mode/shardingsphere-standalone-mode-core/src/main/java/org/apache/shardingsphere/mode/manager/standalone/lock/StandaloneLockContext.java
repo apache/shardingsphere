@@ -28,11 +28,6 @@ import java.util.Optional;
 public final class StandaloneLockContext implements LockContext {
     
     @Override
-    public Optional<ShardingSphereLock> createSchemaLock(final String schemaName) {
-        return Optional.empty();
-    }
-    
-    @Override
     public Optional<ShardingSphereLock> getSchemaLock(final String schemaName) {
         return Optional.empty();
     }

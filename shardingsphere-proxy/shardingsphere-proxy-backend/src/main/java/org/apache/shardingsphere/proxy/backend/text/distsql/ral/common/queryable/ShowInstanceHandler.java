@@ -52,7 +52,7 @@ public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowIn
     
     private static final String LABELS = "labels";
     
-    private static final String XA_RECOVERY_ID = "xa_recovery_id";
+    private static final String XA_RECOVERY_NODES = "xa_recovery_nodes";
     
     private static final String DISABLED = "disabled";
     
@@ -60,7 +60,7 @@ public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowIn
     
     @Override
     protected Collection<String> getColumnNames() {
-        return Arrays.asList(ID, HOST, PORT, STATUS, MODE_TYPE, LABELS, XA_RECOVERY_ID);
+        return Arrays.asList(ID, HOST, PORT, STATUS, MODE_TYPE, LABELS, XA_RECOVERY_NODES);
     }
     
     @Override
