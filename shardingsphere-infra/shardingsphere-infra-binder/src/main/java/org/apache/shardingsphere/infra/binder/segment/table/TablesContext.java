@@ -56,8 +56,6 @@ public final class TablesContext {
     
     private final Collection<String> tableNames = new HashSet<>();
     
-    private final Collection<String> schemaNames = new HashSet<>();
-    
     private final Collection<String> databaseNames = new HashSet<>();
     
     private final Map<String, Collection<SubqueryTableContext>> subqueryTables = new HashMap<>();
@@ -79,7 +77,6 @@ public final class TablesContext {
                 SimpleTableSegment simpleTableSegment = (SimpleTableSegment) each;
                 tables.add(simpleTableSegment);
                 tableNames.add(simpleTableSegment.getTableName().getIdentifier().getValue());
-                simpleTableSegment.getOwner().ifPresent(owner -> schemaNames.add(owner.getIdentifier().getValue()));
                 findDatabaseName(simpleTableSegment, databaseType).ifPresent(databaseNames::add);
             }
             if (each instanceof SubqueryTableSegment) {
