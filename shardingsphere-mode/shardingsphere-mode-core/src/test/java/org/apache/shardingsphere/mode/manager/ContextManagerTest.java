@@ -263,7 +263,7 @@ public final class ContextManagerTest {
         when(metaDataPersistService.getSchemaMetaDataService()).thenReturn(schemaMetaDataPersistService);
         when(metaDataContexts.getMetaDataPersistService()).thenReturn(Optional.of(metaDataPersistService));
         contextManager.reloadMetaData("foo_schema");
-        verify(schemaMetaDataPersistService, times(1)).persist(eq("foo_schema"), any(ShardingSphereSchema.class));
+        verify(schemaMetaDataPersistService, times(1)).persist(eq("foo_schema"), eq("foo_schema"), any(ShardingSphereSchema.class));
         contextManager.reloadMetaData("foo_schema", "foo_table");
         assertNotNull(contextManager.getMetaDataContexts().getMetaData("foo_schema"));
         contextManager.reloadMetaData("foo_schema", "foo_table", "foo_ds");
