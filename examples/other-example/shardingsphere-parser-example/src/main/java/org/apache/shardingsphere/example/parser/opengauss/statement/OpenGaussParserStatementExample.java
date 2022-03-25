@@ -55,7 +55,7 @@ public final class OpenGaussParserStatementExample {
             CacheOption cacheOption = new CacheOption(128, 1024L, 4);
             SQLParserEngine parserEngine = new SQLParserEngine("openGauss", cacheOption, false);
             ParseContext parseContext = parserEngine.parse(sql, false);
-            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("openGauss", "STATEMENT", new Properties());
+            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("openGauss", "STATEMENT", false, new Properties());
             OpenGaussStatement sqlStatement = visitorEngine.visit(parseContext);
             System.out.println(sqlStatement.toString());
         });

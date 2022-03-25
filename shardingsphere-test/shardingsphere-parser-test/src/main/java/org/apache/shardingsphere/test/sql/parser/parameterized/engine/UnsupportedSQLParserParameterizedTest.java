@@ -53,6 +53,6 @@ public abstract class UnsupportedSQLParserParameterizedTest {
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         CacheOption cacheOption = new CacheOption(128, 1024L, 4);
         ParseContext parseContext = new SQLParserEngine(databaseType, cacheOption, true).parse(sql, false);
-        SQLStatement sqlStatement = new SQLVisitorEngine(databaseType, "STATEMENT", new Properties()).visit(parseContext);
+        SQLStatement sqlStatement = new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(parseContext);
     }
 }

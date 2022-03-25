@@ -56,7 +56,7 @@ public final class FormatHandler extends QueryableRALBackendHandler<FormatStatem
         }
         Properties props = new Properties();
         props.setProperty("parameterized", "false");
-        SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "FORMAT", props);
+        SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "FORMAT", false, props);
         return Collections.singleton(Collections.singletonList(visitorEngine.visit(parseContext)));
     }
 }

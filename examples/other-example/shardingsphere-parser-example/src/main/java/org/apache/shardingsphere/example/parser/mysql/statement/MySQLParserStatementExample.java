@@ -53,11 +53,11 @@ public final class MySQLParserStatementExample {
     }
     
     public static void main(String[] args) {
-        MYSQL_PARSER_STATEMENT_LIST.stream().forEach(sql -> {
+        MYSQL_PARSER_STATEMENT_LIST.forEach(sql -> {
             CacheOption cacheOption = new CacheOption(128, 1024L, 4);
             SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption, false);
             ParseContext parseContext = parserEngine.parse(sql, false);
-            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "STATEMENT", new Properties());
+            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "STATEMENT", false, new Properties());
             MySQLStatement sqlStatement = visitorEngine.visit(parseContext);
             System.out.println(sqlStatement.toString());
         });

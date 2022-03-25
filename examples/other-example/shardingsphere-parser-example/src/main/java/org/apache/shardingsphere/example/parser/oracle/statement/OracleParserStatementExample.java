@@ -55,7 +55,7 @@ public final class OracleParserStatementExample {
             CacheOption cacheOption = new CacheOption(128, 1024L, 4);
             SQLParserEngine parserEngine = new SQLParserEngine("Oracle", cacheOption, false);
             ParseContext parseContext = parserEngine.parse(sql, false);
-            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("Oracle", "STATEMENT", new Properties());
+            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("Oracle", "STATEMENT", false, new Properties());
             OracleStatement sqlStatement = visitorEngine.visit(parseContext);
             System.out.println(sqlStatement.toString());
         });

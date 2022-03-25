@@ -39,6 +39,8 @@ public final class SQLVisitorEngine {
     
     private final String visitorType;
     
+    private final boolean isParseComment;
+    
     private final Properties props;
     
     /**
@@ -51,12 +53,14 @@ public final class SQLVisitorEngine {
     public <T> T visit(final ParseContext parseContext) {
         ParseTreeVisitor<T> visitor = SQLVisitorFactory.newInstance(databaseType, visitorType, SQLVisitorRule.valueOf(parseContext.getParseTree().getClass()), props);
         T result = parseContext.getParseTree().accept(visitor);
-        appendSQLComments(parseContext, result);
+        if (isParseComment) {
+            appendSQLComments(parseContext, result);
+        }
         return result;
     }
     
     private <T> void appendSQLComments(final ParseContext parseContext, final T visitResult) {
-        if (!parseContext.getHiddenTokens().isEmpty() && visitResult instanceof AbstractSQLStatement) {
+        if (visitResult instanceof AbstractSQLStatement) {
             Collection<CommentSegment> commentSegments = parseContext.getHiddenTokens().stream().map(
                 each -> new CommentSegment(each.getText(), each.getStartIndex(), each.getStopIndex())).collect(Collectors.toList());
             ((AbstractSQLStatement) visitResult).getCommentSegments().addAll(commentSegments);

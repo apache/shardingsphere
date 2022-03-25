@@ -58,7 +58,7 @@ public final class MySQLParserFormatExample {
             CacheOption cacheOption = new CacheOption(128, 1024L, 4);
             SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption, false);
             ParseContext parseContext = parserEngine.parse(sql, false);
-            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "FORMAT", props);
+            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "FORMAT", false, props);
             String result = visitorEngine.visit(parseContext);
             System.out.println(result);
         });

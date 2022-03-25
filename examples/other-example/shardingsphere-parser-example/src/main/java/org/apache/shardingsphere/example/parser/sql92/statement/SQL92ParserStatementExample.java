@@ -55,7 +55,7 @@ public final class SQL92ParserStatementExample {
             CacheOption cacheOption = new CacheOption(128, 1024L, 4);
             SQLParserEngine parserEngine = new SQLParserEngine("SQL92", cacheOption,false);
             ParseContext parseContext = parserEngine.parse(sql, false);
-            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("SQL92", "STATEMENT", new Properties());
+            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("SQL92", "STATEMENT", false, new Properties());
             SQL92Statement sqlStatement = visitorEngine.visit(parseContext);
             System.out.println(sqlStatement.toString());
         });

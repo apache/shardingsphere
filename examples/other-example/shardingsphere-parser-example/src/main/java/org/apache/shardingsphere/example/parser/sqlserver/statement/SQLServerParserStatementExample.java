@@ -57,7 +57,7 @@ public final class SQLServerParserStatementExample {
             CacheOption cacheOption = new CacheOption(128, 1024L, 4);
             SQLParserEngine parserEngine = new SQLParserEngine("SQLServer", cacheOption, false);
             ParseContext parseContext = parserEngine.parse(sql, false);
-            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("SQLServer", "STATEMENT", new Properties());
+            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("SQLServer", "STATEMENT", false, new Properties());
             SQLServerStatement sqlStatement = visitorEngine.visit(parseContext);
             System.out.println(sqlStatement);
         });
