@@ -19,7 +19,7 @@ name: Integration Test
 
 on:
   push:
-    branches: [ dev ]
+    branches: [ master, dev ]
     paths-ignore:
       - 'docs/**'
   pull_request:
