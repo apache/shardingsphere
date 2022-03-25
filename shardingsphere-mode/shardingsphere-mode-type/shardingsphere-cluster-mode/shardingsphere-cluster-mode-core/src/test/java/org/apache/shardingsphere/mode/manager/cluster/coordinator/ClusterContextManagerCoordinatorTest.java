@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
@@ -246,9 +246,9 @@ public final class ClusterContextManagerCoordinatorTest {
     
     private OptimizerContext createOptimizerContext() {
         OptimizerContext result = mock(OptimizerContext.class, RETURNS_DEEP_STUBS);
-        Map<String, FederationSchemaMetaData> schemas = new HashMap<>(1, 1);
-        schemas.put("schema", new FederationSchemaMetaData("schema", Collections.emptyMap()));
-        when(result.getFederationMetaData().getSchemas()).thenReturn(schemas);
+        Map<String, FederationDatabaseMetaData> databases = new HashMap<>(1, 1);
+        databases.put("schema", new FederationDatabaseMetaData("schema", Collections.emptyMap()));
+        when(result.getFederationMetaData().getDatabases()).thenReturn(databases);
         return result;
     }
     

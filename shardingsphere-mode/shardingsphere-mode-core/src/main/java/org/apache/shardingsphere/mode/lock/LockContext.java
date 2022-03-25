@@ -27,14 +27,6 @@ import java.util.Optional;
 public interface LockContext {
     
     /**
-     * Create schema lock.
-     *
-     * @param schemaName schema name
-     * @return schema lock
-     */
-    Optional<ShardingSphereLock> createSchemaLock(String schemaName);
-    
-    /**
      * Get schema lock.
      *
      * @param schemaName schema name

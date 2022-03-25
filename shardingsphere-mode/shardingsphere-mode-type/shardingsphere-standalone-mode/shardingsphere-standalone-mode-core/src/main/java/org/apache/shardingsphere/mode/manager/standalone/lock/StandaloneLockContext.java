@@ -20,25 +20,31 @@ package org.apache.shardingsphere.mode.manager.standalone.lock;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.lock.LockContext;
 
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Standalone lock context.
  */
 public final class StandaloneLockContext implements LockContext {
     
-    @Override
-    public Optional<ShardingSphereLock> createSchemaLock(final String schemaName) {
-        return Optional.empty();
-    }
+    private final Map<String, ShardingSphereLock> locks = new ConcurrentHashMap<>();
     
     @Override
-    public Optional<ShardingSphereLock> getSchemaLock(final String schemaName) {
-        return Optional.empty();
+    public synchronized Optional<ShardingSphereLock> getSchemaLock(final String schemaName) {
+        ShardingSphereLock result = locks.get(schemaName);
+        if (null == result) {
+            result = new ShardingSphereNonReentrantLock(new ReentrantLock());
+            locks.put(schemaName, result);
+        }
+        return Optional.of(result);
     }
     
     @Override
     public boolean isLockedSchema(final String schemaName) {
-        return false;
+        ShardingSphereLock shardingSphereLock = locks.get(schemaName);
+        return null != shardingSphereLock && shardingSphereLock.isLocked(schemaName);
     }
 }

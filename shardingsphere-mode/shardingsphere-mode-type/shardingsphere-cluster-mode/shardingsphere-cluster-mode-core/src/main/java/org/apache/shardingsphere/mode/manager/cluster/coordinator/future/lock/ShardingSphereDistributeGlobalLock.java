@@ -55,7 +55,7 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
         this.instanceContext = instanceContext;
         this.ownerInstanceId = ownerInstanceId;
         this.lockService = lockService;
-        synchronizedLockState = new AtomicReference<>(isOwnerInstanceId(getCurrentInstanceId()) ? LockState.INITIALIZATION : LockState.UNLOCKED);
+        synchronizedLockState = new AtomicReference<>(isOwnerInstanceId(getCurrentInstanceId()) ? LockState.INITIALIZATION : LockState.LOCKED);
         initLockedInstances(instanceContext);
     }
     
@@ -73,21 +73,18 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
     
     @Override
     public boolean tryLock(final String lockName) {
-        if (LockState.LOCKED == synchronizedLockState.get()) {
-            return true;
-        }
         return innerTryLock(lockName, DEFAULT_REGISTRY_TIMEOUT_MILLISECONDS);
     }
     
     @Override
     public boolean tryLock(final String lockName, final long timeout) {
-        if (LockState.LOCKED == synchronizedLockState.get()) {
-            return true;
-        }
         return innerTryLock(lockName, timeout);
     }
     
     private boolean innerTryLock(final String lockName, final long timeout) {
+        if (LockState.LOCKED == synchronizedLockState.get()) {
+            return false;
+        }
         long count = 0;
         do {
             if (lockService.tryLock(GlobalLockNode.generateSchemaLockName(lockName, ownerInstanceId))) {
@@ -139,7 +136,7 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
     
     @Override
     public boolean isLocked(final String lockName) {
-        return LockState.UNLOCKED == synchronizedLockState.get();
+        return LockState.LOCKED == synchronizedLockState.get();
     }
     
     private boolean isAckCompleted() {
