@@ -22,7 +22,6 @@ ARG APP_NAME
 ENV LOCAL_PATH /opt/shardingsphere-proxy
 
 ADD target/${APP_NAME}.tar.gz /opt
-RUN mv /opt/${APP_NAME} ${LOCAL_PATH}
-RUN mkdir -p ${LOCAL_PATH}/ext-lib
+RUN mv /opt/${APP_NAME} ${LOCAL_PATH} && mkdir -p ${LOCAL_PATH}/ext-lib
 
 ENTRYPOINT ${LOCAL_PATH}/bin/start.sh ${PORT} && tail -f ${LOCAL_PATH}/logs/stdout.log
