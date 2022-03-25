@@ -122,8 +122,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
                 ? Collections.singletonList(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit()) : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
     }
     
-    protected void mockDataSource(final Map<String, DataSource> dataSources) throws SQLException {
-    }
+    protected abstract void mockDataSource(Map<String, DataSource> dataSources) throws SQLException;
     
     protected abstract YamlRootConfiguration createRootConfiguration() throws IOException;
     
