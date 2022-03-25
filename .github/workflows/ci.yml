@@ -22,7 +22,7 @@ name: Continuous Integration
 
 on:
   push:
-    branches: [ master, dev ]
+    branches: [ dev ]
     paths-ignore:
       - 'docs/**'
   pull_request:

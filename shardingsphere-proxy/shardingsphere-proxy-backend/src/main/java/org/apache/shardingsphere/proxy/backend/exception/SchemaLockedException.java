@@ -15,12 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.lock;
+package org.apache.shardingsphere.proxy.backend.exception;
 
-import org.apache.shardingsphere.spi.required.RequiredSPI;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Rule based job lock algorithm, SPI.
+ * Schema locked exception.
  */
-public interface RuleBasedJobLockAlgorithm extends JobLock, RequiredSPI {
+@RequiredArgsConstructor
+@Getter
+public final class SchemaLockedException extends BackendException {
+    
+    private static final long serialVersionUID = -5409739222950362541L;
+    
+    private final String schemaName;
 }

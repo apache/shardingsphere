@@ -152,6 +152,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegm
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeLengthSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -186,6 +187,8 @@ import java.util.Properties;
 public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
+    
+    private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     
     public OpenGaussStatementSQLVisitor(final Properties props) {
     }
@@ -324,7 +327,9 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         }
         if (null != ctx.parameterMarker()) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
-            return new ParameterMarkerExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), parameterMarker.getValue(), parameterMarker.getType());
+            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), parameterMarker.getValue(), parameterMarker.getType());
+            parameterMarkerSegments.add(segment);
+            return segment;
         }
         if (null != ctx.aexprConst()) {
             ASTNode astNode = visit(ctx.aexprConst());
@@ -595,6 +600,7 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
             result.setOnDuplicateKeyColumnsSegment((OnDuplicateKeyColumnsSegment) visit(ctx.optOnDuplicateKey()));
         }
         result.setParameterCount(getCurrentParameterIndex());
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
@@ -755,6 +761,7 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
             result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }
         result.setParameterCount(getCurrentParameterIndex());
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
@@ -773,6 +780,7 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
             result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }
         result.setParameterCount(getCurrentParameterIndex());
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
@@ -786,6 +794,7 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         // TODO :Unsupported for withClause.
         OpenGaussSelectStatement result = (OpenGaussSelectStatement) visit(ctx.selectNoParens());
         result.setParameterCount(getCurrentParameterIndex());
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     

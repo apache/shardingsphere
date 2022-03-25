@@ -36,6 +36,8 @@ public enum CommonErrorCode implements SQLErrorCode {
     TABLE_LOCK_WAIT_TIMEOUT(1301, "C1301", "The table %s of schema %s lock wait timeout of %s ms exceeded"),
     
     TABLE_LOCKED(1302, "C1302", "The table %s of schema %s is locked"),
+    
+    SCHEMA_LOCKED(1302, "C1303", "The schema %s is locked"),
 
     TOO_MANY_CONNECTIONS_EXCEPTION(1040, "08004", "Too many connections"),
 
