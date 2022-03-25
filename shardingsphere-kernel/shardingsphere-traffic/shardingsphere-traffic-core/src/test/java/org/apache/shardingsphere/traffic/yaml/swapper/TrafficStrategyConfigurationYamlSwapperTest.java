@@ -69,12 +69,11 @@ public final class TrafficStrategyConfigurationYamlSwapperTest {
     }
 
     private YamlTrafficStrategyConfiguration createYamlTrafficStrategyConfiguration() {
-        YamlTrafficStrategyConfiguration yamlTrafficStrategyConfiguration = new YamlTrafficStrategyConfiguration();
-        yamlTrafficStrategyConfiguration.setName(NAME);
-        yamlTrafficStrategyConfiguration.setLabels(LABELS);
-        yamlTrafficStrategyConfiguration.setAlgorithmName(ALGORITHM_NAME);
-        yamlTrafficStrategyConfiguration.setLoadBalancerName(LOAD_BALANCER_NAME);
-        return yamlTrafficStrategyConfiguration;
+        YamlTrafficStrategyConfiguration result = new YamlTrafficStrategyConfiguration();
+        result.setName(NAME);
+        result.setLabels(LABELS);
+        result.setAlgorithmName(ALGORITHM_NAME);
+        result.setLoadBalancerName(LOAD_BALANCER_NAME);
+        return result;
     }
-
 }
