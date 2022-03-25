@@ -172,7 +172,7 @@ variableName
     ;
 
 variableValues
-    : variableValue (COMMA variableValue)*?
+    : variableValue (COMMA variableValue)*
     ;
 
 variableValue
