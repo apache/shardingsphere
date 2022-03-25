@@ -23,7 +23,7 @@ import org.apache.calcite.linq4j.AbstractEnumerable;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.plan.RelOptCluster;
-import org.apache.calcite.plan.RelOptSchema;
+import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.rel2sql.RelToSqlConverter;
@@ -78,6 +78,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -223,9 +224,10 @@ public final class FilterableTableScanExecutor {
     }
     
     private RelNode createRelNode(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext) {
-        String schemaName = executorContext.getSchemaName();
-        RelOptCluster relOptCluster = optimizerContext.getPlannerContexts().get(schemaName).getConverter().getCluster();
-        RelOptSchema relOptSchema = (RelOptSchema) optimizerContext.getPlannerContexts().get(schemaName).getValidator().getCatalogReader();
+        String databaseName = executorContext.getDatabaseName();
+        RelOptCluster relOptCluster = optimizerContext.getPlannerContexts().get(databaseName).getConverter().getCluster();
+        CalciteCatalogReader relOptSchema = ((CalciteCatalogReader) optimizerContext.getPlannerContexts()
+                .get(databaseName).getValidator().getCatalogReader()).withSchemaPath(Arrays.asList(databaseName, executorContext.getSchemaName()));
         RelBuilder builder = RelFactories.LOGICAL_BUILDER.create(relOptCluster, relOptSchema).scan(tableMetaData.getName()).filter(scanContext.getFilters());
         if (null != scanContext.getProjects()) {
             builder.project(createProjections(scanContext.getProjects(), builder, tableMetaData.getColumnNames()));

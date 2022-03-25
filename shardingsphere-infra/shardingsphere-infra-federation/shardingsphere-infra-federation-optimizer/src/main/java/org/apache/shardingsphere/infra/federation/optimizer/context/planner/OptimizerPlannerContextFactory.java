@@ -43,8 +43,6 @@ import org.apache.shardingsphere.infra.federation.optimizer.planner.QueryOptimiz
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -98,25 +96,17 @@ public final class OptimizerPlannerContextFactory {
         return result;
     }
     
-    private static CalciteCatalogReader createCatalogReader(final String databaseName, final Schema schema, 
+    private static CalciteCatalogReader createCatalogReader(final String schemaName, final Schema schema, 
                                                             final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
         CalciteSchema rootSchema = CalciteSchema.createRootSchema(true);
-        rootSchema.add(databaseName, schema);
-        CalciteSchema subSchema = rootSchema.getSubSchema(databaseName, false);
+        rootSchema.add(schemaName, schema);
+        CalciteSchema subSchema = rootSchema.getSubSchema(schemaName, true);
         for (String each : schema.getSubSchemaNames()) {
             if (null != subSchema) {
                 subSchema.add(each, schema.getSubSchema(each));
             }
         }
-        List<String> schemaPaths = createSchemaPaths(databaseName, schema);
-        return new CalciteCatalogReader(rootSchema, Collections.singletonList(databaseName), relDataTypeFactory, connectionConfig).withSchemaPath(schemaPaths);
-    }
-    
-    private static List<String> createSchemaPaths(final String databaseName, final Schema schema) {
-        List<String> result = new LinkedList<>();
-        result.add(databaseName);
-        result.addAll(schema.getSubSchemaNames());
-        return result;
+        return new CalciteCatalogReader(rootSchema, Collections.singletonList(schemaName), relDataTypeFactory, connectionConfig);
     }
     
     private static SqlValidator createValidator(final CalciteCatalogReader catalogReader, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
