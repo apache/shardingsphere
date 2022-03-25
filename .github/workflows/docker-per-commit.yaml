@@ -20,6 +20,11 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - 'docs/**'
+      - 'examples/**'
+      - 'shardingsphere-test/**'
+      - '*.md'
 
 env:
   HUB: ghcr.io/apache/shardingsphere
