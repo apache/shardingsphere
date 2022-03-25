@@ -15,12 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.lock;
+package org.apache.shardingsphere.proxy.frontend.constant;
 
-import org.apache.shardingsphere.spi.required.RequiredSPI;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Rule based job lock algorithm, SPI.
+ * MDC constants of log.
  */
-public interface RuleBasedJobLockAlgorithm extends JobLock, RequiredSPI {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class LogMDCConstants {
+    
+    public static final String SCHEMA_KEY = "schema";
+    
+    public static final String USER_KEY = "user";
 }

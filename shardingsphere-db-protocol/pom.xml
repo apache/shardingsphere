@@ -31,11 +31,11 @@
     
     <modules>
         <module>shardingsphere-db-protocol-core</module>
-        <module>shardingsphere-db-protocol-mysql</module>
         <module>shardingsphere-db-protocol-postgresql</module>
+        <module>shardingsphere-db-protocol-mysql</module>
         <module>shardingsphere-db-protocol-opengauss</module>
     </modules>
-
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

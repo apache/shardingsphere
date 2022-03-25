@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.standalone;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
@@ -77,12 +78,17 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
             if (databaseType.containsSystemSchema(each)) {
                 continue;
             }
-            Map<String, DataSource> dataSources = metaDataPersistService.getEffectiveDataSources(each, parameter.getSchemaConfigs());
-            Collection<RuleConfiguration> schemaRuleConfigs = metaDataPersistService.getSchemaRuleService().load(each);
-            builder.addSchema(each, databaseType, new DataSourceProvidedSchemaConfiguration(dataSources, schemaRuleConfigs), props);
+            builder.addSchema(each, databaseType, createSchemaConfiguration(each, metaDataPersistService, parameter), props);
         }
         builder.addSystemSchemas(databaseType);
         return builder.build(metaDataPersistService);
+    }
+    
+    private SchemaConfiguration createSchemaConfiguration(final String schemaName, final MetaDataPersistService metaDataPersistService,
+                                                          final ContextManagerBuilderParameter parameter) {
+        Map<String, DataSource> dataSources = metaDataPersistService.getEffectiveDataSources(schemaName, parameter.getSchemaConfigs());
+        Collection<RuleConfiguration> schemaRuleConfigs = metaDataPersistService.getSchemaRuleService().load(schemaName);
+        return new DataSourceProvidedSchemaConfiguration(dataSources, schemaRuleConfigs);
     }
     
     private ContextManager createContextManager(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter, final MetaDataContexts metaDataContexts) {

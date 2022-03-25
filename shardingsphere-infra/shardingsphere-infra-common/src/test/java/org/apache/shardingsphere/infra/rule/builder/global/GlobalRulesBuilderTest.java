@@ -15,12 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.lock;
+package org.apache.shardingsphere.infra.rule.builder.global;
 
-import org.apache.shardingsphere.spi.required.RequiredSPI;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.junit.Test;
 
-/**
- * Rule based job lock algorithm, SPI.
- */
-public interface RuleBasedJobLockAlgorithm extends JobLock, RequiredSPI {
+import java.util.Collections;
+
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+
+public final class GlobalRulesBuilderTest {
+    
+    @Test
+    public void assertBuildRulesWithoutGlobalRules() {
+        assertTrue(GlobalRulesBuilder.buildRules(Collections.singletonList(mock(RuleConfiguration.class)), Collections.singletonMap("logic_db", mock(ShardingSphereMetaData.class))).isEmpty());
+    }
+    
+    // TODO add more test cases for BuildRulesWithGlobalRules
 }

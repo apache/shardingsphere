@@ -31,10 +31,25 @@
     
     <modules>
         <module>shardingsphere-sql-parser-sql92</module>
-        <module>shardingsphere-sql-parser-mysql</module>
         <module>shardingsphere-sql-parser-postgresql</module>
-        <module>shardingsphere-sql-parser-opengauss</module>
+        <module>shardingsphere-sql-parser-mysql</module>
         <module>shardingsphere-sql-parser-oracle</module>
         <module>shardingsphere-sql-parser-sqlserver</module>
+        <module>shardingsphere-sql-parser-opengauss</module>
     </modules>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-parser-engine</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-parser-test</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>
