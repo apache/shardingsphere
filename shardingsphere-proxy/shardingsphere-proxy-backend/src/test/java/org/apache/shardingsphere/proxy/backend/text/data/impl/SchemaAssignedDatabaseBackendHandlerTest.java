@@ -87,7 +87,7 @@ public final class SchemaAssignedDatabaseBackendHandlerTest {
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
         when(connectionSession.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
         mockDatabaseCommunicationEngine(new UpdateResponseHeader(mock(SQLStatement.class)));
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         schemaAssignedDatabaseBackendHandler = new SchemaAssignedDatabaseBackendHandler(sqlStatementContext, EXECUTE_SQL, connectionSession);
         setBackendHandlerFactory(schemaAssignedDatabaseBackendHandler);

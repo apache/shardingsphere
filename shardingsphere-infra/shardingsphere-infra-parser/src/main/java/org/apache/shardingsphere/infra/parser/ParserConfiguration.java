@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement;
+package org.apache.shardingsphere.infra.parser;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 
 /**
- * SQL statement abstract class.
+ * Parser configuration.
  */
+@RequiredArgsConstructor
 @Getter
-public abstract class AbstractSQLStatement implements SQLStatement {
+public final class ParserConfiguration {
     
-    @Setter
-    private int parameterCount;
+    private final CacheOption sqlStatementCacheOption;
     
-    private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
+    private final CacheOption parseTreeCacheOption;
     
-    private final Collection<CommentSegment> commentSegments = new LinkedList<>();
+    private final boolean isParseComment;
 }
