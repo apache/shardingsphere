@@ -23,8 +23,12 @@ name: Continuous Integration
 on:
   push:
     branches: [ master, dev ]
+    paths-ignore:
+      - 'docs/**'
   pull_request:
     branches: [ master ]
+    paths-ignore:
+      - 'docs/**'
   repository_dispatch:
     types: [rerun-ci]
 
@@ -36,13 +40,6 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
 
 jobs:
-  check-license:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Check License Header
-        uses: apache/skywalking-eyes@main
-  
   windows:
     runs-on: windows-latest
     timeout-minutes: 60
@@ -116,7 +113,6 @@ jobs:
   
   macos:
     name: JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
-    needs: check-license
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:

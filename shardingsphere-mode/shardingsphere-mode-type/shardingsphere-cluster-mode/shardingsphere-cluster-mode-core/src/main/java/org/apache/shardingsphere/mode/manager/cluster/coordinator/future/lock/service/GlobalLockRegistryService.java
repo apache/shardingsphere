@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.service;
 
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryException;
 
-import java.util.concurrent.TimeUnit;
+import java.util.Collection;
 
 /**
  * Global lock registry service.
@@ -33,14 +34,35 @@ public final class GlobalLockRegistryService {
     }
     
     /**
+     * Init global lock root patch.
+     */
+    public void initGlobalLockRoot() {
+        repository.persist(GlobalLockNode.getGlobalLocksNodePath(), "");
+        repository.persist(GlobalLockNode.getGlobalAckNodePath(), "");
+    }
+    
+    /**
+     * Synchronize all global locks.
+     *
+     * @return all global locks
+     */
+    public Collection<String> synchronizeAllGlobalLock() {
+        return repository.getChildrenKeys(GlobalLockNode.getGlobalLocksNodePath());
+    }
+    
+    /**
      * Try to get lock.
      *
      * @param lockName lock name
-     * @param timeoutMilliseconds the maximum time in milliseconds to acquire lock
      * @return true if get the lock, false if not
      */
-    public boolean tryLock(final String lockName, final long timeoutMilliseconds) {
-        return repository.tryLock(lockName, timeoutMilliseconds, TimeUnit.MILLISECONDS);
+    public boolean tryLock(final String lockName) {
+        try {
+            repository.persistEphemeral(lockName, LockState.LOCKED.name());
+            return true;
+        } catch (final ClusterPersistRepositoryException ignored) {
+            return false;
+        }
     }
     
     /**
@@ -49,7 +71,7 @@ public final class GlobalLockRegistryService {
      * @param lockName lock name
      */
     public void releaseLock(final String lockName) {
-        repository.releaseLock(lockName);
+        repository.delete(lockName);
     }
     
     /**

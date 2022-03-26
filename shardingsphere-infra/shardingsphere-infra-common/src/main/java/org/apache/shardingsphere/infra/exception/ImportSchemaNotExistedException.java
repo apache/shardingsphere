@@ -15,23 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core;
+package org.apache.shardingsphere.infra.exception;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.tree.ParseTree;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 
 /**
- * Parse context.
+ * Import schema does not exist exception.
  */
-@RequiredArgsConstructor
 @Getter
-public final class ParseContext {
+public final class ImportSchemaNotExistedException extends DistSQLException {
     
-    private final ParseTree parseTree;
+    private static final long serialVersionUID = 4803138422791056535L;
     
-    private final Collection<Token> hiddenTokens;
+    public ImportSchemaNotExistedException(final String fileName) {
+        super(1106, String.format("Property `schemaName` in file `%s` is required.", fileName));
+    }
 }

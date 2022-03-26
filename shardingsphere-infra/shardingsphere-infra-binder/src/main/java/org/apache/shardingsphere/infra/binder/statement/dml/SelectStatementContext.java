@@ -107,7 +107,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         extractWhereSegments(whereSegments, sqlStatement);
         ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
         subqueryContexts = createSubqueryContexts(metaDataMap, parameters, defaultSchemaName);
-        tablesContext = new TablesContext(getAllTableSegments(), subqueryContexts);
+        tablesContext = new TablesContext(getAllTableSegments(), subqueryContexts, getDatabaseType());
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
@@ -129,7 +129,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {
-        String schemaName = tablesContext.getSchemaName().orElse(defaultSchemaName);
+        String schemaName = tablesContext.getDatabaseName().orElse(defaultSchemaName);
         ShardingSphereMetaData metaData = metaDataMap.get(schemaName);
         if (null == metaData) {
             throw new SchemaNotExistedException(schemaName);

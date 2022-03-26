@@ -34,8 +34,8 @@ public final class SQLStatementParserExecutor {
     private final SQLVisitorEngine visitorEngine;
     
     public SQLStatementParserExecutor(final String databaseType, final SQLParserRule sqlParserRule) {
-        parserEngine = new SQLParserEngine(databaseType, sqlParserRule.getParseTreeCache(), sqlParserRule.isSqlCommentParseEnabled());
-        visitorEngine = new SQLVisitorEngine(databaseType, "STATEMENT", new Properties());
+        parserEngine = new SQLParserEngine(databaseType, sqlParserRule.getParseTreeCache());
+        visitorEngine = new SQLVisitorEngine(databaseType, "STATEMENT", sqlParserRule.isSqlCommentParseEnabled(), new Properties());
     }
     
     /**

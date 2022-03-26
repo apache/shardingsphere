@@ -43,11 +43,5 @@
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
         </dependency>
-        
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
 </project>

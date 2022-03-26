@@ -17,43 +17,48 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse;
 
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatement;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLParseCompletePacket;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLComParseExecutorTest {
+    
+    private static final int CONNECTION_ID = 1;
     
     private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
@@ -63,28 +68,55 @@ public final class PostgreSQLComParseExecutorTest {
     @Mock
     private ConnectionSession connectionSession;
     
+    @InjectMocks
+    private PostgreSQLComParseExecutor executor;
+    
+    private ContextManager contextManagerBefore;
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ContextManager mockedContextManager;
+    
     @Before
     public void setup() {
-        PostgreSQLPreparedStatementRegistry.getInstance().register(1);
-        PostgreSQLPreparedStatementRegistry.getInstance().register(1, "2", "", new EmptyStatement(), Collections.emptyList());
-        when(connectionSession.getConnectionId()).thenReturn(1);
+        contextManagerBefore = ProxyContext.getInstance().getContextManager();
+        ProxyContext.getInstance().init(mockedContextManager);
+        PostgreSQLPreparedStatementRegistry.getInstance().register(CONNECTION_ID);
+        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
     }
     
     @Test
-    public void assertNewInstance() throws NoSuchFieldException, IllegalAccessException {
-        when(parsePacket.getSql()).thenReturn("SELECT 1");
-        when(parsePacket.getStatementId()).thenReturn("2");
+    public void assertExecuteWithEmptySQL() {
+        final String expectedSQL = "";
+        final String statementId = "S_1";
+        when(parsePacket.getSql()).thenReturn(expectedSQL);
+        when(parsePacket.getStatementId()).thenReturn(statementId);
+        Collection<DatabasePacket<?>> actualPackets = executor.execute();
+        assertThat(actualPackets.size(), is(1));
+        assertThat(actualPackets.iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
+        PostgreSQLPreparedStatement actualPreparedStatement = PostgreSQLPreparedStatementRegistry.getInstance().get(CONNECTION_ID, statementId);
+        assertTrue(actualPreparedStatement.getSqlStatement() instanceof EmptyStatement);
+        assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
+        assertThat(actualPreparedStatement.getParameterTypes(), is(Collections.emptyList()));
+    }
+    
+    @Test
+    public void assertExecuteWithParameterizedSQL() {
+        final String rawSQL = "/*$0*/insert into sbtest1 /* $1 */ -- $2 \n (id, k, c, pad) \r values \r\n($1, $2, 'apsbd$31a', '$99')/*$0*/ \n--$0";
+        final String expectedSQL = "/*$0*/insert into sbtest1 /* $1 */ -- $2 \n (id, k, c, pad) \r values \r\n(?, ?, 'apsbd$31a', '$99')/*$0*/ \n--$0";
+        final String statementId = "S_2";
+        when(parsePacket.getSql()).thenReturn(rawSQL);
+        when(parsePacket.getStatementId()).thenReturn(statementId);
+        when(parsePacket.readParameterTypes()).thenReturn(Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
         when(connectionSession.getSchemaName()).thenReturn("schema");
-        Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
-        contextManagerField.setAccessible(true);
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(),
-                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        contextManagerField.set(ProxyContext.getInstance(), contextManager);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(sqlParserRule));
-        PostgreSQLComParseExecutor actual = new PostgreSQLComParseExecutor(parsePacket, connectionSession);
-        assertThat(actual.execute().iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
+        when(mockedContextManager.getMetaDataContexts().getMetaData("schema").getResource().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
+        when(mockedContextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(sqlParserRule));
+        Collection<DatabasePacket<?>> actualPackets = executor.execute();
+        assertThat(actualPackets.size(), is(1));
+        assertThat(actualPackets.iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
+        PostgreSQLPreparedStatement actualPreparedStatement = PostgreSQLPreparedStatementRegistry.getInstance().get(CONNECTION_ID, statementId);
+        assertTrue(actualPreparedStatement.getSqlStatement() instanceof PostgreSQLInsertStatement);
+        assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
+        assertThat(actualPreparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED)));
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
@@ -93,11 +125,8 @@ public final class PostgreSQLComParseExecutorTest {
         return Collections.singletonMap("schema", metaData);
     }
     
-    @Test
-    public void assertGetSqlWithNull() {
-        when(parsePacket.getStatementId()).thenReturn("");
-        when(parsePacket.getSql()).thenReturn("");
-        PostgreSQLComParseExecutor actual = new PostgreSQLComParseExecutor(parsePacket, connectionSession);
-        assertThat(actual.execute().iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
+    @After
+    public void tearDown() {
+        ProxyContext.getInstance().init(contextManagerBefore);
     }
 }

@@ -15,29 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.future.lock.util;
+package org.apache.shardingsphere.infra.rule.builder.global;
 
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.junit.Test;
 
-import java.util.Optional;
+import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
-public final class GlobalLockNodeTest {
+public final class GlobalRulesBuilderTest {
     
     @Test
-    public void assertGetLockedKey() {
-        Optional<String> lockName = GlobalLockNode.getLockedKey("/lock/global/locks/schema-127.0.0.1@3307/_c_c2d-lock-00000");
-        assertTrue(lockName.isPresent());
-        assertThat(lockName.get(), is("schema-127.0.0.1@3307"));
+    public void assertBuildRulesWithoutGlobalRules() {
+        assertTrue(GlobalRulesBuilder.buildRules(Collections.singletonList(mock(RuleConfiguration.class)), Collections.singletonMap("logic_db", mock(ShardingSphereMetaData.class))).isEmpty());
     }
     
-    @Test
-    public void assertGetAckLockedKey() {
-        Optional<String> lockName = GlobalLockNode.getAckLockedKey("/lock/global/ack/schema-127.0.0.1@3308/_c_c2d-lock-00000");
-        assertTrue(lockName.isPresent());
-        assertThat(lockName.get(), is("schema-127.0.0.1@3308"));
-    }
+    // TODO add more test cases for BuildRulesWithGlobalRules
 }

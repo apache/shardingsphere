@@ -94,15 +94,15 @@ public final class TextProtocolBackendHandlerFactory {
         if (sqlStatement instanceof DistSQLStatement) {
             return DistSQLBackendHandlerFactory.newInstance(databaseType, (DistSQLStatement) sqlStatement, connectionSession);
         }
-        Optional<TextProtocolBackendHandler> backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatement, connectionSession, sql);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(),
+                sqlStatement, connectionSession.getDefaultSchemaName());
+        Optional<TextProtocolBackendHandler> backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession, sql);
         if (backendHandler.isPresent()) {
             return backendHandler.get();
         }
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), 
-                sqlStatement, connectionSession.getDefaultSchemaName());
         // TODO optimize SQLStatementSchemaHolder
         if (sqlStatementContext instanceof TableAvailable) {
-            ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().ifPresent(SQLStatementSchemaHolder::set);
+            ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(SQLStatementSchemaHolder::set);
         }
         Optional<ExtraTextProtocolBackendHandler> extraHandler = findExtraTextProtocolBackendHandler(sqlStatement);
         if (extraHandler.isPresent()) {
@@ -112,14 +112,14 @@ public final class TextProtocolBackendHandlerFactory {
         if (databaseOperateHandler.isPresent()) {
             return databaseOperateHandler.get();
         }
-        String schemaName = sqlStatementContext.getTablesContext().getSchemaName().isPresent()
-                ? sqlStatementContext.getTablesContext().getSchemaName().get() : connectionSession.getSchemaName();
+        String schemaName = sqlStatementContext.getTablesContext().getDatabaseName().isPresent()
+                ? sqlStatementContext.getTablesContext().getDatabaseName().get() : connectionSession.getSchemaName();
         SQLCheckEngine.check(sqlStatement, Collections.emptyList(),
                 getRules(schemaName), schemaName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), connectionSession.getGrantee());
         if (sqlStatement instanceof TCLStatement) {
             return TransactionBackendHandlerFactory.newInstance((SQLStatementContext<TCLStatement>) sqlStatementContext, sql, connectionSession);
         }
-        backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatement, connectionSession);
+        backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession);
         return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(sqlStatementContext, sql, connectionSession));
     }
     

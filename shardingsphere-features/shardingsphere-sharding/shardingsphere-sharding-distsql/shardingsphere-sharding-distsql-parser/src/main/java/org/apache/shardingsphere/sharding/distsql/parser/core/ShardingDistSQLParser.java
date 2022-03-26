@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.parser.core;
 
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
@@ -34,6 +35,6 @@ public final class ShardingDistSQLParser extends ShardingDistSQLStatementParser 
     
     @Override
     public ASTNode parse() {
-        return new ParseASTNode(execute());
+        return new ParseASTNode(execute(), (CommonTokenStream) getTokenStream());
     }
 }

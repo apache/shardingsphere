@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.data.pipeline.mysql.ingest;
 
 import com.google.common.base.Preconditions;
-import com.zaxxer.hikari.HikariConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJdbcConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
@@ -93,10 +93,10 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     }
     
     private void dump() {
-        HikariConfig hikariConfig = ((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getHikariConfig();
-        log.info("incremental dump, jdbcUrl={}", hikariConfig.getJdbcUrl());
-        DataSourceMetaData metaData = DatabaseTypeRegistry.getActualDatabaseType("MySQL").getDataSourceMetaData(hikariConfig.getJdbcUrl(), null);
-        MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), metaData.getHostname(), metaData.getPort(), hikariConfig.getUsername(), hikariConfig.getPassword()));
+        YamlJdbcConfiguration jdbcConfig = ((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getJdbcConfig();
+        log.info("incremental dump, jdbcUrl={}", jdbcConfig.getJdbcUrl());
+        DataSourceMetaData metaData = DatabaseTypeRegistry.getActualDatabaseType("MySQL").getDataSourceMetaData(jdbcConfig.getJdbcUrl(), null);
+        MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), metaData.getHostname(), metaData.getPort(), jdbcConfig.getUsername(), jdbcConfig.getPassword()));
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
         int eventCount = 0;
