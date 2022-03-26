@@ -41,16 +41,20 @@ public final class JDBCExampleGenerator implements ExampleGenerator {
         String frameworks = dataModel.get("frameworks");
         for (String eachFramework : frameworks.split(",")) {
             for (String eachFeature : GenerateUtil.generateCombination(features.split(","))) {
-                dataModel.put("feature", eachFeature);
-                dataModel.put("framework", eachFramework);
-                GenerateUtil.generateDirs(templateConfig, dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getJavaClassPaths(), OUTPUT_PATH + JAVA_CLASS_PATH);
-                GenerateUtil.generateDirs(templateConfig, dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getResourcePaths(), OUTPUT_PATH + RESOURCES_PATH);
-                GenerateUtil.generateFile(templateConfig, getType(), dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getJavaClassTemplateMap(), OUTPUT_PATH + JAVA_CLASS_PATH);
-                GenerateUtil.generateFile(templateConfig, getType(), dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getResourceTemplateMap(), OUTPUT_PATH + RESOURCES_PATH);
-                String outputPath = GenerateUtil.generatePath(templateConfig, dataModel, OUTPUT_PATH);
-                GenerateUtil.processFile(templateConfig, dataModel, getType() + "/pom.ftl", outputPath + "pom.xml");
+                generate(templateConfig, dataModel, eachFramework, eachFeature);
             }
         }
+    }
+    
+    private void generate(final Configuration templateConfig, final Map<String, String> dataModel, final String framework, final String feature) throws IOException, TemplateException {
+        dataModel.put("feature", feature);
+        dataModel.put("framework", framework);
+        GenerateUtil.generateDirs(templateConfig, dataModel, new ExampleScenarioFactory(feature, framework).getJavaClassPaths(), OUTPUT_PATH + JAVA_CLASS_PATH);
+        GenerateUtil.generateDirs(templateConfig, dataModel, new ExampleScenarioFactory(feature, framework).getResourcePaths(), OUTPUT_PATH + RESOURCES_PATH);
+        GenerateUtil.generateFile(templateConfig, getType(), dataModel, new ExampleScenarioFactory(feature, framework).getJavaClassTemplateMap(), OUTPUT_PATH + JAVA_CLASS_PATH);
+        GenerateUtil.generateFile(templateConfig, getType(), dataModel, new ExampleScenarioFactory(feature, framework).getResourceTemplateMap(), OUTPUT_PATH + RESOURCES_PATH);
+        String outputPath = GenerateUtil.generatePath(templateConfig, dataModel, OUTPUT_PATH);
+        GenerateUtil.processFile(templateConfig, dataModel, getType() + "/pom.ftl", outputPath + "pom.xml");
     }
     
     @Override
