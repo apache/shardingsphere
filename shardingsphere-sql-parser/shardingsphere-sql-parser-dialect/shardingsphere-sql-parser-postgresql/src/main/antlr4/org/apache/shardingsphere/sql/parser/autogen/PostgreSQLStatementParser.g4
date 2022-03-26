@@ -120,5 +120,6 @@ execute
     | dropPolicy
     | dropOwned
     | dropOperator
+    | dropMaterializedView
     ) SEMI_?
     ;
