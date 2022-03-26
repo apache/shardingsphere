@@ -34,7 +34,7 @@ import java.util.ServiceLoader;
  */
 public final class ExampleGeneratorFactory {
     
-    private static final String DATA_MODEL_PATH = "/data-model/data-model.yaml";
+    private static final String CONFIG_FILE = "/config.yaml";
     
     private final Configuration templateConfig;
     
@@ -57,7 +57,7 @@ public final class ExampleGeneratorFactory {
      */
     @SuppressWarnings("unchecked")
     public void generate() throws TemplateException, IOException {
-        try (InputStream input = ExampleGeneratorFactory.class.getResourceAsStream(DATA_MODEL_PATH)) {
+        try (InputStream input = ExampleGeneratorFactory.class.getResourceAsStream(CONFIG_FILE)) {
             Map<String, String> dataModel = new Yaml().loadAs(input, Map.class);
             String product = dataModel.get("product");
             dataModel.put("shardingsphereVersion", ShardingSphereVersion.VERSION);

@@ -4,9 +4,9 @@ Project uses freemarker template engine to generate example codes of ShardingSph
 
 ## Usage
 
-1. Configure parameter
+1. Configure YAML file
 
-File: `src/main/resources/data-model/data-model.yaml`
+File: `src/main/resources/config.yaml`
 
 2. Generate code
 
