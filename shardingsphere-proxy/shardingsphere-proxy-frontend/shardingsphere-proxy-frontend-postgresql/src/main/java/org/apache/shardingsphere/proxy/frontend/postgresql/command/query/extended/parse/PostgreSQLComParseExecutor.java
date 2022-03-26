@@ -73,8 +73,8 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         Optional<SQLParserRule> sqlParserRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
         Preconditions.checkState(sqlParserRule.isPresent());
-        return new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType()), 
-                sqlParserRule.get().getSqlStatementCache(), sqlParserRule.get().getParseTreeCache(), sqlParserRule.get().isSqlCommentParseEnabled());
+        return new ShardingSphereSQLParserEngine(
+                DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType()), sqlParserRule.get().toParserConfiguration());
     }
     
     private String convertSQLToJDBCStyle(final SQLStatement sqlStatement, final String sql) {

@@ -89,8 +89,7 @@ public final class TextProtocolBackendHandlerFactory {
         SQLStatement sqlStatement = sqlStatementSupplier.get().orElseGet(() -> {
             Optional<SQLParserRule> sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
             Preconditions.checkState(sqlParserRule.isPresent());
-            return new ShardingSphereSQLParserEngine(getBackendDatabaseType(databaseType, connectionSession).getName(), 
-                    sqlParserRule.get().getSqlStatementCache(), sqlParserRule.get().getParseTreeCache(), sqlParserRule.get().isSqlCommentParseEnabled()).parse(sql, false);
+            return new ShardingSphereSQLParserEngine(getBackendDatabaseType(databaseType, connectionSession).getName(), sqlParserRule.get().toParserConfiguration()).parse(sql, false);
         });
         databaseType.handleRollbackOnly(connectionSession.getTransactionStatus().isRollbackOnly(), sqlStatement);
         checkUnsupportedSQLStatement(sqlStatement);

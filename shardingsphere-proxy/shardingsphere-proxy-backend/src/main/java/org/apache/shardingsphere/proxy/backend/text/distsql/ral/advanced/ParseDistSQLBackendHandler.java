@@ -68,8 +68,8 @@ public final class ParseDistSQLBackendHandler extends QueryableRALBackendHandler
         Preconditions.checkState(sqlParserRule.isPresent());
         SQLStatement parsedSqlStatement;
         try {
-            parsedSqlStatement = new ShardingSphereSQLParserEngine(getBackendDatabaseType(databaseType, connectionSession).getName(), 
-                    sqlParserRule.get().getSqlStatementCache(), sqlParserRule.get().getParseTreeCache(), sqlParserRule.get().isSqlCommentParseEnabled()).parse(sqlStatement.getSql(), false);
+            parsedSqlStatement = new ShardingSphereSQLParserEngine(
+                    getBackendDatabaseType(databaseType, connectionSession).getName(), sqlParserRule.get().toParserConfiguration()).parse(sqlStatement.getSql(), false);
         } catch (SQLParsingException ex) {
             throw new SQLParsingException("You have a syntax error in your parsed statement");
         }

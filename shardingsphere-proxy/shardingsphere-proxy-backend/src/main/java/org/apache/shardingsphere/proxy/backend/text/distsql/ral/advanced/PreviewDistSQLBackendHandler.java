@@ -103,8 +103,7 @@ public final class PreviewDistSQLBackendHandler extends QueryableRALBackendHandl
         String databaseType = DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType());
         Optional<SQLParserRule> sqlParserRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
         Preconditions.checkState(sqlParserRule.isPresent());
-        SQLStatement previewedStatement = new ShardingSphereSQLParserEngine(databaseType, 
-                sqlParserRule.get().getSqlStatementCache(), sqlParserRule.get().getParseTreeCache(), sqlParserRule.get().isSqlCommentParseEnabled()).parse(sqlStatement.getSql(), false);
+        SQLStatement previewedStatement = new ShardingSphereSQLParserEngine(databaseType, sqlParserRule.get().toParserConfiguration()).parse(sqlStatement.getSql(), false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), previewedStatement, schemaName);
         // TODO optimize SQLStatementSchemaHolder
         if (sqlStatementContext instanceof TableAvailable) {
