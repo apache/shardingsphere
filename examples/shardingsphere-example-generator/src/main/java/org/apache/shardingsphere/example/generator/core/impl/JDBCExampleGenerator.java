@@ -37,10 +37,8 @@ public final class JDBCExampleGenerator implements ExampleGenerator {
     
     @Override
     public void generate(final Configuration templateConfig, final Map<String, String> dataModel) throws IOException, TemplateException {
-        String features = dataModel.get("features");
-        String frameworks = dataModel.get("frameworks");
-        for (String eachFramework : frameworks.split(",")) {
-            for (String eachFeature : GenerateUtil.generateCombination(features.split(","))) {
+        for (String eachFramework : dataModel.get("frameworks").split(",")) {
+            for (String eachFeature : GenerateUtil.generateCombination(dataModel.get("features").split(","))) {
                 generate(templateConfig, dataModel, eachFramework, eachFeature);
             }
         }
