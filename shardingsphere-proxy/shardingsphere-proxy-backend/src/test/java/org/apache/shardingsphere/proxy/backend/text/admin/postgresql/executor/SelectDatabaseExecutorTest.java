@@ -128,7 +128,8 @@ public final class SelectDatabaseExecutorTest {
         final String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate, d.datallowconn, pg_get_userbyid(d.datdba) AS databaseowner," 
                 + " d.datcollate, d.datctype, shobj_description(d.oid, 'pg_database') AS description, d.datconnlimit, t.spcname, d.encoding, pg_encoding_to_char(d.encoding) AS encodingname " 
                 + "FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
-        final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("PostgreSQL", sqlParserRule).parse(sql, false);
+        final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("PostgreSQL",
+                sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache(), sqlParserRule.isSqlCommentParseEnabled()).parse(sql, false);
         Map<String, String> mockResultSetMap = new HashMap<>();
         mockResultSetMap.put("databasename", "demo_ds_0");
         mockResultSetMap.put("databaseowner", "postgres");
@@ -162,7 +163,8 @@ public final class SelectDatabaseExecutorTest {
         final String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate, d.datallowconn, pg_get_userbyid(d.datdba) AS databaseowner, " 
                 + "d.datcollate, d.datctype, shobj_description(d.oid, 'pg_database') AS description, d.datconnlimit, t.spcname, d.encoding, pg_encoding_to_char(d.encoding) AS encodingname " 
                 + "FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
-        final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("PostgreSQL", sqlParserRule).parse(sql, false);
+        final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("PostgreSQL",
+                sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache(), sqlParserRule.isSqlCommentParseEnabled()).parse(sql, false);
         Map<String, String> mockResultSetMap = new HashMap<>();
         mockResultSetMap.put("databasename", "demo_ds_0");
         mockResultSetMap.put("databaseowner", "postgres");
@@ -181,7 +183,8 @@ public final class SelectDatabaseExecutorTest {
     @Test
     public void assertSelectSchemataWithoutDataSourceExecuteAndWithColumnProjectionSegment() throws SQLException {
         final String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
-        final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("PostgreSQL", sqlParserRule).parse(sql, false);
+        final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("PostgreSQL",
+                sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache(), sqlParserRule.isSqlCommentParseEnabled()).parse(sql, false);
         Map<String, String> mockResultSetMap = new HashMap<>();
         mockResultSetMap.put("databasename", "demo_ds_0");
         mockResultSetMap.put("databaseowner", "postgres");
@@ -203,7 +206,8 @@ public final class SelectDatabaseExecutorTest {
     @Test
     public void assertSelectSchemataInNoSchemaExecute() throws SQLException {
         final String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
-        final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("PostgreSQL", sqlParserRule).parse(sql, false);
+        final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("PostgreSQL",
+                sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache(), sqlParserRule.isSqlCommentParseEnabled()).parse(sql, false);
         SelectDatabaseExecutor selectSchemataExecutor = new SelectDatabaseExecutor((SelectStatement) sqlStatement, sql);
         selectSchemataExecutor.execute(mock(ConnectionSession.class));
         assertThat(selectSchemataExecutor.getQueryResultMetaData().getColumnCount(), is(0));
