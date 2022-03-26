@@ -20,6 +20,7 @@ package org.apache.shardingsphere.example.generator;
 import freemarker.template.TemplateException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.example.generator.core.ExampleGeneratorFactory;
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ import java.io.IOException;
  * Example generator entrance.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class ExampleGeneratorMain {
     
     /**
@@ -39,5 +41,11 @@ public final class ExampleGeneratorMain {
      */
     public static void main(final String[] args) throws IOException, TemplateException {
         new ExampleGeneratorFactory().generate();
+        printMessages();
+    }
+    
+    private static void printMessages() {
+        log.info("Example codes are generated successful!");
+        log.info("Please find them in folder `target/generated-sources/shardingsphere-${product}-sample`.");
     }
 }
