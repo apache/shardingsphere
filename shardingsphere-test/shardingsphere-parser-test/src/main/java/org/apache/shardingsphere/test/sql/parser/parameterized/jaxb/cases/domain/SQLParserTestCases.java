@@ -581,6 +581,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "drop-function")
     private final List<DropFunctionStatementTestCase> dropFunctionTestCase = new LinkedList<>();
     
+    @XmlElement(name = "drop-group")
+    private final List<DropGroupStatementTestCase> dropGroupTestCase = new LinkedList<>();
+    
     @XmlElement(name = "drop-policy")
     private final List<DropPolicyStatementTestCase> dropPolicyTestCase = new LinkedList<>();
     
@@ -1278,6 +1281,7 @@ public final class SQLParserTestCases {
         putAll(dropPolicyTestCase, result);
         putAll(dropProcedureTestCase, result);
         putAll(dropFunctionTestCase, result);
+        putAll(dropGroupTestCase, result);
         putAll(dropDatabaseTestCase, result);
         putAll(callProcedureTestCase, result);
         putAll(copyStatementTestCase, result);
