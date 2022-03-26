@@ -6,7 +6,7 @@
 
 1. 配置参数
 
-文件位置：`src/main/resources/data-model/data-model.yaml` 
+文件位置：`src/main/resources/config.yaml` 
 
 2. 生成代码
 
