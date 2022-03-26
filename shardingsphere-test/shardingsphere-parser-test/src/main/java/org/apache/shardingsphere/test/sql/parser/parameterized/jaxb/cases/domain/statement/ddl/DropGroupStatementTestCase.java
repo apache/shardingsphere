@@ -22,5 +22,5 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 /**
  * Drop policy statement test case.
  */
-public final class DropGrouptatementTestCase extends SQLParserTestCase {
+public final class DropGroupStatementTestCase extends SQLParserTestCase {
 }
