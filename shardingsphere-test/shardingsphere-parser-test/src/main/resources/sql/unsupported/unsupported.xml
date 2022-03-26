@@ -43,7 +43,6 @@
     <sql-case id="create_statistics" value="CREATE STATISTICS alt_stat1 ON a, b FROM alt_regress_1" db-types="PostgreSQL" />
     <sql-case id="alter_statistics" value="ALTER STATISTICS alt_stat1 RENAME TO alt_stat2" db-types="PostgreSQL" />
     <sql-case id="drop_foreign_data_wrapper" value="DROP FOREIGN DATA WRAPPER alt_fdw2 CASCADE" db-types="PostgreSQL" />
-    <sql-case id="drop_operator" value="DROP OPERATOR === (boolean, boolean)" db-types="PostgreSQL" />
     <sql-case id="comment_on_table" value="COMMENT ON TABLE attmp_wrong IS 'table comment';" db-types="PostgreSQL" />
     <sql-case id="alter_view_rename" value="ALTER VIEW attmp_view_new RENAME TO fail" db-types="PostgreSQL" />
     <sql-case id="create_table_no_valid" value="create table nv_parent (d date, check (false) no inherit not valid)" db-types="PostgreSQL" />
@@ -5873,17 +5872,6 @@
     <sql-case id="drop_by_postgresql_source_test_case88" value="DROP MATERIALIZED VIEW mvtest_mv1 CASCADE;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case89" value="DROP MATERIALIZED VIEW ptif_test_matview;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case90" value="DROP MATERIALIZED VIEW tid_matview;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case91" value="DROP OPERATOR !==(bigint, bigint);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case92" value="DROP OPERATOR ###### (NONE, int4);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case93" value="DROP OPERATOR ###### (int4, NONE);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case94" value="DROP OPERATOR ###### (int4, int8);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case95" value="DROP OPERATOR &lt;&lt;&lt; (int, int);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case96" value="DROP OPERATOR &lt;&lt;&lt; (int, int);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case97" value="DROP OPERATOR &lt;|(bigint, bigint);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case98" value="DROP OPERATOR === (boolean, boolean);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case99" value="DROP OPERATOR ===(bigint, bigint);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case100" value="DROP OPERATOR @#@ (int, int);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case101" value="DROP OPERATOR @#@ (int8, int8);" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case102" value="DROP OPERATOR CLASS IF EXISTS no_such_schema.widget_ops USING btree;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case103" value="DROP OPERATOR CLASS IF EXISTS test_operator_class USING btree;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case104" value="DROP OPERATOR CLASS IF EXISTS test_operator_class USING no_such_am;" db-types="PostgreSQL"/>
@@ -5911,12 +5899,6 @@
     <sql-case id="drop_by_postgresql_source_test_case126" value="DROP OPERATOR FAMILY alt_opf9 USING gist;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case127" value="DROP OPERATOR FAMILY test_operator_family USING btree;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case128" value="DROP OPERATOR FAMILY test_operator_family USING no_such_am;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case129" value="DROP OPERATOR IF EXISTS # (NONE, no_such_schema.no_such_type);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case130" value="DROP OPERATOR IF EXISTS + (no_such_schema.no_such_type, no_such_schema.no_such_type);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case131" value="DROP OPERATOR IF EXISTS + (no_such_type, no_such_type);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case132" value="DROP OPERATOR IF EXISTS @#@ (int, int);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case133" value="DROP OPERATOR IF EXISTS no_such_schema.+ (int, int);" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case134" value="DROP OPERATOR |&gt;(bigint, bigint);" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case173" value="DROP PUBLICATION addr_pub;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case174" value="DROP PUBLICATION addr_pub_schema;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case175" value="DROP PUBLICATION pub;" db-types="PostgreSQL"/>
@@ -9115,22 +9097,8 @@
     <sql-case id="low_drop_by_postgresql_source_test_case18" value="drop instance rule nonesuch on noplace;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case19" value="drop materialized view mvtest_error;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case20" value="drop materialized view parallel_mat_view;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case21" value="drop operator (int4, int4);" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case22" value="drop operator = ( , int4);" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case23" value="drop operator = (int4, );" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case24" value="drop operator = (int4, nonesuch);" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case25" value="drop operator = (nonesuch);" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case26" value="drop operator = (nonesuch, int4);" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case27" value="drop operator === ();" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case28" value="drop operator === (int4);" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case29" value="drop operator === (int4, int4);" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case30" value="drop operator ===(int4, int4);" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case31" value="drop operator ===;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case32" value="drop operator class custom_opclass using hash;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case33" value="drop operator class part_test_int4_ops2 using hash;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case34" value="drop operator equals;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case35" value="drop operator int4, int4;" db-types="PostgreSQL"/>
-    <sql-case id="low_drop_by_postgresql_source_test_case36" value="drop operator;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case37" value="drop rewrite rule nonesuch;" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case38" value="drop routine f1(), p1();" db-types="PostgreSQL"/>
     <sql-case id="low_drop_by_postgresql_source_test_case39" value="drop rule &quot;_RETURN&quot; on rules_fooview;" db-types="PostgreSQL"/>

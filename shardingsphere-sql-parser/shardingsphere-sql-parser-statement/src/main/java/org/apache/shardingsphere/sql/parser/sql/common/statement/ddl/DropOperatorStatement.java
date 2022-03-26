@@ -15,37 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.statement;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * SQL statement context.
- * 
- * @param <T> type of SQL statement
+ * Drop operator statement.
  */
-public interface SQLStatementContext<T extends SQLStatement> {
-    
-    /**
-     * Get SQL statement.
-     * 
-     * @return SQL statement
-     */
-    T getSqlStatement();
-    
-    /**
-     * Get tables context.
-     *
-     * @return tables context
-     */
-    TablesContext getTablesContext();
-    
-    /**
-     * Get database type.
-     * 
-     * @return database type
-     */
-    DatabaseType getDatabaseType();
+@ToString
+public abstract class DropOperatorStatement extends AbstractSQLStatement implements DDLStatement {
 }

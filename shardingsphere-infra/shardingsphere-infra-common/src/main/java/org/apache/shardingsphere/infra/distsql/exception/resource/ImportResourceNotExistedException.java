@@ -15,37 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.statement;
+package org.apache.shardingsphere.infra.distsql.exception.resource;
 
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import lombok.Getter;
 
 /**
- * SQL statement context.
- * 
- * @param <T> type of SQL statement
+ * Import resource does not exist exception.
  */
-public interface SQLStatementContext<T extends SQLStatement> {
+@Getter
+public final class ImportResourceNotExistedException extends ResourceDefinitionViolationException {
     
-    /**
-     * Get SQL statement.
-     * 
-     * @return SQL statement
-     */
-    T getSqlStatement();
+    private static final long serialVersionUID = -7044446309219726180L;
     
-    /**
-     * Get tables context.
-     *
-     * @return tables context
-     */
-    TablesContext getTablesContext();
-    
-    /**
-     * Get database type.
-     * 
-     * @return database type
-     */
-    DatabaseType getDatabaseType();
+    public ImportResourceNotExistedException(final String fileName) {
+        super(1105, String.format("Data sources configuration in file `%s` is required.", fileName));
+    }
 }

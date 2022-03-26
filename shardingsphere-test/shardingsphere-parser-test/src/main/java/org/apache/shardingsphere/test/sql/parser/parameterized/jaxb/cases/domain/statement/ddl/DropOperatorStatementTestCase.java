@@ -15,37 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.statement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * SQL statement context.
- * 
- * @param <T> type of SQL statement
+ * Drop operator statement test case.
  */
-public interface SQLStatementContext<T extends SQLStatement> {
-    
-    /**
-     * Get SQL statement.
-     * 
-     * @return SQL statement
-     */
-    T getSqlStatement();
-    
-    /**
-     * Get tables context.
-     *
-     * @return tables context
-     */
-    TablesContext getTablesContext();
-    
-    /**
-     * Get database type.
-     * 
-     * @return database type
-     */
-    DatabaseType getDatabaseType();
+public final class DropOperatorStatementTestCase extends SQLParserTestCase {
 }

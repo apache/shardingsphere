@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -15,13 +16,7 @@
   ~ limitations under the License.
   -->
 
-<dataset>
-    <metadata>
-        <column name="schema_name" />
-    </metadata>
-    <row values="sharding_governance" />
-    <row values="mysql" />
-    <row values="information_schema" />
-    <row values="performance_schema" />
-    <row values="sys" />
-</dataset>
+<sql-cases>
+    <sql-case id="drop_operator" value="DROP OPERATOR === (boolean, boolean)" db-types="PostgreSQL" />
+    <sql-case id="drop_operator_if_exists" value="DROP OPERATOR IF EXISTS === (boolean, boolean)" db-types="PostgreSQL" />
+</sql-cases>
