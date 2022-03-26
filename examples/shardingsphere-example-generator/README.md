@@ -1,12 +1,12 @@
-## Generate examples using shardingsphere-example-generator
+# Automatic example codes generator
 
 shardingsphere-example-generator is an example code generation module based on the freemarker template engine. Data and template can generate the required code examples.
 
-#### Template
+## Template
 
 shardingsphere-example-generator has defined relevant templates, users do not need to pay attention when using them. The relevant templates are in the template folder under the `resources` directory. If there are any errors, please correct them.
 
-#### Data
+## Data
 
 Data is the core of template generation. Based on data, we inject soul into our template and generate running code. The specific data model is as follows:
 
@@ -22,7 +22,7 @@ Data is the core of template generation. Based on data, we inject soul into our 
 | username            | database username  | root                                                                                                                              |
 | password            | database password  | root                                                                                                                              |
 
-#### Steps
+## Steps
 
 1、Configure the data model
 

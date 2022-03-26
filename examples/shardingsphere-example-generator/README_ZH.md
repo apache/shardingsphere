@@ -1,12 +1,12 @@
-## 使用 shardingsphere-example-generator 生成示例
+# 自动生成代码使用示例
 
-shardingsphere-example-generator 是基于 freemarker 模板引擎的示例代码生成模块，数据+模板即可生成所需要的代码示例。
+shardingsphere-example-generator 是基于 freemarker 模板引擎的示例代码生成模块，数据 + 模板即可生成所需要的代码示例。
 
-#### 模板
+## 模板
 
 shardingsphere-example-generator 已经定义好了相关模板，用户在使用时，不需要关注，相关模板在 resources 目录下的 template 文件夹，若有错误，也请指正。
 
-#### 数据
+## 数据
 
 数据是模板生成的核心，基于数据，为我们的模板注入灵魂，生成运行的代码，具体的数据模型如下：
 
@@ -22,7 +22,7 @@ shardingsphere-example-generator 已经定义好了相关模板，用户在使�
 | username    | 数据库用户名    | root                                                                                                                            |
 | password    | 数据库密码     | root                                                                                                                            |
 
-#### 生成步骤
+## 生成步骤
 
 1、配置数据模型
 

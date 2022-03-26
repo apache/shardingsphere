@@ -25,13 +25,23 @@
         <artifactId>shardingsphere-example</artifactId>
         <version>${revision}</version>
     </parent>
-    <artifactId>shardingsphere-sample</artifactId>
-    <packaging>pom</packaging>
-    <name>${project.artifactId}</name>
+    <artifactId>shardingsphere-example-generator</artifactId>
     
-    <modules>
-        <module>shardingsphere-example-generator</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-common</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+        </dependency>
+    </dependencies>
     
     <build>
         <pluginManagement>
