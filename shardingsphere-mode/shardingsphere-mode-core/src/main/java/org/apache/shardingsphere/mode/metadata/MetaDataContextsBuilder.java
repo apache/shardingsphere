@@ -91,6 +91,9 @@ public final class MetaDataContextsBuilder {
      */
     public void addSystemSchemas(final DatabaseType databaseType) {
         for (Entry<String, Collection<String>> entry : databaseType.getSystemSchemas().entrySet()) {
+            if (databaseMap.containsKey(entry.getKey())) {
+                continue;
+            }
             ShardingSphereDatabase database = DatabaseLoader.load(entry.getKey(), databaseType);
             databaseMap.put(entry.getKey(), database);
         }

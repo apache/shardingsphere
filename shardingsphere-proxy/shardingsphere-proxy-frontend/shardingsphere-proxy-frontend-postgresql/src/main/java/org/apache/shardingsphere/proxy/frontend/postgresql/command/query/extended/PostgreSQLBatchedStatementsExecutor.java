@@ -21,6 +21,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLTypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
@@ -54,6 +55,7 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -61,9 +63,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Batched inserts executor for PostgreSQL.
+ * Batched statements executor for PostgreSQL.
  */
-public final class PostgreSQLBatchedInsertsExecutor {
+public final class PostgreSQLBatchedStatementsExecutor {
     
     private final KernelProcessor kernelProcessor = new KernelProcessor();
     
@@ -75,31 +77,49 @@ public final class PostgreSQLBatchedInsertsExecutor {
     
     private final PostgreSQLPreparedStatement preparedStatement;
     
-    private final Map<ExecutionUnit, List<List<Object>>> executionUnitParameters;
+    private final Map<ExecutionUnit, List<List<Object>>> executionUnitParameters = new HashMap<>();
     
-    private ExecutionContext anyExecutionContext;
+    private final ExecutionContext anyExecutionContext;
     
     private ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext;
     
-    public PostgreSQLBatchedInsertsExecutor(final ConnectionSession connectionSession, final PostgreSQLPreparedStatement preparedStatement, final List<List<Object>> parameterSets) {
+    public PostgreSQLBatchedStatementsExecutor(final ConnectionSession connectionSession, final PostgreSQLPreparedStatement preparedStatement, final List<List<Object>> parameterSets) {
         this.connectionSession = connectionSession;
         metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         this.preparedStatement = preparedStatement;
-        executionUnitParameters = new HashMap<>();
-        for (List<Object> eachGroupParameter : parameterSets) {
-            ExecutionContext executionContext = createExecutionContext(createLogicSQL(eachGroupParameter));
-            if (null == anyExecutionContext) {
-                anyExecutionContext = executionContext;
-            }
+        Iterator<List<Object>> parameterSetsIterator = parameterSets.iterator();
+        SQLStatementContext<?> sqlStatementContext = null;
+        ExecutionContext executionContext = null;
+        if (parameterSetsIterator.hasNext()) {
+            List<Object> firstGroupOfParameter = parameterSetsIterator.next();
+            sqlStatementContext = createSQLStatementContext(firstGroupOfParameter);
+            executionContext = createExecutionContext(createLogicSQL(sqlStatementContext, firstGroupOfParameter));
             for (ExecutionUnit each : executionContext.getExecutionUnits()) {
+                executionUnitParameters.computeIfAbsent(each, unused -> new LinkedList<>()).add(each.getSqlUnit().getParameters());
+            }
+        }
+        anyExecutionContext = executionContext;
+        prepareForRestOfParametersSet(parameterSetsIterator, sqlStatementContext);
+    }
+    
+    private SQLStatementContext<?> createSQLStatementContext(final List<Object> parameters) {
+        return SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), parameters, preparedStatement.getSqlStatement(), connectionSession.getSchemaName());
+    }
+    
+    private void prepareForRestOfParametersSet(final Iterator<List<Object>> parameterSetsIterator, final SQLStatementContext<?> sqlStatementContext) {
+        while (parameterSetsIterator.hasNext()) {
+            List<Object> eachGroupOfParameter = parameterSetsIterator.next();
+            if (sqlStatementContext instanceof ParameterAware) {
+                ((ParameterAware) sqlStatementContext).setUpParameters(eachGroupOfParameter);
+            }
+            ExecutionContext eachExecutionContext = createExecutionContext(createLogicSQL(sqlStatementContext, eachGroupOfParameter));
+            for (ExecutionUnit each : eachExecutionContext.getExecutionUnits()) {
                 executionUnitParameters.computeIfAbsent(each, unused -> new LinkedList<>()).add(each.getSqlUnit().getParameters());
             }
         }
     }
     
-    private LogicSQL createLogicSQL(final List<Object> parameters) {
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
-                metaDataContexts.getMetaDataMap(), parameters, preparedStatement.getSqlStatement(), connectionSession.getSchemaName());
+    private LogicSQL createLogicSQL(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
         return new LogicSQL(sqlStatementContext, preparedStatement.getSql(), parameters);
     }
     
@@ -152,7 +172,7 @@ public final class PostgreSQLBatchedInsertsExecutor {
     private int executeBatchedPreparedStatements() throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         DatabaseType databaseType = metaDataContexts.getMetaData(connectionSession.getSchemaName()).getResource().getDatabaseType();
-        JDBCExecutorCallback<int[]> callback = new BatchedInsertsJDBCExecutorCallback(databaseType, preparedStatement.getSqlStatement(), isExceptionThrown);
+        JDBCExecutorCallback<int[]> callback = new BatchedStatementsJDBCExecutorCallback(databaseType, preparedStatement.getSqlStatement(), isExceptionThrown);
         List<int[]> executeResults = jdbcExecutor.execute(executionGroupContext, callback);
         int result = 0;
         for (int[] eachResult : executeResults) {
@@ -163,9 +183,9 @@ public final class PostgreSQLBatchedInsertsExecutor {
         return result;
     }
     
-    private static class BatchedInsertsJDBCExecutorCallback extends JDBCExecutorCallback<int[]> {
+    private static class BatchedStatementsJDBCExecutorCallback extends JDBCExecutorCallback<int[]> {
     
-        BatchedInsertsJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
+        BatchedStatementsJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
             super(databaseType, sqlStatement, isExceptionThrown);
         }
     

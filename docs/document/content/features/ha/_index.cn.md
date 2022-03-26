@@ -20,6 +20,8 @@ Apache ShardingSphere 自身提供计算节点，并通过数据库作为存储�
 
 Apache ShardingSphere 需要自动感知多样化的存储节点高可用方案的同时，也能够动态集成对读写分离方案，是实现的主要挑战。
 
+![概述](https://shardingsphere.apache.org/document/current/img/discovery/overview.cn.png)
+
 ## 目标
 
 **尽可能的保证 7*24 小时不间断的数据库服务，是 Apache ShardingSphere 高可用模块的主要设计目标。**
