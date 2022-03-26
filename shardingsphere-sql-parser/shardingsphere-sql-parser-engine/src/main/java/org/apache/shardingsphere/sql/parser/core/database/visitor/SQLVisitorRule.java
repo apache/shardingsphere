@@ -430,7 +430,9 @@ public enum SQLVisitorRule {
     
     ALTER_TEXT_SEARCH_TEMPLATE("AlterTextSearchTemplate", SQLStatementType.DDL),
     
-    ALTER_TEXT_SEARCH_PARSER("AlterTextSearchParser", SQLStatementType.DDL);
+    ALTER_TEXT_SEARCH_PARSER("AlterTextSearchParser", SQLStatementType.DDL),
+
+    DROP_GROUP("DropGroup",SQLStatementType.DDL);
 
     private final String name;
     

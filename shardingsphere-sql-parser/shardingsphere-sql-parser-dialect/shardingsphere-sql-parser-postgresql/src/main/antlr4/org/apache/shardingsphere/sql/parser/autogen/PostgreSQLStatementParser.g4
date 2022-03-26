@@ -117,5 +117,6 @@ execute
     | createExtension
     | alterExtension
     | dropExtension
+    | dropGroup
     ) SEMI_?
     ;
