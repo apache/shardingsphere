@@ -38,7 +38,7 @@ public final class AlterInstanceHandlerTest {
         String instanceId = "instance_id";
         String key = "key_1";
         String value = "value_1";
-        new AlterInstanceHandler().initStatement(getSQLStatement(instanceId , key , value)).execute();
+        new AlterInstanceHandler().initStatement(getSQLStatement(instanceId, key, value)).execute();
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -49,7 +49,7 @@ public final class AlterInstanceHandlerTest {
         String instanceId = "instance_id";
         String key = "xa_recovery_nodes";
         String value = "value_1";
-        new AlterInstanceHandler().initStatement(getSQLStatement(instanceId , key , value)).execute();
+        new AlterInstanceHandler().initStatement(getSQLStatement(instanceId, key, value)).execute();
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -61,10 +61,10 @@ public final class AlterInstanceHandlerTest {
         String instanceId = "instance_id";
         String key = "xa_recovery_nodes";
         String value = "value_1";
-        new AlterInstanceHandler().initStatement(getSQLStatement(instanceId , key , value)).execute();
+        new AlterInstanceHandler().initStatement(getSQLStatement(instanceId, key, value)).execute();
     }
 
-    private AlterInstanceStatement getSQLStatement(final String instanceId , final String key , final String value) {
-        return new AlterInstanceStatement(instanceId , key , value);
+    private AlterInstanceStatement getSQLStatement(final String instanceId, final String key, final String value) {
+        return new AlterInstanceStatement(instanceId, key, value);
     }
 }
