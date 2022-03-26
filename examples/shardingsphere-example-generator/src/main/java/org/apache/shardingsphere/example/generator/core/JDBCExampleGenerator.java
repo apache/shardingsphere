@@ -15,19 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.generator;
+package org.apache.shardingsphere.example.generator.core;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
+import org.apache.shardingsphere.example.generator.scenario.ExampleScenarioFactory;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Map;
 
 /**
- * Proxy example generator.
+ * JDBC example generator.
  */
-public final class ProxyExampleGenerator implements ExampleGenerator {
+public final class JDBCExampleGenerator implements ExampleGenerator {
+    
+    private static final String JAVA_CLASS_PATH = "src/main/java/org/apache/shardingsphere/example/"
+            + "<#assign package = feature?replace('-', '.')?replace(',', '.') />"
+            + "${package}/${framework?replace('-', '/')}";
     
     @Override
     public void generate(final Configuration templateConfig, final Map<String, String> dataModel) throws IOException, TemplateException {
@@ -37,26 +41,18 @@ public final class ProxyExampleGenerator implements ExampleGenerator {
             for (String eachFeature : GenerateUtil.generateCombination(features.split(","))) {
                 dataModel.put("feature", eachFeature);
                 dataModel.put("framework", eachFramework);
-                GenerateUtil.generateDirs(templateConfig, dataModel, Collections.singleton("conf"), OUTPUT_PATH + RESOURCES_PATH);
+                GenerateUtil.generateDirs(templateConfig, dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getJavaClassPaths(), OUTPUT_PATH + JAVA_CLASS_PATH);
+                GenerateUtil.generateDirs(templateConfig, dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getResourcePaths(), OUTPUT_PATH + RESOURCES_PATH);
+                GenerateUtil.generateFile(templateConfig, getType(), dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getJavaClassTemplateMap(), OUTPUT_PATH + JAVA_CLASS_PATH);
+                GenerateUtil.generateFile(templateConfig, getType(), dataModel, new ExampleScenarioFactory(eachFeature, eachFramework).getResourceTemplateMap(), OUTPUT_PATH + RESOURCES_PATH);
                 String outputPath = GenerateUtil.generatePath(templateConfig, dataModel, OUTPUT_PATH);
-                processFile(eachFeature, templateConfig, dataModel, outputPath);
+                GenerateUtil.processFile(templateConfig, dataModel, getType() + "/pom.ftl", outputPath + "pom.xml");
             }
         }
     }
     
-    private void processFile(final String feature, final Configuration templateConfig, final Map<String, String> dataModel,
-                             final String baseOutputPath) throws TemplateException, IOException {
-        String outputPath = baseOutputPath + RESOURCES_PATH + "/conf/";
-        for (String each : feature.split(",")) {
-            String fileSuffix = "config-" + each;
-            GenerateUtil.processFile(templateConfig, dataModel, getType() + "/" + fileSuffix + ".ftl", outputPath + fileSuffix + ".yaml");
-        }
-        GenerateUtil.processFile(templateConfig, dataModel, getType() + "/server.ftl", outputPath + "server.yaml");
-        GenerateUtil.processFile(templateConfig, dataModel, getType() + "/pom.ftl", baseOutputPath + "pom.xml");
-    }
-    
     @Override
     public String getType() {
-        return "proxy";
+        return "jdbc";
     }
 }

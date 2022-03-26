@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.generator;
+package org.apache.shardingsphere.example.generator.core;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
