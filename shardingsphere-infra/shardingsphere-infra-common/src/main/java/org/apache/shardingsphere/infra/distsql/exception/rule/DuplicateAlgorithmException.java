@@ -15,30 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.merge.dql.fixture;
-
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+package org.apache.shardingsphere.infra.distsql.exception.rule;
 
 import java.util.Collection;
 
-public final class TableAvailableAndSqlStatementContextFixture implements TableAvailable, SQLStatementContext {
+/**
+ * Duplicate algorithm exception.
+ */
+public final class DuplicateAlgorithmException extends RuleDefinitionViolationException {
     
-    @Override
-    public SQLStatement getSqlStatement() {
-        return null;
-    }
+    private static final long serialVersionUID = 4382238091103015055L;
     
-    @Override
-    public Collection<SimpleTableSegment> getAllTables() {
-        return null;
-    }
-    
-    @Override
-    public TablesContext getTablesContext() {
-        return null;
+    public DuplicateAlgorithmException(final String ruleType, final String schemaName, final Collection<String> algorithmNames) {
+        super(1122, String.format("Duplicate %s algorithm names `%s` in schema `%s`", ruleType, algorithmNames, schemaName));
     }
 }

@@ -54,14 +54,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShadowDeleteStatementRoutingEngineTest {
-
+    
     private ShadowDeleteStatementRoutingEngine shadowDeleteStatementRoutingEngine;
-
+    
     @Before
     public void init() {
         shadowDeleteStatementRoutingEngine = new ShadowDeleteStatementRoutingEngine(createDeleteStatementContext(), Collections.emptyList());
     }
-
+    
     private DeleteStatementContext createDeleteStatementContext() {
         DeleteStatementContext result = mock(DeleteStatementContext.class);
         Collection<SimpleTableSegment> allTables = new LinkedList<>();
@@ -72,15 +72,13 @@ public final class ShadowDeleteStatementRoutingEngineTest {
         when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, "1"));
         WhereSegment whereSegment = new WhereSegment(0, 0, binaryOperationExpression);
         when(result.getWhereSegments()).thenReturn(Collections.singletonList(whereSegment));
-        MySQLDeleteStatement mySQLDeleteStatement = new MySQLDeleteStatement();
-        Collection<CommentSegment> commentSegments = new LinkedList<>();
-        commentSegments.add(new CommentSegment("/*shadow:true,foo:bar*/", 0, 20));
-        commentSegments.add(new CommentSegment("/*aaa:bbb*/", 21, 30));
-        mySQLDeleteStatement.setCommentSegments(commentSegments);
-        when(result.getSqlStatement()).thenReturn(mySQLDeleteStatement);
+        MySQLDeleteStatement deleteStatement = new MySQLDeleteStatement();
+        deleteStatement.getCommentSegments().add(new CommentSegment("/*shadow:true,foo:bar*/", 0, 20));
+        deleteStatement.getCommentSegments().add(new CommentSegment("/*aaa:bbb*/", 21, 30));
+        when(result.getSqlStatement()).thenReturn(deleteStatement);
         return result;
     }
-
+    
     @Test
     public void assertRouteAndParseShadowColumnConditions() {
         RouteContext routeContext = mock(RouteContext.class);
@@ -95,7 +93,7 @@ public final class ShadowDeleteStatementRoutingEngineTest {
         assertThat(sqlNotesIt.next(), is("/*shadow:true,foo:bar*/"));
         assertThat(sqlNotesIt.next(), is("/*aaa:bbb*/"));
     }
-
+    
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
         AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
         result.setDataSources(createDataSources());
@@ -103,13 +101,13 @@ public final class ShadowDeleteStatementRoutingEngineTest {
         result.setShadowAlgorithms(createShadowAlgorithms());
         return result;
     }
-
+    
     private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
         Map<String, ShadowAlgorithm> result = new LinkedHashMap<>();
         result.put("user-id-delete-regex-algorithm", createColumnShadowAlgorithm());
         return result;
     }
-
+    
     private ShadowAlgorithm createColumnShadowAlgorithm() {
         Properties properties = new Properties();
         properties.setProperty("column", "user_id");
@@ -120,7 +118,7 @@ public final class ShadowDeleteStatementRoutingEngineTest {
         columnRegexMatchShadowAlgorithm.init();
         return columnRegexMatchShadowAlgorithm;
     }
-
+    
     private Map<String, ShadowTableConfiguration> createTables() {
         Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
         Collection<String> shadowAlgorithmNames = new LinkedList<>();
@@ -128,7 +126,7 @@ public final class ShadowDeleteStatementRoutingEngineTest {
         result.put("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source-0"), shadowAlgorithmNames));
         return result;
     }
-
+    
     private Map<String, ShadowDataSourceConfiguration> createDataSources() {
         Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
         result.put("shadow-data-source-0", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
@@ -142,4 +140,3 @@ public final class ShadowDeleteStatementRoutingEngineTest {
         assertThat(allTables.iterator().next().getTableName().getIdentifier().getValue(), is("t_order"));
     }
 }
-

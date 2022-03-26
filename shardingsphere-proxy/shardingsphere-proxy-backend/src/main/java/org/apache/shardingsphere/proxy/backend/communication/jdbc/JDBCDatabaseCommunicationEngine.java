@@ -115,12 +115,14 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
     @SuppressWarnings({"unchecked", "rawtypes"})
     @SneakyThrows(SQLException.class)
     public ResponseHeader execute() {
-        ExecutionContext executionContext = getKernelProcessor()
-                .generateExecutionContext(getLogicSQL(), getMetaData(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
+        LogicSQL logicSQL = getLogicSQL();
+        ExecutionContext executionContext = getKernelProcessor().generateExecutionContext(
+                logicSQL, getMetaData(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
         // TODO move federation route logic to binder
-        if (executionContext.getRouteContext().isFederated()) {
+        if (executionContext.getRouteContext().isFederated() 
+                || logicSQL.getSqlStatementContext().getDatabaseType().containsSystemSchema(backendConnection.getConnectionSession().getSchemaName())) {
             MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-            ResultSet resultSet = doExecuteFederation(getLogicSQL(), metaDataContexts);
+            ResultSet resultSet = doExecuteFederation(logicSQL, metaDataContexts);
             return processExecuteFederation(resultSet, metaDataContexts);
         }
         if (executionContext.getExecutionUnits().isEmpty()) {
