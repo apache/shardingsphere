@@ -32,7 +32,7 @@ import java.util.Map;
 public final class JDBCExampleGenerator implements ExampleGenerator {
     
     private static final String JAVA_CLASS_PATH = "src/main/java/org/apache/shardingsphere/example/"
-            + "<#assign package = feature?replace('-', '.')?replace(',', '.') />"
+            + "<#assign package = feature?replace('-', '')?replace(',', '.') />"
             + "${package}/${framework?replace('-', '/')}";
     
     @Override
