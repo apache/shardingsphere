@@ -139,7 +139,7 @@ public final class FilterableTableScanExecutor {
         LogicSQL logicSQL = createLogicSQL(federationContext.getMetaDataMap(), sqlString, databaseType);
         ShardingSphereMetaData metaData = federationContext.getMetaDataMap().get(schemaName);
         ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, metaData, executorContext.getProps());
-        if (federationContext.isPreview()) {
+        if (federationContext.isPreview() || databaseType.containsSystemSchema(schemaName)) {
             federationContext.getExecutionUnits().addAll(context.getExecutionUnits());
             return createEmptyEnumerable();
         }

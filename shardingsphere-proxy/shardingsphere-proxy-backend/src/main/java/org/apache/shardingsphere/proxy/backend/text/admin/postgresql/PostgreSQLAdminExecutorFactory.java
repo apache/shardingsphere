@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.postgresql;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorFactory;
@@ -57,12 +58,13 @@ public final class PostgreSQLAdminExecutorFactory implements DatabaseAdminExecut
     private static final String PG_PREFIX = "pg_";
     
     @Override
-    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatement sqlStatement) {
+    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatementContext<?> sqlStatementContext) {
         return Optional.empty();
     }
     
     @Override
-    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatement sqlStatement, final String sql, final Optional<String> schemaName) {
+    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatementContext<?> sqlStatementContext, final String sql, final String schemaName) {
+        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof SelectStatement) {
             Collection<String> selectedTableNames = getSelectedTableNames((SelectStatement) sqlStatement);
             if (selectedTableNames.contains(PG_DATABASE)) {
