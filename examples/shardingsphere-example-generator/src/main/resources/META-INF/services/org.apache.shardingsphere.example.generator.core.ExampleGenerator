@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.example.generator.JDBCExampleGenerator
-org.apache.shardingsphere.example.generator.ProxyExampleGenerator
+org.apache.shardingsphere.example.generator.core.impl.JDBCExampleGenerator
+org.apache.shardingsphere.example.generator.core.impl.ProxyExampleGenerator

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.generator;
+package org.apache.shardingsphere.example.generator.core;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -74,22 +74,6 @@ public final class GenerateUtil {
         String outputPath = generatePath(templateConfig, dataModel, path);
         for (Entry<String, String> entry : templateMap.entrySet()) {
             processFile(templateConfig, dataModel, rootDir + "/" + entry.getKey(), outputPath + "/" + entry.getValue());
-        }
-    }
-    
-    /**
-     * Generate file.
-     * 
-     * @param templateConfig template configuration
-     * @param dataModel data model
-     * @param path paths
-     * @throws IOException IO exception
-     * @throws TemplateException template exception
-     */
-    public static void generateFile(final Configuration templateConfig, final Map<String, String> dataModel, final Map<String, String> templateMap, final String path) throws IOException, TemplateException {
-        String outputPath = generatePath(templateConfig, dataModel, path);
-        for (Entry<String, String> entry : templateMap.entrySet()) {
-            processFile(templateConfig, dataModel, entry.getKey(), outputPath + "/" + entry.getValue());
         }
     }
     

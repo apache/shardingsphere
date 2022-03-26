@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.generator;
+package org.apache.shardingsphere.example.generator.core.impl;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
+import org.apache.shardingsphere.example.generator.core.ExampleGenerator;
+import org.apache.shardingsphere.example.generator.core.GenerateUtil;
 import org.apache.shardingsphere.example.generator.scenario.ExampleScenarioFactory;
 
 import java.io.IOException;

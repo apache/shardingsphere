@@ -20,6 +20,7 @@ package org.apache.shardingsphere.example.generator;
 import freemarker.template.TemplateException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.example.generator.core.ExampleGeneratorFactory;
 
 import java.io.IOException;
 

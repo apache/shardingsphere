@@ -53,19 +53,7 @@ public final class ShardingSphereSQLParserEngine {
      * @param useCache whether use cache
      * @return SQL statement
      */
-    @SuppressWarnings("OverlyBroadCatchBlock")
     public SQLStatement parse(final String sql, final boolean useCache) {
-        try {
-            return parse0(sql, useCache);
-            // CHECKSTYLE:OFF
-            // TODO check whether throw SQLParsingException only
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            throw ex;
-        }
-    }
-    
-    private SQLStatement parse0(final String sql, final boolean useCache) {
         try {
             return sqlStatementParserEngine.parse(sql, useCache);
         } catch (final SQLParsingException | ParseCancellationException | UncheckedExecutionException originalEx) {

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.generator;
+package org.apache.shardingsphere.example.generator.core;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
@@ -28,8 +28,7 @@ import java.util.Map;
  */
 public interface ExampleGenerator {
     
-    String OUTPUT_PATH = "./examples/shardingsphere-example-generator/target/generated-sources"
-            + "/shardingsphere-${product}-sample/${feature?replace(',', '-')}--${framework}--${mode}--${transaction}/";
+    String OUTPUT_PATH = "./examples/shardingsphere-example-generator/target/generated-sources/shardingsphere-${product}-sample/${feature?replace(',', '-')}--${framework}--${mode}--${transaction}/";
     
     String RESOURCES_PATH = "src/main/resources";
     
