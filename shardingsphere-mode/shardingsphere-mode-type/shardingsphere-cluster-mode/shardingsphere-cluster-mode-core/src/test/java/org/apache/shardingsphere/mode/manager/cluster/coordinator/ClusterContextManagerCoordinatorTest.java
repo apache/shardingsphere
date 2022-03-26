@@ -318,6 +318,7 @@ public final class ClusterContextManagerCoordinatorTest {
     public void assertRenewInstanceOfflineEvent() {
         InstanceOfflineEvent mockInstanceOfflineEvent = new InstanceOfflineEvent(contextManager.getInstanceContext().getInstance().getInstanceDefinition());
         coordinator.renew(mockInstanceOfflineEvent);
+        
         assertThat(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getUniqueSign(), is(3307));
     }
 
