@@ -49,7 +49,7 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/sql-parser 
                            http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser.xsd
                            ">
-<#assign package = feature?replace('-', '.')?replace(',', '.') />
+<#assign package = feature?replace('-', '')?replace(',', '.') />
 
     <context:annotation-config />
     <context:component-scan base-package="org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}"/>

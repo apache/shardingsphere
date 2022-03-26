@@ -22,8 +22,8 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.shardingsphere.example</groupId>
     <artifactId>${feature?replace(',', '-')}--${framework}--${mode}--${transaction}</artifactId>
-    <name>${r'${project.artifactId}'}</name>
     <version>${shardingsphereVersion}</version>
+    <name>${r'${project.artifactId}'}</name>
     
     <dependencies>
     <#if framework=="jdbc">
@@ -122,7 +122,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
