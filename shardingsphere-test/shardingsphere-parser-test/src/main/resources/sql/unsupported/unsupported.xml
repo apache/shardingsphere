@@ -5860,11 +5860,6 @@
     <sql-case id="drop_by_postgresql_source_test_case76" value="DROP FOREIGN TABLE ft_part_1_1, ft_part_1_2;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case77" value="DROP FOREIGN TABLE ft_part_1_2;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case78" value="DROP FOREIGN TABLE no_table;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case79" value="DROP GROUP IF EXISTS regress_test_g1, regress_test_g2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case80" value="DROP GROUP regress_dep_group;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case81" value="DROP GROUP regress_dep_group;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case82" value="DROP GROUP regress_test_g1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case83" value="DROP GROUP regress_test_g2;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case84" value="DROP MATERIALIZED VIEW IF EXISTS no_such_mv;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case85" value="DROP MATERIALIZED VIEW IF EXISTS no_such_schema.foo;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case86" value="DROP MATERIALIZED VIEW concur_reindex_matview;" db-types="PostgreSQL"/>
