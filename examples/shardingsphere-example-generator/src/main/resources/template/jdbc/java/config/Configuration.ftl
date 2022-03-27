@@ -85,12 +85,6 @@ public final class Configuration {
     
     private static final String PASSWORD = "${(password)?string}";
     
-    /**
-     * Create ShardingSphere data source.
-     * 
-     * @return created ShardingSphere data source
-     * @throws SQLException SQL exception
-     */
     public DataSource createDataSource() throws SQLException {
     <#if mode=="memory">
         return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), createRuleConfiguration(), createProperties());
