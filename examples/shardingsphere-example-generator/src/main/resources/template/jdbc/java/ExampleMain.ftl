@@ -18,6 +18,8 @@
 <#assign package = feature?replace('-', '')?replace(',', '.') />
 package org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')};
 
+import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.service.ExampleService;
+
 <#if framework?contains("spring-boot")>
 <#if framework=="spring-boot-starter-mybatis">
 import org.mybatis.spring.annotation.MapperScan;
@@ -56,12 +58,12 @@ import java.sql.SQLException;
 <#if framework?contains("spring-boot")>
 @SpringBootApplication
 </#if>
-public class Example {
+public final class ExampleMain {
     
     public static void main(final String[] args) throws SQLException {
     <#if framework=="jdbc">
-        Configuration configuration = new Configuration();
-        DataSource dataSource = configuration.getDataSource();
+        Configuration config = new Configuration();
+        DataSource dataSource = config.getDataSource();
         ExampleService exampleService = new ExampleService(dataSource);
         exampleService.run();
     <#else>
