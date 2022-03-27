@@ -29,6 +29,9 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Address repository.
+ */
 public final class AddressRepository {
     
     private final DataSource dataSource;
@@ -37,15 +40,24 @@ public final class AddressRepository {
         this.dataSource = dataSource;
     }
     
+    /**
+     * Create address table if not existed.
+     * 
+     * @throws SQLException SQL exception
+     */
     public void createTableIfNotExists() throws SQLException {
-        String sql = "CREATE TABLE IF NOT EXISTS t_address "
-            + "(address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id))";
+        String sql = "CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id))";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
         }
     }
     
+    /**
+     * Drop address table.
+     * 
+     * @throws SQLException SQL exception
+     */
     public void dropTable() throws SQLException {
         String sql = "DROP TABLE t_address";
         try (Connection connection = dataSource.getConnection();
@@ -54,6 +66,11 @@ public final class AddressRepository {
         }
     }
     
+    /**
+     * Truncate address table.
+     * 
+     * @throws SQLException SQL exception
+     */
     public void truncateTable() throws SQLException {
         String sql = "TRUNCATE TABLE t_address";
         try (Connection connection = dataSource.getConnection();
@@ -62,32 +79,46 @@ public final class AddressRepository {
         }
     }
     
-    public Long insert(final Address entity) throws SQLException {
+    /**
+     * Insert address.
+     * 
+     * @param address address to be inserted
+     * @throws SQLException SQL exception
+     */
+    public Long insert(final Address address) throws SQLException {
         String sql = "INSERT INTO t_address (address_id, address_name) VALUES (?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setLong(1, entity.getAddressId());
-            preparedStatement.setString(2, entity.getAddressName());
+            preparedStatement.setLong(1, address.getAddressId());
+            preparedStatement.setString(2, address.getAddressName());
             preparedStatement.executeUpdate();
         }
         return entity.getAddressId();
     }
     
-    public void delete(final Long primaryKey) throws SQLException {
+    /**
+     * Delete address by id.
+     * 
+     * @param id address id to be deleted
+     * @throws SQLException SQL exception
+     */
+    public void delete(final Long id) throws SQLException {
         String sql = "DELETE FROM t_address WHERE address_id=?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setLong(1, primaryKey);
+            preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
         }
     }
     
+    /**
+     * Select all address.
+     * 
+     * @return all address
+     * @throws SQLException SQL exception
+     */
     public List<Address> selectAll() throws SQLException {
         String sql = "SELECT * FROM t_address";
-        return getAddress(sql);
-    }
-    
-    private List<Address> getAddress(final String sql) throws SQLException {
         List<Address> result = new LinkedList<>();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
