@@ -18,7 +18,9 @@
 <#assign package = feature?replace('-', '')?replace(',', '.') />
 package org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')};
 
+<#if framework=="jdbc">
 import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.config.Configuration;
+</#if>
 import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.service.ExampleService;
 
 <#if framework?contains("spring-boot")>
@@ -59,7 +61,7 @@ import java.sql.SQLException;
 <#if framework?contains("spring-boot")>
 @SpringBootApplication
 </#if>
-public final class ExampleMain {
+public class ExampleMain {
     
     public static void main(final String[] args) throws SQLException {
     <#if framework=="jdbc">
@@ -71,7 +73,7 @@ public final class ExampleMain {
     <#if framework?contains("spring-namespace")>
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("application.xml")) {
     <#else>
-        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(Example.class, args)) {
+        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(ExampleMain.class, args)) {
     </#if>
             ExampleService exampleService = applicationContext.getBean(ExampleService.class);
             exampleService.run();
