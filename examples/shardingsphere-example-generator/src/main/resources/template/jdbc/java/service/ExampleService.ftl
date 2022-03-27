@@ -74,11 +74,6 @@ public final class ExampleService {
     }
 </#if>
     
-    /**
-     * Execute test.
-     *
-     * @throws SQLException SQL exception
-     */
     public void run() throws SQLException {
         try {
             this.initEnvironment();
@@ -88,11 +83,6 @@ public final class ExampleService {
         }
     }
     
-    /**
-     * Initialize the database test environment.
-     * 
-     * @throws SQLException SQL exception
-     */
     private void initEnvironment() throws SQLException {
         orderRepository.createTableIfNotExists();
         orderItemRepository.createTableIfNotExists();
@@ -179,11 +169,6 @@ public final class ExampleService {
         return result;
     }
     
-    /**
-     * Restore the environment.
-     * 
-     * @throws SQLException SQL exception
-     */
     private void cleanEnvironment() throws SQLException {
     <#if feature?contains("shadow")>
         orderRepository.dropTableShadow();

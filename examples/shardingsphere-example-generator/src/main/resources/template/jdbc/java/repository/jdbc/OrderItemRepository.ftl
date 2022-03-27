@@ -118,10 +118,6 @@ public final class OrderItemRepository {
     
     public List<OrderItem> selectAll() throws SQLException {
         String sql = "SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id";
-        return getOrderItems(sql);
-    }
-    
-    private List<OrderItem> getOrderItems(final String sql) throws SQLException {
         List<OrderItem> result = new LinkedList<>();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
