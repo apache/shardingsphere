@@ -117,8 +117,8 @@ public final class Configuration {
     
     private DataSource createDataSource(final String dataSourceName) {
         HikariDataSource result = new HikariDataSource();
-        result.setDriverClassName("com.mysql.jdbc.Driver");
-        result.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8", HOST, PORT, dataSourceName));
+        result.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        result.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true", HOST, PORT, dataSourceName));
         result.setUsername(USER_NAME);
         result.setPassword(PASSWORD);
         return result;
