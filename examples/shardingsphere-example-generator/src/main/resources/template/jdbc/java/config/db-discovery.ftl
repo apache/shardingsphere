@@ -20,12 +20,12 @@
     }
     
     private Collection<DatabaseDiscoveryDataSourceRuleConfiguration> createDataSources() {
-        DatabaseDiscoveryDataSourceRuleConfiguration dsRuleConf1 = new DatabaseDiscoveryDataSourceRuleConfiguration("rule", Lists.newArrayList("ds_0", "ds_1", "ds_2"), "mgr-heartbeat", "mgr");
-        return Lists.newArrayList(dsRuleConf1);
+        DatabaseDiscoveryDataSourceRuleConfiguration result = new DatabaseDiscoveryDataSourceRuleConfiguration("rule", Arrays.asList("ds_0", "ds_1", "ds_2"), "mgr-heartbeat", "mgr");
+        return Collections.singleton(result);
     }
     
     private Map<String, DatabaseDiscoveryHeartBeatConfiguration> createDiscoveryHeartbeats() {
-        Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartBeatConfiguration = new HashMap<>();
+        Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartBeatConfiguration = new LinkedHashMap<>();
         Properties props = new Properties();
         props.put("keep-alive-cron", "0/5 * * * * ?");
         discoveryHeartBeatConfiguration.put("mgr-heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(props));
@@ -33,7 +33,7 @@
     }
     
     private Map<String, ShardingSphereAlgorithmConfiguration> createDiscoveryTypes() {
-        Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes = new HashMap<>();
+        Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes = new LinkedHashMap<>();
         Properties props = new Properties();
         props.put("keep-alive-cron", "0/5 * * * * ?");
         props.put("group-name", "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
