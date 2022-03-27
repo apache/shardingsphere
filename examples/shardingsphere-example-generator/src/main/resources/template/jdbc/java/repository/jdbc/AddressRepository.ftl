@@ -93,7 +93,7 @@ public final class AddressRepository {
             preparedStatement.setString(2, address.getAddressName());
             preparedStatement.executeUpdate();
         }
-        return entity.getAddressId();
+        return address.getAddressId();
     }
     
     /**
