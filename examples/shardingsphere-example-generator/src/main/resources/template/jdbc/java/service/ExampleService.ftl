@@ -24,6 +24,8 @@ import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.'
 import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.repository.AddressRepository;
 import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.repository.OrderItemRepository;
 import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.repository.OrderRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 <#if framework?contains("spring")>
 
 import org.springframework.stereotype.Service;
@@ -52,6 +54,8 @@ import java.util.List;
 @Service
 </#if>
 public final class ExampleService {
+    
+    private static final Logger logger = LoggerFactory.getLogger(ExampleService.class);
     
     private final OrderRepository orderRepository;
     
@@ -97,16 +101,16 @@ public final class ExampleService {
     }
     
     private void processSuccess() throws SQLException {
-        System.out.println("-------------- Process Success Begin ---------------");
+        logger.info("-------------- Process Success Begin ---------------");
         List<Long> orderIds = insertData();
         printData(); 
         deleteData(orderIds);
         printData();
-        System.out.println("-------------- Process Success Finish --------------");
+        logger.info("-------------- Process Success Finish --------------");
     }
     
     private List<Long> insertData() throws SQLException {
-        System.out.println("---------------------------- Insert Data ----------------------------");
+        logger.info("---------------------------- Insert Data ----------------------------");
         List<Long> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
             Order order = new Order();
@@ -134,7 +138,7 @@ public final class ExampleService {
     }
     
     private void deleteData(final List<Long> orderIds) throws SQLException {
-        System.out.println("---------------------------- Delete Data ----------------------------");
+        logger.info("---------------------------- Delete Data ----------------------------");
         long count = 1;
         for (Long each : orderIds) {
         <#if feature?contains("shadow")>
@@ -147,17 +151,17 @@ public final class ExampleService {
     }
     
     private void printData() throws SQLException {
-        System.out.println("---------------------------- Print Order Data -----------------------");
+        logger.info("---------------------------- Print Order Data -----------------------");
         for (Object each : this.selectAll()) {
-            System.out.println(each);
+            logger.info(each.toString());
         }
-        System.out.println("---------------------------- Print OrderItem Data -------------------");
+        logger.info("---------------------------- Print OrderItem Data -------------------");
         for (Object each : orderItemRepository.selectAll()) {
-            System.out.println(each);
+            logger.info(each.toString());
         } 
-        System.out.println("---------------------------- Print Address Data -------------------");
+        logger.info("---------------------------- Print Address Data -------------------");
         for (Object each : addressRepository.selectAll()) {
-            System.out.println(each);
+            logger.info(each.toString());
         }
     }
     
