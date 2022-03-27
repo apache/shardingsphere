@@ -20,8 +20,8 @@
     }
     
     private Collection<DatabaseDiscoveryDataSourceRuleConfiguration> createDataSources() {
-        DatabaseDiscoveryDataSourceRuleConfiguration dsRuleConf1 = new DatabaseDiscoveryDataSourceRuleConfiguration("rule", Lists.newArrayList("ds_0", "ds_1", "ds_2"), "mgr-heartbeat", "mgr");
-        return Lists.newArrayList(dsRuleConf1);
+        DatabaseDiscoveryDataSourceRuleConfiguration result = new DatabaseDiscoveryDataSourceRuleConfiguration("rule", Arrays.asList("ds_0", "ds_1", "ds_2"), "mgr-heartbeat", "mgr");
+        return Collections.singleton(result);
     }
     
     private Map<String, DatabaseDiscoveryHeartBeatConfiguration> createDiscoveryHeartbeats() {
