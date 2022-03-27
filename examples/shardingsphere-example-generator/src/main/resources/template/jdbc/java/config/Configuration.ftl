@@ -64,7 +64,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -115,7 +114,7 @@ public final class Configuration {
 </#if>
     
     private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>();
+        Map<String, DataSource> result = new LinkedHashMap<>();
         result.put("ds_0", createDataSource("demo_ds_0"));
         result.put("ds_1", createDataSource("demo_ds_1"));
         result.put("ds_2", createDataSource("demo_ds_2"));
