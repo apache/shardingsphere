@@ -18,6 +18,7 @@
 <#assign package = feature?replace('-', '')?replace(',', '.') />
 package org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')};
 
+import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.config.Configuration;
 import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.service.ExampleService;
 
 <#if framework?contains("spring-boot")>
@@ -63,7 +64,7 @@ public final class ExampleMain {
     public static void main(final String[] args) throws SQLException {
     <#if framework=="jdbc">
         Configuration config = new Configuration();
-        DataSource dataSource = config.getDataSource();
+        DataSource dataSource = config.createDataSource();
         ExampleService exampleService = new ExampleService(dataSource);
         exampleService.run();
     <#else>

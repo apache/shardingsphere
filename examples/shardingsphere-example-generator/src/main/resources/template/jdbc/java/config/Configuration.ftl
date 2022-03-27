@@ -16,7 +16,7 @@
  */
 <#assign package = feature?replace('-', '')?replace(',', '.') />
 
-package org.apache.shardingsphere.example.${package}.${framework};
+package org.apache.shardingsphere.example.${package}.${framework}.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
@@ -88,16 +88,16 @@ public final class Configuration {
     private static final String PASSWORD = "${(password)?string}";
     
     /**
-     * Create a DataSource object, which is an object rewritten by ShardingSphere itself
-     * and contains various rules for rewriting the original data storage. When in use, you only need to use this object.
-     * @return datasource
+     * Create ShardingSphere data source.
+     * 
+     * @return created ShardingSphere data source
      * @throws SQLException SQL exception
      */
-    public DataSource getDataSource() throws SQLException {
+    public DataSource createDataSource() throws SQLException {
     <#if mode=="memory">
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), createRuleConfiguration(), createShardingSphereProps());
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), createRuleConfiguration(), createProperties());
     <#else>
-        return ShardingSphereDataSourceFactory.createDataSource(createModeConfiguration(), createDataSourceMap(), createRuleConfiguration(), createShardingSphereProps());
+        return ShardingSphereDataSourceFactory.createDataSource(createModeConfiguration(), createDataSourceMap(), createRuleConfiguration(), createProperties());
     </#if>
     }
 <#if mode!="memory">
@@ -115,9 +115,20 @@ public final class Configuration {
     }
 </#if>
     
-    private Properties createShardingSphereProps() {
-        Properties result = new Properties();
-        result.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new HashMap<>();
+        result.put("ds_0", createDataSource("demo_ds_0"));
+        result.put("ds_1", createDataSource("demo_ds_1"));
+        result.put("ds_2", createDataSource("demo_ds_2"));
+        return result;
+    }
+    
+    private DataSource createDataSource(final String dataSourceName) {
+        HikariDataSource result = new HikariDataSource();
+        result.setDriverClassName("com.mysql.jdbc.Driver");
+        result.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8", HOST, PORT, dataSourceName));
+        result.setUsername(USER_NAME);
+        result.setPassword(PASSWORD);
         return result;
     }
     
@@ -145,20 +156,9 @@ public final class Configuration {
     <#include "${item}.ftl">
 </#list>
     
-    private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("ds_0", createDataSource("demo_ds_0"));
-        dataSourceMap.put("ds_1", createDataSource("demo_ds_1"));
-        dataSourceMap.put("ds_2", createDataSource("demo_ds_2"));
-        return dataSourceMap;
-    }
-    
-    private DataSource createDataSource(final String dataSourceName) {
-        HikariDataSource result = new HikariDataSource();
-        result.setDriverClassName("com.mysql.jdbc.Driver");
-        result.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8", HOST, PORT, dataSourceName));
-        result.setUsername(USER_NAME);
-        result.setPassword(PASSWORD);
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
         return result;
     }
 }
