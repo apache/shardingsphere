@@ -34,14 +34,14 @@ spring.shardingsphere.datasource.ds-0.password=${(password)?string}
 spring.shardingsphere.datasource.ds-0.max-active=16
 
 spring.shardingsphere.datasource.ds-1.type=com.zaxxer.hikari.HikariDataSource
-spring.shardingsphere.datasource.ds-1.driver-class-name=,com.mysql.cj.jdbc.Driver
+spring.shardingsphere.datasource.ds-1.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.shardingsphere.datasource.ds-1.jdbc-url=jdbc:mysql://${host}:${(port)?c}/demo_ds_1?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
 spring.shardingsphere.datasource.ds-1.username=${username}
 spring.shardingsphere.datasource.ds-1.password=${(password)?string}
 spring.shardingsphere.datasource.ds-1.max-active=16
 
 spring.shardingsphere.datasource.ds-2.type=com.zaxxer.hikari.HikariDataSource
-spring.shardingsphere.datasource.ds-2.driver-class-name=,com.mysql.cj.jdbc.Driver
+spring.shardingsphere.datasource.ds-2.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.shardingsphere.datasource.ds-2.jdbc-url=jdbc:mysql://${host}:${(port)?c}/demo_ds_2?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
 spring.shardingsphere.datasource.ds-2.username=${username}
 spring.shardingsphere.datasource.ds-2.password=${(password)?string}
