@@ -164,7 +164,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 8
-      - name: Build with Maven
-        run: echo y | ./mvnw -B clean install ${{ matrix.java.maven_args }}
+      - name: Build Project
+        run: ./mvnw -B clean install -DskipITs -DskipTests
       - name: Run Example generator
         run: echo y | ./mvnw -B test -f examples/shardingsphere-example-generator/pom.xml -Pexample-generator
