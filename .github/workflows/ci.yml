@@ -37,9 +37,11 @@ on:
       - '.*.yaml'
   repository_dispatch:
     types: [rerun-ci]
+  schedule:
+    - cron: '0 0 */1 * *'  # once a day. UTC time
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.event_name }}-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -47,6 +49,7 @@ env:
 
 jobs:
   windows:
+    if: (github.event_name == 'schedule')
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
@@ -117,6 +120,7 @@ jobs:
         run: echo y | ./mvnw -B -f examples/pom.xml clean package -DskipTests
   
   macos:
+    if: (github.event_name == 'schedule')
     name: JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
