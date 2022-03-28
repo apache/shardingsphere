@@ -55,7 +55,7 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
     
     private static final String STATUS = "status";
     
-    private static final String DELAY_TIME = "delay_time";
+    private static final String DELAY_TIME = "delay_time(ms)";
     
     private static final String ENABLED = "enabled";
     
