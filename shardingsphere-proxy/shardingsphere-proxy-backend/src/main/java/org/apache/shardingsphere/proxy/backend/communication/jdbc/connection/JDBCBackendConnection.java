@@ -64,8 +64,6 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     
     private final ResourceLock resourceLock = new ResourceLock();
     
-    private final ConnectionStatus connectionStatus = new ConnectionStatus();
-    
     private volatile int connectionReferenceCount = 0;
     
     public JDBCBackendConnection(final ConnectionSession connectionSession) {
@@ -180,10 +178,6 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     public Void prepareForTaskExecution() throws BackendConnectionException {
         synchronized (this) {
             connectionReferenceCount++;
-            if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction()) {
-                connectionStatus.waitUntilConnectionRelease();
-                connectionStatus.switchToUsing();
-            }
             if (!connectionSession.isAutoCommit() && !connectionSession.getTransactionStatus().isInTransaction()) {
                 JDBCBackendTransactionManager transactionManager = new JDBCBackendTransactionManager(this);
                 try {
@@ -208,7 +202,6 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
             if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction()) {
                 result.addAll(closeDatabaseCommunicationEngines(true));
                 result.addAll(closeConnections(false));
-                connectionStatus.switchToReleased();
             }
             if (result.isEmpty()) {
                 return null;
@@ -219,10 +212,12 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     
     @Override
     public Void closeAllResources() {
-        closeDatabaseCommunicationEngines(true);
-        closeConnections(true);
-        closeFederationExecutor();
-        return null;
+        synchronized (this) {
+            closeDatabaseCommunicationEngines(true);
+            closeConnections(true);
+            closeFederationExecutor();
+            return null;
+        }
     }
     
     /**
@@ -231,7 +226,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
      * @param includeInUse include engines in use
      * @return SQL exception when engine close
      */
-    public synchronized Collection<SQLException> closeDatabaseCommunicationEngines(final boolean includeInUse) {
+    public Collection<SQLException> closeDatabaseCommunicationEngines(final boolean includeInUse) {
         Collection<SQLException> result = new LinkedList<>();
         for (JDBCDatabaseCommunicationEngine each : databaseCommunicationEngines) {
             if (!includeInUse && inUseDatabaseCommunicationEngines.contains(each)) {
@@ -256,7 +251,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
      * @param forceRollback is force rollback
      * @return SQL exception when connections close
      */
-    public synchronized Collection<SQLException> closeConnections(final boolean forceRollback) {
+    public Collection<SQLException> closeConnections(final boolean forceRollback) {
         Collection<SQLException> result = new LinkedList<>();
         for (Connection each : cachedConnections.values()) {
             try {
@@ -291,7 +286,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
      *
      * @return SQL exception when federation executor close
      */
-    public synchronized Collection<SQLException> closeFederationExecutor() {
+    public Collection<SQLException> closeFederationExecutor() {
         Collection<SQLException> result = new LinkedList<>();
         if (null != federationExecutor) {
             try {
