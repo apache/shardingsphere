@@ -146,4 +146,3 @@ tables:
         name: pg_tablespace_oid_index
       pg_tablespace_spcname_index:
         name: pg_tablespace_spcname_index
-        
