@@ -77,21 +77,13 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
     @Override
     public ASTNode visitEnableReadDataSource(final EnableReadDataSourceContext ctx) {
         SchemaSegment schemaSegment = Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null;
-        SetReadwriteSplittingStatusStatement result = new SetReadwriteSplittingStatusStatement(ctx.ENABLE().getText().toUpperCase(), getIdentifierValue(ctx.resourceName()), schemaSegment);
-        if (null != ctx.ruleName()) {
-            result.setRuleName(getIdentifierValue(ctx.ruleName()));
-        }
-        return result;
+        return new SetReadwriteSplittingStatusStatement(ctx.ENABLE().getText().toUpperCase(), getIdentifierValue(ctx.resourceName()), schemaSegment);
     }
     
     @Override
     public ASTNode visitDisableReadDataSource(final DisableReadDataSourceContext ctx) {
         SchemaSegment schemaSegment = Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null;
-        SetReadwriteSplittingStatusStatement result = new SetReadwriteSplittingStatusStatement(ctx.DISABLE().getText().toUpperCase(), getIdentifierValue(ctx.resourceName()), schemaSegment);
-        if (null != ctx.ruleName()) {
-            result.setRuleName(getIdentifierValue(ctx.ruleName()));
-        }
-        return result;
+        return new SetReadwriteSplittingStatusStatement(ctx.DISABLE().getText().toUpperCase(), getIdentifierValue(ctx.resourceName()), schemaSegment);
     }
     
     @Override

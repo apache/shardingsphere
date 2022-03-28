@@ -38,7 +38,6 @@ import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedExcep
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.status.SetReadwriteSplittingStatusStatement;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
@@ -46,7 +45,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -71,46 +69,29 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     @Override
     protected void update(final ContextManager contextManager, final SetReadwriteSplittingStatusStatement sqlStatement) throws DistSQLException {
         String schemaName = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getSchemaName();
-        String toBeDisableResource = sqlStatement.getResourceName();
+        String toBeUpdatedResource = sqlStatement.getResourceName();
         checkModeAndPersistRepository(contextManager);
         checkSchema(schemaName);
-        ReadwriteSplittingRuleConfiguration ruleConfiguration = checkReadwriteSplittingRule(contextManager, schemaName);
+        checkReadwriteSplittingRule(contextManager, schemaName);
         Map<String, String> replicaResources = getReplicaResources(contextManager, schemaName);
         Map<String, String> disabledResources = getDisabledResources(contextManager, schemaName);
-        String groupName = sqlStatement.getRuleName();
         boolean isDisable = DISABLE.equals(sqlStatement.getStatus());
         if (isDisable) {
-            checkDisable(contextManager, schemaName, disabledResources.keySet(), toBeDisableResource, replicaResources);
-            groupName = Strings.isNullOrEmpty(groupName) ? replicaResources.get(toBeDisableResource) : groupName;
+            checkDisable(contextManager, schemaName, disabledResources.keySet(), toBeUpdatedResource, replicaResources);
         } else {
-            checkEnable(contextManager, schemaName, disabledResources, toBeDisableResource);
-            groupName = Strings.isNullOrEmpty(groupName) ? disabledResources.get(toBeDisableResource) : groupName;
+            checkEnable(contextManager, schemaName, disabledResources, toBeUpdatedResource);
         }
-        checkGroupName(replicaResources, disabledResources, toBeDisableResource, groupName);
-        StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisable ? StorageNodeStatus.DISABLE : StorageNodeStatus.ENABLE);
-        ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, groupName, toBeDisableResource, storageNodeDataSource));
-        String autoAwareDataSourceNames = getAutoAwareDataSourceNames(ruleConfiguration, groupName);
-        if (!autoAwareDataSourceNames.isEmpty()) {
-            ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, autoAwareDataSourceNames, toBeDisableResource, storageNodeDataSource));
-        }
+        Collection<String> groupNames = getGroupNames(toBeUpdatedResource, replicaResources, disabledResources);
+        updateStatus(schemaName, groupNames, toBeUpdatedResource, isDisable);
     }
     
-    private ReadwriteSplittingRuleConfiguration checkReadwriteSplittingRule(ContextManager contextManager, final String schemaName) {
+    private ReadwriteSplittingRuleConfiguration checkReadwriteSplittingRule(final ContextManager contextManager, final String schemaName) {
         Optional<ReadwriteSplittingRuleConfiguration> result = contextManager.getMetaDataContexts().getMetaData(schemaName)
                 .getRuleMetaData().findRuleConfiguration(ReadwriteSplittingRuleConfiguration.class).stream().findAny();
         if (!result.isPresent()) {
             throw new UnsupportedOperationException("The current schema has no read_write splitting rules");
         }
         return result.get();
-    }
-    
-    private String getAutoAwareDataSourceNames(final ReadwriteSplittingRuleConfiguration ruleConfiguration, final String ruleName) {
-        ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration = ruleConfiguration.getDataSources().stream().filter(each1 -> each1.getName().equals(ruleName)).findFirst().get();
-        if (dataSourceConfiguration.getType().equals("Dynamic")) {
-            return dataSourceConfiguration.getAutoAwareDataSourceName().orElseGet(() -> "");
-        } else {
-            return "";
-        }
     }
     
     private void checkModeAndPersistRepository(final ContextManager contextManager) {
@@ -141,17 +122,17 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     private Map<String, String> getDisabledResources(final ContextManager contextManager, final String schemaName) {
         Optional<MetaDataPersistService> persistService = contextManager.getMetaDataContexts().getMetaDataPersistService();
         Map<String, String> result = new HashMap<>();
-        persistService.ifPresent(op ->
-                result.putAll(
-                        getDisabledStorageNodes(schemaName, op).stream().collect(Collectors.toMap(QualifiedSchema::getDataSourceName, QualifiedSchema::getGroupName, (value1, value2) -> String.join(",", value1, value2))))
-        );
+        persistService.ifPresent(op -> {
+            Map<String, String> disableNodes = getDisabledStorageNodes(schemaName, op).stream()
+                    .collect(Collectors.toMap(QualifiedSchema::getDataSourceName, QualifiedSchema::getGroupName, (value1, value2) -> String.join(",", value1, value2)));
+            result.putAll(disableNodes);
+        });
         return result;
     }
     
     private void checkEnable(final ContextManager contextManager, final String schemaName, final Map<String, String> disabledResources, final String toBeEnabledResource) throws DistSQLException {
         checkResourceExists(contextManager, schemaName, toBeEnabledResource);
         checkIsNotDisabled(disabledResources.keySet(), toBeEnabledResource);
-        checkIsReusedResource(disabledResources, toBeEnabledResource);
     }
     
     private void checkResourceExists(final ContextManager contextManager, final String schemaName, final String toBeDisabledResource) throws DistSQLException {
@@ -165,21 +146,12 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
         }
     }
     
-    private void checkIsReusedResource(final Map<String, String> disabledResources, final String toBeDisabledResource) {
-        String replicaResources = disabledResources.get(toBeDisabledResource);
-        if (Strings.isNullOrEmpty(sqlStatement.getRuleName()) && Strings.isNullOrEmpty(sqlStatement.getRuleName()) && replicaResources.contains(",")) {
-            throw new UnsupportedOperationException(String.format("`%s` is used by multiple readwrite splitting rules %s, need to specify the name of the readwrite splitting rule",
-                    toBeDisabledResource, replicaResources));
-        }
-    }
-    
     private void checkDisable(final ContextManager contextManager, final String schemaName, final Collection<String> disabledResources, final String toBeDisabledResource,
                               final Map<String, String> replicaResources) throws DistSQLException {
         checkResourceExists(contextManager, schemaName, toBeDisabledResource);
         checkIsDisabled(replicaResources, disabledResources, toBeDisabledResource);
         checkIsReplicaResource(replicaResources, toBeDisabledResource);
         checkIsLastResource(replicaResources, toBeDisabledResource);
-        checkIsReusedResource(replicaResources, toBeDisabledResource);
     }
     
     private void checkIsDisabled(final Map<String, String> replicaResources, final Collection<String> disabledResources, final String toBeDisabledResource) {
@@ -204,6 +176,18 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
         }
     }
     
+    private Collection<String> getGroupNames(final String toBeDisableResource, final Map<String, String> replicaResources, final Map<String, String> disabledResources) {
+        String groupNames = replicaResources.getOrDefault(toBeDisableResource, disabledResources.get(toBeDisableResource));
+        return Splitter.on(",").splitToList(groupNames);
+    }
+    
+    private void updateStatus(final String schemaName, final Collection<String> groupNames, final String toBeDisableResource, final boolean isDisable) {
+        groupNames.forEach(each -> {
+            StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisable ? StorageNodeStatus.DISABLE : StorageNodeStatus.ENABLE);
+            ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, each, toBeDisableResource, storageNodeDataSource));
+        });
+    }
+    
     private Collection<QualifiedSchema> getDisabledStorageNodes(final String schemaName, final MetaDataPersistService persistService) {
         Map<String, StorageNodeDataSource> storageNodes = new StorageNodeStatusService((ClusterPersistRepository) persistService.getRepository()).loadStorageNodes();
         return storageNodes.entrySet().stream().filter(each -> StorageNodeStatus.DISABLE.name().equalsIgnoreCase(each.getValue().getStatus()))
@@ -214,11 +198,11 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     private Map<String, Map<String, String>> getExportedReadwriteSplittingRules(final ContextManager contextManager, final String schemaName) {
         Map<String, Map<String, String>> result = new HashMap<>();
         contextManager.getMetaDataContexts().getMetaData(schemaName).getRuleMetaData().findRules(ReadwriteSplittingRule.class).stream().findAny()
-                .filter(each -> each.containExportableKey(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE)))
-                .map(each -> each.export(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE)))
+                .filter(each -> each.containExportableKey(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE)))
+                .map(each -> each.export(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE)))
                 .ifPresent(each -> {
                     result.putAll((Map) each.getOrDefault(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, Collections.emptyMap()));
-                    result.putAll((Map) each.getOrDefault(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE, Collections.emptyMap()));
+                    result.putAll((Map) each.getOrDefault(ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE, Collections.emptyMap()));
                 });
         return result;
     }
@@ -227,17 +211,6 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
         return replicaResources.values().stream().map(schemaName -> Arrays.stream(schemaName.split(",")).collect(Collectors.toMap(each -> each, each -> 1)).entrySet())
                 .flatMap(Collection::stream).collect(Collectors.toMap(Entry::getKey, Entry::getValue, Integer::sum)).entrySet().stream()
                 .filter(entry -> entry.getValue() <= 1).map(Entry::getKey).collect(Collectors.toSet());
-    }
-    
-    private void checkGroupName(final Map<String, String> replicaResources, final Map<String, String> disabledResources, final String toBeDisableResource, final String groupName) {
-        if (groupName.contains(",")) {
-            throw new UnsupportedOperationException("Please specify the name of the readwrite splitting rule");
-        }
-        List<String> toBeDisabledRuleNames = Splitter.on(",").trimResults().splitToList(replicaResources.getOrDefault(toBeDisableResource, ""));
-        List<String> disabledRuleNames = Splitter.on(",").trimResults().splitToList(disabledResources.getOrDefault(toBeDisableResource, ""));
-        if (!toBeDisabledRuleNames.contains(groupName) && !disabledRuleNames.contains(groupName)) {
-            throw new UnsupportedOperationException(String.format("`%s` does not exist in readwrite splitting rule `%s`", toBeDisableResource, groupName));
-        }
     }
     
     private void addReplicaResource(final Map<String, String> replicaResources, final Entry<String, Map<String, String>> entry) {
