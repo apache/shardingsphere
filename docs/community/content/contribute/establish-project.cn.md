@@ -41,18 +41,18 @@ git config --global core.longpaths true
 
 ## 选择终端
 
-### macOS
+### MacOS
 
 以下终端任选其一：
-- Terminal ：macOS 自带
-- iTerm2 ：可自行安装
+- Terminal：MacOS 自带。
+- iTerm2：可自行安装。
 
 ### Windows
 
 以下终端任选其一：
-- PowerShell ：Windows 自带
-- Git Bash ：可以通过 Git 官方客户端安装
-- [适用于 Linux 的 Windows 子系统 (WSL)]( https://docs.microsoft.com/zh-cn/windows/wsl/install ) ：可自行安装
+- PowerShell：Windows 自带。
+- Git Bash：可以通过 Git 官方客户端安装。
+- [适用于 Linux 的 Windows 子系统 (WSL)]( https://docs.microsoft.com/zh-cn/windows/wsl/install ) ：可自行安装。
 
 ### Linux
 
@@ -71,13 +71,13 @@ git config --global core.longpaths true
 ## 安装 IDE 插件
 
 以下是一些常用插件：
-- Lombok ：必须。最新版 IntelliJ IDEA 已自带。
-- CheckStyle ：可选。可以实时或根据需要扫描 Java 文件，找出不符合代码规范的地方并提示。**注意**：不是所有不符合 [代码规范](/cn/contribute/code-conduct/) 的地方都可以被检查出来。
-- ANTLR v4 ：可选。做 SQL 语法扩展任务的时候可能有用。
+- Lombok：必须。最新版 IntelliJ IDEA 已自带。
+- CheckStyle：可选。可以实时或根据需要扫描 Java 文件，找出不符合代码规范的地方并提示。**注意**：不是所有不符合 [代码规范](/cn/contribute/code-conduct/) 的地方都可以被检查出来。
+- ANTLR v4：可选。做 SQL 语法扩展任务的时候可能有用。
 
 ### CheckStyle 插件配置
 
-1. 添加配置文件 ：使用 `src/resources/checkstyle.xml`
-2. 选择 Checkstyle 版本 ：使用 `8.8`
+1. 添加配置文件 ：使用 `src/resources/checkstyle.xml`；
+2. 选择 Checkstyle 版本 ：使用 `8.8`。
 
 详情请参考 [CheckStyle-IDEA 文档]( https://github.com/jshiell/checkstyle-idea/blob/main/README.md )。
