@@ -15,34 +15,12 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import BaseRule;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-setReadwriteSplittingHintSource
-    : SET READWRITE_SPLITTING HINT SOURCE EQ sourceValue
-    ;
-
-showReadwriteSplittingHintStatus
-    : SHOW READWRITE_SPLITTING HINT STATUS
-    ;
-
-clearReadwriteSplittingHint
-    : CLEAR READWRITE_SPLITTING HINT
-    ;
-
-enableReadDataSource
-    : ENABLE READWRITE_SPLITTING (READ)? resourceName (FROM schemaName)?
-    ;
-
-disableReadDataSource
-    : DISABLE READWRITE_SPLITTING (READ)? resourceName (FROM schemaName)?
-    ;
-
-showReadwriteSplittingReadResources
-    : SHOW READWRITE_SPLITTING READ RESOURCES (FROM schemaName)?
-    ;
-
-sourceValue
-    : IDENTIFIER
-    ;
+/**
+ * Drop foreign table statement test case.
+ */
+public final class DropForeignTableStatementTestCase extends SQLParserTestCase {
+}
