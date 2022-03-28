@@ -16,21 +16,36 @@
 #
 
 # supported: jdbc,proxy
-product: jdbc
+products:
+  - jdbc
 
 # supported: memory,cluster-zookeeper,cluster-etcd,standalone-file
-mode: memory
+modes: 
+  - memory
 
 # supported: local
-transaction: local
+transactions: 
+  - local
 
 # supported: sharding,readwrite-splitting,encrypt,db-discovery
-features: sharding,readwrite-splitting,encrypt,shadow,db-discovery
+features: 
+  - sharding
+  - readwrite-splitting
+  - encrypt
+  - shadow
+  - db-discovery
 
 # supported：jdbc,spring-boot-starter-jdbc,spring-boot-starter-jpa,spring-boot-starter-mybatis,spring-namespace-jpa,spring-namespace-mybatis
-frameworks: jdbc,spring-boot-starter-jdbc,spring-boot-starter-jpa,spring-boot-starter-mybatis,spring-namespace-jpa,spring-namespace-mybatis
+frameworks:
+  - jdbc
+  - spring-boot-starter-jdbc
+  - spring-boot-starter-jpa
+  - spring-boot-starter-mybatis
+  - spring-namespace-jpa
+  - spring-namespace-mybatis
 
-host: localhost
-port: 3306
-username: root
-password: root
+props:
+  host: localhost
+  port: 3306
+  username: root
+  password: root
