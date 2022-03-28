@@ -6,7 +6,7 @@ chapter = true
 
 ## 提交者提名
 
-ShardingSphere 社区遵循[Apache Community’s process](http://community.apache.org/newcommitter.html) 来接收新的提交者。
+ShardingSphere 社区遵循 [Apache Community’s process](http://community.apache.org/newcommitter.html) 来接收新的提交者。
 当您积极地参与 ShardingSphere 社区之后，项目管理委员会和项目官方提交者会根据您的表现发起吸纳您成为官方提交者和项目管理委员会成员的流程。
 
 ## 提交者责任
@@ -35,4 +35,4 @@ ShardingSphere 社区遵循[Apache Community’s process](http://community.apach
 
 3. Committer 提交的 PR，需要根据 PR 类型和当前发布的周期标注 Label 和 Milestone。
 
-4. Committer review PR 时，可以进行 squash and merge to master 的操作, 如果有问题可以加上 change request 或者@相关人员协助处理。
+4. Committer review PR 时，可以进行 squash and merge to master 的操作，如果有问题可以加上 change request 或者 @ 相关人员协助处理。
