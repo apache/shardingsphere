@@ -66,6 +66,8 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     
     private final ConnectionStatus connectionStatus = new ConnectionStatus();
     
+    private volatile int connectionReferenceCount = 0;
+    
     public JDBCBackendConnection(final ConnectionSession connectionSession) {
         this.connectionSession = connectionSession;
     }
@@ -115,7 +117,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
             each.process(target);
         }
     }
-
+    
     private void replayTransactionOption(final Connection connection) throws SQLException {
         if (null == connection) {
             return;
@@ -176,35 +178,43 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     
     @Override
     public Void prepareForTaskExecution() throws BackendConnectionException {
-        if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction()) {
-            connectionStatus.waitUntilConnectionRelease();
-            connectionStatus.switchToUsing();
-        }
-        if (!connectionSession.isAutoCommit() && !connectionSession.getTransactionStatus().isInTransaction()) {
-            JDBCBackendTransactionManager transactionManager = new JDBCBackendTransactionManager(this);
-            try {
-                transactionManager.begin();
-            } catch (SQLException ex) {
-                throw new BackendConnectionException(ex);
+        synchronized (this) {
+            connectionReferenceCount++;
+            if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction()) {
+                connectionStatus.waitUntilConnectionRelease();
+                connectionStatus.switchToUsing();
             }
+            if (!connectionSession.isAutoCommit() && !connectionSession.getTransactionStatus().isInTransaction()) {
+                JDBCBackendTransactionManager transactionManager = new JDBCBackendTransactionManager(this);
+                try {
+                    transactionManager.begin();
+                } catch (SQLException ex) {
+                    throw new BackendConnectionException(ex);
+                }
+            }
+            return null;
         }
-        return null;
     }
     
     @Override
     public Void closeExecutionResources() throws BackendConnectionException {
-        Collection<Exception> result = new LinkedList<>();
-        result.addAll(closeDatabaseCommunicationEngines(false));
-        result.addAll(closeFederationExecutor());
-        if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction()) {
-            result.addAll(closeDatabaseCommunicationEngines(true));
-            result.addAll(closeConnections(false));
-            connectionStatus.switchToReleased();
+        synchronized (this) {
+            if (connectionReferenceCount > 0 && connectionReferenceCount-- > 1) {
+                return null;
+            }
+            Collection<Exception> result = new LinkedList<>();
+            result.addAll(closeDatabaseCommunicationEngines(false));
+            result.addAll(closeFederationExecutor());
+            if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction()) {
+                result.addAll(closeDatabaseCommunicationEngines(true));
+                result.addAll(closeConnections(false));
+                connectionStatus.switchToReleased();
+            }
+            if (result.isEmpty()) {
+                return null;
+            }
+            throw new BackendConnectionException(result);
         }
-        if (result.isEmpty()) {
-            return null;
-        }
-        throw new BackendConnectionException(result);
     }
     
     @Override
@@ -242,7 +252,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     
     /**
      * Close connections.
-     * 
+     *
      * @param forceRollback is force rollback
      * @return SQL exception when connections close
      */
@@ -263,7 +273,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
         connectionPostProcessors.clear();
         return result;
     }
-
+    
     private void resetConnection(final Connection connection) throws SQLException {
         if (null == connection) {
             return;
@@ -275,10 +285,10 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
             connection.setTransactionIsolation(TransactionUtil.getTransactionIsolationLevel(connectionSession.getIsolationLevel()));
         }
     }
-
+    
     /**
      * Close federation executor.
-     * 
+     *
      * @return SQL exception when federation executor close
      */
     public synchronized Collection<SQLException> closeFederationExecutor() {
