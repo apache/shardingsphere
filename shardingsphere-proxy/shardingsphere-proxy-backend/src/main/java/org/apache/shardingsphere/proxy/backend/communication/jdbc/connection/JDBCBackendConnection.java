@@ -64,7 +64,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     
     private final ResourceLock resourceLock = new ResourceLock();
     
-    private volatile int connectionReferenceCount = 0;
+    private volatile int connectionReferenceCount;
     
     public JDBCBackendConnection(final ConnectionSession connectionSession) {
         this.connectionSession = connectionSession;
