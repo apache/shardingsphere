@@ -32,7 +32,7 @@
         <module>shardingsphere-jdbc-example</module>
         <module>shardingsphere-proxy-example</module>
         
-        <module>shardingsphere-sample</module>
+        <module>shardingsphere-example-generator</module>
     </modules>
     
     <properties>

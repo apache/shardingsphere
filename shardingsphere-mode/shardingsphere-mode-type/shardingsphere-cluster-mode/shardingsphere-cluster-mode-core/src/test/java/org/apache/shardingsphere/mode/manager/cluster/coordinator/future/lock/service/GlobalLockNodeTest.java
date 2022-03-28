@@ -40,4 +40,9 @@ public final class GlobalLockNodeTest {
         assertTrue(lockName.isPresent());
         assertThat(lockName.get(), is("schema-127.0.0.1@3308"));
     }
+
+    @Test
+    public void assertGetGlobalAckNodePath() {
+        assertThat(GlobalLockNode.getGlobalAckNodePath(), is("/lock/global/ack"));
+    }
 }

@@ -25,10 +25,16 @@ on:
     branches: [ master, dev ]
     paths-ignore:
       - 'docs/**'
+      - '*.md'
+      - '*.txt'
+      - '.*.yaml'
   pull_request:
     branches: [ master ]
     paths-ignore:
       - 'docs/**'
+      - '*.md'
+      - '*.txt'
+      - '.*.yaml'
   repository_dispatch:
     types: [rerun-ci]
 
@@ -76,7 +82,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
-      fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
         java:
@@ -116,7 +121,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
-      fail-fast: false
       matrix:
         os: [ macos-latest ]
         java:

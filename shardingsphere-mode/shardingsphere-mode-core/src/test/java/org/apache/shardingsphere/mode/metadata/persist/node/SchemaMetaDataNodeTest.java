@@ -89,4 +89,9 @@ public class SchemaMetaDataNodeTest {
     public void assertGetSchemaVersionPath() {
         assertThat(SchemaMetaDataNode.getSchemaVersionPath("logic_db", "0"), is("/metadata/logic_db/logic_db/versions/0"));
     }
+
+    @Test
+    public void assertGetDatabaseNamePath() {
+        assertThat(SchemaMetaDataNode.getDatabaseNamePath("db"), is("/metadata/db"));
+    }
 }
