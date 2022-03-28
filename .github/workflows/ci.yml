@@ -121,7 +121,7 @@ jobs:
   
   macos:
     if: (github.event_name == 'schedule')
-    name: JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
+    name: macos
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
