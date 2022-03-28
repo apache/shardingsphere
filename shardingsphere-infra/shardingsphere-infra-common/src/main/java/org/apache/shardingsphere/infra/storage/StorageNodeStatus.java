@@ -22,5 +22,5 @@ package org.apache.shardingsphere.infra.storage;
  */
 public enum StorageNodeStatus {
     
-    DISABLE, ENABLE
+    DISABLED, ENABLED
 }
