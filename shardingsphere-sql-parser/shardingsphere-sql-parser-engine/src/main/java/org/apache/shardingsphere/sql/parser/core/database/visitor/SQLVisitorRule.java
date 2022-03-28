@@ -438,7 +438,9 @@ public enum SQLVisitorRule {
     
     DROP_OWNED("DropOwned", SQLStatementType.DDL),
     
-    DROP_OPERATOR("DropOperator", SQLStatementType.DDL);
+    DROP_OPERATOR("DropOperator", SQLStatementType.DDL),
+    
+    DROP_MATERIALIZED_VIEW("DropMaterializedView", SQLStatementType.DDL);
     
     private final String name;
     
