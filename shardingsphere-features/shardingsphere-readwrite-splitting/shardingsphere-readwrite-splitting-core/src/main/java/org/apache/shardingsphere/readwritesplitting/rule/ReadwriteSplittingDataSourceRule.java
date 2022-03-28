@@ -31,10 +31,10 @@ import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgori
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -103,12 +103,18 @@ public final class ReadwriteSplittingDataSourceRule {
     /**
      * Get data sources.
      *
+     * @param removeDisabled Whether to remove the disabled resource
      * @return data sources
      */
-    public Map<String, String> getDataSources() {
-        return readwriteSplittingType.getDataSources().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey,
-                    each -> ExportableConstants.REPLICA_DATA_SOURCE_NAMES.equals(each.getKey()) ? removeDisabledDataSources(each.getValue()) : each.getValue()));
+    public Map<String, String> getDataSources(final boolean removeDisabled) {
+        Map<String, String> result = new LinkedHashMap<>();
+        readwriteSplittingType.getDataSources().forEach((key, value) -> {
+            if (ExportableConstants.REPLICA_DATA_SOURCE_NAMES.equals(key) && removeDisabled) {
+                value = removeDisabledDataSources(value);
+            }
+            result.put(key, value);
+        });
+        return result;
     }
     
     private String removeDisabledDataSources(final String readDataSources) {
