@@ -121,4 +121,12 @@ public final class InlineExpressionParserTest {
         boolean actualExpression1 = InlineExpressionParser.isInlineExpression("t_>{\"new_order1\"}");
         assertThat(actualExpression1, is(false));
     }
+
+    @Test
+    public void assertHandlePlaceHolder() {
+        String actualExpression1 = InlineExpressionParser.handlePlaceHolder("t_$->{[\"new$->{1+2}\"]}");
+        String actualExpression2 = InlineExpressionParser.handlePlaceHolder("t_{[\"new$->{1+2}\"]}");
+        assertThat(actualExpression1, is("t_${[\"new${1+2}\"]}"));
+        assertThat(actualExpression2, is("t_{[\"new${1+2}\"]}"));
+    }
 }
