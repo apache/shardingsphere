@@ -46,7 +46,3 @@ showReadwriteSplittingReadResources
 sourceValue
     : IDENTIFIER
     ;
-
-ruleName
-    : IDENTIFIER
-    ;

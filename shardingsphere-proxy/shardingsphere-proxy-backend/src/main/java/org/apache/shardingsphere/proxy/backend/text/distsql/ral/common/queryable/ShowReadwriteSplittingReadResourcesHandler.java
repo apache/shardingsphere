@@ -109,7 +109,7 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
     }
     
     private Map<String, StorageNodeDataSource> getPersistentReadResources(final String schemaName, final MetaDataPersistService persistService) {
-        if (null == persistService || null == persistService.getRepository()) {
+        if (null == persistService || null == persistService.getRepository() || !(persistService.getRepository() instanceof ClusterPersistRepository)) {
             return Collections.emptyMap();
         }
         Map<String, StorageNodeDataSource> storageNodes = new StorageNodeStatusService((ClusterPersistRepository) persistService.getRepository()).loadStorageNodes();
