@@ -18,6 +18,11 @@
 <#assign package = feature?replace('-', '')?replace(',', '.') />
 package org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')};
 
+<#if framework=="jdbc">
+import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.config.Configuration;
+</#if>
+import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.service.ExampleService;
+
 <#if framework?contains("spring-boot")>
 <#if framework=="spring-boot-starter-mybatis">
 import org.mybatis.spring.annotation.MapperScan;
@@ -56,19 +61,19 @@ import java.sql.SQLException;
 <#if framework?contains("spring-boot")>
 @SpringBootApplication
 </#if>
-public class Example {
+public class ExampleMain {
     
     public static void main(final String[] args) throws SQLException {
     <#if framework=="jdbc">
-        Configuration configuration = new Configuration();
-        DataSource dataSource = configuration.getDataSource();
+        Configuration config = new Configuration();
+        DataSource dataSource = config.createDataSource();
         ExampleService exampleService = new ExampleService(dataSource);
         exampleService.run();
     <#else>
     <#if framework?contains("spring-namespace")>
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("application.xml")) {
     <#else>
-        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(Example.class, args)) {
+        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(ExampleMain.class, args)) {
     </#if>
             ExampleService exampleService = applicationContext.getBean(ExampleService.class);
             exampleService.run();
