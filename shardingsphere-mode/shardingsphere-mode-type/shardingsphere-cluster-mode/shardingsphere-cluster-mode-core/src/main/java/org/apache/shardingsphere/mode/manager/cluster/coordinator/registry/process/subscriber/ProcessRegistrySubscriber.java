@@ -18,12 +18,18 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber;
 
 import com.google.common.eventbus.Subscribe;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ProcessHolder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessReportEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessSummaryReportEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessUnitReportEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ShowProcessListResponseEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.node.ProcessNode;
+import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
@@ -31,7 +37,6 @@ import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcess
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.util.Collection;
 import java.util.List;
@@ -54,11 +59,34 @@ public final class ProcessRegistrySubscriber {
      *
      * @param event get children request event.
      */
+    @SneakyThrows
     @Subscribe
     public void loadShowProcessListData(final ShowProcessListRequestEvent event) {
+        Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.JDBC));
+        onlineComputeNodes.forEach(each -> repository.persist(ComputeNode.getOnlineProcessTriggerNodePath(each, InstanceType.JDBC), "ON"));
+        Collection<String> proxyOnlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.PROXY));
+        proxyOnlineComputeNodes.forEach(each -> repository.persist(ComputeNode.getOnlineProcessTriggerNodePath(each, InstanceType.PROXY), "ON"));
+        // loop until trigger is deleted
+        out : while(true) {
+            Thread.sleep(10);
+            for(String each : onlineComputeNodes) {
+                String value = repository.get(ComputeNode.getOnlineInstanceNodePath(each, InstanceType.JDBC));
+                if ("process_trigger".equalsIgnoreCase(value)) {
+                    continue out;
+                }
+            }
+            for(String each : proxyOnlineComputeNodes) {
+                String value = repository.get(ComputeNode.getOnlineInstanceNodePath(each, InstanceType.PROXY));
+                if ("process_trigger".equalsIgnoreCase(value)) {
+                    continue out;
+                }
+            }
+           break;
+        }
         List<String> childrenKeys = repository.getChildrenKeys(ProcessNode.getExecutionNodesPath());
         Collection<String> processListData = childrenKeys.stream().map(key -> repository.get(ProcessNode.getExecutionPath(key))).collect(Collectors.toList());
         ShardingSphereEventBus.getInstance().post(new ShowProcessListResponseEvent(processListData));
+        repository.delete(ProcessNode.getExecutionNodesPath());
     }
     
     /**
@@ -69,7 +97,7 @@ public final class ProcessRegistrySubscriber {
     @Subscribe
     public void reportExecuteProcessSummary(final ExecuteProcessSummaryReportEvent event) {
         ExecuteProcessContext executeProcessContext = event.getExecuteProcessContext();
-        repository.persist(ProcessNode.getExecutionPath(executeProcessContext.getExecutionID()), YamlEngine.marshal(new YamlExecuteProcessContext(executeProcessContext)));
+        ProcessHolder.getInstance().put(executeProcessContext.getExecutionID(), new YamlExecuteProcessContext(executeProcessContext));
     }
     
     /**
@@ -80,16 +108,12 @@ public final class ProcessRegistrySubscriber {
     @Subscribe
     public void reportExecuteProcessUnit(final ExecuteProcessUnitReportEvent event) {
         String executionID = event.getExecutionID();
-        synchronized (executionID) {
-            String executionPath = ProcessNode.getExecutionPath(executionID);
-            YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(repository.get(executionPath), YamlExecuteProcessContext.class);
-            ExecuteProcessUnit executeProcessUnit = event.getExecuteProcessUnit();
-            for (YamlExecuteProcessUnit unit : yamlExecuteProcessContext.getUnitStatuses()) {
-                if (unit.getUnitID().equals(executeProcessUnit.getUnitID())) {
-                    unit.setStatus(executeProcessUnit.getStatus());
-                }
+        YamlExecuteProcessContext yamlExecuteProcessContext = ProcessHolder.getInstance().get(executionID);
+        ExecuteProcessUnit executeProcessUnit = event.getExecuteProcessUnit();
+        for (YamlExecuteProcessUnit unit : yamlExecuteProcessContext.getUnitStatuses()) {
+            if (unit.getUnitID().equals(executeProcessUnit.getUnitID())) {
+                unit.setStatus(executeProcessUnit.getStatus());
             }
-            repository.persist(executionPath, YamlEngine.marshal(yamlExecuteProcessContext));
         }
     }
     
@@ -100,13 +124,12 @@ public final class ProcessRegistrySubscriber {
      */
     @Subscribe
     public void reportExecuteProcess(final ExecuteProcessReportEvent event) {
-        String executionPath = ProcessNode.getExecutionPath(event.getExecutionID());
-        YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(repository.get(executionPath), YamlExecuteProcessContext.class);
+        YamlExecuteProcessContext yamlExecuteProcessContext = ProcessHolder.getInstance().get(event.getExecutionID());
         for (YamlExecuteProcessUnit unit : yamlExecuteProcessContext.getUnitStatuses()) {
             if (unit.getStatus() != ExecuteProcessConstants.EXECUTE_STATUS_DONE) {
                 return;
             }
         }
-        repository.delete(executionPath);
+        ProcessHolder.getInstance().remove(event.getExecutionID());
     }
 }
