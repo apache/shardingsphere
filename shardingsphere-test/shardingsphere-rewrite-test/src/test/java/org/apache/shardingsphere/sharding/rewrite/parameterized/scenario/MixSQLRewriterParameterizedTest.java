@@ -30,9 +30,11 @@ import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParametersBuilder;
 import org.junit.runners.Parameterized.Parameters;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
@@ -88,6 +90,10 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     
     @Override
     protected void mockRules(final Collection<ShardingSphereRule> rules) {
+    }
+    
+    @Override
+    protected void mockDataSource(final Map<String, DataSource> dataSources) throws SQLException {
     }
 
     private Map<String, ColumnMetaData> createColumnMetaDataMap() {

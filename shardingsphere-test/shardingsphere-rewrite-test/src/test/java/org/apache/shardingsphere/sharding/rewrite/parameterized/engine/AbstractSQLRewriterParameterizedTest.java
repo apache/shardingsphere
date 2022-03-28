@@ -53,7 +53,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import javax.sql.DataSource;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -77,7 +79,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
             DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION));
     
     @Test
-    public final void assertRewrite() throws IOException {
+    public final void assertRewrite() throws IOException, SQLException {
         Collection<SQLRewriteUnit> actual = createSQLRewriteUnits();
         assertThat(actual.size(), is(testParameters.getOutputSQLs().size()));
         int count = 0;
@@ -91,15 +93,15 @@ public abstract class AbstractSQLRewriterParameterizedTest {
         }
     }
     
-    private Collection<SQLRewriteUnit> createSQLRewriteUnits() throws IOException {
+    private Collection<SQLRewriteUnit> createSQLRewriteUnits() throws IOException, SQLException {
         YamlRootConfiguration rootConfig = createRootConfiguration();
-        String databaseType = getTestParameters().getDatabaseType();
         SchemaConfiguration schemaConfig = new DataSourceProvidedSchemaConfiguration(
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()));
+        mockDataSource(schemaConfig.getDataSources());
         Collection<ShardingSphereRule> rules = SchemaRulesBuilder.buildRules("schema_name", schemaConfig, new ConfigurationProperties(new Properties()));
         mockRules(rules);
         rules.add(sqlParserRule);
-        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType,
+        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(getTestParameters().getDatabaseType(),
                 sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache(), sqlParserRule.isSqlCommentParseEnabled());
         Map<String, ShardingSphereSchema> schemas = mockSchemas();
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
@@ -120,6 +122,8 @@ public abstract class AbstractSQLRewriterParameterizedTest {
         return sqlRewriteResult instanceof GenericSQLRewriteResult
                 ? Collections.singletonList(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit()) : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
     }
+    
+    protected abstract void mockDataSource(Map<String, DataSource> dataSources) throws SQLException;
     
     protected abstract YamlRootConfiguration createRootConfiguration() throws IOException;
     

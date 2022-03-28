@@ -69,5 +69,6 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
         defaultQueryProperties.setProperty("tinyInt1isBit", Boolean.FALSE.toString());
         defaultQueryProperties.setProperty("useSSL", Boolean.FALSE.toString());
         defaultQueryProperties.setProperty("serverTimezone", "UTC");
+        defaultQueryProperties.setProperty("zeroDateTimeBehavior", "round");
     }
 }
