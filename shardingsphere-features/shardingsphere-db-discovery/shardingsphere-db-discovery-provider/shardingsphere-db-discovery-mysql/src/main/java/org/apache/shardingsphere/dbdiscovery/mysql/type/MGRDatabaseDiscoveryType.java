@@ -153,7 +153,7 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     }
     
     @Override
-    protected void determineMemberDataSourceState(final String schemaName, final Map<String, DataSource> dataSourceMap, final String groupName) {
+    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final String groupName) {
         List<String> memberDataSourceURLs = findMemberDataSourceURLs(dataSourceMap);
         if (memberDataSourceURLs.isEmpty()) {
             return;
@@ -163,7 +163,7 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     
     private List<String> findMemberDataSourceURLs(final Map<String, DataSource> dataSourceMap) {
         List<String> result = new LinkedList<>();
-        try (Connection connection = dataSourceMap.values().stream().findFirst().get().getConnection();
+        try (Connection connection = dataSourceMap.get(getPrimaryDataSource()).getConnection();
              Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(MEMBER_LIST);
             while (resultSet.next()) {
@@ -180,6 +180,9 @@ public final class MGRDatabaseDiscoveryType extends AbstractDatabaseDiscoveryTyp
     
     private void determineDisabledDataSource(final String schemaName, final Map<String, DataSource> dataSourceMap, final List<String> memberDataSourceURLs, final String groupName) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            if (entry.getKey().equals(getPrimaryDataSource())) {
+                continue;
+            }
             boolean disable = true;
             String url;
             try (Connection connection = entry.getValue().getConnection()) {

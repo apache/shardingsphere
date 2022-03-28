@@ -23,27 +23,33 @@ name: Continuous Integration
 on:
   push:
     branches: [ master, dev ]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - '*.txt'
+      - '.*.yaml'
   pull_request:
     branches: [ master ]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - '*.txt'
+      - '.*.yaml'
   repository_dispatch:
     types: [rerun-ci]
+  schedule:
+    - cron: '0 0 */1 * *'  # once a day. UTC time
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.event_name }}-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
 
 jobs:
-  check-license:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Check License Header
-        uses: apache/skywalking-eyes@main
-  
   windows:
+    if: (github.event_name == 'schedule')
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
@@ -79,7 +85,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
-      fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
         java:
@@ -115,12 +120,11 @@ jobs:
         run: echo y | ./mvnw -B -f examples/pom.xml clean package -DskipTests
   
   macos:
-    name: JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
-    needs: check-license
+    if: (github.event_name == 'schedule')
+    name: macos
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
-      fail-fast: false
       matrix:
         os: [ macos-latest ]
         java:
