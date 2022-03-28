@@ -21,6 +21,9 @@ import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropForeignTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
+/**
+ * PostgreSQL drop foreign table statement.
+ */
 @ToString
 public final class PostgreSQLDropForeignTableStatement extends DropForeignTableStatement implements PostgreSQLStatement {
 }

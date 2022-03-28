@@ -19,5 +19,8 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
+/**
+ * Drop foreign table statement test case.
+ */
 public final class DropForeignTableStatementTestCase extends SQLParserTestCase {
 }

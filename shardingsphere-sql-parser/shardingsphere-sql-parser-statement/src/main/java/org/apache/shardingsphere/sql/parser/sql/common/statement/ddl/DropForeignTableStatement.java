@@ -20,6 +20,9 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
+/**
+ * Drop foreign table statement.
+ */
 @ToString
 public abstract class DropForeignTableStatement extends AbstractSQLStatement implements DDLStatement {
 }
