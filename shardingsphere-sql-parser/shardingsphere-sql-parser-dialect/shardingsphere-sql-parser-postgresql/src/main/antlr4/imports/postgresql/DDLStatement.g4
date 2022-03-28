@@ -131,7 +131,7 @@ dropDatabase
     ;
 
 dropGroup
-    : DROP GROUP existClause? name
+    : DROP GROUP existClause? name (COMMA_ name)*
     ;
 
 createDatabaseSpecification
