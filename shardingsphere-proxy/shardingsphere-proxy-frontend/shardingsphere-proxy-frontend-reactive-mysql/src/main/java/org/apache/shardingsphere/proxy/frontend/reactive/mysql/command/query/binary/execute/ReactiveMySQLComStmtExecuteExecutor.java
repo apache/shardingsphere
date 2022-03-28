@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.reactive.mysql.command.query.binary.execute;
 
+import com.google.common.base.Preconditions;
 import io.vertx.core.Future;
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
@@ -83,8 +84,9 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
         String schemaName = connectionSession.getSchemaName();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         Optional<SQLParserRule> sqlParserRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
-        ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(
-                metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType()), sqlParserRule.orElse(null));
+        Preconditions.checkState(sqlParserRule.isPresent());
+        ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(
+                DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType()), sqlParserRule.get().toParserConfiguration());
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(packet.getSql(), true);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), packet.getParameters(),
                 sqlStatement, connectionSession.getDefaultSchemaName());

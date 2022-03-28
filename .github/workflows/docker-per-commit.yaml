@@ -20,11 +20,15 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - 'docs/**'
+      - 'examples/**'
+      - 'shardingsphere-test/**'
+      - '*.md'
 
 env:
   HUB: ghcr.io/apache/shardingsphere
   PROXY: ghcr.io/apache/shardingsphere-proxy
-  ORIGINAL_PROXY_TAG: PER_COMMIT
 
 jobs:
   build:
@@ -36,8 +40,6 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: true
       - name: Set up JDK 8
         uses: actions/setup-java@v2
         with:
@@ -56,9 +58,7 @@ jobs:
           registry: ${{ env.HUB }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build docker images based on Java 8
-        run: ./mvnw -B -Prelease,docker-per-commit -DskipTests -Dmaven.javadoc.skip=true -Drat.skip=true clean install
-      - name: Retag the image version to current commit id
-        run: docker tag ${{ env.PROXY }}:${{ env.ORIGINAL_PROXY_TAG }} ${{ env.PROXY }}:${{ github.sha }}
-      - name: Push docker images
+      - name: Build docker image
+        run: ./mvnw -B -Prelease,docker -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.sha }} clean install
+      - name: Push docker image
         run: docker push ${{ env.PROXY }}:${{ github.sha }}

@@ -139,7 +139,7 @@ public final class FilterableTableScanExecutor {
         LogicSQL logicSQL = createLogicSQL(federationContext.getMetaDataMap(), sqlString, databaseType);
         ShardingSphereMetaData metaData = federationContext.getMetaDataMap().get(schemaName);
         ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, metaData, executorContext.getProps());
-        if (federationContext.isPreview()) {
+        if (federationContext.isPreview() || databaseType.containsSystemSchema(schemaName)) {
             federationContext.getExecutionUnits().addAll(context.getExecutionUnits());
             return createEmptyEnumerable();
         }
@@ -254,7 +254,9 @@ public final class FilterableTableScanExecutor {
     
     private LogicSQL createLogicSQL(final Map<String, ShardingSphereMetaData> metaDataMap, final SqlString sqlString, final DatabaseType databaseType) {
         String sql = sqlString.getSql().replace("\n", " ");
-        SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getName(), optimizerContext.getSqlParserRule()).parse(sql, false);
+        SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getName(), 
+                optimizerContext.getSqlParserRule().getSqlStatementCache(), optimizerContext.getSqlParserRule().getParseTreeCache(), 
+                optimizerContext.getSqlParserRule().isSqlCommentParseEnabled()).parse(sql, false);
         List<Object> parameters = getParameters(sqlString.getDynamicParameters());
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataMap, parameters, sqlStatement, executorContext.getSchemaName());
         return new LogicSQL(sqlStatementContext, sql, parameters);

@@ -54,7 +54,7 @@ public class SchemaMetaDataNodeTest {
     
     @Test
     public void assertGetMetaDataTablesPath() {
-        assertThat(SchemaMetaDataNode.getMetaDataTablesPath("sharding_db"), is("/metadata/sharding_db/sharding_db/tables"));
+        assertThat(SchemaMetaDataNode.getMetaDataTablesPath("sharding_db", "sharding_db"), is("/metadata/sharding_db/sharding_db/tables"));
     }
 
     @Test
@@ -88,5 +88,10 @@ public class SchemaMetaDataNodeTest {
     @Test
     public void assertGetSchemaVersionPath() {
         assertThat(SchemaMetaDataNode.getSchemaVersionPath("logic_db", "0"), is("/metadata/logic_db/logic_db/versions/0"));
+    }
+
+    @Test
+    public void assertGetDatabaseNamePath() {
+        assertThat(SchemaMetaDataNode.getDatabaseNamePath("db"), is("/metadata/db"));
     }
 }

@@ -68,7 +68,7 @@ public final class ParseDistSQLBackendHandlerTest {
                 .init(new HandlerParameter<ParseStatement>().setStatement(parseStatement).setConnectionSession(mock(ConnectionSession.class)).setDatabaseType(new MySQLDatabaseType()));
         parseDistSQLBackendHandler.execute();
         parseDistSQLBackendHandler.next();
-        SQLStatement statement = new ShardingSphereSQLParserEngine("MySQL", sqlParserRule).parse(sql, false);
+        SQLStatement statement = new ShardingSphereSQLParserEngine("MySQL", sqlParserRule.toParserConfiguration()).parse(sql, false);
         assertThat(new LinkedList<>(parseDistSQLBackendHandler.getRowData()).getFirst(), is("MySQLSelectStatement"));
         assertThat(new LinkedList<>(parseDistSQLBackendHandler.getRowData()).getLast(), is(new Gson().toJson(statement)));
     }
