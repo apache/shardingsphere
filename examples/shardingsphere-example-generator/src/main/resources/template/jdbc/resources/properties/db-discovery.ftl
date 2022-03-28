@@ -22,6 +22,3 @@ spring.shardingsphere.rules.database-discovery.discovery-heartbeats.mgr-heartbea
 spring.shardingsphere.rules.database-discovery.discovery-types.mgr.type=MGR
 spring.shardingsphere.rules.database-discovery.discovery-types.mgr.props.keep-alive-cron=0/5 * * * * ?
 spring.shardingsphere.rules.database-discovery.discovery-types.mgr.props.group-name=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-
-
-

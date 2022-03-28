@@ -38,8 +38,8 @@ public final class OrderItemRepository {
     }
     
     public void createTableIfNotExists() throws SQLException {
-        String sql = "CREATE TABLE IF NOT EXISTS t_order_item "
-            + "(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id))";
+        String sql = "CREATE TABLE IF NOT EXISTS t_order_item " +
+                        "(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id))";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
@@ -118,10 +118,6 @@ public final class OrderItemRepository {
     
     public List<OrderItem> selectAll() throws SQLException {
         String sql = "SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id";
-        return getOrderItems(sql);
-    }
-    
-    private List<OrderItem> getOrderItems(final String sql) throws SQLException {
         List<OrderItem> result = new LinkedList<>();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
