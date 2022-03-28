@@ -33,8 +33,6 @@ import java.util.Map;
  */
 public final class PostgreSQLSystemSchemaBuilder implements DialectSystemSchemaBuilder {
     
-    private static final String DEFAULT_POSTGRES_DATABASE = "postgres";
-    
     @Override
     public Map<String, ShardingSphereSchema> build(final String schemaName) {
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>();
