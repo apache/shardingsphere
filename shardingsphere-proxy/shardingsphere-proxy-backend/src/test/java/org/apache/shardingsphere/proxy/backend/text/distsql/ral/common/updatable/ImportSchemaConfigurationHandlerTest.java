@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatabl
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.ImportSchemaConfigurationStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -33,11 +32,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.ShardingRuleConfigurationChecker;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,11 +46,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Properties;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -70,25 +63,28 @@ public final class ImportSchemaConfigurationHandlerTest {
     
     private final String schemaName = "sharding_db";
     
-    private final String scalingName = "default_scaling";
-    
     @Mock
     private DataSourcePropertiesValidator validator;
+    
+    @Mock
+    private ShardingRuleConfigurationChecker shardingRuleConfigurationChecker;
     
     private ImportSchemaConfigurationHandler importSchemaConfigurationHandler;
     
     @Before
     public void init() throws Exception {
         importSchemaConfigurationHandler = new ImportSchemaConfigurationHandler().init(getParameter(createSqlStatement(), mockConnectionSession()));
-        Field field = importSchemaConfigurationHandler.getClass().getDeclaredField("validator");
-        field.setAccessible(true);
-        field.set(importSchemaConfigurationHandler, validator);
+        Field validatorField = importSchemaConfigurationHandler.getClass().getDeclaredField("validator");
+        validatorField.setAccessible(true);
+        validatorField.set(importSchemaConfigurationHandler, validator);
+        Field shardingRuleConfigurationCheckerField = importSchemaConfigurationHandler.getClass().getDeclaredField("shardingRuleConfigurationChecker");
+        shardingRuleConfigurationCheckerField.setAccessible(true);
+        shardingRuleConfigurationCheckerField.set(importSchemaConfigurationHandler, shardingRuleConfigurationChecker);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getAllSchemaNames()).thenReturn(Collections.singletonList(schemaName));
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(shardingSphereMetaData.getSchema()).thenReturn(new ShardingSphereSchema(createTableMap()));
         when(shardingSphereMetaData.getResource().getDataSources()).thenReturn(createDataSourceMap());
-        when(shardingSphereMetaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singletonList(createShardingRuleConfiguration()));
         when(contextManager.getMetaDataContexts().getMetaData(schemaName)).thenReturn(shardingSphereMetaData);
         ProxyContext.getInstance().init(contextManager);
     }
@@ -101,20 +97,6 @@ public final class ImportSchemaConfigurationHandlerTest {
         assertNotNull(ruleConfigurations);
         ResponseHeader responseHeader = importSchemaConfigurationHandler.execute();
         assertTrue(responseHeader instanceof UpdateResponseHeader);
-    }
-    
-    private ShardingRuleConfiguration createShardingRuleConfiguration() {
-        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getTables().add(createTableRuleConfiguration());
-        result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "ds_inline"));
-        result.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
-        result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties()));
-        Properties props = new Properties();
-        props.setProperty("algorithm-expression", "ds_${order_id % 2}");
-        result.getShardingAlgorithms().put("ds_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props));
-        result.setScalingName(scalingName);
-        result.getScaling().put(scalingName, null);
-        return result;
     }
     
     private Map<String, DataSource> createDataSourceMap() {
@@ -133,16 +115,10 @@ public final class ImportSchemaConfigurationHandlerTest {
     }
     
     private Map<String, TableMetaData> createTableMap() {
-        List<ColumnMetaData> columns = Collections.singletonList(new ColumnMetaData("order_id", 0, false, false, false));
-        List<IndexMetaData> indexes = Collections.singletonList(new IndexMetaData("primary"));
+        Collection<ColumnMetaData> columns = Collections.singletonList(new ColumnMetaData("order_id", 0, false, false, false));
+        Collection<IndexMetaData> indexes = Collections.singletonList(new IndexMetaData("primary"));
         Map<String, TableMetaData> result = new HashMap<>(1, 1);
         result.put("t_order", new TableMetaData("t_order", columns, indexes, Collections.emptyList()));
-        return result;
-    }
-    
-    private ShardingTableRuleConfiguration createTableRuleConfiguration() {
-        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..1}");
-        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
         return result;
     }
     

@@ -55,7 +55,7 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
         this.instanceContext = instanceContext;
         this.ownerInstanceId = ownerInstanceId;
         this.lockService = lockService;
-        synchronizedLockState = new AtomicReference<>(isOwnerInstanceId(getCurrentInstanceId()) ? LockState.INITIALIZATION : LockState.UNLOCKED);
+        synchronizedLockState = new AtomicReference<>(isOwnerInstanceId(getCurrentInstanceId()) ? LockState.INITIALIZATION : LockState.LOCKED);
         initLockedInstances(instanceContext);
     }
     
