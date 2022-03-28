@@ -110,7 +110,7 @@ public final class MySQLMultiStatementsHandler implements TextProtocolBackendHan
     private ShardingSphereSQLParserEngine getSQLParserEngine() {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         return new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(connectionSession.getSchemaName()).getResource().getDatabaseType()),
-                metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class).orElse(null));
+                metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class).orElseThrow(() -> new IllegalStateException("SQLParserRule not found")).toParserConfiguration());
     }
     
     private List<String> extractMultiStatements(final Pattern pattern, final String sql) {
