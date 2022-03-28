@@ -77,7 +77,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
             checkEnablingIsValid(schemaName, resourceName);
         }
         ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, groupName, resourceName,
-                new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisable ? StorageNodeStatus.DISABLE : StorageNodeStatus.ENABLE)));
+                new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisable ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED)));
     }
     
     private void checkSchema(final String schemaName) {
