@@ -17,18 +17,13 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder.spi;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeAwareSPI;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.spi.singleton.SingletonSPI;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.net.URL;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 /**
  * Dialect system schema builder.
@@ -49,9 +44,8 @@ public interface DialectSystemSchemaBuilder extends DatabaseTypeAwareSPI, Single
      * @param schemaName schema name
      * @return system schema content
      */
-    @SneakyThrows({URISyntaxException.class, IOException.class})
-    default String getSystemSchemaContent(final String schemaName) {
-        Path path = Paths.get(ClassLoader.getSystemResource("schema/" + getDatabaseType().toLowerCase() + "/" + schemaName + ".yaml").toURI());
-        return Files.readAllLines(path).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+    default Optional<String> getSystemSchemaPath(final String schemaName) {
+        URL url = getClass().getResource("/schema/" + getDatabaseType().toLowerCase() + "/" + schemaName + ".yaml");
+        return Optional.ofNullable(url).map(URL::getFile);
     }
 }

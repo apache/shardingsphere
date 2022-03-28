@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder.dialect;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -25,23 +26,28 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.SchemaYamlSwapper;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * PostgreSQL system schema builder.
  */
 public final class PostgreSQLSystemSchemaBuilder implements DialectSystemSchemaBuilder {
     
-    private static final String DEFAULT_POSTGRES_DATABASE = "postgres";
-    
+    @SneakyThrows
     @Override
     public Map<String, ShardingSphereSchema> build(final String schemaName) {
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>();
         DatabaseType databaseType = DatabaseTypeRegistry.getTrunkDatabaseType(getDatabaseType());
         SchemaYamlSwapper swapper = new SchemaYamlSwapper();
         for (String each : databaseType.getSystemSchemas()) {
-            YamlSchema yamlSchema = YamlEngine.unmarshal(getSystemSchemaContent(each), YamlSchema.class);
+            Optional<String> schemaPath = getSystemSchemaPath(each);
+            if (!schemaPath.isPresent()) {
+                continue;
+            }
+            YamlSchema yamlSchema = YamlEngine.unmarshal(new File(schemaPath.get()), YamlSchema.class);
             result.put(each, swapper.swapToObject(yamlSchema));
         }
         return result;
