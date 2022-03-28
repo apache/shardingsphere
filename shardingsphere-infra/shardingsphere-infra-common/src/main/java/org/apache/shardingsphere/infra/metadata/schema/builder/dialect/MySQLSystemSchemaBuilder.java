@@ -38,7 +38,7 @@ public final class MySQLSystemSchemaBuilder implements DialectSystemSchemaBuilde
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>();
         DatabaseType databaseType = DatabaseTypeRegistry.getTrunkDatabaseType(getDatabaseType());
         SchemaYamlSwapper swapper = new SchemaYamlSwapper();
-        for (String each : databaseType.getSystemDatabases()) {
+        for (String each : databaseType.getSystemSchemas()) {
             YamlSchema yamlSchema = YamlEngine.unmarshal(getSystemSchemaContent(each), YamlSchema.class);
             result.put(each, swapper.swapToObject(yamlSchema));
         }
