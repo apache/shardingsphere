@@ -121,5 +121,6 @@ execute
     | dropOwned
     | dropForeignTable
     | dropOperator
+    | dropMaterializedView
     ) SEMI_?
     ;
