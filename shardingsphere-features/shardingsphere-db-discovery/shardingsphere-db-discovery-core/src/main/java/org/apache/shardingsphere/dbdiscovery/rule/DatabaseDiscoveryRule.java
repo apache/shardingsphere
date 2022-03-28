@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
@@ -159,17 +158,12 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     @Override
     public void updateStatus(final DataSourceStatusChangedEvent event) {
         if (event instanceof DataSourceNameDisabledEvent) {
-            QualifiedSchema qualifiedSchema = ((DataSourceNameDisabledEvent) event).getQualifiedSchema();
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
-                if (!entry.getKey().equals(qualifiedSchema.getGroupName())) {
-                    continue;
-                }
                 if (((DataSourceNameDisabledEvent) event).isDisabled()) {
-                    entry.getValue().disableDataSource(qualifiedSchema.getDataSourceName());
+                    entry.getValue().disableDataSource(((DataSourceNameDisabledEvent) event).getQualifiedSchema().getDataSourceName());
                 } else {
-                    entry.getValue().enableDataSource(qualifiedSchema.getDataSourceName());
+                    entry.getValue().enableDataSource(((DataSourceNameDisabledEvent) event).getQualifiedSchema().getDataSourceName());
                 }
-                break;
             }
         } else if (event instanceof PrimaryDataSourceChangedEvent) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
