@@ -571,11 +571,6 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     }
     
     @Override
-    public ASTNode visitDropGroup(final DropGroupContext ctx) {
-        return new PostgreSQLDropGroupStatement();
-    }
-    
-    @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
         return new PostgreSQLDropViewStatement();
     }
