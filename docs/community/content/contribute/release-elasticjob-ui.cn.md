@@ -40,7 +40,7 @@ https://github.com/apache/shardingsphere-elasticjob-ui/blob/master/RELEASE-NOTES
 
 **3. 创建发布分支**
 
-假设从 github 下载的 ElasticJob-UI 源代码在 `~/elasticjob-ui/` 目录；假设即将发布的版本为 `${RELEASE.VERSION}`。
+假设从 Github 下载的 ElasticJob-UI 源代码在 `~/elasticjob-ui/` 目录；假设即将发布的版本为 `${RELEASE.VERSION}`。
 创建 `${RELEASE.VERSION}-release` 分支，接下来的操作都在该分支进行。
 
 ```shell
@@ -59,11 +59,11 @@ cd ~/elasticjob-ui
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github 用户名}
 ```
 
--Prelease: 选择 release 的 profile，这个 profile 会打包所有源码、jar 文件以及 ElasticJob-UI 的可执行二进制包。
+-Prelease：选择 release 的 profile，这个 profile 会打包所有源码、jar 文件以及 ElasticJob-UI 的可执行二进制包。
 
 -DautoVersionSubmodules=true：作用是发布过程中版本号只需要输入一次，不必为每个子模块都输入一次。
 
--DdryRun=true：演练，即不产生版本号提交，不生成新的tag。
+-DdryRun=true：演练，即不产生版本号提交，不生成新的 tag。
 
 **5. 准备发布**
 
@@ -85,7 +85,7 @@ mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 
 -DpushChanges=false：不要将修改后的版本号和 tag 自动提交至 Github。
 
-将本地文件检查无误后，提交至 github。
+将本地文件检查无误后，提交至 Github。
 
 ```shell
 git push origin ${RELEASE.VERSION}-release
@@ -101,7 +101,7 @@ mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 
 ## 发布 Apache SVN 仓库
 
-**1. 检出 shardingsphere 发布目录**
+**1. 检出 ShardingSphere 发布目录**
 
 如无本地工作目录，则先创建本地工作目录。
 
@@ -110,7 +110,7 @@ mkdir -p ~/ss_svn/dev/
 cd ~/ss_svn/dev/
 ```
 
-创建完毕后，从 Apache SVN 检出 shardingsphere 发布目录。
+创建完毕后，从 Apache SVN 检出 ShardingSphere 发布目录。
 
 ```shell
 svn --username=${APACHE LDAP 用户名} co https://dist.apache.org/repos/dist/dev/shardingsphere
@@ -125,7 +125,7 @@ cd ~/ss_svn/dev/shardingsphere
 gpg -a --export ${GPG用户名} >> KEYS
 ```
 
-**3. 将待发布的内容添加至SVN目录**
+**3. 将待发布的内容添加至 SVN 目录**
 
 创建版本号目录。
 
@@ -134,7 +134,7 @@ mkdir -p ~/ss_svn/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION}
 cd ~/ss_svn/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION}
 ```
 
-将源码包和二进制包添加至SVN工作目录。
+将源码包和二进制包添加至 SVN 工作目录。
 
 ```shell
 cp -f ~/elasticjob-ui/shardingsphere-elasticjob-ui-distribution/shardingsphere-elasticjob-ui-src-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/elasticjob-ui-${RELEASE.VERSION}
@@ -172,7 +172,7 @@ shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-ui-bin.tar.g
 
 **检查 gpg 签名**
 
-首先导入发布人公钥。从 svn 仓库导入 KEYS 到本地环境。（发布版本的人不需要再导入，帮助做验证的人需要导入，用户名填发版人的即可）
+首先导入发布人公钥。从 svn 仓库导入 KEYS 到本地环境。（发布版本的人不需要再导入，帮助做验证的人需要导入，用户名填发版人的即可）。
 
 ```shell
 curl https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS >> KEYS
@@ -215,36 +215,36 @@ diff -r apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src shardingspher
 
 **检查源码包的文件内容**
 
-- 检查源码包是否包含由于包含不必要文件，致使 tarball 过于庞大
-- 存在 `LICENSE` 和 `NOTICE` 文件
-- `NOTICE` 文件中的年份正确
-- 只存在文本文件，不存在二进制文件
-- 所有文件的开头都有ASF许可证
-- 能够正确编译，单元测试可以通过 (./mvnw -T 1C install)
-- 检查是否有多余文件或文件夹，例如空文件夹等
+- 检查源码包是否包含由于包含不必要文件，致使 tarball 过于庞大；
+- 存在 `LICENSE` 和 `NOTICE` 文件；
+- `NOTICE` 文件中的年份正确；
+- 只存在文本文件，不存在二进制文件；
+- 所有文件的开头都有 ASF 许可证；
+- 能够正确编译，单元测试可以通过（./mvnw -T 1C install）；
+- 检查是否有多余文件或文件夹，例如空文件夹等。
 
 **检查二进制包的文件内容**
 
 解压缩 `apache-shardingsphere-elasticjob-${RELEASE.VERSION}-lite-ui-bin.tar.gz` 和 `apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-ui-bin.tar.gz`
 进行如下检查:
 
-- 存在 `LICENSE` 和 `NOTICE` 文件
-- `NOTICE` 文件中的年份正确
-- 所有文本文件开头都有 ASF 许可证
+- 存在 `LICENSE` 和 `NOTICE` 文件；
+- `NOTICE` 文件中的年份正确；
+- 所有文本文件开头都有 ASF 许可证；
 - 检查第三方依赖许可证：
-  - 第三方依赖的许可证兼容
-  - 所有第三方依赖的许可证都在 `LICENSE` 文件中声名
-  - 依赖许可证的完整版全部在 `license` 目录
-  - 如果依赖的是Apache许可证并且存在 `NOTICE` 文件，那么这些 `NOTICE` 文件也需要加入到版本的 `NOTICE` 文件中
+  - 第三方依赖的许可证兼容；
+  - 所有第三方依赖的许可证都在 `LICENSE` 文件中声明；
+  - 依赖许可证的完整版全部在 `license` 目录；
+  - 如果依赖的是 Apache 许可证并且存在 `NOTICE` 文件，那么这些 `NOTICE` 文件也需要加入到版本的 `NOTICE` 文件中。
 
 ## 发起投票
 
 **投票阶段**
 
 1. ShardingSphere 社区投票，发起投票邮件到 `dev@shardingsphere.apache.org`。PMC 需要先按照文档检查版本的正确性，然后再进行投票。
-经过至少 72 小时并统计到3个`+1 PMC member` 票后，即可进入下一阶段的投票。
+经过至少 72 小时并统计到3个 `+1 PMC member` 票后，即可进入下一阶段的投票。
 
-2. 宣布投票结果,发起投票结果邮件到 `dev@shardingsphere.apache.org`。
+2. 宣布投票结果，发起投票结果邮件到 `dev@shardingsphere.apache.org`。
 
 **投票模板**
 
@@ -371,7 +371,7 @@ mvn clean package -Prelease,docker
 
 3.3 给本地 Docker 镜像打标记
 
-通过 `docker images` 查看到 IMAGE ID，例如为：e9ea51023687
+通过 `docker images` 查看到 IMAGE ID，例如为：e9ea51023687。
 
 ```shell
 docker tag e9ea51023687 apache/shardingsphere-elasticjob-cloud-ui:latest
@@ -387,7 +387,7 @@ docker push apache/shardingsphere-elasticjob-cloud-ui:${RELEASE_VERSION}
 
 3.5 确认发布成功
 
-登录 [Docker Hub](https://hub.docker.com/r/apache/shardingsphere-elasticjob-cloud-ui/) 查看是否有发布的镜像
+登录 [Docker Hub](https://hub.docker.com/r/apache/shardingsphere-elasticjob-cloud-ui/) 查看是否有发布的镜像。
 
 **4. 发布 Docker (lite-ui)**
 
@@ -404,7 +404,7 @@ mvn clean package -Prelease,docker
 
 4.3 给本地 Docker 镜像打标记
 
-通过`docker images`查看到IMAGE ID，例如为：e9ea51023687
+通过 `docker images` 查看到 IMAGE ID，例如为：e9ea51023687。
 
 ```shell
 docker tag e9ea51023687 apache/shardingsphere-elasticjob-lite-ui:latest
@@ -421,13 +421,13 @@ docker push apache/shardingsphere-elasticjob-lite-ui:${RELEASE_VERSION}
 
 4.5 确认发布成功
 
-登录 [Docker Hub](https://hub.docker.com/r/apache/shardingsphere-elasticjob-lite-ui/) 查看是否有发布的镜像
+登录 [Docker Hub](https://hub.docker.com/r/apache/shardingsphere-elasticjob-lite-ui/) 查看是否有发布的镜像。
 
 **5. GitHub 版本发布**
 
-在 [GitHub Releases](https://github.com/apache/shardingsphere-elasticjob-ui/releases) 页面的 `shardingsphere-elasticjob-ui-${RELEASE_VERSION}` 版本上点击 `Edit`
+在 [GitHub Releases](https://github.com/apache/shardingsphere-elasticjob-ui/releases) 页面的 `shardingsphere-elasticjob-ui-${RELEASE_VERSION}` 版本上点击 `Edit`。
 
-编辑版本号及版本说明，并点击 `Publish release`
+编辑版本号及版本说明，并点击 `Publish release`。
 
 **6. 更新下载页面**
 
@@ -437,13 +437,13 @@ https://shardingsphere.apache.org/elasticjob/current/en/downloads/
 
 https://shardingsphere.apache.org/elasticjob/current/cn/downloads/
 
-GPG签名文件和哈希校验文件的下载连接应该使用这个前缀： `https://downloads.apache.org/shardingsphere/`
+GPG 签名文件和哈希校验文件的下载连接应该使用这个前缀：`https://downloads.apache.org/shardingsphere/`。
 
-`最新版本`中保留一个最新的版本。
+`最新版本` 中保留一个最新的版本。
 
 **7. 邮件通知版本发布完成**
 
-发送邮件到 `dev@shardingsphere.apache.org` 和 `announce@apache.org` 通知完成版本发布
+发送邮件到 `dev@shardingsphere.apache.org` 和 `announce@apache.org` 通知完成版本发布。
 
 通知邮件模板：
 

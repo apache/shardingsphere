@@ -31,9 +31,11 @@ import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.junit.runners.Parameterized.Parameters;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -103,5 +105,9 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         result.put("amount", mock(ColumnMetaData.class));
         result.put("status", mock(ColumnMetaData.class));
         return result;
+    }
+    
+    @Override
+    protected void mockDataSource(final Map<String, DataSource> dataSources) throws SQLException {
     }
 }

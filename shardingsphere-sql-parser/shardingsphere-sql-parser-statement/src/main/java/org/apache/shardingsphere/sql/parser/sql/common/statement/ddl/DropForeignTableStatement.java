@@ -15,34 +15,14 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import BaseRule;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
-setReadwriteSplittingHintSource
-    : SET READWRITE_SPLITTING HINT SOURCE EQ sourceValue
-    ;
-
-showReadwriteSplittingHintStatus
-    : SHOW READWRITE_SPLITTING HINT STATUS
-    ;
-
-clearReadwriteSplittingHint
-    : CLEAR READWRITE_SPLITTING HINT
-    ;
-
-enableReadDataSource
-    : ENABLE READWRITE_SPLITTING (READ)? resourceName (FROM schemaName)?
-    ;
-
-disableReadDataSource
-    : DISABLE READWRITE_SPLITTING (READ)? resourceName (FROM schemaName)?
-    ;
-
-showReadwriteSplittingReadResources
-    : SHOW READWRITE_SPLITTING READ RESOURCES (FROM schemaName)?
-    ;
-
-sourceValue
-    : IDENTIFIER
-    ;
+/**
+ * Drop foreign table statement.
+ */
+@ToString
+public abstract class DropForeignTableStatement extends AbstractSQLStatement implements DDLStatement {
+}

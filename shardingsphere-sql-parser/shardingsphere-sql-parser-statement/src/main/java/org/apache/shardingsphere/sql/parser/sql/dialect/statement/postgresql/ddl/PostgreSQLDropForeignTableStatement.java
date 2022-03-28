@@ -15,34 +15,15 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import BaseRule;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropForeignTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
-setReadwriteSplittingHintSource
-    : SET READWRITE_SPLITTING HINT SOURCE EQ sourceValue
-    ;
-
-showReadwriteSplittingHintStatus
-    : SHOW READWRITE_SPLITTING HINT STATUS
-    ;
-
-clearReadwriteSplittingHint
-    : CLEAR READWRITE_SPLITTING HINT
-    ;
-
-enableReadDataSource
-    : ENABLE READWRITE_SPLITTING (READ)? resourceName (FROM schemaName)?
-    ;
-
-disableReadDataSource
-    : DISABLE READWRITE_SPLITTING (READ)? resourceName (FROM schemaName)?
-    ;
-
-showReadwriteSplittingReadResources
-    : SHOW READWRITE_SPLITTING READ RESOURCES (FROM schemaName)?
-    ;
-
-sourceValue
-    : IDENTIFIER
-    ;
+/**
+ * PostgreSQL drop foreign table statement.
+ */
+@ToString
+public final class PostgreSQLDropForeignTableStatement extends DropForeignTableStatement implements PostgreSQLStatement {
+}
