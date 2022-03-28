@@ -247,7 +247,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     
     /**
      * Close connections.
-     *
+     * 
      * @param forceRollback is force rollback
      * @return SQL exception when connections close
      */
@@ -283,7 +283,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     
     /**
      * Close federation executor.
-     *
+     * 
      * @return SQL exception when federation executor close
      */
     public Collection<SQLException> closeFederationExecutor() {
