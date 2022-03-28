@@ -31,7 +31,7 @@ import java.util.Optional;
  */
 public final class MySQLDatabaseType implements DatabaseType {
     
-    private static final Collection<String> MYSQL_SYSTEM_DATABASES = Sets.newHashSet("information_schema", "performance_schema", "mysql", "sys");
+    private static final Collection<String> SYSTEM_DATABASES = Sets.newHashSet("information_schema", "performance_schema", "mysql", "sys");
     
     @Override
     public String getName() {
@@ -60,11 +60,11 @@ public final class MySQLDatabaseType implements DatabaseType {
     
     @Override
     public Collection<String> getSystemDatabases() {
-        return MYSQL_SYSTEM_DATABASES;
+        return SYSTEM_DATABASES;
     }
     
     @Override
     public Collection<String> getSystemSchemas() {
-        return MYSQL_SYSTEM_DATABASES;
+        return SYSTEM_DATABASES;
     }
 }
