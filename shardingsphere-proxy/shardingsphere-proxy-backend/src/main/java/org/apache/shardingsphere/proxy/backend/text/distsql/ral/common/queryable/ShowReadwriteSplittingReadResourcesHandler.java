@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -56,10 +57,6 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
     private static final String STATUS = "status";
     
     private static final String DELAY_TIME = "delay_time(ms)";
-    
-    private static final String ENABLED = "enabled";
-    
-    private static final String DISABLED = "disabled";
     
     private ConnectionSession connectionSession;
     
@@ -133,11 +130,11 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
     
     private List<Object> buildRow(final String resource, final StorageNodeDataSource storageNodeDataSource) {
         if (null == storageNodeDataSource) {
-            return Arrays.asList(resource, ENABLED, "0");
+            return Arrays.asList(resource, StorageNodeStatus.ENABLED, "0");
         } else {
-            Long replicationDelayTime = storageNodeDataSource.getReplicationDelayTime();
-            boolean isEnabled = storageNodeDataSource.getStatus().startsWith("enable");
-            return Arrays.asList(resource, isEnabled ? ENABLED : DISABLED, null != replicationDelayTime ? Long.toString(replicationDelayTime) : "0");
+            Long replicationDelayTime = storageNodeDataSource.getReplicationDelayMilliseconds();
+            String status = StorageNodeStatus.valueOf(storageNodeDataSource.getStatus()).toString().toLowerCase();
+            return Arrays.asList(resource, status, null != replicationDelayTime ? Long.toString(replicationDelayTime) : "0");
         }
     }
 }

@@ -183,14 +183,14 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     
     private void updateStatus(final String schemaName, final Collection<String> groupNames, final String toBeDisableResource, final boolean isDisable) {
         groupNames.forEach(each -> {
-            StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisable ? StorageNodeStatus.DISABLE : StorageNodeStatus.ENABLE);
+            StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisable ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED);
             ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, each, toBeDisableResource, storageNodeDataSource));
         });
     }
     
     private Collection<QualifiedSchema> getDisabledStorageNodes(final String schemaName, final MetaDataPersistService persistService) {
         Map<String, StorageNodeDataSource> storageNodes = new StorageNodeStatusService((ClusterPersistRepository) persistService.getRepository()).loadStorageNodes();
-        return storageNodes.entrySet().stream().filter(each -> StorageNodeStatus.DISABLE.name().equalsIgnoreCase(each.getValue().getStatus()))
+        return storageNodes.entrySet().stream().filter(each -> StorageNodeStatus.DISABLED.name().equalsIgnoreCase(each.getValue().getStatus()))
                 .map(each -> new QualifiedSchema(each.getKey())).filter(each -> schemaName.equalsIgnoreCase(each.getSchemaName()))
                 .collect(Collectors.toList());
     }
