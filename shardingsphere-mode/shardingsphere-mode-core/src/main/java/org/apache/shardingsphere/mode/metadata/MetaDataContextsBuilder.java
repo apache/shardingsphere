@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
 import org.apache.shardingsphere.infra.config.schema.impl.DataSourceProvidedSchemaConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -42,8 +43,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * Meta data contexts builder.
@@ -120,13 +121,14 @@ public final class MetaDataContextsBuilder {
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() throws SQLException {
+        DatabaseType defaultDatabaseType = DatabaseTypeFactory.getDatabaseType(schemaConfigMap, props);
         Map<String, ShardingSphereMetaData> result = new HashMap<>(databaseMap.size(), 1);
         for (Entry<String, ShardingSphereDatabase> entry : databaseMap.entrySet()) {
             String databaseName = entry.getKey();
             // TODO support database and schema configuration separately
             SchemaConfiguration schemaConfig = schemaConfigMap.getOrDefault(databaseName, new DataSourceProvidedSchemaConfiguration(Collections.emptyMap(), Collections.emptyList()));
             Collection<ShardingSphereRule> rules = schemaRulesMap.getOrDefault(databaseName, Collections.emptyList());
-            result.put(databaseName, ShardingSphereMetaData.create(databaseName, entry.getValue().getSchemas(), schemaConfig, rules));
+            result.put(databaseName, ShardingSphereMetaData.create(databaseName, entry.getValue().getSchemas(), schemaConfig, rules, defaultDatabaseType));
         }
         return result;
     }

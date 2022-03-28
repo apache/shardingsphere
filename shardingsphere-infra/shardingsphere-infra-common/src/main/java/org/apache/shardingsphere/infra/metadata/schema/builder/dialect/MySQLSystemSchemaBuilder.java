@@ -21,6 +21,9 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectSystemSchemaBuilder;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
+import org.apache.shardingsphere.infra.yaml.schema.swapper.SchemaYamlSwapper;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -35,9 +38,10 @@ public final class MySQLSystemSchemaBuilder implements DialectSystemSchemaBuilde
     public Map<String, ShardingSphereSchema> build(final String schemaName) {
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>();
         DatabaseType databaseType = DatabaseTypeRegistry.getTrunkDatabaseType(getDatabaseType());
+        SchemaYamlSwapper swapper = new SchemaYamlSwapper();
         for (String each : databaseType.getSystemSchemas().getOrDefault(schemaName, Collections.emptyList())) {
-            // TODO build ShardingSphereSchema according to MySQL schema
-            result.put(each, new ShardingSphereSchema(Collections.emptyMap()));
+            YamlSchema yamlSchema = YamlEngine.unmarshal(getSystemSchemaContent(each), YamlSchema.class);
+            result.put(each, swapper.swapToObject(yamlSchema));
         }
         return result;
     }

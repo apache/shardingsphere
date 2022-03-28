@@ -22,6 +22,8 @@ import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -84,8 +86,8 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         proxySQLExecutor = new ProxySQLExecutor(driverType, backendConnection, this);
         this.backendConnection = backendConnection;
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        String schemaName = backendConnection.getConnectionSession().getSchemaName();
-        federationExecutor = FederationExecutorFactory.newInstance(schemaName, metaDataContexts.getOptimizerContext(),
+        String databaseName = backendConnection.getConnectionSession().getSchemaName();
+        federationExecutor = FederationExecutorFactory.newInstance(databaseName, metaDataContexts.getOptimizerContext(),
                 metaDataContexts.getProps(), new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), backendConnection.isSerialExecute()));
     }
     
@@ -120,7 +122,7 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
                 logicSQL, getMetaData(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
         // TODO move federation route logic to binder
         if (executionContext.getRouteContext().isFederated() 
-                || logicSQL.getSqlStatementContext().getDatabaseType().containsSystemSchema(backendConnection.getConnectionSession().getSchemaName())) {
+                || containsSystemSchema(logicSQL.getSqlStatementContext().getDatabaseType(), logicSQL.getSqlStatementContext().getTablesContext().getSchemaNames())) {
             MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
             ResultSet resultSet = doExecuteFederation(logicSQL, metaDataContexts);
             return processExecuteFederation(resultSet, metaDataContexts);
@@ -136,6 +138,18 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         return executeResultSample instanceof QueryResult
                 ? processExecuteQuery(executionContext, result, (QueryResult) executeResultSample)
                 : processExecuteUpdate(executionContext, result);
+    }
+    
+    private boolean containsSystemSchema(final DatabaseType databaseType, final Collection<String> schemaNames) {
+        if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
+            for (String each : schemaNames) {
+                if (!databaseType.containsSystemSchema(each)) {
+                    continue;
+                }
+                return true;
+            }
+        }
+        return databaseType.containsSystemSchema(backendConnection.getConnectionSession().getSchemaName());
     }
     
     private ResultSet doExecuteFederation(final LogicSQL logicSQL, final MetaDataContexts metaDataContexts) throws SQLException {

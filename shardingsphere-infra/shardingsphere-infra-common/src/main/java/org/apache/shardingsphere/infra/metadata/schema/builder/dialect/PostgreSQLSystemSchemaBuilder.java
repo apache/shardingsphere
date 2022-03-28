@@ -21,6 +21,9 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectSystemSchemaBuilder;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
+import org.apache.shardingsphere.infra.yaml.schema.swapper.SchemaYamlSwapper;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -31,15 +34,16 @@ import java.util.Map;
  */
 public final class PostgreSQLSystemSchemaBuilder implements DialectSystemSchemaBuilder {
     
-    private static final String POSTGRES_DEFAULT_DATABASE = "postgres";
+    private static final String DEFAULT_POSTGRES_DATABASE = "postgres";
     
     @Override
     public Map<String, ShardingSphereSchema> build(final String schemaName) {
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>();
         DatabaseType databaseType = DatabaseTypeRegistry.getTrunkDatabaseType(getDatabaseType());
-        for (String each : databaseType.getSystemSchemas().getOrDefault(POSTGRES_DEFAULT_DATABASE, Collections.emptyList())) {
-            // TODO build ShardingSphereSchema according to PostgreSQL schema
-            result.put(each, new ShardingSphereSchema(Collections.emptyMap()));
+        SchemaYamlSwapper swapper = new SchemaYamlSwapper();
+        for (String each : databaseType.getSystemSchemas().getOrDefault(DEFAULT_POSTGRES_DATABASE, Collections.emptyList())) {
+            YamlSchema yamlSchema = YamlEngine.unmarshal(getSystemSchemaContent(each), YamlSchema.class);
+            result.put(each, swapper.swapToObject(yamlSchema));
         }
         return result;
     }
