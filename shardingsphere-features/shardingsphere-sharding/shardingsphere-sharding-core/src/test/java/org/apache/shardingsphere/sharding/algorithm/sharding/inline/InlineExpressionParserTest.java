@@ -107,4 +107,12 @@ public final class InlineExpressionParserTest {
         assertThat(expected.size(), is(1024));
         assertThat(expected, hasItems("ds_0.t_user_0", "ds_15.t_user_1023"));
     }
+
+    @Test
+    public void assertValidInlineExpression() {
+        boolean actualExpression1 = InlineExpressionParser.isInlineExpression("t_$->{\"new_order1\"}");
+        boolean actualExpression2 = InlineExpressionParser.isInlineExpression("t_${\"new_order2\"}");
+        assertThat(actualExpression1, is(true));
+        assertThat(actualExpression2, is(true));
+    }
 }
