@@ -115,4 +115,10 @@ public final class InlineExpressionParserTest {
         assertThat(actualExpression1, is(true));
         assertThat(actualExpression2, is(true));
     }
+
+    @Test
+    public void assertInValidInLineExpression() {
+        boolean actualExpression1 = InlineExpressionParser.isInlineExpression("t_>{\"new_order1\"}");
+        assertThat(actualExpression1, is(false));
+    }
 }
