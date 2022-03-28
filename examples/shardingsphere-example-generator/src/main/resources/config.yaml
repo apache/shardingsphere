@@ -16,7 +16,7 @@
 #
 
 # supported: jdbc,proxy
-product0: jdbc
+product: jdbc
 
 # supported: memory,cluster-zookeeper,cluster-etcd,standalone-file
 mode: memory
