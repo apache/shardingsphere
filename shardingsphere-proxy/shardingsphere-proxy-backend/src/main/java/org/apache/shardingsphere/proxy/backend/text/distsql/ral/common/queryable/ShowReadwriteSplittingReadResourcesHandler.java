@@ -114,7 +114,7 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
         }
         Map<String, StorageNodeDataSource> storageNodes = new StorageNodeStatusService((ClusterPersistRepository) persistService.getRepository()).loadStorageNodes();
         Map<String, StorageNodeDataSource> result = new HashMap<>();
-        storageNodes.entrySet().stream().filter(entry -> entry.getValue().getRole().equalsIgnoreCase("member")).forEach(entry -> {
+        storageNodes.entrySet().stream().filter(entry -> "member".equalsIgnoreCase(entry.getValue().getRole())).forEach(entry -> {
             QualifiedSchema qualifiedSchema = new QualifiedSchema(entry.getKey());
             if (schemaName.equalsIgnoreCase(qualifiedSchema.getSchemaName())) {
                 result.put(qualifiedSchema.getDataSourceName(), entry.getValue());

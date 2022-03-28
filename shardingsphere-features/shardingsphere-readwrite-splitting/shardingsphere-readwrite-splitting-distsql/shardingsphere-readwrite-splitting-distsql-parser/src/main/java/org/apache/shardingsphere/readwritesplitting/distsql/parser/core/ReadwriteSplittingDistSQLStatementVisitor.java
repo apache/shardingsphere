@@ -107,7 +107,7 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
         }
         StaticReadwriteSplittingRuleDefinitionContext staticRuleDefinitionCtx = ctx.staticReadwriteSplittingRuleDefinition();
         return new ReadwriteSplittingRuleSegment(getIdentifierValue(ctx.ruleName()),
-                getIdentifierValue(staticRuleDefinitionCtx.writeResourceName()),
+                getIdentifierValue(staticRuleDefinitionCtx.writeResourceName()), 
                 staticRuleDefinitionCtx.readResourceNames().resourceName().stream().map(each -> getIdentifierValue(each)).collect(Collectors.toList()),
                 algorithmName, props);
     }
