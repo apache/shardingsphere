@@ -440,6 +440,8 @@ public enum SQLVisitorRule {
     
     DROP_OPERATOR("DropOperator", SQLStatementType.DDL);
     
+    DROP_GROUP("DropGroup",SQLStatementType.DDL);
+
     private final String name;
     
     @Getter

@@ -580,7 +580,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-function")
     private final List<DropFunctionStatementTestCase> dropFunctionTestCase = new LinkedList<>();
-    
+
     @XmlElement(name = "drop-group")
     private final List<DropGroupStatementTestCase> dropGroupTestCases = new LinkedList<>();
     
