@@ -29,14 +29,16 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 /**
  * Database type of PostgreSQL.
  */
 public final class PostgreSQLDatabaseType implements DatabaseType {
+    
+    private static final Collection<String> SYSTEM_DATABASES = Sets.newHashSet("postgres");
+    
+    private static final Collection<String> SYSTEM_SCHEMAS = Sets.newHashSet("information_schema", "pg_catalog");
     
     @Override
     public String getName() {
@@ -71,9 +73,12 @@ public final class PostgreSQLDatabaseType implements DatabaseType {
     }
     
     @Override
-    public Map<String, Collection<String>> getSystemSchemas() {
-        Map<String, Collection<String>> result = new LinkedHashMap<>();
-        result.put("postgres", Sets.newHashSet("information_schema", "pg_catalog"));
-        return result;
+    public Collection<String> getSystemDatabases() {
+        return SYSTEM_DATABASES;
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas() {
+        return SYSTEM_SCHEMAS;
     }
 }

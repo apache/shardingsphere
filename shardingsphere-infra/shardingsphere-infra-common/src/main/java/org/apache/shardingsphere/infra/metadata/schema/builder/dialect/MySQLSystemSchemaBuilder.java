@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.SchemaYamlSwapper;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -39,7 +38,7 @@ public final class MySQLSystemSchemaBuilder implements DialectSystemSchemaBuilde
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>();
         DatabaseType databaseType = DatabaseTypeRegistry.getTrunkDatabaseType(getDatabaseType());
         SchemaYamlSwapper swapper = new SchemaYamlSwapper();
-        for (String each : databaseType.getSystemSchemas().getOrDefault(schemaName, Collections.emptyList())) {
+        for (String each : databaseType.getSystemDatabases()) {
             YamlSchema yamlSchema = YamlEngine.unmarshal(getSystemSchemaContent(each), YamlSchema.class);
             result.put(each, swapper.swapToObject(yamlSchema));
         }

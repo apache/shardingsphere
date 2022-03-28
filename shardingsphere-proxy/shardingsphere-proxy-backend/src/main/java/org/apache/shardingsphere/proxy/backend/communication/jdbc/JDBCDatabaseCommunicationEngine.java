@@ -144,13 +144,13 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
     private boolean containsSystemSchema(final DatabaseType databaseType, final Collection<String> schemaNames) {
         if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
             for (String each : schemaNames) {
-                if (!databaseType.containsSystemSchema(each)) {
+                if (!databaseType.getSystemSchemas().contains(each)) {
                     continue;
                 }
                 return true;
             }
         }
-        return databaseType.containsSystemSchema(backendConnection.getConnectionSession().getSchemaName());
+        return databaseType.getSystemSchemas().contains(backendConnection.getConnectionSession().getSchemaName());
     }
     
     private ResultSet doExecuteFederation(final LogicSQL logicSQL, final MetaDataContexts metaDataContexts) throws SQLException {

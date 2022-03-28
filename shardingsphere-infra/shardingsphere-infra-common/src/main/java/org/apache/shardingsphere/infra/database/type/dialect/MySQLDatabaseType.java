@@ -24,14 +24,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 /**
  * Database type of MySQL.
  */
 public final class MySQLDatabaseType implements DatabaseType {
+    
+    private static final Collection<String> MYSQL_SYSTEM_DATABASES = Sets.newHashSet("information_schema", "performance_schema", "mysql", "sys");
     
     @Override
     public String getName() {
@@ -59,12 +59,12 @@ public final class MySQLDatabaseType implements DatabaseType {
     }
     
     @Override
-    public Map<String, Collection<String>> getSystemSchemas() {
-        Map<String, Collection<String>> result = new LinkedHashMap<>();
-        result.put("information_schema", Sets.newHashSet("information_schema"));
-        result.put("performance_schema", Sets.newHashSet("performance_schema"));
-        result.put("mysql", Sets.newHashSet("mysql"));
-        result.put("sys", Sets.newHashSet("sys"));
-        return result;
+    public Collection<String> getSystemDatabases() {
+        return MYSQL_SYSTEM_DATABASES;
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas() {
+        return MYSQL_SYSTEM_DATABASES;
     }
 }

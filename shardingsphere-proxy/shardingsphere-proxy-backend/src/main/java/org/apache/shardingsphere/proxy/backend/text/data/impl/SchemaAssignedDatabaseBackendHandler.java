@@ -84,13 +84,13 @@ public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBacke
     private boolean containsSystemSchema(final DatabaseType databaseType, final Collection<String> schemaNames) {
         if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
             for (String each : schemaNames) {
-                if (!databaseType.containsSystemSchema(each)) {
+                if (!databaseType.getSystemSchemas().contains(each)) {
                     continue;
                 }
                 return true;
             }
         }
-        return databaseType.containsSystemSchema(connectionSession.getSchemaName());
+        return databaseType.getSystemSchemas().contains(connectionSession.getSchemaName());
     }
     
     @Override

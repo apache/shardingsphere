@@ -28,7 +28,6 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -69,7 +68,12 @@ public final class OpenGaussDatabaseType implements DatabaseType {
     }
     
     @Override
-    public Map<String, Collection<String>> getSystemSchemas() {
-        return Collections.emptyMap();
+    public Collection<String> getSystemDatabases() {
+        return Collections.emptyList();
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas() {
+        return Collections.emptyList();
     }
 }
