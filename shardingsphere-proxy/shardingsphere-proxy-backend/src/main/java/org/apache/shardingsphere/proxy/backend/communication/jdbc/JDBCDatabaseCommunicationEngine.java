@@ -87,7 +87,8 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         this.backendConnection = backendConnection;
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String databaseName = backendConnection.getConnectionSession().getSchemaName();
-        federationExecutor = FederationExecutorFactory.newInstance(databaseName, metaDataContexts.getOptimizerContext(),
+        String schemaName = logicSQL.getSqlStatementContext().getTablesContext().getSchemaNames().stream().findFirst().orElse(databaseName);
+        federationExecutor = FederationExecutorFactory.newInstance(databaseName, schemaName, metaDataContexts.getOptimizerContext(),
                 metaDataContexts.getProps(), new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), backendConnection.isSerialExecute()));
     }
     
