@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token;
 
-import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptOrderByItemTokenGenerator;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptPredicateColumnTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptProjectionTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
@@ -66,30 +64,23 @@ public final class EncryptTokenGenerateBuilderTest {
         when(selectStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("table"));
         when(selectStatementContext.getOrderByContext().getItems()).thenReturn(Collections.singletonList(mock(OrderByItem.class)));
         when(selectStatementContext.getGroupByContext().getItems()).thenReturn(Collections.emptyList());
-        when(selectStatementContext.isContainsJoinQuery()).thenReturn(true);
         when(selectStatementContext.getWhereSegments()).thenReturn(Collections.emptyList());
         EncryptTokenGenerateBuilder encryptTokenGenerateBuilder = new EncryptTokenGenerateBuilder(
-                encryptRule, selectStatementContext, Collections.emptyList(), true, DefaultSchema.LOGIC_NAME);
+                encryptRule, selectStatementContext, Collections.emptyList(), DefaultSchema.LOGIC_NAME);
         Collection<SQLTokenGenerator> sqlTokenGenerators = encryptTokenGenerateBuilder.getSQLTokenGenerators();
-        assertThat(sqlTokenGenerators.size(), is(3));
+        assertThat(sqlTokenGenerators.size(), is(2));
         Iterator<SQLTokenGenerator> iterator = sqlTokenGenerators.iterator();
         SQLTokenGenerator item1 = iterator.next();
         assertThat(item1, instanceOf(EncryptProjectionTokenGenerator.class));
         assertSqlTokenGenerator(item1);
         SQLTokenGenerator item2 = iterator.next();
-        assertThat(item2, instanceOf(EncryptPredicateColumnTokenGenerator.class));
+        assertThat(item2, instanceOf(EncryptOrderByItemTokenGenerator.class));
         assertSqlTokenGenerator(item2);
-        SQLTokenGenerator item3 = iterator.next();
-        assertThat(item3, instanceOf(EncryptOrderByItemTokenGenerator.class));
-        assertSqlTokenGenerator(item3);
     }
     
     private void assertSqlTokenGenerator(final SQLTokenGenerator sqlTokenGenerator) throws IllegalAccessException {
         if (sqlTokenGenerator instanceof EncryptRuleAware) {
             assertField(sqlTokenGenerator, encryptRule, "encryptRule");
-        }
-        if (sqlTokenGenerator instanceof QueryWithCipherColumnAware) {
-            assertField(sqlTokenGenerator, encryptRule.isQueryWithCipherColumn(), "queryWithCipherColumn");
         }
     }
     

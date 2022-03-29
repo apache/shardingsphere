@@ -71,4 +71,14 @@ public final class OracleDatabaseType implements DatabaseType {
     public String formatTableNamePattern(final String tableNamePattern) {
         return tableNamePattern.toUpperCase();
     }
+    
+    @Override
+    public Collection<String> getSystemDatabases() {
+        return Collections.emptyList();
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas() {
+        return Collections.emptyList();
+    }
 }

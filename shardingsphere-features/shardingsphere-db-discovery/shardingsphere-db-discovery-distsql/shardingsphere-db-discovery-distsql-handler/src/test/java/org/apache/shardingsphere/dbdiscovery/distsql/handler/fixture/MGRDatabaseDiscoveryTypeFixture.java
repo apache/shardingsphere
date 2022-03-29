@@ -46,7 +46,7 @@ public final class MGRDatabaseDiscoveryTypeFixture implements DatabaseDiscoveryT
     }
     
     @Override
-    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
+    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final String groupName) {
         
     }
     

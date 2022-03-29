@@ -54,4 +54,14 @@ public final class SQL92DatabaseType implements DatabaseType {
     public Optional<String> getDataSourceClassName() {
         return Optional.empty();
     }
+    
+    @Override
+    public Collection<String> getSystemDatabases() {
+        return Collections.emptyList();
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas() {
+        return Collections.emptyList();
+    }
 }

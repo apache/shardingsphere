@@ -60,14 +60,14 @@ public final class SchemaMetaDataPersistServiceTest {
         TableMetaData tableMetaData = new TableMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(), YamlTableMetaData.class));
         ShardingSphereSchema schema = new ShardingSphereSchema();
         schema.getTables().put("t_order", tableMetaData);
-        new SchemaMetaDataPersistService(repository).persist("foo_db", schema);
-        verify(repository).persist(eq("/metadata/foo_db/tables/t_order"), anyString());
+        new SchemaMetaDataPersistService(repository).persist("foo_db", "foo_db", schema);
+        verify(repository).persist(eq("/metadata/foo_db/foo_db/tables/t_order"), anyString());
     }
     
     @Test
     public void assertPersistSchemaTables() {
         new SchemaMetaDataPersistService(repository).persist("foo_db");
-        verify(repository).persist(eq("/metadata/foo_db/tables"), anyString());
+        verify(repository).persist(eq("/metadata/foo_db/foo_db/tables"), anyString());
     }
     
     @Test
@@ -79,11 +79,11 @@ public final class SchemaMetaDataPersistServiceTest {
     @Test
     public void assertLoad() {
         SchemaMetaDataPersistService schemaMetaDataPersistService = new SchemaMetaDataPersistService(repository);
-        when(repository.getChildrenKeys("/metadata/foo_db/tables")).thenReturn(Lists.newArrayList("t_order"));
-        when(repository.get("/metadata/foo_db/tables/t_order")).thenReturn(readYAML());
-        Optional<ShardingSphereSchema> schemaOptional = schemaMetaDataPersistService.load("foo_db");
+        when(repository.getChildrenKeys("/metadata/foo_db/foo_db/tables")).thenReturn(Lists.newArrayList("t_order"));
+        when(repository.get("/metadata/foo_db/foo_db/tables/t_order")).thenReturn(readYAML());
+        Optional<ShardingSphereSchema> schemaOptional = schemaMetaDataPersistService.load("foo_db", "foo_db");
         assertTrue(schemaOptional.isPresent());
-        Optional<ShardingSphereSchema> empty = schemaMetaDataPersistService.load("test");
+        Optional<ShardingSphereSchema> empty = schemaMetaDataPersistService.load("test", "test");
         assertThat(empty, is(Optional.empty()));
         ShardingSphereSchema schema = schemaOptional.get();
         assertThat(schema.getAllTableNames(), is(Collections.singleton("t_order")));
@@ -94,11 +94,17 @@ public final class SchemaMetaDataPersistServiceTest {
     
     @Test
     public void assertLoadAllNames() {
-        when(repository.getChildrenKeys("/metadata")).thenReturn(Arrays.asList("foo_db", "bar_db"));
+        when(repository.getChildrenKeys("/metadata")).thenReturn(Arrays.asList("foo_db"));
         Collection<String> actual = new SchemaMetaDataPersistService(repository).loadAllNames();
-        assertThat(actual.size(), is(2));
+        assertThat(actual.size(), is(1));
         assertThat(actual, hasItems("foo_db"));
-        assertThat(actual, hasItems("bar_db"));
+    }
+    
+    @Test
+    public void assertPersistTableMetaData() {
+        TableMetaData tableMetaData = new TableMetaData("FOO_TABLE", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        new SchemaMetaDataPersistService(repository).persist("foo_db", tableMetaData);
+        verify(repository).persist(eq("/metadata/foo_db/foo_db/tables/foo_table"), anyString());
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class})

@@ -20,8 +20,11 @@ package org.apache.shardingsphere.infra.distsql.update;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 /**
- * Drop rule rule definition updater.
+ * Drop rule definition updater.
  * 
  * @param <T> type of SQL statement
  * @param <R> type of rule configuration
@@ -33,7 +36,39 @@ public interface RuleDefinitionDropUpdater<T extends SQLStatement, R extends Rul
      *
      * @param sqlStatement SQL statement
      * @param currentRuleConfig current rule configuration to be updated
-     * @return current rule configuration is empty or not 
+     * @return current rule configuration is empty or not
      */
     boolean updateCurrentRuleConfiguration(T sqlStatement, R currentRuleConfig);
+    
+    /**
+     * Whether there is configuration.
+     *
+     * @param currentRuleConfig current rule configuration 
+     * @return configuration exists or does not exist
+     */
+    default boolean isExistRuleConfig(R currentRuleConfig) {
+        return currentRuleConfig != null;
+    }
+    
+    /**
+     * Whether there is dropped data.
+     * 
+     * @param sqlStatement SQL statement
+     * @param currentRuleConfig current rule configuration
+     * @return dropped data exists or does not exist
+     */
+    default boolean hasAnyOneToBeDropped(T sqlStatement, R currentRuleConfig) {
+        return true;
+    }
+    
+    /**
+     * Get identical data.
+     *
+     * @param currentRules collection
+     * @param toBeDroppedRules collection
+     * @return identical data
+     */
+    default Collection<String> getIdenticalData(Collection<String> currentRules, Collection<String> toBeDroppedRules) {
+        return currentRules.stream().filter(toBeDroppedRules::contains).collect(Collectors.toSet());
+    }
 }

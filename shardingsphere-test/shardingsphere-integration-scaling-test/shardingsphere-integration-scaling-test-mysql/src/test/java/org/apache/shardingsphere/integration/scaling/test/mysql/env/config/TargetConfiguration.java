@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.integration.scaling.test.mysql.env.config;
 
-import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.integration.scaling.test.mysql.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
+import org.apache.shardingsphere.integration.scaling.test.mysql.env.IntegrationTestEnvironment;
 
 import javax.sql.DataSource;
 import java.util.Properties;
@@ -61,6 +61,6 @@ public final class TargetConfiguration {
      * @return data source
      */
     public static DataSource createHostDataSource() {
-        return new HikariDataSource(TargetConfiguration.getHostConfiguration().getHikariConfig());
+        return new PipelineDataSourceFactory().newInstance(getHostConfiguration());
     }
 }

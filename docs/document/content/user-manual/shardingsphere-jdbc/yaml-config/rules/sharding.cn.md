@@ -10,13 +10,13 @@ rules:
 - !SHARDING
   tables: # 数据分片规则配置
     <logic-table-name> (+): # 逻辑表名称
-      actualDataNodes (?): # 由数据源名 + 表名组成（参考Inline语法规则）
+      actualDataNodes (?): # 由数据源名 + 表名组成（参考 Inline 语法规则）
       databaseStrategy (?): # 分库策略，缺省表示使用默认分库策略，以下的分片策略只能选其一
         standard: # 用于单分片键的标准分片场景
           shardingColumn: # 分片列名称
           shardingAlgorithmName: # 分片算法名称
         complex: # 用于多分片键的复合分片场景
-          shardingColumns: #分片列名称，多个列以逗号分隔
+          shardingColumns: # 分片列名称，多个列以逗号分隔
           shardingAlgorithmName: # 分片算法名称
         hint: # Hint 分片策略
           shardingAlgorithmName: # 分片算法名称

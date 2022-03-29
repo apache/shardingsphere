@@ -34,7 +34,7 @@ public final class TestDatabaseDiscoveryType implements DatabaseDiscoveryType {
     }
     
     @Override
-    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
+    public void updateMemberState(final String schemaName, final Map<String, DataSource> dataSourceMap, final String groupName) {
     }
     
     @Override

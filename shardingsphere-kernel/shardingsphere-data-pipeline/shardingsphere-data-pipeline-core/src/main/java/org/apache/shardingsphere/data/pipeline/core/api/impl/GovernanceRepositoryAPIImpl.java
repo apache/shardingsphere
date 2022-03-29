@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
@@ -40,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Governance repository API impl.
@@ -51,6 +51,11 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     private static final JobProgressYamlSwapper JOB_PROGRESS_YAML_SWAPPER = new JobProgressYamlSwapper();
     
     private final ClusterPersistRepository repository;
+    
+    @Override
+    public boolean isExisted(final String key) {
+        return null != repository.get(key);
+    }
     
     @Override
     public void persistJobProgress(final RuleAlteredJobContext jobContext) {
@@ -126,17 +131,28 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
-    public void renewJobStatus(final JobStatus status, final String jobId) {
-        List<String> offsetKeys = getChildrenKeys(String.format("%s/%s/offset", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId));
-        Map<Integer, JobProgress> progressMap = Maps.newHashMap();
-        offsetKeys.forEach(each -> progressMap.put(Integer.parseInt(each), getJobProgress(jobId, Integer.parseInt(each))));
-        progressMap.forEach((key, value) -> {
-            value.setStatus(status);
-            persist(getOffsetPath(jobId, key), YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(value)));
-        });
+    public List<Integer> getShardingItems(final String jobId) {
+        List<String> result = getChildrenKeys(getOffsetPath(jobId));
+        log.info("getShardingItems, jobId={}, offsetKeys={}", jobId, result);
+        return result.stream().map(Integer::parseInt).collect(Collectors.toList());
+    }
+    
+    @Override
+    public void updateShardingJobStatus(final String jobId, final int shardingItem, final JobStatus status) {
+        JobProgress jobProgress = getJobProgress(jobId, shardingItem);
+        if (null == jobProgress) {
+            log.warn("updateShardingJobStatus, jobProgress is null, jobId={}, shardingItem={}", jobId, shardingItem);
+            return;
+        }
+        jobProgress.setStatus(status);
+        persist(getOffsetPath(jobId, shardingItem), YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(jobProgress)));
     }
     
     private String getOffsetPath(final String jobId, final int shardingItem) {
         return String.format("%s/%s/offset/%d", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, shardingItem);
+    }
+    
+    private String getOffsetPath(final String jobId) {
+        return String.format("%s/%s/offset", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId);
     }
 }

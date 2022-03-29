@@ -68,6 +68,10 @@ public final class ReactiveMySQLFrontendEngine implements ReactiveDatabaseProtoc
     }
     
     @Override
+    public void handleException(final ConnectionSession connectionSession) {
+    }
+    
+    @Override
     public ReactiveCommandExecuteEngine getReactiveCommandExecuteEngine() {
         return reactiveCommandExecuteEngine;
     }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.type.dialect;
 
+import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.database.metadata.dialect.PostgreSQLDataSourceMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
@@ -65,5 +66,15 @@ public final class PostgreSQLDatabaseTypeTest {
         QuoteCharacter actual = new PostgreSQLDatabaseType().getQuoteCharacter();
         assertThat(actual.getStartDelimiter(), is("\""));
         assertThat(actual.getEndDelimiter(), is("\""));
+    }
+    
+    @Test
+    public void assertGetSystemDatabases() {
+        assertThat(new PostgreSQLDatabaseType().getSystemDatabases(), is(Sets.newHashSet("postgres")));
+    }
+    
+    @Test
+    public void assertGetSystemSchemas() {
+        assertThat(new PostgreSQLDatabaseType().getSystemSchemas(), is(Sets.newHashSet("information_schema", "pg_catalog")));
     }
 }

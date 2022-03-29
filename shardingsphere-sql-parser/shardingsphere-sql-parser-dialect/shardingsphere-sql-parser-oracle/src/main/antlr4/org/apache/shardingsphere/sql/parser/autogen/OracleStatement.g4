@@ -66,5 +66,7 @@ execute
     | createDimension
     | alterDimension
     | dropDimension
+    | createFunction
+    | dropDatabaseLink
     ) SEMI_?
     ;

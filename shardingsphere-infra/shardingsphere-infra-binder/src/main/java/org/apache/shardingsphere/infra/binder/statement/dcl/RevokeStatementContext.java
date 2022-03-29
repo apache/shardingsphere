@@ -36,7 +36,7 @@ public final class RevokeStatementContext extends CommonSQLStatementContext<Revo
     
     public RevokeStatementContext(final RevokeStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTables());
+        tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType());
     }
     
     @Override

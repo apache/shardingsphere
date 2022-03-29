@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
-import org.h2.jdbcx.JdbcDataSource;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -55,11 +54,21 @@ public final class H2DatabaseType implements BranchDatabaseType {
     
     @Override
     public Optional<String> getDataSourceClassName() {
-        return Optional.of(JdbcDataSource.class.getName());
+        return Optional.of("org.h2.jdbcx.JdbcDataSource");
     }
     
     @Override
     public DatabaseType getTrunkDatabaseType() {
         return DatabaseTypeRegistry.getActualDatabaseType("MySQL");
+    }
+    
+    @Override
+    public Collection<String> getSystemDatabases() {
+        return Collections.emptyList();
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas() {
+        return Collections.emptyList();
     }
 }

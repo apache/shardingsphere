@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.scaling.update;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.scaling.distsql.statement.ApplyScalingStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.scaling.ApplyScalingStatementTestCase;
@@ -51,7 +50,7 @@ public final class ApplyScalingStatementAssert {
     }
     
     private static void assertJobIds(final SQLCaseAssertContext assertContext, final String actual, final List<String> expected) {
-        if (CollectionUtils.isEmpty(expected)) {
+        if (expected.isEmpty()) {
             assertNull(assertContext.getText("Actual job id should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual job id should exist."), actual);

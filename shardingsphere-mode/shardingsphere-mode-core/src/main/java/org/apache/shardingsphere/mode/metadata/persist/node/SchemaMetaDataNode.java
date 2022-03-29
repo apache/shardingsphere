@@ -64,6 +64,16 @@ public final class SchemaMetaDataNode {
     }
     
     /**
+     * Get database name path.
+     *
+     * @param databaseName database name
+     * @return database name path
+     */
+    public static String getDatabaseNamePath(final String databaseName) {
+        return String.join("/", getMetaDataNodePath(), databaseName);
+    }
+    
+    /**
      * Get schema name path.
      *
      * @param schemaName schema name
@@ -87,26 +97,28 @@ public final class SchemaMetaDataNode {
     /**
      * Get meta data tables path.
      *
+     * @param databaseName database name
      * @param schemaName schema name
      * @return tables path
      */
-    public static String getMetaDataTablesPath(final String schemaName) {
-        return getFullMetaDataPath(schemaName, TABLES_NODE);
+    public static String getMetaDataTablesPath(final String databaseName, final String schemaName) {
+        return String.join("/", getDatabaseNamePath(databaseName), schemaName, TABLES_NODE);
     }
     
     /**
      * Get table meta data path.
-     * 
+     *
+     * @param databaseName database name
      * @param schemaName schema name
      * @param table table name
      * @return table meta data path
      */
-    public static String getTableMetaDataPath(final String schemaName, final String table) {
-        return String.join("/", getMetaDataTablesPath(schemaName), table);
+    public static String getTableMetaDataPath(final String databaseName, final String schemaName, final String table) {
+        return String.join("/", getMetaDataTablesPath(databaseName, schemaName), table);
     }
     
     private static String getFullMetaDataPath(final String schemaName, final String node) {
-        return String.join("/", "", ROOT_NODE, schemaName, node);
+        return String.join("/", "", ROOT_NODE, schemaName, schemaName, node);
     }
     
     /**

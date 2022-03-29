@@ -55,8 +55,6 @@ public final class ReflectiveUtil {
 
     private static Field getField(final Class<?> clazz, final String fieldName) {
         Field[] fields = clazz.getDeclaredFields();
-        return fields.length != 0
-                ? Arrays.stream(fields).filter(each -> fieldName.equals(each.getName())).findFirst().orElse(null)
-                : null;
+        return fields.length != 0 ? Arrays.stream(fields).filter(each -> fieldName.equals(each.getName())).findFirst().orElse(null) : null;
     }
 }

@@ -32,7 +32,7 @@ import java.sql.SQLException;
  * @param <C> type of resource connection
  * @param <O> type of storage resource option
  */
-public interface SQLExecutionUnitBuilder<T extends DriverExecutionUnit<?>, M extends ExecutorDriverManager<C, ?, O>, C, O extends StorageResourceOption> extends TypedSPI {
+public interface SQLExecutionUnitBuilder<T extends DriverExecutionUnit<?>, M extends ExecutorStatementManager<C, ?, O>, C, O extends StorageResourceOption> extends TypedSPI {
     
     /**
      * Build SQL execution unit.

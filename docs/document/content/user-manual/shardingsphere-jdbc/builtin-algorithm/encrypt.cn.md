@@ -37,7 +37,7 @@ weight = 5
 
 | *名称*         | *数据类型* | *说明*         |
 | ------------- | --------- | ------------- |
-| sm3-salt      | String    | SM3 使用的 SALT（空 或 8 Bytes） |
+| sm3-salt      | String    | SM3 使用的 SALT（空或 8 Bytes） |
 
 ## SM4 加密算法
 
@@ -49,5 +49,5 @@ weight = 5
 | ------------- | --------- | ------------- |
 | sm4-key       | String    | SM4 使用的 KEY （16 Bytes） |
 | sm4-mode      | String    | SM4 使用的 MODE （CBC 或 ECB） |
-| sm4-iv        | String    | SM4 使用的 IV （MODE为CBC时需指定，16 Bytes）|
-| sm4-padding   | String    | SM4 使用的 PADDING （PKCS5Padding 或 PKCS7Padding，暂不支持NoPadding）|
+| sm4-iv        | String    | SM4 使用的 IV （MODE 为 CBC 时需指定，16 Bytes）|
+| sm4-padding   | String    | SM4 使用的 PADDING （PKCS5Padding 或 PKCS7Padding，暂不支持 NoPadding）|

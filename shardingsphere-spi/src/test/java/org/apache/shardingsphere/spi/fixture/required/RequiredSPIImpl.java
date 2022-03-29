@@ -20,9 +20,4 @@ package org.apache.shardingsphere.spi.fixture.required;
 import org.apache.shardingsphere.spi.required.RequiredSPI;
 
 public final class RequiredSPIImpl implements RequiredSPI {
-    
-    @Override
-    public boolean isDefault() {
-        return false;
-    }
 }

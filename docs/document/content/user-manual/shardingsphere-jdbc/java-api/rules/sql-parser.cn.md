@@ -13,7 +13,7 @@ weight = 6
 |-----------------------------|-------------------|---------------------|
 | sqlCommentParseEnabled (?)  | boolean           | 是否解析 SQL 注释     |
 | parseTreeCache (?)          | CacheOption       | 解析语法树本地缓存配置  |
-| sqlStatementCache (?)       | CacheOption       | sql语句本地缓存配置    |
+| sqlStatementCache (?)       | CacheOption       | SQL 语句本地缓存配置    |
 
 ## 本地缓存配置
 
@@ -23,6 +23,6 @@ weight = 6
 
 | *名称*                    | *数据类型*   | *说明*                                       | *默认值*                                    |
 |-------------------------|-------------|---------------------------------------------|--------------------------------------------|
-| initialCapacity         | int         | 本地缓存初始容量                               | 语法树本地缓存默认值128，sql语句缓存默认值2000   |
-| maximumSize             | long        | 本地缓存最大容量                               | 语法树本地缓存默认值1024，sql语句缓存默认值65535 |
+| initialCapacity         | int         | 本地缓存初始容量                               | 语法树本地缓存默认值 128，SQL 语句缓存默认值 2000   |
+| maximumSize             | long        | 本地缓存最大容量                               | 语法树本地缓存默认值 1024，SQL 语句缓存默认值 65535 |
 | concurrencyLevel        | int         | 本地缓存并发级别，最多允许线程并发更新的个数        | 4                                          |

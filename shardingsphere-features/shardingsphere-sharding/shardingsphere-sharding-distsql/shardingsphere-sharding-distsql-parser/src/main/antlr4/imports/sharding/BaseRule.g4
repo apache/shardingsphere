@@ -30,3 +30,7 @@ algorithmName
 keyGeneratorName
     : IDENTIFIER
     ;
+
+existsClause
+    : IF EXISTS
+    ;

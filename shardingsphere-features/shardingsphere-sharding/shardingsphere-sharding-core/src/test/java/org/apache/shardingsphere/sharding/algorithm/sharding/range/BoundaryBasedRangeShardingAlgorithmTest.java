@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.range;
 
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.sharding.api.sharding.common.DataNodeInfo;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.junit.Before;
@@ -34,7 +34,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class BoundaryBasedRangeShardingAlgorithmTest {
     
-    private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("t_order_", 1);
+    private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("t_order_", 1, '0');
     
     private BoundaryBasedRangeShardingAlgorithm shardingAlgorithm;
     

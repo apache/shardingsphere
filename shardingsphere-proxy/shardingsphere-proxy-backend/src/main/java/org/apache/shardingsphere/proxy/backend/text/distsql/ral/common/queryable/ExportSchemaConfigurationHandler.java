@@ -50,13 +50,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Export schema configuration handler.
  */
 public final class ExportSchemaConfigurationHandler extends QueryableRALBackendHandler<ExportSchemaConfigurationStatement, ExportSchemaConfigurationHandler> {
     
-    private static final String CONFIG = "config";
+    private static final String RESULT = "result";
     
     private static final String COLON = ":";
     
@@ -106,7 +107,7 @@ public final class ExportSchemaConfigurationHandler extends QueryableRALBackendH
     
     @Override
     protected Collection<String> getColumnNames() {
-        return Collections.singletonList(CONFIG);
+        return Collections.singletonList(RESULT);
     }
     
     @Override
@@ -121,13 +122,16 @@ public final class ExportSchemaConfigurationHandler extends QueryableRALBackendH
             return Collections.singleton(Collections.singletonList(result.toString()));
         }
         File outFile = new File(sqlStatement.getFilePath().get());
+        if (!outFile.exists()) {
+            outFile.getParentFile().mkdirs();
+        }
         try (FileOutputStream stream = new FileOutputStream(outFile)) {
             stream.write(result.toString().getBytes());
             stream.flush();
         } catch (final IOException ex) {
             throw new ShardingSphereException(ex);
         }
-        return null;
+        return Collections.singleton(Collections.singletonList(String.format("Successfully exported to：'%s'", sqlStatement.getFilePath().get())));
     }
     
     private void getDataSourcesConfig(final ShardingSphereMetaData metaData, final StringBuilder result) {
@@ -135,7 +139,7 @@ public final class ExportSchemaConfigurationHandler extends QueryableRALBackendH
             return;
         }
         configItem(ZERO, "dataSources", result);
-        for (Map.Entry<String, DataSource> each : metaData.getResource().getDataSources().entrySet()) {
+        for (Entry<String, DataSource> each : metaData.getResource().getDataSources().entrySet()) {
             configItem(ONE, each.getKey(), result);
             DataSourceProperties dataSourceProps = DataSourcePropertiesCreator.create(each.getValue());
             dataSourceProps.getConnectionPropertySynonyms().getStandardProperties().entrySet().forEach(standard -> {
@@ -148,6 +152,9 @@ public final class ExportSchemaConfigurationHandler extends QueryableRALBackendH
     }
     
     private void getRulesConfig(final Collection<RuleConfiguration> ruleConfigurations, final StringBuilder result) {
+        if (null == ruleConfigurations || ruleConfigurations.isEmpty()) {
+            return;
+        }
         configItem(ZERO, "rules", result);
         ruleConfigurations.forEach(each -> {
             getRulesConfigForSharding(each, result);

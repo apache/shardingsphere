@@ -28,7 +28,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public class LabelsEvent implements GovernanceEvent {
+public final class LabelsEvent implements GovernanceEvent {
     
     private final String instanceId;
     

@@ -60,7 +60,7 @@ public class ShadowUserRepositoryImpl implements ShadowUserRepository {
     public void delete(final Long id) {
         Query query = entityManager.createQuery("DELETE FROM ShadowUserEntity o WHERE o.userId = ?1 and o.userType = ?2");
         query.setParameter(1, id.intValue());
-        query.setParameter(2, id % 2);
+        query.setParameter(2, id.intValue() % 2);
         query.executeUpdate();
     }
     

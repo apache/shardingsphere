@@ -112,6 +112,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.Co
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.DropIndexDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.ValidStatementSegment;
@@ -210,6 +211,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
         MySQLCreateDatabaseStatement result = new MySQLCreateDatabaseStatement();
         result.setDatabaseName(new IdentifierValue(ctx.schemaName().getText()).getValue());
+        result.setContainsNotExistClause(null != ctx.notExistClause());
         return result;
     }
     
@@ -222,9 +224,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
         MySQLDropDatabaseStatement result = new MySQLDropDatabaseStatement();
         result.setDatabaseName(new IdentifierValue(ctx.schemaName().getText()).getValue());
-        if (null != ctx.existClause()) {
-            result.setContainsExistClause(true);
-        }
+        result.setContainsExistClause(null != ctx.existClause());
         return result;
     }
     
@@ -289,6 +289,8 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
                     result.setRenameTable(((RenameTableDefinitionSegment) each).getRenameTable());
                 } else if (each instanceof ConvertTableDefinitionSegment) {
                     result.setConvertTableDefinition((ConvertTableDefinitionSegment) each);
+                } else if (each instanceof DropIndexDefinitionSegment) {
+                    result.getDropIndexDefinitions().add((DropIndexDefinitionSegment) each);
                 }
             }
         }
@@ -333,6 +335,9 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
                     result.getValue().add(new DropConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), constraintSegment));
                 } else if (null == alterTableDrop.KEY() && null == alterTableDrop.keyOrIndex()) {
                     result.getValue().add(generateDropColumnDefinitionSegment(alterTableDrop));
+                } else if (null != alterTableDrop.keyOrIndex()) {
+                    IndexSegment indexSegment = (IndexSegment) visit(alterTableDrop.indexName());
+                    result.getValue().add(new DropIndexDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), indexSegment));
                 }
             }
             if (each instanceof AddTableConstraintContext) {
@@ -488,8 +493,8 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         if (null != ctx.UNIQUE()) {
             result.getIndexColumns().addAll(getKeyColumnsFromKeyListWithExpression(ctx.keyListWithExpression()));
-            if (null != ctx.indexNameAndType()) {
-                result.setIndexName((IndexSegment) visit(ctx.indexNameAndType().indexName()));
+            if (null != ctx.indexName()) {
+                result.setIndexName((IndexSegment) visit(ctx.indexName()));
             }
             return result;
         }
@@ -499,9 +504,6 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.getIndexColumns().addAll(getKeyColumnsFromKeyListWithExpression(ctx.keyListWithExpression()));
         if (null != ctx.indexName()) {
             result.setIndexName((IndexSegment) visit(ctx.indexName()));
-        }
-        if (null != ctx.indexNameAndType()) {
-            result.setIndexName((IndexSegment) visit(ctx.indexNameAndType().indexName()));
         }
         return result;
     }

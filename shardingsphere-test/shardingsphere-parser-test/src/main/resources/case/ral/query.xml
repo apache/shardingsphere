@@ -32,4 +32,9 @@
             </properties>
         </type-strategy>
     </check-scaling>
+
+    <show-scaling-status sql-case-id="show-scaling-status">
+        <job-id>123</job-id>
+    </show-scaling-status>
+
 </sql-parser-test-cases>

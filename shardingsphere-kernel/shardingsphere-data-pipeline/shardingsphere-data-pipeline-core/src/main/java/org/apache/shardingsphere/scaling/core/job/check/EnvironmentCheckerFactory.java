@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsis
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCheckerImpl;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
-import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
+import org.apache.shardingsphere.scaling.core.spi.ScalingEntryFactory;
 
 /**
  * Environment checker factory.
@@ -48,7 +48,7 @@ public final class EnvironmentCheckerFactory {
      */
     @SneakyThrows(ReflectiveOperationException.class)
     public static DataSourcePreparer getDataSourcePreparer(final String databaseType) {
-        ScalingEntry scalingEntry = ScalingEntryLoader.getInstance(databaseType);
+        ScalingEntry scalingEntry = ScalingEntryFactory.getInstance(databaseType);
         Class<? extends DataSourcePreparer> preparerClass = scalingEntry.getEnvironmentCheckerClass().getConstructor().newInstance().getDataSourcePreparerClass();
         if (null == preparerClass) {
             return null;

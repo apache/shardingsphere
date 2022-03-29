@@ -20,18 +20,31 @@ package org.apache.shardingsphere.infra.metadata.user;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Grantee.
  */
-@RequiredArgsConstructor
 public final class Grantee {
     
     @Getter
     private final String username;
     
+    @Getter
     private final String hostname;
+    
+    private final boolean isUnlimitedHost;
+    
+    private final int hashCode;
+    
+    private final String toString;
+    
+    public Grantee(final String username, final String hostname) {
+        this.username = username;
+        this.hostname = Strings.isNullOrEmpty(hostname) ? "%" : hostname;
+        isUnlimitedHost = "%".equals(this.hostname);
+        hashCode = isUnlimitedHost ? username.toUpperCase().hashCode() : Objects.hashCode(username.toUpperCase(), hostname.toUpperCase());
+        toString = username + "@" + hostname;
+    }
     
     @Override
     public boolean equals(final Object obj) {
@@ -43,29 +56,16 @@ public final class Grantee {
     }
     
     private boolean isPermittedHost(final Grantee grantee) {
-        return grantee.hostname.equalsIgnoreCase(hostname) || isUnlimitedHost();
-    }
-    
-    private boolean isUnlimitedHost() {
-        return Strings.isNullOrEmpty(hostname) || "%".equals(hostname);
-    }
-    
-    /**
-     * Get host name.
-     * 
-     * @return host name
-     */
-    public String getHostname() {
-        return Strings.isNullOrEmpty(hostname) ? "%" : hostname;
+        return isUnlimitedHost || grantee.hostname.equalsIgnoreCase(hostname);
     }
     
     @Override
     public int hashCode() {
-        return isUnlimitedHost() ? Objects.hashCode(username.toUpperCase()) : Objects.hashCode(username.toUpperCase(), hostname.toUpperCase());
+        return hashCode;
     }
     
     @Override
     public String toString() {
-        return String.format("%s@%s", username, hostname);
+        return toString;
     }
 }

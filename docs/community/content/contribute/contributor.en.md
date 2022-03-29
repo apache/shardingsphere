@@ -33,6 +33,13 @@ git remote add apache https://github.com/apache/shardingsphere.git
 git remote -v
 ```
 
+Build and install all modules, it'll install modules into Maven local repository cache, and also generate Java class files of parser from ANTLR grammar `.g4` files to prevent from compile error of parser on IDE.
+```shell
+cd shardingsphere
+mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Prelease
+```
+When you pull the latest code from ShardingSphere and create new branch later, you might get similar compile error of parser again, then you could run this command again.
+
 **2. Choose Issue**
 
  - Please choose the issue to be edited. If it is a new issue discovered or a new function enhancement to offer, please create an issue and set the right label for it.

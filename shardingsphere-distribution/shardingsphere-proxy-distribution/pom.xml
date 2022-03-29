@@ -85,6 +85,10 @@
         </profile>
         <profile>
             <id>docker</id>
+            <properties>
+                <proxy.image.repository>apache/shardingsphere-proxy</proxy.image.repository>
+                <proxy.image.tag>${project.version}</proxy.image.tag>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -99,8 +103,8 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <repository>apache/shardingsphere-proxy</repository>
-                            <tag>${project.version}</tag>
+                            <repository>${proxy.image.repository}</repository>
+                            <tag>${proxy.image.tag}</tag>
                             <buildArgs>
                                 <APP_NAME>${project.build.finalName}-shardingsphere-proxy-bin</APP_NAME>
                             </buildArgs>

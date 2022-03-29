@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionFactory;
+import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapperFactory;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
@@ -81,21 +81,22 @@ public final class XATransactionDataSource implements AutoCloseable {
         }
         Transaction transaction = xaTransactionManagerProvider.getTransactionManager().getTransaction();
         if (!enlistedTransactions.get().containsKey(transaction)) {
-            Connection result = dataSource.getConnection();
-            XAConnection xaConnection = XAConnectionFactory.createXAConnection(databaseType, xaDataSource, result);
+            Connection connection = dataSource.getConnection();
+            XAConnection xaConnection = XAConnectionWrapperFactory.newInstance(databaseType).wrap(xaDataSource, connection);
             transaction.enlistResource(new SingleXAResource(resourceName, xaConnection.getXAResource()));
             transaction.registerSynchronization(new Synchronization() {
+                
                 @Override
                 public void beforeCompletion() {
                     enlistedTransactions.get().remove(transaction);
                 }
-    
+                
                 @Override
                 public void afterCompletion(final int status) {
                     enlistedTransactions.get().clear();
                 }
             });
-            enlistedTransactions.get().put(transaction, result);
+            enlistedTransactions.get().put(transaction, connection);
         }
         return enlistedTransactions.get().get(transaction);
     }

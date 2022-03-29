@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.type.dialect;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
@@ -30,6 +30,8 @@ import java.util.Optional;
  * Database type of MySQL.
  */
 public final class MySQLDatabaseType implements DatabaseType {
+    
+    private static final Collection<String> SYSTEM_DATABASES = Sets.newHashSet("information_schema", "performance_schema", "mysql", "sys");
     
     @Override
     public String getName() {
@@ -53,6 +55,16 @@ public final class MySQLDatabaseType implements DatabaseType {
     
     @Override
     public Optional<String> getDataSourceClassName() {
-        return Optional.of(MysqlDataSource.class.getName());
+        return Optional.of("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
+    }
+    
+    @Override
+    public Collection<String> getSystemDatabases() {
+        return SYSTEM_DATABASES;
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas() {
+        return SYSTEM_DATABASES;
     }
 }

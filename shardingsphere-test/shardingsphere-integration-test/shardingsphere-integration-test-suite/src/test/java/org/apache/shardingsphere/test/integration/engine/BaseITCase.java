@@ -60,7 +60,7 @@ public abstract class BaseITCase {
     
     private DataSource targetDataSource;
     
-    private Map<String, DataSource> verificationDataSourceMap;
+    private Map<String, DataSource> expectedDataSourceMap;
     
     public BaseITCase(final ParameterizedArray parameterizedArray) {
         scenario = parameterizedArray.getScenario();
@@ -75,7 +75,7 @@ public abstract class BaseITCase {
         composedContainer.start();
         actualDataSourceMap = composedContainer.getActualDataSourceMap();
         targetDataSource = composedContainer.getTargetDataSource();
-        verificationDataSourceMap = composedContainer.getVerificationDataSourceMap();
+        expectedDataSourceMap = composedContainer.getExpectedDataSourceMap();
     }
     
     @AfterClass

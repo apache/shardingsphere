@@ -45,6 +45,6 @@ public final class DriverStateContext {
      * @return connection
      */
     public static Connection getConnection(final String schemaName, final ContextManager contextManager) {
-        return STATES.get(contextManager.getInstanceContext().getState().getCurrentState().name()).getConnection(schemaName, contextManager);
+        return STATES.get(contextManager.getInstanceContext().getInstance().getState().getCurrentState().name()).getConnection(schemaName, contextManager);
     }
 }

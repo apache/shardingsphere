@@ -18,10 +18,4 @@
 package org.apache.shardingsphere.spi.fixture.required;
 
 public final class RequiredSPIFixtureDefaultFalseImpl implements RequiredSPIFixture {
-    
-    @Override
-    public boolean isDefault() {
-        return false;
-    }
 }
-

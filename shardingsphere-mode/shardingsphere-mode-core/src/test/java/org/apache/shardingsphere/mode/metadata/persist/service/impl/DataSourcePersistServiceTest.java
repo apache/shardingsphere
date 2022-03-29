@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.metadata.persist.service.impl;
 
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
@@ -52,8 +51,8 @@ public final class DataSourcePersistServiceTest {
     
     @Test
     public void assertLoad() {
-        when(repository.get("/metadata/foo_db/active_version")).thenReturn("0");
-        when(repository.get("/metadata/foo_db/versions/0/dataSources")).thenReturn(readDataSourceYaml("yaml/persist/data-source.yaml"));
+        when(repository.get("/metadata/foo_db/foo_db/active_version")).thenReturn("0");
+        when(repository.get("/metadata/foo_db/foo_db/versions/0/dataSources")).thenReturn(readDataSourceYaml("yaml/persist/data-source.yaml"));
         Map<String, DataSourceProperties> actual = new DataSourcePersistService(repository).load("foo_db");
         assertThat(actual.size(), is(2));
         assertDataSourceProperties(actual.get("ds_0"), DataSourcePropertiesCreator.create(createDataSource("ds_0")));
@@ -63,7 +62,7 @@ public final class DataSourcePersistServiceTest {
     @SneakyThrows({IOException.class, URISyntaxException.class})
     private String readDataSourceYaml(final String path) {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(path).toURI()))
-                .stream().filter(each -> StringUtils.isNotBlank(each) && !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+                .stream().filter(each -> !"".equals(each.trim()) && !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
     
     private void assertDataSourceProperties(final DataSourceProperties actual, final DataSourceProperties expected) {
@@ -76,26 +75,26 @@ public final class DataSourcePersistServiceTest {
     
     @Test
     public void assertLoadWithoutPath() {
-        when(repository.get("/metadata/foo_db/active_version")).thenReturn("0");
+        when(repository.get("/metadata/foo_db/foo_db/active_version")).thenReturn("0");
         Map<String, DataSourceProperties> actual = new DataSourcePersistService(repository).load("foo_db");
         assertTrue(actual.isEmpty());
     }
     
     @Test
     public void assertAppend() {
-        when(repository.get("/metadata/foo_db/active_version")).thenReturn("0");
+        when(repository.get("/metadata/foo_db/foo_db/active_version")).thenReturn("0");
         new DataSourcePersistService(repository).append("foo_db", Collections.singletonMap("foo_ds", DataSourcePropertiesCreator.create(createDataSource("foo_ds"))));
         String expected = readDataSourceYaml("yaml/persist/data-source-foo.yaml");
-        verify(repository).persist("/metadata/foo_db/versions/0/dataSources", expected);
+        verify(repository).persist("/metadata/foo_db/foo_db/versions/0/dataSources", expected);
     }
     
     @Test
     public void assertDrop() {
-        when(repository.get("/metadata/foo_db/active_version")).thenReturn("0");
+        when(repository.get("/metadata/foo_db/foo_db/active_version")).thenReturn("0");
         String actual = readDataSourceYaml("yaml/persist/data-source-foo.yaml");
-        when(repository.get("/metadata/foo_db/versions/0/dataSources")).thenReturn(actual);
+        when(repository.get("/metadata/foo_db/foo_db/versions/0/dataSources")).thenReturn(actual);
         new DataSourcePersistService(repository).drop("foo_db", Collections.singleton("foo_ds"));
-        verify(repository).persist("/metadata/foo_db/versions/0/dataSources", "{}" + System.lineSeparator());
+        verify(repository).persist("/metadata/foo_db/foo_db/versions/0/dataSources", "{}" + System.lineSeparator());
     }
     
     private DataSource createDataSource(final String name) {

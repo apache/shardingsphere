@@ -49,18 +49,13 @@ public final class HashModShardingAlgorithm implements StandardShardingAlgorithm
     
     private int getShardingCount() {
         Preconditions.checkArgument(props.containsKey(SHARDING_COUNT_KEY), "Sharding count cannot be null.");
-        return Integer.parseInt(props.getProperty(SHARDING_COUNT_KEY));
+        return Integer.parseInt(props.get(SHARDING_COUNT_KEY).toString());
     }
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         String suffix = String.valueOf(hashShardingValue(shardingValue.getValue()) % shardingCount);
-        for (String each : availableTargetNames) {
-            if (each.endsWith(suffix)) {
-                return each;
-            }
-        }
-        return null;
+        return findMatchedTargetName(availableTargetNames, suffix, shardingValue.getDataNodeInfo()).orElse(null);
     }
     
     @Override

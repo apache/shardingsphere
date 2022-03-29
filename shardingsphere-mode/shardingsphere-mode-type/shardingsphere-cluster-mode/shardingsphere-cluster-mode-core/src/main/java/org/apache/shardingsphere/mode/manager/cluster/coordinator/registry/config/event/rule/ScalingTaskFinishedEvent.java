@@ -20,21 +20,20 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.conf
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
  * Scaling task finished event.
  */
 @RequiredArgsConstructor
 @Getter
+@ToString
 public final class ScalingTaskFinishedEvent {
     
     @NonNull
     private final String targetSchemaName;
     
-    private final String targetSchemaVersion;
+    private final int targetActiveVersion;
     
-    @Override
-    public String toString() {
-        return "ScalingTaskFinishedEvent{" + "targetSchemaName='" + targetSchemaName + '\'' + ", targetSchemaVersion='" + targetSchemaVersion + '\'' + '}';
-    }
+    private final int targetNewVersion;
 }

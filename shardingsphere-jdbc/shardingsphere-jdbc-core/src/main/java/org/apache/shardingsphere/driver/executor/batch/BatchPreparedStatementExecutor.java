@@ -92,8 +92,8 @@ public final class BatchPreparedStatementExecutor {
     
     private Collection<BatchExecutionUnit> createBatchExecutionUnits(final Collection<ExecutionUnit> executionUnits) {
         List<BatchExecutionUnit> result = new ArrayList<>(executionUnits.size());
-        for (ExecutionUnit executionUnit : executionUnits) {
-            BatchExecutionUnit batchExecutionUnit = new BatchExecutionUnit(executionUnit);
+        for (ExecutionUnit each : executionUnits) {
+            BatchExecutionUnit batchExecutionUnit = new BatchExecutionUnit(each);
             result.add(batchExecutionUnit);
         }
         return result;
@@ -246,16 +246,9 @@ public final class BatchPreparedStatementExecutor {
      * @throws SQLException SQL exception
      */
     public void clear() throws SQLException {
-        closeStatements();
         getStatements().clear();
         executionGroupContext.getInputGroups().clear();
         batchCount = 0;
         batchExecutionUnits.clear();
-    }
-    
-    private void closeStatements() throws SQLException {
-        for (Statement each : getStatements()) {
-            each.close();
-        }
     }
 }
