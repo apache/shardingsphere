@@ -98,8 +98,7 @@ public final class MetaDataContextsBuilder {
             if (databaseMap.containsKey(each)) {
                 continue;
             }
-            ShardingSphereDatabase database = DatabaseLoader.load(each, databaseType);
-            databaseMap.put(each, database);
+            databaseMap.put(each, DatabaseLoader.load(databaseType));
         }
     }
     
