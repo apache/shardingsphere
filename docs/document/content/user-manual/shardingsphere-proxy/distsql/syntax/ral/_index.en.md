@@ -32,6 +32,7 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 | show scaling check algorithms                        | Show available consistency check algorithms                       | show scaling check algorithms            |
 | check scaling {jobId} by type(name={algorithmType})  | Data consistency check with defined algorithm                     | check scaling 1234 by type(name=DEFAULT) |
 | stop scaling source writing xx                       | The source ShardingSphere data source is discontinued, xx: jobId  | stop scaling source writing 1234         |
+| restore scaling source writing xx                    | Restore source data source writing, xx: jobId                     | restore scaling source writing 1234      |
 | apply scaling xx                                     | Switch to target ShardingSphere metadata, xx: jobId               | apply scaling 1234                       |
 
 ## Circuit Breaker
