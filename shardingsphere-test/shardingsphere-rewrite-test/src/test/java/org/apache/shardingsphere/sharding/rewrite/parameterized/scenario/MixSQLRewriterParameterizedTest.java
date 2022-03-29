@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.parameterized.scenario;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -85,7 +86,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
         when(result.get("t_account_detail")).thenReturn(mock(TableMetaData.class));
         when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
         when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
-        return Collections.singletonMap("sharding_db", result);
+        return Collections.singletonMap(DefaultSchema.LOGIC_NAME, result);
     }
     
     @Override

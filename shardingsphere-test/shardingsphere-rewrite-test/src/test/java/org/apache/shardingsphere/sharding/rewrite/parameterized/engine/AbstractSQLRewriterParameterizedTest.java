@@ -106,7 +106,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
         Map<String, ShardingSphereSchema> schemas = mockSchemas();
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", resource, new ShardingSphereRuleMetaData(Collections.emptyList(), rules), schemas);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(DefaultSchema.LOGIC_NAME, resource, new ShardingSphereRuleMetaData(Collections.emptyList(), rules), schemas);
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(2, 1);
         metaDataMap.put(DefaultSchema.LOGIC_NAME, metaData);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataMap, 
