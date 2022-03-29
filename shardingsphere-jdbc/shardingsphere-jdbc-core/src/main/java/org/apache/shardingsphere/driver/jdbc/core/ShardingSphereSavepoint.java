@@ -21,19 +21,22 @@ import java.rmi.server.UID;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 
-public class ShardingSphereSavepoint implements Savepoint {
+/**
+ * ShardingSphere savepoint.
+ */
+public final class ShardingSphereSavepoint implements Savepoint {
     
     private final String savepointName;
     
     public ShardingSphereSavepoint() {
-        this.savepointName = getUniqueId();
+        savepointName = getUniqueId();
     }
     
     public ShardingSphereSavepoint(final String name) throws SQLException {
-        if (name == null || name.length() == 0) {
+        if (null == name || 0 == name.length()) {
             throw new SQLException("Savepoint name can not be NULL or empty");
         }
-        this.savepointName = name;
+        savepointName = name;
     }
     
     @Override
