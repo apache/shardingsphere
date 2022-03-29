@@ -33,19 +33,27 @@ import org.apache.shardingsphere.scaling.distsql.handler.converter.ShardingScali
 import org.apache.shardingsphere.scaling.distsql.statement.CreateShardingScalingRuleStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScalingRuleConfigurationSegment;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.spi.singleton.SingletonSPI;
+import org.apache.shardingsphere.spi.singleton.TypedSingletonSPIHolder;
 import org.apache.shardingsphere.spi.typed.TypedSPI;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Create sharding scaling rule statement updater.
  */
 public final class CreateShardingScalingRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingScalingRuleStatement, ShardingRuleConfiguration> {
+    
+    private static final TypedSingletonSPIHolder<JobRateLimitAlgorithm> RATE_LIMIT_ALGORITHM_HOLDER = new TypedSingletonSPIHolder<>(JobRateLimitAlgorithm.class, false);
+    
+    private static final TypedSingletonSPIHolder<PipelineChannelFactory> PIPELINE_CHANNEL_FACTORY_HOLDER = new TypedSingletonSPIHolder<>(PipelineChannelFactory.class, false);
+    
+    private static final TypedSingletonSPIHolder<JobCompletionDetectAlgorithm> COMPLETION_DETECT_ALGORITHM_HOLDER = new TypedSingletonSPIHolder<>(JobCompletionDetectAlgorithm.class, false);
+    
+    private static final TypedSingletonSPIHolder<DataConsistencyCheckAlgorithm> DATA_CONSISTENCY_CHECK_ALGORITHM_HOLDER = new TypedSingletonSPIHolder<>(DataConsistencyCheckAlgorithm.class, false);
     
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingScalingRuleStatement sqlStatement,
@@ -53,7 +61,7 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
         String schemaName = shardingSphereMetaData.getName();
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkDuplicate(schemaName, sqlStatement, currentRuleConfig);
-        checkAlgorithms(sqlStatement);
+        checkAlgorithms(sqlStatement.getConfigurationSegment());
     }
     
     private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
@@ -64,18 +72,18 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
     
     private void checkDuplicate(final String schemaName, final CreateShardingScalingRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         if (currentRuleConfig.getScaling().containsKey(sqlStatement.getScalingName())) {
-            throw new DuplicateRuleException("Scaling", schemaName, Arrays.asList(sqlStatement.getScalingName()));
+            throw new DuplicateRuleException("Scaling", schemaName, Collections.singletonList(sqlStatement.getScalingName()));
         }
     }
     
-    private void checkAlgorithms(final CreateShardingScalingRuleStatement sqlStatement) throws DistSQLException {
-        if (null == sqlStatement.getConfigurationSegment()) {
+    private void checkAlgorithms(final ShardingScalingRuleConfigurationSegment segment) throws DistSQLException {
+        if (null == segment) {
             return;
         }
-        checkRateLimiterExist(sqlStatement.getConfigurationSegment());
-        checkStreamChannelExist(sqlStatement.getConfigurationSegment());
-        checkCompletionDetectorExist(sqlStatement.getConfigurationSegment());
-        checkDataConsistencyCheckerExist(sqlStatement.getConfigurationSegment());
+        checkRateLimiterExist(segment);
+        checkStreamChannelExist(segment);
+        checkCompletionDetectorExist(segment);
+        checkDataConsistencyCheckerExist(segment);
     }
     
     private void checkRateLimiterExist(final ShardingScalingRuleConfigurationSegment segment) throws DistSQLException {
@@ -88,29 +96,32 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
     }
     
     private void checkRateLimiterAlgorithm(final AlgorithmSegment rateLimiter) throws DistSQLException {
-        checkAlgorithm(JobRateLimitAlgorithm.class, "rate limiter", rateLimiter);
+        if (null != rateLimiter) {
+            checkAlgorithm(RATE_LIMIT_ALGORITHM_HOLDER, "rate limiter", rateLimiter);
+        }
     }
     
     private void checkStreamChannelExist(final ShardingScalingRuleConfigurationSegment segment) throws DistSQLException {
         if (null != segment.getStreamChannel()) {
-            checkAlgorithm(PipelineChannelFactory.class, "stream channel", segment.getStreamChannel());
+            checkAlgorithm(PIPELINE_CHANNEL_FACTORY_HOLDER, "stream channel", segment.getStreamChannel());
         }
     }
     
     private void checkCompletionDetectorExist(final ShardingScalingRuleConfigurationSegment segment) throws DistSQLException {
         if (null != segment.getCompletionDetector()) {
-            checkAlgorithm(JobCompletionDetectAlgorithm.class, "completion detector", segment.getCompletionDetector());
+            checkAlgorithm(COMPLETION_DETECT_ALGORITHM_HOLDER, "completion detector", segment.getCompletionDetector());
         }
     }
     
     private void checkDataConsistencyCheckerExist(final ShardingScalingRuleConfigurationSegment segment) throws DistSQLException {
         if (null != segment.getDataConsistencyChecker()) {
-            checkAlgorithm(DataConsistencyCheckAlgorithm.class, "data consistency checker", segment.getDataConsistencyChecker());
+            checkAlgorithm(DATA_CONSISTENCY_CHECK_ALGORITHM_HOLDER, "data consistency checker", segment.getDataConsistencyChecker());
         }
     }
     
-    private <T extends TypedSPI> void checkAlgorithm(final Class<T> typedSPIClass, final String algorithmType, final AlgorithmSegment segment) throws DistSQLException {
-        Optional<T> service = TypedSPIRegistry.findRegisteredService(typedSPIClass, segment.getName(), new Properties());
+    private <T extends TypedSPI & SingletonSPI> void checkAlgorithm(
+            final TypedSingletonSPIHolder<T> singletonSPIHolder, final String algorithmType, final AlgorithmSegment segment) throws DistSQLException {
+        Optional<T> service = singletonSPIHolder.get(segment.getName());
         if (!service.isPresent()) {
             throw new InvalidAlgorithmConfigurationException(algorithmType, segment.getName());
         }
@@ -151,6 +162,6 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
     
     @Override
     public String getType() {
-        return CreateShardingScalingRuleStatement.class.getCanonicalName();
+        return CreateShardingScalingRuleStatement.class.getName();
     }
 }

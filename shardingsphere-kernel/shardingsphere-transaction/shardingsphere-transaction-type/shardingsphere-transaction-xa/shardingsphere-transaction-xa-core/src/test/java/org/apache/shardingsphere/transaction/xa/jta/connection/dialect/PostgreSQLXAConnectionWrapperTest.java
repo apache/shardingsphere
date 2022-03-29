@@ -18,50 +18,44 @@
 package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
+import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapperFactory;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.postgresql.core.BaseConnection;
+import org.postgresql.xa.PGXAConnection;
 
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
-import javax.transaction.xa.XAResource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLXAConnectionWrapperTest {
     
-    private XADataSource xaDataSource;
-    
-    @Mock
-    private Connection connection;
-    
-    @Before
-    public void setUp() throws SQLException, ClassNotFoundException {
-        BaseConnection connection = (BaseConnection) mock(Class.forName("org.postgresql.core.BaseConnection"));
-        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), "ds1");
-        xaDataSource = XADataSourceFactory.build(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), dataSource);
-        when(this.connection.unwrap(any())).thenReturn(connection);
-        
-    }
+    private final DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL");
     
     @Test
-    public void assertCreatePostgreSQLConnection() throws SQLException {
-        XAConnection actual = new PostgreSQLXAConnectionWrapper().wrap(xaDataSource, connection);
-        assertThat(actual.getXAResource(), instanceOf(XAResource.class));
-        assertThat(actual.getConnection(), instanceOf(Connection.class));
+    public void assertWrap() throws SQLException {
+        XAConnection actual = XAConnectionWrapperFactory.newInstance(databaseType).wrap(createXADataSource(), mockConnection());
+        assertThat(actual.getXAResource(), instanceOf(PGXAConnection.class));
+    }
+    
+    private XADataSource createXADataSource() {
+        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, databaseType, "foo_ds");
+        return XADataSourceFactory.build(databaseType, dataSource);
+    }
+    
+    private Connection mockConnection() throws SQLException {
+        Connection result = mock(Connection.class);
+        when(result.unwrap(BaseConnection.class)).thenReturn(mock(BaseConnection.class));
+        return result;
     }
 }

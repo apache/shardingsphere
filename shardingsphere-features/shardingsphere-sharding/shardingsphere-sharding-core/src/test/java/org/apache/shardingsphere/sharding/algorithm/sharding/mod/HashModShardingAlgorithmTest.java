@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 
 import com.google.common.collect.Range;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.junit.Before;
@@ -32,25 +33,29 @@ import static org.junit.Assert.assertThat;
 
 public final class HashModShardingAlgorithmTest {
     
+    private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("t_order_", 1, '0');
+    
     private HashModShardingAlgorithm shardingAlgorithm;
     
     @Before
     public void setup() {
         shardingAlgorithm = new HashModShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("sharding-count", "4");
+        shardingAlgorithm.getProps().put("sharding-count", 4);
         shardingAlgorithm.init();
     }
     
     @Test
     public void assertPreciseDoSharding() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        assertThat(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_type", "a")), is("t_order_1"));
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames, 
+                new PreciseShardingValue<>("t_order", "order_type", DATA_NODE_INFO, "a")), is("t_order_1"));
     }
     
     @Test
     public void assertRangeDoSharding() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "create_time", Range.closed("a", "f")));
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, 
+                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed("a", "f")));
         assertThat(actual.size(), is(4));
     }
 }

@@ -29,6 +29,7 @@ execute
     | checkScaling
     | showScalingCheckAlgorithms
     | stopScalingSourceWriting
+    | restoreScalingSourceWriting
     | applyScaling
     | showShardingScalingRules
     | createShardingScalingRule

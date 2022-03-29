@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.traffic.algorithm.loadbalance;
 
+import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -33,7 +34,7 @@ public final class RandomTrafficLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetInstanceId() {
-        List<String> instanceIds = Arrays.asList("127.0.0.1@3307", "127.0.0.1@3308");
+        List<InstanceId> instanceIds = Arrays.asList(new InstanceId("127.0.0.1@3307"), new InstanceId("127.0.0.1@3308"));
         assertTrue(instanceIds.contains(randomAlgorithm.getInstanceId("simple_traffic", instanceIds)));
         assertTrue(instanceIds.contains(randomAlgorithm.getInstanceId("simple_traffic", instanceIds)));
         assertTrue(instanceIds.contains(randomAlgorithm.getInstanceId("simple_traffic", instanceIds)));

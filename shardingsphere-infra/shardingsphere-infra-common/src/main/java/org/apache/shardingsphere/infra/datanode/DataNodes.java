@@ -62,7 +62,7 @@ public final class DataNodes {
         if (!dataNodeContainedRule.isPresent()) {
             return Collections.emptyList();
         }
-        Collection<DataNode> result = new LinkedList<>(dataNodeContainedRule.get().getAllDataNodes().get(tableName));
+        Collection<DataNode> result = new LinkedList<>(dataNodeContainedRule.get().getDataNodesByTableName(tableName));
         for (Entry<ShardingSphereRule, DataNodeBuilder> entry : decorators.entrySet()) {
             result = entry.getValue().build(result, entry.getKey());
         }
@@ -74,6 +74,6 @@ public final class DataNodes {
     }
     
     private boolean isDataNodeContainedRuleContainsTable(final ShardingSphereRule each, final String tableName) {
-        return each instanceof DataNodeContainedRule && ((DataNodeContainedRule) each).getAllDataNodes().containsKey(tableName);
+        return each instanceof DataNodeContainedRule && !((DataNodeContainedRule) each).getDataNodesByTableName(tableName).isEmpty();
     }
 }

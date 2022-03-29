@@ -21,10 +21,8 @@ import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
 
 /**
  * Hint traffic algorithm.
- *
- * @param <T> class type of hint value
  */
-public interface HintTrafficAlgorithm<T extends Comparable<?>> extends TrafficAlgorithm {
+public interface HintTrafficAlgorithm extends TrafficAlgorithm {
     
     /**
      * Judge hint traffic value is match or not.
@@ -32,5 +30,5 @@ public interface HintTrafficAlgorithm<T extends Comparable<?>> extends TrafficAl
      * @param hintTrafficValue hint traffic value
      * @return hint traffic value is match or not
      */
-    boolean match(HintTrafficValue<T> hintTrafficValue);
+    boolean match(HintTrafficValue hintTrafficValue);
 }

@@ -22,7 +22,7 @@
     <parent>
         <artifactId>shardingsphere-proxy-frontend</artifactId>
         <groupId>org.apache.shardingsphere</groupId>
-        <version>5.0.1-SNAPSHOT</version>
+        <version>5.1.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>shardingsphere-proxy-frontend-opengauss</artifactId>
@@ -40,27 +40,4 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
-    
-    <profiles>
-        <profile>
-            <id>jdk12+</id>
-            <activation>
-                <jdk>[12,)</jdk>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <excludes>
-                                <!-- TODO Consider refactoring tests which changed Field's modifiers -->
-                                <exclude>org.apache.shardingsphere.proxy.frontend.opengauss.OpenGaussFrontendEngineTest</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>

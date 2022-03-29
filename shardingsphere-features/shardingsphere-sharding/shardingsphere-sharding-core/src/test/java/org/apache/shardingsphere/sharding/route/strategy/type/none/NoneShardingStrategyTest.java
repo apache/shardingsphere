@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,7 +42,8 @@ public final class NoneShardingStrategyTest {
     @Test
     public void assertGetShardingAlgorithm() {
         Collection<String> targets = Sets.newHashSet("1", "2", "3");
-        Collection<String> actualSharding = noneShardingStrategy.doSharding(targets, Collections.emptySet(), new ConfigurationProperties(new Properties()));
+        DataNodeInfo dataNodeInfo = new DataNodeInfo("logicTable_", 1, '0');
+        Collection<String> actualSharding = noneShardingStrategy.doSharding(targets, Collections.emptySet(), dataNodeInfo, new ConfigurationProperties(new Properties()));
         assertThat(actualSharding.size(), is(3));
         assertThat(actualSharding, is(targets));
     }

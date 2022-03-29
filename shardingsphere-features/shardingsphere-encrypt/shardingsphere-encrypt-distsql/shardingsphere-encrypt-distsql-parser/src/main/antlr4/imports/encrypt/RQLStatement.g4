@@ -17,7 +17,7 @@
 
 grammar RQLStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 showEncryptRules
     : SHOW ENCRYPT (TABLE tableRule | RULES) (FROM schemaName)?
@@ -25,10 +25,6 @@ showEncryptRules
 
 tableRule
     : RULE tableName
-    ;
-
-tableName
-    : IDENTIFIER
     ;
 
 schemaName

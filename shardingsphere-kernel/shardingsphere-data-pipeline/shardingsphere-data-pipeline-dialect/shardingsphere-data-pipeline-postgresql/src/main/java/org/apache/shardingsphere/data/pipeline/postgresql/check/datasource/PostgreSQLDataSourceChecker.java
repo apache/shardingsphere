@@ -19,8 +19,6 @@ package org.apache.shardingsphere.data.pipeline.postgresql.check.datasource;
 
 import org.apache.shardingsphere.data.pipeline.core.check.datasource.AbstractDataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
-import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.PostgreSQLPipelineSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -28,12 +26,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
 
 /**
  * PostgreSQL Data source checker.
  */
-public final class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker {
+public class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker {
     
     @Override
     public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
@@ -67,7 +64,7 @@ public final class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker
     }
     
     @Override
-    protected PipelineSQLBuilder getSQLBuilder() {
-        return new PostgreSQLPipelineSQLBuilder(new HashMap<>());
+    protected String getDatabaseType() {
+        return "PostgreSQL";
     }
 }

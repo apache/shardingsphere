@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.proxy.frontend.opengauss;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.opengauss.codec.OpenGaussPacketCodecEngine;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.OpenGaussAuthenticationEngine;
@@ -29,18 +31,17 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 /**
  * Frontend engine for openGauss.
  */
+@Getter
 public final class OpenGaussFrontendEngine implements DatabaseProtocolFrontendEngine {
     
+    @Getter(AccessLevel.NONE)
     private final PostgreSQLFrontendEngine postgreSQLFrontendEngine = new PostgreSQLFrontendEngine();
     
-    @Getter
-    private final OpenGaussPacketCodecEngine codecEngine = new OpenGaussPacketCodecEngine();
+    private final OpenGaussAuthenticationEngine authenticationEngine = new OpenGaussAuthenticationEngine();
     
-    @Getter
     private final OpenGaussCommandExecuteEngine commandExecuteEngine = new OpenGaussCommandExecuteEngine();
     
-    @Getter
-    private final OpenGaussAuthenticationEngine authenticationEngine = new OpenGaussAuthenticationEngine();
+    private final OpenGaussPacketCodecEngine codecEngine = new OpenGaussPacketCodecEngine();
     
     @Override
     public FrontendContext getFrontendContext() {
@@ -48,8 +49,20 @@ public final class OpenGaussFrontendEngine implements DatabaseProtocolFrontendEn
     }
     
     @Override
+    public void setDatabaseVersion(final String databaseVersion) {
+        PostgreSQLServerInfo.setServerVersion(databaseVersion);
+    }
+    
+    @Override
     public void release(final ConnectionSession connectionSession) {
         postgreSQLFrontendEngine.release(connectionSession);
+    }
+    
+    @Override
+    public void handleException(final ConnectionSession connectionSession) {
+        if (connectionSession.getTransactionStatus().isInTransaction() && !connectionSession.getTransactionStatus().isRollbackOnly()) {
+            connectionSession.getTransactionStatus().setRollbackOnly(true);
+        }
     }
     
     @Override

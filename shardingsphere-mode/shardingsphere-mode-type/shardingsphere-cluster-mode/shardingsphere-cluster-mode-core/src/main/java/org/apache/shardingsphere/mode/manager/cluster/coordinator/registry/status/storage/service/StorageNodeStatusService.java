@@ -17,14 +17,16 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.StorageNodeStatus;
+import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node.StorageStatusNode;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Storage node status service.
@@ -37,12 +39,17 @@ public final class StorageNodeStatusService {
     /**
      * Load storage node names.
      *
-     * @param schemaName schema name to be loaded
-     * @param status storage node status to be loaded
      * @return loaded storage node names
      */
-    public Collection<String> loadStorageNodes(final String schemaName, final StorageNodeStatus status) {
-        Collection<String> disabledStorageNodes = repository.getChildrenKeys(StorageStatusNode.getStatusPath(status));
-        return disabledStorageNodes.stream().map(QualifiedSchema::new).filter(each -> each.getSchemaName().equals(schemaName)).map(QualifiedSchema::getDataSourceName).collect(Collectors.toList());
+    public Map<String, StorageNodeDataSource> loadStorageNodes() {
+        Collection<String> storageNodes = repository.getChildrenKeys(StorageStatusNode.getRootPath());
+        Map<String, StorageNodeDataSource> result = new HashMap<>(storageNodes.size(), 1);
+        storageNodes.forEach(each -> {
+            String yamlContext = repository.get(StorageStatusNode.getStorageNodesDataSourcePath(each));
+            if (!Strings.isNullOrEmpty(yamlContext)) {
+                result.put(each, YamlEngine.unmarshal(yamlContext, StorageNodeDataSource.class));
+            }
+        });
+        return result;
     }
 }

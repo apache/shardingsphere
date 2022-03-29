@@ -35,7 +35,7 @@ public final class DataNodeContainedFixtureRuleBasedTableMetaDataBuilder impleme
         if (!tableNames.isEmpty() && (tableNames.contains("data_node_routed_table1") || tableNames.contains("data_node_routed_table2"))) {
             Map<String, TableMetaData> result = new LinkedHashMap<>();
             for (String tableName : tableNames) {
-                result.put(tableName, new TableMetaData(tableName, Collections.emptyList(), Collections.emptyList()));
+                result.put(tableName, new TableMetaData(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
             }
             return result;
         }
@@ -43,8 +43,8 @@ public final class DataNodeContainedFixtureRuleBasedTableMetaDataBuilder impleme
     }
     
     @Override
-    public TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final DataNodeContainedFixtureRule rule) {
-        return tableMetaData;
+    public Map<String, TableMetaData> decorate(final Map<String, TableMetaData> tableMetaDataMap, final DataNodeContainedFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+        return tableMetaDataMap;
     }
     
     @Override

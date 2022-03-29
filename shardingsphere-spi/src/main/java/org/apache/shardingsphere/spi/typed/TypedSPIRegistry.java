@@ -41,13 +41,13 @@ public final class TypedSPIRegistry {
      * @return registered service
      */
     public static <T extends TypedSPI> Optional<T> findRegisteredService(final Class<T> typedSPIClass, final String type, final Properties props) {
-        Optional<T> serviceInstance = ShardingSphereServiceLoader.newServiceInstances(typedSPIClass).stream().filter(each -> each.getType().equalsIgnoreCase(type)).findFirst();
-        if (!serviceInstance.isPresent()) {
-            return Optional.empty();
+        for (T each : ShardingSphereServiceLoader.newServiceInstances(typedSPIClass)) {
+            if (each.getType().equalsIgnoreCase(type) || each.getTypeAliases().contains(type)) {
+                setProperties(each, props);
+                return Optional.of(each);
+            }
         }
-        T result = serviceInstance.get();
-        setProperties(result, props);
-        return Optional.of(result);
+        return Optional.empty();
     }
     
     private static <T extends TypedSPI> void setProperties(final T service, final Properties props) {

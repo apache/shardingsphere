@@ -25,7 +25,7 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementBaseVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AssignmentContext;
@@ -48,11 +48,13 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Dat
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DeleteContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DelimitedIdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.FunctionCallContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GroupByClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.HavingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.HexadecimalLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.IdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.IndexNameContext;
@@ -67,6 +69,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Mul
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.MultipleTablesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.NullValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.NumberLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OrderByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OrderByItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputTableNameContext;
@@ -76,9 +79,13 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Own
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.PredicateContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProjectionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.QualifiedShorthandContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RegularFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RegularIdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SchemaNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SelectClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SimpleExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SingleTableClauseContext;
@@ -89,6 +96,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Tab
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableReferenceContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableReferencesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TopContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UpdateContext;
@@ -148,6 +156,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeL
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
@@ -185,6 +194,8 @@ import java.util.stream.Collectors;
 public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
+    
+    private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     
     public SQLServerStatementSQLVisitor(final Properties props) {
     }
@@ -252,8 +263,21 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     
     @Override
     public final ASTNode visitIdentifier(final IdentifierContext ctx) {
+        IdentifierValue result = (IdentifierValue) (null != ctx.regularIdentifier() ? visit(ctx.regularIdentifier()) : visit(ctx.delimitedIdentifier()));
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitRegularIdentifier(final RegularIdentifierContext ctx) {
         UnreservedWordContext unreservedWord = ctx.unreservedWord();
-        return null != unreservedWord ? visit(unreservedWord) : new IdentifierValue(ctx.getText());
+        IdentifierValue result = null != unreservedWord ? (IdentifierValue) visit(unreservedWord) : new IdentifierValue(ctx.getText());
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitDelimitedIdentifier(final DelimitedIdentifierContext ctx) {
+        IdentifierValue result = new IdentifierValue(ctx.getText());
+        return result;
     }
     
     @Override
@@ -449,7 +473,10 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         }
         if (astNode instanceof ParameterMarkerValue) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) astNode;
-            return new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), parameterMarker.getValue(), parameterMarker.getType());
+            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), 
+                    parameterMarker.getValue(), parameterMarker.getType());
+            parameterMarkerSegments.add(segment);
+            return segment;
         }
         if (astNode instanceof SubquerySegment) {
             return new SubqueryExpressionSegment((SubquerySegment) astNode);
@@ -644,21 +671,22 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     }
 
     @Override
-    public ASTNode visitSelect(final SQLServerStatementParser.SelectContext ctx) {
+    public ASTNode visitSelect(final SelectContext ctx) {
         // TODO :Unsupported for withClause.
         SQLServerSelectStatement result = (SQLServerSelectStatement) visit(ctx.aggregationClause());
         result.setParameterCount(getCurrentParameterIndex());
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
 
     @Override
-    public ASTNode visitAggregationClause(final SQLServerStatementParser.AggregationClauseContext ctx) {
+    public ASTNode visitAggregationClause(final AggregationClauseContext ctx) {
         // TODO :Unsupported for union | except | intersect SQL.
         return visit(ctx.selectClause(0));
     }
 
     @Override
-    public ASTNode visitSelectClause(final SQLServerStatementParser.SelectClauseContext ctx) {
+    public ASTNode visitSelectClause(final SelectClauseContext ctx) {
         SQLServerSelectStatement result = new SQLServerSelectStatement();
         result.setProjections((ProjectionsSegment) visit(ctx.projections()));
         if (null != ctx.duplicateSpecification()) {
@@ -684,12 +712,12 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     }
 
     @Override
-    public ASTNode visitHavingClause(final SQLServerStatementParser.HavingClauseContext ctx) {
+    public ASTNode visitHavingClause(final HavingClauseContext ctx) {
         ExpressionSegment expr = (ExpressionSegment) visit(ctx.expr());
         return new HavingSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), expr);
     }
 
-    private SQLServerSelectStatement visitOrderBy(final SQLServerSelectStatement selectStatement, final SQLServerStatementParser.OrderByClauseContext ctx) {
+    private SQLServerSelectStatement visitOrderBy(final SQLServerSelectStatement selectStatement, final OrderByClauseContext ctx) {
         Collection<OrderByItemSegment> items = new LinkedList<>();
         int orderByStartIndex = ctx.start.getStartIndex();
         int orderByStopIndex = ctx.start.getStartIndex();
@@ -727,17 +755,17 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         return selectStatement;
     }
 
-    private boolean isDistinct(final SQLServerStatementParser.SelectClauseContext ctx) {
+    private boolean isDistinct(final SelectClauseContext ctx) {
         return ((BooleanLiteralValue) visit(ctx.duplicateSpecification())).getValue();
     }
 
     @Override
-    public ASTNode visitProjections(final SQLServerStatementParser.ProjectionsContext ctx) {
+    public ASTNode visitProjections(final ProjectionsContext ctx) {
         Collection<ProjectionSegment> projections = new LinkedList<>();
         if (null != ctx.unqualifiedShorthand()) {
             projections.add(new ShorthandProjectionSegment(ctx.unqualifiedShorthand().getStart().getStartIndex(), ctx.unqualifiedShorthand().getStop().getStopIndex()));
         }
-        for (SQLServerStatementParser.ProjectionContext each : ctx.projection()) {
+        for (ProjectionContext each : ctx.projection()) {
             projections.add((ProjectionSegment) visit(each));
         }
         ProjectionsSegment result = new ProjectionsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
@@ -746,7 +774,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     }
 
     @Override
-    public ASTNode visitTableReferences(final SQLServerStatementParser.TableReferencesContext ctx) {
+    public ASTNode visitTableReferences(final TableReferencesContext ctx) {
         TableSegment result = (TableSegment) visit(ctx.tableReference(0));
         if (ctx.tableReference().size() > 1) {
             for (int i = 1; i < ctx.tableReference().size(); i++) {
@@ -756,7 +784,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         return result;
     }
 
-    private JoinTableSegment generateJoinTableSourceFromTableReference(final SQLServerStatementParser.TableReferenceContext ctx, final TableSegment tableSegment) {
+    private JoinTableSegment generateJoinTableSourceFromTableReference(final TableReferenceContext ctx, final TableSegment tableSegment) {
         JoinTableSegment result = new JoinTableSegment();
         result.setStartIndex(tableSegment.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
@@ -804,6 +832,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         }
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.setParameterCount(getCurrentParameterIndex());
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
@@ -923,6 +952,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
         result.setParameterCount(getCurrentParameterIndex());
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
@@ -982,6 +1012,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
         result.setParameterCount(getCurrentParameterIndex());
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
@@ -1049,7 +1080,9 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         if (topNum instanceof NumberLiteralValue) {
             return new NumberLiteralRowNumberValueSegment(startIndex, stopIndex, ((NumberLiteralValue) topNum).getValue().longValue(), false);
         }
-        return new ParameterMarkerRowNumberValueSegment(startIndex, stopIndex, ((ParameterMarkerValue) topNum).getValue(), false);
+        ParameterMarkerSegment result = new ParameterMarkerRowNumberValueSegment(startIndex, stopIndex, ((ParameterMarkerValue) topNum).getValue(), false);
+        parameterMarkerSegments.add(result);
+        return result;
     }
     
     @Override

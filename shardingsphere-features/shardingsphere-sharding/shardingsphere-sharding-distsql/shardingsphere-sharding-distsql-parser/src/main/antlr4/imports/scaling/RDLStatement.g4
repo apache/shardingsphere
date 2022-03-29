@@ -17,14 +17,14 @@
 
 grammar RDLStatement;
 
-import Keyword, Literals, Symbol, BaseRule;
+import BaseRule;
 
 createShardingScalingRule
     : CREATE SHARDING SCALING RULE scalingName scalingRuleDefinition?
     ;
 
 dropShardingScalingRule
-    : DROP SHARDING SCALING RULE scalingName
+    : DROP SHARDING SCALING RULE existsClause? scalingName
     ;
 
 enableShardingScalingRule
@@ -40,27 +40,15 @@ scalingName
     ;
 
 scalingRuleDefinition
-    : minimumAutoDefinition | completeAutoDefinition | manualDefinition
-    ;
-
-minimumAutoDefinition
-    : LP completionDetector COMMA dataConsistencyChecker RP
-    ;
-
-completeAutoDefinition
-    : LP inputDefinition COMMA outputDefinition COMMA streamChannel COMMA completionDetector COMMA dataConsistencyChecker RP
-    ;
-
-manualDefinition
-    : LP inputDefinition COMMA outputDefinition COMMA streamChannel RP
+    : LP inputDefinition? (COMMA? outputDefinition)? (COMMA? streamChannel)? (COMMA? completionDetector)? (COMMA? dataConsistencyChecker)? RP
     ;
 
 inputDefinition
-    : INPUT LP workerThread COMMA batchSize COMMA rateLimiter RP
+    : INPUT LP workerThread? (COMMA? batchSize)? (COMMA? rateLimiter)? RP
     ;
 
 outputDefinition
-    : OUTPUT LP workerThread COMMA batchSize COMMA rateLimiter RP
+    : OUTPUT LP workerThread? (COMMA? batchSize)? (COMMA? rateLimiter)? RP
     ;
 
 completionDetector
@@ -89,4 +77,8 @@ streamChannel
 
 intValue
     : INT
+    ;
+
+existsClause
+    : IF EXISTS
     ;

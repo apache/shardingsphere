@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.err;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
 import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.proxy.backend.exception.DBDropNotExistsExceptio
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.SchemaLockedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableLockWaitTimeoutException;
 import org.apache.shardingsphere.proxy.backend.exception.TableLockedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
@@ -40,7 +42,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception
 import org.apache.shardingsphere.proxy.frontend.exception.FrontendTooManyConnectionsException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.exception.UnknownCharacterSetException;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
@@ -110,6 +112,10 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof RuleNotExistedException || cause instanceof DatabaseNotExistedException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_SP_DOES_NOT_EXIST);
         }
+        if (cause instanceof SchemaLockedException) {
+            SchemaLockedException exception = (SchemaLockedException) cause;
+            return new MySQLErrPacket(1, CommonErrorCode.SCHEMA_WRITE_LOCKED, exception.getSchemaName());
+        }
         if (cause instanceof TableLockWaitTimeoutException) {
             TableLockWaitTimeoutException exception = (TableLockWaitTimeoutException) cause;
             return new MySQLErrPacket(1, CommonErrorCode.TABLE_LOCK_WAIT_TIMEOUT, exception.getTableName(),
@@ -126,6 +132,9 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof FrontendTooManyConnectionsException) {
             return new MySQLErrPacket(0, MySQLServerErrorCode.ER_CON_COUNT_ERROR, MySQLServerErrorCode.ER_CON_COUNT_ERROR.getErrorMessage());
         }
+        if (cause instanceof UnknownCharacterSetException) {
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_UNKNOWN_CHARACTER_SET, cause.getMessage());
+        }
         if (cause instanceof RuntimeException) {
             return new MySQLErrPacket(1, CommonErrorCode.RUNTIME_EXCEPTION, cause.getMessage());
         }
@@ -133,7 +142,7 @@ public final class MySQLErrPacketFactory {
     }
     
     private static String getErrorMessage(final SQLException cause) {
-        if (null != cause.getNextException() && StringUtils.isBlank(cause.getMessage())) {
+        if (null != cause.getNextException() && Strings.isNullOrEmpty(cause.getMessage())) {
             return cause.getNextException().getMessage();
         }
         return cause.getMessage();

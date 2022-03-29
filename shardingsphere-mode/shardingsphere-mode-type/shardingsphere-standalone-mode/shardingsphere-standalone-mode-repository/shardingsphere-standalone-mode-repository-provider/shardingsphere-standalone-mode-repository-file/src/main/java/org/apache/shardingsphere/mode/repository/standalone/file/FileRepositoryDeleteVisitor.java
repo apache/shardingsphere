@@ -27,27 +27,27 @@ import java.nio.file.attribute.BasicFileAttributes;
 /**
  * File repository delete visitor.
  */
-public final class FileRepositoryDeleteVisitor implements FileVisitor {
+public final class FileRepositoryDeleteVisitor implements FileVisitor<Path> {
     
     @Override
-    public FileVisitResult preVisitDirectory(final Object dir, final BasicFileAttributes attrs) {
+    public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs) {
         return FileVisitResult.CONTINUE;
     }
     
     @Override
-    public FileVisitResult visitFile(final Object file, final BasicFileAttributes attrs) throws IOException {
-        Files.deleteIfExists((Path) file);
+    public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
+        Files.deleteIfExists(file);
         return FileVisitResult.CONTINUE;
     }
     
     @Override
-    public FileVisitResult visitFileFailed(final Object file, final IOException exc) {
+    public FileVisitResult visitFileFailed(final Path file, final IOException exc) {
         return FileVisitResult.CONTINUE;
     }
     
     @Override
-    public FileVisitResult postVisitDirectory(final Object dir, final IOException exc) throws IOException {
-        Files.deleteIfExists((Path) dir);
+    public FileVisitResult postVisitDirectory(final Path dir, final IOException exc) throws IOException {
+        Files.deleteIfExists(dir);
         return FileVisitResult.CONTINUE;
     }
 }

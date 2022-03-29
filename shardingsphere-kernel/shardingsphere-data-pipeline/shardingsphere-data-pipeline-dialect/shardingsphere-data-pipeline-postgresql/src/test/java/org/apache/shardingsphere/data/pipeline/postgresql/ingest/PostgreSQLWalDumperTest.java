@@ -18,13 +18,17 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.distribution.MemoryPipelineChannel;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MultiplexMemoryPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.LogicalReplication;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,19 +64,26 @@ public final class PostgreSQLWalDumperTest {
     
     private WalPosition position;
     
+    private DumperConfiguration dumperConfig;
+    
     private PostgreSQLWalDumper walDumper;
     
-    private StandardPipelineDataSourceConfiguration pipelineDataSourceConfig;
+    private MultiplexMemoryPipelineChannel channel;
     
-    private MemoryPipelineChannel channel;
+    private final PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
     
     @Before
     public void setUp() {
         position = new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)));
-        walDumper = new PostgreSQLWalDumper(mockDumperConfiguration(), position);
-        channel = new MemoryPipelineChannel(records -> {
-        });
-        walDumper.setChannel(channel);
+        channel = new MultiplexMemoryPipelineChannel();
+        dumperConfig = mockDumperConfiguration();
+        PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig()));
+        walDumper = new PostgreSQLWalDumper(dumperConfig, position, channel, metaDataLoader);
+    }
+    
+    @After
+    public void tearDown() {
+        dataSourceManager.close();
     }
     
     private DumperConfiguration mockDumperConfiguration() {
@@ -87,9 +98,9 @@ public final class PostgreSQLWalDumperTest {
         } catch (final SQLException e) {
             throw new RuntimeException("Init table failed", e);
         }
-        pipelineDataSourceConfig = new StandardPipelineDataSourceConfiguration(jdbcUrl, username, password);
+        PipelineDataSourceConfiguration dataSourceConfig = new StandardPipelineDataSourceConfiguration(jdbcUrl, username, password);
         DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceConfig(pipelineDataSourceConfig);
+        result.setDataSourceConfig(dataSourceConfig);
         Map<String, String> tableNameMap = new HashMap<>();
         tableNameMap.put("t_order_0", "t_order");
         result.setTableNameMap(tableNameMap);
@@ -98,9 +109,10 @@ public final class PostgreSQLWalDumperTest {
     
     @Test
     public void assertStart() throws SQLException, NoSuchFieldException, IllegalAccessException {
+        StandardPipelineDataSourceConfiguration dataSourceConfig = (StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig();
         try {
             ReflectionUtil.setFieldValue(walDumper, "logicalReplication", logicalReplication);
-            when(logicalReplication.createConnection(pipelineDataSourceConfig)).thenReturn(pgConnection);
+            when(logicalReplication.createConnection(dataSourceConfig)).thenReturn(pgConnection);
             when(pgConnection.unwrap(PgConnection.class)).thenReturn(pgConnection);
             when(logicalReplication.createReplicationStream(pgConnection, PostgreSQLPositionInitializer.getUniqueSlotName(pgConnection), position.getLogSequenceNumber()))
                     .thenReturn(pgReplicationStream);

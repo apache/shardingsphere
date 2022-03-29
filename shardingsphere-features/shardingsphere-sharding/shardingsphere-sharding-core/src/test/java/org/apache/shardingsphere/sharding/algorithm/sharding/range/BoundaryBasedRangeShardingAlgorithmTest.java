@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.range;
 
 import com.google.common.collect.Range;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.junit.Before;
@@ -33,6 +34,8 @@ import static org.junit.Assert.assertTrue;
 
 public final class BoundaryBasedRangeShardingAlgorithmTest {
     
+    private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("t_order_", 1, '0');
+    
     private BoundaryBasedRangeShardingAlgorithm shardingAlgorithm;
     
     @Before
@@ -44,7 +47,7 @@ public final class BoundaryBasedRangeShardingAlgorithmTest {
     
     @Test
     public void assertPreciseDoSharding() {
-        assertPreciseDoSharding(new PreciseShardingValue<>("t_order", "order_id", 0L));
+        assertPreciseDoSharding(new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0L));
     }
     
     private void assertPreciseDoSharding(final PreciseShardingValue<Comparable<?>> shardingValue) {
@@ -54,12 +57,12 @@ public final class BoundaryBasedRangeShardingAlgorithmTest {
     
     @Test
     public void assertPreciseDoShardingWithIntShardingValue() {
-        assertPreciseDoSharding(new PreciseShardingValue<>("t_order", "order_id", 0));
+        assertPreciseDoSharding(new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0));
     }
     
     @Test
     public void assertRangeDoSharding() {
-        assertRangeDoSharding(new RangeShardingValue<>("t_order", "order_id", Range.closed(2L, 15L)));
+        assertRangeDoSharding(new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(2L, 15L)));
     }
     
     private void assertRangeDoSharding(final RangeShardingValue<Comparable<?>> shardingValue) {
@@ -73,7 +76,7 @@ public final class BoundaryBasedRangeShardingAlgorithmTest {
     
     @Test
     public void assertRangeDoShardingWithIntShardingValue() {
-        assertRangeDoSharding(new RangeShardingValue<>("t_order", "order_id", Range.closed(2, 15)));
+        assertRangeDoSharding(new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(2, 15)));
     }
     
     @Test

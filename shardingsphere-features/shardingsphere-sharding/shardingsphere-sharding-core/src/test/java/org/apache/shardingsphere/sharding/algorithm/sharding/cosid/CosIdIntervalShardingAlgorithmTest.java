@@ -17,6 +17,8 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.cosid;
 
 import com.google.common.collect.Range;
 import me.ahoo.cosid.sharding.ExactCollection;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.sharding.algorithm.constant.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.junit.Before;
@@ -68,16 +70,16 @@ public final class CosIdIntervalShardingAlgorithmTest {
     static CosIdIntervalShardingAlgorithm createShardingAlg() {
         Properties properties = new Properties();
         properties.setProperty(CosIdIntervalShardingAlgorithm.ZONE_ID_KEY, "Asia/Shanghai");
-        properties.setProperty(CosIdAlgorithm.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX);
+        properties.setProperty(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX);
         properties.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_LOWER_KEY, LOWER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
         properties.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_UPPER_KEY, UPPER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
         properties.setProperty(CosIdIntervalShardingAlgorithm.SHARDING_SUFFIX_FORMAT_KEY, SUFFIX_FORMATTER_STRING);
         properties.setProperty(CosIdIntervalShardingAlgorithm.INTERVAL_UNIT_KEY, "MONTHS");
-        properties.setProperty(CosIdIntervalShardingAlgorithm.INTERVAL_AMOUNT_KEY, "1");
-        CosIdIntervalShardingAlgorithm shardingAlgorithm = new CosIdIntervalShardingAlgorithm();
-        shardingAlgorithm.setProps(properties);
-        shardingAlgorithm.init();
-        return shardingAlgorithm;
+        properties.put(CosIdIntervalShardingAlgorithm.INTERVAL_AMOUNT_KEY, 1);
+        CosIdIntervalShardingAlgorithm result = new CosIdIntervalShardingAlgorithm();
+        result.setProps(properties);
+        result.init();
+        return result;
     }
     
     static Iterable<Object[]> preciseArgsProvider(final Function<LocalDateTime, ? extends Comparable<?>> datetimeConvert) {
@@ -120,7 +122,6 @@ public final class CosIdIntervalShardingAlgorithmTest {
                         new ExactCollection<>("table_202101", "table_202102", "table_202103", "table_202104", "table_202105", "table_202106",
                                 "table_202107", "table_202108", "table_202109", "table_202110", "table_202111", "table_202112")),
                 Arguments.of(Range.openClosed(datetimeConvert.apply(LOWER_DATE_TIME), datetimeConvert.apply(UPPER_DATE_TIME)), ALL_NODES),
-                
                 Arguments.of(Range.greaterThan(datetimeConvert.apply(LOWER_DATE_TIME)), ALL_NODES),
                 Arguments.of(Range.atLeast(datetimeConvert.apply(LOWER_DATE_TIME)), ALL_NODES),
                 Arguments.of(Range.greaterThan(datetimeConvert.apply(UPPER_DATE_TIME)), new ExactCollection<>("table_202201")),
@@ -129,7 +130,6 @@ public final class CosIdIntervalShardingAlgorithmTest {
                         new ExactCollection<>("table_202112", "table_202201")),
                 Arguments.of(Range.atLeast(datetimeConvert.apply(LocalDateTime.of(2021, 12, 5, 0, 0))),
                         new ExactCollection<>("table_202112", "table_202201")),
-                
                 Arguments.of(Range.lessThan(datetimeConvert.apply(LOWER_DATE_TIME)), ExactCollection.empty()),
                 Arguments.of(Range.atMost(datetimeConvert.apply(LOWER_DATE_TIME)), new ExactCollection<>("table_202101")),
                 Arguments.of(Range.lessThan(datetimeConvert.apply(UPPER_DATE_TIME)), new ExactCollection<>("table_202101",
@@ -158,7 +158,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
     static Iterable<Object[]> rangeArgsProviderAsTimestamp() {
         return rangeArgsProvider(ldt -> ldt.toInstant(ZONE_OFFSET_SHANGHAI).toEpochMilli());
     }
-
+    
     @RunWith(Parameterized.class)
     public static class LocalDateTimePreciseValueDoShardingTest {
         
@@ -185,12 +185,12 @@ public final class CosIdIntervalShardingAlgorithmTest {
         
         @Test
         public void assertDoSharding() {
-            PreciseShardingValue shardingValue = new PreciseShardingValue<>(LOGIC_NAME, COLUMN_NAME, dateTime);
+            PreciseShardingValue shardingValue = new PreciseShardingValue<>(LOGIC_NAME, COLUMN_NAME, new DataNodeInfo(LOGIC_NAME_PREFIX, 6, '0'), dateTime);
             String actual = shardingAlgorithm.doSharding(ALL_NODES, shardingValue);
             assertThat(actual, is(expected));
         }
     }
-
+    
     @RunWith(Parameterized.class)
     public static class LocalDateTimeRangeValueDoShardingTest {
         
@@ -217,12 +217,12 @@ public final class CosIdIntervalShardingAlgorithmTest {
         
         @Test
         public void assertDoSharding() {
-            RangeShardingValue shardingValue = new RangeShardingValue<>(LOGIC_NAME, COLUMN_NAME, rangeValue);
+            RangeShardingValue shardingValue = new RangeShardingValue<>(LOGIC_NAME, COLUMN_NAME, new DataNodeInfo(LOGIC_NAME_PREFIX, 6, '0'), rangeValue);
             Collection<String> actual = shardingAlgorithm.doSharding(ALL_NODES, shardingValue);
             assertThat(actual, is(expected));
         }
     }
-
+    
     @RunWith(Parameterized.class)
     public static class StringPreciseValueDoShardingTest {
         
@@ -249,12 +249,12 @@ public final class CosIdIntervalShardingAlgorithmTest {
         
         @Test
         public void assertDoSharding() {
-            PreciseShardingValue shardingValue = new PreciseShardingValue<>(LOGIC_NAME, COLUMN_NAME, value);
+            PreciseShardingValue shardingValue = new PreciseShardingValue<>(LOGIC_NAME, COLUMN_NAME, new DataNodeInfo(LOGIC_NAME_PREFIX, 6, '0'), value);
             String actual = shardingAlgorithm.doSharding(ALL_NODES, shardingValue);
             assertThat(actual, is(expected));
         }
     }
-
+    
     @RunWith(Parameterized.class)
     public static class StringRangeValueDoShardingTest {
         
@@ -281,12 +281,12 @@ public final class CosIdIntervalShardingAlgorithmTest {
         
         @Test
         public void assertDoSharding() {
-            RangeShardingValue shardingValue = new RangeShardingValue<>(LOGIC_NAME, COLUMN_NAME, rangeValue);
+            RangeShardingValue shardingValue = new RangeShardingValue<>(LOGIC_NAME, COLUMN_NAME, new DataNodeInfo(LOGIC_NAME_PREFIX, 6, '0'), rangeValue);
             Collection<String> actual = shardingAlgorithm.doSharding(ALL_NODES, shardingValue);
             assertThat(actual, is(expected));
         }
     }
-
+    
     @RunWith(Parameterized.class)
     public static class DatePreciseValueDoShardingTest {
         
@@ -313,12 +313,12 @@ public final class CosIdIntervalShardingAlgorithmTest {
         
         @Test
         public void assertDoSharding() {
-            PreciseShardingValue shardingValue = new PreciseShardingValue<>(LOGIC_NAME, COLUMN_NAME, value);
+            PreciseShardingValue shardingValue = new PreciseShardingValue<>(LOGIC_NAME, COLUMN_NAME, new DataNodeInfo(LOGIC_NAME_PREFIX, 6, '0'), value);
             String actual = shardingAlgorithm.doSharding(ALL_NODES, shardingValue);
             assertThat(actual, is(expected));
         }
     }
-
+    
     @RunWith(Parameterized.class)
     public static class DateRangeValueDoShardingTest {
         
@@ -345,12 +345,12 @@ public final class CosIdIntervalShardingAlgorithmTest {
         
         @Test
         public void assertDoSharding() {
-            RangeShardingValue shardingValue = new RangeShardingValue<>(LOGIC_NAME, COLUMN_NAME, rangeValue);
+            RangeShardingValue shardingValue = new RangeShardingValue<>(LOGIC_NAME, COLUMN_NAME, new DataNodeInfo(LOGIC_NAME_PREFIX, 6, '0'), rangeValue);
             Collection<String> actual = shardingAlgorithm.doSharding(ALL_NODES, shardingValue);
             assertThat(actual, is(expected));
         }
     }
-
+    
     @RunWith(Parameterized.class)
     public static class TimestampPreciseValueDoShardingTest {
         
@@ -377,12 +377,12 @@ public final class CosIdIntervalShardingAlgorithmTest {
         
         @Test
         public void assertDoSharding() {
-            PreciseShardingValue shardingValue = new PreciseShardingValue<>(LOGIC_NAME, COLUMN_NAME, value);
+            PreciseShardingValue shardingValue = new PreciseShardingValue<>(LOGIC_NAME, COLUMN_NAME, new DataNodeInfo(LOGIC_NAME_PREFIX, 6, '0'), value);
             String actual = shardingAlgorithm.doSharding(ALL_NODES, shardingValue);
             assertThat(actual, is(expected));
         }
     }
-
+    
     @RunWith(Parameterized.class)
     public static class TimestampRangeValueDoShardingTest {
         
@@ -409,7 +409,7 @@ public final class CosIdIntervalShardingAlgorithmTest {
         
         @Test
         public void assertDoSharding() {
-            RangeShardingValue shardingValue = new RangeShardingValue<>(LOGIC_NAME, COLUMN_NAME, rangeValue);
+            RangeShardingValue shardingValue = new RangeShardingValue<>(LOGIC_NAME, COLUMN_NAME, new DataNodeInfo(LOGIC_NAME_PREFIX, 6, '0'), rangeValue);
             Collection<String> actual = shardingAlgorithm.doSharding(ALL_NODES, shardingValue);
             assertThat(actual, is(expected));
         }

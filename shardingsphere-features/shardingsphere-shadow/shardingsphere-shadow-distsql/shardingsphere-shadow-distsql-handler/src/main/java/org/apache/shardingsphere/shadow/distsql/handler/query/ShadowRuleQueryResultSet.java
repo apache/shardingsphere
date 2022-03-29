@@ -119,6 +119,6 @@ public final class ShadowRuleQueryResultSet implements DistSQLResultSet {
     
     @Override
     public String getType() {
-        return ShowShadowRulesStatement.class.getCanonicalName();
+        return ShowShadowRulesStatement.class.getName();
     }
 }

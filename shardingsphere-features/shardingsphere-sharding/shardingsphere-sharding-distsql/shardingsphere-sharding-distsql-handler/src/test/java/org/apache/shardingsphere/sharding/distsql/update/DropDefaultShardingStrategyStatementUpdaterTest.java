@@ -50,6 +50,12 @@ public final class DropDefaultShardingStrategyStatementUpdaterTest {
     }
     
     @Test
+    public void assertCheckSQLStatementWithIfExists() throws DistSQLException {
+        updater.checkSQLStatement(shardingSphereMetaData, new DropDefaultShardingStrategyStatement(true, "table"), new ShardingRuleConfiguration());
+        updater.checkSQLStatement(shardingSphereMetaData, new DropDefaultShardingStrategyStatement(true, "table"), null);
+    }
+    
+    @Test
     public void assertUpdateCurrentRuleConfiguration() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         updater.updateCurrentRuleConfiguration(createSQLStatement("Database"), currentRuleConfig);

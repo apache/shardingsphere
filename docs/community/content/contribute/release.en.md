@@ -12,38 +12,38 @@ The release note should be provided in Chinese / English， confirm whether the 
 and shall be classified according to the following labels:
 
 1. New Feature
-1. API Change
-1. Enhancement
-1. Refactor
-1. Bug Fix
+2. API Change
+3. Enhancement
+4. Refactor
+5. Bug Fix
 
 **2. Confirm issue list**
 
-Open [GitHub issues](https://github.com/apache/shardingsphere/issues), filter the issue whose milestone is `${release. Version}` and status is open:
+Open [GitHub issues](https://github.com/apache/shardingsphere/issues), filter the issue whose milestone is `${RELEASE.VERSION}` and status is open:
 
 1. Close the completed issue
-1. For outstanding issues, communicate with the developer in charge. If this release is not affected, modify milestone to the next version
-1. Confirm that there is no issue in open status under milestone of release version
+2. For outstanding issues, communicate with the developer in charge. If this release is not affected, modify milestone to the next version
+3. Confirm that there is no issue in open status under milestone of release version
 
 **3. Confirm pull request list**
 
-Open [GitHub pull requests](https://github.com/apache/shardingsphere/pulls), filter pull requests whose milestone is `${release. Version}` and status is open:
+Open [GitHub pull requests](https://github.com/apache/shardingsphere/pulls), filter pull requests whose milestone is `${RELEASE.VERSION}` and status is open:
 
 1. Review the open pull request and merge 
-1. For pull requests that cannot merge and do not affect this release, modify milestone to the next version
-1. Confirm that there is no open pull request under milestone of release version
+2. For pull requests that cannot merge and do not affect this release, modify milestone to the next version
+3. Confirm that there is no open pull request under milestone of release version
 
 **4. Close milestone**
 
 Open [GitHub milestone](https://github.com/apache/shardingsphere/milestones)
 
-1. Confirm that the milestone completion status of `${release. Version}` is 100%
-1. Click `close` to close milestone
+1. Confirm that the milestone completion status of `${RELEASE.VERSION}` is 100%
+2. Click `close` to close milestone
 
 **5. Call for a discussion**
 
 1. Send email to` dev@shardingsphere.apache.org `, describe or link the release note in the message body
-1. Follow the mailing list and confirm that the community developers have no questions about the release note
+2. Follow the mailing list and confirm that the community developers have no questions about the release note
 
 ## GPG Settings
 
@@ -135,10 +135,10 @@ Among them, 700E6065 is public key ID.
 The command is as follows:
 
 ```shell
-gpg --keyserver hkp://pool.sks-keyservers.net --send-key 700E6065
+gpg --keyserver hkp://keyserver.ubuntu.com --send-key 700E6065
 ```
 
-`pool.sks-keyservers.net` is randomly chosen from [public key server](https://sks-keyservers.net/status/). 
+`keyserver.ubuntu.com` is randomly chosen from public key server. 
 Each server will automatically synchronize with one another, so it would be okay to choose any one.
 
 ## Apache Maven Central Repository Release

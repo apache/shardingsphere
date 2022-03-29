@@ -26,6 +26,7 @@ import org.apache.shardingsphere.agent.core.config.yaml.YamlPluginConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * YAML agent configuration swapper.
@@ -35,15 +36,15 @@ public final class YamlAgentConfigurationSwapper {
     
     /**
      * Swap YAML agent configuration to agent configuration.
-     * 
+     *
      * @param yamlConfig YAML agent configuration
      * @return agent configuration
      */
     public static AgentConfiguration swap(final YamlAgentConfiguration yamlConfig) {
         Map<String, PluginConfiguration> configurationMap = new LinkedHashMap<>();
-        for (Map.Entry<String, YamlPluginConfiguration> entry : yamlConfig.getPlugins().entrySet()) {
+        for (Entry<String, YamlPluginConfiguration> entry : yamlConfig.getPlugins().entrySet()) {
             configurationMap.put(entry.getKey(), transform(entry.getValue()));
-        }        
+        }
         return new AgentConfiguration(yamlConfig.getApplicationName(), yamlConfig.getIgnoredPluginNames(), configurationMap);
     }
     

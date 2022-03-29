@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.spi.ingest.position;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
+import org.apache.shardingsphere.spi.singleton.SingletonSPI;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -25,7 +27,7 @@ import java.sql.SQLException;
 /**
  * Position initializer.
  */
-public interface PositionInitializer {
+public interface PositionInitializer extends TypedSPI, SingletonSPI {
     
     /**
      * Init position by data source.

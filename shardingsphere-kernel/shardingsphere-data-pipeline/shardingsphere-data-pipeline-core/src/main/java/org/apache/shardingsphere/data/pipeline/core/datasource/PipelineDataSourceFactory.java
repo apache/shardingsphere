@@ -38,7 +38,6 @@ public final class PipelineDataSourceFactory {
      */
     @SneakyThrows(SQLException.class)
     public PipelineDataSourceWrapper newInstance(final PipelineDataSourceConfiguration dataSourceConfig) {
-        // TODO cache and reuse, try PipelineDataSourceManager
         DataSource pipelineDataSource = PipelineDataSourceCreatorFactory.getInstance(dataSourceConfig.getType()).createPipelineDataSource(dataSourceConfig.getDataSourceConfiguration());
         return new PipelineDataSourceWrapper(pipelineDataSource, dataSourceConfig.getDatabaseType());
     }

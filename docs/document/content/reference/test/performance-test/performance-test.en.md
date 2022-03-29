@@ -34,7 +34,7 @@ While as a comparison, MySQL runs with INSERT & UPDATE & DELETE statement and fu
 
 ### Table Structure of Database
 
-The structure of table here refer to `sbtest` in `sysbench`
+The structure of table here refer to `sbtest` in `sysbench`.
 
 ```shell
 CREATE TABLE `tbl` (
@@ -119,8 +119,6 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-        worker-id: 123
 ```
 
 #### Readwrite-splitting Configuration
@@ -148,10 +146,11 @@ dataSources:
 rules:
 - !READWRITE_SPLITTING
   dataSources:
-    pr_ds:
-      writeDataSourceName: primary_ds
-      readDataSourceNames:
-        - replica_ds_0
+    readwrite_ds:
+      type: Static
+      props:
+        write-data-source-name: primary_ds
+        read-data-source-names: replica_ds_0
 ```
 
 #### Readwrite-splitting & Encrypt & Sharding Configuration
@@ -228,7 +227,7 @@ rules:
 - !SHARDING
   tables:
     tbl:
-      actualDataNodes: pr_ds_${0..3}.tbl${0..1023}
+      actualDataNodes: readwrite_ds_${0..3}.tbl${0..1023}
       databaseStrategy:
         standard:
           shardingColumn: id
@@ -249,7 +248,7 @@ rules:
     tbl_database_inline:
       type: INLINE
       props:
-        algorithm-expression: pr_ds_${id % 4}
+        algorithm-expression: readwrite_ds_${id % 4}
     tbl_table_inline:
       type: INLINE
       props:
@@ -257,29 +256,31 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-          worker-id: 123
 - !READWRITE_SPLITTING
   dataSources:
-    pr_ds_0:
-      writeDataSourceName: primary_ds_0
-      readDataSourceNames:
-        - replica_ds_0
+    readwrite_ds_0:
+      type: Static
+      props:
+        write-data-source-name: primary_ds_0
+        read-data-source-names: replica_ds_0
       loadBalancerName: round_robin
-    pr_ds_1:
-      writeDataSourceName: primary_ds_1
-      readDataSourceNames:
-        - replica_ds_1
+    readwrite_ds_1:
+      type: Static
+      props:
+        write-data-source-name: primary_ds_1
+        read-data-source-names: replica_ds_1
       loadBalancerName: round_robin
-    pr_ds_2:
-      writeDataSourceName: primary_ds_2
-      readDataSourceNames:
-        - replica_ds_2
+    readwrite_ds_2:
+      type: Static
+      props:
+        write-data-source-name: primary_ds_2
+        read-data-source-names: replica_ds_2
       loadBalancerName: round_robin
-    pr_ds_3:
-      writeDataSourceName: primary_ds_3
-      readDataSourceNames:
-        - replica_ds_3
+    readwrite_ds_3:
+      type: Static
+      props:
+        write-data-source-name: primary_ds_3
+        read-data-source-names: replica_ds_3
       loadBalancerName: round_robin
   loadBalancers:
     round_robin:
@@ -372,8 +373,6 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-        worker-id: 123  
 ```
 
 ## Test Result Verification

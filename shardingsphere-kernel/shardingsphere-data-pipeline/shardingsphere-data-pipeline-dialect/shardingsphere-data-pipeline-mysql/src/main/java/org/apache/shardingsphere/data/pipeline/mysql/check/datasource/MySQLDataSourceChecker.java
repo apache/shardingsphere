@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.mysql.check.datasource;
 
 import org.apache.shardingsphere.data.pipeline.core.check.datasource.AbstractDataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
-import org.apache.shardingsphere.data.pipeline.mysql.sqlbuilder.MySQLPipelineSQLBuilder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -113,7 +112,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     }
     
     @Override
-    protected MySQLPipelineSQLBuilder getSQLBuilder() {
-        return new MySQLPipelineSQLBuilder(new HashMap<>());
+    protected String getDatabaseType() {
+        return "MySQL";
     }
 }

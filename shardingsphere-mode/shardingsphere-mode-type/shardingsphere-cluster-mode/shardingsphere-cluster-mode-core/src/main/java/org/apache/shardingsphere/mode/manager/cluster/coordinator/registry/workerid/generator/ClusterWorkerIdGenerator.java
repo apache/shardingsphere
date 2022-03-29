@@ -38,11 +38,12 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
     @Override
     public long generate() {
-        Long result = metaDataPersistService.getComputeNodePersistService().loadInstanceWorkerId(instanceDefinition.getInstanceId().getId());
-        if (null == result) {
-            result = Long.valueOf(repository.getSequentialId(WorkerIdNode.getWorkerIdGeneratorPath(instanceDefinition.getInstanceId().getId()), ""));
-            metaDataPersistService.getComputeNodePersistService().persistInstanceWorkerId(instanceDefinition.getInstanceId().getId(), result);        
-        }
+        return metaDataPersistService.getComputeNodePersistService().loadInstanceWorkerId(instanceDefinition.getInstanceId().getId()).orElseGet(() -> reGenerate());
+    }
+    
+    private Long reGenerate() {
+        Long result = Long.valueOf(repository.getSequentialId(WorkerIdNode.getWorkerIdGeneratorPath(instanceDefinition.getInstanceId().getId()), ""));
+        metaDataPersistService.getComputeNodePersistService().persistInstanceWorkerId(instanceDefinition.getInstanceId().getId(), result);
         return result;
     }
 }

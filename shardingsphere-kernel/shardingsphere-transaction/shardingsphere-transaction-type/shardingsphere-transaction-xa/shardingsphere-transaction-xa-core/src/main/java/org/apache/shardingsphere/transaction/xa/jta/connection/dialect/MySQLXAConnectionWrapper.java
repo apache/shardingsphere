@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
 
@@ -30,31 +29,62 @@ import java.sql.SQLException;
 /**
  * XA connection wrapper for MySQL.
  */
-@RequiredArgsConstructor
 public final class MySQLXAConnectionWrapper implements XAConnectionWrapper {
     
-    private static final String MYSQL_XA_DATASOURCE_5 = "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource";
+    private static volatile Class<Connection> jdbcConnectionClass;
     
-    private static final String MYSQL_XA_DATASOURCE_8 = "com.mysql.cj.jdbc.MysqlXADataSource";
+    private static volatile Method xaConnectionCreatorMethod;
     
-    @SneakyThrows(ReflectiveOperationException.class)
+    private volatile boolean initialized;
+    
     @Override
-    public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) {
-        Connection physicalConnection = unwrapPhysicalConnection(xaDataSource.getClass().getName(), connection);
-        Method method = xaDataSource.getClass().getDeclaredMethod("wrapConnection", Connection.class);
-        method.setAccessible(true);
-        return (XAConnection) method.invoke(xaDataSource, physicalConnection);
+    public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {
+        if (!initialized) {
+            loadReflection();
+            initialized = true;
+        }
+        return createXAConnection(xaDataSource, connection.unwrap(jdbcConnectionClass));
     }
     
-    @SneakyThrows({SQLException.class, ClassNotFoundException.class})
-    private Connection unwrapPhysicalConnection(final String xaDataSourceClassName, final Connection connection) {
-        switch (xaDataSourceClassName) {
-            case MYSQL_XA_DATASOURCE_5:
-                return (Connection) connection.unwrap(Class.forName("com.mysql.jdbc.Connection"));
-            case MYSQL_XA_DATASOURCE_8:
-                return (Connection) connection.unwrap(Class.forName("com.mysql.cj.jdbc.JdbcConnection"));
-            default:
-                throw new UnsupportedOperationException(String.format("Cannot support xa datasource: `%s`", xaDataSourceClassName));
+    private void loadReflection() {
+        jdbcConnectionClass = getJDBCConnectionClass();
+        xaConnectionCreatorMethod = getXAConnectionCreatorMethod();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Class<Connection> getJDBCConnectionClass() {
+        try {
+            return (Class<Connection>) Class.forName("com.mysql.jdbc.Connection");
+        } catch (final ClassNotFoundException ignored) {
+            return (Class<Connection>) Class.forName("com.mysql.cj.jdbc.JdbcConnection");
         }
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Method getXAConnectionCreatorMethod() {
+        Method result = getXADataSourceClass().getDeclaredMethod("wrapConnection", Connection.class);
+        result.setAccessible(true);
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Class<XADataSource> getXADataSourceClass() {
+        try {
+            return (Class<XADataSource>) Class.forName("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource");
+        } catch (final ClassNotFoundException ignored) {
+            return (Class<XADataSource>) Class.forName("com.mysql.cj.jdbc.MysqlXADataSource");
+        }
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private XAConnection createXAConnection(final XADataSource xaDataSource, final Connection connection) {
+        return (XAConnection) xaConnectionCreatorMethod.invoke(xaDataSource, connection);
+    }
+    
+    @Override
+    public String getType() {
+        return "MySQL";
     }
 }

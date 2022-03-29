@@ -128,4 +128,9 @@ public final class PostgreSQLPositionInitializer implements PositionInitializer 
     public static String getUniqueSlotName(final Connection connection) throws SQLException {
         return String.format("%s_%s", SLOT_NAME, connection.getCatalog());
     }
+    
+    @Override
+    public String getType() {
+        return "PostgreSQL";
+    }
 }

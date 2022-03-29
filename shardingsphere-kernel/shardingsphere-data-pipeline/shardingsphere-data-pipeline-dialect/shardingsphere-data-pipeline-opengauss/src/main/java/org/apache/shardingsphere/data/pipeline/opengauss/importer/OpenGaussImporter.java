@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.opengauss.importer;
 
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.importer.AbstractImporter;
 import org.apache.shardingsphere.data.pipeline.opengauss.sqlbuilder.OpenGaussPipelineSQLBuilder;
@@ -27,12 +28,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * OpenGauss importer.
+ * Importer of openGauss.
  */
 public final class OpenGaussImporter extends AbstractImporter {
-
-    public OpenGaussImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
-        super(importerConfig, dataSourceManager);
+    
+    public OpenGaussImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
+        super(importerConfig, dataSourceManager, channel);
     }
     
     @Override
@@ -40,4 +41,3 @@ public final class OpenGaussImporter extends AbstractImporter {
         return new OpenGaussPipelineSQLBuilder(shardingColumnsMap);
     }
 }
-

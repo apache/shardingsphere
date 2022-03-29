@@ -21,6 +21,8 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RoundRobinReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadwriteSplittingType;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,6 +38,10 @@ import static org.junit.Assert.assertThat;
 public final class ReadwriteSplittingDataSourceRuleTest {
     
     private ReadwriteSplittingDataSourceRule readwriteSplittingDataSourceRule;
+    
+    static {
+        ShardingSphereServiceLoader.register(ReadwriteSplittingType.class);
+    }
     
     @Before
     public void setUp() {
@@ -88,6 +94,12 @@ public final class ReadwriteSplittingDataSourceRuleTest {
         Map<String, Collection<String>> actual = readwriteSplittingDataSourceRule.getDataSourceMapper();
         Map<String, Collection<String>> expected = ImmutableMap.of("test_pr", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"));
         assertThat(actual, is(expected));
+    }
+    
+    @Test
+    public void assertGetWriteDataSource() {
+        String writeDataSourceName = readwriteSplittingDataSourceRule.getWriteDataSource();
+        assertThat(writeDataSourceName, is("write_ds"));
     }
     
     private Properties getProperties(final String writeDataSource, final String readDataSources) {

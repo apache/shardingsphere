@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.type.dialect;
 
+import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
@@ -65,5 +66,15 @@ public final class MySQLDatabaseTypeTest {
         QuoteCharacter actual = new MySQLDatabaseType().getQuoteCharacter();
         assertThat(actual.getStartDelimiter(), is("`"));
         assertThat(actual.getEndDelimiter(), is("`"));
+    }
+    
+    @Test
+    public void assertGetSystemDatabases() {
+        assertThat(new MySQLDatabaseType().getSystemDatabases(), is(Sets.newHashSet("information_schema", "performance_schema", "mysql", "sys")));
+    }
+    
+    @Test
+    public void assertGetSystemSchemas() {
+        assertThat(new MySQLDatabaseType().getSystemSchemas(), is(Sets.newHashSet("information_schema", "performance_schema", "mysql", "sys")));
     }
 }

@@ -27,12 +27,15 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.singletable.constant.SingleTableOrder;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 
 /**
@@ -43,7 +46,13 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     @Override
     public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final SingleTableRule rule, final ConfigurationProperties props) {
         RouteContext result = new RouteContext();
-        route(logicSQL.getSqlStatementContext(), rule, result, props);
+        if (1 == metaData.getResource().getDataSources().size()) {
+            String logicDataSource = rule.getDataSourceNames().iterator().next();
+            String actualDataSource = metaData.getResource().getDataSources().keySet().iterator().next();
+            result.getRouteUnits().add(new RouteUnit(new RouteMapper(logicDataSource, actualDataSource), Collections.emptyList()));
+        } else {
+            route(logicSQL.getSqlStatementContext(), rule, result, props);
+        }
         return result;
     }
     

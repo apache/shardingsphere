@@ -17,7 +17,7 @@
 
 grammar RDLStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 createReadwriteSplittingRule
     : CREATE READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA readwriteSplittingRuleDefinition)*
@@ -28,7 +28,7 @@ alterReadwriteSplittingRule
     ;
 
 dropReadwriteSplittingRule
-    : DROP READWRITE_SPLITTING RULE ruleName (COMMA ruleName)*
+    : DROP READWRITE_SPLITTING RULE existClause? ruleName (COMMA ruleName)*
     ;
 
 readwriteSplittingRuleDefinition
@@ -55,10 +55,6 @@ readResourceNames
     : resourceName (COMMA resourceName)*
     ;
 
-resourceName
-    : IDENTIFIER
-    ;
-
 algorithmDefinition
     : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
     ;
@@ -73,4 +69,8 @@ algorithmProperties
 
 algorithmProperty
     : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
+    ;
+
+existClause
+    : IF EXISTS
     ;

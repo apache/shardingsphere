@@ -24,14 +24,19 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import java.sql.SQLException;
 
 public final class FixtureContextManagerBuilder implements ContextManagerBuilder {
-
+    
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
         return null;
     }
-
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
+    
     @Override
     public String getType() {
-        return "fixture";
+        return "Test";
     }
 }

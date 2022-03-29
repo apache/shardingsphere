@@ -23,6 +23,7 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSp
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.traffic.context.TrafficContextHolder;
 import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.sql.Array;
@@ -160,7 +161,9 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         try {
             connectionManager.commit();
         } finally {
+            connectionManager.getConnectionTransaction().setRollbackOnly(false);
             TransactionHolder.clear();
+            TrafficContextHolder.remove();
         }
     }
     
@@ -169,7 +172,9 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         try {
             connectionManager.rollback();
         } finally {
+            connectionManager.getConnectionTransaction().setRollbackOnly(false);
             TransactionHolder.clear();
+            TrafficContextHolder.remove();
         }
     }
     

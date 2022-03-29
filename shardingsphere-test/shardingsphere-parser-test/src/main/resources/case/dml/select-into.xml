@@ -33,7 +33,7 @@
                     <operator>=</operator>
                     <right>
                         <literal-expression value="1" start-index="55" stop-index="55" />
-                        <parameter-marker-expression value="0" start-index="55" stop-index="55" />
+                        <parameter-marker-expression parameter-index="0" start-index="55" stop-index="55" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -56,7 +56,7 @@
                     <operator>=</operator>
                     <right>
                         <literal-expression value="1" start-index="44" stop-index="44" />
-                        <parameter-marker-expression value="0" start-index="44" stop-index="44" />
+                        <parameter-marker-expression parameter-index="0" start-index="44" stop-index="44" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -80,7 +80,7 @@
                     <operator>=</operator>
                     <right>
                         <literal-expression value="1" start-index="53" stop-index="53" />
-                        <parameter-marker-expression value="0" start-index="53" stop-index="53" />
+                        <parameter-marker-expression parameter-index="0" start-index="53" stop-index="53" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -164,7 +164,7 @@
                     <operator>=</operator>
                     <right>
                         <literal-expression value="1" start-index="44" stop-index="44" />
-                        <parameter-marker-expression value="0" start-index="44" stop-index="44" />
+                        <parameter-marker-expression parameter-index="0" start-index="44" stop-index="44" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -188,11 +188,17 @@
                     <operator>=</operator>
                     <right>
                         <literal-expression value="1" start-index="44" stop-index="44" />
-                        <parameter-marker-expression value="0" start-index="44" stop-index="44" />
+                        <parameter-marker-expression parameter-index="0" start-index="44" stop-index="44" />
                     </right>
                 </binary-operation-expression>
             </expr>
         </where>
         <lock start-index="46" stop-index="55"/>
+    </select>
+    
+    <select sql-case-id="select_into_param_without_at">
+        <projections start-index="7" stop-index="7">
+            <expression-projection text="1" start-index="7" stop-index="7" />
+        </projections>
     </select>
 </sql-parser-test-cases>

@@ -43,6 +43,6 @@ public final class FixtureRuleDefinitionCreateUpdater implements RuleDefinitionC
     
     @Override
     public String getType() {
-        return CreateFixtureRuleStatement.class.getCanonicalName();
+        return CreateFixtureRuleStatement.class.getName();
     }
 }

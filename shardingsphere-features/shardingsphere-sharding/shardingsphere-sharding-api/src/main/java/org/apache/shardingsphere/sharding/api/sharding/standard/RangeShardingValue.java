@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingValue;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 
 /**
  * Sharding value for range.
@@ -34,6 +35,8 @@ public final class RangeShardingValue<T extends Comparable<?>> implements Shardi
     private final String logicTableName;
     
     private final String columnName;
+    
+    private final DataNodeInfo dataNodeInfo;
     
     private final Range<T> valueRange;
 }

@@ -53,6 +53,7 @@ import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -78,9 +79,6 @@ public final class CuratorZookeeperRepositoryTest {
     private static final CuratorZookeeperRepository REPOSITORY = new CuratorZookeeperRepository();
     
     private static final String SERVER_LISTS = "127.0.0.1:2181";
-    
-    @Mock
-    private Map<String, CuratorCache> caches;
     
     @Mock
     private CuratorCache curatorCache;
@@ -207,7 +205,7 @@ public final class CuratorZookeeperRepositoryTest {
     @Test
     @SneakyThrows
     public void assertWatchUpdatedChangedType() {
-        mockCache();
+        mockCache("/test/children_updated/1");
         ChildData oldData = new ChildData("/test/children_updated/1", null, "value1".getBytes());
         ChildData data = new ChildData("/test/children_updated/1", null, "value2".getBytes());
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(CuratorCacheListener.Type.NODE_CHANGED, oldData, data))).when(listenable).addListener(any(CuratorCacheListener.class));
@@ -222,7 +220,7 @@ public final class CuratorZookeeperRepositoryTest {
     
     @Test
     public void assertWatchDeletedChangedType() throws Exception {
-        mockCache();
+        mockCache("/test/children_deleted/5");
         ChildData oldData = new ChildData("/test/children_deleted/5", null, "value5".getBytes());
         ChildData data = new ChildData("/test/children_deleted/5", null, "value5".getBytes());
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(CuratorCacheListener.Type.NODE_DELETED, oldData, data))).when(listenable).addListener(any(CuratorCacheListener.class));
@@ -238,7 +236,7 @@ public final class CuratorZookeeperRepositoryTest {
     @Test
     @SneakyThrows
     public void assertWatchAddedChangedType() {
-        mockCache();
+        mockCache("/test/children_added/4");
         ChildData data = new ChildData("/test/children_added/4", null, "value4".getBytes());
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(CuratorCacheListener.Type.NODE_CREATED, null, data))).when(listenable).addListener(any(CuratorCacheListener.class));
         SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
@@ -250,11 +248,12 @@ public final class CuratorZookeeperRepositoryTest {
         assertThat(dataChangedEvent.getValue(), is("value4"));
     }
     
-    private void mockCache() throws Exception {
+    private void mockCache(final String key) throws Exception {
         Field cachesFiled = CuratorZookeeperRepository.class.getDeclaredField("caches");
         cachesFiled.setAccessible(true);
+        Map<String, CuratorCache> caches = new HashMap<>();
+        caches.put(key, curatorCache);
         cachesFiled.set(REPOSITORY, caches);
-        when(caches.get(anyString())).thenReturn(curatorCache);
         when(curatorCache.listenable()).thenReturn(listenable);
     }
     

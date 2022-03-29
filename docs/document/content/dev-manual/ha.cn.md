@@ -11,7 +11,8 @@ chapter = true
 | ----------------------------------------- | ----------------------- |
 | DatabaseDiscoveryType                     | 数据库发现类型            |
 
-| *已知实现类*                               | *详细说明*                 |
-| ----------------------------------------- | ------------------------  |
-| MGRDatabaseDiscoveryType                  | 基于 MySQL MGR 的数据库发现 |
-| OpenGaussDatabaseDiscoveryType            | 基于 openGauss 的数据库发现 |
+| *已知实现类*                               | *详细说明*                    |
+| ----------------------------------------- | --------------------------  |
+| MGRDatabaseDiscoveryType                  | 基于 MySQL MGR 的数据库发现    |
+| ShowSlaveStatusDatabaseDiscoveryType      | 基于 MySQL 主从延迟的数据库发现 |
+| OpenGaussDatabaseDiscoveryType            | 基于 openGauss 的数据库发现   |

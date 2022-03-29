@@ -71,12 +71,10 @@ public final class ShadowUpdateStatementRoutingEngineTest {
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("user_id")));
         when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, "1"));
         WhereSegment whereSegment = new WhereSegment(0, 0, binaryOperationExpression);
-        when(result.getWhere()).thenReturn(Optional.of(whereSegment));
+        when(result.getWhereSegments()).thenReturn(Collections.singletonList(whereSegment));
         MySQLUpdateStatement updateStatement = new MySQLUpdateStatement();
-        Collection<CommentSegment> commentSegments = new LinkedList<>();
-        commentSegments.add(new CommentSegment("/*shadow:true,foo:bar*/", 0, 20));
-        commentSegments.add(new CommentSegment("/*aaa:bbb*/", 21, 30));
-        updateStatement.setCommentSegments(commentSegments);
+        updateStatement.getCommentSegments().add(new CommentSegment("/*shadow:true,foo:bar*/", 0, 20));
+        updateStatement.getCommentSegments().add(new CommentSegment("/*aaa:bbb*/", 21, 30));
         when(result.getSqlStatement()).thenReturn(updateStatement);
         return result;
     }

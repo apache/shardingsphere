@@ -39,6 +39,6 @@ public final class UseDefaultInsertColumnsToken extends SQLToken implements Atta
     
     @Override
     public String toString() {
-        return columns.isEmpty() ? "" : String.format("(%s)", Joiner.on(", ").join(columns));
+        return columns.isEmpty() ? "" : "(" + Joiner.on(", ").join(columns) + ")";
     }
 }

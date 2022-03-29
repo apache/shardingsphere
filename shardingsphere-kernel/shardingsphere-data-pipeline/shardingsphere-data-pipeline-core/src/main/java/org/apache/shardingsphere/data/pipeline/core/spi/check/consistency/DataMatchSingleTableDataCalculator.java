@@ -27,9 +27,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.scaling.core.job.sqlbuilder.ScalingSQLBuilderFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -82,7 +82,7 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
     @Override
     protected Optional<Object> calculateChunk(final DataCalculateParameter dataCalculateParameter) {
         String logicTableName = dataCalculateParameter.getLogicTableName();
-        PipelineSQLBuilder sqlBuilder = ScalingSQLBuilderFactory.newInstance(dataCalculateParameter.getDatabaseType());
+        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getSQLBuilder(dataCalculateParameter.getDatabaseType());
         String uniqueKey = dataCalculateParameter.getUniqueKey();
         CalculatedResult previousCalculatedResult = (CalculatedResult) dataCalculateParameter.getPreviousCalculatedResult();
         Number startUniqueKeyValue = null != previousCalculatedResult ? previousCalculatedResult.getMaxUniqueKeyValue() : -1;
@@ -137,14 +137,11 @@ public final class DataMatchSingleTableDataCalculator extends AbstractStreamingS
             if (!(o instanceof CalculatedResult)) {
                 return false;
             }
-        
             final CalculatedResult that = (CalculatedResult) o;
-    
             boolean equalsFirst = new EqualsBuilder().append(getRecordCount(), that.getRecordCount()).append(getMaxUniqueKeyValue(), that.getMaxUniqueKeyValue()).isEquals();
             if (!equalsFirst) {
                 return false;
             }
-            
             Iterator<Collection<Object>> thisIterator = this.records.iterator();
             Iterator<Collection<Object>> thatIterator = that.records.iterator();
             while (thisIterator.hasNext() && thatIterator.hasNext()) {

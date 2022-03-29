@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql;
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.mysql.codec.MySQLPacketCodecEngine;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -36,7 +37,7 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 @Getter
 public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine {
     
-    private final FrontendContext frontendContext = new FrontendContext(false, true);
+    private final FrontendContext frontendContext = new FrontendContext(false);
     
     private final AuthenticationEngine authenticationEngine = new MySQLAuthenticationEngine();
     
@@ -45,8 +46,17 @@ public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine
     private final DatabasePacketCodecEngine<MySQLPacket> codecEngine = new MySQLPacketCodecEngine();
     
     @Override
+    public void setDatabaseVersion(final String databaseVersion) {
+        MySQLServerInfo.setServerVersion(databaseVersion);
+    }
+    
+    @Override
     public void release(final ConnectionSession connectionSession) {
         MySQLPreparedStatementRegistry.getInstance().unregisterConnection(connectionSession.getConnectionId());
+    }
+    
+    @Override
+    public void handleException(final ConnectionSession connectionSession) {
     }
     
     @Override

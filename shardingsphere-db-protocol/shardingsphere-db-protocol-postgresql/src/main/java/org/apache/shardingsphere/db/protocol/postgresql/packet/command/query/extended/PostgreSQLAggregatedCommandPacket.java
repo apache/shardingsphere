@@ -35,7 +35,7 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
     
     private final List<PostgreSQLCommandPacket> packets;
     
-    private final boolean containsBatchedInserts;
+    private final boolean containsBatchedStatements;
     
     private final int firstBindIndex;
     
@@ -93,7 +93,7 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
         }
         this.firstBindIndex = firstBindIndex;
         this.lastExecuteIndex = lastExecuteIndex;
-        if (this.containsBatchedInserts = firstStatementBindTimes == firstStatementExecuteTimes && firstStatementBindTimes >= 3) {
+        if (this.containsBatchedStatements = firstStatementBindTimes == firstStatementExecuteTimes && firstStatementBindTimes >= 3) {
             ensureRandomAccessible(packets);
         }
     }

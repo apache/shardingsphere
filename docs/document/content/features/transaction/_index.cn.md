@@ -30,9 +30,9 @@ chapter = true
 
 ### 两阶段提交
 
-XA协议最早的分布式事务模型是由 `X/Open` 国际联盟提出的 `X/Open Distributed Transaction Processing (DTP)` 模型，简称 XA 协议。
+XA 协议最早的分布式事务模型是由 `X/Open` 国际联盟提出的 `X/Open Distributed Transaction Processing (DTP)` 模型，简称 XA 协议。
 
-基于XA协议实现的分布式事务对业务侵入很小。
+基于 XA 协议实现的分布式事务对业务侵入很小。
 它最大的优势就是对使用方透明，用户可以像使用本地事务一样使用基于XA协议的分布式事务。
 XA协议能够严格保障事务 ACID 特性。
 

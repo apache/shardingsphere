@@ -13,7 +13,7 @@ chapter = true
 
   For the ShardingSphere metadata loading process, it is first necessary to clarify the type and hierarchy of metadata in ShardingSphere. The metadata in ShardingSphere is mainly based around the `ShardingSphereMetaData`, the core of which is the `ShardingSphereSchema`, which is the metadata of the database and is also the top-level object of the data source metadata. The structure of the database metadata in ShardingSphere is shown as below, for each layer, the upper layer data comes from the assembly of the lower layer data, so we use the following bottom-up hierarchy to analyze one by one.
 
-![](../../static/img/Blog_17_img_1_ShardingSphere_Database_Metadata_Structure_Diagram_en.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_17_img_1_ShardingSphere_Database_Metadata_Structure_Diagram_en.png)
 
 
 **2. ColumMetaData and IndexMetaData**
@@ -261,7 +261,7 @@ For the loading of resources common to the system, we follow the concept of “o
     
 **About The Author**
 
-![](../../static/img/Blog_17_img_2_Tang_Guocheng_Photo.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_17_img_2_Tang_Guocheng_Photo.png)
 
 Tang Guocheng, a software engineer at Xiaomi, is mainly responsible for the development of the MIUI browser server side. He is a technology and Open-Source enthusiast, loves to explore and is keen on researching and learning about Open-Source middleware solutions. He is a proud member of the ShardingSphere community and is working hard to improve his skills with the support of the community, and to contribute to the development of the ShardingSphere community.
 

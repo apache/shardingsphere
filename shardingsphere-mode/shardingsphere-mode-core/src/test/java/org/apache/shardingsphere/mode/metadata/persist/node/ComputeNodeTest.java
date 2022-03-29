@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.node;
 
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.junit.Test;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class ComputeNodeTest {
     
@@ -38,8 +42,8 @@ public final class ComputeNodeTest {
     }
     
     @Test
-    public void assertGetInstanceLabelNodePath() {
-        assertThat(ComputeNode.getInstanceLabelNodePath("127.0.0.1@3307"), is("/nodes/compute_nodes/attributes/127.0.0.1@3307/label"));
+    public void assertGetInstanceLabelsNodePath() {
+        assertThat(ComputeNode.getInstanceLabelsNodePath("127.0.0.1@3307"), is("/nodes/compute_nodes/attributes/127.0.0.1@3307/labels"));
     }
     
     @Test
@@ -56,10 +60,37 @@ public final class ComputeNodeTest {
     public void assertGetInstanceIdByAttributes() {
         assertThat(ComputeNode.getInstanceIdByAttributes("/nodes/compute_nodes/attributes/127.0.0.1@3307/status"), is("127.0.0.1@3307"));
         assertThat(ComputeNode.getInstanceIdByAttributes("/nodes/compute_nodes/attributes/127.0.0.1@3308/worker_id"), is("127.0.0.1@3308"));
+        assertThat(ComputeNode.getInstanceIdByAttributes("/nodes/compute_nodes/attributes/127.0.0.1@3309/labels"), is("127.0.0.1@3309"));
     }
     
     @Test
     public void assertGetInstanceStatusNodePath() {
         assertThat(ComputeNode.getInstanceStatusNodePath("127.0.0.1@3307"), is("/nodes/compute_nodes/attributes/127.0.0.1@3307/status"));
+    }
+    
+    @Test
+    public void assertGetInstanceXaRecoveryIdNodePath() {
+        assertThat(ComputeNode.getInstanceXaRecoveryIdNodePath("127.0.0.1@3307"), is("/nodes/compute_nodes/attributes/127.0.0.1@3307/xa_recovery_id"));
+    }
+    
+    @Test
+    public void assertGetInstanceDefinitionByProxyOnlinePath() {
+        Optional<InstanceDefinition> actual = ComputeNode.getInstanceDefinitionByInstanceOnlinePath("/nodes/compute_nodes/online/proxy/127.0.0.1@3307");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getInstanceId().getId(), is("127.0.0.1@3307"));
+        assertThat(actual.get().getInstanceType(), is(InstanceType.PROXY));
+    }
+    
+    @Test
+    public void assertGetInstanceDefinitionByJdbcOnlinePath() {
+        Optional<InstanceDefinition> actual = ComputeNode.getInstanceDefinitionByInstanceOnlinePath("/nodes/compute_nodes/online/jdbc/127.0.0.1@3307");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getInstanceId().getId(), is("127.0.0.1@3307"));
+        assertThat(actual.get().getInstanceType(), is(InstanceType.JDBC));
+    }
+    
+    @Test
+    public void assertGetComputeNodePath() {
+        assertThat(ComputeNode.getComputeNodePath(), is("/nodes/compute_nodes"));
     }
 }

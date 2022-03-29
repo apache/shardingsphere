@@ -63,6 +63,6 @@ public final class DatabaseDiscoveryTypeQueryResultSet implements DistSQLResultS
     
     @Override
     public String getType() {
-        return ShowDatabaseDiscoveryTypesStatement.class.getCanonicalName();
+        return ShowDatabaseDiscoveryTypesStatement.class.getName();
     }
 }
