@@ -22,14 +22,16 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectSystemSchemaBuilder;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlTableMetaData;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.SchemaYamlSwapper;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.InputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * PostgreSQL system schema builder.
@@ -43,14 +45,25 @@ public final class PostgreSQLSystemSchemaBuilder implements DialectSystemSchemaB
         DatabaseType databaseType = DatabaseTypeRegistry.getTrunkDatabaseType(getDatabaseType());
         SchemaYamlSwapper swapper = new SchemaYamlSwapper();
         for (String each : databaseType.getSystemSchemas()) {
-            Optional<InputStream> schemaStream = getSystemSchemaStream(each);
-            if (!schemaStream.isPresent()) {
+            Collection<File> schemaFiles = buildSystemSchema(each);
+            if (schemaFiles.isEmpty()) {
                 continue;
             }
-            YamlSchema yamlSchema = new Yaml().loadAs(schemaStream.get(), YamlSchema.class);
+            YamlSchema yamlSchema = buildYamlSchema(schemaFiles);
             result.put(each, swapper.swapToObject(yamlSchema));
         }
         return result;
+    }
+    
+    private YamlSchema buildYamlSchema(final Collection<File> schemaFiles) throws IOException {
+        YamlSchema yamlSchema = new YamlSchema();
+        Map<String, YamlTableMetaData> tables = new LinkedHashMap<>();
+        for (File file : schemaFiles) {
+            YamlTableMetaData metaData = YamlEngine.unmarshal(file, YamlTableMetaData.class);
+            tables.put(file.getName().substring(0, file.getName().lastIndexOf(".")), metaData);
+            yamlSchema.setTables(tables);
+        }
+        return yamlSchema;
     }
     
     @Override

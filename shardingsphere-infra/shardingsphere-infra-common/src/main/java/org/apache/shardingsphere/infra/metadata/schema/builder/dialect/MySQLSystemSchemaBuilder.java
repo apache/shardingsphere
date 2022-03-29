@@ -22,14 +22,15 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectSystemSchemaBuilder;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
-import org.apache.shardingsphere.infra.yaml.schema.swapper.SchemaYamlSwapper;
-import org.yaml.snakeyaml.Yaml;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlTableMetaData;
+import org.apache.shardingsphere.infra.yaml.schema.swapper.TableMetaDataYamlSwapper;
 
-import java.io.InputStream;
+import java.io.File;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * MySQL system schema builder.
@@ -41,14 +42,20 @@ public final class MySQLSystemSchemaBuilder implements DialectSystemSchemaBuilde
     public Map<String, ShardingSphereSchema> build(final String schemaName) {
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>();
         DatabaseType databaseType = DatabaseTypeRegistry.getTrunkDatabaseType(getDatabaseType());
-        SchemaYamlSwapper swapper = new SchemaYamlSwapper();
+        TableMetaDataYamlSwapper swapper = new TableMetaDataYamlSwapper();
         for (String each : databaseType.getSystemDatabases()) {
-            Optional<InputStream> schemaStream = getSystemSchemaStream(each);
-            if (!schemaStream.isPresent()) {
+            Collection<File> schemaFiles = buildSystemSchema(each);
+            if (schemaFiles.isEmpty()) {
                 continue;
             }
-            YamlSchema yamlSchema = new Yaml().loadAs(schemaStream.get(), YamlSchema.class);
-            result.put(each, swapper.swapToObject(yamlSchema));
+            YamlSchema yamlSchema = new YamlSchema();
+            Map<String, YamlTableMetaData> tables = new LinkedHashMap<>();
+            for (File file : schemaFiles) {
+                YamlTableMetaData metaData = YamlEngine.unmarshal(file, YamlTableMetaData.class);
+                tables.put(file.getName().substring(0, file.getName().lastIndexOf(".")), metaData);
+                yamlSchema.setTables(tables);
+            }
+            result.put(each, new ShardingSphereSchema());
         }
         return result;
     }
