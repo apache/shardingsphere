@@ -318,7 +318,7 @@ h2:first-of-type{
 table{
     table-layout: fixed;
 }
-table td{
+table td,table td code{
     word-break:break-all;
 }
 
