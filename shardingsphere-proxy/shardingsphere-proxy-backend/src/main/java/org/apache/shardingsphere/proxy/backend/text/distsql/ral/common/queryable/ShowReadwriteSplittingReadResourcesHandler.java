@@ -20,46 +20,43 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryabl
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
+import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
-import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingReadResourcesStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Show readwrite-splitting read resources executor.
  */
 public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableRALBackendHandler<ShowReadwriteSplittingReadResourcesStatement, ShowReadwriteSplittingReadResourcesHandler> {
     
-    private static final String DELIMITER = "\\.";
-    
     private static final String RESOURCE = "resource";
     
     private static final String STATUS = "status";
     
-    private static final String DELAY_TIME = "delay_time (ms)";
-    
-    private static final String DISABLED = "disabled";
-    
-    private static final String ENABLED = "enabled";
+    private static final String DELAY_TIME = "delay_time(ms)";
     
     private ConnectionSession connectionSession;
     
@@ -86,65 +83,58 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
         MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
         ShardingSphereMetaData metaData = metaDataContexts.getMetaData(schemaName);
         Collection<String> allReadResources = getAllReadResources(metaData);
-        Collection<String> disabledReadResources = getDisabledReadResources(schemaName, metaDataContexts.getMetaDataPersistService().orElse(null));
-        return buildRows(allReadResources, disabledReadResources);
+        Map<String, StorageNodeDataSource> persistentReadResources = getPersistentReadResources(schemaName, metaDataContexts.getMetaDataPersistService().orElse(null));
+        return buildRows(allReadResources, persistentReadResources);
     }
     
     private Collection<String> getAllReadResources(final ShardingSphereMetaData metaData) {
-        Collection<String> configuredResources = getConfiguredReadResources(metaData);
-        Collection<String> autoAwareResources = getAutoAwareReadResources(metaData);
-        return Stream.of(configuredResources, autoAwareResources).flatMap(Collection::stream).distinct().collect(Collectors.toCollection(LinkedList::new));
+        Collection<String> result = new LinkedHashSet<>();
+        Map<String, Map<String, String>> readResourceData = getReadResourceData(metaData);
+        readResourceData.forEach((key, value) -> {
+            String resources = value.getOrDefault(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, "");
+            result.addAll(deconstructString(resources));
+        });
+        return result;
     }
     
-    private Collection<String> getConfiguredReadResources(final ShardingSphereMetaData metaData) {
-        Collection<ReadwriteSplittingRuleConfiguration> ruleConfiguration = metaData.getRuleMetaData().findRuleConfiguration(ReadwriteSplittingRuleConfiguration.class);
-        return ruleConfiguration.stream().map(ReadwriteSplittingRuleConfiguration::getDataSources).flatMap(Collection::stream).filter(Objects::nonNull)
-                .map(ReadwriteSplittingDataSourceRuleConfiguration::getReadDataSourceNames).filter(Optional::isPresent)
-                .map(each -> deconstructString(each.get())).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));
-    }
-    
-    private Collection<String> getAutoAwareReadResources(final ShardingSphereMetaData metaData) {
-        Map<String, Map<String, String>> autoAwareResourceData = getAutoAwareResourceData(metaData);
-        return autoAwareResourceData.values().stream()
-                .map(map -> map.get(ExportableConstants.REPLICA_DATA_SOURCE_NAMES)).filter(Objects::nonNull).map(this::deconstructString)
-                .flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));
-    }
-    
-    private Map<String, Map<String, String>> getAutoAwareResourceData(final ShardingSphereMetaData metaData) {
+    private Map<String, Map<String, String>> getReadResourceData(final ShardingSphereMetaData metaData) {
         return metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof ExportableRule)
-                .map(each -> ((ExportableRule) each).export(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE))
+                .map(each -> ((ExportableRule) each).export(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE))
                 .map(each -> (Map<String, Map<String, String>>) each.orElse(Collections.emptyMap()))
-                .map(Map::entrySet).flatMap(Collection::stream).filter(entry -> !entry.getValue().isEmpty()).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+                .map(Map::entrySet).flatMap(Collection::stream).filter(entry -> !entry.getValue().isEmpty())
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (v1, v2) -> v2, LinkedHashMap::new));
     }
     
-    private Collection<String> getDisabledReadResources(final String schemaName, final MetaDataPersistService persistService) {
-        if (null == persistService || null == persistService.getRepository()) {
-            return Collections.emptyList();
+    private Map<String, StorageNodeDataSource> getPersistentReadResources(final String schemaName, final MetaDataPersistService persistService) {
+        if (null == persistService || null == persistService.getRepository() || !(persistService.getRepository() instanceof ClusterPersistRepository)) {
+            return Collections.emptyMap();
         }
-        // TODO fix me
-        //TODO API for getting disabled nodes needs to be adjusted
-       /* List<String> disableResources = persistService.getRepository().getChildrenKeys(StorageStatusNode.getStatusPath(StorageNodeStatus.DISABLE));
-        if (!disableResources.isEmpty()) {
-            return disableResources.stream().filter(Objects::nonNull).filter(each -> schemaName.equals(each.split(DELIMITER)[0])).map(each -> each.split(DELIMITER)[1])
-                    .collect(Collectors.toCollection(LinkedList::new));
-        }*/
-        return Collections.emptyList();
+        Map<String, StorageNodeDataSource> storageNodes = new StorageNodeStatusService((ClusterPersistRepository) persistService.getRepository()).loadStorageNodes();
+        Map<String, StorageNodeDataSource> result = new HashMap<>();
+        storageNodes.entrySet().stream().filter(entry -> "member".equalsIgnoreCase(entry.getValue().getRole())).forEach(entry -> {
+            QualifiedSchema qualifiedSchema = new QualifiedSchema(entry.getKey());
+            if (schemaName.equalsIgnoreCase(qualifiedSchema.getSchemaName())) {
+                result.put(qualifiedSchema.getDataSourceName(), entry.getValue());
+            }
+        });
+        return result;
     }
     
-    private Collection<List<Object>> buildRows(final Collection<String> allReadResources, final Collection<String> disabledResourceRows) {
-        return allReadResources.stream().map(each -> buildRow(each, getDelayTime(), disabledResourceRows.contains(each))).collect(Collectors.toCollection(LinkedList::new));
-    }
-    
-    private String getDelayTime() {
-        //TODO Need to implement api to get delay time
-        return "";
+    private Collection<List<Object>> buildRows(final Collection<String> allReadResources, final Map<String, StorageNodeDataSource> disabledResources) {
+        return allReadResources.stream().map(each -> buildRow(each, disabledResources.get(each))).collect(Collectors.toCollection(LinkedList::new));
     }
     
     private LinkedList<String> deconstructString(final String str) {
         return new LinkedList<>(Arrays.asList(str.split(",")));
     }
     
-    private List<Object> buildRow(final String resource, final String delayTime, final boolean isDisabled) {
-        return Arrays.asList(resource, isDisabled ? DISABLED : ENABLED, delayTime);
+    private List<Object> buildRow(final String resource, final StorageNodeDataSource storageNodeDataSource) {
+        if (null == storageNodeDataSource) {
+            return Arrays.asList(resource, StorageNodeStatus.ENABLED.name().toLowerCase(), "0");
+        } else {
+            Long replicationDelayTime = storageNodeDataSource.getReplicationDelayMilliseconds();
+            String status = StorageNodeStatus.valueOf(storageNodeDataSource.getStatus().toUpperCase()).name().toLowerCase();
+            return Arrays.asList(resource, status, null != replicationDelayTime ? Long.toString(replicationDelayTime) : "0");
+        }
     }
 }

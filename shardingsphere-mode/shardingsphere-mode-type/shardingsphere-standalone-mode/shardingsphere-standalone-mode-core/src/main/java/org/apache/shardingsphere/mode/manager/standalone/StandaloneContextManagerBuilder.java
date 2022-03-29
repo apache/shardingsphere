@@ -75,7 +75,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
                 ? parameter.getSchemaConfigs().keySet() : metaDataPersistService.getSchemaMetaDataService().loadAllNames();
         DatabaseType databaseType = DatabaseTypeFactory.getDatabaseType(parameter.getSchemaConfigs(), new ConfigurationProperties(parameter.getProps()));
         for (String each : schemaNames) {
-            if (databaseType.containsSystemSchema(each)) {
+            if (databaseType.getSystemSchemas().contains(each)) {
                 continue;
             }
             builder.addSchema(each, databaseType, createSchemaConfiguration(each, metaDataPersistService, parameter), props);

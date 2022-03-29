@@ -22,10 +22,16 @@ on:
     branches: [ master, dev ]
     paths-ignore:
       - 'docs/**'
+      - '*.md'
+      - '*.txt'
+      - '.*.yaml'
   pull_request:
     branches: [ master ]
     paths-ignore:
       - 'docs/**'
+      - '*.md'
+      - '*.txt'
+      - '.*.yaml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -40,7 +46,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
-      fail-fast: false
       matrix:
         env: [ docker ]
         adapter: [ proxy, jdbc ]
@@ -71,7 +76,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
-      fail-fast: false
       matrix:
         env: [ docker ]
         adapter: [ proxy, jdbc ]
@@ -102,7 +106,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
-      fail-fast: false
       matrix:
         env: [ docker ]
         adapter: [ proxy, jdbc ]

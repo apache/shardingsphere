@@ -45,6 +45,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -87,8 +88,9 @@ public final class SchemaAssignedDatabaseBackendHandlerTest {
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
         when(connectionSession.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
         mockDatabaseCommunicationEngine(new UpdateResponseHeader(mock(SQLStatement.class)));
-        SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class);
+        SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         schemaAssignedDatabaseBackendHandler = new SchemaAssignedDatabaseBackendHandler(sqlStatementContext, EXECUTE_SQL, connectionSession);
         setBackendHandlerFactory(schemaAssignedDatabaseBackendHandler);
     }

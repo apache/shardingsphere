@@ -15,40 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
+package org.apache.shardingsphere.example.generator.core.yaml.config;
 
-/**
- * Connection status.
- */
-public final class ConnectionStatus {
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
+
+import java.util.List;
+import java.util.Properties;
+
+@Getter
+@Setter
+public final class YamlExampleConfiguration implements YamlConfiguration {
     
-    private final ResourceLock resourceLock = new ResourceLock();
+    private List<String> products;
     
-    private volatile boolean isUsing;
+    private List<String> modes;
     
-    /**
-     * Switch connection status to using.
-     */
-    public void switchToUsing() {
-        isUsing = true;
-    }
+    private List<String> transactions;
     
-    /**
-     * Switch connection status to released.
-     */
-    public void switchToReleased() {
-        if (isUsing) {
-            isUsing = false;
-            resourceLock.doNotify();
-        }
-    }
+    private List<String> features;
     
-    /**
-     * Wait until connection release.
-     */
-    public void waitUntilConnectionRelease() {
-        while (isUsing) {
-            resourceLock.doAwait();
-        }
-    }
+    private List<String> frameworks;
+    
+    private Properties props;
 }

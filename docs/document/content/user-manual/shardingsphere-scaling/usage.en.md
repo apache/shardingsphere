@@ -155,7 +155,9 @@ ADD RESOURCE ds_2 (
 );
 ```
 
-2. Alter all sharding table rule
+2. Alter sharding table rule for tables to be scaled
+
+We could scale all tables or partial tables. Binding tables must be scaled together.
 
 Currently, scaling job could only be emitted by executing `ALTER SHARDING TABLE RULE` DistSQL.
 
@@ -289,5 +291,3 @@ Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/distsql/synta
 ### DistSQL API for manual mode
 
 Data consistency check and switch configuration could be emitted manually. Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#scaling) for more details.
-
-Attention: It's still under development.

@@ -148,6 +148,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDimensionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDomainStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropExtensionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropForeignTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropLanguageStatementTestCase;
@@ -170,6 +171,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.TruncateStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropOwnedStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropOperatorStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropMaterializedViewStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterInstanceStatementTestCase;
@@ -1116,6 +1118,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "alter-foreign-table")
     private final List<AlterForeignTableTestCase> alterForeignTableTestCase = new LinkedList<>();
+
+    @XmlElement(name = "drop-foreign-table")
+    private final List<DropForeignTableStatementTestCase> dropForeignTableStatementTestCase = new LinkedList<>();
     
     @XmlElement(name = "alter-group")
     private final List<AlterGroupStatementTestCase> alterGroupStatementTestCase = new LinkedList<>();
@@ -1191,6 +1196,9 @@ public final class SQLParserTestCases {
 
     @XmlElement(name = "drop-operator")
     private final List<DropOperatorStatementTestCase> dropOperatorStatementTestCases = new LinkedList<>();
+
+    @XmlElement(name = "drop-materialized-view")
+    private final List<DropMaterializedViewStatementTestCase> dropMaterializedViewStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -1450,6 +1458,7 @@ public final class SQLParserTestCases {
         putAll(alterDefaultPrivilegesTestCase, result);
         putAll(alterForeignDataWrapperTestCase, result);
         putAll(alterForeignTableTestCase, result);
+        putAll(dropForeignTableStatementTestCase, result);
         putAll(alterGroupStatementTestCase, result);
         putAll(alterMaterializedViewStatementTestCase, result);
         putAll(createTextSearchStatementTestCases, result);
@@ -1489,6 +1498,7 @@ public final class SQLParserTestCases {
         putAll(importSchemaConfigurationStatementTestCases, result);
         putAll(dropOwnedStatementTestCases, result);
         putAll(dropOperatorStatementTestCases, result);
+        putAll(dropMaterializedViewStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

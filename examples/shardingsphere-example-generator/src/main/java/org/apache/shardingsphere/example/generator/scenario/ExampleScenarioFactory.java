@@ -70,8 +70,8 @@ public final class ExampleScenarioFactory {
      */
     public Map<String, String> getJavaClassTemplateMap() {
         Map<String, String> result = new HashMap<>();
-        result.put("java/Example.ftl", "Example.java");
-        result.put("java/ExampleService.ftl", "ExampleService.java");
+        result.put("java/ExampleMain.ftl", "ExampleMain.java");
+        result.put("java/service/ExampleService.ftl", "service/ExampleService.java");
         result.put("java/entity/Order.ftl", "entity/Order.java");
         result.put("java/entity/OrderItem.ftl", "entity/OrderItem.java");
         result.put("java/entity/Address.ftl", "entity/Address.java");
@@ -109,6 +109,7 @@ public final class ExampleScenarioFactory {
         }
         result.addAll(frameworkScenario.getJavaClassPaths());
         result.add("entity");
+        result.add("service");
         return result;
     }
     

@@ -10,10 +10,10 @@ chapter = true
 
 ## 前置条件
 
-- 熟悉 [官方网站](https://shardingsphere.apache.org/index_zh.html)
-- 熟悉 [GitHub 协同开发流程](https://help.github.com/cn/github/collaborating-with-issues-and-pull-requests)
-- 熟练掌握 [Markdown](https://help.github.com/cn/github/writing-on-github/basic-writing-and-formatting-syntax)
-- 熟悉 [Hugo](https://gohugo.io/)
+- 熟悉 [官方网站](https://shardingsphere.apache.org/index_zh.html)。
+- 熟悉 [GitHub 协同开发流程](https://help.github.com/cn/github/collaborating-with-issues-and-pull-requests)。
+- 熟练掌握 [Markdown](https://help.github.com/cn/github/writing-on-github/basic-writing-and-formatting-syntax)。
+- 熟悉 [Hugo](https://gohugo.io/)。
 
 ## Fork 文档项目
 
@@ -79,7 +79,7 @@ shardingsphere
 
 ## 文档基础知识
 
-ShardingSphere 文档使用 Markdown 编写，并使用 Hugo 进行处理生成 html，部署于 [asf-site](https://github.com/apache/shardingsphere-doc/tree/asf-site) 分支，源代码位于 [Github](https://github.com/apache/shardingsphere/tree/master) 。
+ShardingSphere 文档使用 Markdown 编写，并使用 Hugo 进行处理生成 html，部署于 [asf-site](https://github.com/apache/shardingsphere-doc/tree/asf-site) 分支，源代码位于 [Github](https://github.com/apache/shardingsphere/tree/master)。
 
 - [官方教程最新版本](https://shardingsphere.apache.org/document/current/cn/overview/) 源存储在 `/document/`
 - [社区介绍及贡献](https://shardingsphere.apache.org/community/cn/contribute/) 相关文档源都储存在 `/community/content/`
@@ -115,6 +115,6 @@ ShardingSphere 文档使用 Markdown 编写，并使用 Hugo 进行处理生成 
 
 ## 约定
 
-- 非特别说明，请使用 Hugo 的 `0.70.0` 版本
+- 非特别说明，请使用 Hugo 的 `0.70.0` 版本。
 
-- asf-site分支由官方定期更新，您无需向 asf-site 提交 pull request
+- asf-site 分支由官方定期更新，您无需向 asf-site 提交 pull request。

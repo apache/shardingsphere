@@ -18,23 +18,17 @@
 package org.apache.shardingsphere.data.pipeline.api.datasource.config.impl;
 
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJdbcConfiguration;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
-import java.sql.SQLException;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 public final class StandardPipelineDataSourceConfigurationTest {
     
-    private static final String WINDOWS = "Windows";
+    private static final String NEW_JDBC_URL = "jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=true";
     
     private static final String JDBC_URL = "jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false";
     
@@ -42,79 +36,32 @@ public final class StandardPipelineDataSourceConfigurationTest {
     
     private static final String PASSWORD = "password";
     
-    private StandardPipelineDataSourceConfiguration dataSourceConfig;
-    
-    @Before
-    public void setUp() throws SQLException {
-        dataSourceConfig = new StandardPipelineDataSourceConfiguration(JDBC_URL, USERNAME, PASSWORD);
+    @Test
+    public void assertCreate() {
+        StandardPipelineDataSourceConfiguration actual = new StandardPipelineDataSourceConfiguration(JDBC_URL, USERNAME, PASSWORD);
+        assertGetConfig(actual);
+        actual = new StandardPipelineDataSourceConfiguration(actual.getParameter());
+        assertGetConfig(actual);
+        assertAppendJDBCQueryProperties(actual);
     }
     
-    @Test
-    public void assertConstructorWithStringSuccess() {
-        String parameter = "jdbcUrl: jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false\n"
-                + "username: userName\n"
-                + "password: password\n";
-        StandardPipelineDataSourceConfiguration standardPipelineDataSourceConfigurationOtherInstance = new StandardPipelineDataSourceConfiguration(parameter);
-        String actualDatabaseTypeName = standardPipelineDataSourceConfigurationOtherInstance.getDatabaseType().getName();
-        assertThat(actualDatabaseTypeName, is("MySQL"));
+    private void assertGetConfig(final StandardPipelineDataSourceConfiguration actual) {
+        assertThat(actual.getDatabaseType().getName(), is("MySQL"));
+        assertThat(actual.getType(), is("JDBC"));
+        assertThat(((DataSourceProperties) actual.getDataSourceConfiguration()).getDataSourceClassName(), is("com.zaxxer.hikari.HikariDataSource"));
+        assertGetJdbcConfig(actual.getJdbcConfig());
     }
     
-    @Test
-    public void assertEqualsAndHashCodeSuccess() {
-        StandardPipelineDataSourceConfiguration standardPipelineDataSourceConfigurationOtherInstance = new StandardPipelineDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/demo_ds?"
-                + "serverTimezone=UTC&useSSL=false", "userName", "password");
-        assertThat(dataSourceConfig.hashCode(), is(standardPipelineDataSourceConfigurationOtherInstance.hashCode()));
-    }
-    
-    @Test
-    public void assertGetDatabaseTypeSuccess() {
-        DatabaseType actualDatabaseType = dataSourceConfig.getDatabaseType();
-        String actualDatabaseTypeName = actualDatabaseType.getName();
-        assertThat(actualDatabaseTypeName, is("MySQL"));
-    }
-    
-    @Test
-    public void assertGetHikariConfigSuccess() {
-        YamlJdbcConfiguration actual = dataSourceConfig.getJdbcConfig();
+    private void assertGetJdbcConfig(final YamlJdbcConfiguration actual) {
         assertThat(actual.getJdbcUrl(), is(JDBC_URL));
         assertThat(actual.getUsername(), is(USERNAME));
         assertThat(actual.getPassword(), is(PASSWORD));
     }
     
-    @Test
-    public void assertGetParameterSuccess() {
-        // TODO could be OS independent?
-        String os = System.getProperty("os.name");
-        String expectedParameter = "jdbcUrl: jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false\n"
-                + "username: userName\n"
-                + "password: password\n";
-        if (os.contains(WINDOWS)) {
-            expectedParameter = "jdbcUrl: jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false\r\n"
-                    + "username: userName\r\n"
-                    + "password: password\r\n";
-        }
-        String actualParameter = dataSourceConfig.getParameter();
-        assertThat(actualParameter, is(expectedParameter));
-    }
-    
-    @Test
-    public void assertGetTypeSuccess() {
-        String actualType = dataSourceConfig.getType();
-        assertThat(actualType, is("JDBC"));
-    }
-    
-    @Test
-    public void assertGetDataSourceConfigurationSuccess() {
-        DataSourceProperties actualDataSourceConfiguration = (DataSourceProperties) dataSourceConfig.getDataSourceConfiguration();
-        String actualDataSourceClassName = actualDataSourceConfiguration.getDataSourceClassName();
-        assertThat(actualDataSourceClassName, is("com.zaxxer.hikari.HikariDataSource"));
-    }
-    
-    @Test
-    public void assertAppendJDBCQueryPropertiesSuccess() {
-        StandardPipelineDataSourceConfiguration standardPipelineDataSourceConfigurationSpy = Mockito.spy(dataSourceConfig);
-        Properties propertiesInput = new Properties();
-        standardPipelineDataSourceConfigurationSpy.appendJDBCQueryProperties(propertiesInput);
-        verify(standardPipelineDataSourceConfigurationSpy, times(1)).appendJDBCQueryProperties(propertiesInput);
+    private void assertAppendJDBCQueryProperties(final StandardPipelineDataSourceConfiguration actual) {
+        Properties props = new Properties();
+        props.setProperty("useSSL", Boolean.TRUE.toString());
+        actual.appendJDBCQueryProperties(props);
+        assertThat(actual.getJdbcConfig().getJdbcUrl(), is(NEW_JDBC_URL));
     }
 }
