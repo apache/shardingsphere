@@ -24,6 +24,8 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.SchemaLockedException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandlerFactory;
@@ -51,6 +53,7 @@ public final class DistSQLBackendHandlerFactory {
         if (sqlStatement instanceof RQLStatement) {
             return RQLBackendHandlerFactory.newInstance((RQLStatement) sqlStatement, connectionSession);
         }
+        checkLockedSchema(connectionSession);
         if (sqlStatement instanceof RDLStatement) {
             return RDLBackendHandlerFactory.newInstance(databaseType, (RDLStatement) sqlStatement, connectionSession);
         }
@@ -58,5 +61,12 @@ public final class DistSQLBackendHandlerFactory {
             return RALBackendHandlerFactory.newInstance(databaseType, (RALStatement) sqlStatement, connectionSession);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
+    }
+    
+    private static void checkLockedSchema(final ConnectionSession connectionSession) {
+        String schemaName = connectionSession.getSchemaName();
+        if (ProxyContext.getInstance().getContextManager().getLockContext().isLockedSchema(schemaName)) {
+            throw new SchemaLockedException(schemaName);
+        }
     }
 }
