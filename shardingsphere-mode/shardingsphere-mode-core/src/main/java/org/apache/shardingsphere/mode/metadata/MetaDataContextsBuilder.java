@@ -39,9 +39,9 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -124,8 +124,8 @@ public final class MetaDataContextsBuilder {
         for (Entry<String, ShardingSphereDatabase> entry : databaseMap.entrySet()) {
             String databaseName = entry.getKey();
             // TODO support database and schema configuration separately
-            SchemaConfiguration schemaConfig = schemaConfigMap.getOrDefault(databaseName, new DataSourceProvidedSchemaConfiguration(Collections.emptyMap(), Collections.emptyList()));
-            Collection<ShardingSphereRule> rules = schemaRulesMap.getOrDefault(databaseName, Collections.emptyList());
+            SchemaConfiguration schemaConfig = schemaConfigMap.getOrDefault(databaseName, new DataSourceProvidedSchemaConfiguration(new LinkedHashMap<>(), new LinkedList<>()));
+            Collection<ShardingSphereRule> rules = schemaRulesMap.getOrDefault(databaseName, new LinkedList<>());
             result.put(databaseName, ShardingSphereMetaData.create(databaseName, entry.getValue().getSchemas(), schemaConfig, rules, defaultDatabaseType));
         }
         return result;
