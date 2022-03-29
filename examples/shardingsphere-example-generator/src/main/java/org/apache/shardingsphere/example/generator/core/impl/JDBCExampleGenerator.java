@@ -21,9 +21,12 @@ import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 import org.apache.shardingsphere.example.generator.core.ExampleGenerator;
 import org.apache.shardingsphere.example.generator.core.GenerateUtil;
+import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfiguration;
 import org.apache.shardingsphere.example.generator.scenario.ExampleScenarioFactory;
+import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -36,17 +39,28 @@ public final class JDBCExampleGenerator implements ExampleGenerator {
             + "${package}/${framework?replace('-', '/')}";
     
     @Override
-    public void generate(final Configuration templateConfig, final Map<String, String> dataModel) throws IOException, TemplateException {
-        for (String eachFramework : dataModel.get("frameworks").split(",")) {
-            for (String eachFeature : GenerateUtil.generateCombination(dataModel.get("features").split(","))) {
-                generate(templateConfig, dataModel, eachFramework, eachFeature);
+    public void generate(final Configuration templateConfig, final YamlExampleConfiguration configuration) throws IOException, TemplateException {
+        for (String eachFramework : configuration.getFrameworks()) {
+            for (String eachFeature : GenerateUtil.generateCombination(configuration.getFeatures())) {
+                generate(templateConfig, buildDataModel(configuration, eachFramework, eachFeature), eachFramework, eachFeature);
             }
         }
     }
     
+    private Map<String, String> buildDataModel(final YamlExampleConfiguration configuration, final String framework, final String feature) {
+        Map<String, String> result = new LinkedHashMap<>();
+        configuration.getProps().forEach((key, value) -> result.put(key.toString(), value.toString()));
+        result.put("product", getType());
+        // TODO support mode & transaction combination
+        result.put("mode", configuration.getModes().size() > 0 ? configuration.getModes().get(0) : "");
+        result.put("transaction", configuration.getTransactions().size() > 0 ? configuration.getTransactions().get(0) : "");
+        result.put("feature", feature);
+        result.put("framework", framework);
+        result.put("shardingsphereVersion", ShardingSphereVersion.VERSION);
+        return result;
+    }
+    
     private void generate(final Configuration templateConfig, final Map<String, String> dataModel, final String framework, final String feature) throws IOException, TemplateException {
-        dataModel.put("feature", feature);
-        dataModel.put("framework", framework);
         GenerateUtil.generateDirs(templateConfig, dataModel, new ExampleScenarioFactory(feature, framework).getJavaClassPaths(), OUTPUT_PATH + JAVA_CLASS_PATH);
         GenerateUtil.generateDirs(templateConfig, dataModel, new ExampleScenarioFactory(feature, framework).getResourcePaths(), OUTPUT_PATH + RESOURCES_PATH);
         GenerateUtil.generateFile(templateConfig, getType(), dataModel, new ExampleScenarioFactory(feature, framework).getJavaClassTemplateMap(), OUTPUT_PATH + JAVA_CLASS_PATH);
