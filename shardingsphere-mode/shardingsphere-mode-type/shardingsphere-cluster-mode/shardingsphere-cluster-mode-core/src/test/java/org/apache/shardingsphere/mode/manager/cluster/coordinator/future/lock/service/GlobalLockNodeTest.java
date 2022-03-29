@@ -45,4 +45,9 @@ public final class GlobalLockNodeTest {
     public void assertGetGlobalAckNodePath() {
         assertThat(GlobalLockNode.getGlobalAckNodePath(), is("/lock/global/ack"));
     }
+
+    @Test
+    public void assertGenerateSchemaLockName() {
+        assertThat(GlobalLockNode.generateSchemaLockName("schema", "instanceId"), is("/lock/global/locks/schema-instanceId"));
+    }
 }
