@@ -30,6 +30,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -116,14 +117,14 @@ public final class GenerateUtil {
      * @param combinations combinations
      * @return All combination
      */
-    public static Collection<String> generateCombination(String[] combinations) {
-        int len = combinations.length;
+    public static Collection<String> generateCombination(List<String> combinations) {
+        int len = combinations.size();
         Collection<String> result = new HashSet<>();
         for (int i = 0, size = 1 << len; i < size; i++) {
             StringBuilder eachCombBuilder = new StringBuilder();
             for (int j = 0; j < len; j++) {
                 if (((1 << j) & i) != 0) {
-                    eachCombBuilder.append(combinations[j]).append(",");
+                    eachCombBuilder.append(combinations.get(j)).append(",");
                 }
             }
             if (0 != eachCombBuilder.length()) {

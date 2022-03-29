@@ -19,13 +19,15 @@ package org.apache.shardingsphere.example.generator.core;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
-import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
-import org.yaml.snakeyaml.Yaml;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfiguration;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.ServiceLoader;
 
@@ -57,15 +59,19 @@ public final class ExampleGeneratorFactory {
      */
     @SuppressWarnings("unchecked")
     public void generate() throws TemplateException, IOException {
-        try (InputStream input = ExampleGeneratorFactory.class.getResourceAsStream(CONFIG_FILE)) {
-            Map<String, String> dataModel = new Yaml().loadAs(input, Map.class);
-            String product = dataModel.get("product");
-            dataModel.put("shardingsphereVersion", ShardingSphereVersion.VERSION);
-            for (ExampleGenerator each : ServiceLoader.load(ExampleGenerator.class)) {
-                if (product.equals(each.getType())) {
-                    each.generate(templateConfig, dataModel);
-                }
+        YamlExampleConfiguration exampleConfiguration = swapConfigToObject();
+        Collection<String> products = exampleConfiguration.getProducts();
+        for (ExampleGenerator each : ServiceLoader.load(ExampleGenerator.class)) {
+            if (products.contains(each.getType())) {
+                each.generate(templateConfig, exampleConfiguration);
             }
         }
+    }
+    
+    @SneakyThrows({URISyntaxException.class, IOException.class})
+    private YamlExampleConfiguration swapConfigToObject() {
+        URL url = ExampleGeneratorFactory.class.getResource(CONFIG_FILE);
+        File file =  null == url ? new File(CONFIG_FILE) : new File(url.toURI().getPath());
+        return YamlEngine.unmarshal(file, YamlExampleConfiguration.class);
     }
 }
