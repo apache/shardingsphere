@@ -32,16 +32,19 @@ public final class FinishedCheckJobExecutor extends AbstractLifecycleExecutor {
     
     private static final String JOB_NAME = "_finished_check";
     
-    private static final String CRON_EXPRESSION = "0 * * * * ?";
+    private static final String CRON_EXPRESSION = "*/10 * * * * ?";
     
     @Override
-    public void start() {
-        super.start();
-        log.info("Start finished check job executor.");
+    protected void doStart() {
+        // TODO refactor it and FinishedCheck after ejob support non-cron job
         new ScheduleJobBootstrap(PipelineAPIFactory.getRegistryCenter(), new FinishedCheckJob(), createJobConfig()).schedule();
     }
     
     private JobConfiguration createJobConfig() {
         return JobConfiguration.newBuilder(JOB_NAME, 1).cron(CRON_EXPRESSION).build();
+    }
+    
+    @Override
+    protected void doStop() {
     }
 }

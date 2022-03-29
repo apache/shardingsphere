@@ -17,7 +17,7 @@
 
 grammar OpenGaussStatement;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement, StoreProcedure;
+import Comments, TCLStatement, DCLStatement, DALStatement, StoreProcedure;
 
 execute
     : (select
@@ -56,6 +56,11 @@ execute
     | alterAggregate
     | alterFunction
     | alterDatabase
+    | alterDomain
+    | alterDefaultPrivileges
+    | alterForeignTable
+    | alterGroup
+    | alterMaterializedView
     | alterProcedure
     | alterServer
     | alterSequence
@@ -71,6 +76,7 @@ execute
     | createSchema
     | createType
     | createTextSearch
+    | declare
     | dropDatabase
     | dropFunction
     | dropProcedure
@@ -101,5 +107,8 @@ execute
     | alterTextSearchDictionary
     | alterTextSearchTemplate
     | alterTextSearchParser
+    | createExtension
+    | alterExtension
+    | dropExtension
     ) SEMI_?
     ;

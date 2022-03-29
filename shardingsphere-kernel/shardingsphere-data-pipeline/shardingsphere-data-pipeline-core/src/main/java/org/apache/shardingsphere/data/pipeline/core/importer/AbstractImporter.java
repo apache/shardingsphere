@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.importer;
 
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
@@ -34,7 +32,6 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
-import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterListener;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 
 import javax.sql.DataSource;
@@ -60,15 +57,12 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
     
     private final PipelineSQLBuilder pipelineSqlBuilder;
     
-    @Setter
-    private PipelineChannel channel;
+    private final PipelineChannel channel;
     
-    @Setter
-    private ImporterListener importerListener;
-    
-    protected AbstractImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
+    protected AbstractImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
         this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
+        this.channel = channel;
         pipelineSqlBuilder = createSQLBuilder(importerConfig.getShardingColumnsMap());
     }
     
@@ -81,51 +75,51 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
     protected abstract PipelineSQLBuilder createSQLBuilder(Map<String, Set<String>> shardingColumnsMap);
     
     @Override
-    public final void start() {
-        super.start();
+    protected void doStart() {
         write();
     }
     
-    @Override
-    public final void write() {
+    private void write() {
         log.info("importer write");
+        int round = 1;
         int rowCount = 0;
+        boolean finishedByBreak = false;
+        int batchSize = importerConfig.getBatchSize() * 2;
         while (isRunning()) {
-            List<Record> records = channel.fetchRecords(1024, 3);
+            List<Record> records = channel.fetchRecords(batchSize, 3);
             if (null != records && !records.isEmpty()) {
+                round++;
                 rowCount += records.size();
                 flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
-                if (null != importerListener) {
-                    importerListener.recordsImported(records);
-                }
                 channel.ack(records);
+                if (log.isDebugEnabled()) {
+                    log.debug("importer write, round={}, rowCount={}", round, rowCount);
+                } else if (0 == round % 50) {
+                    log.info("importer write, round={}, rowCount={}", round, rowCount);
+                }
                 if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
+                    log.info("write, get FinishedRecord, break");
+                    finishedByBreak = true;
                     break;
                 }
             }
         }
-        log.info("importer write, rowCount={}", rowCount);
+        log.info("importer write done, rowCount={}, finishedByBreak={}", rowCount, finishedByBreak);
     }
     
     private void flush(final DataSource dataSource, final List<Record> buffer) {
-        List<GroupedDataRecord> groupedDataRecords = MERGER.group(buffer.stream()
-                .filter(each -> each instanceof DataRecord)
-                .map(each -> (DataRecord) each)
-                .collect(Collectors.toList()));
+        List<GroupedDataRecord> groupedDataRecords = MERGER.group(buffer.stream().filter(each -> each instanceof DataRecord).map(each -> (DataRecord) each).collect(Collectors.toList()));
         groupedDataRecords.forEach(each -> {
-            if (CollectionUtils.isNotEmpty(each.getDeleteDataRecords())) {
-                flushInternal(dataSource, each.getDeleteDataRecords());
-            }
-            if (CollectionUtils.isNotEmpty(each.getInsertDataRecords())) {
-                flushInternal(dataSource, each.getInsertDataRecords());
-            }
-            if (CollectionUtils.isNotEmpty(each.getUpdateDataRecords())) {
-                flushInternal(dataSource, each.getUpdateDataRecords());
-            }
+            flushInternal(dataSource, each.getDeleteDataRecords());
+            flushInternal(dataSource, each.getInsertDataRecords());
+            flushInternal(dataSource, each.getUpdateDataRecords());
         });
     }
     
     private void flushInternal(final DataSource dataSource, final List<DataRecord> buffer) {
+        if (null == buffer || buffer.isEmpty()) {
+            return;
+        }
         boolean success = tryFlush(dataSource, buffer);
         if (isRunning() && !success) {
             throw new PipelineJobExecutionException("write failed.");
@@ -139,7 +133,7 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
                 return true;
             } catch (final SQLException ex) {
                 log.error("flush failed {}/{} times.", i, importerConfig.getRetryTimes(), ex);
-                ThreadUtil.sleep(Math.min(5 * 60 * 1000L, 1000 << i));
+                ThreadUtil.sleep(Math.min(5 * 60 * 1000L, 1000L << i));
             }
         }
         return false;
@@ -215,5 +209,9 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
             }
             ps.executeBatch();
         }
+    }
+    
+    @Override
+    protected void doStop() {
     }
 }

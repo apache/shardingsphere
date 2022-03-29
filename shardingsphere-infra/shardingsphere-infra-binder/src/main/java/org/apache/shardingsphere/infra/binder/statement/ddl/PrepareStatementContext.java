@@ -38,7 +38,7 @@ public final class PrepareStatementContext extends CommonSQLStatementContext<Pre
     
     public PrepareStatementContext(final PrepareStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(extractTablesFromPreparedStatement(sqlStatement));
+        tablesContext = new TablesContext(extractTablesFromPreparedStatement(sqlStatement), getDatabaseType());
     }
     
     @Override

@@ -18,9 +18,4 @@
 package org.apache.shardingsphere.spi.fixture.required;
 
 public final class RequiredSingletonSPIFixtureImpl implements RequiredSingletonSPIFixture {
-    
-    @Override
-    public boolean isDefault() {
-        return false;
-    }
 }

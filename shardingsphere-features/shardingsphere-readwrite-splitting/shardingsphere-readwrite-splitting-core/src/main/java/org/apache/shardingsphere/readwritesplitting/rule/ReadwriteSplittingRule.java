@@ -37,12 +37,14 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * Readwrite-splitting rule.
@@ -53,6 +55,10 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
         ShardingSphereServiceLoader.register(ReplicaLoadBalanceAlgorithm.class);
         ShardingSphereServiceLoader.register(ReadwriteSplittingType.class);
     }
+    
+    private static final String DYNAMIC = "DYNAMIC";
+    
+    private static final String STATIC = "STATIC";
     
     private final Map<String, ReplicaLoadBalanceAlgorithm> loadBalancers = new LinkedHashMap<>();
     
@@ -114,26 +120,30 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     public void updateStatus(final DataSourceStatusChangedEvent event) {
         if (event instanceof DataSourceNameDisabledEvent) {
             for (Entry<String, ReadwriteSplittingDataSourceRule> entry : dataSourceRules.entrySet()) {
-                entry.getValue().updateDisabledDataSourceNames(((DataSourceNameDisabledEvent) event).getDataSourceName(), ((DataSourceNameDisabledEvent) event).isDisabled());
+                entry.getValue().updateDisabledDataSourceNames(((DataSourceNameDisabledEvent) event).getQualifiedSchema().getDataSourceName(),
+                        ((DataSourceNameDisabledEvent) event).isDisabled());
             }
         }
     }
     
     @Override
-    public Map<String, Object> export() {
-        Map<String, Object> result = new HashMap<>(1, 1);
-        result.put(ExportableConstants.AUTO_AWARE_DATA_SOURCE_KEY, exportDataSourceNames());
-        result.put(ExportableConstants.AUTO_AWARE_DATA_SOURCE_NAME, exportAutoAwareDataSourceNames());
-        result.put(ExportableConstants.DATA_SOURCE_KEY, exportDataSourceNames());
+    public Map<String, Supplier<Object>> getExportedMethods() {
+        Map<String, Supplier<Object>> result = new HashMap<>(4, 1);
+        result.put(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, () -> exportDataSource(false, DYNAMIC));
+        result.put(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_NAME, this::exportAutoAwareDataSourceNames);
+        result.put(ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE, () -> exportDataSource(true, STATIC));
+        result.put(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE, () -> exportDataSource(false, DYNAMIC, STATIC));
         return result;
     }
     
-    private Map<String, Map<String, String>> exportDataSourceNames() {
-        Map<String, Map<String, String>> result = new HashMap<>(dataSourceRules.size(), 1);
+    private Map<String, Map<String, String>> exportDataSource(final boolean removeDisabled, final String... readwriteSplittingTypes) {
+        Map<String, Map<String, String>> result = new LinkedHashMap<>(dataSourceRules.size(), 1);
         dataSourceRules.forEach((name, dataSourceRule) -> {
-            Map<String, String> dataSources = dataSourceRule.getDataSources();
-            if (!dataSources.isEmpty()) {
-                result.put(dataSourceRule.getName(), dataSources);
+            if (Arrays.asList(readwriteSplittingTypes).contains(dataSourceRule.getReadwriteSplittingType().getType())) {
+                Map<String, String> dataSources = dataSourceRule.getDataSources(removeDisabled);
+                if (!dataSources.isEmpty()) {
+                    result.put(dataSourceRule.getName(), dataSources);
+                }
             }
         });
         return result;

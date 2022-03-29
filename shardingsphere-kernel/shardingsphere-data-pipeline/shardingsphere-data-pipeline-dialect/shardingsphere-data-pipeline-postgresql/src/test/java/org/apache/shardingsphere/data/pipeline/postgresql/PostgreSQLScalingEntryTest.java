@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql;
 
-import org.apache.shardingsphere.data.pipeline.postgresql.check.datasource.PostgreSQLDataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.postgresql.importer.PostgreSQLImporter;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLInventoryDumper;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLPositionInitializer;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLWalDumper;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
-import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
+import org.apache.shardingsphere.scaling.core.spi.ScalingEntryFactory;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -33,12 +31,10 @@ import static org.junit.Assert.assertTrue;
 public final class PostgreSQLScalingEntryTest {
     
     @Test
-    public void assertGetScalingEntryByDatabaseType() throws IllegalAccessException, InstantiationException {
-        ScalingEntry scalingEntry = ScalingEntryLoader.getInstance("PostgreSQL");
+    public void assertGetScalingEntryByDatabaseType() {
+        ScalingEntry scalingEntry = ScalingEntryFactory.getInstance("PostgreSQL");
         assertTrue(scalingEntry instanceof PostgreSQLScalingEntry);
-        assertThat(scalingEntry.getPositionInitializerClass(), equalTo(PostgreSQLPositionInitializer.class));
         assertThat(scalingEntry.getEnvironmentCheckerClass(), equalTo(PostgreSQLEnvironmentChecker.class));
-        assertThat(scalingEntry.getEnvironmentCheckerClass().newInstance().getDataSourceCheckerClass(), equalTo(PostgreSQLDataSourceChecker.class));
         assertThat(scalingEntry.getImporterClass(), equalTo(PostgreSQLImporter.class));
         assertThat(scalingEntry.getInventoryDumperClass(), equalTo(PostgreSQLInventoryDumper.class));
         assertThat(scalingEntry.getIncrementalDumperClass(), equalTo(PostgreSQLWalDumper.class));

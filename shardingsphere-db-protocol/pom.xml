@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere</artifactId>
-        <version>5.0.1-SNAPSHOT</version>
+        <version>5.1.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-db-protocol</artifactId>
     <packaging>pom</packaging>
@@ -31,11 +31,11 @@
     
     <modules>
         <module>shardingsphere-db-protocol-core</module>
-        <module>shardingsphere-db-protocol-mysql</module>
         <module>shardingsphere-db-protocol-postgresql</module>
+        <module>shardingsphere-db-protocol-mysql</module>
         <module>shardingsphere-db-protocol-opengauss</module>
     </modules>
-
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

@@ -42,7 +42,7 @@ public final class HintDistSQLBackendHandler implements TextProtocolBackendHandl
     
     private final ConnectionSession connectionSession;
     
-    private HintStatementExecutor hintStatementExecutor;
+    private HintStatementExecutor<? extends HintDistSQLStatement> hintStatementExecutor;
     
     @Override
     public ResponseHeader execute() throws SQLException {

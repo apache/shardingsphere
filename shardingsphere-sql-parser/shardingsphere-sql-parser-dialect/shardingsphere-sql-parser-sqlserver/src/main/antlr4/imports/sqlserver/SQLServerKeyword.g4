@@ -1754,3 +1754,63 @@ WITH_RECOMMENDATIONS
 BATCH_SIZE
     : B A T C H UL_ S I Z E
     ;
+
+SETUSER
+    : S E T U S E R
+    ;
+
+NORESET
+    : N O R E S E T
+    ;
+
+DEFAULT_SCHEMA
+    : D E F A U L T UL_ S C H E M A
+    ;
+
+ALLOW_ENCRYPTED_VALUE_MODIFICATIONS
+    : A L L O W UL_ E N C R Y P T E D UL_ V A L U E UL_ M O D I F I C A T I O N S
+    ;
+
+OLD_PASSWORD
+    : O L D UL_ P A S S W O R D
+    ;
+
+PROVIDER
+    : P R O V I D E R
+    ;
+
+SID
+    : S I D
+    ;
+
+UNCOMMITTED
+    : U N C O M M I T T E D
+    ;
+
+COMMITTED
+    : C O M M I T T E D
+    ;
+
+STOPLIST
+    : S T O P L I S T
+    ;
+
+SEARCH
+    : S E A R C H
+    ;
+
+PROPERTY
+    : P R O P E R T Y
+    ;
+
+LIST
+    : L I S T
+    ;
+
+SEND
+    : S E N D
+    ;
+
+MEMBER
+    : M E M B E R
+    ;

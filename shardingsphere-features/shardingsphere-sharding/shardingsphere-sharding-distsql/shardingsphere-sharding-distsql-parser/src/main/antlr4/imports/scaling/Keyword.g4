@@ -55,6 +55,10 @@ RESET
     : R E S E T
     ;
 
+RESTORE
+    : R E S T O R E
+    ;
+
 CHECK
     : C H E C K
     ;
@@ -153,4 +157,12 @@ ENABLE
 
 DISABLE
     : D I S A B L E
+    ;
+
+IF
+    : I F
+    ;
+
+EXISTS
+    : E X I S T S
     ;

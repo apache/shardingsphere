@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
-import org.apache.shardingsphere.infra.config.datasource.props.DataSourcePropertiesValidator;
+import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -93,7 +95,7 @@ public final class AlterResourceBackendHandlerTest {
         when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test_schema"));
         when(metaDataContexts.getMetaData("test_schema")).thenReturn(metaData);
         when(metaData.getResource()).thenReturn(resource);
-        when(resource.getDataSources()).thenReturn(Collections.singletonMap("ds_0", dataSource));
+        when(resource.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource("ds_0")));
         ResponseHeader responseHeader = alterResourceBackendHandler.execute("test_schema", createAlterResourceStatement("ds_0"));
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
@@ -115,6 +117,19 @@ public final class AlterResourceBackendHandlerTest {
         alterResourceBackendHandler.execute("test_schema", createAlterResourceStatement("not_existed"));
     }
     
+    @Test(expected = InvalidResourcesException.class)
+    public void assertExecuteWithAlterDatabase() throws Exception {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        ProxyContext.getInstance().init(contextManager);
+        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test_schema"));
+        when(metaDataContexts.getMetaData("test_schema")).thenReturn(metaData);
+        when(metaData.getResource()).thenReturn(resource);
+        when(resource.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource("ds_1")));
+        ResponseHeader responseHeader = alterResourceBackendHandler.execute("test_schema", createAlterResourceStatement("ds_0"));
+        assertTrue(responseHeader instanceof UpdateResponseHeader);
+    }
+    
     private AlterResourceStatement createAlterResourceStatement(final String resourceName) {
         return new AlterResourceStatement(Collections.singleton(new DataSourceSegment(resourceName, "jdbc:mysql://127.0.0.1:3306/ds_0", null, null, null, "root", "", new Properties())));
     }
@@ -124,5 +139,11 @@ public final class AlterResourceBackendHandlerTest {
         result.add(new DataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/ds_0", null, null, null, "root", "", new Properties()));
         result.add(new DataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/ds_1", null, null, null, "root", "", new Properties()));
         return new AlterResourceStatement(result);
+    }
+    
+    private HikariDataSource mockHikariDataSource(final String database) {
+        HikariDataSource result = new HikariDataSource();
+        result.setJdbcUrl(String.format("jdbc:mysql://127.0.0.1:3306/%s?serverTimezone=UTC&useSSL=false", database));
+        return result;
     }
 }

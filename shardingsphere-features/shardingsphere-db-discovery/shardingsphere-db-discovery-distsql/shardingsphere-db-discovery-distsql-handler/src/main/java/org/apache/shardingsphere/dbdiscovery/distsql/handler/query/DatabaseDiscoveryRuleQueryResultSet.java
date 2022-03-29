@@ -62,16 +62,20 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
     
     private Map<String, String> primaryDataSources;
     
+    @SuppressWarnings("unchecked")
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = metaData.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof DatabaseDiscoveryRuleConfiguration).map(each -> (DatabaseDiscoveryRuleConfiguration) each).findAny();
-        data = ruleConfig.map(optional -> optional.getDataSources().iterator()).orElse(Collections.emptyIterator());
-        discoveryTypes = ruleConfig.map(DatabaseDiscoveryRuleConfiguration::getDiscoveryTypes).orElse(Collections.emptyMap());
-        discoveryHeartbeats = ruleConfig.map(DatabaseDiscoveryRuleConfiguration::getDiscoveryHeartbeats).orElse(Collections.emptyMap());
+        data = ruleConfig.map(optional -> optional.getDataSources().iterator()).orElseGet(Collections::emptyIterator);
+        discoveryTypes = ruleConfig.map(DatabaseDiscoveryRuleConfiguration::getDiscoveryTypes).orElseGet(Collections::emptyMap);
+        discoveryHeartbeats = ruleConfig.map(DatabaseDiscoveryRuleConfiguration::getDiscoveryHeartbeats).orElseGet(Collections::emptyMap);
         Optional<ExportableRule> exportableRule = metaData.getRuleMetaData().getRules()
-                .stream().filter(each -> each instanceof ExportableRule).map(each -> (ExportableRule) each).findAny();
-        primaryDataSources = (Map<String, String>) exportableRule.map(optional -> optional.export().get(ExportableConstants.PRIMARY_DATA_SOURCE_KEY)).orElse(Collections.emptyMap());
+                .stream().filter(each -> each instanceof ExportableRule)
+                .filter(each -> ((ExportableRule) each).containExportableKey(Collections.singleton(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE)))
+                .map(each -> (ExportableRule) each).findAny();
+        primaryDataSources = (Map<String, String>) (exportableRule.map(optional -> 
+            optional.export(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE).orElseGet(Collections::emptyMap)).orElseGet(Collections::emptyMap));
     }
     
     @Override
@@ -98,15 +102,13 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
         return Arrays.asList(groupName, String.join(",", dataSourceRuleConfig.getDataSourceNames()), primaryDataSourceName, typeMap, heartbeatMap);
     }
     
+    @SuppressWarnings("unchecked")
     private Map<String, String> convertToMap(final Object obj) {
-        if (obj == null) {
-            return Collections.emptyMap();
-        }
-        return new Gson().fromJson(new Gson().toJson(obj), LinkedHashMap.class);
+        return null == obj ? Collections.emptyMap() : new Gson().fromJson(new Gson().toJson(obj), LinkedHashMap.class);
     }
     
     @Override
     public String getType() {
-        return ShowDatabaseDiscoveryRulesStatement.class.getCanonicalName();
+        return ShowDatabaseDiscoveryRulesStatement.class.getName();
     }
 }

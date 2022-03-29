@@ -9,7 +9,7 @@ weight = 7
 
 ## 创建日志表
 
-在每一个分片数据库实例中执创建 `undo_log`表（以 MySQL 为例）。
+在每一个分片数据库实例中执创建 `undo_log` 表（以 MySQL 为例）。
 
 ```sql
 CREATE TABLE IF NOT EXISTS `undo_log`
@@ -40,4 +40,4 @@ client {
 }
 ```
 
-根据实际场景修改 Seata 的 `file.conf`和 `registry.conf` 文件。
+根据实际场景修改 Seata 的 `file.conf` 和 `registry.conf` 文件。

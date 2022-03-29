@@ -26,7 +26,12 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.o
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.value.IdentifierValueAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.column.ExpectedColumn;
 
+import java.util.Collection;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -51,5 +56,21 @@ public final class ColumnAssert {
             assertFalse(assertContext.getText("Actual owner should not exist."), actual.getOwner().isPresent());
         }
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
+    }
+    
+    /**
+     * Assert actual column segments is correct with expected columns.
+     *
+     * @param assertContext assert context
+     * @param actual actual columns
+     * @param expected expected columns
+     */
+    public static void assertIs(final SQLCaseAssertContext assertContext, final Collection<ColumnSegment> actual, final List<ExpectedColumn> expected) {
+        assertThat(assertContext.getText("Columns size assertion error: "), actual.size(), is(expected.size()));
+        int count = 0;
+        for (ColumnSegment each : actual) {
+            assertIs(assertContext, each, expected.get(count));
+            count++;
+        }
     }
 }

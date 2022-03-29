@@ -17,7 +17,7 @@
 
 grammar TCLStatement;
 
-import Symbol, Keyword, SQL92Keyword, Literals, BaseRule;
+import BaseRule;
 
 setTransaction
     : SET TRANSACTION ISOLATION LEVEL levelOfIsolation

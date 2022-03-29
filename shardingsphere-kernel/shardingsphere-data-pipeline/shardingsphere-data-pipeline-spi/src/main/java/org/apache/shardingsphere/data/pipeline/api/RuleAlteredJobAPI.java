@@ -43,14 +43,6 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI, Singleto
     List<JobInfo> list();
     
     /**
-     * Get uncompleted job ids of schema.
-     *
-     * @param schemaName schema name
-     * @return uncompleted job ids
-     */
-    List<Long> getUncompletedJobIds(String schemaName);
-    
-    /**
      * Start scaling job by config.
      *
      * @param jobConfig job config
@@ -80,6 +72,29 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI, Singleto
      * @param jobId job id
      */
     void stopClusterWriteDB(String jobId);
+    
+    /**
+     * Stop cluster write to job source schema's underlying DB.
+     *
+     * @param schemaName schema name
+     * @param jobId job id
+     */
+    void stopClusterWriteDB(String schemaName, String jobId);
+    
+    /**
+     * Restore cluster write to job source schema's underlying DB.
+     *
+     * @param jobId job id
+     */
+    void restoreClusterWriteDB(String jobId);
+    
+    /**
+     * Restore cluster write to job source schema's underlying DB.
+     *
+     * @param schemaName schema name
+     * @param jobId job id
+     */
+    void restoreClusterWriteDB(String schemaName, String jobId);
     
     /**
      * List all data consistency check algorithms from SPI.

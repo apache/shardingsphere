@@ -56,8 +56,18 @@ weight = 7
     
     <!-- 主从规则配置 -->
     <readwrite-splitting:rule id="readWriteSplittingRule">
-        <readwrite-splitting:data-source-rule id="ds_0" write-data-source-name="write_ds0" read-data-source-names="read_ds0_0, read_ds0_1" load-balance-algorithm-ref="randomStrategy" />
-        <readwrite-splitting:data-source-rule id="ds_1" write-data-source-name="write_ds1" read-data-source-names="read_ds1_0, read_ds1_1" load-balance-algorithm-ref="randomStrategy" />
+        <readwrite-splitting:data-source-rule id="ds_0" type="Static" load-balance-algorithm-ref="randomStrategy">
+            <props>
+                <prop key="write-data-source-name">write_ds0</prop>
+                <prop key="read-data-source-names">read_ds0_0, read_ds0_1</prop>
+            </props>
+        </readwrite-splitting:data-source-rule>
+        <readwrite-splitting:data-source-rule id="ds_1" type="Static" load-balance-algorithm-ref="randomStrategy">
+            <props>
+                <prop key="write-data-source-name">write_ds1</prop>
+                <prop key="read-data-source-names">read_ds1_0, read_ds1_1</prop>
+            </props>
+        </readwrite-splitting:data-source-rule>
     </readwrite-splitting:rule>
     
     <!-- 分片策略配置 -->

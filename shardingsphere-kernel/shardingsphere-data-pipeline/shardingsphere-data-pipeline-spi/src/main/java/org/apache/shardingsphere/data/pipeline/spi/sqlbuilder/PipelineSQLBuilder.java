@@ -19,17 +19,21 @@ package org.apache.shardingsphere.data.pipeline.spi.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
+import org.apache.shardingsphere.spi.singleton.SingletonSPI;
+import org.apache.shardingsphere.spi.typed.TypedSPI;
 
 import java.util.Collection;
 import java.util.List;
 
 /**
  * Pipeline SQL builder.
+ * It's singleton when it's used as SPI, else not.
  */
-public interface PipelineSQLBuilder {
+public interface PipelineSQLBuilder extends TypedSPI, SingletonSPI {
     
     /**
      * Build insert SQL.
+     * Used in {@linkplain org.apache.shardingsphere.data.pipeline.spi.importer.Importer}.
      *
      * @param dataRecord data record
      * @return insert SQL
@@ -46,11 +50,12 @@ public interface PipelineSQLBuilder {
     String buildUpdateSQL(DataRecord dataRecord, Collection<Column> conditionColumns);
     
     /**
-     * Extract need updated columns.
+     * Extract updated columns.
+     * Used in {@linkplain org.apache.shardingsphere.data.pipeline.spi.importer.Importer}.
      *
-     * @param columns the input columns
-     * @param record the input datarecord
-     * @return the filtered columns.
+     * @param columns columns
+     * @param record data record
+     * @return filtered columns
      */
     List<Column> extractUpdatedColumns(Collection<Column> columns, DataRecord record);
     

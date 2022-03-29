@@ -67,8 +67,8 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithDuplicateRuleNames() throws DistSQLException {
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("pr_ds", Collections.emptyList(), "ha-heartbeat", "test");
-        DatabaseDiscoveryConstructionSegment segment = new DatabaseDiscoveryConstructionSegment("pr_ds", Collections.emptyList(), "", "");
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds", Collections.emptyList(), "ha-heartbeat", "test");
+        DatabaseDiscoveryConstructionSegment segment = new DatabaseDiscoveryConstructionSegment("readwrite_ds", Collections.emptyList(), "", "");
         updater.checkSQLStatement(shardingSphereMetaData, new CreateDatabaseDiscoveryRuleStatement(Collections.singleton(segment)),
                 new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceRuleConfig), Collections.emptyMap(), Collections.emptyMap()));
     }
@@ -76,27 +76,28 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
     @Test(expected = RequiredResourceMissedException.class)
     public void assertCheckSQLStatementWithoutExistedResources() throws DistSQLException {
         when(resource.getNotExistedResources(any())).thenReturn(Collections.singleton("ds_read_0"));
-        DatabaseDiscoveryConstructionSegment segment = new DatabaseDiscoveryConstructionSegment("pr_ds", Arrays.asList("ds_read_0", "ds_read_1"), "", "");
+        DatabaseDiscoveryConstructionSegment segment = new DatabaseDiscoveryConstructionSegment("readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), "", "");
         updater.checkSQLStatement(shardingSphereMetaData, new CreateDatabaseDiscoveryRuleStatement(Collections.singleton(segment)), null);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckSQLStatementWithDatabaseDiscoveryType() throws DistSQLException {
         AlgorithmSegment algorithmSegment = new AlgorithmSegment("INVALID_TYPE", new Properties());
-        DatabaseDiscoveryDefinitionSegment segment = new DatabaseDiscoveryDefinitionSegment("pr_ds", Arrays.asList("ds_read_0", "ds_read_1"), algorithmSegment, new Properties());
+        DatabaseDiscoveryDefinitionSegment segment = new DatabaseDiscoveryDefinitionSegment("readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), algorithmSegment, new Properties());
         updater.checkSQLStatement(shardingSphereMetaData, new CreateDatabaseDiscoveryRuleStatement(Collections.singleton(segment)), null);
     }
     
     @Test(expected = RequiredAlgorithmMissedException.class)
     public void assertCheckSQLStatementWithNotExistDiscoveryTypeName() throws DistSQLException {
-        DatabaseDiscoveryConstructionSegment segment = new DatabaseDiscoveryConstructionSegment("pr_ds", Arrays.asList("ds_read_0", "ds_read_1"), "not_exist_discovery_type_name", "");
+        DatabaseDiscoveryConstructionSegment segment = new DatabaseDiscoveryConstructionSegment("readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), "not_exist_discovery_type_name", "");
         DatabaseDiscoveryRuleConfiguration configuration = new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap());
         updater.checkSQLStatement(shardingSphereMetaData, new CreateDatabaseDiscoveryRuleStatement(Collections.singleton(segment)), configuration);
     }
     
     @Test(expected = RequiredAlgorithmMissedException.class)
     public void assertCheckSQLStatementWithNotExistDiscoveryHeartbeatName() throws DistSQLException {
-        DatabaseDiscoveryConstructionSegment segment = new DatabaseDiscoveryConstructionSegment("pr_ds", Arrays.asList("ds_read_0", "ds_read_1"), "discovery_type_name", "not_exist_heartbeat_name");
+        DatabaseDiscoveryConstructionSegment segment = new DatabaseDiscoveryConstructionSegment(
+                "readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), "discovery_type_name", "not_exist_heartbeat_name");
         DatabaseDiscoveryRuleConfiguration configuration = new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), 
                 Collections.singletonMap("discovery_type_name", null));
         updater.checkSQLStatement(shardingSphereMetaData, new CreateDatabaseDiscoveryRuleStatement(Collections.singleton(segment)), configuration);
@@ -104,37 +105,37 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
     
     @Test
     public void assertBuild() {
-        DatabaseDiscoveryConstructionSegment constructionSegment = new DatabaseDiscoveryConstructionSegment("pr_ds_1", Arrays.asList("ds_read_0", "ds_read_1"), 
+        DatabaseDiscoveryConstructionSegment constructionSegment = new DatabaseDiscoveryConstructionSegment("readwrite_ds_1", Arrays.asList("ds_read_0", "ds_read_1"), 
                 "discovery_type_name", "heartbeat_name");
         AlgorithmSegment algorithmSegment = new AlgorithmSegment("mgr", new Properties());
-        DatabaseDiscoveryDefinitionSegment definitionSegment = new DatabaseDiscoveryDefinitionSegment("pr_ds_2", Arrays.asList("ds_read_0", "ds_read_1"), algorithmSegment, new Properties());
+        DatabaseDiscoveryDefinitionSegment definitionSegment = new DatabaseDiscoveryDefinitionSegment("readwrite_ds_2", Arrays.asList("ds_read_0", "ds_read_1"), algorithmSegment, new Properties());
         DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration 
                 = updater.buildToBeCreatedRuleConfiguration(new CreateDatabaseDiscoveryRuleStatement(Arrays.asList(constructionSegment, definitionSegment)));
         assertThat(databaseDiscoveryRuleConfiguration.getDataSources().size(), is(2));
         assertTrue(databaseDiscoveryRuleConfiguration.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName)
-                .collect(Collectors.toList()).removeAll(Collections.singletonList("pr_ds_1")));
+                .collect(Collectors.toList()).removeAll(Collections.singletonList("readwrite_ds_1")));
         assertTrue(databaseDiscoveryRuleConfiguration.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName)
-                .collect(Collectors.toList()).removeAll(Collections.singletonList("pr_ds_2")));
-        assertTrue(databaseDiscoveryRuleConfiguration.getDiscoveryTypes().containsKey("pr_ds_2_mgr"));
-        assertTrue(databaseDiscoveryRuleConfiguration.getDiscoveryHeartbeats().containsKey("pr_ds_2_heartbeat"));
+                .collect(Collectors.toList()).removeAll(Collections.singletonList("readwrite_ds_2")));
+        assertTrue(databaseDiscoveryRuleConfiguration.getDiscoveryTypes().containsKey("readwrite_ds_2_mgr"));
+        assertTrue(databaseDiscoveryRuleConfiguration.getDiscoveryHeartbeats().containsKey("readwrite_ds_2_heartbeat"));
     }
     
     @Test
     public void assertUpdate() {
-        DatabaseDiscoveryConstructionSegment constructionSegment = new DatabaseDiscoveryConstructionSegment("pr_ds_1", Arrays.asList("ds_read_0", "ds_read_1"), 
+        DatabaseDiscoveryConstructionSegment constructionSegment = new DatabaseDiscoveryConstructionSegment("readwrite_ds_1", Arrays.asList("ds_read_0", "ds_read_1"), 
                 "discovery_type_name", "heartbeat_name");
         AlgorithmSegment algorithmSegment = new AlgorithmSegment("mgr", new Properties());
-        DatabaseDiscoveryDefinitionSegment definitionSegment = new DatabaseDiscoveryDefinitionSegment("pr_ds_2", Arrays.asList("ds_read_0", "ds_read_1"), algorithmSegment, new Properties());
+        DatabaseDiscoveryDefinitionSegment definitionSegment = new DatabaseDiscoveryDefinitionSegment("readwrite_ds_2", Arrays.asList("ds_read_0", "ds_read_1"), algorithmSegment, new Properties());
         DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig 
                 = updater.buildToBeCreatedRuleConfiguration(new CreateDatabaseDiscoveryRuleStatement(Arrays.asList(constructionSegment, definitionSegment)));
         DatabaseDiscoveryRuleConfiguration currentConfiguration = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
         updater.updateCurrentRuleConfiguration(currentConfiguration, toBeCreatedRuleConfig);
         assertThat(currentConfiguration.getDataSources().size(), is(2));
         assertTrue(currentConfiguration.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName)
-                .collect(Collectors.toList()).removeAll(Collections.singletonList("pr_ds_1")));
+                .collect(Collectors.toList()).removeAll(Collections.singletonList("readwrite_ds_1")));
         assertTrue(currentConfiguration.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName)
-                .collect(Collectors.toList()).removeAll(Collections.singletonList("pr_ds_2")));
-        assertTrue(currentConfiguration.getDiscoveryTypes().containsKey("pr_ds_2_mgr"));
-        assertTrue(currentConfiguration.getDiscoveryHeartbeats().containsKey("pr_ds_2_heartbeat"));
+                .collect(Collectors.toList()).removeAll(Collections.singletonList("readwrite_ds_2")));
+        assertTrue(currentConfiguration.getDiscoveryTypes().containsKey("readwrite_ds_2_mgr"));
+        assertTrue(currentConfiguration.getDiscoveryHeartbeats().containsKey("readwrite_ds_2_heartbeat"));
     }
 }

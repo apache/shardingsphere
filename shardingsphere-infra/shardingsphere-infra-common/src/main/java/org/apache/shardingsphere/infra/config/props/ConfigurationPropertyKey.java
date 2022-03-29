@@ -66,12 +66,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * Flush threshold for every records from databases for ShardingSphere-Proxy.
      */
     PROXY_FRONTEND_FLUSH_THRESHOLD("proxy-frontend-flush-threshold", String.valueOf(128), int.class),
-    
-    /**
-     * Whether enable opentracing for ShardingSphere-Proxy.
-     */
-    PROXY_OPENTRACING_ENABLED("proxy-opentracing-enabled", String.valueOf(Boolean.FALSE), boolean.class),
-    
+      
     /**
      * Whether enable hint for ShardingSphere-Proxy.
      */
@@ -105,7 +100,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     
     /**
      * Available options of proxy backend executor suitable: OLAP(default), OLTP. The OLTP option may reduce time cost of writing packets to client, but it may increase the latency of SQL execution
-     * if client connections are more than proxy-frontend-netty-executor-size, especially executing slow SQL.
+     * and block other clients if client connections are more than {@link ConfigurationPropertyKey#PROXY_FRONTEND_EXECUTOR_SIZE}, especially executing slow SQL.
      */
     PROXY_BACKEND_EXECUTOR_SUITABLE("proxy-backend-executor-suitable", "OLAP", String.class),
     

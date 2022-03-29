@@ -47,10 +47,11 @@ public interface RuleBasedTableMetaDataBuilder<T extends TableContainedRule> ext
     /**
      * Decorate table meta data.
      *
-     * @param tableName table name
-     * @param tableMetaData table meta data to be decorated
+     * @param tableMetaDataMap key is logic table name, value is actual table meta data
      * @param rule ShardingSphere rule
-     * @return decorated table meta data
+     * @param materials SchemaBuilderMaterials materials
+     * @return table meta data map key is logic table name value is actual table meta data
+     * @throws SQLException SQL exception
      */
-    TableMetaData decorate(String tableName, TableMetaData tableMetaData, T rule);
+    Map<String, TableMetaData> decorate(Map<String, TableMetaData> tableMetaDataMap, T rule, SchemaBuilderMaterials materials) throws SQLException;
 }

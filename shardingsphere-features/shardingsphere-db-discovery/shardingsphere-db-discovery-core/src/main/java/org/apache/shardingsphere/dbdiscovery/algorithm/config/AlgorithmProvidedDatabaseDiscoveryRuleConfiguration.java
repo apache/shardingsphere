@@ -33,7 +33,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Algorithm provided data base discovery rule configuration.
+ * Algorithm provided database discovery rule configuration.
  */
 @NoArgsConstructor
 @AllArgsConstructor

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.core;
 
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.Test;
 
@@ -31,6 +32,6 @@ public final class ParseASTNodeTest {
     public void assertGetRootNode() {
         ParseTree parseTree = mock(ParseTree.class);
         when(parseTree.getChild(0)).thenReturn(parseTree);
-        assertThat(new ParseASTNode(parseTree).getRootNode(), is(parseTree));
+        assertThat(new ParseASTNode(parseTree, mock(CommonTokenStream.class)).getRootNode(), is(parseTree));
     }
 }

@@ -52,15 +52,15 @@
             <values>
                 <value>
                     <assignment-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression parameter-index="0" />
                         <literal-expression value="1" start-index="64" stop-index="64" />
                     </assignment-value>
                     <assignment-value>
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression parameter-index="1" />
                         <literal-expression value="1" start-index="67" stop-index="67" />
                     </assignment-value>
                     <assignment-value>
-                        <parameter-marker-expression value="2" />
+                        <parameter-marker-expression parameter-index="2" />
                         <literal-expression value="insert" start-index="70" stop-index="77" />
                     </assignment-value>
                 </value>
@@ -80,7 +80,7 @@
                         <operator>=</operator>
                         <right>
                             <literal-expression value="init" start-index="41" stop-index="46" />
-                            <parameter-marker-expression value="0" start-index="41" stop-index="41" />
+                            <parameter-marker-expression parameter-index="0" start-index="41" stop-index="41" />
                         </right>
                     </binary-operation-expression>
                 </expr>
@@ -268,14 +268,17 @@
         <simple-table name="tableName" start-index="5" stop-index="13" />
         <column-wild name="u%" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="18" />
     </describe>
+    
     <describe sql-case-id="explain_table">
-        <table>
+        <select>
             <simple-table name="t_order" start-index="14" stop-index="20" />
-            <column name="order_id" start-index="31" stop-index="38"/>
-            <limit literal-start-index="40" literal-stop-index="55">
+            <order-by>
+                <column-item name="order_id" start-index="31" stop-index="38" />
+            </order-by>
+            <limit start-index="40" stop-index="55">
                 <offset value="2" literal-start-index="55" literal-stop-index="55" />
-                <row-count value="1" literal-start-index="46" literal-stop-index="46" />
+                <row-count value="1" start-index="46" stop-index="46"/>
             </limit>
-        </table>
+        </select>
     </describe>
 </sql-parser-test-cases>

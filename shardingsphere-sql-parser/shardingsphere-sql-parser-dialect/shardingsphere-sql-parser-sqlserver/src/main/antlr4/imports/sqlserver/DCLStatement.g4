@@ -17,30 +17,18 @@
 
 grammar DCLStatement;
 
-import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule;
+import BaseRule;
 
 grant
-    : GRANT (classPrivilegesClause | classTypePrivilegesClause | roleClause)
+    : GRANT (grantClassPrivilegesClause | grantClassTypePrivilegesClause)
     ;
 
-revoke
-    : REVOKE (optionForClause? classPrivilegesClause | classTypePrivilegesClause | roleClause)
+grantClassPrivilegesClause
+    : classPrivileges (ON onClassClause)? TO principal (COMMA_ principal)* (WITH GRANT OPTION)? (AS principal)?
     ;
 
-deny
-    : DENY (classPrivilegesClause | classTypePrivilegesClause)
-    ;
-
-classPrivilegesClause
-    : classPrivileges (ON onClassClause)?
-    ;
-
-classTypePrivilegesClause
-    : classTypePrivileges (ON onClassTypeClause)?
-    ;
-
-optionForClause
-    : GRANT OPTION FOR
+grantClassTypePrivilegesClause
+    : classTypePrivileges (ON onClassTypeClause)? TO principal (COMMA_ principal)* (WITH GRANT OPTION)?
     ;
 
 classPrivileges
@@ -48,7 +36,7 @@ classPrivileges
     ;
 
 onClassClause
-    : class_? tableName
+    : (classItem COLON_ COLON_)? securable
     ;
 
 classTypePrivileges
@@ -56,116 +44,293 @@ classTypePrivileges
     ;
 
 onClassTypeClause
-    : classType? tableName
+    : (classType COLON_ COLON_)? securable
+    ;
+
+securable
+    : (owner DOT_)? name
+    ;
+
+principal
+    : userName
+    ;
+
+revoke
+    : REVOKE (optionForClause? revokeClassPrivilegesClause | revokeClassTypePrivilegesClause)
+    ;
+
+revokeClassPrivilegesClause
+    : classPrivileges (ON onClassClause)? (TO | FROM) principal (COMMA_ principal)* (CASCADE)? (AS principal)?
+    ;
+
+revokeClassTypePrivilegesClause
+    : classTypePrivileges (ON onClassTypeClause)? (TO | FROM) principal (COMMA_ principal)* (CASCADE)?
+    ;
+
+deny
+    : DENY (denyClassPrivilegesClause | denyClassTypePrivilegesClause)
+    ;
+
+denyClassPrivilegesClause
+    : classPrivileges (ON onClassClause)? TO principal (COMMA_ principal)* (CASCADE)? (AS principal)?
+    ;
+
+denyClassTypePrivilegesClause
+    : classTypePrivileges (ON onClassTypeClause)? TO principal (COMMA_ principal)* (CASCADE)?
+    ;
+
+optionForClause
+    : GRANT OPTION FOR
     ;
 
 privilegeType
     : ALL PRIVILEGES?
-    | basicPermission | objectPermission
+    | assemblyPermission | asymmetricKeyPermission
+    | availabilityGroupPermission | certificatePermission
+    | objectPermission | systemObjectPermission
+    | databasePermission | databasePrincipalPermission
+    | databaseScopedCredentialPermission | endpointPermission
+    | fullTextPermission
+    | schemaPermission | searchPropertyListPermission
     | serverPermission | serverPrincipalPermission
-    | databasePermission | databasePrincipalPermission | schemaPermission
-    | serviceBrokerPermission | endpointPermission
-    | certificatePermission | symmetricKeyPermission | asymmetricKeyPermission
-    | assemblyPermission | availabilityGroupPermission | fullTextPermission
-    ;
-
-basicPermission
-    : CONTROL SERVER? | TAKE OWNERSHIP | ALTER | VIEW ANY? DEFINITION | REFERENCES
-    | SELECT | INSERT | UPDATE | DELETE | EXECUTE | RECEIVE
+    | serviceBrokerPermission | symmetricKeyPermission
+    | typePermission | xmlSchemaCollectionPermission
     ;
 
 objectPermission
-    : VIEW CHANGE TRACKING
+    : ALTER | CONTROL | DELETE | EXECUTE | INSERT | RECEIVE | REFERENCES | SELECT | TAKE OWNERSHIP | UPDATE
+    | VIEW CHANGE TRACKING | VIEW DEFINITION
     ;
 
 serverPermission
-    : ALTER (RESOURCES | SETTINGS | TRACE | SERVER STATE)
+    : ADMINISTER BULK OPERATIONS | ALTER (RESOURCES | SETTINGS | TRACE | SERVER STATE)
     | ALTER ANY (AVAILABILITY GROUP | CONNECTION | CREDENTIAL | DATABASE | ENDPOINT | EVENT NOTIFICATION | EVENT SESSION | LINKED SERVER | LOGIN | SERVER AUDIT | SERVER ROLE)
+    | AUTHENTICATE SERVER | CONNECT ANY DATABASE | CONNECT SQL | CONTROL SERVER | CREATE ANY DATABASE
     | CREATE (AVAILABILITY GROUP | DDL EVENT NOTIFICATION | ENDPOINT | SERVER ROLE | TRACE EVENT NOTIFICATION)
-    | CREATE ANY DATABASE
-    | VIEW SERVER STATE
-    | VIEW ANY (DATABASE | DEFINITION)
-    | CONNECT ANY DATABASE | CONNECT SQL
-    | IMPERSONATE ANY LOGIN
-    | SELECT ALL USER SECURABLES | AUTHENTICATE SERVER | EXTERNAL ACCESS ASSEMBLY | ADMINISTER BULK OPERATIONS | UNSAFE ASSEMBLY
-    | SHUTDOWN
+    | EXTERNAL ACCESS ASSEMBLY | IMPERSONATE ANY LOGIN | SELECT ALL USER SECURABLES | SHUTDOWN | UNSAFE ASSEMBLY
+    | VIEW ANY (DATABASE | DEFINITION) | VIEW SERVER STATE
     ;
 
 serverPrincipalPermission
-    : IMPERSONATE | ALTER ANY (LOGIN | SERVER ROLE)
+    : CONTROL SERVER? | IMPERSONATE | VIEW ANY? DEFINITION | ALTER | ALTER ANY (LOGIN | SERVER ROLE)
     ;
 
 databasePermission
-    : ALTER TRACE
-    | ALTER ANY (DATABASE (AUDIT | DDL TRIGGER | EVENT NOTIFICATION | EVENT SESSION | SCOPED CONFIGURATION)? | DATASPACE | SCHEMA
-      | SERVICE AUDIT?| USER | APPLICATION? ROLE | CERTIFICATE | CONTRACT | ASSEMBLY | CONNECTION
-      | (SYMMETRIC | ASYMMETRIC | COLUMN ENCRYPTION) KEY | COLUMN MASTER KEY DEFINITION
-      | EXTERNAL (DATA SOURCE | FILE FORMAT | LIBRARY)
-      | FULLTEXT CATALOG | MASK | MESSAGE TYPE | REMOTE SERVICE BINDING | ROUTE | EVENT SESSION | SECURITY POLICY)
-    | CREATE (DATABASE | DATABASE DDL EVENT NOTIFICATION | SCHEMA | TABLE | VIEW | SERVICE | TYPE | DEFAULT | AGGREGATE | ASSEMBLY | (SYMMETRIC | ASYMMETRIC) KEY 
-      | CERTIFICATE | CONTRACT | FULLTEXT CATALOG | FUNCTION | MESSAGE TYPE | PROCEDURE | QUEUE | REMOTE SERVICE BINDING | ROLE | ROUTE | RULE | SYNONYM | XML SCHEMA COLLECTION)
+    : ADMINISTER DATABASE BULK OPERATIONS | ALTER | ALTER TRACE
+    | ALTER ANY (APPLICATION ROLE | ASSEMBLY | (SYMMETRIC | ASYMMETRIC | COLUMN ENCRYPTION) KEY | CERTIFICATE
+    | CONNECTION | COLUMN MASTER KEY DEFINITION | CONTRACT
+    | DATABASE (AUDIT | DDL TRIGGER | EVENT NOTIFICATION | EVENT SESSION | SCOPED CONFIGURATION)?
+    | DATASPACE | EVENT (NOTIFICATION | SESSION) | EXTERNAL (DATA SOURCE | FILE FORMAT | LIBRARY) | FULLTEXT CATALOG | MASK | MESSAGE TYPE
+    | REMOTE SERVICE BINDING | ROLE | ROUTE | SERVER AUDIT | SCHEMA | SECURITY POLICY | SERVICE | USER)
+    | AUTHENTICATE SERVER? | BACKUP (DATABASE | LOG) | CHECKPOINT | CONNECT | CONNECT REPLICATION? | CONTROL SERVER?
+    | CREATE (AGGREGATE | ASSEMBLY | (SYMMETRIC | ASYMMETRIC) KEY | CERTIFICATE | CONTRACT | DATABASE | DATABASE? DDL EVENT NOTIFICATION
+    | DEFAULT | FULLTEXT CATALOG | FUNCTION | MESSAGE TYPE | PROCEDURE | QUEUE | REMOTE SERVICE BINDING | ROLE | ROUTE | RULE | SCHEMA
+    | SERVICE | SYNONYM | TABLE | TYPE | VIEW | XML SCHEMA COLLECTION)
+    | DELETE | EXECUTE | EXECUTE ANY? EXTERNAL SCRIPT | INSERT | KILL DATABASE CONNECTION | REFERENCES | SELECT | SHOWPLAN | SUBSCRIBE QUERY NOTIFICATIONS
+    | TAKE OWNERSHIP | UNMASK | UPDATE
+    | VIEW ANY COLUMN (MASTER | ENCRYPTION) KEY DEFINITION
     | CREATE ANY (DATABASE | EXTERNAL LIBRARY)
-    | VIEW ((DATABASE | SERVER) STATE | DDL EVENT NOTIFICATION)
-    | VIEW ANY (COLUMN (MASTER | ENCRYPTION) KEY DEFINITION | DEFINITION)
-    | EXECUTE ANY EXTERNAL SCRIPT | CONNECT REPLICATION? | KILL DATABASE CONNECTION
-    | BACKUP (DATABASE | LOG) 
-    | AUTHENTICATE SERVER? | SHOWPLAN | SUBSCRIBE QUERY NOTIFICATIONS | UNMASK | CHECKPOINT | ADMINISTER DATABASE BULK OPERATIONS
+    | VIEW (DATABASE | SERVER) STATE | VIEW ANY? DEFINITION
+    | 
     ;
 
 databasePrincipalPermission
-    : IMPERSONATE | ALTER ANY (USER | APPLICATION? ROLE)
+    : databaseUserPermission | databaseRolePermission | applicationRolePermission
+    ;
+
+databaseUserPermission
+    : CONTROL | IMPERSONATE | ALTER | VIEW DEFINITION | ALTER ANY USER
+    ;
+
+databaseRolePermission
+    : CONTROL | TAKE OWNERSHIP | ALTER | VIEW DEFINITION | ALTER ANY ROLE
+    ;
+
+applicationRolePermission
+    : CONTROL | ALTER | VIEW DEFINITION | ALTER ANY APPLICATION ROLE
+    ;
+
+databaseScopedCredentialPermission
+    : CONTROL | TAKE OWNERSHIP | ALTER | REFERENCES | VIEW DEFINITION
     ;
 
 schemaPermission
-    : ALTER ANY SCHEMA | CREATE SEQUENCE | VIEW CHANGE TRACKING
+    : ALTER | CONTROL | CREATE SEQUENCE | DELETE | EXECUTE | INSERT | REFERENCES | SELECT | TAKE OWNERSHIP
+    | UPDATE | VIEW CHANGE TRACKING | VIEW DEFINITION | ALTER ANY SCHEMA
+    ;
+
+searchPropertyListPermission
+    : ALTER | CONTROL | REFERENCES | TAKE OWNERSHIP | VIEW DEFINITION | ALTER ANY FULLTEXT CATALOG
     ;
 
 serviceBrokerPermission
-    : ALTER ANY (CONTRACT | MESSAGE TYPE | REMOTE SERVICE BINDING | ROUTE | SERVICE)
+    : serviceBrokerContractsPermission | serviceBrokerMessageTypesPermission | serviceBrokerRemoteServiceBindingsPermission
+    | serviceBrokerRoutesPermission | serviceBrokerServicesPermission
+    ;
+
+serviceBrokerContractsPermission
+    : CONTROL | TAKE OWNERSHIP | ALTER | REFERENCES | VIEW DEFINITION | ALTER ANY CONTRACT
+    ;
+
+serviceBrokerMessageTypesPermission
+    : CONTROL | TAKE OWNERSHIP | ALTER | REFERENCES | VIEW DEFINITION | ALTER ANY MESSAGE TYPE
+    ;
+
+serviceBrokerRemoteServiceBindingsPermission
+    : CONTROL | TAKE OWNERSHIP | ALTER | VIEW DEFINITION | ALTER ANY REMOTE SERVICE BINDING
+    ;
+
+serviceBrokerRoutesPermission
+    : CONTROL | TAKE OWNERSHIP | ALTER | VIEW DEFINITION | ALTER ANY ROUTE
+    ;
+
+serviceBrokerServicesPermission
+    : CONTROL | TAKE OWNERSHIP | SEND | ALTER | VIEW DEFINITION | ALTER ANY SERVICE
     ;
 
 endpointPermission
-    : ALTER ANY ENDPOINT
+    : ALTER | CONNECT | CONTROL SERVER? | TAKE OWNERSHIP | VIEW ANY? DEFINITION | ALTER ANY ENDPOINT
     ;
 
 certificatePermission
-    : ALTER ANY CERTIFICATE
+    : CONTROL | TAKE OWNERSHIP | ALTER | REFERENCES | VIEW DEFINITION | ALTER ANY CERTIFICATE
     ;
 
 symmetricKeyPermission
-    : ALTER ANY SYMMETRIC KEY
+    : ALTER | CONTROL | REFERENCES | TAKE OWNERSHIP | VIEW DEFINITION | ALTER ANY SYMMETRIC KEY
     ;
 
 asymmetricKeyPermission
-    : ALTER ANY ASYMMETRIC KEY
+    : CONTROL | TAKE OWNERSHIP | ALTER | REFERENCES | VIEW DEFINITION | ALTER ANY ASYMMETRIC KEY
     ;
 
 assemblyPermission
-    : ALTER ANY ASSEMBLY
+    : CONTROL | TAKE OWNERSHIP | ALTER | REFERENCES | VIEW DEFINITION | ALTER ANY ASSEMBLY
     ;
 
 availabilityGroupPermission
-    : ALTER ANY AVAILABILITY GROUP | CONNECT
+    : ALTER | CONNECT | CONTROL SERVER? | TAKE OWNERSHIP | VIEW ANY? DEFINITION | ALTER ANY AVAILABILITY GROUP
     ;
 
 fullTextPermission
-    : ALTER ANY FULLTEXT CATALOG
+    : fullTextCatalogPermission | fullTextStoplistPermission
+    ;
+
+fullTextCatalogPermission
+    : CONTROL | TAKE OWNERSHIP | ALTER | REFERENCES | VIEW DEFINITION | ALTER ANY FULLTEXT CATALOG
+    ;
+
+fullTextStoplistPermission
+    : ALTER | CONTROL | REFERENCES | TAKE OWNERSHIP | VIEW DEFINITION | ALTER ANY FULLTEXT CATALOG
+    ;
+
+typePermission
+    : CONTROL | EXECUTE | REFERENCES | TAKE OWNERSHIP | VIEW DEFINITION
+    ;
+
+xmlSchemaCollectionPermission
+    : ALTER | CONTROL | EXECUTE | REFERENCES | TAKE OWNERSHIP | VIEW DEFINITION
+    ;
+
+systemObjectPermission
+    : SELECT | EXECUTE
     ;
 
 class_
     : IDENTIFIER_ COLON_ COLON_
     ;
 
+classItem
+    : ASSEMBLY | ASYMMETRIC KEY | AVAILABILITY GROUP | CERTIFICATE | USER | ROLE | APPLICATION ROLE
+    | DATABASE SCOPED CREDENTIAL | ENDPOINT | FULLTEXT (CATALOG | STOPLIST) | OBJECT | SCHEMA | SEARCH PROPERTY LIST
+    | LOGIN | SERVER ROLE | CONTRACT | MESSAGE TYPE | REMOTE SERVICE BINDING | ROUTE | SERVICE | SYMMETRIC KEY
+    | SELECT | EXECUTE | TYPE | XML SCHEMA COLLECTION
+    ;
+
 classType
-    : (LOGIN | DATABASE | OBJECT | ROLE | SCHEMA | USER) COLON_ COLON_
+    : LOGIN | DATABASE | OBJECT | ROLE | SCHEMA | USER
     ;
 
 roleClause
     : ignoredIdentifiers
     ;
 
+setUser
+    : SETUSER (stringLiterals (WITH NORESET)?)?
+    ;
+
 createUser
     : CREATE USER
+    (createUserLoginClause 
+    | createUserWindowsPrincipalClause 
+    | createUserLoginWindowsPrincipalClause
+    | createUserWithoutLoginClause
+    | createUserFromExternalProviderClause
+    | createUserWithDefaultSchema
+    | createUserWithAzureActiveDirectoryPrincipalClause
+    | userName)?
+    ;
+
+createUserLoginClause
+    : userName ((FOR | FROM) LOGIN identifier)? (WITH limitedOptionsList (COMMA_ limitedOptionsList)*)?
+    ;
+
+createUserWindowsPrincipalClause
+    : windowsPrincipal (WITH optionsList (COMMA_ optionsList)*)?
+    | userName WITH PASSWORD EQ_ stringLiterals (COMMA_ optionsList (COMMA_ optionsList)*)?
+    | azureActiveDirectoryPrincipal FROM EXTERNAL PROVIDER
+    ;
+
+createUserLoginWindowsPrincipalClause
+    : ((windowsPrincipal ((FOR | FROM) LOGIN windowsPrincipal)?) | (userName (FOR | FROM) LOGIN windowsPrincipal))
+    (WITH limitedOptionsList (COMMA_ limitedOptionsList)*)?
+    ;
+
+createUserWithoutLoginClause
+    : userName (WITHOUT LOGIN (WITH limitedOptionsList (COMMA_ limitedOptionsList)*)?
+    | (FOR | FROM) CERTIFICATE identifier
+    | (FOR | FROM) ASYMMETRIC KEY identifier)
+    ;
+
+optionsList
+    : DEFAULT_SCHEMA EQ_ schemaName
+    | DEFAULT_LANGUAGE EQ_ (NONE | identifier)
+    | SID EQ_ (NCHAR_TEXT | HEX_DIGIT_)
+    | ALLOW_ENCRYPTED_VALUE_MODIFICATIONS EQ_ (ON | OFF)?
+    ;
+
+limitedOptionsList
+    : DEFAULT_SCHEMA EQ_ schemaName
+    | DEFAULT_LANGUAGE EQ_ (NONE | identifier)
+    | ALLOW_ENCRYPTED_VALUE_MODIFICATIONS EQ_ (ON | OFF)?
+    ;
+
+createUserFromExternalProviderClause
+    : userName ((FOR | FROM) LOGIN identifier)? | FROM EXTERNAL PROVIDER (WITH limitedOptionsList (COMMA_ limitedOptionsList)*)?
+    ;
+
+createUserWithDefaultSchema
+    : userName ((FOR | FROM) LOGIN identifier | WITHOUT LOGIN)? (WITH DEFAULT_SCHEMA EQ_ schemaName)?
+    ;
+
+createUserWithAzureActiveDirectoryPrincipalClause
+    : azureActiveDirectoryPrincipal FROM EXTERNAL PROVIDER (WITH DEFAULT_SCHEMA EQ_ schemaName)?
+    ;
+
+windowsPrincipal
+    : userName
+    ;
+
+azureActiveDirectoryPrincipal
+    : userName
+    ;
+
+userName
+    : ignoredNameIdentifier
+    ;
+
+ignoredNameIdentifier
+    : identifier (DOT_ identifier)?
     ;
 
 dropUser
@@ -173,19 +338,28 @@ dropUser
     ;
 
 alterUser
-    : ALTER USER
+    : ALTER USER userName (WITH setItem (COMMA_ setItem)* | FROM EXTERNAL PROVIDER)
+    ;
+
+setItem
+    : NAME EQ_ userName
+    | DEFAULT_SCHEMA EQ_ (schemaName | NULL)
+    | LOGIN EQ_ identifier
+    | PASSWORD EQ_ stringLiterals (OLD_PASSWORD EQ_ stringLiterals)?
+    | DEFAULT_LANGUAGE EQ_ (NONE | identifier)
+    | ALLOW_ENCRYPTED_VALUE_MODIFICATIONS EQ_ (ON | OFF)?
     ;
 
 createRole
-    : CREATE ROLE
+    : CREATE ROLE name (AUTHORIZATION name)?
     ;
 
 dropRole
-    : DROP ROLE
+    : DROP ROLE (IF EXISTS)? name
     ;
 
 alterRole
-    : ALTER ROLE
+    : ALTER ROLE name (ADD MEMBER principal | DROP MEMBER principal | WITH NAME EQ_ name)
     ;
 
 createLogin

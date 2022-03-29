@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.spring.boot.datasource;
 
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.mock.env.MockEnvironment;
@@ -34,22 +35,21 @@ public final class DataSourceMapSetterTest {
     public void assetGetDataSourceMap() throws SQLException {
         MockEnvironment mockEnvironment = new MockEnvironment();
         mockEnvironment.setProperty("spring.shardingsphere.datasource.names", "ds0,ds1");
-        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds0.url", "jdbc:h2:mem:ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
-        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds0.type", "org.apache.commons.dbcp2.BasicDataSource");
+        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds0.url", "jdbc:mock://127.0.0.1/ds_0");
+        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds0.type", MockedDataSource.class.getName());
         mockEnvironment.setProperty("spring.shardingsphere.datasource.ds0.username", "sa");
-        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds0.max-total", "50");
         mockEnvironment.setProperty("spring.shardingsphere.datasource.ds0.password", "");
-        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds1.url", "jdbc:h2:mem:ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
-        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds1.type", "org.apache.commons.dbcp2.BasicDataSource");
+        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds0.maxPoolSize", "50");
+        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds1.url", "jdbc:mock://127.0.0.1/ds_1");
+        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds1.type", MockedDataSource.class.getName());
         mockEnvironment.setProperty("spring.shardingsphere.datasource.ds1.username", "sa");
-        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds1.max-total", "150");
         mockEnvironment.setProperty("spring.shardingsphere.datasource.ds1.password", "");
+        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds1.max-pool-size", "150");
         StandardEnvironment standardEnvironment = new StandardEnvironment();
         standardEnvironment.merge(mockEnvironment);
         Map<String, DataSource> dataSourceMap = DataSourceMapSetter.getDataSourceMap(standardEnvironment);
         assertThat(dataSourceMap.size(), is(2));
-        assertThat(dataSourceMap.get("ds0").getConnection().getMetaData().getUserName(), is("SA"));
-        assertThat(dataSourceMap.get("ds1").getConnection().getMetaData().getUserName(), is("SA"));
+        assertThat(dataSourceMap.get("ds0").getConnection().getMetaData().getUserName(), is("sa"));
+        assertThat(dataSourceMap.get("ds1").getConnection().getMetaData().getUserName(), is("sa"));
     }
 }
-

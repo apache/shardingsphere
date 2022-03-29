@@ -16,13 +16,13 @@ rules:
 - !SHARDING
   tables: # 数据分片规则配置
     <logic-table-name> (+): # 逻辑表名称
-      actualDataNodes (?): # 由数据源名 + 表名组成（参考Inline语法规则）
+      actualDataNodes (?): # 由数据源名 + 表名组成（参考 Inline 语法规则）
       databaseStrategy (?): # 分库策略，缺省表示使用默认分库策略，以下的分片策略只能选其一
         standard: # 用于单分片键的标准分片场景
           shardingColumn: # 分片列名称
           shardingAlgorithmName: # 分片算法名称
         complex: # 用于多分片键的复合分片场景
-          shardingColumns: #分片列名称，多个列以逗号分隔
+          shardingColumns: # 分片列名称，多个列以逗号分隔
           shardingAlgorithmName: # 分片算法名称
         hint: # Hint 分片策略
           shardingAlgorithmName: # 分片算法名称
@@ -180,8 +180,8 @@ shardingRule:
       databaseStrategy: # 分库策略，缺省表示使用默认分库策略，以下的分片策略只能选其一
         standard: # 用于单分片键的标准分片场景
           shardingColumn: # 分片列名称
-          preciseAlgorithmClassName: # 精确分片算法类名称，用于 = 和 IN。。该类需实现 PreciseShardingAlgorithm 接口并提供无参数的构造器
-          rangeAlgorithmClassName: # 范围分片算法类名称，用于 BETWEEN，可选。。该类需实现 RangeShardingAlgorithm 接口并提供无参数的构造器
+          preciseAlgorithmClassName: # 精确分片算法类名称，用于 = 和 IN。该类需实现 PreciseShardingAlgorithm 接口并提供无参数的构造器
+          rangeAlgorithmClassName: # 范围分片算法类名称，用于 BETWEEN，可选。该类需实现 RangeShardingAlgorithm 接口并提供无参数的构造器
         complex: # 用于多分片键的复合分片场景
           shardingColumns: # 分片列名称，多个列以逗号分隔
           algorithmClassName: # 复合分片算法类名称。该类需实现 ComplexKeysShardingAlgorithm 接口并提供无参数的构造器
@@ -195,7 +195,7 @@ shardingRule:
       keyGenerator:
         column: # 自增列名称，缺省表示不使用自增主键生成器
         type: # 自增列值生成器类型，缺省表示使用默认自增列值生成器。可使用用户自定义的列值生成器或选择内置类型：SNOWFLAKE/UUID
-        props: # 属性配置, 注意：使用 SNOWFLAKE 算法，需要配置 worker.id 与 max.tolerate.time.difference.milliseconds 属性。若使用此算法生成值作分片值，建议配置 max.vibration.offset 属性
+        props: # 属性配置， 注意：使用 SNOWFLAKE 算法，需要配置 max.tolerate.time.difference.milliseconds 属性。若使用此算法生成值作分片值，建议配置 max.vibration.offset 属性
           <property-name>: # 属性名称
 
   bindingTables: # 绑定表规则列表
@@ -210,10 +210,10 @@ shardingRule:
   defaultDataSourceName: # 未配置分片规则的表将通过默认数据源定位  
   defaultDatabaseStrategy: # 默认数据库分片策略，同分库策略
   defaultTableStrategy: # 默认表分片策略，同分库策略
-  defaultKeyGenerator: # 默认的主键生成算法 如果没有设置,默认为 SNOWFLAKE 算法
+  defaultKeyGenerator: # 默认的主键生成算法，如果没有设置，默认为 SNOWFLAKE 算法
     type: # 默认自增列值生成器类型，缺省将使用 org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator。可使用用户自定义的列值生成器或选择内置类型：SNOWFLAKE/UUID
     props:
-      <property-name>: # 自增列值生成器属性配置, 比如 SNOWFLAKE 算法的 worker.id 与 max.tolerate.time.difference.milliseconds
+      <property-name>: # 自增列值生成器属性配置，比如 SNOWFLAKE 算法的 max.tolerate.time.difference.milliseconds
 
   masterSlaveRules: # 读写分离规则，详见读写分离部分
     <data_source_name>: # 数据源名称，需要与真实数据源匹配，可配置多个 data_source_name
@@ -226,7 +226,7 @@ shardingRule:
 props: # 属性配置
   sql.show: # 是否开启 SQL 显示，默认值: false
   executor.size: # 工作线程数量，默认值: CPU 核数
-  max.connections.size.per.query: # 每个查询可以打开的最大连接数量,默认为 1
+  max.connections.size.per.query: # 每个查询可以打开的最大连接数量，默认为 1
   check.table.metadata.enabled: # 是否在启动时检查分表元数据一致性，默认值: false
 ```
 
@@ -266,7 +266,7 @@ encryptRule:
   encryptors:
     <encryptor-name>:
       type: # 加解密器类型，可自定义或选择内置类型：MD5/AES 
-      props: # 属性配置, 注意：使用 AES 加密器，需要配置 AES 加密器的 KEY 属性：aes.key.value
+      props: # 属性配置，注意：使用 AES 加密器，需要配置 AES 加密器的 KEY 属性：aes.key.value
         aes.key.value:
   tables:
     <table-name>:
@@ -345,7 +345,7 @@ dataSources: # 配置数据源列表,必须是有效的 jdbc 配置,目前仅支
     password: password
 masterSlaveRule: # 这里配置这个规则的话,相当于是全局读写分离配置
   name: ds_rw # 名称,合法的字符串即可,但如果涉及到在读写分离的基础上设置分库分表,则名称需要有意义才可以,另外,虽然目前没有强制要求,但主从库配置需要配置在实际关联的主从库上,如果配置的数据源之间主从是断开的状态,那么可能会发生写入的数据对于只读会话无法读取到的问题
-  # 如果一个会话发生了写入并且没有提交(显式打开事务),sharding sphere 在后续的路由中,select 都会在主库执行,直到会话提交
+  # 如果一个会话发生了写入并且没有提交(显式打开事务)， ShardingSphere 在后续的路由中,select 都会在主库执行,直到会话提交
   masterDataSourceName: master_ds_0 # 主库的 DataSource 名称
   slaveDataSourceNames: # 从库的 DataSource 列表,至少需要有一个
     - slave_ds_0
@@ -388,12 +388,12 @@ shardingRule: # sharding 的配置
       preciseShardingAlgorithm: # preciseShardingAlgorithm 接口的实现类
       rangeShardingAlgorithm: # rangeShardingAlgorithm 接口的实现类
   defaultTableStrategy: # 配置参考 defaultDatabaseShardingStrategy,区别在于,inline 算法的配置中,algorithmExpression 的配置算法结果需要是实际的物理表名称,而非数据源名称
-  defaultKeyGenerator: # 默认的主键生成算法 如果没有设置,默认为 SNOWFLAKE 算法
+  defaultKeyGenerator: # 默认的主键生成算法，如果没有设置，默认为 SNOWFLAKE 算法
     column: # 自增键对应的列名称
     type: # 自增键的类型,主要用于调用内置的主键生成算法有三个可用值:SNOWFLAKE(时间戳 +worker id+ 自增 id),UUID(java.util.UUID 类生成的随机 UUID),LEAF,其中 Snowflake 算法与 UUID 算法已经实现,LEAF 目前(2018-01-14)尚未实现
     className: # 非内置的其他实现了 KeyGenerator 接口的类,需要注意,如果设置这个,就不能设置 type,否则 type 的设置会覆盖 class 的设置
     props:
-    # 定制算法需要设置的参数,比如 SNOWFLAKE 算法的 worker.id 与 max.tolerate.time.difference.milliseconds
+    # 定制算法需要设置的参数,比如 SNOWFLAKE 算法的 max.tolerate.time.difference.milliseconds
   tables: # 配置表 sharding 的主要位置
     sharding_t1:
       actualDataNodes: master_test_${0..1}.t_order${0..1} # sharding 表对应的数据源以及物理名称,需要用表达式处理,表示表实际上在哪些数据源存在,配置示例中,意思是总共存在 4 个分片 master_test_0.t_order0,master_test_0.t_order1,master_test_1.t_order0,master_test_1.t_order1
@@ -551,7 +551,7 @@ shardingRule:
 2. 独立使用读写分离支持 SQL 透传。
 3. 同一线程且同一数据库连接内，如有写入操作，以后的读操作均从主库读取，用于保证数据一致性。
 4. Spring 命名空间。
-5. 基于 Hin t的强制主库路由。
+5. 基于 Hint 的强制主库路由。
 
 #### 不支持范围
 

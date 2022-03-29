@@ -20,6 +20,9 @@ package org.apache.shardingsphere.proxy.backend.text.data.impl;
 import io.vertx.core.Future;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
@@ -68,13 +71,26 @@ public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBacke
     }
     
     private void prepareDatabaseCommunicationEngine() throws RequiredResourceMissedException {
-        if (!ProxyContext.getInstance().getMetaData(connectionSession.getSchemaName()).hasDataSource()) {
+        boolean isSystemSchema = containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames());
+        if (!isSystemSchema && !ProxyContext.getInstance().getMetaData(connectionSession.getSchemaName()).hasDataSource()) {
             throw new RequiredResourceMissedException(connectionSession.getSchemaName());
         }
-        if (!ProxyContext.getInstance().getMetaData(connectionSession.getSchemaName()).isComplete()) {
+        if (!isSystemSchema && !ProxyContext.getInstance().getMetaData(connectionSession.getSchemaName()).isComplete()) {
             throw new RuleNotExistedException();
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
+    }
+    
+    private boolean containsSystemSchema(final DatabaseType databaseType, final Collection<String> schemaNames) {
+        if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
+            for (String each : schemaNames) {
+                if (!databaseType.getSystemSchemas().contains(each)) {
+                    continue;
+                }
+                return true;
+            }
+        }
+        return databaseType.getSystemSchemas().contains(connectionSession.getSchemaName());
     }
     
     @Override

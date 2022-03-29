@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.datetime.database.DatabaseDatetimeServiceDelegate
+org.apache.shardingsphere.datetime.database.DatabaseDatetimeService

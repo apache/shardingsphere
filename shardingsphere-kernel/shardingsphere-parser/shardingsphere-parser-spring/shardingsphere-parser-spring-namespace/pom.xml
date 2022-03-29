@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-parser-spring</artifactId>
-        <version>5.0.1-SNAPSHOT</version>
+        <version>5.1.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-parser-spring-namespace</artifactId>
     <name>${project.artifactId}</name>
@@ -39,7 +39,7 @@
             <artifactId>shardingsphere-jdbc-spring-namespace-infra</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
@@ -49,5 +49,4 @@
             <artifactId>spring-test</artifactId>
         </dependency>
     </dependencies>
-    
 </project>

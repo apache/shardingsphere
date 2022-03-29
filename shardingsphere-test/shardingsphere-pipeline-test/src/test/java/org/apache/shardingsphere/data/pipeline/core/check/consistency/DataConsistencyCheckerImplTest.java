@@ -22,10 +22,11 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureDataConsistencyCheckAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
-import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -44,13 +45,17 @@ import static org.junit.Assert.assertTrue;
 
 public final class DataConsistencyCheckerImplTest {
     
+    @BeforeClass
+    public static void beforeClass() {
+        PipelineContextUtil.mockModeConfigAndContextManager();
+    }
+    
     @Test
     public void assertCountAndDataCheck() {
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(ResourceUtil.mockJobConfig());
-        initTableData(jobContext.getTaskConfigs().iterator().next().getDumperConfig().getDataSourceConfig());
-        initTableData(jobContext.getTaskConfigs().iterator().next().getImporterConfig().getDataSourceConfig());
-        PipelineContextUtil.mockContextManager();
-        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobContext);
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration());
+        initTableData(jobContext.getTaskConfig().getDumperConfig().getDataSourceConfig());
+        initTableData(jobContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
+        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobContext.getJobConfig());
         Map<String, DataConsistencyCheckResult> resultMap = dataConsistencyChecker.checkRecordsCount();
         assertTrue(resultMap.get("t_order").isRecordsCountMatched());
         assertThat(resultMap.get("t_order").getSourceRecordsCount(), is(resultMap.get("t_order").getTargetRecordsCount()));
@@ -72,8 +77,8 @@ public final class DataConsistencyCheckerImplTest {
     @Test(expected = InvocationTargetException.class)
     @SneakyThrows(ReflectiveOperationException.class)
     public void assertCheckDatabaseTypeSupported() {
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(ResourceUtil.mockJobConfig());
-        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobContext);
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration());
+        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobContext.getJobConfig());
         Method method = dataConsistencyChecker.getClass().getDeclaredMethod("checkDatabaseTypeSupportedOrNot", Collection.class, String.class);
         method.setAccessible(true);
         method.invoke(dataConsistencyChecker, Arrays.asList("MySQL", "PostgreSQL"), "H2");

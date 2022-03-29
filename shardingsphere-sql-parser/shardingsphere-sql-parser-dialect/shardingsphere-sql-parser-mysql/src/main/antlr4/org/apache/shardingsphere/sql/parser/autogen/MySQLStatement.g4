@@ -17,11 +17,10 @@
 
 grammar MySQLStatement;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement, RLStatement;
+import Comments, DDLStatement, TCLStatement, DCLStatement, RLStatement;
 
 execute
-    : (table
-    | select
+    : (select
     | insert
     | update
     | delete
@@ -53,7 +52,9 @@ execute
     | alterResourceGroup
     | createResourceGroup
     | dropResourceGroup
-    | preparedStatement
+    | prepare
+    | executeStmt
+    | deallocate
     | setTransaction
     | beginTransaction
     | setAutoCommit
@@ -70,9 +71,6 @@ execute
     | dropRole
     | setDefaultRole
     | setRole
-    | createTablespaceInnodb
-    | createTablespaceNdb
-    | dropTablespace
     | createSRSStatement
     | dropSRSStatement
     | flush

@@ -25,11 +25,13 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.api.job.JobSubType;
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
+import org.apache.shardingsphere.data.pipeline.api.job.RuleAlteredJobId;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
 import org.apache.shardingsphere.spi.required.RequiredSPIRegistry;
 
-import java.util.Collection;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Collections;
 
 /**
  * Scaling job configuration.
@@ -61,21 +63,20 @@ public final class JobConfiguration {
         HandleConfiguration handleConfig = getHandleConfig();
         if (null == handleConfig || null == handleConfig.getJobShardingDataNodes()) {
             RuleAlteredJobConfigurationPreparer preparer = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobConfigurationPreparer.class);
-            handleConfig = preparer.createHandleConfiguration(pipelineConfig);
+            handleConfig = preparer.createHandleConfiguration(pipelineConfig, getWorkflowConfig());
             this.handleConfig = handleConfig;
         }
         if (null == handleConfig.getJobId()) {
-            // TODO use uuid; update pattern
-            handleConfig.setJobId(String.valueOf(System.nanoTime() - ThreadLocalRandom.current().nextLong(100_0000)));
+            handleConfig.setJobId(generateJobId());
         }
         if (Strings.isNullOrEmpty(handleConfig.getSourceDatabaseType())) {
             PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
-                    getPipelineConfig().getSource().getType(), getPipelineConfig().getSource().getParameter());
+                    pipelineConfig.getSource().getType(), pipelineConfig.getSource().getParameter());
             handleConfig.setSourceDatabaseType(sourceDataSourceConfig.getDatabaseType().getName());
         }
         if (Strings.isNullOrEmpty(handleConfig.getTargetDatabaseType())) {
             PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
-                    getPipelineConfig().getTarget().getType(), getPipelineConfig().getTarget().getParameter());
+                    pipelineConfig.getTarget().getType(), pipelineConfig.getTarget().getParameter());
             handleConfig.setTargetDatabaseType(targetDataSourceConfig.getDatabaseType().getName());
         }
         if (null == handleConfig.getJobShardingItem()) {
@@ -83,13 +84,16 @@ public final class JobConfiguration {
         }
     }
     
-    /**
-     * Split job configuration to task configurations.
-     *
-     * @return task configurations
-     */
-    public Collection<TaskConfiguration> buildTaskConfigs() {
-        RuleAlteredJobConfigurationPreparer preparer = RequiredSPIRegistry.getRegisteredService(RuleAlteredJobConfigurationPreparer.class);
-        return preparer.createTaskConfigurations(pipelineConfig, handleConfig);
+    private String generateJobId() {
+        RuleAlteredJobId jobId = new RuleAlteredJobId();
+        // TODO type, subTypes
+        jobId.setType(JobType.RULE_ALTERED.getValue());
+        jobId.setFormatVersion(RuleAlteredJobId.CURRENT_VERSION);
+        jobId.setSubTypes(Collections.singletonList(JobSubType.SCALING.getValue()));
+        WorkflowConfiguration workflowConfig = getWorkflowConfig();
+        jobId.setCurrentMetadataVersion(workflowConfig.getActiveVersion());
+        jobId.setNewMetadataVersion(workflowConfig.getNewVersion());
+        jobId.setSchemaName(workflowConfig.getSchemaName());
+        return jobId.marshal();
     }
 }

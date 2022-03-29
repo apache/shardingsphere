@@ -19,10 +19,17 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.concurrent.ConcurrentException;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 
@@ -34,6 +41,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
+@Slf4j
 // TODO extract JobContext
 public final class RuleAlteredJobContext {
     
@@ -45,7 +53,7 @@ public final class RuleAlteredJobContext {
     
     private JobProgress initProgress;
     
-    private final Collection<TaskConfiguration> taskConfigs;
+    private final TaskConfiguration taskConfig;
     
     private final Collection<InventoryTask> inventoryTasks = new LinkedList<>();
     
@@ -55,6 +63,22 @@ public final class RuleAlteredJobContext {
     
     private final RuleAlteredContext ruleAlteredContext;
     
+    private final PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
+    
+    private final LazyInitializer<PipelineDataSourceWrapper> sourceDataSourceLazyInitializer = new LazyInitializer<PipelineDataSourceWrapper>() {
+        @Override
+        protected PipelineDataSourceWrapper initialize() {
+            return dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig());
+        }
+    };
+    
+    private final LazyInitializer<PipelineTableMetaDataLoader> sourceMetaDataLoaderLazyInitializer = new LazyInitializer<PipelineTableMetaDataLoader>() {
+        @Override
+        protected PipelineTableMetaDataLoader initialize() throws ConcurrentException {
+            return new PipelineTableMetaDataLoader(sourceDataSourceLazyInitializer.get());
+        }
+    };
+    
     private RuleAlteredJobPreparer jobPreparer;
     
     public RuleAlteredJobContext(final JobConfiguration jobConfig) {
@@ -63,6 +87,34 @@ public final class RuleAlteredJobContext {
         jobConfig.buildHandleConfig();
         jobId = jobConfig.getHandleConfig().getJobId();
         shardingItem = jobConfig.getHandleConfig().getJobShardingItem();
-        taskConfigs = jobConfig.buildTaskConfigs();
+        taskConfig = RuleAlteredJobWorker.buildTaskConfig(jobConfig.getPipelineConfig(), jobConfig.getHandleConfig(), ruleAlteredContext.getOnRuleAlteredActionConfig());
+    }
+    
+    /**
+     * Get source data source.
+     *
+     * @return source data source
+     */
+    @SneakyThrows(ConcurrentException.class)
+    public PipelineDataSourceWrapper getSourceDataSource() {
+        return sourceDataSourceLazyInitializer.get();
+    }
+    
+    /**
+     * Get source metadata loader.
+     *
+     * @return source metadata loader
+     */
+    @SneakyThrows(ConcurrentException.class)
+    public PipelineTableMetaDataLoader getSourceMetaDataLoader() {
+        return sourceMetaDataLoaderLazyInitializer.get();
+    }
+    
+    /**
+     * Release resources.
+     */
+    public void close() {
+        log.info("close...");
+        dataSourceManager.close();
     }
 }

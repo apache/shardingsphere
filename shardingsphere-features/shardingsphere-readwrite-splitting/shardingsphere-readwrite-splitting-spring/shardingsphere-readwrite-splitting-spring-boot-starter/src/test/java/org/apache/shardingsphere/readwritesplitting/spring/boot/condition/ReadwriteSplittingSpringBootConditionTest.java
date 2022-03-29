@@ -49,7 +49,7 @@ public final class ReadwriteSplittingSpringBootConditionTest {
     @Test
     public void assertMatch() {
         MockEnvironment mockEnvironment = new MockEnvironment();
-        mockEnvironment.setProperty("spring.shardingsphere.rules.readwrite-splitting.data-sources.pr_ds.primary-data-source-name", "primary_ds");
+        mockEnvironment.setProperty("spring.shardingsphere.rules.readwrite-splitting.data-sources.readwrite_ds.primary-data-source-name", "primary_ds");
         ConditionContext context = mock(ConditionContext.class);
         AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
         when(context.getEnvironment()).thenReturn(mockEnvironment);

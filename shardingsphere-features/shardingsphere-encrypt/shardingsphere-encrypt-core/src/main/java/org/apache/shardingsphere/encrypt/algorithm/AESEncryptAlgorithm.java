@@ -23,6 +23,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -60,7 +61,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     
     @SneakyThrows(GeneralSecurityException.class)
     @Override
-    public String encrypt(final Object plainValue) {
+    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         if (null == plainValue) {
             return null;
         }
@@ -70,7 +71,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     
     @SneakyThrows(GeneralSecurityException.class)
     @Override
-    public Object decrypt(final String cipherValue) {
+    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
         if (null == cipherValue) {
             return null;
         }

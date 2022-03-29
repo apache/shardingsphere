@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-grammar BaseRule;
+parser grammar BaseRule;
 
-import Keyword, PostgreSQLKeyword, Symbol, Literals;
+options {
+    tokenVocab = ModeLexer;
+}
 
 parameterMarker
     : QUESTION_ literalsType?
@@ -205,6 +207,7 @@ unreservedWord
     | EXECUTE
     | EXPLAIN
     | EXPRESSION
+    | EXTENDED
     | EXTENSION
     | EXTERNAL
     | FAMILY
@@ -257,6 +260,7 @@ unreservedWord
     | LOCK
     | LOCKED
     | LOGGED
+    | MAIN
     | MAPPING
     | MATCH
     | MATERIALIZED
@@ -301,6 +305,7 @@ unreservedWord
     | PARTITION
     | PASSING
     | PASSWORD
+    | PLAIN
     | PLANS
     | POLICY
     | PRECEDING
@@ -870,6 +875,7 @@ funcName
 aexprConst
     : NUMBER_
     | STRING_
+    | BEGIN_DOLLAR_STRING_CONSTANT DOLLAR_TEXT* END_DOLLAR_STRING_CONSTANT
     | funcName STRING_
     | funcName LP_ funcArgList sortClause? RP_ STRING_
     | TRUE
@@ -1383,7 +1389,7 @@ funcType
     ;
 
 selectWithParens
-    : 'Default does not match anything'
+    : DEFAULT_DOES_NOT_MATCH_ANYTHING
     ;
 
 dataType

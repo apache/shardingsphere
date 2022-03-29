@@ -30,12 +30,12 @@ public final class CommonFixtureTableMetaDataBuilder implements RuleBasedTableMe
     
     @Override
     public Map<String, TableMetaData> load(final Collection<String> tableNames, final CommonFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
-        return Collections.singletonMap("t_order_new", new TableMetaData("t_order_new"));
+        return Collections.singletonMap("t_order_new", new TableMetaData("t_order_new", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
     }
     
     @Override
-    public TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final CommonFixtureRule rule) {
-        return tableMetaData;
+    public Map<String, TableMetaData> decorate(final Map<String, TableMetaData> tableMetaDataMap, final CommonFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+        return tableMetaDataMap;
     }
     
     @Override

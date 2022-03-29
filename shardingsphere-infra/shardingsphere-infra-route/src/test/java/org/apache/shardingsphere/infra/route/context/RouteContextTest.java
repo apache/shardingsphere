@@ -49,12 +49,20 @@ public final class RouteContextTest {
     
     private RouteContext multiRouteContext;
     
+    private RouteContext notContainsTableShardingRouteContext;
+    
     @Before
     public void setUp() {
         singleRouteContext = new RouteContext();
         multiRouteContext = new RouteContext();
+        notContainsTableShardingRouteContext = new RouteContext();
         multiRouteContext.getRouteUnits().addAll(Arrays.asList(mockRouteUnit(DATASOURCE_NAME_0), mockRouteUnit(DATASOURCE_NAME_1)));
         singleRouteContext.getRouteUnits().add(mockRouteUnit(DATASOURCE_NAME_0));
+        notContainsTableShardingRouteContext.getRouteUnits().addAll(Arrays.asList(mockDatabaseShardingOnlyRouteUnit(DATASOURCE_NAME_0), mockDatabaseShardingOnlyRouteUnit(DATASOURCE_NAME_1)));
+    }
+    
+    private RouteUnit mockDatabaseShardingOnlyRouteUnit(final String datasourceName) {
+        return new RouteUnit(new RouteMapper(datasourceName, datasourceName), Collections.singletonList(new RouteMapper(LOGIC_TABLE, LOGIC_TABLE)));
     }
     
     private RouteUnit mockRouteUnit(final String datasourceName) {
@@ -109,5 +117,16 @@ public final class RouteContextTest {
     @Test
     public void assertTableMapperNotFound() {
         assertFalse(singleRouteContext.findTableMapper(DATASOURCE_NAME_1, ACTUAL_TABLE).isPresent());
+    }
+    
+    @Test
+    public void assertContainsTableShardingWhenContainsTableSharding() {
+        assertTrue(singleRouteContext.containsTableSharding());
+        assertTrue(multiRouteContext.containsTableSharding());
+    }
+    
+    @Test
+    public void assertContainsTableShardingWhenNotContainsTableSharding() {
+        assertFalse(notContainsTableShardingRouteContext.containsTableSharding());
     }
 }

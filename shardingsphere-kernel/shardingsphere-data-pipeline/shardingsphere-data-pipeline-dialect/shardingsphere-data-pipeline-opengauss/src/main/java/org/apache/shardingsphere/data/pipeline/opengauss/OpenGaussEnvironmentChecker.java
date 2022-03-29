@@ -18,18 +18,12 @@
 package org.apache.shardingsphere.data.pipeline.opengauss;
 
 import org.apache.shardingsphere.data.pipeline.opengauss.prepare.datasource.OpenGaussDataSourcePreparer;
-import org.apache.shardingsphere.data.pipeline.postgresql.check.datasource.PostgreSQLDataSourceChecker;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
 
 /**
  * Environment checker for openGauss.
  */
 public final class OpenGaussEnvironmentChecker implements EnvironmentChecker {
-    
-    @Override
-    public Class<PostgreSQLDataSourceChecker> getDataSourceCheckerClass() {
-        return PostgreSQLDataSourceChecker.class;
-    }
     
     @Override
     public Class<OpenGaussDataSourcePreparer> getDataSourcePreparerClass() {

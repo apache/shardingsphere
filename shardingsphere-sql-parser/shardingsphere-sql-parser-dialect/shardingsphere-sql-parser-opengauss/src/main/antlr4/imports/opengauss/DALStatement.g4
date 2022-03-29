@@ -17,7 +17,7 @@
 
 grammar DALStatement;
 
-import Symbol, Keyword, OpenGaussKeyword, Literals, BaseRule, DDLStatement;
+import DDLStatement;
 
 show
     : SHOW (varName | TIME ZONE | TRANSACTION ISOLATION LEVEL | SESSION AUTHORIZATION | ALL) EOF
@@ -51,7 +51,7 @@ configurationParameterClause
     ;
 
 resetParameter
-    : RESET (ALL | identifier)
+    : RESET (ALL | identifier) EOF
     ;
 
 explain

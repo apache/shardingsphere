@@ -18,7 +18,7 @@
 <dataset>
     <metadata>
         <column name="data_source_name"/>
-        <column name="sql"/>
+        <column name="actual_sql"/>
     </metadata>
     <row values="encrypt_write_ds_0| select * from t_user_item_0 UNION ALL select * from t_user_item_10 UNION ALL select * from t_user_item_20 UNION ALL select * from t_user_item_30"/>
     <row values="encrypt_write_ds_1| select * from t_user_item_1 UNION ALL select * from t_user_item_11 UNION ALL select * from t_user_item_21 UNION ALL select * from t_user_item_31"/>

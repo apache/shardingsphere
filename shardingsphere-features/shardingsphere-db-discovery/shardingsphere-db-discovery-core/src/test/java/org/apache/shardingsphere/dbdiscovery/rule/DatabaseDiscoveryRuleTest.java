@@ -22,7 +22,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
+import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.HashMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -44,7 +45,7 @@ public final class DatabaseDiscoveryRuleTest {
     
     @Test
     public void assertNewWithEmptyDataSourceRule() {
-        new DatabaseDiscoveryRule("ha_db", dataSourceMap, new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()));
+        new DatabaseDiscoveryRule("db_discovery", dataSourceMap, new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()));
     }
     
     @Test
@@ -65,29 +66,6 @@ public final class DatabaseDiscoveryRuleTest {
     }
     
     @Test
-    public void assertUpdateRuleStatusWithNotExistDataSource() {
-        DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
-        databaseDiscoveryRule.updateStatus(new DataSourceNameDisabledEvent("db", true));
-        assertThat(databaseDiscoveryRule.getSingleDataSourceRule().getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
-    }
-    
-    @Test
-    public void assertUpdateRuleStatus() {
-        DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
-        databaseDiscoveryRule.updateStatus(new DataSourceNameDisabledEvent("ds_0", true));
-        assertThat(databaseDiscoveryRule.getSingleDataSourceRule().getDataSourceNames(), is(Collections.singletonList("ds_1")));
-    }
-    
-    @Test
-    public void assertUpdateRuleStatusWithEnable() {
-        DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
-        databaseDiscoveryRule.updateStatus(new DataSourceNameDisabledEvent("ds_0", true));
-        assertThat(databaseDiscoveryRule.getSingleDataSourceRule().getDataSourceNames(), is(Collections.singletonList("ds_1")));
-        databaseDiscoveryRule.updateStatus(new DataSourceNameDisabledEvent("ds_0", false));
-        assertThat(databaseDiscoveryRule.getSingleDataSourceRule().getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
-    }
-    
-    @Test
     public void assertGetDataSourceMapper() {
         DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
         Map<String, Collection<String>> actual = databaseDiscoveryRule.getDataSourceMapper();
@@ -101,10 +79,18 @@ public final class DatabaseDiscoveryRuleTest {
         assertThat(databaseDiscoveryRule.getType(), is(DatabaseDiscoveryRule.class.getSimpleName()));
     }
     
+    @Test
+    public void assertGetExportedMethods() {
+        DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
+        Map<String, String> singleDataSourceRuleMap = new HashMap<>(1, 1);
+        singleDataSourceRuleMap.put("test_pr", "primary");
+        assertThat(databaseDiscoveryRule.getExportedMethods().get(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE).get(), is(singleDataSourceRuleMap));
+    }
+    
     private DatabaseDiscoveryRule createRule() {
         DatabaseDiscoveryDataSourceRuleConfiguration config = new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "", "TEST");
-        return new DatabaseDiscoveryRule("ha_db", dataSourceMap, new DatabaseDiscoveryRuleConfiguration(
-                Collections.singleton(config), Collections.singletonMap("ha_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
+        return new DatabaseDiscoveryRule("db_discovery", dataSourceMap, new DatabaseDiscoveryRuleConfiguration(
+                Collections.singleton(config), Collections.singletonMap("discovery_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
                 ImmutableMap.of("TEST", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()))));
     }
 }

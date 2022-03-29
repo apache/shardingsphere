@@ -55,7 +55,7 @@ public final class LocalShardingTablesConfiguration implements ExampleConfigurat
         result.getBroadcastTables().add("t_address");
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "standard_test_tbl"));
         result.getShardingAlgorithms().put("standard_test_tbl", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
-        result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", getProperties()));
+        result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties()));
         return result;
     }
     
@@ -77,11 +77,5 @@ public final class LocalShardingTablesConfiguration implements ExampleConfigurat
     
     private static KeyGenerateStrategyConfiguration getKeyGeneratorConfiguration() {
         return new KeyGenerateStrategyConfiguration("order_id", "snowflake");
-    }
-    
-    private static Properties getProperties() {
-        Properties result = new Properties();
-        result.setProperty("worker-id", "123");
-        return result;
     }
 }

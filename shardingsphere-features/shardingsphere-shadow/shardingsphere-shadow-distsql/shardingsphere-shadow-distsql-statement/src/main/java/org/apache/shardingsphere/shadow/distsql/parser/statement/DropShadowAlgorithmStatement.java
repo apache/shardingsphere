@@ -31,4 +31,9 @@ import java.util.Collection;
 public final class DropShadowAlgorithmStatement extends DropRuleStatement {
     
     private final Collection<String> algorithmNames;
+    
+    public DropShadowAlgorithmStatement(final boolean containsExistClause, final Collection<String> algorithmNames) {
+        setContainsExistClause(containsExistClause);
+        this.algorithmNames = algorithmNames;
+    }
 }

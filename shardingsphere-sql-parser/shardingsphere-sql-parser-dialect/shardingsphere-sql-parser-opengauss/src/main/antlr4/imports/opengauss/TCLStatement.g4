@@ -17,7 +17,7 @@
 
 grammar TCLStatement;
 
-import Symbol, Keyword, OpenGaussKeyword, Literals, BaseRule, DMLStatement;
+import DMLStatement;
 
 setTransaction
     : SET (SESSION CHARACTERISTICS AS)? TRANSACTION transactionModeList

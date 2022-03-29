@@ -22,6 +22,8 @@ Therefore, the high availability solution it adopts is to use the high availabil
 Apache ShardingSphere needs to detect high availability solution of diversified storage nodes automatically,
 and can also integrate the readwrite splitting dynamically, which is the main challenge of implementation.
 
+![Overview](https://shardingsphere.apache.org/document/current/img/discovery/overview.en.png)
+
 ## Goal
 
 **The main goal of Apache ShardingSphere high availability module which is ensuring 7 * 24-hour uninterrupted database service as much as possible.**

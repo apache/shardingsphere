@@ -32,7 +32,7 @@ PASSWORD=root
 - 创建数据库发现规则
 
 ```sql
-CREATE DB_DISCOVERY RULE ha_group_0 (
+CREATE DB_DISCOVERY RULE db_discovery_group_0 (
 RESOURCES(ds_0, ds_1),
 TYPE(NAME=mgr,PROPERTIES('group-name'='92504d5b-6dec')),
 HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
@@ -42,7 +42,7 @@ HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 - 修改数据库发现规则
 
 ```sql
-ALTER DB_DISCOVERY RULE ha_group_0 (
+ALTER DB_DISCOVERY RULE db_discovery_group_0 (
 RESOURCES(ds_0, ds_1, ds_2),
 TYPE(NAME=mgr,PROPERTIES('group-name'='92504d5b-6dec')),
 HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
@@ -52,19 +52,19 @@ HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 - 删除数据库发现规则
 
 ```sql
-DROP DB_DISCOVERY RULE ha_group_0;
+DROP DB_DISCOVERY RULE db_discovery_group_0;
 ```
 
 - 删除数据库发现类型
 
 ```sql
-DROP DB_DISCOVERY TYPE ha_group_0_mgr;
+DROP DB_DISCOVERY TYPE db_discovery_group_0_mgr;
 ```
 
 - 删除数据库发现心跳
 
 ```sql
-DROP DB_DISCOVERY HEARTBEAT ha_group_0_heartbeat;
+DROP DB_DISCOVERY HEARTBEAT db_discovery_group_0_heartbeat;
 ```
 
 - 删除数据源

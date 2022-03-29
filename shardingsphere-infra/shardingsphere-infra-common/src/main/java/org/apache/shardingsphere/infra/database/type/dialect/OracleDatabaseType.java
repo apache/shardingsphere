@@ -52,6 +52,11 @@ public final class OracleDatabaseType implements DatabaseType {
         return new OracleDataSourceMetaData(url, username);
     }
     
+    @Override
+    public Optional<String> getDataSourceClassName() {
+        return Optional.empty();
+    }
+    
     @SuppressWarnings("ReturnOfNull")
     @Override
     public String getSchema(final Connection connection) {
@@ -65,5 +70,15 @@ public final class OracleDatabaseType implements DatabaseType {
     @Override
     public String formatTableNamePattern(final String tableNamePattern) {
         return tableNamePattern.toUpperCase();
+    }
+    
+    @Override
+    public Collection<String> getSystemDatabases() {
+        return Collections.emptyList();
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas() {
+        return Collections.emptyList();
     }
 }

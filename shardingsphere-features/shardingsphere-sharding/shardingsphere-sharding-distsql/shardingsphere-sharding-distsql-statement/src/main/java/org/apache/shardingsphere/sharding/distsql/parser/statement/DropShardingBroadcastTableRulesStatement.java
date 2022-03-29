@@ -31,4 +31,9 @@ import java.util.Collection;
 public final class DropShardingBroadcastTableRulesStatement extends DropRuleStatement {
     
     private final Collection<String> rules;
+    
+    public DropShardingBroadcastTableRulesStatement(final boolean containsExistClause, final Collection<String> rules) {
+        setContainsExistClause(containsExistClause);
+        this.rules = rules;
+    }
 }

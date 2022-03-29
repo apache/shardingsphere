@@ -25,7 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
-import org.apache.shardingsphere.scaling.core.job.position.PositionInitializerFactory;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializerFactory;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -122,6 +122,6 @@ public final class JobProgressYamlSwapper {
     }
     
     private Function<Entry<String, YamlJobProgress.YamlIncremental>, IncrementalTaskProgress> getIncrementalTaskProgressFunction(final String databaseType) {
-        return entry -> new IncrementalTaskProgress(PositionInitializerFactory.newInstance(databaseType).init(entry.getValue().getPosition()), entry.getValue().getDelay());
+        return entry -> new IncrementalTaskProgress(PositionInitializerFactory.getPositionInitializer(databaseType).init(entry.getValue().getPosition()), entry.getValue().getDelay());
     }
 }

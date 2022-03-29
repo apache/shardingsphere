@@ -33,6 +33,9 @@ public final class DropShardingScalingRuleStatementUpdater implements RuleDefini
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingScalingRuleStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         String schemaName = shardingSphereMetaData.getName();
+        if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isContainsExistClause()) {
+            return;
+        }
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkStatement(schemaName, sqlStatement, currentRuleConfig);
     }
@@ -49,9 +52,17 @@ public final class DropShardingScalingRuleStatementUpdater implements RuleDefini
     }
     
     private void checkExist(final String schemaName, final DropShardingScalingRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        if (sqlStatement.isContainsExistClause()) {
+            return;
+        }
         if (!currentRuleConfig.getScaling().containsKey(sqlStatement.getScalingName())) {
             throw new RequiredRuleMissedException("Scaling", schemaName, sqlStatement.getScalingName());
         }
+    }
+    
+    @Override
+    public boolean hasAnyOneToBeDropped(final DropShardingScalingRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        return isExistRuleConfig(currentRuleConfig) && currentRuleConfig.getScaling().containsKey(sqlStatement.getScalingName());
     }
     
     @Override
@@ -70,6 +81,6 @@ public final class DropShardingScalingRuleStatementUpdater implements RuleDefini
     
     @Override
     public String getType() {
-        return DropShardingScalingRuleStatement.class.getCanonicalName();
+        return DropShardingScalingRuleStatement.class.getName();
     }
 }

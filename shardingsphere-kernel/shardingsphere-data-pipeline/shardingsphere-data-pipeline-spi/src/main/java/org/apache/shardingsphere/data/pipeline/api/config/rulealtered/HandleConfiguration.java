@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
 
+import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -71,5 +72,14 @@ public final class HandleConfiguration {
      */
     public int getJobShardingCount() {
         return null == jobShardingDataNodes ? 0 : jobShardingDataNodes.size();
+    }
+    
+    /**
+     * Split {@linkplain #logicTables} to logic table names.
+     *
+     * @return logic table names
+     */
+    public List<String> splitLogicTableNames() {
+        return Splitter.on(',').splitToList(logicTables);
     }
 }

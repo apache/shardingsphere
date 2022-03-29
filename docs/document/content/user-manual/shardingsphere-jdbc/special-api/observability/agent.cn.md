@@ -12,7 +12,7 @@ weight = 1
  > mvn clean install
 ```
 
-### 远程下载(暂未发布)
+### 远程下载（暂未发布）
 
 ```
  > weget http://xxxxx/shardingsphere-agent.tar.gz

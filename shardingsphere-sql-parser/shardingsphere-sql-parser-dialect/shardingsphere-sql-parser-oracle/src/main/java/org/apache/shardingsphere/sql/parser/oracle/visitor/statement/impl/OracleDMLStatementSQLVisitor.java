@@ -22,7 +22,6 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentValuesContext;
@@ -46,6 +45,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExprCo
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExpressionListContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ForUpdateClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ForUpdateClauseListContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ForUpdateClauseOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FromClauseListContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FromClauseOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GroupByClauseContext;
@@ -190,6 +190,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
             result.setSelectSubquery(subquerySegment);
         }
         result.setParameterCount(getCurrentParameterIndex());
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
@@ -211,6 +212,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         SubquerySegment subquerySegment = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), subquery);
         result.setSelectSubquery(subquerySegment);
         result.setParameterCount(getCurrentParameterIndex());
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
@@ -322,6 +324,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
         result.setParameterCount(getCurrentParameterIndex());
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
@@ -446,6 +449,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
         result.setParameterCount(getCurrentParameterIndex());
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
@@ -470,6 +474,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitSelect(final SelectContext ctx) {
         OracleSelectStatement result = (OracleSelectStatement) visit(ctx.selectSubquery());
         result.setParameterCount(getCurrentParameterIndex());
+        result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         if (null != ctx.forUpdateClause()) {
             result.setLock((LockSegment) visit(ctx.forUpdateClause()));
         }
@@ -1008,7 +1013,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     
     private List<SimpleTableSegment> generateTablesFromforUpdateClauseOption(final ForUpdateClauseListContext ctx) {
         List<SimpleTableSegment> result = new LinkedList<>();
-        for (OracleStatementParser.ForUpdateClauseOptionContext each : ctx.forUpdateClauseOption()) {
+        for (ForUpdateClauseOptionContext each : ctx.forUpdateClauseOption()) {
             if (null != each.tableName()) {
                 result.add((SimpleTableSegment) visit(each.tableName()));
             }
@@ -1018,7 +1023,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     
     private List<ColumnSegment> generateColumnsFromforUpdateClauseOption(final ForUpdateClauseListContext ctx) {
         List<ColumnSegment> result = new LinkedList<>();
-        for (OracleStatementParser.ForUpdateClauseOptionContext each : ctx.forUpdateClauseOption()) {
+        for (ForUpdateClauseOptionContext each : ctx.forUpdateClauseOption()) {
             if (null != each.columnName()) {
                 result.add((ColumnSegment) visit(each.columnName()));
             }

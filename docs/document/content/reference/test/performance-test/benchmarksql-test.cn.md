@@ -26,11 +26,24 @@ AFTER_LOAD="indexCreates foreignKeys extraHistID buildFinish"
 AFTER_LOAD="indexCreates buildFinish"
 ```
 
-## 压测相关参数建议
+## 压测环境或参数建议
+
+**注意：本节中提到的任何参数都不是绝对值，都需要根据实际测试结果进行调整或取舍。**
+
+### 建议使用 Java 17 运行 ShardingSphere
+
+编译 ShardingSphere 可以使用 Java 8。
+
+使用 Java 17 可以在默认情况下尽量提升 ShardingSphere 的性能。
 
 ### ShardingSphere 数据分片建议
 
-对 BenchmarkSQL 的数据分片，可以考虑以 warehouse id 作为分片键。其中一个表 `bmsql_item` 没有 warehouse id，可以取 `i_id` 作为分片键。  
+对 BenchmarkSQL 的数据分片，可以考虑以各个表中的 warehouse id 作为分片键。  
+
+其中一个表 `bmsql_item` 没有 warehouse id，数据量固定 10 万行：
+- 可以取 `i_id` 作为分片键。但可能会导致同一个 Proxy 连接同时持有多个不同数据源的连接。
+- 或考虑不做分片，存在单个数据源内。可能会导致某一数据源压力较大。
+- 或对 `i_id` 进行范围分片，例如 1-50000 分布在数据源 0、50001-100000 分布在数据源 1。
 
 BenchmarkSQL 中有如下 SQL 涉及多表：
 
@@ -65,36 +78,31 @@ rules:
 
 ### PostgreSQL JDBC URL 参数建议
 
-对 BenchmarkSQL 所使用的配置文件中的 JDBC URL 进行调整，即参数名 `conn` 的值。
-增加参数 `defaultRowFetchSize=1` 可能减少 Delivery 业务耗时。
+对 BenchmarkSQL 所使用的配置文件中的 JDBC URL 进行调整，即参数名 `conn` 的值：
+- 增加参数 `defaultRowFetchSize=50` 可能减少多行结果集的 fetch 次数，需要根据实际测试结果适当增大或减小。
+- 增加参数 `reWriteBatchedInserts=true` 可能减少批量插入的耗时，例如准备数据或 New Order 业务的批量插入，需要根据实际测试结果决定是否启用。
 
 props.pg 文件节选，建议修改的位置为第 3 行 `conn` 的参数值：
 ```properties
 db=postgres
 driver=org.postgresql.Driver
-conn=jdbc:postgresql://localhost:5432/postgres?defaultRowFetchSize=1
+conn=jdbc:postgresql://localhost:5432/postgres?defaultRowFetchSize=50&reWriteBatchedInserts=true
 user=benchmarksql
 password=PWbmsql
-
-warehouses=1
-loadWorkers=4
-
-terminals=1
 ```
 
 ### ShardingSphere Proxy server.yaml 参数建议
 
-`proxy-backend-query-fetch-size` 参数值默认值为 -1，修改为 `1000` 可能减少 Delivery 业务耗时。  
+`proxy-backend-query-fetch-size` 参数值默认值为 -1，修改为 `50` 左右可以尽量减少多行结果集的 fetch 次数。 
+`proxy-frontend-executor-size` 参数默认值为 CPU * 2，可以根据实际测试结果减少至 CPU * 0.5 左右；如果涉及 NUMA，可以根据实际测试结果设置为单个 CPU 的物理核数。
 
 `server.yaml` 文件节选：
 ```yaml
 props:
-  proxy-backend-query-fetch-size: 1000
+  proxy-backend-query-fetch-size: 50
+  # proxy-frontend-executor-size: 32 # 4 路 32C aarch64
+  # proxy-frontend-executor-size: 12 # 2 路 12C24T x86
 ```
-
-其他参数如 `max-connections-size-per-query` 等可以在压测过程中适当增大，比如取 Actual tables 最大的数量。
-假如有个表分 4 库 x 4 表，共 16 个表，参数值可以尝试取 16。
-实际效果与取决于数据分片方式，如果分片配置能够让所有 SQL 都路由到单点，该参数可能对性能没有影响。  
 
 ## 附录
 
@@ -153,8 +161,6 @@ rules:
       none:
     keyGenerators:
       snowflake:
-        props:
-          worker-id: 123
         type: SNOWFLAKE
     tables:
       bmsql_config:
@@ -165,118 +171,69 @@ rules:
         databaseStrategy:
           standard:
             shardingColumn: w_id
-            shardingAlgorithmName: bmsql_warehouse_database_inline
+            shardingAlgorithmName: mod_4
 
       bmsql_district:
         actualDataNodes: ds_${0..3}.bmsql_district
         databaseStrategy:
           standard:
             shardingColumn: d_w_id
-            shardingAlgorithmName: bmsql_district_database_inline
+            shardingAlgorithmName: mod_4
 
       bmsql_customer:
         actualDataNodes: ds_${0..3}.bmsql_customer
         databaseStrategy:
           standard:
             shardingColumn: c_w_id
-            shardingAlgorithmName: bmsql_customer_database_inline
+            shardingAlgorithmName: mod_4
 
       bmsql_item:
         actualDataNodes: ds_${0..3}.bmsql_item
         databaseStrategy:
           standard:
             shardingColumn: i_id
-            shardingAlgorithmName: bmsql_item_database_inline
+            shardingAlgorithmName: mod_4
 
       bmsql_history:
         actualDataNodes: ds_${0..3}.bmsql_history
         databaseStrategy:
           standard:
             shardingColumn: h_w_id
-            shardingAlgorithmName: bmsql_history_database_inline
+            shardingAlgorithmName: mod_4
 
       bmsql_oorder:
-        actualDataNodes: ds_${0..3}.bmsql_oorder_${0..3}
+        actualDataNodes: ds_${0..3}.bmsql_oorder
         databaseStrategy:
           standard:
             shardingColumn: o_w_id
-            shardingAlgorithmName: bmsql_oorder_database_inline
-        tableStrategy:
-          standard:
-            shardingColumn: o_c_id
-            shardingAlgorithmName: bmsql_oorder_table_inline
+            shardingAlgorithmName: mod_4
 
       bmsql_stock:
         actualDataNodes: ds_${0..3}.bmsql_stock
         databaseStrategy:
           standard:
             shardingColumn: s_w_id
-            shardingAlgorithmName: bmsql_stock_database_inline
+            shardingAlgorithmName: mod_4
 
       bmsql_new_order:
         actualDataNodes: ds_${0..3}.bmsql_new_order
         databaseStrategy:
           standard:
             shardingColumn: no_w_id
-            shardingAlgorithmName: bmsql_new_order_database_inline
+            shardingAlgorithmName: mod_4
 
       bmsql_order_line:
         actualDataNodes: ds_${0..3}.bmsql_order_line
         databaseStrategy:
           standard:
             shardingColumn: ol_w_id
-            shardingAlgorithmName: bmsql_order_line_database_inline
+            shardingAlgorithmName: mod_4
 
     shardingAlgorithms:
-      bmsql_warehouse_database_inline:
-        type: INLINE
+      mod_4:
+        type: MOD
         props:
-          algorithm-expression: ds_${w_id & 3}
-
-      bmsql_district_database_inline:
-        type: INLINE
-        props:
-          algorithm-expression: ds_${d_w_id & 3}
-
-      bmsql_customer_database_inline:
-        type: INLINE
-        props:
-          algorithm-expression: ds_${c_w_id & 3}
-
-      bmsql_item_database_inline:
-        type: INLINE
-        props:
-          algorithm-expression: ds_${i_id & 3}
-
-      bmsql_history_database_inline:
-        type: INLINE
-        props:
-          algorithm-expression: ds_${h_w_id & 3}
-
-      bmsql_oorder_database_inline:
-        type: INLINE
-        props:
-          algorithm-expression: ds_${o_w_id & 3}
-
-      bmsql_oorder_table_inline:
-        type: INLINE
-        props:
-          algorithm-expression: bmsql_oorder_${o_c_id & 3}
-
-      bmsql_stock_database_inline:
-        type: INLINE
-        props:
-          algorithm-expression: ds_${s_w_id & 3}
-
-      bmsql_new_order_database_inline:
-        type: INLINE
-        props:
-          algorithm-expression: ds_${no_w_id & 3}
-
-      bmsql_order_line_database_inline:
-        type: INLINE
-        props:
-          algorithm-expression: ds_${ol_w_id & 3}
+          sharding-count: 4
 ```
 
 ## BenchmarkSQL 5.0 PostgreSQL 语句列表

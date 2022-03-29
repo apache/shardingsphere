@@ -21,6 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataCalcula
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.AbstractSingleTableDataCalculator;
 import org.apache.shardingsphere.data.pipeline.core.spi.check.consistency.CRC32MatchDataConsistencyCheckAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.mysql.sqlbuilder.MySQLPipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 
@@ -31,7 +32,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +41,8 @@ import java.util.stream.Collectors;
 public final class CRC32MatchMySQLSingleTableDataCalculator extends AbstractSingleTableDataCalculator {
     
     private static final Collection<String> DATABASE_TYPES = Collections.singletonList(new MySQLDatabaseType().getName());
+    
+    private static final MySQLPipelineSQLBuilder SQL_BUILDER = (MySQLPipelineSQLBuilder) PipelineSQLBuilderFactory.getSQLBuilder("MySQL");
     
     @Override
     public String getAlgorithmType() {
@@ -55,11 +57,10 @@ public final class CRC32MatchMySQLSingleTableDataCalculator extends AbstractSing
     @Override
     public Iterable<Object> calculate(final DataCalculateParameter dataCalculateParameter) {
         String logicTableName = dataCalculateParameter.getLogicTableName();
-        MySQLPipelineSQLBuilder scalingSQLBuilder = new MySQLPipelineSQLBuilder(new HashMap<>());
         List<Long> result = dataCalculateParameter.getColumnNames().stream().map(each -> {
-            String sql = scalingSQLBuilder.buildSumCrc32SQL(logicTableName, each);
+            String sql = SQL_BUILDER.buildCRC32SQL(logicTableName, each);
             try {
-                return sumCrc32(dataCalculateParameter.getDataSource(), sql);
+                return calculateCRC32(dataCalculateParameter.getDataSource(), sql);
             } catch (final SQLException ex) {
                 throw new PipelineDataConsistencyCheckFailedException(String.format("table %s data check failed.", logicTableName), ex);
             }
@@ -67,7 +68,7 @@ public final class CRC32MatchMySQLSingleTableDataCalculator extends AbstractSing
         return Collections.unmodifiableList(result);
     }
     
-    private long sumCrc32(final DataSource dataSource, final String sql) throws SQLException {
+    private long calculateCRC32(final DataSource dataSource, final String sql) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
              ResultSet resultSet = preparedStatement.executeQuery()) {

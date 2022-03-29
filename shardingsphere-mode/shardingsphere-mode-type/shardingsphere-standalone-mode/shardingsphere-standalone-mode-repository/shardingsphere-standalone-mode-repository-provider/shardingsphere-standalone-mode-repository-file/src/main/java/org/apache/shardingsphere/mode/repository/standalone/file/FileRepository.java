@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -57,7 +58,10 @@ public final class FileRepository implements StandalonePersistRepository {
             return "";
         }
         try {
-            return Files.readAllLines(Paths.get(path, key)).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+            Collection<String> lines = Files.readAllLines(Paths.get(path, key));
+            if (!lines.isEmpty()) {
+                return lines.size() == 1 ? lines.iterator().next() : lines.stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+            }
         } catch (final IOException ex) {
             log.error("Get file data by key: {} failed", key, ex);
         }
@@ -70,10 +74,11 @@ public final class FileRepository implements StandalonePersistRepository {
         if (!file.exists()) {
             return Collections.emptyList();
         }
-        return null != file.listFiles() ? Arrays.stream(file.listFiles()).map(File::getName).collect(Collectors.toList())
-                : Collections.emptyList();
+        File[] files = file.listFiles();
+        return null == files ? Collections.emptyList() : Arrays.stream(files).map(File::getName).collect(Collectors.toList());
     }
     
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public void persist(final String key, final String value) {
         File file = new File(path, key);
@@ -102,11 +107,16 @@ public final class FileRepository implements StandalonePersistRepository {
     }
     
     @Override
-    public String getType() {
-        return "File";
+    public void close() {
     }
     
     @Override
-    public void close() {
+    public boolean isDefault() {
+        return true;
+    }
+    
+    @Override
+    public String getType() {
+        return "File";
     }
 }

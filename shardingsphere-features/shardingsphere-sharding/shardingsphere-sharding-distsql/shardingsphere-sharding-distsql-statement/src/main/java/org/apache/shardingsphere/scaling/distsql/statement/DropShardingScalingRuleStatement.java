@@ -29,4 +29,9 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleState
 public final class DropShardingScalingRuleStatement extends DropRuleStatement {
     
     private final String scalingName;
+    
+    public DropShardingScalingRuleStatement(final boolean containsExistClause, final String scalingName) {
+        setContainsExistClause(containsExistClause);
+        this.scalingName = scalingName;
+    }
 }

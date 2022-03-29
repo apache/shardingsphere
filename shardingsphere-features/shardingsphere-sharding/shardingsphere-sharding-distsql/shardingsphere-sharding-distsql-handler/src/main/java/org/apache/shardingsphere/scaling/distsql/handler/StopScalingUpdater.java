@@ -36,6 +36,6 @@ public final class StopScalingUpdater implements RALUpdater<StopScalingStatement
     
     @Override
     public String getType() {
-        return StopScalingStatement.class.getCanonicalName();
+        return StopScalingStatement.class.getName();
     }
 }

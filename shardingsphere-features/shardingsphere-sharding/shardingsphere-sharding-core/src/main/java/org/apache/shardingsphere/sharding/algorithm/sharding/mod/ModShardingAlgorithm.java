@@ -55,12 +55,8 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
-        for (String each : availableTargetNames) {
-            if (each.endsWith(String.valueOf(getLongValue(shardingValue.getValue()) % shardingCount))) {
-                return each;
-            }
-        }
-        return null;
+        String suffix = String.valueOf(getLongValue(shardingValue.getValue()) % shardingCount);
+        return findMatchedTargetName(availableTargetNames, suffix, shardingValue.getDataNodeInfo()).orElse(null);
     }
     
     @Override
@@ -76,17 +72,14 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     private Collection<String> getAvailableTargetNames(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         for (long i = getLongValue(shardingValue.getValueRange().lowerEndpoint()); i <= getLongValue(shardingValue.getValueRange().upperEndpoint()); i++) {
-            for (String each : availableTargetNames) {
-                if (each.endsWith(String.valueOf(i % shardingCount))) {
-                    result.add(each);
-                }
-            }
+            String suffix = String.valueOf(i % shardingCount);
+            findMatchedTargetName(availableTargetNames, suffix, shardingValue.getDataNodeInfo()).ifPresent(result::add);
         }
         return result;
     }
     
     private long getLongValue(final Comparable<?> value) {
-        return Long.parseLong(value.toString());
+        return value instanceof Number ? ((Number) value).longValue() : Long.parseLong(value.toString());
     }
     
     @Override

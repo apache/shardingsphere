@@ -19,6 +19,8 @@ package org.apache.shardingsphere.traffic.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
+import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
 import java.util.Collection;
 
@@ -33,7 +35,7 @@ public final class TrafficStrategyRule {
     
     private final Collection<String> labels;
     
-    private final String algorithmName;
+    private final TrafficAlgorithm trafficAlgorithm;
     
-    private final String loadBalancerName;
+    private final TrafficLoadBalanceAlgorithm loadBalancer;
 }

@@ -56,7 +56,7 @@ public final class LocalTransactionManagerTest {
     private LocalTransactionManager localTransactionManager;
     
     @Before
-    public void setUp() throws SQLException {
+    public void setUp() {
         when(connectionSession.getTransactionStatus()).thenReturn(transactionStatus);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         when(backendConnection.getCachedConnections()).thenReturn(setCachedConnections());
@@ -82,7 +82,7 @@ public final class LocalTransactionManagerTest {
     @SneakyThrows(SQLException.class)
     public void assertCommit() {
         localTransactionManager.commit();
-        verify(transactionStatus).isInTransaction();
+        verify(transactionStatus).isRollbackOnly();
         verify(connection).commit();
     }
     

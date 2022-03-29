@@ -43,17 +43,17 @@ public final class AlterDefaultSingleTableRuleStatementUpdater implements RuleDe
     }
     
     private void checkConfigurationExist(final String schemaName, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(null != currentRuleConfig, new RequiredRuleMissedException(schemaName, "single table"));
+        DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException(schemaName, "single table"));
     }
     
     private void checkResourceExist(final String schemaName, final ShardingSphereMetaData metaData, final AlterDefaultSingleTableRuleStatement sqlStatement) throws DistSQLException {
         Set<String> resourceNames = metaData.getResource().getDataSources().keySet();
         DistSQLException.predictionThrow(resourceNames.contains(sqlStatement.getDefaultResource()),
-                new RequiredResourceMissedException(schemaName, Collections.singleton(sqlStatement.getDefaultResource())));
+            () -> new RequiredResourceMissedException(schemaName, Collections.singleton(sqlStatement.getDefaultResource())));
     }
     
     private void checkDefaultResourceExist(final String schemaName, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(currentRuleConfig.getDefaultDataSource().isPresent(), new RequiredRuleMissedException("single table", schemaName));
+        DistSQLException.predictionThrow(currentRuleConfig.getDefaultDataSource().isPresent(), () -> new RequiredRuleMissedException("single table", schemaName));
     }
     
     @Override
@@ -75,6 +75,6 @@ public final class AlterDefaultSingleTableRuleStatementUpdater implements RuleDe
     
     @Override
     public String getType() {
-        return AlterDefaultSingleTableRuleStatement.class.getCanonicalName();
+        return AlterDefaultSingleTableRuleStatement.class.getName();
     }
 }

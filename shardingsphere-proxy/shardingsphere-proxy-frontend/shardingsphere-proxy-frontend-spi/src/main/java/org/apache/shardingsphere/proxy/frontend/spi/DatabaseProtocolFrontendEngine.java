@@ -30,6 +30,14 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeAwareSPI;
 public interface DatabaseProtocolFrontendEngine extends DatabaseTypeAwareSPI {
     
     /**
+     * Set database version.
+     * 
+     * @param databaseVersion database version
+     */
+    default void setDatabaseVersion(String databaseVersion) {
+    }
+    
+    /**
      * Get frontend context.
      *
      * @return frontend context
@@ -63,4 +71,11 @@ public interface DatabaseProtocolFrontendEngine extends DatabaseTypeAwareSPI {
      * @param connectionSession connection session
      */
     void release(ConnectionSession connectionSession);
+    
+    /**
+     * Handle exception.
+     *
+     * @param connectionSession connection session
+     */
+    void handleException(ConnectionSession connectionSession);
 }

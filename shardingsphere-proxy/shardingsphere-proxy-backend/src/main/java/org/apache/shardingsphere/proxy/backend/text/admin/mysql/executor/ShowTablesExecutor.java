@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
@@ -53,6 +54,8 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     
     private final MySQLShowTablesStatement showTablesStatement;
     
+    private final DatabaseType databaseType;
+    
     private QueryResultMetaData queryResultMetaData;
     
     private MergedResult mergedResult;
@@ -64,7 +67,7 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     }
     
     private QueryResult getQueryResult(final String schemaName) {
-        if (!ProxyContext.getInstance().getMetaData(schemaName).isComplete()) {
+        if (!databaseType.getSystemSchemas().contains(schemaName) && !ProxyContext.getInstance().getMetaData(schemaName).isComplete()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
         List<MemoryQueryResultDataRow> rows = getAllTableNames(schemaName).stream().map(each -> {
@@ -77,12 +80,12 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     }
     
     private Collection<String> getAllTableNames(final String schemaName) {
-        Collection<String> allTableNames = ProxyContext.getInstance().getMetaData(schemaName).getSchema().getTables().values().stream().map(TableMetaData::getName).collect(Collectors.toList());
+        Collection<String> result = ProxyContext.getInstance().getMetaData(schemaName).getSchema().getTables().values().stream().map(TableMetaData::getName).collect(Collectors.toList());
         if (showTablesStatement.getFilter().isPresent()) {
             Optional<String> pattern = showTablesStatement.getFilter().get().getLike().map(each -> SQLUtil.convertLikePatternToRegex(each.getPattern()));
-            return pattern.isPresent() ? allTableNames.stream().filter(each -> each.matches(pattern.get())).collect(Collectors.toList()) : allTableNames;
+            return pattern.isPresent() ? result.stream().filter(each -> each.matches(pattern.get())).collect(Collectors.toList()) : result;
         }
-        return allTableNames;
+        return result;
     }
     
     private QueryResultMetaData createQueryResultMetaData(final String schemaName) {

@@ -45,6 +45,6 @@ public final class HeartbeatJob implements SimpleJob {
     @Override
     public void execute(final ShardingContext shardingContext) {
         databaseDiscoveryType.updatePrimaryDataSource(schemaName, dataSourceMap, disabledDataSourceNames, groupName);
-        databaseDiscoveryType.updateMemberState(schemaName, dataSourceMap, disabledDataSourceNames);
+        databaseDiscoveryType.updateMemberState(schemaName, dataSourceMap, groupName);
     }
 }
