@@ -33,13 +33,13 @@ import java.util.Optional;
  */
 public final class MySQLDatabaseType implements DatabaseType {
     
-    private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMAS = new HashMap<>();
+    private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new HashMap<>();
     
     static {
-        SYSTEM_DATABASE_SCHEMAS.put("information_schema", Collections.singletonList("information_schema"));
-        SYSTEM_DATABASE_SCHEMAS.put("performance_schema", Collections.singletonList("performance_schema"));
-        SYSTEM_DATABASE_SCHEMAS.put("mysql", Collections.singletonList("mysql"));
-        SYSTEM_DATABASE_SCHEMAS.put("sys", Collections.singletonList("sys"));
+        SYSTEM_DATABASE_SCHEMA_MAP.put("information_schema", Collections.singletonList("information_schema"));
+        SYSTEM_DATABASE_SCHEMA_MAP.put("performance_schema", Collections.singletonList("performance_schema"));
+        SYSTEM_DATABASE_SCHEMA_MAP.put("mysql", Collections.singletonList("mysql"));
+        SYSTEM_DATABASE_SCHEMA_MAP.put("sys", Collections.singletonList("sys"));
     }
     
     @Override
@@ -69,11 +69,11 @@ public final class MySQLDatabaseType implements DatabaseType {
     
     @Override
     public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return SYSTEM_DATABASE_SCHEMAS;
+        return SYSTEM_DATABASE_SCHEMA_MAP;
     }
     
     @Override
     public Collection<String> getSystemSchemas() {
-        return SYSTEM_DATABASE_SCHEMAS.keySet();
+        return SYSTEM_DATABASE_SCHEMA_MAP.keySet();
     }
 }

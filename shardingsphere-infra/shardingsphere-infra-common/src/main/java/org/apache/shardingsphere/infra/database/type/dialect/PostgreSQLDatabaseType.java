@@ -38,12 +38,12 @@ import java.util.Optional;
  */
 public final class PostgreSQLDatabaseType implements DatabaseType {
     
-    private static final Map<String, Collection<String>> SYSTEM_DATABASES = new HashMap<>();
+    private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new HashMap<>();
     
     private static final Collection<String> SYSTEM_SCHEMAS = Sets.newHashSet("information_schema", "pg_catalog");
     
     static {
-        SYSTEM_DATABASES.put("postgres", SYSTEM_SCHEMAS);
+        SYSTEM_DATABASE_SCHEMA_MAP.put("postgres", SYSTEM_SCHEMAS);
     }
     
     @Override
@@ -80,7 +80,7 @@ public final class PostgreSQLDatabaseType implements DatabaseType {
     
     @Override
     public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return SYSTEM_DATABASES;
+        return SYSTEM_DATABASE_SCHEMA_MAP;
     }
     
     @Override
