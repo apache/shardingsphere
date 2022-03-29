@@ -18,8 +18,8 @@
 name: ISSUE Standardized Process
 
 on:
-  schedule:
-    - cron: '0 0 */1 * *'  # once a day
+#  schedule:
+#    - cron: '0 0 */1 * *'  # once a day
   issue_comment:
     types: [created,edited]
   issues:
