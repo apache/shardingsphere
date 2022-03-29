@@ -172,6 +172,7 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     
     @Override
     public String buildSplitByPrimaryKeyRangeSQL(final String tableName, final String primaryKey) {
-        return String.format("SELECT MAX(%s) FROM (SELECT %s FROM %s WHERE %s>=? limit ?) t", quote(primaryKey), quote(primaryKey), quote(tableName), quote(primaryKey));
+        String quotedKey = quote(primaryKey).toString();
+        return String.format("SELECT MAX(%s) FROM (SELECT %s FROM %s WHERE %s>=? ORDER BY %s LIMIT ?) t", quotedKey, quotedKey, quote(tableName), quotedKey, quotedKey);
     }
 }
