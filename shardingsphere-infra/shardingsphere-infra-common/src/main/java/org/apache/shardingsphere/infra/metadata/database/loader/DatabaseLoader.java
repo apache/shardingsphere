@@ -51,17 +51,18 @@ public final class DatabaseLoader {
                                               final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
         Map<String, ShardingSphereSchema> schemas = new LinkedHashMap<>();
         schemas.put(schemaName, SchemaLoader.load(dataSourceMap, rules, props));
-        schemas.putAll(SystemSchemaBuilder.build(databaseType));
+        schemas.putAll(SystemSchemaBuilder.build(schemaName, databaseType));
         return new ShardingSphereDatabase(schemas);
     }
     
     /**
      * Load database.
      * 
+     * @param databaseName database name
      * @param databaseType database type
      * @return loaded database
      */
-    public static ShardingSphereDatabase load(final DatabaseType databaseType) {
-        return new ShardingSphereDatabase(SystemSchemaBuilder.build(databaseType));
+    public static ShardingSphereDatabase load(final String databaseName, final DatabaseType databaseType) {
+        return new ShardingSphereDatabase(SystemSchemaBuilder.build(databaseName, databaseType));
     }
 }

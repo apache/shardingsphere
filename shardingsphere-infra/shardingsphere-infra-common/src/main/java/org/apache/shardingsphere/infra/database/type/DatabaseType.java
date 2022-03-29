@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -69,11 +70,11 @@ public interface DatabaseType {
     Optional<String> getDataSourceClassName();
     
     /**
-     * Get system databases.
+     * Get system database schema map.
      * 
-     * @return system databases
+     * @return system database schema map
      */
-    Collection<String> getSystemDatabases();
+    Map<String, Collection<String>> getSystemDatabaseSchemaMap();
     
     /**
      * Get system schemas.

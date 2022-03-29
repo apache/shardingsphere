@@ -21,6 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -44,14 +46,15 @@ public final class SystemSchemaBuilder {
     /**
      * Build.
      * 
+     * @param databaseName database name
      * @param databaseType database type
      * @return ShardingSphere schema map
      */
     @SneakyThrows
-    public static Map<String, ShardingSphereSchema> build(final DatabaseType databaseType) {
+    public static Map<String, ShardingSphereSchema> build(final String databaseName, final DatabaseType databaseType) {
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(databaseType.getSystemSchemas().size(), 1);
         TableMetaDataYamlSwapper swapper = new TableMetaDataYamlSwapper();
-        for (String each : databaseType.getSystemSchemas()) {
+        for (String each : getSystemSchemas(databaseName, databaseType)) {
             Collection<File> schemaFiles = getSchemaFiles(each, databaseType);
             if (schemaFiles.isEmpty()) {
                 continue;
@@ -59,6 +62,11 @@ public final class SystemSchemaBuilder {
             result.put(each, createSchema(schemaFiles, swapper));
         }
         return result;
+    }
+    
+    private static Collection<String> getSystemSchemas(final String originalDatabaseName, final DatabaseType databaseType) {
+        String databaseName = databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType ? "postgres" : originalDatabaseName;
+        return databaseType.getSystemDatabaseSchemaMap().getOrDefault(databaseName, Collections.emptyList());
     }
     
     private static Collection<File> getSchemaFiles(final String schemaName, final DatabaseType databaseType) {
