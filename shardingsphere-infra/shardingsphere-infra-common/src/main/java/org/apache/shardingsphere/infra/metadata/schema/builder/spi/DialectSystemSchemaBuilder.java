@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeAwareSPI;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.spi.singleton.SingletonSPI;
 
-import java.net.URL;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Optional;
 
@@ -39,13 +39,12 @@ public interface DialectSystemSchemaBuilder extends DatabaseTypeAwareSPI, Single
     Map<String, ShardingSphereSchema> build(String schemaName);
     
     /**
-     * Get system schema content.
+     * Get system schema stream.
      * 
      * @param schemaName schema name
-     * @return system schema content
+     * @return system schema stream
      */
-    default Optional<String> getSystemSchemaPath(final String schemaName) {
-        URL url = getClass().getResource("schema/" + getDatabaseType().toLowerCase() + "/" + schemaName + ".yaml");
-        return Optional.ofNullable(url).map(URL::getFile);
+    default Optional<InputStream> getSystemSchemaStream(final String schemaName) {
+        return Optional.ofNullable(getClass().getClassLoader().getResourceAsStream("schema/" + getDatabaseType().toLowerCase() + "/" + schemaName + ".yaml"));
     }
 }

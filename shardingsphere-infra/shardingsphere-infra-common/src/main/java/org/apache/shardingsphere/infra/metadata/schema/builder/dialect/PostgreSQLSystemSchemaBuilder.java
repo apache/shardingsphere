@@ -22,11 +22,11 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectSystemSchemaBuilder;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.SchemaYamlSwapper;
+import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
+import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -43,11 +43,11 @@ public final class PostgreSQLSystemSchemaBuilder implements DialectSystemSchemaB
         DatabaseType databaseType = DatabaseTypeRegistry.getTrunkDatabaseType(getDatabaseType());
         SchemaYamlSwapper swapper = new SchemaYamlSwapper();
         for (String each : databaseType.getSystemSchemas()) {
-            Optional<String> schemaPath = getSystemSchemaPath(each);
-            if (!schemaPath.isPresent()) {
+            Optional<InputStream> schemaStream = getSystemSchemaStream(each);
+            if (!schemaStream.isPresent()) {
                 continue;
             }
-            YamlSchema yamlSchema = YamlEngine.unmarshal(new File(schemaPath.get()), YamlSchema.class);
+            YamlSchema yamlSchema = new Yaml().loadAs(schemaStream.get(), YamlSchema.class);
             result.put(each, swapper.swapToObject(yamlSchema));
         }
         return result;
