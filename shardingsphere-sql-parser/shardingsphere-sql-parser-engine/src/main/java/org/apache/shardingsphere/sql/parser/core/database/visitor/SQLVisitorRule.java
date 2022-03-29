@@ -90,6 +90,8 @@ public enum SQLVisitorRule {
     
     DROP_FUNCTION("DropFunction", SQLStatementType.DDL),
     
+    DROP_GROUP("DropGroup", SQLStatementType.DDL),
+    
     CREATE_DATABASE("CreateDatabase", SQLStatementType.DDL),
     
     CREATE_DATABASE_LINK("CreateDatabaseLink", SQLStatementType.DDL),

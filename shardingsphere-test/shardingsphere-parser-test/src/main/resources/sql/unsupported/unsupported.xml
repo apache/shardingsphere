@@ -5844,11 +5844,6 @@
     <sql-case id="drop_by_postgresql_source_test_case60" value="DROP FOREIGN DATA WRAPPER postgresql CASCADE;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case61" value="DROP FOREIGN DATA WRAPPER test_fdw;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case62" value="DROP FOREIGN DATA WRAPPER test_fdw_exists;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case79" value="DROP GROUP IF EXISTS regress_test_g1, regress_test_g2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case80" value="DROP GROUP regress_dep_group;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case81" value="DROP GROUP regress_dep_group;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case82" value="DROP GROUP regress_test_g1;" db-types="PostgreSQL"/>
-    <sql-case id="drop_by_postgresql_source_test_case83" value="DROP GROUP regress_test_g2;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case102" value="DROP OPERATOR CLASS IF EXISTS no_such_schema.widget_ops USING btree;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case103" value="DROP OPERATOR CLASS IF EXISTS test_operator_class USING btree;" db-types="PostgreSQL"/>
     <sql-case id="drop_by_postgresql_source_test_case104" value="DROP OPERATOR CLASS IF EXISTS test_operator_class USING no_such_am;" db-types="PostgreSQL"/>
