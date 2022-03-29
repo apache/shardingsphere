@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCStatementManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
@@ -81,7 +82,8 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
     }
     
     private void setFetchSize(final Statement statement) throws SQLException {
-        DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType();
+        DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getMetaDataContexts()
+                .getMetaData(null == schemaName ? SQLStatementSchemaHolder.get() : schemaName).getResource().getDatabaseType();
         if (fetchSizeSetters.containsKey(databaseType.getName())) {
             fetchSizeSetters.get(databaseType.getName()).setFetchSize(statement);
         }
