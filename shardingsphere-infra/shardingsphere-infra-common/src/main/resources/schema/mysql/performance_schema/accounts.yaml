@@ -14,3 +14,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+name: accounts
+columns:
+  user:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: USER
+    primaryKey: false
+  host:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: HOST
+    primaryKey: false
+  current_connections:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: CURRENT_CONNECTIONS
+    primaryKey: false
+  total_connections:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: TOTAL_CONNECTIONS
+    primaryKey: false

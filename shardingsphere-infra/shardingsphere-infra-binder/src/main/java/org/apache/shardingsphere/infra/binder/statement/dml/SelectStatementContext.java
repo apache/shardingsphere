@@ -134,7 +134,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         if (null == metaData) {
             throw new SchemaNotExistedException(databaseName);
         }
-        return metaData.getSchema();
+        String schemaName = tablesContext.getSchemaNames().stream().findFirst().orElse(databaseName);
+        return metaData.getSchemas().get(schemaName);
     }
     
     /**

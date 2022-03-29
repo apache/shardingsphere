@@ -29,6 +29,8 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -36,9 +38,13 @@ import java.util.Optional;
  */
 public final class PostgreSQLDatabaseType implements DatabaseType {
     
-    private static final Collection<String> SYSTEM_DATABASES = Sets.newHashSet("postgres");
+    private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new HashMap<>();
     
     private static final Collection<String> SYSTEM_SCHEMAS = Sets.newHashSet("information_schema", "pg_catalog");
+    
+    static {
+        SYSTEM_DATABASE_SCHEMA_MAP.put("postgres", SYSTEM_SCHEMAS);
+    }
     
     @Override
     public String getName() {
@@ -73,8 +79,8 @@ public final class PostgreSQLDatabaseType implements DatabaseType {
     }
     
     @Override
-    public Collection<String> getSystemDatabases() {
-        return SYSTEM_DATABASES;
+    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
+        return SYSTEM_DATABASE_SCHEMA_MAP;
     }
     
     @Override

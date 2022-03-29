@@ -15,5 +15,40 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.metadata.schema.builder.dialect.MySQLSystemSchemaBuilder
-org.apache.shardingsphere.infra.metadata.schema.builder.dialect.PostgreSQLSystemSchemaBuilder
+name: pg_tablespace
+columns:
+  oid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: oid
+    primaryKey: false
+  spcname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: spcname
+    primaryKey: false
+  spcowner:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: spcowner
+    primaryKey: false
+  spcacl:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: spcacl
+    primaryKey: false
+  spcoptions:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: spcoptions
+    primaryKey: false
+indexes:
+  pg_tablespace_oid_index:
+    name: pg_tablespace_oid_index
+  pg_tablespace_spcname_index:
+    name: pg_tablespace_spcname_index

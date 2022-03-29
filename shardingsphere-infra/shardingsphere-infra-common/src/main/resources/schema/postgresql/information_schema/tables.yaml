@@ -1,0 +1,91 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: tables
+columns:
+  table_catalog:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: table_catalog
+    primaryKey: false
+  table_schema:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: table_schema
+    primaryKey: false
+  table_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: table_name
+    primaryKey: false
+  table_type:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: table_type
+    primaryKey: false
+  self_referencing_column_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: self_referencing_column_name
+    primaryKey: false
+  reference_generation:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: reference_generation
+    primaryKey: false
+  user_defined_type_catalog:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: user_defined_type_catalog
+    primaryKey: false
+  user_defined_type_schema:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: user_defined_type_schema
+    primaryKey: false
+  user_defined_type_name:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: user_defined_type_name
+    primaryKey: false
+  is_insertable_into:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: is_insertable_into
+    primaryKey: false
+  is_typed:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: is_typed
+    primaryKey: false
+  commit_action:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: commit_action
+    primaryKey: false
