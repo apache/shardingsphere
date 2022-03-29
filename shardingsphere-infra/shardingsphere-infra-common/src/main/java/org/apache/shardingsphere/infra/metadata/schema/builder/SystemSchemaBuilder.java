@@ -61,7 +61,7 @@ public final class SystemSchemaBuilder {
         return result;
     }
     
-    static Collection<File> getSchemaFiles(final String schemaName, final DatabaseType databaseType) {
+    private static Collection<File> getSchemaFiles(final String schemaName, final DatabaseType databaseType) {
         URL url = SystemSchemaBuilder.class.getClassLoader().getResource("schema/" + databaseType.getName().toLowerCase() + "/" + schemaName);
         if (null == url) {
             return Collections.emptyList();
