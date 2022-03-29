@@ -130,10 +130,10 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
     
     private List<Object> buildRow(final String resource, final StorageNodeDataSource storageNodeDataSource) {
         if (null == storageNodeDataSource) {
-            return Arrays.asList(resource, StorageNodeStatus.ENABLED, "0");
+            return Arrays.asList(resource, StorageNodeStatus.ENABLED.name().toLowerCase(), "0");
         } else {
             Long replicationDelayTime = storageNodeDataSource.getReplicationDelayMilliseconds();
-            String status = StorageNodeStatus.valueOf(storageNodeDataSource.getStatus()).toString().toLowerCase();
+            String status = StorageNodeStatus.valueOf(storageNodeDataSource.getStatus().toUpperCase()).name().toLowerCase();
             return Arrays.asList(resource, status, null != replicationDelayTime ? Long.toString(replicationDelayTime) : "0");
         }
     }
