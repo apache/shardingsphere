@@ -17,27 +17,38 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder.dialect;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectSystemSchemaBuilder;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
+import org.apache.shardingsphere.infra.yaml.schema.swapper.SchemaYamlSwapper;
 
-import java.util.Collections;
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * MySQL system schema builder.
  */
 public final class MySQLSystemSchemaBuilder implements DialectSystemSchemaBuilder {
     
+    @SneakyThrows
     @Override
     public Map<String, ShardingSphereSchema> build(final String schemaName) {
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>();
         DatabaseType databaseType = DatabaseTypeRegistry.getTrunkDatabaseType(getDatabaseType());
-        for (String each : databaseType.getSystemSchemas().getOrDefault(schemaName, Collections.emptyList())) {
-            // TODO build ShardingSphereSchema according to MySQL schema
-            result.put(each, new ShardingSphereSchema(Collections.emptyMap()));
+        SchemaYamlSwapper swapper = new SchemaYamlSwapper();
+        for (String each : databaseType.getSystemDatabases()) {
+            Optional<String> schemaPath = getSystemSchemaPath(each);
+            if (!schemaPath.isPresent()) {
+                continue;
+            }
+            YamlSchema yamlSchema = YamlEngine.unmarshal(new File(schemaPath.get()), YamlSchema.class);
+            result.put(each, swapper.swapToObject(yamlSchema));
         }
         return result;
     }
